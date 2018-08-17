@@ -11,13 +11,13 @@ void help() {
     qInfo() << "Usage: CDQ <app-binary> [options]";
     qInfo() << "";
     qInfo() << "Options:";
-    qInfo() << "   -help / -h        : show help.";
-    qInfo() << "   -always-overwrite        : Copy files even if the target file exists.";
-    qInfo() << "   -bin                     : deployment binry.";
-    qInfo() << "   -qmlDir                  : qml datadir. for example ~/Qt/5.11.1/gcc_64/qml";
-    qInfo() << "   -noStrip                 : no strip deployed lib";
-    qInfo() << "   -deploy-not-qt           : deploy all libs";
-    qInfo() << "   -qmake                   : qmake path. for example";
+    qInfo() << "   help / h        : show help.";
+    qInfo() << "   always-overwrite        : Copy files even if the target file exists.";
+    qInfo() << "   -bin    [params]         : deployment binry.";
+    qInfo() << "   -qmlDir [params]         : qml datadir. for example ~/Qt/5.11.1/gcc_64/qml";
+    qInfo() << "   noStrip                 : no strip deployed lib";
+    qInfo() << "   deploy-not-qt           : deploy all libs";
+    qInfo() << "   -qmake  [params]         : qmake path. for example";
     qInfo() << "                            | for example ~/Qt/5.11.1/gcc_64/bin/qmake";
 
 }
@@ -29,7 +29,7 @@ bool parseQt(Deploy& deploy) {
     if (!info.isFile() || (info.baseName() != "qmake")) {
         return false;
     }
-    basePath = info.path();
+    basePath = info.absolutePath();
     deploy.setQmake(qmake);
 
     auto bin = QuasarAppUtils::getStrArg("bin");
@@ -63,14 +63,13 @@ bool parseQt(Deploy& deploy) {
         return false;
     }
 
-    deploy.setQtDir(dir.path());
+    deploy.setQtDir(dir.absolutePath());
 
     return true;
 }
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
 
     if (!QuasarAppUtils::parseParams(argc, argv)) {
         qWarning() << "wrong parametrs";
@@ -95,5 +94,7 @@ int main(int argc, char *argv[])
 
     deploy.deploy();
 
-    return a.exec();
+    qInfo() << "deploy done!";
+
+    return 0;
 }

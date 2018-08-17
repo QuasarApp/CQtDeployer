@@ -38,13 +38,15 @@ QString Deploy::getTarget() const {
 
 bool Deploy::setTarget(const QString &value) {
     target = value;
-    targetDir = QFileInfo(target).path();
+    targetDir = QFileInfo(target).absolutePath();
 
-    if (!QDir(targetDir).mkdir("lib")){
+    if (!QFileInfo::exists(targetDir + QDir::separator() + "lib") &&
+            !QDir(targetDir).mkdir("lib")) {
         return false;
     }
 
     if (QuasarAppUtils::isEndable("qmlDir") &&
+            !QFileInfo::exists(targetDir  + QDir::separator() + "qml") &&
             !QDir(targetDir).mkdir("qml")){
         return false;
     }
@@ -61,6 +63,10 @@ void Deploy::deploy() {
         copyFiles(noQTLibs, targetDir + QDir::separator() + "lib");
     }
 
+    if (!QuasarAppUtils::isEndable("noStrip")) {
+        strip(targetDir + QDir::separator() + "lib");
+    }
+
 }
 
 QString Deploy::getQtDir() const {
@@ -73,7 +79,7 @@ void Deploy::setQtDir(const QString &value) {
 
 bool Deploy::isQtLib(const QString &lib) const {
     QFileInfo info(lib);
-    return info.path().contains(qtDir);
+    return info.absolutePath().contains(qtDir);
 }
 
 void Deploy::copyFiles(const QStringList &files , const QString& target) {
@@ -89,9 +95,10 @@ bool Deploy::copyFile(const QString &file, const QString& target) {
     auto info = QFileInfo(file);
 
     auto name = info.baseName();
+    info.setFile(target + QDir::separator() + name);
 
     if (QuasarAppUtils::isEndable("always-overwrite") &&
-            !QFile::remove(target + QDir::separator() + name)){
+            info.exists() && !QFile::remove(target + QDir::separator() + name)){
         return false;
     }
 
@@ -107,6 +114,7 @@ void Deploy::extract(const QString &file) {
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     env.insert("LD_LIBRARY_PATH", qtDir + "/lib");
+    env.insert("LD_LIBRARY_PATH", targetDir);
     env.insert("QML_IMPORT_PATH", qtDir + "/qml");
     env.insert("QML2_IMPORT_PATH", qtDir + "/qml");
     env.insert("QT_PLUGIN_PATH", qtDir + "/plugins");
@@ -136,14 +144,32 @@ void Deploy::extract(const QString &file) {
         if (isQtLib(line) && !QtLibs.contains(line)) {
             QtLibs << line;
             extract(line);
+            continue;
         }
 
-        if (QuasarAppUtils::isEndable("deploy-not-qt")) {
+        if (QuasarAppUtils::isEndable("deploy-not-qt") &&
+                !noQTLibs.contains(line)) {
             noQTLibs << line;
             extract(line);
         }
 
     }
+}
+
+void Deploy::strip(const QString& dir) {
+    QProcess P;
+
+    P.setWorkingDirectory(dir);
+    P.setArguments(QStringList() << "*");
+    P.start("strip", QProcess::ReadOnly);
+
+
+    if (!P.waitForStarted()) return;
+    if (!P.waitForFinished()) return;
+
+    auto a = P.errorString();
+    qInfo() << a;
+
 }
 
 Deploy::Deploy(){

@@ -23,6 +23,8 @@ private:
     bool copyFile(const QString& file, const QString &target);
     void extract(const QString& file);
 
+    void strip(const QString &dir);
+
 public:
     Deploy();
     bool getDeployQml() const;
