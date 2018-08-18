@@ -11,14 +11,17 @@ void help() {
     qInfo() << "Usage: CDQ <app-binary> [options]";
     qInfo() << "";
     qInfo() << "Options:";
-    qInfo() << "   help / h        : show help.";
-    qInfo() << "   always-overwrite        : Copy files even if the target file exists.";
+    qInfo() << "   help / h                 : show help.";
+    qInfo() << "   always-overwrite         : Copy files even if the target file exists.";
     qInfo() << "   -bin    [params]         : deployment binry.";
-    qInfo() << "   -qmlDir [params]         : qml datadir. for example ~/Qt/5.11.1/gcc_64/qml";
-    qInfo() << "   noStrip                 : no strip deployed lib";
-    qInfo() << "   deploy-not-qt           : deploy all libs";
+    qInfo() << "   -qmlDir [params]         : qml datadir. for example -qmlDir ~/Qt/5.11.1/gcc_64/qml";
+    qInfo() << "   noStrip                  : no strip deployed lib";
+    qInfo() << "   deploy-not-qt            : deploy all libs";
     qInfo() << "   -qmake  [params]         : qmake path. for example";
-    qInfo() << "                            | for example ~/Qt/5.11.1/gcc_64/bin/qmake";
+    qInfo() << "                            | for example  -qmake ~/Qt/5.11.1/gcc_64/bin/qmake";
+    qInfo() << "   ignoreCudaLib            : it filter ignore cuda lib of nvidea";
+    qInfo() << "   -ignore [list,params]    : ignore filter for libs";
+    qInfo() << "                            | for example -ignore libicudata.so.56,libicudata2.so.56";
 
 }
 

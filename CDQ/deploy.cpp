@@ -56,6 +56,16 @@ bool Deploy::setTarget(const QString &value) {
 
 void Deploy::deploy() {
     qInfo() << "target deploy started!!";
+
+    if (QuasarAppUtils::isEndable("ignoreCudaLib")) {
+        ignoreList << "libicudata" << "libicui" << "libicuuc";
+    }
+
+    if (QuasarAppUtils::isEndable("ignore")) {
+        auto list = QuasarAppUtils::getStrArg("ignore").split(',');
+        ignoreList.append(list);
+    }
+
     extract(target);
     copyFiles(QtLibs, targetDir + QDir::separator() + "lib");
 
@@ -65,6 +75,12 @@ void Deploy::deploy() {
 
     if (!QuasarAppUtils::isEndable("noStrip")) {
         strip(targetDir + QDir::separator() + "lib");
+    }
+
+    copyPlugins(neededPlugins);
+
+    if (!QuasarAppUtils::isEndable("noStrip")) {
+        strip(targetDir + QDir::separator() + "plugins");
     }
 
 }
@@ -94,7 +110,7 @@ bool Deploy::copyFile(const QString &file, const QString& target) {
 
     auto info = QFileInfo(file);
 
-    auto name = info.baseName();
+    auto name = info.fileName();
     info.setFile(target + QDir::separator() + name);
 
     if (QuasarAppUtils::isEndable("always-overwrite") &&
@@ -141,9 +157,22 @@ void Deploy::extract(const QString &file) {
             continue;
         }
 
+        bool isIgnore = false;
+        for (auto ignore: ignoreList) {
+            if (line.contains(ignore)) {
+                qInfo() << line << " ignored by filter" << ignore;
+                isIgnore = true;
+            }
+        }
+
+        if (isIgnore) {
+            continue;
+        }
+
         if (isQtLib(line) && !QtLibs.contains(line)) {
             QtLibs << line;
             extract(line);
+            extractPlugins(line);
             continue;
         }
 
@@ -156,6 +185,130 @@ void Deploy::extract(const QString &file) {
     }
 }
 
+void Deploy::extractPlugins(const QString &lib) {
+
+    qInfo() << "extrac plugin for " << lib;
+
+    if (lib.contains("libQt5Core") && !neededPlugins.contains("xcbglintegrations")) {
+        neededPlugins   << "xcbglintegrations"
+                        << "platforms";
+    } else if (lib.contains("libQt5Gui") && !neededPlugins.contains("imageformats")) {
+        neededPlugins    << "imageformats"
+                         << "iconengines";
+    } else if (lib.contains("libQt5Sql") && !neededPlugins.contains("sqldrivers")) {
+        neededPlugins    << "sqldrivers";
+    } else if (lib.contains("libQt5Gamepad") && !neededPlugins.contains("gamepads")) {
+        neededPlugins    << "gamepads";
+    } else if (lib.contains("libQt5PrintSupport") && !neededPlugins.contains("printsupport")) {
+        neededPlugins    << "printsupport";
+    } else if (lib.contains("libQt5Sensors") && !neededPlugins.contains("sensors")) {
+        neededPlugins    << "sensors"
+                         << "sensorgestures";
+    } else if (lib.contains("libQt5Positioning") && !neededPlugins.contains("geoservices")) {
+        neededPlugins    << "geoservices"
+                         << "position"
+                         << "geometryloaders";
+    } else if (lib.contains("libQt5Multimedia") && !neededPlugins.contains("audio")) {
+        neededPlugins    << "audio"
+                         << "mediaservice"
+                         << "playlistformats";
+    }
+
+}
+
+bool Deploy::copyPlugin(const QString &plugin) {
+    QDir dir(qtDir);
+    if (!dir.cd("plugins")) {
+        return false;
+    }
+
+    if (!dir.cd(plugin)) {
+        return false;
+    }
+
+    QDir dirTo(targetDir);
+
+    if (!dirTo.cd("plugins")) {
+        if (!dirTo.mkdir("plugins")) {
+            return false;
+        }
+
+        if (!dirTo.cd("plugins")) {
+            return false;
+        }
+    }
+
+    if (!dirTo.cd(plugin)) {
+        if (!dirTo.mkdir(plugin)) {
+            return false;
+        }
+
+        if (!dirTo.cd(plugin)) {
+            return false;
+        }
+    }
+
+    return copyFolder(dir, dirTo, ".so.debug");
+
+}
+
+void Deploy::copyPlugins(const QStringList &list) {
+    for (auto plugin : list) {
+        if ( !copyPlugin(plugin)) {
+            qWarning () << plugin << " not copied!";
+        }
+    }
+}
+
+bool Deploy::copyFolder( QDir &from,  QDir &to, const QString& filter) {
+
+    if (!(from.isReadable() && to.isReadable())){
+        return false;
+    }
+
+    auto list = from.entryList();
+    list.removeAll("..");
+    list.removeAll(".");
+
+    for (auto item : list ) {
+        if (QFileInfo(item).isDir()) {
+
+            if (!from.cd(item)) {
+                qWarning() <<"not open " << from.absolutePath() + QDir::separator() + item;
+                continue;
+            }
+
+            if (!QFileInfo::exists(to.absolutePath() + QDir::separator() + item) &&
+                    !to.mkdir(item)) {
+                qWarning() <<"not create " << to.absolutePath() + QDir::separator() + item;
+                continue;
+            }
+
+            if (!to.cd(item)) {
+                qWarning() <<"not open " << to.absolutePath() + QDir::separator() + item;
+                continue;
+            }
+
+            copyFolder(from, to, filter);
+            from.cdUp();
+            to.cdUp();
+
+        } else {
+
+            if (!filter.isEmpty() && item.contains(filter)) {
+                qInfo() << item << " ignored by filter " << filter;
+                continue;
+            }
+
+            if (!copyFile(from.absolutePath() + QDir::separator() + item, to.absolutePath())) {
+                qWarning() <<"not copied file " << to.absolutePath() + QDir::separator() + item;
+            }
+        }
+    }
+
+    return true;
+}
+
 void Deploy::strip(const QString& dir) {
     QProcess P;
 
@@ -166,9 +319,6 @@ void Deploy::strip(const QString& dir) {
 
     if (!P.waitForStarted()) return;
     if (!P.waitForFinished()) return;
-
-    auto a = P.errorString();
-    qInfo() << a;
 
 }
 

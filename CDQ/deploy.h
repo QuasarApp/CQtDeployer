@@ -1,5 +1,6 @@
 #ifndef DEPLOY_H
 #define DEPLOY_H
+#include <QDir>
 #include <QString>
 #include <QStringList>
 
@@ -16,12 +17,20 @@ private:
     QStringList QtLibs;
     QStringList noQTLibs;
     QStringList qmlLibs;
+    QStringList neededPlugins;
+    QStringList ignoreList;
 
     bool isQtLib(const QString& lib) const;
 
     void copyFiles(const QStringList &files, const QString &target);
     bool copyFile(const QString& file, const QString &target);
     void extract(const QString& file);
+
+    void extractPlugins(const QString &lib);
+    bool copyPlugin(const QString &plugin);
+    void copyPlugins(const QStringList& list);
+    bool copyFolder(QDir &from, QDir &to, const QString &filter = "");
+
 
     void strip(const QString &dir);
 
