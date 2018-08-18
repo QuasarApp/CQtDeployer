@@ -49,6 +49,9 @@ public:
     void deploy();
     QString getQtDir() const;
     void setQtDir(const QString &value);
+
+    void clear();
+
 };
 
 #endif // DEPLOY_H

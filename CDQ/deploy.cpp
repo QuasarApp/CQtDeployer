@@ -309,6 +309,21 @@ bool Deploy::copyFolder( QDir &from,  QDir &to, const QString& filter) {
     return true;
 }
 
+void Deploy::clear() {
+    QDir dir(targetDir);
+
+    if (dir.cd("lib")) {
+        dir.removeRecursively();
+        dir.cdUp();
+    }
+
+    if (dir.cd("plugins")) {
+        dir.removeRecursively();
+        dir.cdUp();
+
+    }
+}
+
 void Deploy::strip(const QString& dir) {
     QProcess P;
 
