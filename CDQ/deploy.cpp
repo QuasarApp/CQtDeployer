@@ -83,6 +83,10 @@ void Deploy::deploy() {
         strip(targetDir + QDir::separator() + "plugins");
     }
 
+    if (deployQml && !extractQml()) {
+        qCritical() << "qml not extacted!";
+    }
+
 }
 
 QString Deploy::getQtDir() const {
@@ -266,26 +270,25 @@ bool Deploy::copyFolder( QDir &from,  QDir &to, const QString& filter) {
         return false;
     }
 
-    auto list = from.entryList();
-    list.removeAll("..");
-    list.removeAll(".");
+    auto list = from.entryInfoList(QDir::NoDotAndDotDot|QDir::AllEntries);
+
 
     for (auto item : list ) {
         if (QFileInfo(item).isDir()) {
 
-            if (!from.cd(item)) {
-                qWarning() <<"not open " << from.absolutePath() + QDir::separator() + item;
+            if (!from.cd(item.baseName())) {
+                qWarning() <<"not open " << from.absolutePath() + QDir::separator() + item.baseName();
                 continue;
             }
 
-            if (!QFileInfo::exists(to.absolutePath() + QDir::separator() + item) &&
-                    !to.mkdir(item)) {
-                qWarning() <<"not create " << to.absolutePath() + QDir::separator() + item;
+            if (!QFileInfo::exists(to.absolutePath() + QDir::separator() + item.baseName()) &&
+                    !to.mkdir(item.baseName())) {
+                qWarning() <<"not create " << to.absolutePath() + QDir::separator() + item.baseName();
                 continue;
             }
 
-            if (!to.cd(item)) {
-                qWarning() <<"not open " << to.absolutePath() + QDir::separator() + item;
+            if (!to.cd(item.baseName())) {
+                qWarning() <<"not open " << to.absolutePath() + QDir::separator() + item.baseName();
                 continue;
             }
 
@@ -295,18 +298,44 @@ bool Deploy::copyFolder( QDir &from,  QDir &to, const QString& filter) {
 
         } else {
 
-            if (!filter.isEmpty() && item.contains(filter)) {
+            if (!filter.isEmpty() && item.fileName().contains(filter)) {
                 qInfo() << item << " ignored by filter " << filter;
                 continue;
             }
 
-            if (!copyFile(from.absolutePath() + QDir::separator() + item, to.absolutePath())) {
-                qWarning() <<"not copied file " << to.absolutePath() + QDir::separator() + item;
+            if (!copyFile(from.absolutePath() + QDir::separator() + item.fileName(), to.absolutePath())) {
+                qWarning() <<"not copied file " << to.absolutePath() + QDir::separator() + item.fileName();
             }
         }
     }
 
     return true;
+}
+
+bool Deploy::extractQml() {
+    auto qmlDir = QuasarAppUtils::getStrArg("qmlDir");
+
+    if (!QFileInfo::exists(qmlDir)){
+        qWarning() << "qml dir wrong!";
+        return false;
+    }
+
+    QDir dir(qmlDir);
+
+    QDir dirTo(targetDir);
+
+    if (!dirTo.cd("qml")) {
+        if (!dirTo.mkdir("qml")) {
+            return false;
+        }
+
+        if (!dirTo.cd("qml")) {
+            return false;
+        }
+    }
+
+    return copyFolder(dir, dirTo, ".so.debug");
+
 }
 
 void Deploy::clear() {
@@ -318,6 +347,12 @@ void Deploy::clear() {
     }
 
     if (dir.cd("plugins")) {
+        dir.removeRecursively();
+        dir.cdUp();
+
+    }
+
+    if (dir.cd("qml")) {
         dir.removeRecursively();
         dir.cdUp();
 

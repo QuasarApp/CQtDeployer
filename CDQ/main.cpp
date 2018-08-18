@@ -57,15 +57,10 @@ bool parseQt(Deploy& deploy) {
 
     QDir dir(basePath);
 
-    if (qmlDir.isEmpty()) {
-        deploy.setDeployQml(false);
+    if (QFileInfo::exists(qmlDir)) {
+        deploy.setDeployQml(true);
     } else {
-        auto scaners = dir.entryList(QStringList() << "qmlimportscanner");
-        if (!scaners.size()) {
-            qWarning () << "qmlimportscanner not installed";
-        } else {
-            deploy.setQmlScaner(scaners.first());
-        }
+        qCritical () << "wrong qml dir!";
     }
 
     if (!dir.cdUp()) {

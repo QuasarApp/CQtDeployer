@@ -31,6 +31,7 @@ private:
     void copyPlugins(const QStringList& list);
     bool copyFolder(QDir &from, QDir &to, const QString &filter = "");
 
+    bool extractQml();
 
     void strip(const QString &dir);
 
