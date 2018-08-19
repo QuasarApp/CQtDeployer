@@ -16,7 +16,7 @@ Key differences of this program:
 
 ### How to use
 
-#### Usage: CDQ <-bin    [params]> [options]
+#### Usage: CQtDeployer <-bin    [params]> [options]
 
 #### Options:
 | Option                      | Descriptiion                                              |
@@ -34,7 +34,7 @@ Key differences of this program:
 |                             | for example -ignore libicudata.so.56,libicudata2.so.56    |
 |   clear                     | delete all old deploy data                                |
 
-#### Example: CDQ -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
+#### Example: CQtDeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
 
 
 
@@ -63,10 +63,10 @@ Console QtDeployer является консольной реализацией 
 * Гибкость - это приложение имеет флаги, которые помогут вам настроить деплоинг под ваши нужды и нужды вашего проекта
 
 ## Внимание
-##### Данный проект преднозначен для сборки проектов состоящих всего из одного pro файла, если вам необходимо собрать крупный проект то вам нужно аоспользоватся нашим [шаблоном](https://quasarapp.github.io/QtDeployTemplate/) для сборки и развертывания qt приложений 
+##### Данный проект преднозначен для сборки проектов состоящих всего из одного pro файла, если вам необходимо собрать крупный проект то вам нужно воспользоватся нашим [шаблоном](https://quasarapp.github.io/QtDeployTemplate/) для сборки и развертывания qt приложений 
 
 ### Как использовать
-#### пример : CDQ <-bin    [params]> [options]
+#### пример : CQtDeployer <-bin    [params]> [options]
 
 #### Options:
 | Option                      | Descriptiion                                              |
@@ -76,15 +76,15 @@ Console QtDeployer является консольной реализацией 
 |   -bin    [params]          | Исполняемый файл над которым будет выплнятся деплои                                        |
 |   -qmlDir [params]          | Папка qml. пример -qmlDir ~/Qt/5.11.1/gcc_64/qml   |
 |   noStrip                   | не выполнять стрип копируемых библиотек                                    |
-|   deploy-not-qt             | Еопировать все библиотеки                                          |
+|   deploy-not-qt             | Копировать все библиотеки                                          |
 |   -qmake  [params]          | Путь к qmake. пример                                   |
 |                             | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake                       |
 |   ignoreCudaLib             | Этот фильтр будет игнорировать библиотеки nvidea                       |
-|   -ignore [list,params]     | Мписок библиотек для игнорирования                                     |
+|   -ignore [list,params]     | Список библиотек для игнорирования                                     |
 |                             | пример -ignore libicudata.so.56,libicudata2.so.56    |
 |   clear                     | удалит все старые файлы (с прошлого запуска)                               |
 
-#### Пример: CDQ -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
+#### Пример: CQtDeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
 
 ## Build для Linux 
   -  qmake & make или установите qtcreator и соберите проект с qt5.9 или выше.
