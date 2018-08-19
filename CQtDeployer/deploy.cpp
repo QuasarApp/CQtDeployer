@@ -75,7 +75,7 @@ bool Deploy::createRunScript() {
 
     content = content.arg(QFileInfo(target).fileName());
 
-    QString fname = QFileInfo(target).fileName() + ".sh";
+    QString fname = targetDir + QDir::separator() + QFileInfo(target).fileName() + ".sh";
 
     QFile F(fname);
     if (!F.open(QIODevice::WriteOnly)) {
