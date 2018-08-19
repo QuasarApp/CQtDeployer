@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2018 QuasarApp.
+ * Distributed under the lgplv3 software license, see the accompanying
+ * Everyone is permitted to copy and distribute verbatim copies
+ * of this license document, but changing it is not allowed.
+*/
+
 #include "deploy.h"
 #include <QFileInfo>
 #include <QDebug>
@@ -54,6 +61,37 @@ bool Deploy::setTarget(const QString &value) {
     return true;
 }
 
+bool Deploy::createRunScript() {
+
+    QString content =
+        "#!/bin/sh\n"
+        "BASEDIR=$(dirname $0)\n"
+        "export LD_LIBRARY_PATH=\"$BASEDIR/lib:$BASEDIR\"\n"
+        "export QML_IMPORT_PATH=\"$BASEDIR/qml\"\n"
+        "export QML2_IMPORT_PATH=\"$BASEDIR/qml\"\n"
+        "export QT_PLUGIN_PATH=\"$BASEDIR/plugins\"\n"
+        "export QT_QPA_PLATFORM_PLUGIN_PATH=\"$BASEDIR/plugins/platforms\"\n"
+        "$BASEDIR//%1";
+
+    content = content.arg(QFileInfo(target).fileName());
+
+    QString fname = QFileInfo(target).fileName() + ".sh";
+
+    QFile F(fname);
+    if (!F.open(QIODevice::WriteOnly)) {
+        return false;
+    }
+
+    F.write(content.toUtf8());
+    F.flush();
+    F.close();
+
+    return F.setPermissions(QFileDevice::ExeUser |
+                            QFileDevice::WriteUser |
+                     QFileDevice::ReadUser);
+
+}
+
 void Deploy::deploy() {
     qInfo() << "target deploy started!!";
 
@@ -87,6 +125,10 @@ void Deploy::deploy() {
         qCritical() << "qml not extacted!";
     }
 
+    if (!createRunScript()) {
+        qCritical() << "run script not created!";
+    }
+
 }
 
 QString Deploy::getQtDir() const {
@@ -104,7 +146,7 @@ bool Deploy::isQtLib(const QString &lib) const {
 
 void Deploy::copyFiles(const QStringList &files , const QString& target) {
     for (auto file : files) {
-        if (!copyFile(file, target)) {
+        if (QFileInfo(file).absolutePath() != targetDir && !copyFile(file, target)) {
             qWarning() << file + " not copied";
         }
     }

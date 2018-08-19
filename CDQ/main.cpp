@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2018 QuasarApp.
+ * Distributed under the lgplv3 software license, see the accompanying
+ * Everyone is permitted to copy and distribute verbatim copies
+ * of this license document, but changing it is not allowed.
+*/
+
 #include <QCoreApplication>
 #include "quasarapp.h"
 #include <QDebug>
@@ -8,7 +15,7 @@
 
 void help() {
     qInfo() << "";
-    qInfo() << "Usage: CDQ <app-binary> [options]";
+    qInfo() << "Usage: CDQ <-bin    [params]> [options]";
     qInfo() << "";
     qInfo() << "Options:";
     qInfo() << "   help / h                 : show help.";
@@ -18,12 +25,13 @@ void help() {
     qInfo() << "   noStrip                  : no strip deployed lib";
     qInfo() << "   deploy-not-qt            : deploy all libs";
     qInfo() << "   -qmake  [params]         : qmake path. for example";
-    qInfo() << "                            | for example  -qmake ~/Qt/5.11.1/gcc_64/bin/qmake";
+    qInfo() << "                            | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake";
     qInfo() << "   ignoreCudaLib            : it filter ignore cuda lib of nvidea";
     qInfo() << "   -ignore [list,params]    : ignore filter for libs";
     qInfo() << "                            | for example -ignore libicudata.so.56,libicudata2.so.56";
     qInfo() << "   clear                    : delete all old deploy data";
-
+    qInfo() << "";
+    qInfo() << "Example: CDQ -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear";
 }
 
 bool parseQt(Deploy& deploy) {

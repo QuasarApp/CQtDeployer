@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2018 QuasarApp.
+ * Distributed under the lgplv3 software license, see the accompanying
+ * Everyone is permitted to copy and distribute verbatim copies
+ * of this license document, but changing it is not allowed.
+*/
+
 #ifndef DEPLOY_H
 #define DEPLOY_H
 #include <QDir>
@@ -46,7 +53,7 @@ public:
     void setQmake(const QString &value);
     QString getTarget() const;
     bool setTarget(const QString &value);
-
+    bool createRunScript();
     void deploy();
     QString getQtDir() const;
     void setQtDir(const QString &value);
