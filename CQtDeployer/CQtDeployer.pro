@@ -24,7 +24,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 include('./../QuasarAppLib/deploy.pri');
 include('./../QuasarAppLib/QuasarLib.pri');
 
-TARGET = CDQ
+TARGET = CQtDeployer
 
 SOURCES += \
         main.cpp \

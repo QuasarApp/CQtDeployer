@@ -8,7 +8,7 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 
-SUBDIRS += CDQ \
+SUBDIRS += CQtDeployer \
     QuasarAppLib
 
 QuasarAppLib.file = $$PWD/QuasarAppLib/QuasarApp.pro
