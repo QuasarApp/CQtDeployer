@@ -5,8 +5,6 @@
 ## What is Console Qt Deployer
 The Console QtDeployer is console veriosn of the [QtDeployer](https://quasarapp.github.io/QtDeployer/).
 
-This application is designed to replace [linuxdeployqt](https://github.com/probonopd/linuxdeployqt) which does not solve the tasks of qt applications deployment.
-
 Key differences of this program:
 * Performance-this program deploys the application several times faster (up to 10 seconds)
 * Flexibility-this application has flags that will help you configure the deployment as you need and your project
@@ -55,8 +53,6 @@ If you want to help the project, then you can donate a small amount to our bitco
 ***************************
 
 Console QtDeployer является консольной реализацией [QtDeployer](https://quasarapp.github.io/QtDeployer/).
-
-Это приложение с целью замены [linuxdeployqt](https://github.com/probonopd/linuxdeployqt), которое не решает задачи развертывания qt-приложений в полной мере.
 
 Основные отличия этой программы:
 * Производительность - эта программа развертывает приложение в несколько раз быстрее (до 10 секунд)

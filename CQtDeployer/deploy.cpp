@@ -75,7 +75,7 @@ bool Deploy::createRunScript() {
 
     content = content.arg(QFileInfo(target).fileName());
 
-    QString fname = targetDir + QDir::separator() + QFileInfo(target).fileName() + ".sh";
+    QString fname = targetDir + QDir::separator() + "AppRun.sh";
 
     QFile F(fname);
     if (!F.open(QIODevice::WriteOnly)) {
@@ -125,8 +125,6 @@ void Deploy::deploy() {
     if (!QuasarAppUtils::isEndable("noStrip")) {
         strip(targetDir + QDir::separator() + "plugins");
     }
-
-
 
     if (!createRunScript()) {
         qCritical() << "run script not created!";
