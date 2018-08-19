@@ -105,6 +105,12 @@ void Deploy::deploy() {
     }
 
     extract(target);
+    copyPlugins(neededPlugins);
+
+    if (deployQml && !extractQml()) {
+        qCritical() << "qml not extacted!";
+    }
+
     copyFiles(QtLibs, targetDir + QDir::separator() + "lib");
 
     if (QuasarAppUtils::isEndable("deploy-not-qt")) {
@@ -115,15 +121,12 @@ void Deploy::deploy() {
         strip(targetDir + QDir::separator() + "lib");
     }
 
-    copyPlugins(neededPlugins);
 
     if (!QuasarAppUtils::isEndable("noStrip")) {
         strip(targetDir + QDir::separator() + "plugins");
     }
 
-    if (deployQml && !extractQml()) {
-        qCritical() << "qml not extacted!";
-    }
+
 
     if (!createRunScript()) {
         qCritical() << "run script not created!";
@@ -170,13 +173,12 @@ bool Deploy::copyFile(const QString &file, const QString& target) {
 
 }
 
-void Deploy::extract(const QString &file) {
+void Deploy::extract(const QString &file, bool isExtractPlugins) {
 
     qInfo() << "extract lib :" << file;
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    env.insert("LD_LIBRARY_PATH", qtDir + "/lib");
-    env.insert("LD_LIBRARY_PATH", targetDir);
+    env.insert("LD_LIBRARY_PATH", qtDir + "/lib:" + targetDir);
     env.insert("QML_IMPORT_PATH", qtDir + "/qml");
     env.insert("QML2_IMPORT_PATH", qtDir + "/qml");
     env.insert("QT_PLUGIN_PATH", qtDir + "/plugins");
@@ -217,15 +219,17 @@ void Deploy::extract(const QString &file) {
 
         if (isQtLib(line) && !QtLibs.contains(line)) {
             QtLibs << line;
-            extract(line);
-            extractPlugins(line);
+            extract(line, isExtractPlugins);
+            if (isExtractPlugins) {
+                extractPlugins(line);
+            }
             continue;
         }
 
         if (QuasarAppUtils::isEndable("deploy-not-qt") &&
                 !noQTLibs.contains(line)) {
             noQTLibs << line;
-            extract(line);
+            extract(line, isExtractPlugins);
         }
 
     }
@@ -235,12 +239,11 @@ void Deploy::extractPlugins(const QString &lib) {
 
     qInfo() << "extrac plugin for " << lib;
 
-    if (lib.contains("libQt5Core") && !neededPlugins.contains("xcbglintegrations")) {
-        neededPlugins   << "xcbglintegrations"
-                        << "platforms";
-    } else if (lib.contains("libQt5Gui") && !neededPlugins.contains("imageformats")) {
+    if (lib.contains("libQt5Gui") && !neededPlugins.contains("imageformats")) {
         neededPlugins    << "imageformats"
-                         << "iconengines";
+                         << "iconengines"
+                         << "xcbglintegrations"
+                         << "platforms";
     } else if (lib.contains("libQt5Sql") && !neededPlugins.contains("sqldrivers")) {
         neededPlugins    << "sqldrivers";
     } else if (lib.contains("libQt5Gamepad") && !neededPlugins.contains("gamepads")) {
@@ -294,7 +297,17 @@ bool Deploy::copyPlugin(const QString &plugin) {
         }
     }
 
-    return copyFolder(dir, dirTo, ".so.debug");
+    QStringList listItems;
+
+    if (!copyFolder(dir, dirTo, ".so.debug", &listItems)) {
+        return false;
+    }
+
+    for (auto item : listItems) {
+        extract(item, false);
+    }
+
+    return true;
 
 }
 
@@ -306,7 +319,8 @@ void Deploy::copyPlugins(const QStringList &list) {
     }
 }
 
-bool Deploy::copyFolder( QDir &from,  QDir &to, const QString& filter) {
+bool Deploy::copyFolder( QDir &from,  QDir &to, const QString& filter,
+                         QStringList* listOfCopiedItems) {
 
     if (!(from.isReadable() && to.isReadable())){
         return false;
@@ -334,7 +348,7 @@ bool Deploy::copyFolder( QDir &from,  QDir &to, const QString& filter) {
                 continue;
             }
 
-            copyFolder(from, to, filter);
+            copyFolder(from, to, filter, listOfCopiedItems);
             from.cdUp();
             to.cdUp();
 
@@ -348,6 +362,11 @@ bool Deploy::copyFolder( QDir &from,  QDir &to, const QString& filter) {
             if (!copyFile(from.absolutePath() + QDir::separator() + item.fileName(), to.absolutePath())) {
                 qWarning() <<"not copied file " << to.absolutePath() + QDir::separator() + item.fileName();
             }
+
+            if (listOfCopiedItems) {
+                *listOfCopiedItems << to.absolutePath() + QDir::separator() + item.fileName();
+            }
+
         }
     }
 
@@ -376,7 +395,18 @@ bool Deploy::extractQml() {
         }
     }
 
-    return copyFolder(dir, dirTo, ".so.debug");
+
+    QStringList listItems;
+
+    if (!copyFolder(dir, dirTo, ".so.debug", &listItems)) {
+        return false;
+    }
+
+//    for (auto item : listItems) {
+//        extract(item, false);
+//    }
+
+    return true;
 
 }
 

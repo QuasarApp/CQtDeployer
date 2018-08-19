@@ -31,12 +31,13 @@ private:
 
     void copyFiles(const QStringList &files, const QString &target);
     bool copyFile(const QString& file, const QString &target);
-    void extract(const QString& file);
+    void extract(const QString& file, bool isExtractPlugins = true);
 
     void extractPlugins(const QString &lib);
     bool copyPlugin(const QString &plugin);
     void copyPlugins(const QStringList& list);
-    bool copyFolder(QDir &from, QDir &to, const QString &filter = "");
+    bool copyFolder(QDir &from, QDir &to, const QString &filter = "",
+                    QStringList *listOfCopiedItems = nullptr);
 
     bool extractQml();
 
