@@ -75,7 +75,12 @@ bool Deploy::createRunScript() {
 
     content = content.arg(QFileInfo(target).fileName());
 
-    QString fname = targetDir + QDir::separator() + "AppRun.sh";
+    QString fname = targetDir + QDir::separator();
+    if (QuasarAppUtils::isEndable("runScript")) {
+        fname += QuasarAppUtils::getStrArg("runScript");
+    } else {
+        fname += "AppRun.sh";
+    }
 
     QFile F(fname);
     if (!F.open(QIODevice::WriteOnly)) {

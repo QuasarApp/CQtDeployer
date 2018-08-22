@@ -30,6 +30,10 @@ void help() {
     qInfo() << "   -ignore [list,params]    : ignore filter for libs";
     qInfo() << "                            | for example -ignore libicudata.so.56,libicudata2.so.56";
     qInfo() << "   clear                    : delete all old deploy data";
+    qInfo() << "   -runScript [params]      : set new name of out file (AppRun.sh by default)";
+    qInfo() << "                            | for example -runScript myApp.sh";
+
+
     qInfo() << "";
     qInfo() << "Example: CDQ -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear";
 }
