@@ -20,6 +20,7 @@ private:
     QString qtDir = "";
     QString target = "";
     QString targetDir = "";
+    QString qmlDir = "";
 
     QStringList QtLibs;
     QStringList noQTLibs;
@@ -43,6 +44,9 @@ private:
 
     void strip(const QString &dir);
 
+    QStringList extractImportsFromDir(const QString &dirpath);
+    QStringList findFilesInsideDir(const QString &name, const QString &dirpath);
+    QStringList extractImportsFromFiles(const QStringList &filepath);
 public:
     Deploy();
     bool getDeployQml() const;

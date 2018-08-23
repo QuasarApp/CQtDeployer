@@ -12,6 +12,10 @@
 #include <QFile>
 #include <quasarapp.h>
 #include <QProcess>
+#include <QDirIterator>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 
 bool Deploy::getDeployQml() const {
@@ -37,6 +41,15 @@ QString Deploy::getQmake() const {
 
 void Deploy::setQmake(const QString &value) {
     qmake = value;
+
+    QFileInfo info(qmake);
+    QDir dir = info.absoluteDir();
+
+    if (!dir.cdUp() || !dir.cd("qml")) {
+        qWarning() << "get qml fail!";
+    }
+
+    qmlDir = dir.absolutePath();
 }
 
 QString Deploy::getTarget() const {
@@ -376,16 +389,64 @@ bool Deploy::copyFolder( QDir &from,  QDir &to, const QString& filter,
     return true;
 }
 
-bool Deploy::extractQml() {
-    auto qmlDir = QuasarAppUtils::getStrArg("qmlDir");
+QStringList Deploy::findFilesInsideDir(const QString &name,
+                                          const QString &dirpath) {
+    QStringList files;
 
-    if (!QFileInfo::exists(qmlDir)){
-        qWarning() << "qml dir wrong!";
-        return false;
+    QDir dir(dirpath);
+    dir.setNameFilters(QStringList(name));
+
+    QDirIterator it(dir, QDirIterator::Subdirectories);
+    while (it.hasNext()) files << it.next();
+
+    return files;
+}
+
+QStringList Deploy::extractImportsFromFiles(const QStringList &filepath){
+    QProcess p;
+    p.setProgram(qmlScaner);
+    p.setArguments(QStringList () << "-qmlFiles" << filepath
+                   << "-importPath" << qmlDir);
+    p.start();
+
+    qInfo() << "run extract qml";
+
+    if (!p.waitForFinished()) {
+        qWarning() << filepath << " not scaning!";
+        return QStringList();
     }
 
-    QDir dir(qmlDir);
+    auto data = QJsonDocument::fromJson(p.readAll());
 
+    if (!data.isArray()) {
+        qWarning() << "wrong data from qml scaner! of " << filepath;
+    }
+
+    auto array =  data.array();
+
+    QStringList result;
+
+    for (auto object : array) {
+        result << object.toObject().value("path").toString();
+    }
+
+    return result;
+}
+
+QStringList Deploy::extractImportsFromDir(const QString &dirpath) {
+    auto files = findFilesInsideDir("*.qml", dirpath);
+
+    QStringList result;
+    for (auto file: files) {
+        result.append(extractImportsFromFile(file));
+    }
+
+    return result;
+}
+
+bool Deploy::extractQml() {
+
+    qInfo() << "run extract qml";
     QDir dirTo(targetDir);
 
     if (!dirTo.cd("qml")) {
@@ -398,16 +459,23 @@ bool Deploy::extractQml() {
         }
     }
 
+    auto plugins = extractImportsFromDir(qmlDir);
 
-    QStringList listItems;
 
-    if (!copyFolder(dir, dirTo, ".so.debug", &listItems)) {
-        return false;
+    for (auto plugin : plugins) {
+
+        QDir dir(plugin);
+        QStringList listItems;
+
+        if (!copyFolder(dir, dirTo, ".so.debug", &listItems)) {
+            return false;
+        }
+
+        for (auto item : listItems) {
+            extract(item, false);
+        }
+
     }
-
-//    for (auto item : listItems) {
-//        extract(item, false);
-//    }
 
     return true;
 

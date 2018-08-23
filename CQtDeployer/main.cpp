@@ -21,7 +21,7 @@ void help() {
     qInfo() << "   help / h                 : show help.";
     qInfo() << "   always-overwrite         : Copy files even if the target file exists.";
     qInfo() << "   -bin    [params]         : deployment binry.";
-    qInfo() << "   -qmlDir [params]         : qml datadir. for example -qmlDir ~/Qt/5.11.1/gcc_64/qml";
+    qInfo() << "   -qmlDir [params]         : qml datadir of project. for example -qmlDir ~/my/project/qml";
     qInfo() << "   noStrip                  : no strip deployed lib";
     qInfo() << "   deploy-not-qt            : deploy all libs";
     qInfo() << "   -qmake  [params]         : qmake path. for example";
@@ -32,6 +32,9 @@ void help() {
     qInfo() << "   clear                    : delete all old deploy data";
     qInfo() << "   -runScript [params]      : set new name of out file (AppRun.sh by default)";
     qInfo() << "                            | for example -runScript myApp.sh";
+    qInfo() << "   allQmlDependes           : This flag will force to extract all qml libraries.";
+    qInfo() << "                            | (not recommended, as it takes up a lot of memory)";
+
 
 
     qInfo() << "";
@@ -47,6 +50,7 @@ bool parseQt(Deploy& deploy) {
     }
     basePath = info.absolutePath();
     deploy.setQmake(qmake);
+    auto scaner = basePath + QDir::separator() + "qmlimportscanner";
 
     auto bin = QuasarAppUtils::getStrArg("bin");
 
@@ -69,7 +73,12 @@ bool parseQt(Deploy& deploy) {
 
     QDir dir(basePath);
 
-    if (QFileInfo::exists(qmlDir)) {
+    if (QFileInfo::exists(qmlDir) && QFileInfo::exists(scaner)) {
+
+        deploy.setDeployQml(true);
+        deploy.setQmlScaner(scaner);
+
+    } else if (QuasarAppUtils::isEndable("allQmlDependes")) {
         deploy.setDeployQml(true);
     } else {
         qCritical () << "wrong qml dir!";
@@ -83,7 +92,6 @@ bool parseQt(Deploy& deploy) {
 
     return true;
 }
-
 int main(int argc, char *argv[])
 {
 
