@@ -335,19 +335,19 @@ bool Deploy::copyFolder( QDir &from,  QDir &to, const QString& filter,
     for (auto item : list ) {
         if (QFileInfo(item).isDir()) {
 
-            if (!from.cd(item.baseName())) {
-                qWarning() <<"not open " << from.absolutePath() + QDir::separator() + item.baseName();
+            if (!from.cd(item.fileName())) {
+                qWarning() <<"not open " << from.absolutePath() + QDir::separator() + item.fileName();
                 continue;
             }
 
-            if (!QFileInfo::exists(to.absolutePath() + QDir::separator() + item.baseName()) &&
-                    !to.mkdir(item.baseName())) {
-                qWarning() <<"not create " << to.absolutePath() + QDir::separator() + item.baseName();
+            if (!QFileInfo::exists(to.absolutePath() + QDir::separator() + item.fileName()) &&
+                    !to.mkdir(item.fileName())) {
+                qWarning() <<"not create " << to.absolutePath() + QDir::separator() + item.fileName();
                 continue;
             }
 
-            if (!to.cd(item.baseName())) {
-                qWarning() <<"not open " << to.absolutePath() + QDir::separator() + item.baseName();
+            if (!to.cd(item.fileName())) {
+                qWarning() <<"not open " << to.absolutePath() + QDir::separator() + item.fileName();
                 continue;
             }
 
