@@ -12,6 +12,10 @@
 #include <QFile>
 #include <quasarapp.h>
 #include <QProcess>
+#include <QDirIterator>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 
 bool Deploy::getDeployQml() const {
@@ -37,15 +41,22 @@ QString Deploy::getQmake() const {
 
 void Deploy::setQmake(const QString &value) {
     qmake = value;
+
+    QFileInfo info(qmake);
+    QDir dir = info.absoluteDir();
+
+    if (!dir.cdUp() || !dir.cd("qml")) {
+        qWarning() << "get qml fail!";
+    }
+
+    qmlDir = dir.absolutePath();
 }
 
 QString Deploy::getTarget() const {
     return target;
 }
 
-bool Deploy::setTarget(const QString &value) {
-    target = value;
-    targetDir = QFileInfo(target).absolutePath();
+bool Deploy::initDirs() {
 
     if (!QFileInfo::exists(targetDir + QDir::separator() + "lib") &&
             !QDir(targetDir).mkdir("lib")) {
@@ -57,6 +68,18 @@ bool Deploy::setTarget(const QString &value) {
             !QDir(targetDir).mkdir("qml")){
         return false;
     }
+
+    return true;
+}
+
+bool Deploy::setTarget(const QString &value) {
+    target = value;
+
+    if (target.isEmpty()) {
+        return false;
+    }
+
+    targetDir = QFileInfo(target).absolutePath();
 
     return true;
 }
@@ -376,8 +399,79 @@ bool Deploy::copyFolder( QDir &from,  QDir &to, const QString& filter,
     return true;
 }
 
-bool Deploy::extractQml() {
-    auto qmlDir = QuasarAppUtils::getStrArg("qmlDir");
+QStringList Deploy::findFilesInsideDir(const QString &name,
+                                          const QString &dirpath) {
+    QStringList files;
+
+    QDir dir(dirpath);
+    dir.setNameFilters(QStringList(name));
+
+    QDirIterator it(dir, QDirIterator::Subdirectories);
+    while (it.hasNext()) files << it.next();
+
+    return files;
+}
+
+QString Deploy::filterQmlPath(const QString& path) {
+    if (path.contains(qmlDir)) {
+        auto endIndex = path.indexOf(QDir::separator(), qmlDir.size() + 1);
+        QString module = path.mid(qmlDir.size() + 1, endIndex - qmlDir.size() - 1);
+        return qmlDir + QDir::separator() + module;
+    }
+
+    return "";
+}
+
+QStringList Deploy::extractImportsFromFiles(const QStringList &filepath){
+    QProcess p;
+    p.setProgram(qmlScaner);
+    p.setArguments(QStringList () << "-qmlFiles" << filepath
+                   << "-importPath" << qmlDir);
+    p.start();
+
+    qInfo() << "run extract qml";
+
+    if (!p.waitForFinished()) {
+        qWarning() << filepath << " not scaning!";
+        return QStringList();
+    }
+
+    auto data = QJsonDocument::fromJson(p.readAll());
+
+    if (!data.isArray()) {
+        qWarning() << "wrong data from qml scaner! of " << filepath;
+    }
+
+    auto array =  data.array();
+
+    QStringList result;
+
+    for (auto object : array) {
+
+        auto module = filterQmlPath(object.toObject().value("path").toString());
+
+        if (module.isEmpty()) {
+            continue;
+        }
+
+        if (!result.contains(module)) {
+            result << module;
+        }
+    }
+
+    return result;
+}
+
+QStringList Deploy::extractImportsFromDir(const QString &dirpath) {
+    auto files = findFilesInsideDir("*.qml", dirpath);
+
+    QStringList result;
+    result.append(extractImportsFromFiles(files));
+
+    return result;
+}
+
+bool Deploy::extractQmlAll() {
 
     if (!QFileInfo::exists(qmlDir)){
         qWarning() << "qml dir wrong!";
@@ -405,15 +499,75 @@ bool Deploy::extractQml() {
         return false;
     }
 
-//    for (auto item : listItems) {
-//        extract(item, false);
-//    }
+    for (auto item : listItems) {
+        extract(item, false);
+    }
 
-    return true;
+return true;
+}
+
+bool Deploy::extractQmlFromSource(const QString sourceDir) {
+    qInfo() << "run extract qml";
+    QDir dirTo(targetDir);
+
+    if (!dirTo.cd("qml")) {
+        if (!dirTo.mkdir("qml")) {
+            return false;
+        }
+
+        if (!dirTo.cd("qml")) {
+            return false;
+        }
+    }
+
+   QStringList plugins = extractImportsFromDir(sourceDir);
+
+   for (auto plugin : plugins) {
+
+       QDir dir(plugin);
+       QStringList listItems;
+
+       if (!dirTo.cd(dir.dirName())) {
+           if (!dirTo.mkdir(dir.dirName())) {
+               return false;
+           }
+
+           if (!dirTo.cd(dir.dirName())) {
+               return false;
+           }
+       }
+
+       if (!copyFolder(dir, dirTo, ".so.debug", &listItems)) {
+           return false;
+       }
+
+       dirTo.cdUp();
+
+       for (auto item : listItems) {
+           extract(item, false);
+       }
+
+   }
+
+   return true;
+}
+
+bool Deploy::extractQml() {
+
+    if (QuasarAppUtils::isEndable("qmlDir")) {
+        return  extractQmlFromSource(QuasarAppUtils::getStrArg("qmlDir"));
+
+    } else if (QuasarAppUtils::isEndable("allQmlDependes")){
+        return  extractQmlAll();
+
+    } else {
+        return false;
+    }
 
 }
 
 void Deploy::clear() {
+
     QDir dir(targetDir);
 
     if (dir.cd("lib")) {
