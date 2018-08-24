@@ -56,9 +56,7 @@ QString Deploy::getTarget() const {
     return target;
 }
 
-bool Deploy::setTarget(const QString &value) {
-    target = value;
-    targetDir = QFileInfo(target).absolutePath();
+bool Deploy::initDirs() {
 
     if (!QFileInfo::exists(targetDir + QDir::separator() + "lib") &&
             !QDir(targetDir).mkdir("lib")) {
@@ -70,6 +68,18 @@ bool Deploy::setTarget(const QString &value) {
             !QDir(targetDir).mkdir("qml")){
         return false;
     }
+
+    return true;
+}
+
+bool Deploy::setTarget(const QString &value) {
+    target = value;
+
+    if (target.isEmpty()) {
+        return false;
+    }
+
+    targetDir = QFileInfo(target).absolutePath();
 
     return true;
 }
@@ -402,6 +412,16 @@ QStringList Deploy::findFilesInsideDir(const QString &name,
     return files;
 }
 
+QString Deploy::filterQmlPath(const QString& path) {
+    if (path.contains(qmlDir)) {
+        auto endIndex = path.indexOf(QDir::separator(), qmlDir.size() + 1);
+        QString module = path.mid(qmlDir.size() + 1, endIndex - qmlDir.size() - 1);
+        return qmlDir + QDir::separator() + module;
+    }
+
+    return "";
+}
+
 QStringList Deploy::extractImportsFromFiles(const QStringList &filepath){
     QProcess p;
     p.setProgram(qmlScaner);
@@ -427,7 +447,16 @@ QStringList Deploy::extractImportsFromFiles(const QStringList &filepath){
     QStringList result;
 
     for (auto object : array) {
-        result << object.toObject().value("path").toString();
+
+        auto module = filterQmlPath(object.toObject().value("path").toString());
+
+        if (module.isEmpty()) {
+            continue;
+        }
+
+        if (!result.contains(module)) {
+            result << module;
+        }
     }
 
     return result;
@@ -437,15 +466,47 @@ QStringList Deploy::extractImportsFromDir(const QString &dirpath) {
     auto files = findFilesInsideDir("*.qml", dirpath);
 
     QStringList result;
-    for (auto file: files) {
-        result.append(extractImportsFromFile(file));
-    }
+    result.append(extractImportsFromFiles(files));
 
     return result;
 }
 
-bool Deploy::extractQml() {
+bool Deploy::extractQmlAll() {
 
+    if (!QFileInfo::exists(qmlDir)){
+        qWarning() << "qml dir wrong!";
+        return false;
+    }
+
+    QDir dir(qmlDir);
+
+    QDir dirTo(targetDir);
+
+    if (!dirTo.cd("qml")) {
+        if (!dirTo.mkdir("qml")) {
+            return false;
+        }
+
+        if (!dirTo.cd("qml")) {
+            return false;
+        }
+    }
+
+
+    QStringList listItems;
+
+    if (!copyFolder(dir, dirTo, ".so.debug", &listItems)) {
+        return false;
+    }
+
+    for (auto item : listItems) {
+        extract(item, false);
+    }
+
+return true;
+}
+
+bool Deploy::extractQmlFromSource(const QString sourceDir) {
     qInfo() << "run extract qml";
     QDir dirTo(targetDir);
 
@@ -459,29 +520,54 @@ bool Deploy::extractQml() {
         }
     }
 
-    auto plugins = extractImportsFromDir(qmlDir);
+   QStringList plugins = extractImportsFromDir(sourceDir);
 
+   for (auto plugin : plugins) {
 
-    for (auto plugin : plugins) {
+       QDir dir(plugin);
+       QStringList listItems;
 
-        QDir dir(plugin);
-        QStringList listItems;
+       if (!dirTo.cd(dir.dirName())) {
+           if (!dirTo.mkdir(dir.dirName())) {
+               return false;
+           }
 
-        if (!copyFolder(dir, dirTo, ".so.debug", &listItems)) {
-            return false;
-        }
+           if (!dirTo.cd(dir.dirName())) {
+               return false;
+           }
+       }
 
-        for (auto item : listItems) {
-            extract(item, false);
-        }
+       if (!copyFolder(dir, dirTo, ".so.debug", &listItems)) {
+           return false;
+       }
 
+       dirTo.cdUp();
+
+       for (auto item : listItems) {
+           extract(item, false);
+       }
+
+   }
+
+   return true;
+}
+
+bool Deploy::extractQml() {
+
+    if (QuasarAppUtils::isEndable("qmlDir")) {
+        return  extractQmlFromSource(QuasarAppUtils::getStrArg("qmlDir"));
+
+    } else if (QuasarAppUtils::isEndable("allQmlDependes")){
+        return  extractQmlAll();
+
+    } else {
+        return false;
     }
-
-    return true;
 
 }
 
 void Deploy::clear() {
+
     QDir dir(targetDir);
 
     if (dir.cd("lib")) {

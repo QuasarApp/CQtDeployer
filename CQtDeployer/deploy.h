@@ -47,6 +47,9 @@ private:
     QStringList extractImportsFromDir(const QString &dirpath);
     QStringList findFilesInsideDir(const QString &name, const QString &dirpath);
     QStringList extractImportsFromFiles(const QStringList &filepath);
+    bool extractQmlAll();
+    bool extractQmlFromSource(const QString sourceDir);
+    QString filterQmlPath(const QString &path);
 public:
     Deploy();
     bool getDeployQml() const;
@@ -65,6 +68,7 @@ public:
 
     void clear();
 
+    bool initDirs();
 };
 
 #endif // DEPLOY_H

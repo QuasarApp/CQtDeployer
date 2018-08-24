@@ -59,12 +59,17 @@ bool parseQt(Deploy& deploy) {
         return false;
     }
 
+    if (!deploy.setTarget(bin)) {
+        qCritical() << "error init targeet dir";
+        return false;
+    }
+
     if (QuasarAppUtils::isEndable("clear")) {
         qInfo() << "clear old data";
         deploy.clear();
     }
 
-    if (!deploy.setTarget(bin)) {
+    if (!deploy.initDirs()) {
         qCritical() << "error init targeet dir";
         return false;
     }
