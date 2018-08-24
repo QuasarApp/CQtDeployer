@@ -22,7 +22,7 @@ Key differences of this program:
 |   help / h                  | show help.                                                |
 |   always-overwrite          | Copy files even if the target file exists.                |
 |   -bin    [params]          | deployment binry.                                         |
-|   -qmlDir [params]          | qml datadir. for example -qmlDir ~/Qt/5.11.1/gcc_64/qml   |
+|   -qmlDir [params]          | qml datadir. for example -qmlDir ~/my/project/qml         |
 |   noStrip                   | no strip deployed lib                                     |
 |   deploy-not-qt             | deploy all libs                                           |
 |   -qmake  [params]          | qmake path. for example                                   |
@@ -31,6 +31,11 @@ Key differences of this program:
 |   -ignore [list,params]     | ignore filter for libs                                    |
 |                             | for example -ignore libicudata.so.56,libicudata2.so.56    |
 |   clear                     | delete all old deploy data                                |
+|  -runScript [params]        | set new name of out file (AppRun.sh by default)           |
+|                             | for example -runScript myApp.sh                           |
+|  allQmlDependes             | This flag will force to extract all qml libraries.        |
+|                             | (not recommended, as it takes up a lot of memory)         |
+
 
 #### Example: CQtDeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
 
@@ -70,7 +75,7 @@ Console QtDeployer является консольной реализацией 
 |   help / h                  | Показать справку                                                |
 |   always-overwrite          | Копирует файлы с заменой уже существующих                |
 |   -bin    [params]          | Исполняемый файл над которым будет выплнятся деплои                                        |
-|   -qmlDir [params]          | Папка qml. пример -qmlDir ~/Qt/5.11.1/gcc_64/qml   |
+|   -qmlDir [params]          | Папка qml. пример -qmlDir ~/my/project/qml   |
 |   noStrip                   | не выполнять стрип копируемых библиотек                                    |
 |   deploy-not-qt             | Копировать все библиотеки                                          |
 |   -qmake  [params]          | Путь к qmake. пример                                   |
@@ -79,7 +84,10 @@ Console QtDeployer является консольной реализацией 
 |   -ignore [list,params]     | Список библиотек для игнорирования                                     |
 |                             | пример -ignore libicudata.so.56,libicudata2.so.56    |
 |   clear                     | удалит все старые файлы (с прошлого запуска)                               |
-
+|  -runScript [params]        | установить новое имя результирующего файла (AppRun.sh по умолчанию)           |
+|                             | пример -runScript myApp.sh                           |
+|  allQmlDependes             | Этот флаг заставит извлекать все библиотеки qml.        |
+|                             | (не рекомендуется, так как занимает много памяти)         |
 #### Пример: CQtDeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
 
 ## Build для Linux 
