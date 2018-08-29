@@ -1,3 +1,6 @@
 [submodule "QuasarAppLib"]
 	path = QuasarAppLib
 	url = https://github.com/QuasarApp/QuasarAppLib.git
+[submodule "qtBase"]
+	path = qtBase
+	url = https://github.com/qt/qtbase.git
