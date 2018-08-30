@@ -9,7 +9,7 @@ make -j$(nproc)
 cd ..
 export PATH=$PATH:/qtBase
 
-./qtBase/bin/qmake CQTDeployer.pro
+./qtBase/bin/qmake CQtDeployer.pro
 
 make -j$(nproc)
 
