@@ -181,7 +181,23 @@ void Deploy::copyFiles(const QStringList &files , const QString& target) {
     }
 }
 
-bool Deploy::copyFile(const QString &file, const QString& target) {
+bool Deploy::copyFile(const QString &file, const QString& target, QStringList *masks) {
+
+
+    bool copy = !masks;
+    if (masks) {
+        for (auto mask : *masks) {
+            if (file.contains(mask)) {
+                copy = true;
+                break;
+            }
+        }
+    }
+
+    if (!copy) {
+        qInfo() << "skip copy :" << file ;
+        return false;
+    }
 
     auto info = QFileInfo(file);
 
@@ -346,7 +362,7 @@ void Deploy::copyPlugins(const QStringList &list) {
 }
 
 bool Deploy::copyFolder( QDir &from,  QDir &to, const QString& filter,
-                         QStringList* listOfCopiedItems) {
+                         QStringList* listOfCopiedItems, QStringList* mask) {
 
     if (!(from.isReadable() && to.isReadable())){
         return false;
@@ -374,7 +390,7 @@ bool Deploy::copyFolder( QDir &from,  QDir &to, const QString& filter,
                 continue;
             }
 
-            copyFolder(from, to, filter, listOfCopiedItems);
+            copyFolder(from, to, filter, listOfCopiedItems, mask);
             from.cdUp();
             to.cdUp();
 
@@ -385,8 +401,9 @@ bool Deploy::copyFolder( QDir &from,  QDir &to, const QString& filter,
                 continue;
             }
 
-            if (!copyFile(from.absolutePath() + QDir::separator() + item.fileName(), to.absolutePath())) {
+            if (!copyFile(from.absolutePath() + QDir::separator() + item.fileName(), to.absolutePath(), mask)) {
                 qWarning() <<"not copied file " << to.absolutePath() + QDir::separator() + item.fileName();
+                continue;
             }
 
             if (listOfCopiedItems) {
@@ -448,7 +465,7 @@ QStringList Deploy::extractImportsFromFiles(const QStringList &filepath){
 
     for (auto object : array) {
 
-        auto module = filterQmlPath(object.toObject().value("path").toString());
+        auto module = object.toObject().value("path").toString();
 
         if (module.isEmpty()) {
             continue;
@@ -503,11 +520,18 @@ bool Deploy::extractQmlAll() {
         extract(item, false);
     }
 
-return true;
+    return true;
 }
 
 bool Deploy::extractQmlFromSource(const QString sourceDir) {
-    qInfo() << "run extract qml";
+
+    if (!QFileInfo::exists(qmlDir)){
+        qWarning() << "qml dir wrong!";
+        return false;
+    }
+
+    QDir dir(qmlDir);
+
     QDir dirTo(targetDir);
 
     if (!dirTo.cd("qml")) {
@@ -520,36 +544,19 @@ bool Deploy::extractQmlFromSource(const QString sourceDir) {
         }
     }
 
-   QStringList plugins = extractImportsFromDir(sourceDir);
+    QStringList plugins = extractImportsFromDir(sourceDir);
 
-   for (auto plugin : plugins) {
+    QStringList listItems;
 
-       QDir dir(plugin);
-       QStringList listItems;
+    if (!copyFolder(dir, dirTo, ".so.debug", &listItems, &plugins)) {
+        return false;
+    }
 
-       if (!dirTo.cd(dir.dirName())) {
-           if (!dirTo.mkdir(dir.dirName())) {
-               return false;
-           }
+    for (auto item : listItems) {
+        extract(item, false);
+    }
 
-           if (!dirTo.cd(dir.dirName())) {
-               return false;
-           }
-       }
-
-       if (!copyFolder(dir, dirTo, ".so.debug", &listItems)) {
-           return false;
-       }
-
-       dirTo.cdUp();
-
-       for (auto item : listItems) {
-           extract(item, false);
-       }
-
-   }
-
-   return true;
+    return true;
 }
 
 bool Deploy::extractQml() {

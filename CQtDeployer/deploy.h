@@ -31,14 +31,15 @@ private:
     bool isQtLib(const QString& lib) const;
 
     void copyFiles(const QStringList &files, const QString &target);
-    bool copyFile(const QString& file, const QString &target);
+    bool copyFile(const QString& file, const QString &target, QStringList *mask = nullptr);
     void extract(const QString& file, bool isExtractPlugins = true);
 
     void extractPlugins(const QString &lib);
     bool copyPlugin(const QString &plugin);
     void copyPlugins(const QStringList& list);
     bool copyFolder(QDir &from, QDir &to, const QString &filter = "",
-                    QStringList *listOfCopiedItems = nullptr);
+                    QStringList *listOfCopiedItems = nullptr,
+                    QStringList *mask = nullptr);
 
     bool extractQml();
 
