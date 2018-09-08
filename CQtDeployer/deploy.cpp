@@ -188,12 +188,12 @@ void Deploy::copyFiles(const QStringList &files , const QString& target) {
 }
 
 bool Deploy::copyFile(const QString &file, const QString& target, QStringList *masks) {
-
+    auto info = QFileInfo(file);
 
     bool copy = !masks;
     if (masks) {
         for (auto mask : *masks) {
-            if (file.contains(mask)) {
+            if (info.absolutePath().contains(mask)) {
                 copy = true;
                 break;
             }
@@ -205,7 +205,6 @@ bool Deploy::copyFile(const QString &file, const QString& target, QStringList *m
         return false;
     }
 
-    auto info = QFileInfo(file);
 
     auto name = info.fileName();
     info.setFile(target + QDir::separator() + name);
