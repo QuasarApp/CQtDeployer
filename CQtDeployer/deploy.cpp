@@ -114,9 +114,15 @@ bool Deploy::createRunScript() {
     F.flush();
     F.close();
 
-    return F.setPermissions(QFileDevice::ExeUser |
+    return F.setPermissions(QFileDevice::ExeOther |
+                            QFileDevice::WriteOther |
+                            QFileDevice::ReadOther |
+                            QFileDevice::ExeUser |
                             QFileDevice::WriteUser |
-                     QFileDevice::ReadUser);
+                            QFileDevice::ReadUser |
+                            QFileDevice::ExeOwner |
+                            QFileDevice::WriteOwner |
+                            QFileDevice::ReadOwner);
 
 }
 
@@ -445,8 +451,6 @@ QStringList Deploy::extractImportsFromFiles(const QStringList &filepath){
     p.setArguments(QStringList () << "-qmlFiles" << filepath
                    << "-importPath" << qmlDir);
     p.start();
-
-    qInfo() << "run extract qml";
 
     if (!p.waitForFinished()) {
         qWarning() << filepath << " not scaning!";
