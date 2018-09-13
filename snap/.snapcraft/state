@@ -1,0 +1,6 @@
+!GlobalState
+assets:
+  build-packages: [libglib2.0-dev-bin=2.56.2-0ubuntu0.18.04.1, libglib2.0-bin=2.56.2-0ubuntu0.18.04.1,
+    libglib2.0-dev=2.56.2-0ubuntu0.18.04.1, libglib2.0-0=2.56.2-0ubuntu0.18.04.1,
+    'libglib2.0-0:i386=2.56.2-0ubuntu0.18.04.1']
+  build-snaps: []
