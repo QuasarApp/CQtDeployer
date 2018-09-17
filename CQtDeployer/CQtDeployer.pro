@@ -34,3 +34,6 @@ HEADERS += \
     deploy.h
 
 QMAKE_LFLAGS += -Wl,-rpath,"'$$DESTDIR'"
+
+DISTFILES += \
+    ../README.md

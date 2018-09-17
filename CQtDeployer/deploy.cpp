@@ -129,10 +129,6 @@ bool Deploy::createRunScript() {
 void Deploy::deploy() {
     qInfo() << "target deploy started!!";
 
-    if (QuasarAppUtils::isEndable("ignoreCudaLib")) {
-        ignoreList << "libicudata" << "libicui" << "libicuuc";
-    }
-
     if (QuasarAppUtils::isEndable("ignore")) {
         auto list = QuasarAppUtils::getStrArg("ignore").split(',');
         ignoreList.append(list);
@@ -152,15 +148,6 @@ void Deploy::deploy() {
 
     if (onlyCLibs || QuasarAppUtils::isEndable("deploy-not-qt")) {
         copyFiles(noQTLibs, targetDir + QDir::separator() + "lib");
-    }
-
-    if (!QuasarAppUtils::isEndable("noStrip")) {
-        strip(targetDir + QDir::separator() + "lib");
-    }
-
-
-    if (!QuasarAppUtils::isEndable("noStrip")) {
-        strip(targetDir + QDir::separator() + "plugins");
     }
 
     if (!createRunScript()) {
