@@ -42,19 +42,10 @@ void help() {
 }
 
 bool parseQt(Deploy& deploy) {
-    auto qmake = QuasarAppUtils::getStrArg("qmake");
-    QString basePath = "";
-    QFileInfo info(qmake);
-    if (!info.isFile() || (info.baseName() != "qmake")) {
-        return false;
-    }
-    basePath = info.absolutePath();
-    deploy.setQmake(qmake);
-    auto scaner = basePath + QDir::separator() + "qmlimportscanner";
 
     auto bin = QuasarAppUtils::getStrArg("bin");
 
-    info.setFile(bin);
+    QFileInfo info(bin);
     if (!info.isFile()) {
         return false;
     }
@@ -64,14 +55,27 @@ bool parseQt(Deploy& deploy) {
         return false;
     }
 
-    if (QuasarAppUtils::isEndable("clear")) {
-        qInfo() << "clear old data";
-        deploy.clear();
-    }
-
     if (!deploy.initDirs()) {
         qCritical() << "error init targeet dir";
         return false;
+    }
+
+    auto qmake = QuasarAppUtils::getStrArg("qmake");
+    QString basePath = "";
+    info.setFile(qmake);
+    if (!info.isFile() || (info.baseName() != "qmake")) {
+        qInfo() << "deploy only C libs because qmake is not found";
+        deploy.setOnlyCLibs(true);
+        return true;
+    }
+
+    basePath = info.absolutePath();
+    deploy.setQmake(qmake);
+    auto scaner = basePath + QDir::separator() + "qmlimportscanner";
+
+    if (QuasarAppUtils::isEndable("clear")) {
+        qInfo() << "clear old data";
+        deploy.clear();
     }
 
     auto qmlDir = QuasarAppUtils::getStrArg("qmlDir");

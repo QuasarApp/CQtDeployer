@@ -15,6 +15,7 @@ class Deploy
 {
 private:
     bool deployQml = false;
+    bool onlyCLibs = false;
     QString qmlScaner = "";
     QString qmake = "";
     QString qtDir = "";
@@ -70,6 +71,7 @@ public:
     void clear();
 
     bool initDirs();
+    void setOnlyCLibs(bool value);
 };
 
 #endif // DEPLOY_H

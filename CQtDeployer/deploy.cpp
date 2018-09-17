@@ -139,15 +139,18 @@ void Deploy::deploy() {
     }
 
     extract(target);
-    copyPlugins(neededPlugins);
 
-    if (deployQml && !extractQml()) {
+    if (!onlyCLibs)
+        copyPlugins(neededPlugins);
+
+    if (!onlyCLibs && deployQml && !extractQml()) {
         qCritical() << "qml not extacted!";
     }
 
-    copyFiles(QtLibs, targetDir + QDir::separator() + "lib");
+    if (!onlyCLibs)
+        copyFiles(QtLibs, targetDir + QDir::separator() + "lib");
 
-    if (QuasarAppUtils::isEndable("deploy-not-qt")) {
+    if (onlyCLibs || QuasarAppUtils::isEndable("deploy-not-qt")) {
         copyFiles(noQTLibs, targetDir + QDir::separator() + "lib");
     }
 
@@ -172,6 +175,10 @@ QString Deploy::getQtDir() const {
 
 void Deploy::setQtDir(const QString &value) {
     qtDir = value;
+}
+
+void Deploy::setOnlyCLibs(bool value) {
+    onlyCLibs = value;
 }
 
 bool Deploy::isQtLib(const QString &lib) const {
