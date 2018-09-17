@@ -94,7 +94,7 @@ bool Deploy::createRunScript() {
         "export QML2_IMPORT_PATH=$BASEDIR/qml:QML2_IMPORT_PATH\n"
         "export QT_PLUGIN_PATH=$BASEDIR/plugins:QT_PLUGIN_PATH\n"
         "export QT_QPA_PLATFORM_PLUGIN_PATH=$BASEDIR/plugins/platforms:QT_QPA_PLATFORM_PLUGIN_PATH\n"
-        "$BASEDIR/%1";
+        "$BASEDIR/%1 \"$@\"";
 
     content = content.arg(QFileInfo(target).fileName());
 
