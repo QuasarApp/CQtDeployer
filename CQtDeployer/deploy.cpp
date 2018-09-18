@@ -168,6 +168,17 @@ void Deploy::setOnlyCLibs(bool value) {
     onlyCLibs = value;
 }
 
+void Deploy::setExtraPath(const QStringList &value) {
+
+    for(auto i: value) {
+        if (QFile::exists(i)) {
+            extraPath.append(i);
+        } else {
+            qWarning() << i << " does not exist! and skiped";
+        }
+    }
+}
+
 bool Deploy::isQtLib(const QString &lib) const {
     QFileInfo info(lib);
     return info.absolutePath().contains(qtDir);
@@ -219,11 +230,20 @@ void Deploy::extract(const QString &file, bool isExtractPlugins) {
     qInfo() << "extract lib :" << file;
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    env.insert("LD_LIBRARY_PATH", qtDir + "/lib:" + targetDir);
+
+    QString ld_path = qtDir + "/lib:" + targetDir;
+
+    for (auto i: extraPath) {
+        ld_path.push_back(":" + i);
+    }
+
+    env.insert("LD_LIBRARY_PATH", ld_path);
     env.insert("QML_IMPORT_PATH", qtDir + "/qml");
     env.insert("QML2_IMPORT_PATH", qtDir + "/qml");
     env.insert("QT_PLUGIN_PATH", qtDir + "/plugins");
     env.insert("QT_QPA_PLATFORM_PLUGIN_PATH", qtDir + "/plugins/platforms");
+
+
 
     QProcess P;
     P.setProcessEnvironment(env);

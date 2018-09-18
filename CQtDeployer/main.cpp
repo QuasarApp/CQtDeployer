@@ -32,6 +32,8 @@ void help() {
     qInfo() << "                            | for example -runScript myApp.sh";
     qInfo() << "   allQmlDependes           : This flag will force to extract all qml libraries.";
     qInfo() << "                            | (not recommended, as it takes up a lot of memory)";
+    qInfo() << "   -libDir [list,params]    : set additional path for extralib of app.";
+    qInfo() << "                            | for example -libDir ~/myLib,~/newLibs";
 
 
 
@@ -52,6 +54,10 @@ bool parseQt(Deploy& deploy) {
         qCritical() << "error init targeet dir";
         return false;
     }
+
+    auto list = QuasarAppUtils::getStrArg("libDir").split(",");
+
+    deploy.setExtraPath(list);
 
     if (!deploy.initDirs()) {
         qCritical() << "error init targeet dir";

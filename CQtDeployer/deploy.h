@@ -28,6 +28,8 @@ private:
     QStringList qmlLibs;
     QStringList neededPlugins;
     QStringList ignoreList;
+    QStringList extraPath;
+
 
     bool isQtLib(const QString& lib) const;
 
@@ -72,6 +74,7 @@ public:
 
     bool initDirs();
     void setOnlyCLibs(bool value);
+    void setExtraPath(const QStringList &value);
 };
 
 #endif // DEPLOY_H

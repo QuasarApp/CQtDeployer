@@ -33,6 +33,9 @@ Key differences of this program:
 |                             | for example -runScript myApp.sh                           |
 |  allQmlDependes             | This flag will force to extract all qml libraries.        |
 |                             | (not recommended, as it takes up a lot of memory)         |
+|  -libDir [list,params]      | set additional path for extralib of app                   |
+|                             | for example -libDir ~/myLib,~/newLibs                     |
+
 
 
 #### Example: CQtDeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
@@ -84,6 +87,10 @@ Console QtDeployer является консольной реализацией 
 |                             | пример -runScript myApp.sh                           |
 |  allQmlDependes             | Этот флаг заставит извлекать все библиотеки qml.        |
 |                             | (не рекомендуется, так как занимает много памяти)         |
+|  -libDir [list,params]      | установит дополнительные пути к библиотекам               |
+|                             | пример -libDir ~/myLib,~/newLibs                          |
+
+
 #### Пример: CQtDeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
 
 ## Build для Linux 
