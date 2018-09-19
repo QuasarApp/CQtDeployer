@@ -35,6 +35,7 @@ Key differences of this program:
 |                             | (not recommended, as it takes up a lot of memory)         |
 |  -libDir [list,params]      | set additional path for extralib of app                   |
 |                             | for example -libDir ~/myLib,~/newLibs                     |
+|  -extraPlugin [list,params] | set additional path for extraPlugin of app                |
 
 
 
@@ -89,6 +90,7 @@ Console QtDeployer является консольной реализацией 
 |                             | (не рекомендуется, так как занимает много памяти)         |
 |  -libDir [list,params]      | установит дополнительные пути к библиотекам               |
 |                             | пример -libDir ~/myLib,~/newLibs                          |
+|  -extraPlugin [list,params] | установить дополнительный путь для extraPlugin приложения |
 
 
 #### Пример: CQtDeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear

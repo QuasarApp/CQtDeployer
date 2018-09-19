@@ -34,11 +34,13 @@ void help() {
     qInfo() << "                            | (not recommended, as it takes up a lot of memory)";
     qInfo() << "   -libDir [list,params]    : set additional path for extralib of app.";
     qInfo() << "                            | for example -libDir ~/myLib,~/newLibs";
-
+    qInfo() << "   -extraPlugin[list,params]: set additional path for extraPlugin of app";
 
 
     qInfo() << "";
     qInfo() << "Example: CDQ -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear";
+    qInfo() << "Example (only C libs): CDQ -bin myApp clear";
+
 }
 
 bool parseQt(Deploy& deploy) {

@@ -29,7 +29,7 @@ private:
     QStringList neededPlugins;
     QStringList ignoreList;
     QStringList extraPath;
-
+    QStringList extraPlugins;
 
     bool isQtLib(const QString& lib) const;
 
@@ -75,6 +75,7 @@ public:
     bool initDirs();
     void setOnlyCLibs(bool value);
     void setExtraPath(const QStringList &value);
+    void setExtraPlugins(const QStringList &value);
 };
 
 #endif // DEPLOY_H
