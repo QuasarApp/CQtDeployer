@@ -297,7 +297,8 @@ void Deploy::extract(const QString &file, bool isExtractPlugins) {
             continue;
         }
 
-        if (QuasarAppUtils::isEndable("deploy-not-qt") &&
+        if ((QuasarAppUtils::isEndable("deploy-not-qt") ||
+             onlyCLibs) &&
                 !noQTLibs.contains(line)) {
             noQTLibs << line;
             extract(line, isExtractPlugins);
@@ -401,7 +402,6 @@ void Deploy::copyPlugins(const QStringList &list) {
             copyFile(info.absoluteFilePath(), targetDir + QDir::separator() + "plugins");
             extract(info.absoluteFilePath());
         }
-
     }
 }
 
