@@ -34,11 +34,13 @@ void help() {
     qInfo() << "                            | (not recommended, as it takes up a lot of memory)";
     qInfo() << "   -libDir [list,params]    : set additional path for extralib of app.";
     qInfo() << "                            | for example -libDir ~/myLib,~/newLibs";
-
+    qInfo() << "   -extraPlugin[list,params]: set additional path for extraPlugin of app";
 
 
     qInfo() << "";
     qInfo() << "Example: CDQ -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear";
+    qInfo() << "Example (only C libs): CDQ -bin myApp clear";
+
 }
 
 bool parseQt(Deploy& deploy) {
@@ -55,9 +57,15 @@ bool parseQt(Deploy& deploy) {
         return false;
     }
 
-    auto list = QuasarAppUtils::getStrArg("libDir").split(",");
+    if (QuasarAppUtils::isEndable("clear")) {
+        qInfo() << "clear old data";
+        deploy.clear();
+    }
 
-    deploy.setExtraPath(list);
+    auto listLibDir = QuasarAppUtils::getStrArg("libDir").split(",");
+    auto listExtraPlugin = QuasarAppUtils::getStrArg("extraPlugin").split(",");
+    deploy.setExtraPath(listLibDir);
+    deploy.setExtraPlugins(listExtraPlugin);
 
     if (!deploy.initDirs()) {
         qCritical() << "error init targeet dir";
@@ -76,11 +84,6 @@ bool parseQt(Deploy& deploy) {
     basePath = info.absolutePath();
     deploy.setQmake(qmake);
     auto scaner = basePath + QDir::separator() + "qmlimportscanner";
-
-    if (QuasarAppUtils::isEndable("clear")) {
-        qInfo() << "clear old data";
-        deploy.clear();
-    }
 
     auto qmlDir = QuasarAppUtils::getStrArg("qmlDir");
 

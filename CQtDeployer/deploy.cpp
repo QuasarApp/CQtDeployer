@@ -179,6 +179,16 @@ void Deploy::setExtraPath(const QStringList &value) {
     }
 }
 
+void Deploy::setExtraPlugins(const QStringList &value) {
+    for(auto i: value) {
+        if (QFile::exists(i)) {
+            extraPlugins.append(i);
+        } else {
+            qWarning() << i << " does not exist! and skiped";
+        }
+    }
+}
+
 bool Deploy::isQtLib(const QString &lib) const {
     QFileInfo info(lib);
     return info.absolutePath().contains(qtDir);
@@ -287,7 +297,8 @@ void Deploy::extract(const QString &file, bool isExtractPlugins) {
             continue;
         }
 
-        if (QuasarAppUtils::isEndable("deploy-not-qt") &&
+        if ((QuasarAppUtils::isEndable("deploy-not-qt") ||
+             onlyCLibs) &&
                 !noQTLibs.contains(line)) {
             noQTLibs << line;
             extract(line, isExtractPlugins);
@@ -376,6 +387,20 @@ void Deploy::copyPlugins(const QStringList &list) {
     for (auto plugin : list) {
         if ( !copyPlugin(plugin)) {
             qWarning () << plugin << " not copied!";
+        }
+    }
+    QFileInfo info;
+
+    for (auto extraPlugin : extraPlugins) {
+
+        info.setFile(extraPlugin);
+        if (info.isDir()) {
+            QDir from(info.absoluteDir());
+            QDir to(targetDir + QDir::separator() + "plugins");
+            copyFolder(from, to, ".so.debug");
+        } else {
+            copyFile(info.absoluteFilePath(), targetDir + QDir::separator() + "plugins");
+            extract(info.absoluteFilePath());
         }
     }
 }
