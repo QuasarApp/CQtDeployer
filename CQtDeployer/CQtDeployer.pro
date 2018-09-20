@@ -34,3 +34,7 @@ HEADERS += \
     deploy.h
 
 QMAKE_LFLAGS += -Wl,-rpath,"'$$DESTDIR'"
+
+DISTFILES += \
+    ../snapBuild.sh \
+    ../staticBuild.sh
