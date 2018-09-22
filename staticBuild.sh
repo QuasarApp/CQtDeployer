@@ -2,32 +2,39 @@
 
 declare -a QTLIBS
 
-BASE_DIR=$(dirname $0)
+BASE_DIR=$(dirname "$(readlink -f "$0")")
+
 QTLIBS=( libQt5Sql.a libQt5Xml.a libQt5Core.a libQt5Test.a libqtpcre2.a libQt5Network.a libQt5Bootstrap.a libQt5Concurrent.a)  
 
-cd qtBase
+echo "base dir $BASE_DIR"
+
+cd $BASE_DIR/qtBase
 
 for var in "${QTLIBS[@]}"
 do
-	if [ -e "$BASE_DIR/lib/$var" ]
+        if [ -e "$BASE_DIR/staticQt/lib/$var" ]
 	then
 	    echo "$var - ok"
 	else
 	    echo "$var - not exits!. rebuild qt ..."
 
-	    git clean -xfd
+            rm -rdf $BASE_DIR/staticQt
+
+            git clean -xdf
 	    
-	    ./configure -confirm-license -release -optimize-size -static -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility
+            ./configure -confirm-license -prefix $BASE_DIR/staticQt -release -optimize-size -static -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility
 	    
-	    make -j$(nproc)
+            make install -j$(nproc)
 	    break
 	fi
 done
 	
 cd ..
-export PATH=$PATH:/qtBase
+rm -rdf $BASE_DIR/build
 
-./qtBase/bin/qmake CQtDeployer.pro
+export PATH=$PATH:$BASE_DIR/staticQt
+
+$BASE_DIR/staticQt/bin/qmake CQtDeployer.pro
 
 make -j$(nproc)
 
