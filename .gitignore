@@ -52,3 +52,5 @@ snap/\.snapcraft/
 \.buildconfig
 
 sharedQt/
+
+staticQt/
