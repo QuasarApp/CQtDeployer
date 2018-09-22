@@ -36,4 +36,7 @@ HEADERS += \
 QMAKE_LFLAGS += -Wl,-rpath,"'$$DESTDIR'"
 
 DISTFILES += \
+    ../snapBuild.sh \
+    ../staticBuild.sh \
+    ../snap/snapcraft.yaml \
     ../README.md

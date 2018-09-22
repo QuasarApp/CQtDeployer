@@ -8,6 +8,7 @@
 *.so
 *.dll
 *.dylib
+*.snap
 
 # Qt-es
 object_script.*.Release
@@ -29,6 +30,9 @@ ui_*.h
 Makefile*
 *build-*
 build/*
+stage/*
+prime/*
+parts/*
 
 # Qt unit tests
 target_wrapper.*
@@ -42,3 +46,7 @@ target_wrapper.*
 
 # QtCreator CMake
 CMakeLists.txt.user*
+
+snap/\.snapcraft/
+
+\.buildconfig

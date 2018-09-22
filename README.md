@@ -14,7 +14,7 @@ Key differences of this program:
 
 ### How to use
 
-#### Usage: CQtDeployer <-bin    [params]> [options]
+#### Usage: cqtdeployer <-bin    [params]> [options]
 
 #### Options:
 | Option                      | Descriptiion                                              |
@@ -39,7 +39,7 @@ Key differences of this program:
 
 
 
-#### Example: CQtDeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
+#### Example: cqtdeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
 
 
 
@@ -69,7 +69,7 @@ Console QtDeployer является консольной реализацией 
 ##### Данный проект преднозначен для сборки проектов состоящих всего из одного pro файла, если вам необходимо собрать крупный проект то вам нужно воспользоватся нашим [шаблоном](https://quasarapp.github.io/QtDeployTemplate/) для сборки и развертывания qt приложений 
 
 ### Как использовать
-#### пример : CQtDeployer <-bin    [params]> [options]
+#### пример : cqtdeployer <-bin    [params]> [options]
 
 #### Options:
 | Option                      | Descriptiion                                              |
@@ -93,7 +93,7 @@ Console QtDeployer является консольной реализацией 
 |  -extraPlugin [list,params] | установить дополнительный путь для extraPlugin приложения |
 
 
-#### Пример: CQtDeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
+#### Пример: cqtdeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
 
 ## Build для Linux 
   -  qmake & make или установите qtcreator и соберите проект с qt5.9 или выше.
