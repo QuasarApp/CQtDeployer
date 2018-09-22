@@ -15,7 +15,7 @@
 
 void help() {
     qInfo() << "";
-    qInfo() << "Usage: CDQ <-bin    [params]> [options]";
+    qInfo() << "Usage: cqtdeployer <-bin    [params]> [options]";
     qInfo() << "";
     qInfo() << "Options:";
     qInfo() << "   help / h                 : show help.";
@@ -35,12 +35,19 @@ void help() {
     qInfo() << "   -libDir [list,params]    : set additional path for extralib of app.";
     qInfo() << "                            | for example -libDir ~/myLib,~/newLibs";
     qInfo() << "   -extraPlugin[list,params]: set additional path for extraPlugin of app";
+    qInfo() << "   verbose                  : show debug log";
 
 
     qInfo() << "";
-    qInfo() << "Example: CDQ -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear";
-    qInfo() << "Example (only C libs): CDQ -bin myApp clear";
+    qInfo() << "Example: cqtdeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear";
+    qInfo() << "Example (only C libs): cqtdeployer -bin myApp clear";
 
+}
+
+void verboseLog(const QString& str) {
+    if (QuasarAppUtils::isEndable("verbose")) {
+        qDebug() << str;
+    }
 }
 
 bool parseQt(Deploy& deploy) {
@@ -49,6 +56,10 @@ bool parseQt(Deploy& deploy) {
 
     QFileInfo info(bin);
     if (!info.isFile()) {
+        verboseLog(QDir::homePath());
+        verboseLog(QDir("./").absolutePath());
+
+        verboseLog("bin file is not file path: " + bin);
         return false;
     }
 
