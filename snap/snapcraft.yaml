@@ -16,7 +16,7 @@ apps:
   cqtdeployer:
     command: desktop-launch $SNAP/CQtDeployer
 
-    plugs: [classic-support]
+    plugs: [home, removable-media]
 
 parts:
   cqtdeployer:

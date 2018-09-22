@@ -37,4 +37,5 @@ QMAKE_LFLAGS += -Wl,-rpath,"'$$DESTDIR'"
 
 DISTFILES += \
     ../snapBuild.sh \
-    ../staticBuild.sh
+    ../staticBuild.sh \
+    ../snap/snapcraft.yaml

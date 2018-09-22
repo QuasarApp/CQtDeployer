@@ -7,3 +7,5 @@ rm -rfd $BASE_DIR/build
 
 echo "Start static build"
 $BASE_DIR/staticBuild.sh
+
+snapcraft
