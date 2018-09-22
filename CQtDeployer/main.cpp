@@ -22,11 +22,9 @@ void help() {
     qInfo() << "   always-overwrite         : Copy files even if the target file exists.";
     qInfo() << "   -bin    [params]         : deployment binry.";
     qInfo() << "   -qmlDir [params]         : qml datadir of project. for example -qmlDir ~/my/project/qml";
-    qInfo() << "   noStrip                  : no strip deployed lib";
     qInfo() << "   deploy-not-qt            : deploy all libs";
     qInfo() << "   -qmake  [params]         : qmake path. for example";
     qInfo() << "                            | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake";
-    qInfo() << "   ignoreCudaLib            : it filter ignore cuda lib of nvidea";
     qInfo() << "   -ignore [list,params]    : ignore filter for libs";
     qInfo() << "                            | for example -ignore libicudata.so.56,libicudata2.so.56";
     qInfo() << "   clear                    : delete all old deploy data";
@@ -34,27 +32,22 @@ void help() {
     qInfo() << "                            | for example -runScript myApp.sh";
     qInfo() << "   allQmlDependes           : This flag will force to extract all qml libraries.";
     qInfo() << "                            | (not recommended, as it takes up a lot of memory)";
-
+    qInfo() << "   -libDir [list,params]    : set additional path for extralib of app.";
+    qInfo() << "                            | for example -libDir ~/myLib,~/newLibs";
+    qInfo() << "   -extraPlugin[list,params]: set additional path for extraPlugin of app";
 
 
     qInfo() << "";
     qInfo() << "Example: CDQ -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear";
+    qInfo() << "Example (only C libs): CDQ -bin myApp clear";
+
 }
 
 bool parseQt(Deploy& deploy) {
-    auto qmake = QuasarAppUtils::getStrArg("qmake");
-    QString basePath = "";
-    QFileInfo info(qmake);
-    if (!info.isFile() || (info.baseName() != "qmake")) {
-        return false;
-    }
-    basePath = info.absolutePath();
-    deploy.setQmake(qmake);
-    auto scaner = basePath + QDir::separator() + "qmlimportscanner";
 
     auto bin = QuasarAppUtils::getStrArg("bin");
 
-    info.setFile(bin);
+    QFileInfo info(bin);
     if (!info.isFile()) {
         return false;
     }
@@ -69,10 +62,28 @@ bool parseQt(Deploy& deploy) {
         deploy.clear();
     }
 
+    auto listLibDir = QuasarAppUtils::getStrArg("libDir").split(",");
+    auto listExtraPlugin = QuasarAppUtils::getStrArg("extraPlugin").split(",");
+    deploy.setExtraPath(listLibDir);
+    deploy.setExtraPlugins(listExtraPlugin);
+
     if (!deploy.initDirs()) {
         qCritical() << "error init targeet dir";
         return false;
     }
+
+    auto qmake = QuasarAppUtils::getStrArg("qmake");
+    QString basePath = "";
+    info.setFile(qmake);
+    if (!info.isFile() || (info.baseName() != "qmake")) {
+        qInfo() << "deploy only C libs because qmake is not found";
+        deploy.setOnlyCLibs(true);
+        return true;
+    }
+
+    basePath = info.absolutePath();
+    deploy.setQmake(qmake);
+    auto scaner = basePath + QDir::separator() + "qmlimportscanner";
 
     auto qmlDir = QuasarAppUtils::getStrArg("qmlDir");
 

@@ -15,6 +15,7 @@ class Deploy
 {
 private:
     bool deployQml = false;
+    bool onlyCLibs = false;
     QString qmlScaner = "";
     QString qmake = "";
     QString qtDir = "";
@@ -27,6 +28,8 @@ private:
     QStringList qmlLibs;
     QStringList neededPlugins;
     QStringList ignoreList;
+    QStringList extraPath;
+    QStringList extraPlugins;
 
     bool isQtLib(const QString& lib) const;
 
@@ -70,6 +73,9 @@ public:
     void clear();
 
     bool initDirs();
+    void setOnlyCLibs(bool value);
+    void setExtraPath(const QStringList &value);
+    void setExtraPlugins(const QStringList &value);
 };
 
 #endif // DEPLOY_H
