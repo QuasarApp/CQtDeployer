@@ -50,3 +50,5 @@ CMakeLists.txt.user*
 snap/\.snapcraft/
 
 \.buildconfig
+
+sharedQt/
