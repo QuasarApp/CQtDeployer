@@ -29,7 +29,7 @@ cd ..
 rm -rdf $BASE_DIR/build
 
 export PATH=$PATH:$BASE_DIR/staticQt
-$BASE_DIR/staticQt/bin/qmake CQtDeployer.pro
+$BASE_DIR/staticQt/bin/qmake QMAKE_LFLAGS+="-static -static-libgcc -static-libstdc++" CQtDeployer.pro
 
 make -j$(nproc)
 
