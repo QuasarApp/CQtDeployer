@@ -88,13 +88,13 @@ bool Deploy::createRunScript() {
 
     QString content =
         "#!/bin/sh\n"
-        "BASEDIR=$(dirname $0)\n"
+        "BASE_DIR=$(dirname \"$(readlink -f \"$0\")\")\n"
         "export LD_LIBRARY_PATH=$BASEDIR/lib:$BASEDIR:$LD_LIBRARY_PATH\n"
         "export QML_IMPORT_PATH=$BASEDIR/qml:QML_IMPORT_PATH\n"
         "export QML2_IMPORT_PATH=$BASEDIR/qml:QML2_IMPORT_PATH\n"
         "export QT_PLUGIN_PATH=$BASEDIR/plugins:QT_PLUGIN_PATH\n"
         "export QT_QPA_PLATFORM_PLUGIN_PATH=$BASEDIR/plugins/platforms:QT_QPA_PLATFORM_PLUGIN_PATH\n"
-        "$BASEDIR/%1 \"$@\"";
+        ".$BASEDIR/%1 \"$@\"";
 
     content = content.arg(QFileInfo(target).fileName());
 
