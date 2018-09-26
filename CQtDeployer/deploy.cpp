@@ -89,12 +89,12 @@ bool Deploy::createRunScript() {
     QString content =
         "#!/bin/sh\n"
         "BASE_DIR=$(dirname \"$(readlink -f \"$0\")\")\n"
-        "export LD_LIBRARY_PATH=$BASE_DIR/lib:$BASEDIR:$LD_LIBRARY_PATH\n"
-        "export QML_IMPORT_PATH=$BASE_DIR/qml:QML_IMPORT_PATH\n"
-        "export QML2_IMPORT_PATH=$BASE_DIR/qml:QML2_IMPORT_PATH\n"
-        "export QT_PLUGIN_PATH=$BASE_DIR/plugins:QT_PLUGIN_PATH\n"
-        "export QT_QPA_PLATFORM_PLUGIN_PATH=$BASE_DIR/plugins/platforms:QT_QPA_PLATFORM_PLUGIN_PATH\n"
-        "$BASE_DIR/%1 \"$@\"";
+        "export LD_LIBRARY_PATH=\"$BASE_DIR\"/lib:\"$BASE_DIR\":$LD_LIBRARY_PATH\n"
+        "export QML_IMPORT_PATH=\"$BASE_DIR\"/qml:QML_IMPORT_PATH\n"
+        "export QML2_IMPORT_PATH=\"$BASE_DIR\"/qml:QML2_IMPORT_PATH\n"
+        "export QT_PLUGIN_PATH=\"$BASE_DIR\"/plugins:QT_PLUGIN_PATH\n"
+        "export QT_QPA_PLATFORM_PLUGIN_PATH=\"$BASE_DIR\"/plugins/platforms:QT_QPA_PLATFORM_PLUGIN_PATH\n"
+        "\"$BASE_DIR\"/%1 \"$@\"";
 
     content = content.arg(QFileInfo(target).fileName());
 
