@@ -298,7 +298,7 @@ void Deploy::extract(const QString &file, bool isExtractPlugins) {
             continue;
         }
 
-        if ((QuasarAppUtils::isEndable("deploy-not-qt") ||
+        if ((QuasarAppUtils::Params::isEndable("deploy-not-qt") ||
              onlyCLibs) &&
                 !noQTLibs.contains(line)) {
             noQTLibs << line;
