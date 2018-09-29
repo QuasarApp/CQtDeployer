@@ -63,7 +63,7 @@ bool Deploy::initDirs() {
         return false;
     }
 
-    if (QuasarAppUtils::isEndable("qmlDir") &&
+    if (QuasarAppUtils::Params::isEndable("qmlDir") &&
             !QFileInfo::exists(targetDir  + QDir::separator() + "qml") &&
             !QDir(targetDir).mkdir("qml")){
         return false;
@@ -99,8 +99,8 @@ bool Deploy::createRunScript() {
     content = content.arg(QFileInfo(target).fileName());
 
     QString fname = targetDir + QDir::separator();
-    if (QuasarAppUtils::isEndable("runScript")) {
-        fname += QuasarAppUtils::getStrArg("runScript");
+    if (QuasarAppUtils::Params::isEndable("runScript")) {
+        fname += QuasarAppUtils::Params::getStrArg("runScript");
     } else {
         fname += "AppRun.sh";
     }
@@ -129,12 +129,12 @@ bool Deploy::createRunScript() {
 void Deploy::deploy() {
     qInfo() << "target deploy started!!";
 
-    if (QuasarAppUtils::isEndable("ignoreCudaLib")) {
+    if (QuasarAppUtils::Params::isEndable("ignoreCudaLib")) {
         ignoreList << "libicudata" << "libicui" << "libicuuc";
     }
 
-    if (QuasarAppUtils::isEndable("ignore")) {
-        auto list = QuasarAppUtils::getStrArg("ignore").split(',');
+    if (QuasarAppUtils::Params::isEndable("ignore")) {
+        auto list = QuasarAppUtils::Params::getStrArg("ignore").split(',');
         ignoreList.append(list);
     }
 
@@ -147,16 +147,16 @@ void Deploy::deploy() {
 
     copyFiles(QtLibs, targetDir + QDir::separator() + "lib");
 
-    if (QuasarAppUtils::isEndable("deploy-not-qt")) {
+    if (QuasarAppUtils::Params::isEndable("deploy-not-qt")) {
         copyFiles(noQTLibs, targetDir + QDir::separator() + "lib");
     }
 
-    if (!QuasarAppUtils::isEndable("noStrip")) {
+    if (!QuasarAppUtils::Params::isEndable("noStrip")) {
         strip(targetDir + QDir::separator() + "lib");
     }
 
 
-    if (!QuasarAppUtils::isEndable("noStrip")) {
+    if (!QuasarAppUtils::Params::isEndable("noStrip")) {
         strip(targetDir + QDir::separator() + "plugins");
     }
 
@@ -210,7 +210,7 @@ bool Deploy::copyFile(const QString &file, const QString& target, QStringList *m
     auto name = info.fileName();
     info.setFile(target + QDir::separator() + name);
 
-    if (QuasarAppUtils::isEndable("always-overwrite") &&
+    if (QuasarAppUtils::Params::isEndable("always-overwrite") &&
             info.exists() && !QFile::remove(target + QDir::separator() + name)){
         return false;
     }
@@ -274,7 +274,7 @@ void Deploy::extract(const QString &file, bool isExtractPlugins) {
             continue;
         }
 
-        if (QuasarAppUtils::isEndable("deploy-not-qt") &&
+        if (QuasarAppUtils::Params::isEndable("deploy-not-qt") &&
                 !noQTLibs.contains(line)) {
             noQTLibs << line;
             extract(line, isExtractPlugins);
@@ -565,10 +565,10 @@ bool Deploy::extractQmlFromSource(const QString sourceDir) {
 
 bool Deploy::extractQml() {
 
-    if (QuasarAppUtils::isEndable("qmlDir")) {
-        return  extractQmlFromSource(QuasarAppUtils::getStrArg("qmlDir"));
+    if (QuasarAppUtils::Params::isEndable("qmlDir")) {
+        return  extractQmlFromSource(QuasarAppUtils::Params::getStrArg("qmlDir"));
 
-    } else if (QuasarAppUtils::isEndable("allQmlDependes")){
+    } else if (QuasarAppUtils::Params::isEndable("allQmlDependes")){
         return  extractQmlAll();
 
     } else {

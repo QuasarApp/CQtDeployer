@@ -42,7 +42,7 @@ void help() {
 }
 
 bool parseQt(Deploy& deploy) {
-    auto qmake = QuasarAppUtils::getStrArg("qmake");
+    auto qmake = QuasarAppUtils::Params::getStrArg("qmake");
     QString basePath = "";
     QFileInfo info(qmake);
     if (!info.isFile() || (info.baseName() != "qmake")) {
@@ -52,7 +52,7 @@ bool parseQt(Deploy& deploy) {
     deploy.setQmake(qmake);
     auto scaner = basePath + QDir::separator() + "qmlimportscanner";
 
-    auto bin = QuasarAppUtils::getStrArg("bin");
+    auto bin = QuasarAppUtils::Params::getStrArg("bin");
 
     info.setFile(bin);
     if (!info.isFile()) {
@@ -64,7 +64,7 @@ bool parseQt(Deploy& deploy) {
         return false;
     }
 
-    if (QuasarAppUtils::isEndable("clear")) {
+    if (QuasarAppUtils::Params::isEndable("clear")) {
         qInfo() << "clear old data";
         deploy.clear();
     }
@@ -74,7 +74,7 @@ bool parseQt(Deploy& deploy) {
         return false;
     }
 
-    auto qmlDir = QuasarAppUtils::getStrArg("qmlDir");
+    auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir");
 
     QDir dir(basePath);
 
@@ -83,7 +83,7 @@ bool parseQt(Deploy& deploy) {
         deploy.setDeployQml(true);
         deploy.setQmlScaner(scaner);
 
-    } else if (QuasarAppUtils::isEndable("allQmlDependes")) {
+    } else if (QuasarAppUtils::Params::isEndable("allQmlDependes")) {
         deploy.setDeployQml(true);
     } else {
         qCritical () << "wrong qml dir!";
@@ -100,15 +100,15 @@ bool parseQt(Deploy& deploy) {
 int main(int argc, char *argv[])
 {
 
-    if (!QuasarAppUtils::parseParams(argc, argv)) {
+    if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
         qWarning() << "wrong parametrs";
         help();
         exit(0);
 
     };
 
-    if (QuasarAppUtils::isEndable("h") ||
-            QuasarAppUtils::isEndable("help")) {
+    if (QuasarAppUtils::Params::isEndable("h") ||
+            QuasarAppUtils::Params::isEndable("help")) {
         help();
         exit(0);
     }
