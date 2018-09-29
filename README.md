@@ -14,7 +14,7 @@ Key differences of this program:
 
 ### How to use
 
-#### Usage: CQtDeployer <-bin    [params]> [options]
+#### Usage: cqtdeployer <-bin    [params]> [options]
 
 #### Options:
 | Option                      | Descriptiion                                              |
@@ -23,11 +23,9 @@ Key differences of this program:
 |   always-overwrite          | Copy files even if the target file exists.                |
 |   -bin    [params]          | deployment binry.                                         |
 |   -qmlDir [params]          | qml datadir. for example -qmlDir ~/my/project/qml         |
-|   noStrip                   | no strip deployed lib                                     |
 |   deploy-not-qt             | deploy all libs                                           |
 |   -qmake  [params]          | qmake path. for example                                   |
 |                             | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake                       |
-|   ignoreCudaLib             | it filter ignore cuda lib of nvidea                       |
 |   -ignore [list,params]     | ignore filter for libs                                    |
 |                             | for example -ignore libicudata.so.56,libicudata2.so.56    |
 |   clear                     | delete all old deploy data                                |
@@ -35,9 +33,13 @@ Key differences of this program:
 |                             | for example -runScript myApp.sh                           |
 |  allQmlDependes             | This flag will force to extract all qml libraries.        |
 |                             | (not recommended, as it takes up a lot of memory)         |
+|  -libDir [list,params]      | set additional path for extralib of app                   |
+|                             | for example -libDir ~/myLib,~/newLibs                     |
+|  -extraPlugin [list,params] | set additional path for extraPlugin of app                |
 
 
-#### Example: CQtDeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
+
+#### Example: cqtdeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
 
 
 
@@ -67,7 +69,7 @@ Console QtDeployer является консольной реализацией 
 ##### Данный проект преднозначен для сборки проектов состоящих всего из одного pro файла, если вам необходимо собрать крупный проект то вам нужно воспользоватся нашим [шаблоном](https://quasarapp.github.io/QtDeployTemplate/) для сборки и развертывания qt приложений 
 
 ### Как использовать
-#### пример : CQtDeployer <-bin    [params]> [options]
+#### пример : cqtdeployer <-bin    [params]> [options]
 
 #### Options:
 | Option                      | Descriptiion                                              |
@@ -76,11 +78,9 @@ Console QtDeployer является консольной реализацией 
 |   always-overwrite          | Копирует файлы с заменой уже существующих                |
 |   -bin    [params]          | Исполняемый файл над которым будет выплнятся деплои                                        |
 |   -qmlDir [params]          | Папка qml. пример -qmlDir ~/my/project/qml   |
-|   noStrip                   | не выполнять стрип копируемых библиотек                                    |
 |   deploy-not-qt             | Копировать все библиотеки                                          |
 |   -qmake  [params]          | Путь к qmake. пример                                   |
 |                             | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake                       |
-|   ignoreCudaLib             | Этот фильтр будет игнорировать библиотеки nvidea                       |
 |   -ignore [list,params]     | Список библиотек для игнорирования                                     |
 |                             | пример -ignore libicudata.so.56,libicudata2.so.56    |
 |   clear                     | удалит все старые файлы (с прошлого запуска)                               |
@@ -88,7 +88,12 @@ Console QtDeployer является консольной реализацией 
 |                             | пример -runScript myApp.sh                           |
 |  allQmlDependes             | Этот флаг заставит извлекать все библиотеки qml.        |
 |                             | (не рекомендуется, так как занимает много памяти)         |
-#### Пример: CQtDeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
+|  -libDir [list,params]      | установит дополнительные пути к библиотекам               |
+|                             | пример -libDir ~/myLib,~/newLibs                          |
+|  -extraPlugin [list,params] | установить дополнительный путь для extraPlugin приложения |
+
+
+#### Пример: cqtdeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
 
 ## Build для Linux 
   -  qmake & make или установите qtcreator и соберите проект с qt5.9 или выше.
