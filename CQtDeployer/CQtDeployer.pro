@@ -28,8 +28,6 @@ include('$$PWD/../QuasarAppLib/QuasarLib.pri');
 
 TARGET = cqtdeployer
 
-INSTALLS.files($$PWD/../QuasarAppLib/build/*)
-
 SOURCES += \
         main.cpp \
     deploy.cpp
