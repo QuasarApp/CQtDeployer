@@ -6,6 +6,8 @@ BASE_DIR=$(dirname "$(readlink -f "$0")")
 QTLIBS=( libQt5Sql.a libQt5Xml.a libQt5Core.a libQt5Test.a libQt5Network.a libQt5Bootstrap.a libQt5Concurrent.a)
 echo "base dir $BASE_DIR"
 
+git submodule update --init --recursive
+
 make clean
 find $BASE_DIR -type f -name 'Makefile' -exec rm {} \;
 cd $BASE_DIR/qtBase
