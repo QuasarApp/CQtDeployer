@@ -5,6 +5,8 @@ declare -a QTLIBS
 BASE_DIR=$(dirname "$(readlink -f "$0")")
 QTLIBS=( libQt5Sql.so libQt5Xml.so libQt5Core.so libQt5Test.so libQt5Network.so libQt5Concurrent.so)
 
+git submodule update --init --recursive
+
 make clean
 find $BASE_DIR -type f -name 'Makefile' -exec rm {} \;
 
@@ -32,6 +34,9 @@ export PATH=$PATH:$BASE_DIR/sharedQt
 $BASE_DIR/sharedQt/bin/qmake CQtDeployer.pro
 
 make -j$(nproc)
+
+mv $BASE_DIR/QuasarAppLib/build/* $BASE_DIR/build
+
 strip build/*
 chmod +x $BASE_DIR/build/cqtdeployer
 

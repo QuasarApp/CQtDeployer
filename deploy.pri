@@ -1,0 +1,2 @@
+
+DESTDIR=$$PWD/build
