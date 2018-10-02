@@ -39,8 +39,7 @@ Key differences of this program:
 
 
 
-#### Example: cqtdeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
-
+#### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
 
 
 ## Build for Linux 
@@ -93,7 +92,7 @@ Console QtDeployer является консольной реализацией 
 |  -extraPlugin [list,params] | установить дополнительный путь для extraPlugin приложения |
 
 
-#### Пример: cqtdeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
+#### Пример: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
 
 ## Build для Linux 
   -  qmake & make или установите qtcreator и соберите проект с qt5.9 или выше.
