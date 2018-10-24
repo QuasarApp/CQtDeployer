@@ -3,7 +3,7 @@
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
-*/
+ */
 
 #ifndef DEPLOY_H
 #define DEPLOY_H
@@ -11,11 +11,11 @@
 #include <QString>
 #include <QStringList>
 
-class Deploy
-{
-private:
+class Deploy {
+  private:
     bool deployQml = false;
     bool onlyCLibs = false;
+    int depchLimit = 0;
     QString qmlScaner = "";
     QString qmake = "";
     QString qtDir = "";
@@ -31,15 +31,16 @@ private:
     QStringList extraPath;
     QStringList extraPlugins;
 
-    bool isQtLib(const QString& lib) const;
+    bool isQtLib(const QString &lib) const;
 
     void copyFiles(const QStringList &files, const QString &target);
-    bool copyFile(const QString& file, const QString &target, QStringList *mask = nullptr);
-    void extract(const QString& file, bool isExtractPlugins = true);
-
+    bool copyFile(const QString &file, const QString &target,
+                  QStringList *mask = nullptr);
+    void extract(const QString &file, bool isExtractPlugins = true);
+    QString recursiveInvairement(int depch, QDir &dir);
     void extractPlugins(const QString &lib);
     bool copyPlugin(const QString &plugin);
-    void copyPlugins(const QStringList& list);
+    void copyPlugins(const QStringList &list);
     bool copyFolder(QDir &from, QDir &to, const QString &filter = "",
                     QStringList *listOfCopiedItems = nullptr,
                     QStringList *mask = nullptr);
@@ -54,7 +55,8 @@ private:
     bool extractQmlAll();
     bool extractQmlFromSource(const QString sourceDir);
     QString filterQmlPath(const QString &path);
-public:
+
+  public:
     Deploy();
     bool getDeployQml() const;
     void setDeployQml(bool value);
@@ -76,6 +78,7 @@ public:
     void setOnlyCLibs(bool value);
     void setExtraPath(const QStringList &value);
     void setExtraPlugins(const QStringList &value);
+    void setDepchLimit(int value);
 };
 
 #endif // DEPLOY_H
