@@ -19,40 +19,29 @@ void help() {
     qInfo() << "";
     qInfo() << "Options:";
     qInfo() << "   help / h                 : show help.";
-    qInfo() << "   always-overwrite         : Copy files even if the target "
-               "file exists.";
+    qInfo() << "   always-overwrite         : Copy files even if the target file exists.";
     qInfo() << "   -bin    [params]         : deployment binry.";
-    qInfo() << "   -qmlDir [params]         : qml datadir of project. for "
-               "example -qmlDir ~/my/project/qml";
+    qInfo() << "   -qmlDir [params]         : qml datadir of project. for example -qmlDir ~/my/project/qml";
     qInfo() << "   deploy-not-qt            : deploy all libs";
     qInfo() << "   -qmake  [params]         : qmake path. for example";
-    qInfo()
-        << "                            | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake";
+    qInfo() << "                            | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake";
     qInfo() << "   -ignore [list,params]    : ignore filter for libs";
-    qInfo() << "                            | for example -ignore "
-               "libicudata.so.56,libicudata2.so.56";
+    qInfo() << "                            | for example -ignore libicudata.so.56,libicudata2.so.56";
     qInfo() << "   clear                    : delete all old deploy data";
-    qInfo() << "   -runScript [params]      : set new name of out file "
-               "(AppRun.sh by default)";
+    qInfo() << "   -runScript [params]      : set new name of out file (AppRun.sh by default)";
     qInfo() << "                            | for example -runScript myApp.sh";
-    qInfo() << "   allQmlDependes           : This flag will force to extract "
-               "all qml libraries.";
-    qInfo() << "                            | (not recommended, as it takes up "
-               "a lot of memory)";
-    qInfo() << "   -libDir [list,params]    : set additional path for extralib "
-               "of app.";
-    qInfo() << "                            | for example -libDir "
-               "~/myLib,~/newLibs";
-    qInfo() << "   -extraPlugin[list,params]: set additional path for "
-               "extraPlugin of app";
-    qInfo() << "   recursiveDepth           : set Depth for recursive search "
-               "of libs (default 1)";
+    qInfo() << "   allQmlDependes           : This flag will force to extract all qml libraries.";
+    qInfo() << "                            | (not recommended, as it takes up a lot of memory)";
+    qInfo() << "   -libDir [list,params]    : set additional path for extralib of app.";
+    qInfo() << "                            | for example -libDir ~/myLib,~/newLibs";
+    qInfo() << "   -extraPlugin[list,params]: set additional path for extraPlugin of app";
+    qInfo() << "   recursiveDepth           : set Depth for recursive search of libs (default 0)";
 
     qInfo() << "   verbose                  : show debug log";
 
+
     qInfo() << "";
-    qInfo() << "Example: cqtdeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml "
-               "-qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear";
+    qInfo() << "Example: cqtdeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear";
     qInfo() << "Example (only C libs): cqtdeployer -bin myApp clear";
 }
 
