@@ -36,6 +36,8 @@ Key differences of this program:
 |  -libDir [list,params]      | set additional path for extralib of app                   |
 |                             | for example -libDir ~/myLib,~/newLibs                     |
 |  -extraPlugin [list,params] | set additional path for extraPlugin of app                |
+|  recursiveDepth             | set Depth for recursive search of libs (default 0)        |
+|  verbose                    | show debug log                                            |
 
 
 
@@ -90,6 +92,8 @@ Console QtDeployer является консольной реализацией 
 |  -libDir [list,params]      | установит дополнительные пути к библиотекам               |
 |                             | пример -libDir ~/myLib,~/newLibs                          |
 |  -extraPlugin [list,params] | установить дополнительный путь для extraPlugin приложения |
+|  recursiveDepth             | установит глубену поиска библиотек (по умолчанию 0)       |
+|  verbose                    | show debug log                                            |
 
 
 #### Пример: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
