@@ -3,14 +3,14 @@
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
-*/
+ */
 
-#include <QCoreApplication>
+#include "deploy.h"
 #include "quasarapp.h"
+#include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
-#include "deploy.h"
 #include <QList>
 
 void help() {
@@ -35,22 +35,23 @@ void help() {
     qInfo() << "   -libDir [list,params]    : set additional path for extralib of app.";
     qInfo() << "                            | for example -libDir ~/myLib,~/newLibs";
     qInfo() << "   -extraPlugin[list,params]: set additional path for extraPlugin of app";
+    qInfo() << "   recursiveDepth           : set Depth for recursive search of libs (default 0)";
+
     qInfo() << "   verbose                  : show debug log";
 
 
     qInfo() << "";
     qInfo() << "Example: cqtdeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear";
     qInfo() << "Example (only C libs): cqtdeployer -bin myApp clear";
-
 }
 
-void verboseLog(const QString& str) {
+void verboseLog(const QString &str) {
     if (QuasarAppUtils::Params::isEndable("verbose")) {
         qDebug() << str;
     }
 }
 
-bool parseQt(Deploy& deploy) {
+bool parseQt(Deploy &deploy) {
 
     auto bin = QuasarAppUtils::Params::getStrArg("bin");
 
@@ -68,13 +69,27 @@ bool parseQt(Deploy& deploy) {
         return false;
     }
 
+    int limit = 1;
+
+    if (QuasarAppUtils::Params::isEndable("recursiveDepth")) {
+        bool ok;
+        limit = QuasarAppUtils::Params::getArg("recursiveDepth").toInt(&ok);
+        if (!ok) {
+            limit = 1;
+            qWarning() << "recursiveDepth is invalid!";
+        }
+    }
+
+    deploy.setDepchLimit(limit);
+
     if (QuasarAppUtils::Params::isEndable("clear")) {
         qInfo() << "clear old data";
         deploy.clear();
     }
 
     auto listLibDir = QuasarAppUtils::Params::getStrArg("libDir").split(",");
-    auto listExtraPlugin = QuasarAppUtils::Params::getStrArg("extraPlugin").split(",");
+    auto listExtraPlugin =
+        QuasarAppUtils::Params::getStrArg("extraPlugin").split(",");
     deploy.setExtraPath(listLibDir);
     deploy.setExtraPlugins(listExtraPlugin);
 
@@ -108,7 +123,7 @@ bool parseQt(Deploy& deploy) {
     } else if (QuasarAppUtils::Params::isEndable("allQmlDependes")) {
         deploy.setDeployQml(true);
     } else {
-        qCritical () << "wrong qml dir!";
+        qCritical() << "wrong qml dir!";
     }
 
     if (!dir.cdUp()) {
@@ -119,18 +134,16 @@ bool parseQt(Deploy& deploy) {
 
     return true;
 }
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
 
     if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
         qWarning() << "wrong parametrs";
         help();
         exit(0);
-
     };
 
     if (QuasarAppUtils::Params::isEndable("h") ||
-            QuasarAppUtils::Params::isEndable("help")) {
+        QuasarAppUtils::Params::isEndable("help")) {
         help();
         exit(0);
     }
