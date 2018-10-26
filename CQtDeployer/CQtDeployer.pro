@@ -23,8 +23,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-include('$$PWD/../deploy.pri')
 include('$$PWD/../QuasarAppLib/QuasarLib.pri');
+
+CONFIG(release, debug|release): {
+    DESTDIR = $$PWD/../build/release
+
+} else {
+    DESTDIR = $$PWD/../build/debug
+}
 
 TARGET = cqtdeployer
 
@@ -35,7 +41,6 @@ SOURCES += \
 HEADERS += \
     deploy.h
 
-QMAKE_LFLAGS += -Wl,-rpath,"'$$DESTDIR'"
 
 DISTFILES += \
     ../snapBuild.sh \
