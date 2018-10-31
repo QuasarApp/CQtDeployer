@@ -11,6 +11,8 @@ QMAKE=$1
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RELEASE_DIR
 
+cd $BASE_DIR
+
 git submodule update --init --recursive
 
 make clean
@@ -21,7 +23,7 @@ if [ -e "$QMAKE" ]
 
 then
 	echo "use qmake from params!"
-	$QMAKE CQtDeployer.pro
+	$QMAKE $BASE_DIR/CQtDeployer.pro
 else
 	echo "use qmake from build!"
 	cd $BASE_DIR/qtBase
@@ -46,7 +48,7 @@ else
 
 	export PATH=$PATH:$BASE_DIR/sharedQt
 	
-	$BASE_DIR/sharedQt/bin/qmake CQtDeployer.pro
+	$BASE_DIR/sharedQt/bin/qmake $BASE_DIR/CQtDeployer.pro
 
 fi
 
@@ -61,9 +63,18 @@ chmod +x $RELEASE_DIR/cqtdeployer
 
 $RELEASE_DIR/cqtdeployer -runScript cqtdeployer.sh -bin $RELEASE_DIR/cqtdeployer -qmake $BASE_DIR/sharedQt/bin/qmake
 
-cd $RELEASE_DIR
 
-tar -czvf $RELEASE_DIR/cqtdeployer.tar.gz ./*
-cd $BASE_DIR
 
-rm $RELEASE_DIR/lib -rdf $RELEASE_DIR/*.so* $RELEASE_DIR/*.sh*
+if [ -e "$QMAKE" ]
+then
+	echo "deploy done (shared mode with custom qmake)"
+else
+	cd $RELEASE_DIR
+	tar -czvf $RELEASE_DIR/cqtdeployer.tar.gz ./*
+	cd $BASE_DIR
+
+	rm $RELEASE_DIR/lib -rdf $RELEASE_DIR/*.so* $RELEASE_DIR/*.sh*
+	echo "deploy done (shared mode with own qmake)"
+fi
+
+

@@ -7,6 +7,8 @@ QTLIBS=( libQt5Sql.a libQt5Xml.a libQt5Core.a libQt5Test.a libQt5Network.a libQt
 
 RELEASE_DIR=$BASE_DIR/build/release
 
+cd $BASE_DIR
+
 git submodule update --init --recursive
 
 make clean
@@ -33,7 +35,7 @@ cd ..
 rm -rdf $BASE_DIR/build
 
 export PATH=$PATH:$BASE_DIR/staticQt
-$BASE_DIR/staticQt/bin/qmake QMAKE_LFLAGS+="-static" CQtDeployer.pro
+$BASE_DIR/staticQt/bin/qmake QMAKE_LFLAGS+="-static" $BASE_DIR/CQtDeployer.pro
 
 make -j$(nproc)
 
