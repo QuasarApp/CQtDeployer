@@ -5,46 +5,76 @@ declare -a QTLIBS
 BASE_DIR=$(dirname "$(readlink -f "$0")")
 QTLIBS=( libQt5Sql.so libQt5Xml.so libQt5Core.so libQt5Test.so libQt5Network.so libQt5Concurrent.so)
 
+RELEASE_DIR=$BASE_DIR/build/release
+
+QMAKE=$1
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RELEASE_DIR
+
+cd $BASE_DIR
+
 git submodule update --init --recursive
 
 make clean
 find $BASE_DIR -type f -name 'Makefile' -exec rm {} \;
+rm $BASE_DIR/QuasarAppLib/Makefile.QuasarApp
 
-cd $BASE_DIR/qtBase
+if [ -e "$QMAKE" ]
 
-for var in "${QTLIBS[@]}"
-do
-        if [ -e "$BASE_DIR/sharedQt/lib/$var" ]
-	then
-	    echo "$var - ok"
-	else
-	    echo "$var - not exits!. rebuild qt ..."
+then
+	echo "use qmake from params!"
+	$QMAKE $BASE_DIR/CQtDeployer.pro
+else
+	echo "use qmake from build!"
+	cd $BASE_DIR/qtBase
 
-            rm -rdf $BASE_DIR/sharedQt
-            git clean -xdf
-            ./configure -confirm-license -prefix $BASE_DIR/sharedQt -release -shared -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility
-            make install -j$(nproc)
-	    break
-	fi
-done
+	for var in "${QTLIBS[@]}"
+	do
+		    if [ -e "$BASE_DIR/sharedQt/lib/$var" ]
+		then
+			echo "$var - ok"
+		else
+			echo "$var - not exits!. rebuild qt ..."
+
+		        rm -rdf $BASE_DIR/sharedQt
+		        git clean -xdf
+		        ./configure -confirm-license -prefix $BASE_DIR/sharedQt -release -shared -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility
+		        make install -j$(nproc)
+			break
+		fi
+	done
 	
-cd ..
+	cd ..
+
+	export PATH=$PATH:$BASE_DIR/sharedQt
+	
+	$BASE_DIR/sharedQt/bin/qmake $BASE_DIR/CQtDeployer.pro
+
+fi
+
 rm -rdf $BASE_DIR/build
-export PATH=$PATH:$BASE_DIR/sharedQt
-$BASE_DIR/sharedQt/bin/qmake CQtDeployer.pro
 
 make -j$(nproc)
 
-mv $BASE_DIR/QuasarAppLib/build/* $BASE_DIR/build
+mv $BASE_DIR/QuasarAppLib/build/release/* $RELEASE_DIR
 
-strip build/*
-chmod +x $BASE_DIR/build/cqtdeployer
+strip $RELEASE_DIR/*
+chmod +x $RELEASE_DIR/cqtdeployer
 
-$BASE_DIR/build/cqtdeployer -runScript cqtdeployer.sh -bin $BASE_DIR/build/cqtdeployer -qmake $BASE_DIR/sharedQt/bin/qmake
+$RELEASE_DIR/cqtdeployer -runScript cqtdeployer.sh -bin $RELEASE_DIR/cqtdeployer -qmake $BASE_DIR/sharedQt/bin/qmake
 
-cd $BASE_DIR/build
 
-tar -czvf $BASE_DIR/build/cqtdeployer.tar.gz ./*
-cd $BASE_DIR
 
-rm $BASE_DIR/build/lib -rdf $BASE_DIR/build/*.so* $BASE_DIR/build/*.sh*
+if [ -e "$QMAKE" ]
+then
+	echo "deploy done (shared mode with custom qmake)"
+else
+	cd $RELEASE_DIR
+	tar -czvf $RELEASE_DIR/cqtdeployer.tar.gz ./*
+	cd $BASE_DIR
+
+	rm $RELEASE_DIR/lib -rdf $RELEASE_DIR/*.so* $RELEASE_DIR/*.sh*
+	echo "deploy done (shared mode with own qmake)"
+fi
+
+
