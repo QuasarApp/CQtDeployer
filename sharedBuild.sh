@@ -56,6 +56,16 @@ rm -rdf $BASE_DIR/build
 
 make -j$(nproc)
 
+if [ $? -eq 0 ]
+then    
+    echo ""
+    echo "Build is successfully completed!"
+else
+    echo ""
+    echo "Build is failed!" >&2
+    exit 1;
+fi
+
 mv $BASE_DIR/QuasarAppLib/build/release/* $RELEASE_DIR
 
 strip $RELEASE_DIR/*
@@ -64,9 +74,9 @@ chmod +x $RELEASE_DIR/cqtdeployer
 $RELEASE_DIR/cqtdeployer -runScript cqtdeployer.sh -bin $RELEASE_DIR/cqtdeployer -qmake $BASE_DIR/sharedQt/bin/qmake
 
 
-
 if [ -e "$QMAKE" ]
 then
+    echo ""
 	echo "deploy done (shared mode with custom qmake)"
 else
 	cd $RELEASE_DIR
@@ -74,6 +84,7 @@ else
 	cd $BASE_DIR
 
 	rm $RELEASE_DIR/lib -rdf $RELEASE_DIR/*.so* $RELEASE_DIR/*.sh*
+	echo ""
 	echo "deploy done (shared mode with own qmake)"
 fi
 

@@ -39,4 +39,14 @@ $BASE_DIR/staticQt/bin/qmake QMAKE_LFLAGS+="-static" $BASE_DIR/CQtDeployer.pro
 
 make -j$(nproc)
 
-strip $RELEASE_DIR/*
+if [ $? -eq 0 ]
+then    
+    echo ""
+    echo "Build is successfully completed!"
+else
+    echo ""
+    echo "Build is failed!" >&2
+fi
+
+
+
