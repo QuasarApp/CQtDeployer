@@ -7,7 +7,7 @@ QTLIBS=( libQt5Sql.so libQt5Xml.so libQt5Core.so libQt5Test.so libQt5Network.so 
 
 RELEASE_DIR=$BASE_DIR/build/release
 
-QMAKE=$1
+
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RELEASE_DIR
 
@@ -19,14 +19,18 @@ make clean
 find $BASE_DIR -type f -name 'Makefile' -exec rm {} \;
 rm $BASE_DIR/QuasarAppLib/Makefile.QuasarApp
 
-if [ -e "$QMAKE" ]
+if [ -e "$1" ]
 
 then
 	echo "use qmake from params!"
-	$QMAKE $BASE_DIR/CQtDeployer.pro
+	QMAKE=$1
+
 else
 	echo "use qmake from build!"
+    QMAKE=$BASE_DIR/sharedQt/bin/qmake
+
 	cd $BASE_DIR/qtBase
+
 
 	for var in "${QTLIBS[@]}"
 	do
@@ -47,10 +51,9 @@ else
 	cd ..
 
 	export PATH=$PATH:$BASE_DIR/sharedQt
-	
-	$BASE_DIR/sharedQt/bin/qmake $BASE_DIR/CQtDeployer.pro
 
 fi
+$QMAKE $BASE_DIR/CQtDeployer.pro
 
 rm -rdf $BASE_DIR/build
 
@@ -71,10 +74,10 @@ mv $BASE_DIR/QuasarAppLib/build/release/* $RELEASE_DIR
 strip $RELEASE_DIR/*
 chmod +x $RELEASE_DIR/cqtdeployer
 
-$RELEASE_DIR/cqtdeployer -runScript cqtdeployer.sh -bin $RELEASE_DIR/cqtdeployer -qmake $BASE_DIR/sharedQt/bin/qmake
+$RELEASE_DIR/cqtdeployer -runScript cqtdeployer.sh -bin $RELEASE_DIR/cqtdeployer -qmake $QMAKE
 
 
-if [ -e "$QMAKE" ]
+if [ -e "$1" ]
 then
     echo ""
 	echo "deploy done (shared mode with custom qmake)"
