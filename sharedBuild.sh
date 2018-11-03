@@ -77,7 +77,7 @@ chmod +x $RELEASE_DIR/cqtdeployer
 $RELEASE_DIR/cqtdeployer -runScript cqtdeployer.sh -bin $RELEASE_DIR/cqtdeployer -qmake $QMAKE
 
 
-if [ -e "$QMAKE" ]
+if [ -e "$1" ]
 then
     echo ""
 	echo "deploy done (shared mode with custom qmake)"
