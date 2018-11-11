@@ -5,9 +5,15 @@ declare -a QTLIBS
 BASE_DIR=$(dirname "$(readlink -f "$0")")
 QTLIBS=( libQt5Sql.so libQt5Xml.so libQt5Core.so libQt5Test.so libQt5Network.so libQt5Concurrent.so)
 
-RELEASE_DIR=$BASE_DIR/build/release
+RELEASE_DIR=$BASE_DIR/distro
 
-
+if [ -e "$PREFIX"]
+then
+    echo "PREFIX is empty, use default install path $RELEASE_DIR"
+else
+    echo "use PREFIX path!"
+    RELEASE_DIR=$PREFIX
+fi
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RELEASE_DIR
 
@@ -18,6 +24,7 @@ git submodule update --init --recursive
 make clean
 find $BASE_DIR -type f -name 'Makefile' -exec rm {} \;
 rm $BASE_DIR/QuasarAppLib/Makefile.QuasarApp
+rm -rdf $RELEASE_DIR
 
 if [ -e "$1" ]
 
@@ -55,8 +62,6 @@ else
 fi
 $QMAKE $BASE_DIR/CQtDeployer.pro
 
-rm -rdf $BASE_DIR/build
-
 make -j$(nproc)
 
 if [ $? -eq 0 ]
@@ -68,8 +73,8 @@ else
     echo "Build is failed!" >&2
     exit 1;
 fi
+make install -j$(nproc)
 
-mv $BASE_DIR/QuasarAppLib/build/release/* $RELEASE_DIR
 
 strip $RELEASE_DIR/*
 chmod +x $RELEASE_DIR/cqtdeployer

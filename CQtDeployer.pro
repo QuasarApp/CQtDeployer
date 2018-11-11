@@ -12,4 +12,5 @@ SUBDIRS += QuasarAppLib \
     CQtDeployer
 
 
+CQtDeployer.depends=QuasarAppLib
 QuasarAppLib.file = $$PWD/QuasarAppLib/QuasarApp.pro
