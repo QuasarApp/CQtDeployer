@@ -35,7 +35,7 @@ make -j$(nproc)
 strip build/*
 chmod +x $BASE_DIR/build/cqtdeployer
 
-$BASE_DIR/build/cqtdeployer -runScript cqtdeployer.sh -bin $BASE_DIR/build/cqtdeployer -qmake $BASE_DIR/sharedQt/bin/qmake
+$BASE_DIR/build/cqtdeployer deploy-not-qt -runScript cqtdeployer.sh -bin $BASE_DIR/build/cqtdeployer -qmake $BASE_DIR/sharedQt/bin/qmake
 
 cd $BASE_DIR/build
 
