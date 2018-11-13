@@ -5,9 +5,15 @@ declare -a QTLIBS
 BASE_DIR=$(dirname "$(readlink -f "$0")")
 QTLIBS=( libQt5Sql.so libQt5Xml.so libQt5Core.so libQt5Test.so libQt5Network.so libQt5Concurrent.so)
 
-RELEASE_DIR=$BASE_DIR/build/release
+RELEASE_DIR=$BASE_DIR/distro
 
-QMAKE=$1
+if [ -e "$PREFIX"]
+then
+    echo "PREFIX is empty, use default install path $RELEASE_DIR"
+else
+    echo "use PREFIX path!"
+    RELEASE_DIR=$PREFIX
+fi
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RELEASE_DIR
 
@@ -18,15 +24,20 @@ git submodule update --init --recursive
 make clean
 find $BASE_DIR -type f -name 'Makefile' -exec rm {} \;
 rm $BASE_DIR/QuasarAppLib/Makefile.QuasarApp
+rm -rdf $RELEASE_DIR
 
-if [ -e "$QMAKE" ]
+if [ -e "$1" ]
 
 then
 	echo "use qmake from params!"
-	$QMAKE $BASE_DIR/CQtDeployer.pro
+	QMAKE=$1
+
 else
 	echo "use qmake from build!"
+    QMAKE=$BASE_DIR/sharedQt/bin/qmake
+
 	cd $BASE_DIR/qtBase
+
 
 	for var in "${QTLIBS[@]}"
 	do
@@ -47,12 +58,9 @@ else
 	cd ..
 
 	export PATH=$PATH:$BASE_DIR/sharedQt
-	
-	$BASE_DIR/sharedQt/bin/qmake $BASE_DIR/CQtDeployer.pro
 
 fi
-
-rm -rdf $BASE_DIR/build
+$QMAKE $BASE_DIR/CQtDeployer.pro
 
 make -j$(nproc)
 
@@ -65,16 +73,16 @@ else
     echo "Build is failed!" >&2
     exit 1;
 fi
+make install -j$(nproc)
 
-mv $BASE_DIR/QuasarAppLib/build/release/* $RELEASE_DIR
 
 strip $RELEASE_DIR/*
 chmod +x $RELEASE_DIR/cqtdeployer
 
-$RELEASE_DIR/cqtdeployer deploy-not-qt -runScript cqtdeployer.sh -bin $RELEASE_DIR/cqtdeployer -qmake $BASE_DIR/sharedQt/bin/qmake
+$RELEASE_DIR/cqtdeployer deploy-not-qt -runScript cqtdeployer.sh -bin $RELEASE_DIR/cqtdeployer -qmake $QMAKE
 
 
-if [ -e "$QMAKE" ]
+if [ -e "$1" ]
 then
     echo ""
 	echo "deploy done (shared mode with custom qmake)"

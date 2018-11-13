@@ -39,6 +39,8 @@ $BASE_DIR/staticQt/bin/qmake QMAKE_LFLAGS+="-static" $BASE_DIR/CQtDeployer.pro
 
 make -j$(nproc)
 
+make install -j$(nproc)
+
 if [ $? -eq 0 ]
 then    
     echo ""
