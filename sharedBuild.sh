@@ -71,7 +71,7 @@ mv $BASE_DIR/QuasarAppLib/build/release/* $RELEASE_DIR
 strip $RELEASE_DIR/*
 chmod +x $RELEASE_DIR/cqtdeployer
 
-$RELEASE_DIR/cqtdeployer -runScript cqtdeployer.sh -bin $RELEASE_DIR/cqtdeployer -qmake $BASE_DIR/sharedQt/bin/qmake
+$RELEASE_DIR/cqtdeployer deploy-not-qt -runScript cqtdeployer.sh -bin $RELEASE_DIR/cqtdeployer -qmake $BASE_DIR/sharedQt/bin/qmake
 
 
 if [ -e "$QMAKE" ]
