@@ -35,7 +35,7 @@ void help() {
     qInfo() << "   -libDir [list,params]    : set additional path for extralib of app.";
     qInfo() << "                            | for example -libDir ~/myLib,~/newLibs";
     qInfo() << "   -extraPlugin[list,params]: set additional path for extraPlugin of app";
-    qInfo() << "   recursiveDepth           : set Depth for recursive search of libs (default 0)";
+    qInfo() << "   -recursiveDepth [params] : set Depth for recursive search of libs (default 0)";
 
     qInfo() << "   verbose                  : show debug log";
 
@@ -69,14 +69,14 @@ bool parseQt(Deploy &deploy) {
         return false;
     }
 
-    int limit = 1;
+    int limit = 0;
 
     if (QuasarAppUtils::Params::isEndable("recursiveDepth")) {
         bool ok;
         limit = QuasarAppUtils::Params::getArg("recursiveDepth").toInt(&ok);
         if (!ok) {
-            limit = 1;
-            qWarning() << "recursiveDepth is invalid!";
+            limit = 0;
+            qWarning() << "recursiveDepth is invalid! use default value 0";
         }
     }
 
