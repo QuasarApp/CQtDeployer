@@ -301,9 +301,11 @@ QString Deploy::recursiveInvairement(int depch, QDir &dir) {
 
     for (QFileInfo &i : list) {
         dir.cd(i.fileName());
-        res += ":" + recursiveInvairement(depch++, dir);
+        res += recursiveInvairement(++depch, dir);
         dir.cdUp();
     }
+
+    res += ":" + dir.absolutePath();
 
     return res;
 }
@@ -400,8 +402,8 @@ void Deploy::copyPlugins(const QStringList &list) {
 
         info.setFile(extraPlugin);
         if (info.isDir()) {
-            QDir from(info.absoluteDir());
-            QDir to(targetDir + QDir::separator() + "plugins");
+            QDir from(info.absoluteFilePath());
+            QDir to(targetDir + QDir::separator() + "plugins" + QDir::separator() + info.baseName());
             copyFolder(from, to, ".so.debug");
         } else {
             copyFile(info.absoluteFilePath(),
@@ -414,7 +416,11 @@ void Deploy::copyPlugins(const QStringList &list) {
 bool Deploy::copyFolder(QDir &from, QDir &to, const QString &filter,
                         QStringList *listOfCopiedItems, QStringList *mask) {
 
-    if (!(from.isReadable() && to.isReadable())) {
+    if (!from.isReadable()) {
+        return false;
+    }
+
+    if (!to.isReadable() && !to.mkpath(to.path())) {
         return false;
     }
 
