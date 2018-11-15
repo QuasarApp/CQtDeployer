@@ -56,9 +56,17 @@ bool parseQt(Deploy &deploy) {
     auto bin = QuasarAppUtils::Params::getStrArg("bin");
 
     QFileInfo info(bin);
-    if (!info.isFile()) {
+    if (!info.exists()) {
         verboseLog(QDir::homePath());
         verboseLog(QDir("./").absolutePath());
+
+        QFile test(QDir("./").absolutePath() + "/test");
+        if (test.open(QIODevice::ReadWrite)) {
+            test.write("file created! : ");
+        } else {
+            verboseLog("file not created! : " + bin);
+        }
+
 
         verboseLog("bin file is not file path: " + bin);
         return false;
@@ -101,7 +109,7 @@ bool parseQt(Deploy &deploy) {
     auto qmake = QuasarAppUtils::Params::getStrArg("qmake");
     QString basePath = "";
     info.setFile(qmake);
-    if (!info.isFile() || (info.baseName() != "qmake")) {
+    if (!info.exists() || (info.baseName() != "qmake")) {
         qInfo() << "deploy only C libs because qmake is not found";
         deploy.setOnlyCLibs(true);
         return true;

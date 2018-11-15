@@ -25,7 +25,7 @@ QString Deploy::getQmlScaner() const { return qmlScaner; }
 
 void Deploy::setQmlScaner(const QString &value) {
     qmlScaner = value;
-    deployQml = QFileInfo(qmlScaner).isFile();
+    deployQml = QFileInfo(qmlScaner).exists();
 }
 
 QString Deploy::getQmake() const { return qmake; }
