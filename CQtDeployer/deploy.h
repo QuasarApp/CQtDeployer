@@ -10,6 +10,7 @@
 #include <QDir>
 #include <QString>
 #include <QStringList>
+#include "utils.h"
 
 class Deploy {
   private:

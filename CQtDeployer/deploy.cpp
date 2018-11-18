@@ -36,7 +36,7 @@ void Deploy::setQmake(const QString &value) {
     QFileInfo info(qmake);
     QDir dir = info.absoluteDir();
 
-    if (!dir.cdUp() || !dir.cd("qml")) {
+    if (!Utils::cdUp(dir) || !Utils::cd(dir,"qml")) {
         qWarning() << "get qml fail!";
     }
 
@@ -300,9 +300,9 @@ QString Deploy::recursiveInvairement(int depch, QDir &dir) {
     QString res = "";
 
     for (QFileInfo &i : list) {
-        dir.cd(i.fileName());
+        Utils::cd(dir, i.fileName());
         res += recursiveInvairement(++depch, dir);
-        dir.cdUp();
+        Utils::cdUp(dir);
     }
 
     res += ":" + dir.absolutePath();
@@ -347,32 +347,32 @@ void Deploy::extractPlugins(const QString &lib) {
 
 bool Deploy::copyPlugin(const QString &plugin) {
     QDir dir(qtDir);
-    if (!dir.cd("plugins")) {
+    if (!Utils::cd(dir, "plugins")) {
         return false;
     }
 
-    if (!dir.cd(plugin)) {
+    if (!Utils::cd(dir, plugin)) {
         return false;
     }
 
     QDir dirTo(targetDir);
 
-    if (!dirTo.cd("plugins")) {
+    if (!Utils::cd(dirTo, "plugins")) {
         if (!dirTo.mkdir("plugins")) {
             return false;
         }
 
-        if (!dirTo.cd("plugins")) {
+        if (!Utils::cd(dirTo, "plugins")) {
             return false;
         }
     }
 
-    if (!dirTo.cd(plugin)) {
+    if (!Utils::cd(dirTo, plugin)) {
         if (!dirTo.mkdir(plugin)) {
             return false;
         }
 
-        if (!dirTo.cd(plugin)) {
+        if (!Utils::cd(dirTo, plugin)) {
             return false;
         }
     }
@@ -429,7 +429,7 @@ bool Deploy::copyFolder(QDir &from, QDir &to, const QString &filter,
     for (auto item : list) {
         if (QFileInfo(item).isDir()) {
 
-            if (!from.cd(item.fileName())) {
+            if (!Utils::cd(from, item.fileName())) {
                 qWarning() << "not open "
                            << from.absolutePath() + QDir::separator() +
                                   item.fileName();
@@ -445,7 +445,7 @@ bool Deploy::copyFolder(QDir &from, QDir &to, const QString &filter,
                 continue;
             }
 
-            if (!to.cd(item.fileName())) {
+            if (!Utils::cd(to, item.fileName())) {
                 qWarning() << "not open "
                            << to.absolutePath() + QDir::separator() +
                                   item.fileName();
@@ -453,8 +453,8 @@ bool Deploy::copyFolder(QDir &from, QDir &to, const QString &filter,
             }
 
             copyFolder(from, to, filter, listOfCopiedItems, mask);
-            from.cdUp();
-            to.cdUp();
+            Utils::cdUp(from);
+            Utils::cdUp(to);
 
         } else {
 
@@ -565,12 +565,12 @@ bool Deploy::extractQmlAll() {
 
     QDir dirTo(targetDir);
 
-    if (!dirTo.cd("qml")) {
+    if (!Utils::cd(dirTo, "qml")) {
         if (!dirTo.mkdir("qml")) {
             return false;
         }
 
-        if (!dirTo.cd("qml")) {
+        if (!Utils::cd(dirTo, "qml")) {
             return false;
         }
     }
@@ -599,12 +599,12 @@ bool Deploy::extractQmlFromSource(const QString sourceDir) {
 
     QDir dirTo(targetDir);
 
-    if (!dirTo.cd("qml")) {
+    if (!Utils::cd(dirTo, "qml")) {
         if (!dirTo.mkdir("qml")) {
             return false;
         }
 
-        if (!dirTo.cd("qml")) {
+        if (!Utils::cd(dirTo, "qml")) {
             return false;
         }
     }
@@ -642,19 +642,19 @@ void Deploy::clear() {
 
     QDir dir(targetDir);
 
-    if (dir.cd("lib")) {
+    if (Utils::cd(dir, "lib")) {
         dir.removeRecursively();
-        dir.cdUp();
+        Utils::cdUp(dir);
     }
 
-    if (dir.cd("plugins")) {
+    if (Utils::cd(dir, "plugins")) {
         dir.removeRecursively();
-        dir.cdUp();
+        Utils::cdUp(dir);
     }
 
-    if (dir.cd("qml")) {
+    if (Utils::cd(dir, "qml")) {
         dir.removeRecursively();
-        dir.cdUp();
+        Utils::cdUp(dir);
     }
 }
 

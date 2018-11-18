@@ -33,10 +33,12 @@ TARGET = cqtdeployer
 
 SOURCES += \
         main.cpp \
-    deploy.cpp
+    deploy.cpp \
+    utils.cpp
 
 HEADERS += \
-    deploy.h
+    deploy.h \
+    utils.h
 
 
 DISTFILES += \

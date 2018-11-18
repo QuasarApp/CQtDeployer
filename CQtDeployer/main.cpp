@@ -45,30 +45,16 @@ void help() {
     qInfo() << "Example (only C libs): cqtdeployer -bin myApp clear";
 }
 
-void verboseLog(const QString &str) {
-    if (QuasarAppUtils::Params::isEndable("verbose")) {
-        qDebug() << str;
-    }
-}
-
 bool parseQt(Deploy &deploy) {
 
     auto bin = QuasarAppUtils::Params::getStrArg("bin");
 
     QFileInfo info(bin);
     if (!info.exists()) {
-        verboseLog(QDir::homePath());
-        verboseLog(QDir("./").absolutePath());
+        Utils::verboseLog(QDir::homePath());
+        Utils::verboseLog(QDir("./").absolutePath());
 
-        QFile test(QDir("./").absolutePath() + "/test");
-        if (test.open(QIODevice::ReadWrite)) {
-            test.write("file created! : ");
-        } else {
-            verboseLog("file not created! : " + bin);
-        }
-
-
-        verboseLog("bin file is not file path: " + bin);
+        Utils::verboseLog("bin file is not file path: " + bin);
         return false;
     }
 
@@ -109,6 +95,11 @@ bool parseQt(Deploy &deploy) {
     auto qmake = QuasarAppUtils::Params::getStrArg("qmake");
     QString basePath = "";
     info.setFile(qmake);
+
+    Utils::verboseLog("qmake path =" + qmake);
+    Utils::verboseLog("qmake path from info =" + info.absoluteFilePath());
+    Utils::verboseLog("qmake baseName from info =" + info.baseName());
+
     if (!info.exists() || (info.baseName() != "qmake")) {
         qInfo() << "deploy only C libs because qmake is not found";
         deploy.setOnlyCLibs(true);
@@ -123,6 +114,10 @@ bool parseQt(Deploy &deploy) {
 
     QDir dir(basePath);
 
+    Utils::verboseLog("basePath =" + basePath);
+    Utils::verboseLog("qmlDir =" + qmlDir);
+    Utils::verboseLog("scaner =" + scaner);
+
     if (QFileInfo::exists(qmlDir) && QFileInfo::exists(scaner)) {
 
         deploy.setDeployQml(true);
@@ -131,10 +126,11 @@ bool parseQt(Deploy &deploy) {
     } else if (QuasarAppUtils::Params::isEndable("allQmlDependes")) {
         deploy.setDeployQml(true);
     } else {
-        qCritical() << "wrong qml dir!";
+        qWarning() << "wrong qml dir!, deploy qml skiped!";
     }
 
-    if (!dir.cdUp()) {
+    if (!Utils::cdUp(dir)) {
+        Utils::verboseLog("parrent dir no exits! this dir =" + dir.path());
         return false;
     }
 
