@@ -3,13 +3,21 @@
 
 #include "windependenciesscanner_global.h"
 
+#include <QMultiMap>
+#include <QStringList>
+
 
 class WINDEPENDENCIESSCANNERSHARED_EXPORT WinDependenciesScanner
 {
+private:
+    QStringList _env;
+    QMultiMap<QString, QString> _EnvLibs;
 public:
     explicit WinDependenciesScanner();
 
-    QList<QByteArray> scan(const QString& path);
+    void setEnvironment(const QString& env);
+
+    QStringList scan(const QString& path);
 
     ~WinDependenciesScanner();
 };

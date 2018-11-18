@@ -31,7 +31,3 @@ HEADERS += \
         windependenciesscanner_global.h \ 
     ../qtTools/src/windeployqt/elfreader.h
 
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
