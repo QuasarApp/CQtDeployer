@@ -15,7 +15,7 @@ private:
 public:
     explicit WinDependenciesScanner();
 
-    void setEnvironment(const QString& env);
+    void setEnvironment(const QStringList &env);
 
     QStringList scan(const QString& path);
 

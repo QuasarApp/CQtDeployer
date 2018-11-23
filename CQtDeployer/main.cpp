@@ -69,6 +69,8 @@ bool parseQt(Deploy &deploy) {
         return false;
     }
 
+    deploy.initEnvirement();
+
     int limit = 0;
 
     if (QuasarAppUtils::Params::isEndable("recursiveDepth")) {

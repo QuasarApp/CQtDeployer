@@ -9,9 +9,12 @@ TEMPLATE = subdirs
 CONFIG += ordered
 
 SUBDIRS += QuasarAppLib \
+    WinDependenciesScanner \
     CQtDeployer \
-    WinDependenciesScanner
+
 
 
 CQtDeployer.depends=QuasarAppLib
+CQtDeployer.depends=WinDependenciesScanner
+
 QuasarAppLib.file = $$PWD/QuasarAppLib/QuasarApp.pro
