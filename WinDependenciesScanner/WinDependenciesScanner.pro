@@ -31,10 +31,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         windependenciesscanner.cpp \
-    ../qtTools/src/windeployqt/elfreader.cpp
+    ../qtTools/src/windeployqt/elfreader.cpp \
+    ../qtTools/src/windeployqt/utils.cpp
 
 HEADERS += \
         windependenciesscanner.h \
         windependenciesscanner_global.h \ 
-    ../qtTools/src/windeployqt/elfreader.h
+    ../qtTools/src/windeployqt/elfreader.h \
+    ../qtTools/src/windeployqt/utils.h
 

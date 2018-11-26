@@ -5,6 +5,7 @@
 
 #include <QMultiMap>
 #include <QStringList>
+#include "../qtTools/src/windeployqt/utils.h"
 
 
 class WINDEPENDENCIESSCANNERSHARED_EXPORT WinDependenciesScanner
@@ -12,6 +13,7 @@ class WINDEPENDENCIESSCANNERSHARED_EXPORT WinDependenciesScanner
 private:
     QStringList _env;
     QMultiMap<QString, QString> _EnvLibs;
+    Platform platformFromMkSpec(const QString &xSpec);
 public:
     explicit WinDependenciesScanner();
 
