@@ -44,17 +44,13 @@ Platform WinDependenciesScanner::platformFromMkSpec(const QString &xSpec)
     return UnknownPlatform;
 }
 
-QStringList WinDependenciesScanner::scan(const QString &path) {
+QStringList WinDependenciesScanner::scan(const QString &path, Platform platfr) {
     QStringList result;
 
     QString errorMessage;
 
-    const QMap<QString, QString> qmakeVariables = queryQMakeAll(&errorMessage);
-    const QString xSpec = qmakeVariables.value(QStringLiteral("QMAKE_XSPEC"));
-
-    Platform platform = platformFromMkSpec(xSpec);
     QStringList dep;
-    readExecutable(path, platform, &errorMessage, &dep);
+    readExecutable(path, platfr, &errorMessage, &dep);
 
     if (!errorMessage.isEmpty()) {
         qCritical() << errorMessage;
