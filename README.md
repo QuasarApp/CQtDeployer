@@ -29,7 +29,7 @@ Key differences of this program:
 |   -ignore [list,params]     | ignore filter for libs                                    |
 |                             | for example -ignore libicudata.so.56,libicudata2.so.56    |
 |   clear                     | delete all old deploy data                                |
-|  -runScript [params]        | set new name of out file (AppRun.sh by default and) (linux omly)|
+|  -runScript [params]        | set new name of out file (AppRun.sh by default and) (linux only)|
 |                             | for example -runScript myApp.sh                           |
 |  allQmlDependes             | This flag will force to extract all qml libraries.        |
 |                             | (not recommended, as it takes up a lot of memory)         |
