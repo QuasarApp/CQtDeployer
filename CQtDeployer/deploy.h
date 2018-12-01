@@ -17,6 +17,7 @@ class Deploy {
   private:
     bool deployQml = false;
     bool onlyCLibs = false;
+    bool isWinApp =false;
     int depchLimit = 0;
     QString qmlScaner = "";
     QString qmake = "";

@@ -47,4 +47,5 @@ DISTFILES += \
     ../staticBuild.sh \
     ../snap/snapcraft.yaml \
     ../README.md \
-    ../sharedBuild.sh
+    ../sharedBuild.sh \
+    ../README.md

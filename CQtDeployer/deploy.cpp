@@ -47,7 +47,7 @@ QString Deploy::getTarget() const { return target; }
 
 bool Deploy::initDirs() {
 
-    if (!QFileInfo::exists(targetDir + QDir::separator() + "lib") &&
+    if (!isWinApp && !QFileInfo::exists(targetDir + QDir::separator() + "lib") &&
         !QDir(targetDir).mkdir("lib")) {
         return false;
     }
@@ -62,10 +62,20 @@ bool Deploy::initDirs() {
 }
 
 bool Deploy::setTarget(const QString &value) {
+    QFileInfo targetInfo(value);
+
+    if (!targetInfo.isFile()) {
+        return false;
+    }
+
     target = value;
 
     if (target.isEmpty()) {
         return false;
+    }
+
+    if (targetInfo.completeSuffix() == "exe") {
+        isWinApp = true;
     }
 
     targetDir = QFileInfo(target).absolutePath();
@@ -133,13 +143,13 @@ void Deploy::deploy() {
     }
 
     if (!onlyCLibs)
-        copyFiles(QtLibs, targetDir + QDir::separator() + "lib");
+        copyFiles(QtLibs, (isWinApp)? targetDir :targetDir + QDir::separator() + "lib");
 
     if (onlyCLibs || QuasarAppUtils::Params::isEndable("deploy-not-qt")) {
-        copyFiles(noQTLibs, targetDir + QDir::separator() + "lib");
+        copyFiles(noQTLibs, (isWinApp)? targetDir :targetDir + QDir::separator() + "lib");
     }
 
-    if (!createRunScript()) {
+    if (!isWinApp && !createRunScript()) {
         qCritical() << "run script not created!";
     }
 }
