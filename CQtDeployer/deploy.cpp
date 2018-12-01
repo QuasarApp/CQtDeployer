@@ -41,9 +41,6 @@ void Deploy::setQmake(const QString &value) {
     }
 
     qmlDir = dir.absolutePath();
-
-    deployEnvironment += ":" + qtDir;
-
 }
 
 QString Deploy::getTarget() const { return target; }
@@ -73,7 +70,7 @@ bool Deploy::setTarget(const QString &value) {
 
     targetDir = QFileInfo(target).absolutePath();
 
-    deployEnvironment += ":" + targetDir;
+    addEnv(targetDir);
 
     return true;
 }
@@ -149,7 +146,10 @@ void Deploy::deploy() {
 
 QString Deploy::getQtDir() const { return qtDir; }
 
-void Deploy::setQtDir(const QString &value) { qtDir = value; }
+void Deploy::setQtDir(const QString &value) {
+    qtDir = value;
+    addEnv(qtDir);
+}
 
 void Deploy::setOnlyCLibs(bool value) { onlyCLibs = value; }
 
@@ -159,7 +159,7 @@ void Deploy::setExtraPath(const QStringList &value) {
     for (auto i : value) {
         if (QFile::exists(i)) {
             dir.setPath(i);
-            deployEnvironment += ":" + recursiveInvairement(0, dir);
+            addEnv(recursiveInvairement(0, dir));
         } else {
             qWarning() << i << " does not exist! and skiped";
         }
@@ -180,7 +180,7 @@ void Deploy::setDepchLimit(int value) { depchLimit = value; }
 
 bool Deploy::isQtLib(const QString &lib) const {
     QFileInfo info(lib);
-    return info.absolutePath().contains(qtDir);
+    return !qtDir.isEmpty() && info.absolutePath().contains(qtDir);
 }
 
 void Deploy::copyFiles(const QStringList &files, const QString &target) {
@@ -241,8 +241,14 @@ void Deploy::extract(const QString &file, bool isExtractPlugins) {
 
 QString Deploy::recursiveInvairement(int depch, QDir &dir) {
 
+    char separator = ':';
+
+#ifdef Q_OS_WIN
+    separator = ';';
+#endif
+
     if (!dir.exists() || depch >= depchLimit) {
-        return ":" + dir.absolutePath();
+        return dir.absolutePath();
     }
 
     QFileInfoList list = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -254,7 +260,7 @@ QString Deploy::recursiveInvairement(int depch, QDir &dir) {
         dir.cdUp();
     }
 
-    res += ":" + dir.absolutePath();
+    res += (res.size())? separator + dir.absolutePath(): dir.absolutePath();
 
     return res;
 }
@@ -558,8 +564,14 @@ void Deploy::extractWindowsLib(const QString &file, bool isExtractPlugins) {
 
 void Deploy::addEnv(const QString &dir) {
 
-    if (dir.contains(':')) {
-        auto list = dir.split(':');
+    char separator = ':';
+
+#ifdef Q_OS_WIN
+    separator = ';';
+#endif
+
+    if (dir.contains(separator)) {
+        auto list = dir.split(separator);
         for (auto i : list) {
             addEnv(i);
         }
@@ -761,7 +773,7 @@ void Deploy::strip(const QString &dir) {
 void Deploy::initEnvirement() {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     auto enva = env.value("LD_LIBRARY_PATH");
-
+    enva += env.value("PATH");
     addEnv(enva);
 
     if (deployEnvironment.size() < 2) {

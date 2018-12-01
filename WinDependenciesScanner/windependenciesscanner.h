@@ -19,7 +19,7 @@ public:
 
     void setEnvironment(const QStringList &env);
 
-    QStringList scan(const QString& path, Platform platfr = WindowsMinGW);
+    QStringList scan(const QString& path, Platform platfr = UnknownPlatform);
 
     ~WinDependenciesScanner();
 };

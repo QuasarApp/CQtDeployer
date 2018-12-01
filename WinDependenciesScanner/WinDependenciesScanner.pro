@@ -40,3 +40,4 @@ HEADERS += \
     ../qtTools/src/windeployqt/elfreader.h \
     ../qtTools/src/windeployqt/utils.h
 
+win32: LIBS += -lshlwapi

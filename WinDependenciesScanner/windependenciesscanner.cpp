@@ -4,6 +4,49 @@
 #include <QDir>
 #include <QDebug>
 
+struct Options {
+    enum DebugDetection {
+        DebugDetectionAuto,
+        DebugDetectionForceDebug,
+        DebugDetectionForceRelease
+    };
+
+    enum AngleDetection {
+        AngleDetectionAuto,
+        AngleDetectionForceOn,
+        AngleDetectionForceOff
+    };
+
+    bool plugins = true;
+    bool libraries = true;
+    bool quickImports = true;
+    bool translations = true;
+    bool systemD3dCompiler = true;
+    bool compilerRunTime = false;
+    AngleDetection angleDetection = AngleDetectionAuto;
+    bool softwareRasterizer = true;
+    Platform platform = Windows;
+    quint64 additionalLibraries = 0;
+    quint64 disabledLibraries = 0;
+    unsigned updateFileFlags = 0;
+    QStringList qmlDirectories; // Project's QML files.
+    QString directory;
+    QString translationsDirectory; // Translations target directory
+    QString libraryDirectory;
+    QString pluginDirectory;
+    QStringList binaries;
+    JsonOutput *json = nullptr;
+    ListOption list = ListNone;
+    DebugDetection debugDetection = DebugDetectionAuto;
+    bool deployPdb = false;
+    bool dryRun = false;
+    bool patchQt = true;
+
+    inline bool isWinRt() const {
+        return platform == WinRtArm || platform == WinRtIntel;
+    }
+};
+
 WinDependenciesScanner::WinDependenciesScanner() {}
 
 void WinDependenciesScanner::setEnvironment(const QStringList &env) {
@@ -48,6 +91,13 @@ QStringList WinDependenciesScanner::scan(const QString &path, Platform platfr) {
     QStringList result;
 
     QString errorMessage;
+
+    if (platfr == Platform::UnknownPlatform) {
+
+        const QMap<QString, QString> qmakeVariables = queryQMakeAll(&errorMessage);
+        const QString xSpec = qmakeVariables.value(QStringLiteral("QMAKE_XSPEC"));
+        platfr = platformFromMkSpec(xSpec);
+    }
 
     QStringList dep;
     readExecutable(path, platfr, &errorMessage, &dep);
