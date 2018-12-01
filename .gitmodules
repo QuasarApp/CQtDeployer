@@ -4,3 +4,6 @@
 [submodule "qtBase"]
 	path = qtBase
 	url = https://github.com/qt/qtbase.git
+[submodule "qtTools"]
+	path = qtTools
+	url = https://github.com/qt/qttools.git

@@ -24,10 +24,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 include('$$PWD/../QuasarAppLib/QuasarLib.pri')
+include('$$PWD/../WinDependenciesScanner/WinDependenciesScanner.pri')
 include('$$PWD/../install.pri')
+
 
 install_data.files += $$DESTDIR/$$runfiletype
 install_data.files += $$QUASARAPP_LIB_OUTPUT_DIR/$$libfiletype
+install_data.files += $$WINDEPENDENCIESSCANNER_LIB_OUTPUT_DIR/$$libfiletype
 
 TARGET = cqtdeployer
 
@@ -44,4 +47,5 @@ DISTFILES += \
     ../staticBuild.sh \
     ../snap/snapcraft.yaml \
     ../README.md \
-    ../sharedBuild.sh
+    ../sharedBuild.sh \
+    ../README.md

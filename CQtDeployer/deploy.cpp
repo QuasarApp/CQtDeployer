@@ -47,7 +47,7 @@ QString Deploy::getTarget() const { return target; }
 
 bool Deploy::initDirs() {
 
-    if (!QFileInfo::exists(targetDir + QDir::separator() + "lib") &&
+    if (!isWinApp && !QFileInfo::exists(targetDir + QDir::separator() + "lib") &&
         !QDir(targetDir).mkdir("lib")) {
         return false;
     }
@@ -62,13 +62,25 @@ bool Deploy::initDirs() {
 }
 
 bool Deploy::setTarget(const QString &value) {
+    QFileInfo targetInfo(value);
+
+    if (!targetInfo.isFile()) {
+        return false;
+    }
+
     target = value;
 
     if (target.isEmpty()) {
         return false;
     }
 
+    if (targetInfo.completeSuffix() == "exe") {
+        isWinApp = true;
+    }
+
     targetDir = QFileInfo(target).absolutePath();
+
+    addEnv(targetDir);
 
     return true;
 }
@@ -131,28 +143,33 @@ void Deploy::deploy() {
     }
 
     if (!onlyCLibs)
-        copyFiles(QtLibs, targetDir + QDir::separator() + "lib");
+        copyFiles(QtLibs, (isWinApp)? targetDir :targetDir + QDir::separator() + "lib");
 
     if (onlyCLibs || QuasarAppUtils::Params::isEndable("deploy-not-qt")) {
-        copyFiles(noQTLibs, targetDir + QDir::separator() + "lib");
+        copyFiles(noQTLibs, (isWinApp)? targetDir :targetDir + QDir::separator() + "lib");
     }
 
-    if (!createRunScript()) {
+    if (!isWinApp && !createRunScript()) {
         qCritical() << "run script not created!";
     }
 }
 
 QString Deploy::getQtDir() const { return qtDir; }
 
-void Deploy::setQtDir(const QString &value) { qtDir = value; }
+void Deploy::setQtDir(const QString &value) {
+    qtDir = value;
+    addEnv(qtDir);
+}
 
 void Deploy::setOnlyCLibs(bool value) { onlyCLibs = value; }
 
 void Deploy::setExtraPath(const QStringList &value) {
+    QDir dir;
 
     for (auto i : value) {
         if (QFile::exists(i)) {
-            extraPath.append(i);
+            dir.setPath(i);
+            addEnv(recursiveInvairement(0, dir));
         } else {
             qWarning() << i << " does not exist! and skiped";
         }
@@ -173,7 +190,7 @@ void Deploy::setDepchLimit(int value) { depchLimit = value; }
 
 bool Deploy::isQtLib(const QString &lib) const {
     QFileInfo info(lib);
-    return info.absolutePath().contains(qtDir);
+    return !qtDir.isEmpty() && info.absolutePath().contains(qtDir);
 }
 
 void Deploy::copyFiles(const QStringList &files, const QString &target) {
@@ -218,82 +235,30 @@ bool Deploy::copyFile(const QString &file, const QString &target,
 }
 
 void Deploy::extract(const QString &file, bool isExtractPlugins) {
+    QFileInfo info(file);
 
-    qInfo() << "extract lib :" << file;
-
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-
-    QString ld_path = qtDir + "/lib:" + targetDir;
-    QDir dir;
-
-    for (auto i : extraPath) {
-        dir.setPath(i);
-        ld_path.push_back(recursiveInvairement(0, dir));
+    if (info.completeSuffix().contains("dll", Qt::CaseSensitive)) {
+        extractWindowsLib(file, isExtractPlugins);
     }
-
-    env.insert("LD_LIBRARY_PATH", ld_path);
-    env.insert("QML_IMPORT_PATH", qtDir + "/qml");
-    env.insert("QML2_IMPORT_PATH", qtDir + "/qml");
-    env.insert("QT_PLUGIN_PATH", qtDir + "/plugins");
-    env.insert("QT_QPA_PLATFORM_PLUGIN_PATH", qtDir + "/plugins/platforms");
-
-    QProcess P;
-    P.setProcessEnvironment(env);
-    P.start("ldd " + file, QProcess::ReadOnly);
-
-    if (!P.waitForStarted())
-        return;
-    if (!P.waitForFinished())
-        return;
-
-    auto data = QString(P.readAll());
-    QStringList libs;
-
-    for (QString &line : data.split("\n", QString::SkipEmptyParts)) {
-        line = line.simplified();
-        auto innerlist = line.split(" ");
-
-        if (innerlist.count() < 3)
-            continue;
-        line = innerlist[2];
-
-        if (!line.startsWith("/")) {
-            continue;
-        }
-
-        bool isIgnore = false;
-        for (auto ignore : ignoreList) {
-            if (line.contains(ignore)) {
-                qInfo() << line << " ignored by filter" << ignore;
-                isIgnore = true;
-            }
-        }
-
-        if (isIgnore) {
-            continue;
-        }
-
-        if (isQtLib(line) && !QtLibs.contains(line)) {
-            QtLibs << line;
-            extract(line, isExtractPlugins);
-            if (isExtractPlugins) {
-                extractPlugins(line);
-            }
-            continue;
-        }
-
-        if ((QuasarAppUtils::Params::isEndable("deploy-not-qt") || onlyCLibs) &&
-            !noQTLibs.contains(line)) {
-            noQTLibs << line;
-            extract(line, isExtractPlugins);
-        }
+    else if (info.completeSuffix().contains("so", Qt::CaseSensitive)) {
+        extractLinuxLib(file, isExtractPlugins);
+    } else if (info.completeSuffix().contains("exe", Qt::CaseSensitive)) {
+        extractWindowsLib(file, isExtractPlugins);
+    } else {
+        extractLinuxLib(file, isExtractPlugins);
     }
 }
 
 QString Deploy::recursiveInvairement(int depch, QDir &dir) {
 
+    char separator = ':';
+
+#ifdef Q_OS_WIN
+    separator = ';';
+#endif
+
     if (!dir.exists() || depch >= depchLimit) {
-        return ":" + dir.absolutePath();
+        return dir.absolutePath();
     }
 
     QFileInfoList list = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -305,7 +270,7 @@ QString Deploy::recursiveInvairement(int depch, QDir &dir) {
         dir.cdUp();
     }
 
-    res += ":" + dir.absolutePath();
+    res += (res.size())? separator + dir.absolutePath(): dir.absolutePath();
 
     return res;
 }
@@ -507,6 +472,150 @@ QString Deploy::filterQmlPath(const QString &path) {
     return "";
 }
 
+void Deploy::extractLinuxLib(const QString &file, bool isExtractPlugins) {
+    qInfo() << "extract lib :" << file;
+
+    QProcessEnvironment env;
+
+    env.insert("LD_LIBRARY_PATH", concatEnv());
+    env.insert("QML_IMPORT_PATH", qtDir + "/qml");
+    env.insert("QML2_IMPORT_PATH", qtDir + "/qml");
+    env.insert("QT_PLUGIN_PATH", qtDir + "/plugins");
+    env.insert("QT_QPA_PLATFORM_PLUGIN_PATH", qtDir + "/plugins/platforms");
+
+    QProcess P;
+    P.setProcessEnvironment(env);
+    P.start("ldd " + file, QProcess::ReadOnly);
+
+    if (!P.waitForStarted())
+        return;
+    if (!P.waitForFinished())
+        return;
+
+    auto data = QString(P.readAll());
+
+    for (QString &line : data.split("\n", QString::SkipEmptyParts)) {
+        line = line.simplified();
+        auto innerlist = line.split(" ");
+
+        if (innerlist.count() < 3)
+            continue;
+        line = innerlist[2];
+
+        if (!line.startsWith("/")) {
+            continue;
+        }
+
+        bool isIgnore = false;
+        for (auto ignore : ignoreList) {
+            if (line.contains(ignore)) {
+                qInfo() << line << " ignored by filter" << ignore;
+                isIgnore = true;
+            }
+        }
+
+        if (isIgnore) {
+            continue;
+        }
+
+        if (isQtLib(line) && !QtLibs.contains(line)) {
+            QtLibs << line;
+            extractLinuxLib(line, isExtractPlugins);
+            if (isExtractPlugins) {
+                extractPlugins(line);
+            }
+            continue;
+        }
+
+        if ((QuasarAppUtils::Params::isEndable("deploy-not-qt") || onlyCLibs) &&
+            !noQTLibs.contains(line)) {
+            noQTLibs << line;
+            extractLinuxLib(line, isExtractPlugins);
+        }
+    }
+}
+
+void Deploy::extractWindowsLib(const QString &file, bool isExtractPlugins) {
+    qInfo() << "extract lib :" << file;
+    auto data = winScaner.scan(file);
+
+    for (QString &line : data) {
+        line = line.simplified();
+
+        bool isIgnore = false;
+        for (auto ignore : ignoreList) {
+            if (line.contains(ignore)) {
+                qInfo() << line << " ignored by filter" << ignore;
+                isIgnore = true;
+                continue;
+            }
+        }
+
+        if (isIgnore) {
+            continue;
+        }
+
+        if (isQtLib(line) && !QtLibs.contains(line)) {
+            QtLibs << line;
+            extractWindowsLib(line, isExtractPlugins);
+            if (isExtractPlugins) {
+                extractPlugins(line);
+            }
+            continue;
+        }
+
+        if ((onlyCLibs || QuasarAppUtils::Params::isEndable("deploy-not-qt")) &&
+            !noQTLibs.contains(line)) {
+            noQTLibs << line;
+            extractWindowsLib(line, isExtractPlugins);
+        }
+    }
+}
+
+void Deploy::addEnv(const QString &dir) {
+
+    char separator = ':';
+
+#ifdef Q_OS_WIN
+    separator = ';';
+#endif
+
+    if (dir.contains(separator)) {
+        auto list = dir.split(separator);
+        for (auto i : list) {
+            addEnv(i);
+        }
+        return;
+    }
+
+    if (!QFileInfo(dir).isDir()) {
+        qWarning() << "bad Environment: " << dir;
+        return;
+    }
+
+    if (deployEnvironment.contains(dir)) {
+        qWarning() << "Environment alredy added: " << dir;
+        return;
+    }
+
+    deployEnvironment.push_back(dir);
+    winScaner.setEnvironment(deployEnvironment);
+}
+
+QString Deploy::concatEnv() const {
+
+    if (deployEnvironment.isEmpty()) {
+        return "";
+    }
+
+    QString result = deployEnvironment.first();
+    for (auto i: deployEnvironment) {
+        result += (":" + i);
+    }
+
+    return result;
+}
+
 QStringList Deploy::extractImportsFromFiles(const QStringList &filepath) {
     QProcess p;
     p.setProgram(qmlScaner);
@@ -671,4 +780,17 @@ void Deploy::strip(const QString &dir) {
         return;
 }
 
+void Deploy::initEnvirement() {
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    auto enva = env.value("LD_LIBRARY_PATH");
+    enva += env.value("PATH");
+    addEnv(enva);
+
+    if (deployEnvironment.size() < 2) {
+        qWarning() << "system environment is empty";
+    }
+}
+
+
 Deploy::Deploy() {}
+

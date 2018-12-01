@@ -10,11 +10,14 @@
 #include <QDir>
 #include <QString>
 #include <QStringList>
+#include <windependenciesscanner.h>
+
 
 class Deploy {
   private:
     bool deployQml = false;
     bool onlyCLibs = false;
+    bool isWinApp =false;
     int depchLimit = 0;
     QString qmlScaner = "";
     QString qmake = "";
@@ -22,14 +25,16 @@ class Deploy {
     QString target = "";
     QString targetDir = "";
     QString qmlDir = "";
+    QStringList deployEnvironment;
 
     QStringList QtLibs;
     QStringList noQTLibs;
     QStringList qmlLibs;
     QStringList neededPlugins;
     QStringList ignoreList;
-    QStringList extraPath;
     QStringList extraPlugins;
+
+    WinDependenciesScanner winScaner;
 
     bool isQtLib(const QString &lib) const;
 
@@ -55,9 +60,16 @@ class Deploy {
     bool extractQmlAll();
     bool extractQmlFromSource(const QString sourceDir);
     QString filterQmlPath(const QString &path);
+    void extractLinuxLib(const QString & file, bool isExtractPlugins);
+    void extractWindowsLib(const QString & file, bool isExtractPlugins);
+
+    void addEnv(const QString& dir);
+    QString concatEnv() const;
 
   public:
     Deploy();
+    void initEnvirement();
+
     bool getDeployQml() const;
     void setDeployQml(bool value);
 

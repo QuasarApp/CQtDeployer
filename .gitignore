@@ -29,7 +29,7 @@ ui_*.h
 *.jsc
 Makefile*
 *build-*
-build/*
+*/build/*
 stage/*
 prime/*
 parts/*
