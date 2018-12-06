@@ -74,7 +74,7 @@ bool Deploy::setTarget(const QString &value) {
         return false;
     }
     
-    auto sufix = argetInfo.completeSuffix();
+    auto sufix = targetInfo.completeSuffix();
     if (sufix == "exe" || sufix == "dll") {
         isWinApp = true;
     }
