@@ -9,8 +9,6 @@ Key differences of this program:
 * Performance-this program deploys the application several times faster (up to 10 seconds)
 * Flexibility-this application has flags that will help you configure the deployment as you need and your project
 
-## Attention
-##### This project is designed to build projects consisting of only one pro file, if you need to collect a large project, then you need to use our [template](https://quasarapp.github.io/QtDeployTemplate/) to build and deploy qt applications
 
 ### How to use
 
@@ -45,11 +43,21 @@ Key differences of this program:
 
 
 ## Build for Linux 
-  -  qmake & make or install qt creator and build on qtcreator
-
+  -  ./staticBuild
+  -  ./sharedBuild
+  -  ./snapBuild
 
 ## Install 
 You can download the latest version of the application [here](https://github.com/QuasarApp/Console-QtDeployer/releases).
+
+### Snap 
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/cqtdeployer)
+
+#### Attention!!!
+This application may not work stably in an isolated container. To solve these problems, use the console installation in the Classic box.
+```bash
+snap install cqtdeployer --classic 
+```
 
 ## Donate
 If you want to help the project, then you can donate a small amount to our bitcoin wallet.
@@ -66,8 +74,6 @@ Console QtDeployer является консольной реализацией 
 * Производительность - эта программа развертывает приложение в несколько раз быстрее (до 10 секунд)
 * Гибкость - это приложение имеет флаги, которые помогут вам настроить деплоинг под ваши нужды и нужды вашего проекта
 
-## Внимание
-##### Данный проект преднозначен для сборки проектов состоящих всего из одного pro файла, если вам необходимо собрать крупный проект то вам нужно воспользоватся нашим [шаблоном](https://quasarapp.github.io/QtDeployTemplate/) для сборки и развертывания qt приложений 
 
 ### Как использовать
 #### пример : cqtdeployer <-bin    [params]> [options]
@@ -99,7 +105,18 @@ Console QtDeployer является консольной реализацией 
 #### Пример: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
 
 ## Build для Linux 
-  -  qmake & make или установите qtcreator и соберите проект с qt5.9 или выше.
+  -  ./staticBuild
+  -  ./sharedBuild
+  -  ./snapBuild
+
+### Snap
+[![Загрузите из Snap Store](https://snapcraft.io/static/images/badges/ru/snap-store-black.svg)](https://snapcraft.io/cqtdeployer)
+
+#### Внимание!!!
+это приложение может работать не стабильно в изолированном контейнере, Для решения этих проблемм используйте становку через консоль в рижеми Classic
+```bash
+snap install cqtdeployer --classic 
+```
 
 
 ## Установить
