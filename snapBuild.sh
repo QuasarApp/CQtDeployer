@@ -1,9 +1,11 @@
 #!/bin/bash
 
-BASE_DIR=$(dirname $0)
+BASE_DIR=$(dirname "$(readlink -f "$0")")
 
 echo "clean build dir"
 rm -rfd $BASE_DIR/distro
+
+chmod a+rx $BASE_DIR/wrapper/bin/desktop-launch
 
 echo "Start static build"
 $BASE_DIR/staticBuild.sh Q_OS_LINUX_SNAP

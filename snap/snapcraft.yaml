@@ -25,4 +25,7 @@ parts:
     plugin: dump
     source: distro
 
-    after: [desktop-glib-only]
+    after: [cqtdeployer-wrapper]
+  cqtdeployer-wrapper:
+    plugin: dump
+    source: wrapper
