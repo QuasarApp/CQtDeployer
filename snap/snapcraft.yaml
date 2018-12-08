@@ -14,7 +14,7 @@ base: core18
 
 apps:
   cqtdeployer:
-    command: desktop-launch $SNAP/CQtDeployer
+    command: desktop-launch $SNAP/cqtdeployer
 
     plugs: [home, removable-media]
 
@@ -23,6 +23,9 @@ parts:
     # See 'snapcraft plugins'
 
     plugin: dump
-    source: build
+    source: distro
 
-    after: [desktop-glib-only]
+    after: [cqtdeployer-wrapper]
+  cqtdeployer-wrapper:
+    plugin: dump
+    source: wrapper
