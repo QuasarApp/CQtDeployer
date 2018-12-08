@@ -1,5 +1,13 @@
 #!/bin/bash
 
+IS_SNAP="$1"
+
+if [ -e "$PREFIX"]
+then
+    echo "build for snap"
+    SNAP_DEFINES="$IS_SNAP"
+fi
+
 declare -a QTLIBS
 
 BASE_DIR=$(dirname "$(readlink -f "$0")")
@@ -45,7 +53,7 @@ cd ..
 rm -rdf $BASE_DIR/build
 
 export PATH=$PATH:$BASE_DIR/staticQt
-$BASE_DIR/staticQt/bin/qmake QMAKE_LFLAGS+="-static" $BASE_DIR/CQtDeployer.pro
+$BASE_DIR/staticQt/bin/qmake QMAKE_LFLAGS+="-static" $BASE_DIR/CQtDeployer.pro DEFINES+="$SNAP_DEFINES"
 
 make -j$(nproc)
 
@@ -56,6 +64,7 @@ then
 else
     echo ""
     echo "Build is failed!" >&2
+    exit 1
 fi
 
 mkdir -p $RELEASE_DIR
