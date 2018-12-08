@@ -28,4 +28,4 @@ parts:
     after: [cqtdeployer-wrapper]
   cqtdeployer-wrapper:
     plugin: dump
-    source: wrapper
+    source: QuasarAppLib/Etalons/snap/wrapper
