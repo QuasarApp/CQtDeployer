@@ -6,6 +6,7 @@
  */
 
 #include "deploy.h"
+#include "deployutils.h"
 #include <QDebug>
 #include <QDir>
 #include <QDirIterator>
@@ -24,14 +25,14 @@ void Deploy::setDeployQml(bool value) { deployQml = value; }
 QString Deploy::getQmlScaner() const { return qmlScaner; }
 
 void Deploy::setQmlScaner(const QString &value) {
-    qmlScaner = value;
+    qmlScaner = QDir::fromNativeSeparators(value);
     deployQml = QFileInfo(qmlScaner).isFile();
 }
 
 QString Deploy::getQmake() const { return qmake; }
 
 void Deploy::setQmake(const QString &value) {
-    qmake = value;
+    qmake = QDir::fromNativeSeparators(value);
 
     QFileInfo info(qmake);
     QDir dir = info.absoluteDir();
@@ -68,7 +69,7 @@ bool Deploy::setTarget(const QString &value) {
         return false;
     }
 
-    target = value;
+    target = QDir::fromNativeSeparators(value);
 
     if (target.isEmpty()) {
         return false;
@@ -155,11 +156,16 @@ void Deploy::deploy() {
     }
 }
 
-QString Deploy::getQtDir() const { return qtDir; }
+QString Deploy::getQtDir() const { return DeployUtils::qtDir; }
 
 void Deploy::setQtDir(const QString &value) {
-    qtDir = value;
-    addEnv(qtDir);
+    DeployUtils::qtDir = QDir::fromNativeSeparators(value);
+    addEnv(DeployUtils::qtDir);
+#ifdef Q_OS_WIN
+    addEnv(DeployUtils::qtDir + "/bin");
+#else
+    addEnv(DeployUtils::qtDir + "/lib");
+#endif
 }
 
 void Deploy::setOnlyCLibs(bool value) { onlyCLibs = value; }
@@ -170,6 +176,8 @@ void Deploy::setExtraPath(const QStringList &value) {
     for (auto i : value) {
         if (QFile::exists(i)) {
             dir.setPath(i);
+            DeployUtils::extraPaths.push_back(
+                        QDir::fromNativeSeparators(i));
             addEnv(recursiveInvairement(0, dir));
         } else {
             qWarning() << i << " does not exist! and skiped";
@@ -188,11 +196,6 @@ void Deploy::setExtraPlugins(const QStringList &value) {
 }
 
 void Deploy::setDepchLimit(int value) { depchLimit = value; }
-
-bool Deploy::isQtLib(const QString &lib) const {
-    QFileInfo info(lib);
-    return !qtDir.isEmpty() && info.absolutePath().contains(qtDir);
-}
 
 void Deploy::copyFiles(const QStringList &files, const QString &target) {
     for (auto file : files) {
@@ -238,16 +241,20 @@ bool Deploy::copyFile(const QString &file, const QString &target,
 void Deploy::extract(const QString &file, bool isExtractPlugins) {
     QFileInfo info(file);
 
-    if (info.completeSuffix().contains("dll", Qt::CaseSensitive)) {
+    auto sufix = info.completeSuffix();
+
+    if (sufix.contains("dll", Qt::CaseSensitive) ||
+        sufix.contains("exe", Qt::CaseSensitive)) {
+
+        winScaner.setEnvironment(deployEnvironment);
         extractWindowsLib(file, isExtractPlugins);
     }
-    else if (info.completeSuffix().contains("so", Qt::CaseSensitive)) {
+    else if (sufix.isEmpty() || sufix.contains("so", Qt::CaseSensitive)) {
         extractLinuxLib(file, isExtractPlugins);
-    } else if (info.completeSuffix().contains("exe", Qt::CaseSensitive)) {
-        extractWindowsLib(file, isExtractPlugins);
     } else {
-        extractLinuxLib(file, isExtractPlugins);
+        qCritical() << "file with sufix " << sufix << " not supported!";
     }
+
 }
 
 QString Deploy::recursiveInvairement(int depch, QDir &dir) {
@@ -267,7 +274,9 @@ QString Deploy::recursiveInvairement(int depch, QDir &dir) {
 
     for (QFileInfo &i : list) {
         dir.cd(i.fileName());
-        res += recursiveInvairement(++depch, dir);
+        QString temp = recursiveInvairement(depch + 1, dir);
+        res += (res.size())? separator + temp: temp;
+
         dir.cdUp();
     }
 
@@ -312,7 +321,7 @@ void Deploy::extractPlugins(const QString &lib) {
 }
 
 bool Deploy::copyPlugin(const QString &plugin) {
-    QDir dir(qtDir);
+    QDir dir(DeployUtils::qtDir);
     if (!dir.cd("plugins")) {
         return false;
     }
@@ -479,10 +488,10 @@ void Deploy::extractLinuxLib(const QString &file, bool isExtractPlugins) {
     QProcessEnvironment env;
 
     env.insert("LD_LIBRARY_PATH", concatEnv());
-    env.insert("QML_IMPORT_PATH", qtDir + "/qml");
-    env.insert("QML2_IMPORT_PATH", qtDir + "/qml");
-    env.insert("QT_PLUGIN_PATH", qtDir + "/plugins");
-    env.insert("QT_QPA_PLATFORM_PLUGIN_PATH", qtDir + "/plugins/platforms");
+    env.insert("QML_IMPORT_PATH", DeployUtils::qtDir + "/qml");
+    env.insert("QML2_IMPORT_PATH", DeployUtils::qtDir + "/qml");
+    env.insert("QT_PLUGIN_PATH", DeployUtils::qtDir + "/plugins");
+    env.insert("QT_QPA_PLATFORM_PLUGIN_PATH", DeployUtils::qtDir + "/plugins/platforms");
 
     QProcess P;
     P.setProcessEnvironment(env);
@@ -519,7 +528,7 @@ void Deploy::extractLinuxLib(const QString &file, bool isExtractPlugins) {
             continue;
         }
 
-        if (isQtLib(line) && !QtLibs.contains(line)) {
+        if ((DeployUtils::isQtLib(line) || DeployUtils::isExtraLib(line)) && !QtLibs.contains(line)) {
             QtLibs << line;
             extractLinuxLib(line, isExtractPlugins);
             if (isExtractPlugins) {
@@ -538,7 +547,8 @@ void Deploy::extractLinuxLib(const QString &file, bool isExtractPlugins) {
 
 void Deploy::extractWindowsLib(const QString &file, bool isExtractPlugins) {
     qInfo() << "extract lib :" << file;
-    auto data = winScaner.scan(file);
+
+    auto data = winScaner.scan(file, Platform::UnknownPlatform, qmake);
 
     for (QString &line : data) {
         line = line.simplified();
@@ -556,7 +566,7 @@ void Deploy::extractWindowsLib(const QString &file, bool isExtractPlugins) {
             continue;
         }
 
-        if (isQtLib(line) && !QtLibs.contains(line)) {
+        if ((DeployUtils::isQtLib(line) || DeployUtils::isExtraLib(line)) && !QtLibs.contains(line)) {
             QtLibs << line;
             extractWindowsLib(line, isExtractPlugins);
             if (isExtractPlugins) {
@@ -599,8 +609,7 @@ void Deploy::addEnv(const QString &dir) {
         return;
     }
 
-    deployEnvironment.push_back(dir);
-    winScaner.setEnvironment(deployEnvironment);
+    deployEnvironment.push_back(QDir::fromNativeSeparators(dir));
 }
 
 QString Deploy::concatEnv() const {

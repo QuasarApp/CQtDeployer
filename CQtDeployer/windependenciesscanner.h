@@ -1,25 +1,26 @@
 #ifndef WINDEPENDENCIESSCANNER_H
 #define WINDEPENDENCIESSCANNER_H
 
-#include "windependenciesscanner_global.h"
-
 #include <QMultiMap>
 #include <QStringList>
 #include "../qtTools/src/windeployqt/utils.h"
 
 
-class WINDEPENDENCIESSCANNERSHARED_EXPORT WinDependenciesScanner
-{
+class WinDependenciesScanner {
 private:
     QStringList _env;
-    QMultiMap<QString, QString> _EnvLibs;
+    QMap<QString, QString> _EnvLibs;
     Platform platformFromMkSpec(const QString &xSpec);
+    QMap<QString, QString> qMakeAll(QString *errorMessage,
+                                    const QString &binary = "qmake");
 public:
     explicit WinDependenciesScanner();
 
     void setEnvironment(const QStringList &env);
 
-    QStringList scan(const QString& path, Platform platfr = UnknownPlatform);
+    QStringList scan(const QString& path,
+                     Platform platfr = UnknownPlatform,
+                     const QString &qmake = "qmake");
 
     ~WinDependenciesScanner();
 };

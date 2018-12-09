@@ -21,7 +21,6 @@ class Deploy {
     int depchLimit = 0;
     QString qmlScaner = "";
     QString qmake = "";
-    QString qtDir = "";
     QString target = "";
     QString targetDir = "";
     QString qmlDir = "";
@@ -36,7 +35,6 @@ class Deploy {
 
     WinDependenciesScanner winScaner;
 
-    bool isQtLib(const QString &lib) const;
 
     void copyFiles(const QStringList &files, const QString &target);
     bool copyFile(const QString &file, const QString &target,
@@ -66,7 +64,7 @@ class Deploy {
     void addEnv(const QString& dir);
     QString concatEnv() const;
 
-  public:
+public:
     Deploy();
     void initEnvirement();
 

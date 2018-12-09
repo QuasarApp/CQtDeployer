@@ -36,10 +36,18 @@ TARGET = cqtdeployer
 
 SOURCES += \
         main.cpp \
-    deploy.cpp
+        deploy.cpp \
+        deployutils.cpp \
+        windependenciesscanner.cpp \
+        ../qtTools/src/windeployqt/elfreader.cpp \
+        ../qtTools/src/windeployqt/utils.cpp
 
 HEADERS += \
-    deploy.h
+        deploy.h \
+        deployutils.h \
+        windependenciesscanner.h \
+        ../qtTools/src/windeployqt/elfreader.h \
+        ../qtTools/src/windeployqt/utils.h
 
 
 DISTFILES += \
@@ -49,3 +57,5 @@ DISTFILES += \
     ../README.md \
     ../sharedBuild.sh \
     ../README.md
+
+win32: LIBS += -lshlwapi
