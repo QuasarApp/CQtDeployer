@@ -8,6 +8,7 @@
 #ifndef DEPLOY_H
 #define DEPLOY_H
 #include <QDir>
+#include <QSettings>
 #include <QString>
 #include <QStringList>
 #include <windependenciesscanner.h>
@@ -19,6 +20,9 @@ class Deploy {
     bool onlyCLibs = false;
     bool isWinApp =false;
     int depchLimit = 0;
+    QStringList deployedFiles;
+
+    QSettings settings;
     QString qmlScaner = "";
     QString qmake = "";
     QString target = "";

@@ -154,6 +154,8 @@ void Deploy::deploy() {
     if (!isWinApp && !createRunScript()) {
         qCritical() << "run script not created!";
     }
+
+    settings.setValue("deployedFiles", deployedFiles);
 }
 
 QString Deploy::getQtDir() const { return DeployUtils::qtDir; }
@@ -235,7 +237,13 @@ bool Deploy::copyFile(const QString &file, const QString &target,
 
     qInfo() << "copy :" << target + QDir::separator() + name;
 
-    return QFile::copy(file, target + QDir::separator() + name);
+    if (!QFile::copy(file, target + QDir::separator() + name)) {
+        return false;
+    }
+
+    deployedFiles += target + QDir::separator() + name;
+
+    return true;
 }
 
 void Deploy::extract(const QString &file, bool isExtractPlugins) {
@@ -758,6 +766,17 @@ bool Deploy::extractQml() {
 }
 
 void Deploy::clear() {
+
+    qInfo() << "clear start!";
+
+    deployedFiles = settings.value("deployedFiles", QStringList()).toStringList();
+
+    for (auto file : deployedFiles) {
+        if (!QFile::remove(file)) {
+            qWarning() << file << "remove fail!";
+        }
+    }
+    deployedFiles.clear();
 
     QDir dir(targetDir);
 

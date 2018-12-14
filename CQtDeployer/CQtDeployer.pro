@@ -7,7 +7,7 @@
 
 QT -= gui
 
-CONFIG += c++11 console
+CONFIG += c++14 console
 CONFIG -= app_bundle
 
 QMAKE_LFLAGS+=" -static-libgcc -static-libstdc++"
@@ -56,6 +56,8 @@ DISTFILES += \
     ../snap/snapcraft.yaml \
     ../README.md \
     ../sharedBuild.sh \
-    ../README.md
+    ../README.md \
+    ../staticBuildWin.sh
 
 win32: LIBS += -lshlwapi
+
