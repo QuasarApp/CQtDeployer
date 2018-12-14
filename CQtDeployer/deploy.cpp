@@ -120,6 +120,8 @@ bool Deploy::createRunScript() {
     F.flush();
     F.close();
 
+    deployedFiles += fname;
+
     return F.setPermissions(QFileDevice::ExeOther | QFileDevice::WriteOther |
                             QFileDevice::ReadOther | QFileDevice::ExeUser |
                             QFileDevice::WriteUser | QFileDevice::ReadUser |
@@ -634,11 +636,11 @@ QString Deploy::concatEnv() const {
     return result;
 }
 
-QStringList Deploy::extractImportsFromFiles(const QStringList &filepath) {
+QStringList Deploy::extractImportsFromDir(const QString &filepath) {
     QProcess p;
     p.setProgram(qmlScaner);
     p.setArguments(QStringList()
-                   << "-qmlFiles" << filepath << "-importPath" << qmlDir);
+                   << "-rootPath" << filepath << "-importPath" << qmlDir);
     p.start();
 
     if (!p.waitForFinished()) {
@@ -668,15 +670,6 @@ QStringList Deploy::extractImportsFromFiles(const QStringList &filepath) {
             result << module;
         }
     }
-
-    return result;
-}
-
-QStringList Deploy::extractImportsFromDir(const QString &dirpath) {
-    auto files = findFilesInsideDir("*.qml", dirpath);
-
-    QStringList result;
-    result.append(extractImportsFromFiles(files));
 
     return result;
 }
