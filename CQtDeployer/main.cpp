@@ -138,6 +138,10 @@ bool parseQt(Deploy &deploy) {
 }
 int main(int argc, char *argv[]) {
 
+    QCoreApplication::setOrganizationName("QuasarApp");
+    QCoreApplication::setOrganizationDomain("https://github.com/QuasarApp");
+    QCoreApplication::setApplicationName("CQtDeployer");
+
     if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
         qWarning() << "wrong parametrs";
         help();

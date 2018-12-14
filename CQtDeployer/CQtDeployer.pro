@@ -7,7 +7,7 @@
 
 QT -= gui
 
-CONFIG += c++11 console
+CONFIG += c++14 console
 CONFIG -= app_bundle
 
 QMAKE_LFLAGS+=" -static-libgcc -static-libstdc++"
@@ -60,4 +60,3 @@ DISTFILES += \
     ../staticBuildWin.bat
 
 win32: LIBS += -lshlwapi
-win32: RC_ICONS = $$PWD/../res/icon.ico
