@@ -24,7 +24,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 include('$$PWD/../QuasarAppLib/QuasarLib.pri')
-include('$$PWD/../WinDependenciesScanner/WinDependenciesScanner.pri')
 include('$$PWD/../install.pri')
 
 
@@ -56,6 +55,9 @@ DISTFILES += \
     ../snap/snapcraft.yaml \
     ../README.md \
     ../sharedBuild.sh \
-    ../README.md
+    ../README.md \
+    ../staticBuildCrossWin.sh \
+    ../staticBuildWin.bat
 
 win32: LIBS += -lshlwapi
+win32: RC_ICONS = $$PWD/../res/icon.ico
