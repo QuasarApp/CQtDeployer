@@ -1,7 +1,7 @@
 #!/bin/bash
 
 IS_SNAP="$1"
-QT_DIR=staticQt
+QT_DIR=staticQtWin64
 
 if [ -e "$PREFIX"]
 then
@@ -26,7 +26,7 @@ fi
 
 cd $BASE_DIR
 
-git submodule update --init --recursive
+#git submodule update --init --recursive
 
 make clean
 find $BASE_DIR -type f -name 'Makefile' -exec rm {} \;
@@ -44,7 +44,7 @@ do
 	    echo "$var - not exits!. rebuild qt ..."
             rm -rdf $BASE_DIR/$QT_DIR
             git clean -xdf    
-            ./configure -confirm-license -prefix $BASE_DIR/$QT_DIR -release -optimize-size -static -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility    
+            ./configure -xplatform win32-g++ -device-option CROSS_COMPILE=x86_64-w64-mingw32- -confirm-license -prefix $BASE_DIR/$QT_DIR -release -optimize-size -static -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility    
             make install -j$(nproc)
 	    break
 	fi
@@ -53,7 +53,7 @@ done
 cd ..
 rm -rdf $BASE_DIR/build
 
-export PATH=$PATH:$BASE_DIR/$QT_DIR
+export PATH=$PATH:$BASE_DIR/staticQt
 $BASE_DIR/$QT_DIR/bin/qmake QMAKE_LFLAGS+="-static" $BASE_DIR/CQtDeployer.pro DEFINES+="$SNAP_DEFINES"
 
 make -j$(nproc)
