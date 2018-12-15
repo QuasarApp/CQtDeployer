@@ -18,14 +18,18 @@ class Deploy {
   private:
     bool deployQml = false;
     bool onlyCLibs = false;
-    bool isWinApp =false;
     int depchLimit = 0;
     QStringList deployedFiles;
 
     QSettings settings;
     QString qmlScaner = "";
     QString qmake = "";
-    QString target = "";
+    /**
+     * @brief targets
+     * key - path
+     * value - create wrapper
+     */
+    QMap<QString, bool> targets;
     QString targetDir = "";
     QString qmlDir = "";
     QStringList deployEnvironment;
@@ -57,7 +61,7 @@ class Deploy {
     void strip(const QString &dir);
 
     QStringList extractImportsFromDir(const QString &dirpath);
-    QStringList findFilesInsideDir(const QString &name, const QString &dirpath);
+    QFileInfoList findFilesInsideDir(const QString &name, const QString &dirpath);
     bool extractQmlAll();
     bool extractQmlFromSource(const QString sourceDir);
     QString filterQmlPath(const QString &path);
@@ -66,6 +70,10 @@ class Deploy {
 
     void addEnv(const QString& dir);
     QString concatEnv() const;
+    bool smartMoveTargets();
+    bool isLib(const QFileInfo &file);
+    bool setBinDir(const QString& dir, bool recursive = false);
+
 
 public:
     Deploy();
@@ -78,9 +86,13 @@ public:
     void setQmlScaner(const QString &value);
     QString getQmake() const;
     void setQmake(const QString &value);
-    QString getTarget() const;
-    bool setTarget(const QString &value);
-    bool createRunScript();
+    bool setTargets(const QStringList &value);
+
+    bool setTargetsRecursive(const QString& dir);
+
+    bool createRunScript(const QString &target);
+    void createQConf();
+
     void deploy();
     QString getQtDir() const;
     void setQtDir(const QString &value);
