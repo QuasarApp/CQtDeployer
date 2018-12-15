@@ -163,8 +163,8 @@ bool Deploy::setBinDir(const QString &dir, bool recursive) {
 
         auto sufix = file.completeSuffix();
 
-        if (!((!recursive && sufix.isEmpty()) ||  sufix.contains("dll") ||
-              sufix.contains("so") || sufix.contains("exe"))) {
+        if (!((!recursive && sufix.isEmpty()) ||  sufix.contains("dll", Qt::CaseInsensitive) ||
+              sufix.contains("so", Qt::CaseInsensitive) || sufix.contains("exe", Qt::CaseInsensitive))) {
             continue;
         }
 
@@ -241,11 +241,12 @@ void Deploy::deploy() {
         qCritical() << "qml not extacted!";
     }
 
-    if (!onlyCLibs)
-        copyFiles(QtLibs, targetDir + QDir::separator() + "lib");
+    if (!onlyCLibs) {
+        copyFiles(QtLibs);
+    }
 
     if (onlyCLibs || QuasarAppUtils::Params::isEndable("deploy-not-qt")) {
-        copyFiles(noQTLibs, targetDir + QDir::separator() + "lib");
+        copyFiles(noQTLibs);
     }
 
     settings.setValue(targetDir, deployedFiles);
@@ -292,10 +293,18 @@ void Deploy::setExtraPlugins(const QStringList &value) {
 
 void Deploy::setDepchLimit(int value) { depchLimit = value; }
 
-void Deploy::copyFiles(const QStringList &files, const QString &target) {
+void Deploy::copyFiles(const QStringList &files) {
     for (auto file : files) {
-        if (QFileInfo(file).absolutePath() != targetDir &&
-            !copyFile(file, target)) {
+        QFileInfo target(file);
+        auto targetPath = targetDir + QDir::separator() + "lib";
+        if (target.completeSuffix().contains("dll", Qt::CaseInsensitive) ||
+                target.completeSuffix().contains("exe", Qt::CaseInsensitive)) {
+
+            targetPath = targetDir;
+        }
+
+        if (target.absolutePath() != targetDir &&
+            !copyFile(file, targetPath)) {
             qWarning() << file + " not copied";
         }
     }
@@ -746,6 +755,12 @@ bool Deploy::smartMoveTargets() {
         QFileInfo target(i.key());
         auto targetPath = targetDir + (isLib(target) ? "/lib/" : "/bin/") + target.fileName();
 
+        if (target.completeSuffix().contains("dll", Qt::CaseInsensitive) ||
+                target.completeSuffix().contains("exe", Qt::CaseInsensitive)) {
+
+            targetPath = targetDir + "/" + target.fileName();
+
+        }
         if (target.absoluteFilePath().contains(targetDir)) {
             if (!QFile::rename(target.absoluteFilePath(), targetPath) &&
                 !QFile::copy(target.absoluteFilePath(), targetPath)) {
@@ -770,7 +785,8 @@ bool Deploy::smartMoveTargets() {
 }
 
 bool Deploy::isLib(const QFileInfo &file) {
-    return file.completeSuffix().contains("so") || file.completeSuffix().contains("dll");
+    return file.completeSuffix().contains("so", Qt::CaseInsensitive)
+            || file.completeSuffix().contains("dll", Qt::CaseInsensitive);
 }
 
 QStringList Deploy::extractImportsFromDir(const QString &filepath) {

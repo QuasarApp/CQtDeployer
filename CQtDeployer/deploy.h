@@ -44,7 +44,7 @@ class Deploy {
     WinDependenciesScanner winScaner;
 
 
-    void copyFiles(const QStringList &files, const QString &target);
+    void copyFiles(const QStringList &files);
     bool copyFile(const QString &file, const QString &target,
                   QStringList *mask = nullptr);
     void extract(const QString &file, bool isExtractPlugins = true);
