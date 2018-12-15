@@ -157,7 +157,7 @@ void Deploy::deploy() {
         qCritical() << "run script not created!";
     }
 
-    settings.setValue("deployedFiles", deployedFiles);
+    settings.setValue(target, deployedFiles);
 }
 
 QString Deploy::getQtDir() const { return DeployUtils::qtDir; }
@@ -762,7 +762,7 @@ void Deploy::clear() {
 
     qInfo() << "clear start!";
 
-    deployedFiles = settings.value("deployedFiles", QStringList()).toStringList();
+    deployedFiles = settings.value(target, QStringList()).toStringList();
 
     for (auto file : deployedFiles) {
         if (!QFile::remove(file)) {
