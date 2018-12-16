@@ -76,6 +76,9 @@ bool Deploy::setTargets(const QStringList &value) {
     for (auto &i : value) {
         QFileInfo targetInfo(i);
 
+        if (i.isEmpty())
+            continue;
+
         if (targetInfo.isFile()) {
 
             auto sufix = targetInfo.completeSuffix();
@@ -116,10 +119,11 @@ bool Deploy::setTargetsRecursive(const QString &dir) {
 
 bool Deploy::setBinDir(const QString &dir, bool recursive) {
     QDir d(dir);
-    if (!d.exists()) {
+    if (dir.isEmpty() || !d.exists()) {
         DeployUtils::verboseLog(dir + " dir not exits!");
         return false;
     }
+    DeployUtils::verboseLog("setBinDir check path: " + dir);
     QFileInfoList list;
 
     if (recursive) {
@@ -419,34 +423,9 @@ bool Deploy::copyPlugin(const QString &plugin) {
         return false;
     }
 
-    QDir dirTo(targetDir);
-
-    if (!dirTo.cd("plugins")) {
-        deployedFiles += targetDir + "/plugins";
-        if (!dirTo.mkdir("plugins")) {
-            return false;
-        }
-
-        if (!dirTo.cd("plugins")) {
-            return false;
-        }
-    }
-
-    if (!dirTo.cd(plugin)) {
-        deployedFiles += dirTo.absolutePath() + "/" + plugin;
-
-        if (!dirTo.mkdir(plugin)) {
-            return false;
-        }
-
-        if (!dirTo.cd(plugin)) {
-            return false;
-        }
-    }
-
     QStringList listItems;
 
-    if (!copyFolder(dir, dirTo, ".so.debug", &listItems)) {
+    if (!copyFolder(dir.absolutePath(), targetDir + "/plugins/" + plugin, ".so.debug", &listItems)) {
         return false;
     }
 
@@ -469,9 +448,10 @@ void Deploy::copyPlugins(const QStringList &list) {
 
         info.setFile(extraPlugin);
         if (info.isDir()) {
-            QDir from(info.absoluteFilePath());
-            QDir to(targetDir + QDir::separator() + "plugins" + QDir::separator() + info.baseName());
-            copyFolder(from, to, ".so.debug");
+
+            copyFolder(info.absoluteFilePath(),
+                       targetDir + "/plugins/" + info.baseName(),
+                       ".so.debug");
         } else {
             copyFile(info.absoluteFilePath(),
                      targetDir + QDir::separator() + "plugins");
@@ -480,49 +460,17 @@ void Deploy::copyPlugins(const QStringList &list) {
     }
 }
 
-bool Deploy::copyFolder(QDir &from, QDir &to, const QString &filter,
+bool Deploy::copyFolder(const QString &from, const QString &to, const QString &filter,
                         QStringList *listOfCopiedItems, QStringList *mask) {
 
-    if (!from.isReadable()) {
-        return false;
-    }
+    QDir fromDir(from);
 
-    if (!to.isReadable() && !to.mkpath(to.path())) {
-        return false;
-    }
+    auto list = fromDir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries);
 
-    auto list = from.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries);
-
-    for (auto item : list) {
+    for (auto &&item : list) {
         if (QFileInfo(item).isDir()) {
 
-            if (!from.cd(item.fileName())) {
-                qWarning() << "not open "
-                           << from.absolutePath() + QDir::separator() +
-                                  item.fileName();
-                continue;
-            }
-
-            if (!QFileInfo::exists(to.absolutePath() + QDir::separator() +
-                                   item.fileName()) &&
-                !to.mkdir(item.fileName())) {
-                qWarning() << "not create "
-                           << to.absolutePath() + QDir::separator() +
-                                  item.fileName();
-                continue;
-            }
-
-            if (!to.cd(item.fileName())) {
-                qWarning() << "not open "
-                           << to.absolutePath() + QDir::separator() +
-                                  item.fileName();
-                continue;
-            }
-
-            copyFolder(from, to, filter, listOfCopiedItems, mask);
-            from.cdUp();
-            to.cdUp();
-
+            copyFolder(item.absoluteFilePath(), to + "/" + item.fileName(), filter, listOfCopiedItems, mask);
         } else {
 
             if (!filter.isEmpty() && item.fileName().contains(filter)) {
@@ -530,18 +478,13 @@ bool Deploy::copyFolder(QDir &from, QDir &to, const QString &filter,
                 continue;
             }
 
-            if (!copyFile(from.absolutePath() + QDir::separator() +
-                              item.fileName(),
-                          to.absolutePath(), mask)) {
-                qWarning() << "not copied file "
-                           << to.absolutePath() + QDir::separator() +
-                                  item.fileName();
+            if (!copyFile(item.absoluteFilePath(), to + "/" + item.fileName(), mask)) {
+                qWarning() << "not copied file " << to + "/" + item.fileName();
                 continue;
             }
 
             if (listOfCopiedItems) {
-                *listOfCopiedItems
-                    << to.absolutePath() + QDir::separator() + item.fileName();
+                *listOfCopiedItems << to + "/" + item.fileName();
             }
         }
     }
@@ -806,23 +749,9 @@ bool Deploy::extractQmlAll() {
         return false;
     }
 
-    QDir dir(qmlDir);
-
-    QDir dirTo(targetDir);
-
-    if (!dirTo.cd("qml")) {
-        if (!dirTo.mkdir("qml")) {
-            return false;
-        }
-
-        if (!dirTo.cd("qml")) {
-            return false;
-        }
-    }
-
     QStringList listItems;
 
-    if (!copyFolder(dir, dirTo, ".so.debug", &listItems)) {
+    if (!copyFolder(qmlDir, targetDir + "/qml", ".so.debug", &listItems)) {
         return false;
     }
 
@@ -840,25 +769,10 @@ bool Deploy::extractQmlFromSource(const QString sourceDir) {
         return false;
     }
 
-    QDir dir(qmlDir);
-
-    QDir dirTo(targetDir);
-
-    if (!dirTo.cd("qml")) {
-        if (!dirTo.mkdir("qml")) {
-            return false;
-        }
-
-        if (!dirTo.cd("qml")) {
-            return false;
-        }
-    }
-
     QStringList plugins = extractImportsFromDir(sourceDir);
-
     QStringList listItems;
 
-    if (!copyFolder(dir, dirTo, ".so.debug", &listItems, &plugins)) {
+    if (!copyFolder(qmlDir, targetDir + "/qml", ".so.debug", &listItems, &plugins)) {
         return false;
     }
 

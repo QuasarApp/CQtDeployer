@@ -79,7 +79,7 @@ make install -j$(nproc)
 strip $RELEASE_DIR/*
 chmod +x $RELEASE_DIR/cqtdeployer
 
-$RELEASE_DIR/cqtdeployer deploy-not-qt -runScript cqtdeployer.sh -bin $RELEASE_DIR/cqtdeployer -qmake $QMAKE
+$RELEASE_DIR/cqtdeployer deploy-not-qt -runScript cqtdeployer.sh -bin $RELEASE_DIR/cqtdeployer -qmake $QMAKE -targetDir
 
 
 if [ -e "$1" ]
@@ -87,11 +87,11 @@ then
     echo ""
 	echo "deploy done (shared mode with custom qmake)"
 else
-	cd $RELEASE_DIR
-	tar -czvf $RELEASE_DIR/cqtdeployer.tar.gz ./*
+        cd $RELEASE_DIR/Distro
+        tar -czvf $RELEASE_DIR/cqtdeployer.tar.gz ./*
 	cd $BASE_DIR
 
-	rm $RELEASE_DIR/lib -rdf $RELEASE_DIR/*.so* $RELEASE_DIR/*.sh*
+        rm $RELEASE_DIR/lib -rdf $RELEASE_DIR/*.so* $RELEASE_DIR/*.sh* $RELEASE_DIR/Distro $RELEASE_DIR/cqtdeployer
 	echo ""
 	echo "deploy done (shared mode with own qmake)"
 fi
