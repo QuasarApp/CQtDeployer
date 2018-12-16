@@ -55,7 +55,7 @@ void DeployUtils::help() {
     qInfo() << "   allQmlDependes           : This flag will force to extract all qml libraries.";
     qInfo() << "                            | (not recommended, as it takes up a lot of memory)";
     qInfo() << "   -libDir [list,params]    : set additional path for extralib of app.";
-    qInfo() << "                            | for example -libDir ~/myLib,~/newLibs";
+    qInfo() << "                            | for example -libDir ~/myLib,~/newLibs ";
     qInfo() << "   -extraPlugin[list,params]: set additional path for extraPlugin of app";
     qInfo() << "   -recursiveDepth [params] : set Depth for recursive search of libs (default 0)";
 
@@ -106,11 +106,6 @@ bool DeployUtils::parseQt(Deploy *deploy) {
             QuasarAppUtils::Params::getStrArg("extraPlugin").split(",");
     deploy->setExtraPath(listLibDir);
     deploy->setExtraPlugins(listExtraPlugin);
-
-    if (!deploy->initDirs()) {
-        qCritical() << "error init targeet dir";
-        return false;
-    }
 
     auto qmake = QuasarAppUtils::Params::getStrArg("qmake");
     QString basePath = "";

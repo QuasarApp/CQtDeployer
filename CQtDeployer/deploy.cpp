@@ -45,37 +45,28 @@ void Deploy::setQmake(const QString &value) {
     qmlDir = dir.absolutePath();
 }
 
-bool Deploy::initDirs() {
+bool Deploy::initDir(const QString &path) {
 
-    if (!QFileInfo::exists(targetDir)) {
-        deployedFiles += targetDir;
-        if (!QDir().mkpath(targetDir)) {
-            return false;
-        }
-    }
-
-    if (!QFileInfo::exists(targetDir + QDir::separator() + "bin")) {
-        deployedFiles += targetDir + QDir::separator() + "bin";
-        if (!QDir(targetDir).mkdir("bin")) {
-            return false;
-        }
-    }
-
-    if (!QFileInfo::exists(targetDir + QDir::separator() + "qml")) {
-        deployedFiles += targetDir + QDir::separator() + "qml";
-        if (!QDir(targetDir).mkdir("qml")) {
-            return false;
-        }
-    }
-
-    if (!QFileInfo::exists(targetDir + QDir::separator() + "lib")) {
-        deployedFiles += targetDir + QDir::separator() + "lib";
-        if (!QDir(targetDir).mkdir("lib")) {
+    if (!QFileInfo::exists(path)) {
+        deployedFiles += path;
+        if (!QDir().mkpath(path)) {
             return false;
         }
     }
 
     return true;
+}
+
+void Deploy::setTargetDir() {
+    if (QuasarAppUtils::Params::isEndable("targetDir")) {
+        targetDir = QuasarAppUtils::Params::getStrArg("targetDir");
+
+    } else {
+        targetDir = QFileInfo(targets.begin().key()).absolutePath() + "/Distro";
+        qInfo () << "flag targetDir not  used." << "use default target dir :" << targetDir;
+    }
+
+    addEnv(targetDir);
 }
 
 bool Deploy::setTargets(const QStringList &value) {
@@ -107,15 +98,7 @@ bool Deploy::setTargets(const QStringList &value) {
     if (!isfillList)
         return false;
 
-    if (QFileInfo(QuasarAppUtils::Params::getStrArg("targetDir")).isDir()) {
-        targetDir = QuasarAppUtils::Params::getStrArg("targetDir");
-
-    } else {
-        targetDir = QFileInfo(targets.begin().key()).absolutePath() + "/Distro";
-        qInfo () << "flag targetDir not  used." << "use default target dir :" << targetDir;
-    }
-
-    addEnv(targetDir);
+    setTargetDir();
 
     return true;
 }
@@ -126,15 +109,7 @@ bool Deploy::setTargetsRecursive(const QString &dir) {
         return false;
     }
 
-    if (QFileInfo(QuasarAppUtils::Params::getStrArg("targetDir")).isDir()) {
-        targetDir = QuasarAppUtils::Params::getStrArg("targetDir");
-
-    } else {
-        targetDir = dir + "/Distro";
-        qInfo () << "flag targetDir not  used." << "use default target dir :" << targetDir;
-    }
-
-    addEnv(targetDir);
+    setTargetDir();
 
     return true;
 }
@@ -331,6 +306,10 @@ bool Deploy::copyFile(const QString &file, const QString &target,
 
     auto name = info.fileName();
     info.setFile(target + QDir::separator() + name);
+
+    if (!initDir(info.absolutePath())) {
+        return false;
+    }
 
     if (QuasarAppUtils::Params::isEndable("always-overwrite") &&
         info.exists() && !QFile::remove(target + QDir::separator() + name)) {
@@ -753,29 +732,22 @@ bool Deploy::smartMoveTargets() {
     for (auto i = targets.cbegin(); i != targets.cend(); ++i) {
 
         QFileInfo target(i.key());
-        auto targetPath = targetDir + (isLib(target) ? "/lib/" : "/bin/") + target.fileName();
+        auto targetPath = targetDir + (isLib(target) ? "/lib" : "/bin");
 
         if (target.completeSuffix().contains("dll", Qt::CaseInsensitive) ||
                 target.completeSuffix().contains("exe", Qt::CaseInsensitive)) {
 
-            targetPath = targetDir + "/" + target.fileName();
+            targetPath = targetDir;
 
         }
-        if (target.absoluteFilePath().contains(targetDir)) {
-            if (!QFile::rename(target.absoluteFilePath(), targetPath) &&
-                !QFile::copy(target.absoluteFilePath(), targetPath)) {
-                result = false;
-                qCritical() << "not move or move target to bin dir " << target.absoluteFilePath();
-            };
-        } else {
-            if (!QFile::copy(target.absoluteFilePath(), targetPath)) {
-                result = false;
-                qCritical() << "not copy target to bin dir " << target.absoluteFilePath();
-            };
-            deployedFiles += targetPath;
-        }
 
-        temp.insert(targetPath, i.value());
+        if (!copyFile(target.absoluteFilePath(), targetPath)) {
+            result = false;
+            qCritical() << "not copy target to bin dir " << target.absoluteFilePath();
+        };
+        deployedFiles += targetPath;
+
+        temp.insert(targetPath + "/" + target.fileName(), i.value());
 
     }
 

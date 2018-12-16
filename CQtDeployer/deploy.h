@@ -74,6 +74,8 @@ class Deploy {
     bool isLib(const QFileInfo &file);
     bool setBinDir(const QString& dir, bool recursive = false);
 
+    bool initDir(const QString &path);
+    void setTargetDir();
 
 public:
     Deploy();
@@ -98,8 +100,6 @@ public:
     void setQtDir(const QString &value);
 
     void clear();
-
-    bool initDirs();
     void setOnlyCLibs(bool value);
     void setExtraPath(const QStringList &value);
     void setExtraPlugins(const QStringList &value);
