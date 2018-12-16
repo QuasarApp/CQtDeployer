@@ -60,3 +60,4 @@ DISTFILES += \
     ../staticBuildWin.bat
 
 win32: LIBS += -lshlwapi
+win32: RC_ICONS = $$PWD/../res/icon.ico

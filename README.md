@@ -15,27 +15,29 @@ Key differences of this program:
 #### Usage: cqtdeployer <-bin    [params]> [options]
 
 #### Options:
-| Option                      | Descriptiion                                              |
-|-----------------------------|-----------------------------------------------------------|
-|   help / h                  | show help.                                                |
-|   always-overwrite          | Copy files even if the target file exists.                |
-|   -bin    [params]          | deployment binry.                                         |
-|   -qmlDir [params]          | qml datadir. for example -qmlDir ~/my/project/qml         |
-|   deploy-not-qt             | deploy all libs                                           |
-|   -qmake  [params]          | qmake path. for example                                   |
-|                             | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake                       |
-|   -ignore [list,params]     | ignore filter for libs                                    |
-|                             | for example -ignore libicudata.so.56,libicudata2.so.56    |
-|   clear                     | delete all old deploy data                                |
-|  -runScript [params]        | set new name of out file (AppRun.sh by default and) (linux only)|
-|                             | for example -runScript myApp.sh                           |
-|  allQmlDependes             | This flag will force to extract all qml libraries.        |
-|                             | (not recommended, as it takes up a lot of memory)         |
-|  -libDir [list,params]      | set additional path for extralib of app                   |
-|                             | for example -libDir ~/myLib,~/newLibs                     |
-|  -extraPlugin [list,params] | set additional path for extraPlugin of app                |
-|  -recursiveDepth [params]   | set Depth for recursive search of libs (default 0)        |
-|  verbose                    | show debug log                                            |
+| Option                      | Descriptiion                                                    |
+|-----------------------------|-----------------------------------------------------------------|
+|   help / h                  | show help.                                                      |
+|   always-overwrite          | Copy files even if the target file exists.                      |
+|   -bin    [list, params]    | deployment binry or directory. example -bin ~/my/project/bin/,~/my/project/bin.exe|
+|   -binDir [params]          | folder with deployment binaries with recursive search. WARNING this flag support only 'so', 'dll' and 'exe' files. If you want deploy linux binary then use '-bin' flag |
+|   -qmlDir [params]          | qml datadir. for example -qmlDir ~/my/project/qml               |
+|   deploy-not-qt             | deploy all libs                                                 |
+|   -qmake  [params]          | qmake path. for example                                         |
+|                             | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake                             |
+|   -ignore [list,params]     | ignore filter for libs                                          |
+|                             | for example -ignore libicudata.so.56,libicudata2.so.56          |
+|   clear                     | delete all old deploy data                                      |
+|  -runScript [params]        | set new name of out file (AppRun.sh by default and) (linux omly)|
+|                             | for example -runScript myApp.sh                                 |
+|  allQmlDependes             | This flag will force to extract all qml libraries.              |
+|                             | (not recommended, as it takes up a lot of memory)               |
+|  -libDir [list,params]      | set additional path for extralib of app                         |
+|                             | for example -libDir ~/myLib,~/newLibs                           |
+|  -extraPlugin [list,params] | set additional path for extraPlugin of app                      |
+|  -recursiveDepth [params]   | set Depth for recursive search of libs (default 0)              |
+|  -targetDir [params]        | set target Dir for binaryes (default is path of first target)   |
+|  verbose                    | show debug log                                                  |
 
 
 
@@ -81,25 +83,27 @@ Console QtDeployer является консольной реализацией 
 #### Options:
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
-|   help / h                  | Показать справку                                                |
-|   always-overwrite          | Копирует файлы с заменой уже существующих                |
-|   -bin    [params]          | Исполняемый файл над которым будет выплнятся деплои                                        |
-|   -qmlDir [params]          | Папка qml. пример -qmlDir ~/my/project/qml   |
-|   deploy-not-qt             | Копировать все библиотеки                                          |
-|   -qmake  [params]          | Путь к qmake. пример                                   |
+|   help / h                  | Показать справку                                          |
+|   always-overwrite          | Копирует файлы с заменой уже существующих                 |
+|   -bin    [list, params]    | Развертываемый файл или папка. пример -bin ~/my/project/bin/,~/my/project/bin.exe|
+|   -binDir [params]          | Папка с развертываемыми файлами (с рекурсивным поиском). ВНИМАНИЕ! Этот флаг поддерживает только файлы 'so', 'dll' и 'exe'. Если вы хотите развернуть бинарный файл Linux, используйте флаг '-bin'  |
+|   -qmlDir [params]          | Папка qml. пример -qmlDir ~/my/project/qml                |
+|   deploy-not-qt             | Копировать все библиотеки                                 |
+|   -qmake  [params]          | Путь к qmake. пример                                      |
 |                             | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake                       |
-|   -ignore [list,params]     | Список библиотек для игнорирования                                     |
-|                             | пример -ignore libicudata.so.56,libicudata2.so.56    |
-|   clear                     | удалит все старые файлы (с прошлого запуска)                               |
+|   -ignore [list,params]     | Список библиотек для игнорирования                        |
+|                             | Пример -ignore libicudata.so.56,libicudata2.so.56         |
+|   clear                     | удалит все старые файлы (с прошлого запуска)              |
 |  -runScript [params]        | установить новое имя результирующего файла (AppRun.sh по умолчанию) (только linux) |
-|                             | пример -runScript myApp.sh                           |
-|  allQmlDependes             | Этот флаг заставит извлекать все библиотеки qml.        |
+|                             | пример -runScript myApp.sh                                |
+|  allQmlDependes             | Этот флаг заставит извлекать все библиотеки qml.          |
 |                             | (не рекомендуется, так как занимает много памяти)         |
-|  -libDir [list,params]      | установит дополнительные пути к библиотекам               |
-|                             | пример -libDir ~/myLib,~/newLibs                          |
-|  -extraPlugin [list,params] | установить дополнительный путь для extraPlugin приложения |
-|  -recursiveDepth [params]   | установит глубену поиска библиотек (по умолчанию 0)       |
-|  verbose                    | show debug log                                            |
+|  -libDir [list,params]      | Установит дополнительные пути к библиотекам               |
+|                             | Пример -libDir ~/myLib,~/newLibs                          |
+|  -extraPlugin [list,params] | Установить дополнительный путь для extraPlugin приложения |
+|  -recursiveDepth [params]   | Установит глубену поиска библиотек (по умолчанию 0)       |
+|  -targetDir [params]        | Установит целевой коталог (по умолчанию это путь к первому развертываемому файлу)|
+|  verbose                    | Показ дебаг лог                                        |
 
 
 #### Пример: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
