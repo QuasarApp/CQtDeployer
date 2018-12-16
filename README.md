@@ -49,6 +49,9 @@ Key differences of this program:
   -  ./sharedBuild
   -  ./snapBuild
 
+## Build for Windows
+ - from qtCreator
+
 ## Install 
 You can download the latest version of the application [here](https://github.com/QuasarApp/Console-QtDeployer/releases).
 
@@ -112,6 +115,9 @@ Console QtDeployer является консольной реализацией 
   -  ./staticBuild
   -  ./sharedBuild
   -  ./snapBuild
+  
+## Build для Windows
+ - Из qtCreator
 
 ### Snap
 [![Загрузите из Snap Store](https://snapcraft.io/static/images/badges/ru/snap-store-black.svg)](https://snapcraft.io/cqtdeployer)
