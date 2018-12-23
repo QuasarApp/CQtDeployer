@@ -68,6 +68,12 @@ void DeployUtils::help() {
 
 bool DeployUtils::parseQt(Deploy *deploy) {
 
+    if (!(QuasarAppUtils::Params::isEndable("bin") ||
+            QuasarAppUtils::Params::isEndable("binDir"))) {
+        qWarning() << "you need to use -bin or -binDir flags";
+        return false;
+    }
+
     auto bin = QuasarAppUtils::Params::getStrArg("bin").split(',');
     bin.removeAll("");
 
