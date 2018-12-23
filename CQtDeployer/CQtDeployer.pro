@@ -38,6 +38,8 @@ include('$$PWD/../QuasarAppLib/Etalons/qmake/install_prefix.pri')
 install_data.files += $$DESTDIR/$$runfiletype
 install_data.files += $$QUASARAPP_LIB_OUTPUT_DIR/$$libfiletype
 
+
+
 TARGET = cqtdeployer
 
 SOURCES += \

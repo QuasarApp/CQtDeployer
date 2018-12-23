@@ -9,7 +9,14 @@ TEMPLATE = subdirs
 CONFIG += ordered
 
 SUBDIRS += QuasarAppLib \
-    CQtDeployer \
+    CQtDeployer
+
+contains(DEFINES, WITH_TESTS) {
+    SUBDIRS += \
+    tests/TestOnlyC \
+    tests/TestQtWidgets \
+    tests/TestQMLWidgets
+}
 
 CQtDeployer.depends=QuasarAppLib
 
