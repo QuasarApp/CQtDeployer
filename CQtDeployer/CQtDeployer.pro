@@ -39,7 +39,6 @@ install_data.files += $$DESTDIR/$$runfiletype
 install_data.files += $$QUASARAPP_LIB_OUTPUT_DIR/$$libfiletype
 
 
-
 TARGET = cqtdeployer
 
 SOURCES += \

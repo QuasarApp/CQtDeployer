@@ -478,7 +478,7 @@ bool Deploy::copyFolder(const QString &from, const QString &to, const QString &f
                 continue;
             }
 
-            if (!copyFile(item.absoluteFilePath(), to + "/" + item.fileName(), mask)) {
+            if (!copyFile(item.absoluteFilePath(), to , mask)) {
                 qWarning() << "not copied file " << to + "/" + item.fileName();
                 continue;
             }
