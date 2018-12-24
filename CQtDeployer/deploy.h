@@ -52,7 +52,8 @@ class Deploy {
     void extractPlugins(const QString &lib);
     bool copyPlugin(const QString &plugin);
     void copyPlugins(const QStringList &list);
-    bool copyFolder(const QString &from, const QString &to, const QString &filter = "",
+    bool copyFolder(const QString &from, const QString &to,
+                    const QStringList &filter = QStringList(),
                     QStringList *listOfCopiedItems = nullptr,
                     QStringList *mask = nullptr);
 
