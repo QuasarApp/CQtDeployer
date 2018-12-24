@@ -87,7 +87,7 @@ then
     echo ""
 	echo "deploy done (shared mode with custom qmake)"
 else
-        cd $RELEASE_DIR/Distro
+        cd $RELEASE_DIR
         tar -czvf $RELEASE_DIR/cqtdeployer.tar.gz ./*
 	cd $BASE_DIR
 
