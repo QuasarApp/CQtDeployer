@@ -126,8 +126,11 @@ bool DeployUtils::parseQt(Deploy *deploy) {
 
     basePath = info.absolutePath();
     deploy->setQmake(qmake);
+#ifdef Q_OS_WIN
+    auto scaner = basePath + QDir::separator() + "qmlimportscanner.exe";
+#else
     auto scaner = basePath + QDir::separator() + "qmlimportscanner";
-
+#endif
     auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir");
 
     QDir dir(basePath);

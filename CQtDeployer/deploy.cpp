@@ -382,30 +382,30 @@ void Deploy::extractPlugins(const QString &lib) {
 
     qInfo() << "extrac plugin for " << lib;
 
-    if (lib.contains("libQt5Gui") && !neededPlugins.contains("imageformats")) {
+    if (lib.contains("Qt5Gui") && !neededPlugins.contains("imageformats")) {
         neededPlugins << "imageformats"
                       << "iconengines"
                       << "xcbglintegrations"
                       << "platforms";
-    } else if (lib.contains("libQt5Sql") &&
+    } else if (lib.contains("Qt5Sql") &&
                !neededPlugins.contains("sqldrivers")) {
         neededPlugins << "sqldrivers";
-    } else if (lib.contains("libQt5Gamepad") &&
+    } else if (lib.contains("Qt5Gamepad") &&
                !neededPlugins.contains("gamepads")) {
         neededPlugins << "gamepads";
-    } else if (lib.contains("libQt5PrintSupport") &&
+    } else if (lib.contains("Qt5PrintSupport") &&
                !neededPlugins.contains("printsupport")) {
         neededPlugins << "printsupport";
-    } else if (lib.contains("libQt5Sensors") &&
+    } else if (lib.contains("Qt5Sensors") &&
                !neededPlugins.contains("sensors")) {
         neededPlugins << "sensors"
                       << "sensorgestures";
-    } else if (lib.contains("libQt5Positioning") &&
+    } else if (lib.contains("Qt5Positioning") &&
                !neededPlugins.contains("geoservices")) {
         neededPlugins << "geoservices"
                       << "position"
                       << "geometryloaders";
-    } else if (lib.contains("libQt5Multimedia") &&
+    } else if (lib.contains("Qt5Multimedia") &&
                !neededPlugins.contains("audio")) {
         neededPlugins << "audio"
                       << "mediaservice"
@@ -425,7 +425,8 @@ bool Deploy::copyPlugin(const QString &plugin) {
 
     QStringList listItems;
 
-    if (!copyFolder(dir.absolutePath(), targetDir + "/plugins/" + plugin, ".so.debug", &listItems)) {
+    if (!copyFolder(dir.absolutePath(), targetDir + "/plugins/" + plugin,
+                    QStringList() << ".so.debug" << "d.dll", &listItems)) {
         return false;
     }
 
@@ -451,7 +452,7 @@ void Deploy::copyPlugins(const QStringList &list) {
 
             copyFolder(info.absoluteFilePath(),
                        targetDir + "/plugins/" + info.baseName(),
-                       ".so.debug");
+                       QStringList() << ".so.debug" << "d.dll");
         } else {
             copyFile(info.absoluteFilePath(),
                      targetDir + QDir::separator() + "plugins");
@@ -460,7 +461,7 @@ void Deploy::copyPlugins(const QStringList &list) {
     }
 }
 
-bool Deploy::copyFolder(const QString &from, const QString &to, const QString &filter,
+bool Deploy::copyFolder(const QString &from, const QString &to, const QStringList &filter,
                         QStringList *listOfCopiedItems, QStringList *mask) {
 
     QDir fromDir(from);
@@ -473,8 +474,16 @@ bool Deploy::copyFolder(const QString &from, const QString &to, const QString &f
             copyFolder(item.absoluteFilePath(), to + "/" + item.fileName(), filter, listOfCopiedItems, mask);
         } else {
 
-            if (!filter.isEmpty() && item.fileName().contains(filter)) {
-                qInfo() << item << " ignored by filter " << filter;
+            QString skipFilter = "";
+            for (auto && i: filter) {
+                if (item.fileName().contains(i)) {
+                    skipFilter = i;
+                    break;
+                }
+            }
+
+            if (!skipFilter.isEmpty()) {
+                qInfo() << item << " ignored by filter " << skipFilter;
                 continue;
             }
 
@@ -751,7 +760,9 @@ bool Deploy::extractQmlAll() {
 
     QStringList listItems;
 
-    if (!copyFolder(qmlDir, targetDir + "/qml", ".so.debug", &listItems)) {
+    if (!copyFolder(qmlDir, targetDir + "/qml",
+                    QStringList() << ".so.debug" << "d.dll",
+                    &listItems)) {
         return false;
     }
 
@@ -772,7 +783,9 @@ bool Deploy::extractQmlFromSource(const QString sourceDir) {
     QStringList plugins = extractImportsFromDir(sourceDir);
     QStringList listItems;
 
-    if (!copyFolder(qmlDir, targetDir + "/qml", ".so.debug", &listItems, &plugins)) {
+    if (!copyFolder(qmlDir, targetDir + "/qml",
+                    QStringList() << ".so.debug" << "d.dll",
+                    &listItems, &plugins)) {
         return false;
     }
 
