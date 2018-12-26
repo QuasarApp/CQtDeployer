@@ -2,6 +2,7 @@
  You nead build your project with own qt version
 
 ```bash
+    snap install cqtdeployer --classic
     git clone https://github.com/QuasarApp/Console-QtDeployer.git
     cd Console-QtDeployer/examples/TestQMLWidgets
     /path/to/your/qmake/bin/qmake TestQMLWidgets.pro
