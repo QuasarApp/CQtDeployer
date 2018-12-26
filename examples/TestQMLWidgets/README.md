@@ -1,6 +1,5 @@
-# this example for packing apps to snap 
-
-# you nead build your project with own qt version
+# This example for packing apps to snap 
+ You nead build your project with own qt version
 
 ```
     git clone https://github.com/QuasarApp/Console-QtDeployer.git
@@ -13,3 +12,4 @@
     snap install cqtdeployerexample_0.1_amd64.snap --dangerous
     cqtdeployerexample
 ``` 
+Done!
