@@ -1,5 +1,5 @@
 # This example for packing apps to snap 
- You nead build your project with own qt version
+ You need to build your project with your own qt version
 
 ```bash
     snap install cqtdeployer --classic
