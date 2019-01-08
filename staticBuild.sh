@@ -44,7 +44,7 @@ do
 	    echo "$var - not exits!. rebuild qt ..."
             rm -rdf $BASE_DIR/$QT_DIR
             git clean -xdf    
-            ./configure -confirm-license -prefix $BASE_DIR/$QT_DIR -release -optimize-size -static -static-libgcc -static-libstdc++ -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility    
+            ./configure -confirm-license -prefix $BASE_DIR/$QT_DIR -release -optimize-size -static -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility    
             make install -j$(nproc)
 	    break
 	fi
@@ -54,7 +54,7 @@ cd ..
 rm -rdf $BASE_DIR/build
 
 export PATH=$PATH:$BASE_DIR/$QT_DIR
-$BASE_DIR/$QT_DIR/bin/qmake QMAKE_LFLAGS+="-static" $BASE_DIR/CQtDeployer.pro DEFINES+="$SNAP_DEFINES"
+$BASE_DIR/$QT_DIR/bin/qmake QMAKE_LFLAGS+="-static -static-libgcc -static-libstdc++" $BASE_DIR/CQtDeployer.pro DEFINES+="$SNAP_DEFINES"
 
 make -j$(nproc)
 
