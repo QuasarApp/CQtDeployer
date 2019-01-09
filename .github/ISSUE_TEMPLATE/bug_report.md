@@ -27,11 +27,5 @@ If applicable, add screenshots to help explain your problem.
  - OS: [e.g. Ubuntu]
  - Version [e.g. 18.04]
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. Samsung gelaxy s9]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
-
 **Additional context**
 Add any other context about the problem here.
