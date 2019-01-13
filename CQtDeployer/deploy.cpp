@@ -559,8 +559,10 @@ void Deploy::extractLinuxLib(const QString &file, bool isExtractPlugins) {
         line = line.simplified();
         auto innerlist = line.split(" ");
 
-        if (innerlist.count() < 3)
+        if (innerlist.count() < 3) {
+            QuasarAppUtils::Params::verboseLog(" the lib is not found: " + line);
             continue;
+        }
         line = innerlist[2];
 
         if (!line.startsWith("/")) {

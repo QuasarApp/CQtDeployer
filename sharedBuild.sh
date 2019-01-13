@@ -19,7 +19,6 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RELEASE_DIR
 
 cd $BASE_DIR
 
-git submodule update --init --recursive
 
 make clean
 find $BASE_DIR -type f -name 'Makefile' -exec rm {} \;
