@@ -7,6 +7,8 @@ QTLIBS=( libQt5Sql.so libQt5Xml.so libQt5Core.so libQt5Test.so libQt5Network.so 
 
 RELEASE_DIR=$BASE_DIR/distro
 
+TEMP_INSTALL_DIR=$PWD/tempInstall
+
 if [ -e "$PREFIX"]
 then
     echo "PREFIX is empty, use default install path $RELEASE_DIR"
@@ -15,7 +17,7 @@ else
     RELEASE_DIR=$PREFIX
 fi
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RELEASE_DIR
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TEMP_INSTALL_DIR
 
 cd $BASE_DIR
 
@@ -33,7 +35,7 @@ then
 
 else
 	echo "use qmake from build!"
-    QMAKE=$BASE_DIR/sharedQt/bin/qmake
+        QMAKE=$BASE_DIR/sharedQt/bin/qmake
 
 	cd $BASE_DIR/qtBase
 
@@ -59,7 +61,7 @@ else
 	export PATH=$PATH:$BASE_DIR/sharedQt
 
 fi
-$QMAKE $BASE_DIR/CQtDeployer.pro
+$QMAKE $BASE_DIR/CQtDeployer.pro PREFIX=$PWD/tempInstall
 
 make -j$(nproc)
 
@@ -76,9 +78,9 @@ make install -j$(nproc)
 
 
 strip $RELEASE_DIR/*
-chmod +x $RELEASE_DIR/cqtdeployer
+chmod +x $TEMP_INSTALL_DIR/cqtdeployer
 
-$RELEASE_DIR/cqtdeployer deploy-not-qt -targetDir $RELEASE_DIR -bin $RELEASE_DIR/cqtdeployer -qmake $QMAKE 
+$TEMP_INSTALL_DIR/cqtdeployer deploy-not-qt -targetDir $RELEASE_DIR -bin $PWD/tempInstall -qmake $QMAKE
 
 
 if [ -e "$1" ]
@@ -90,7 +92,7 @@ else
         tar -czvf $RELEASE_DIR/cqtdeployer.tar.gz ./*
 	cd $BASE_DIR
 
-        rm $RELEASE_DIR/lib -rdf $RELEASE_DIR/*.so* $RELEASE_DIR/*.sh* $RELEASE_DIR/Distro $RELEASE_DIR/cqtdeployer
+        rm $PWD/tempInstall -rdf
 	echo ""
 	echo "deploy done (shared mode with own qmake)"
 	exit 0
