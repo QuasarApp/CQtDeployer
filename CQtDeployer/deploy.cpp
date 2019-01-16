@@ -272,25 +272,9 @@ void Deploy::setExtraPlugins(const QStringList &value) {
 
 void Deploy::setDepchLimit(int value) { depchLimit = value; }
 
-void Deploy::copyFiles(const QStringList &files) {
-    for (auto file : files) {
-        QFileInfo target(file);
-        auto targetPath = targetDir + QDir::separator() + "lib";
-        if (target.completeSuffix().contains("dll", Qt::CaseInsensitive) ||
-                target.completeSuffix().contains("exe", Qt::CaseInsensitive)) {
+bool Deploy::fileActionPrivate(const QString &file, const QString &target,
+                               QStringList *masks, bool isMove) {
 
-            targetPath = targetDir;
-        }
-
-        if (target.absolutePath() != targetDir &&
-            !copyFile(file, targetPath)) {
-            qWarning() << file + " not copied";
-        }
-    }
-}
-
-bool Deploy::copyFile(const QString &file, const QString &target,
-                      QStringList *masks) {
     auto info = QFileInfo(file);
 
     bool copy = !masks;
@@ -304,7 +288,7 @@ bool Deploy::copyFile(const QString &file, const QString &target,
     }
 
     if (!copy) {
-        qInfo() << "skip copy :" << file;
+        qInfo() << ((isMove)? "skip move :": "skip copy :") << file;
         return false;
     }
 
@@ -320,15 +304,63 @@ bool Deploy::copyFile(const QString &file, const QString &target,
         return false;
     }
 
-    qInfo() << "copy :" << target + QDir::separator() + name;
+    qInfo() << ((isMove)? "move :": "copy :") << target + QDir::separator() + name;
 
-    if (!QFile::copy(file, target + QDir::separator() + name)) {
+    if (!((isMove)?
+          QFile::rename(file, target + QDir::separator() + name):
+          QFile::copy(file, target + QDir::separator() + name))) {
         return false;
     }
 
     deployedFiles += target + QDir::separator() + name;
 
     return true;
+}
+
+void Deploy::copyFiles(const QStringList &files) {
+    for (auto file : files) {
+        QFileInfo target(file);
+        auto targetPath = targetDir + QDir::separator() + "lib";
+        if (target.completeSuffix().contains("dll", Qt::CaseInsensitive) ||
+                target.completeSuffix().contains("exe", Qt::CaseInsensitive)) {
+
+            targetPath = targetDir;
+        }
+
+        if (!smartCopyFile(file, targetPath)) {
+            qWarning() << file + " not copied";
+        }
+    }
+}
+
+bool Deploy::copyFile(const QString &file, const QString &target,
+                      QStringList *masks) {
+
+    return fileActionPrivate(file, target, masks, false);
+}
+
+bool Deploy::smartCopyFile(const QString &file, const QString &target, QStringList *mask) {
+    if (file.contains(targetDir)) {
+        if (!moveFile(file, target, mask)) {
+            QuasarAppUtils::Params::verboseLog(" file not moved! try copy");
+
+            if (!copyFile(file, target, mask)) {
+                qCritical() << "not copy target to bin dir " << file;
+                return false;
+            };
+        };
+    } else {
+        if (!copyFile(file, target, mask)) {
+            qCritical() << "not copy target to bin dir " << file;
+            return false;
+        };
+    }
+
+    return true;
+}
+
+bool Deploy::moveFile(const QString &file, const QString &target, QStringList *masks) {
+    return fileActionPrivate(file, target, masks, true);
 }
 
 void Deploy::extract(const QString &file, bool isExtractPlugins) {
@@ -559,8 +591,10 @@ void Deploy::extractLinuxLib(const QString &file, bool isExtractPlugins) {
         line = line.simplified();
         auto innerlist = line.split(" ");
 
-        if (innerlist.count() < 3)
+        if (innerlist.count() < 3) {
+            QuasarAppUtils::Params::verboseLog(" the lib is not found: " + line);
             continue;
+        }
         line = innerlist[2];
 
         if (!line.startsWith("/")) {
@@ -693,10 +727,10 @@ bool Deploy::smartMoveTargets() {
 
         }
 
-        if (!copyFile(target.absoluteFilePath(), targetPath)) {
+        if (!smartCopyFile(target.absoluteFilePath(), targetPath)) {
             result = false;
-            qCritical() << "not copy target to bin dir " << target.absoluteFilePath();
-        };
+        }
+
         deployedFiles += targetPath;
 
         temp.insert(targetPath + "/" + target.fileName(), i.value());
