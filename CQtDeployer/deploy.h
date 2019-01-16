@@ -41,6 +41,8 @@ class Deploy {
     QStringList ignoreList;
     QStringList extraPlugins;
 
+    QString appDir;
+
     WinDependenciesScanner winScaner;
 
     bool fileActionPrivate(const QString &file, const QString &target,
