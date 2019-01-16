@@ -7,6 +7,7 @@
 
 #include "deploy.h"
 #include "deployutils.h"
+#include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
 #include <QDirIterator>
@@ -684,8 +685,13 @@ void Deploy::addEnv(const QString &dir) {
         return;
     }
 
+    if (dir.contains(appDir)) {
+        QuasarAppUtils::Params::verboseLog("is cqtdeployer dir!: " + dir + " app dir : " + appDir);
+        return;
+    }
+
     if (!QFileInfo(dir).isDir()) {
-        qWarning() << "bad Environment: " << dir;
+        QuasarAppUtils::Params::verboseLog("is not dir!! :" + dir);
         return;
     }
 
@@ -886,5 +892,17 @@ void Deploy::initEnvirement() {
 }
 
 
-Deploy::Deploy() {}
+Deploy::Deploy() {
+#ifdef Q_OS_LINUX
+    appDir = QuasarAppUtils::Params::getStrArg("appPath");
+
+    if (appDir.right(4) == "/bin") {
+        appDir = appDir.left(appDir.size() - 4);
+    }
+#else
+    appDir = QCoreApplication::applicationDirPath();
+#endif
+
+    QuasarAppUtils::Params::verboseLog("appDir = " + appDir);
+}
 
