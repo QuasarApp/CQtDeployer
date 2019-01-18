@@ -80,7 +80,7 @@ make install -j$(nproc)
 strip $RELEASE_DIR/*
 chmod +x $TEMP_INSTALL_DIR/cqtdeployer
 
-$TEMP_INSTALL_DIR/cqtdeployer -targetDir $RELEASE_DIR -bin $PWD/tempInstall -qmake $QMAKE
+$TEMP_INSTALL_DIR/cqtdeployer verbose -targetDir $RELEASE_DIR -bin $PWD/tempInstall -qmake $QMAKE
 
 
 if [ -e "$1" ]
