@@ -305,7 +305,7 @@ bool Deploy::fileActionPrivate(const QString &file, const QString &target,
         return false;
     }
 
-    qInfo() << ((isMove)? "move :": "copy :") << target + QDir::separator() + name;
+    qInfo() << ((isMove)? "move :": "copy :") << file;
 
     if (!((isMove)?
           QFile::rename(file, target + QDir::separator() + name):
