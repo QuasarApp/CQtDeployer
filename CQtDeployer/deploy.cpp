@@ -278,11 +278,6 @@ bool Deploy::fileActionPrivate(const QString &file, const QString &target,
 
     auto info = QFileInfo(file);
 
-    if (info.isSymLink()) {
-        QuasarAppUtils::Params::verboseLog("Skiped because is symLink! :" + target);
-        return false;
-    }
-
     bool copy = !masks;
     if (masks) {
         for (auto mask : *masks) {
@@ -310,32 +305,13 @@ bool Deploy::fileActionPrivate(const QString &file, const QString &target,
         return false;
     }
 
-    qInfo() << ((isMove)? "move :": "copy :") << target + QDir::separator() + name;
+    qInfo() << ((isMove)? "move :": "copy :") << file;
 
     if (!((isMove)?
           QFile::rename(file, target + QDir::separator() + name):
           QFile::copy(file, target + QDir::separator() + name))) {
         return false;
     }
-#ifdef Q_OS_LINUX
-    info.setFile(target + QDir::separator() + name);
-    auto path = info.absoluteFilePath();
-
-    if (path.contains(".so",Qt::CaseInsensitive)) {
-
-        while (!path.right(2).contains("so", Qt::CaseInsensitive)) {
-
-            path = path.mid(0, path.lastIndexOf("."));
-            if (!QFile::link(info.absoluteFilePath(), path)) {
-
-                QuasarAppUtils::Params::verboseLog("link not created from:" +
-                                                   info.absoluteFilePath() +
-                                                   " to: " + path);
-            }
-        }
-    }
-
-#endif
 
     deployedFiles += target + QDir::separator() + name;
 

@@ -6,8 +6,9 @@ BASE_DIR=$(dirname "$(readlink -f "$0")")
 QTLIBS=( libQt5Sql.so libQt5Xml.so libQt5Core.so libQt5Test.so libQt5Network.so libQt5Concurrent.so)
 
 RELEASE_DIR=$BASE_DIR/distro
-
 TEMP_INSTALL_DIR=$PWD/tempInstall
+CQDEPLOYER_DIR=$BASE_DIR/build/release
+QUASARAPP_DIR=$BASE_DIR/QuasarAppLib/build/release
 
 if [ -e "$PREFIX"]
 then
@@ -61,7 +62,7 @@ else
 	export PATH=$PATH:$BASE_DIR/sharedQt
 
 fi
-$QMAKE $BASE_DIR/CQtDeployer.pro PREFIX=$PWD/tempInstall
+$QMAKE $BASE_DIR/CQtDeployer.pro PREFIX=$TEMP_INSTALL_DIR
 
 make -j$(nproc)
 
@@ -80,7 +81,7 @@ make install -j$(nproc)
 strip $RELEASE_DIR/*
 chmod +x $TEMP_INSTALL_DIR/cqtdeployer
 
-$TEMP_INSTALL_DIR/cqtdeployer verbose -targetDir $RELEASE_DIR -bin $PWD/tempInstall -qmake $QMAKE
+$TEMP_INSTALL_DIR/cqtdeployer -targetDir $RELEASE_DIR -bin $CQDEPLOYER_DIR -libDir $QUASARAPP_DIR -qmake $QMAKE
 
 
 if [ -e "$1" ]
@@ -92,8 +93,8 @@ else
         tar -czvf $RELEASE_DIR/cqtdeployer.tar.gz ./*
 	cd $BASE_DIR
 
-        rm $PWD/tempInstall -rdf
-	echo ""
+        rm $TEMP_INSTALL_DIR -rdf
+        echo ""
 	echo "deploy done (shared mode with own qmake)"
 	exit 0
 fi
