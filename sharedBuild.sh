@@ -6,6 +6,9 @@ BASE_DIR=$(dirname "$(readlink -f "$0")")
 QTLIBS=( libQt5Sql.so libQt5Xml.so libQt5Core.so libQt5Test.so libQt5Network.so libQt5Concurrent.so)
 
 RELEASE_DIR=$BASE_DIR/distro
+TEMP_INSTALL_DIR=$PWD/tempInstall
+CQDEPLOYER_DIR=$BASE_DIR/build/release
+QUASARAPP_DIR=$BASE_DIR/QuasarAppLib/build/release
 
 if [ -e "$PREFIX"]
 then
@@ -15,11 +18,10 @@ else
     RELEASE_DIR=$PREFIX
 fi
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RELEASE_DIR
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TEMP_INSTALL_DIR
 
 cd $BASE_DIR
 
-git submodule update --init --recursive
 
 make clean
 find $BASE_DIR -type f -name 'Makefile' -exec rm {} \;
@@ -34,7 +36,7 @@ then
 
 else
 	echo "use qmake from build!"
-    QMAKE=$BASE_DIR/sharedQt/bin/qmake
+        QMAKE=$BASE_DIR/sharedQt/bin/qmake
 
 	cd $BASE_DIR/qtBase
 
@@ -60,7 +62,7 @@ else
 	export PATH=$PATH:$BASE_DIR/sharedQt
 
 fi
-$QMAKE $BASE_DIR/CQtDeployer.pro
+$QMAKE $BASE_DIR/CQtDeployer.pro PREFIX=$TEMP_INSTALL_DIR
 
 make -j$(nproc)
 
@@ -77,9 +79,9 @@ make install -j$(nproc)
 
 
 strip $RELEASE_DIR/*
-chmod +x $RELEASE_DIR/cqtdeployer
+chmod +x $TEMP_INSTALL_DIR/cqtdeployer
 
-$RELEASE_DIR/cqtdeployer deploy-not-qt -targetDir $RELEASE_DIR -bin $RELEASE_DIR/cqtdeployer -qmake $QMAKE 
+$TEMP_INSTALL_DIR/cqtdeployer -targetDir $RELEASE_DIR -bin $CQDEPLOYER_DIR -libDir $QUASARAPP_DIR -qmake $QMAKE
 
 
 if [ -e "$1" ]
@@ -91,8 +93,8 @@ else
         tar -czvf $RELEASE_DIR/cqtdeployer.tar.gz ./*
 	cd $BASE_DIR
 
-        rm $RELEASE_DIR/lib -rdf $RELEASE_DIR/*.so* $RELEASE_DIR/*.sh* $RELEASE_DIR/Distro $RELEASE_DIR/cqtdeployer
-	echo ""
+        rm $TEMP_INSTALL_DIR -rdf
+        echo ""
 	echo "deploy done (shared mode with own qmake)"
 	exit 0
 fi

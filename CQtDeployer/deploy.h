@@ -41,11 +41,27 @@ class Deploy {
     QStringList ignoreList;
     QStringList extraPlugins;
 
+    QString appDir;
+
     WinDependenciesScanner winScaner;
 
+    bool fileActionPrivate(const QString &file, const QString &target,
+                           QStringList *mask, bool isMove);
 
     void copyFiles(const QStringList &files);
     bool copyFile(const QString &file, const QString &target,
+                  QStringList *mask = nullptr);
+    /**
+     * @brief smartCopyFile
+     * @param file
+     * @param target
+     * @param mask
+     * @return if file in target dir try move file else copy
+     */
+    bool smartCopyFile(const QString &file, const QString &target,
+                       QStringList *mask = nullptr);
+
+    bool moveFile(const QString &file, const QString &target,
                   QStringList *mask = nullptr);
     void extract(const QString &file, bool isExtractPlugins = true);
     QString recursiveInvairement(int depch, QDir &dir);
