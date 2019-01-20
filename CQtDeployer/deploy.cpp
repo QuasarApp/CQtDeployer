@@ -40,7 +40,7 @@ void Deploy::setQmake(const QString &value) {
     QDir dir = info.absoluteDir();
 
     if (!dir.cdUp() || !dir.cd("qml")) {
-        qWarning() << "get qml fail!";
+        QuasarAppUtils::Params::verboseLog("get qml fail!");
     }
 
     qmlDir = dir.absolutePath();
@@ -66,8 +66,6 @@ void Deploy::setTargetDir() {
         targetDir = QFileInfo(targets.begin().key()).absolutePath() + "/Distro";
         qInfo () << "flag targetDir not  used." << "use default target dir :" << targetDir;
     }
-
-    addEnv(targetDir);
 }
 
 bool Deploy::setTargets(const QStringList &value) {
@@ -250,23 +248,30 @@ void Deploy::setExtraPath(const QStringList &value) {
     QDir dir;
 
     for (auto i : value) {
-        if (QFile::exists(i)) {
-            dir.setPath(i);
+        QFileInfo info(i);
+        if (info.isDir()) {
+            if (targets.contains(info.absoluteFilePath())) {
+                QuasarAppUtils::Params::verboseLog("skip the extra lib path becouse it is target!");
+                continue;
+            }
+
+            dir.setPath(info.absoluteFilePath());
             DeployUtils::extraPaths.push_back(
-                        QDir::fromNativeSeparators(i));
+                        QDir::fromNativeSeparators(info.absoluteFilePath()));
             addEnv(recursiveInvairement(0, dir));
         } else {
-            qWarning() << i << " does not exist! and skiped";
+            QuasarAppUtils::Params::verboseLog(i + " does not exist! and skiped");
         }
     }
 }
 
 void Deploy::setExtraPlugins(const QStringList &value) {
     for (auto i : value) {
-        if (QFile::exists(i)) {
-            extraPlugins.append(i);
+        QFileInfo info(i);
+        if (info.exists()) {
+            extraPlugins.append(info.absoluteFilePath());
         } else {
-            qWarning() << i << " does not exist! and skiped";
+            QuasarAppUtils::Params::verboseLog(i + " does not exist! and skiped");
         }
     }
 }
@@ -696,7 +701,12 @@ void Deploy::addEnv(const QString &dir) {
     }
 
     if (deployEnvironment.contains(dir)) {
-        qWarning() << "Environment alredy added: " << dir;
+        QuasarAppUtils::Params::verboseLog ("Environment alredy added: " + dir);
+        return;
+    }
+
+    if (dir.contains(targetDir)) {
+        QuasarAppUtils::Params::verboseLog ("Skip paths becouse it is target : " + dir);
         return;
     }
 
