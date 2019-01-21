@@ -80,7 +80,7 @@ class Deploy {
     QStringList extractImportsFromDir(const QString &dirpath);
     QFileInfoList findFilesInsideDir(const QString &name, const QString &dirpath);
     bool extractQmlAll();
-    bool extractQmlFromSource(const QString sourceDir);
+    bool extractQmlFromSource(const QString &sourceDir);
     QString filterQmlPath(const QString &path);
     void extractLinuxLib(const QString & file, bool isExtractPlugins);
     void extractWindowsLib(const QString & file, bool isExtractPlugins);

@@ -28,6 +28,7 @@ QString Deploy::getQmlScaner() const { return qmlScaner; }
 
 void Deploy::setQmlScaner(const QString &value) {
     qmlScaner = QDir::fromNativeSeparators(value);
+    QuasarAppUtils::Params::verboseLog("qmlScaner = " + qmlScaner);
     deployQml = QFileInfo(qmlScaner).isFile();
 }
 
@@ -44,6 +45,7 @@ void Deploy::setQmake(const QString &value) {
     }
 
     qmlDir = dir.absolutePath();
+    QuasarAppUtils::Params::verboseLog("qmlDir = " + qmlDir);
 }
 
 bool Deploy::initDir(const QString &path) {
@@ -294,7 +296,7 @@ bool Deploy::fileActionPrivate(const QString &file, const QString &target,
     }
 
     if (!copy) {
-        qInfo() << ((isMove)? "skip move :": "skip copy :") << file;
+        QuasarAppUtils::Params::verboseLog(((isMove)? "skip move :": "skip copy :" + file));
         return false;
     }
 
@@ -334,7 +336,7 @@ void Deploy::copyFiles(const QStringList &files) {
         }
 
         if (!smartCopyFile(file, targetPath)) {
-            qWarning() << file + " not copied";
+            QuasarAppUtils::Params::verboseLog(file + " not copied");
         }
     }
 }
@@ -610,7 +612,7 @@ void Deploy::extractLinuxLib(const QString &file, bool isExtractPlugins) {
         bool isIgnore = false;
         for (auto ignore : ignoreList) {
             if (line.contains(ignore)) {
-                qInfo() << line << " ignored by filter" << ignore;
+                QuasarAppUtils::Params::verboseLog(line + " ignored by filter" + ignore);
                 isIgnore = true;
             }
         }
@@ -647,7 +649,7 @@ void Deploy::extractWindowsLib(const QString &file, bool isExtractPlugins) {
         bool isIgnore = false;
         for (auto ignore : ignoreList) {
             if (line.contains(ignore)) {
-                qInfo() << line << " ignored by filter" << ignore;
+                QuasarAppUtils::Params::verboseLog(line + " ignored by filter" + ignore);
                 isIgnore = true;
                 continue;
             }
@@ -823,15 +825,28 @@ bool Deploy::extractQmlAll() {
     return true;
 }
 
-bool Deploy::extractQmlFromSource(const QString sourceDir) {
+bool Deploy::extractQmlFromSource(const QString& sourceDir) {
+
+    QFileInfo info(sourceDir);
+
+    if (!info.isDir()) {
+        qCritical() << "extract qml fail! qml source dir not exits or is not dir " << sourceDir;
+        return false;
+    }
+
+    QuasarAppUtils::Params::verboseLog("extractQmlFromSource " + info.absoluteFilePath());
 
     if (!QFileInfo::exists(qmlDir)) {
         qWarning() << "qml dir wrong!";
         return false;
     }
 
-    QStringList plugins = extractImportsFromDir(sourceDir);
+    QStringList plugins = extractImportsFromDir(info.absoluteFilePath());
     QStringList listItems;
+
+    for (auto &&i: plugins) {
+        QuasarAppUtils::Params::verboseLog(i);
+    }
 
     if (!copyFolder(qmlDir, targetDir + "/qml",
                     QStringList() << ".so.debug" << "d.dll",
