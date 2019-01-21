@@ -767,6 +767,16 @@ bool Deploy::isLib(const QFileInfo &file) {
 
 QStringList Deploy::extractImportsFromDir(const QString &filepath) {
     QProcess p;
+
+    QProcessEnvironment env;
+
+    env.insert("LD_LIBRARY_PATH", concatEnv());
+    env.insert("QML_IMPORT_PATH", DeployUtils::qtDir + "/qml");
+    env.insert("QML2_IMPORT_PATH", DeployUtils::qtDir + "/qml");
+    env.insert("QT_PLUGIN_PATH", DeployUtils::qtDir + "/plugins");
+    env.insert("QT_QPA_PLATFORM_PLUGIN_PATH", DeployUtils::qtDir + "/plugins/platforms");
+
+    p.setProcessEnvironment(env);
     p.setProgram(qmlScaner);
     p.setArguments(QStringList()
                    << "-rootPath" << filepath << "-importPath" << qmlDir);
@@ -777,7 +787,15 @@ QStringList Deploy::extractImportsFromDir(const QString &filepath) {
         return QStringList();
     }
 
-    auto data = QJsonDocument::fromJson(p.readAll());
+    auto rawData = p.readAll();
+
+    if (p.exitCode()) {
+        qWarning() << "scaner error " << p.errorString() << "exitCode: " << p.exitCode();
+    }
+
+    QuasarAppUtils::Params::verboseLog("rawData from extractImportsFromDir: " + rawData);
+
+    auto data = QJsonDocument::fromJson(rawData);
 
     if (!data.isArray()) {
         qWarning() << "wrong data from qml scaner! of " << filepath;
