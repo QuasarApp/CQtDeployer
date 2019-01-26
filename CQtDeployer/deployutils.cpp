@@ -65,6 +65,7 @@ void DeployUtils::help() {
     qInfo() << "                            | for example -libDir ~/myLib,~/newLibs ";
     qInfo() << "   -extraPlugin[list,params]: set additional path for extraPlugin of app";
     qInfo() << "   -recursiveDepth [params] : set Depth for recursive search of libs (default 0)";
+    qInfo() << "   -targetDir [params]      : set target Dir for binaryes (default is path of first target)";
 
     qInfo() << "   verbose                  : show debug log";
 
