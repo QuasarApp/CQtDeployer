@@ -21,3 +21,5 @@ contains(DEFINES, WITH_TESTS) {
 CQtDeployer.depends=QuasarAppLib
 
 QuasarAppLib.file = $$PWD/QuasarAppLib/QuasarApp.pro
+
+win32:include('$$PWD/CQtDeployerWinBuild.pri')

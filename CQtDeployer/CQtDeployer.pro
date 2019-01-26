@@ -32,6 +32,7 @@ isEmpty(PREFIX){
 }
 include('$$PWD/../QuasarAppLib/QuasarLib.pri')
 include('$$PWD/../QuasarAppLib/Etalons/qmake/install_prefix.pri')
+win32:include('$$PWD/CQtDeployerWinBuild.pri')
 
 install_data.files += $$DESTDIR/$$runfiletype
 install_data.files += $$QUASARAPP_LIB_OUTPUT_DIR/$$libfiletype
@@ -64,6 +65,8 @@ DISTFILES += \
     ../README.md \
     ../staticBuildCrossWin.sh \
     ../sharedBuild.bat
+
+
 
 win32: LIBS += -lshlwapi
 win32: RC_ICONS = $$PWD/../res/icon.ico
