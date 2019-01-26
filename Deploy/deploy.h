@@ -75,7 +75,7 @@ class Deploy {
 
     bool extractQml();
 
-    void strip(const QString &dir);
+    bool strip(const QString &dir);
 
     QStringList extractImportsFromDir(const QString &dirpath);
     QFileInfoList findFilesInsideDir(const QString &name, const QString &dirpath);
@@ -121,6 +121,8 @@ public:
     void setExtraPath(const QStringList &value);
     void setExtraPlugins(const QStringList &value);
     void setDepchLimit(int value);
+
+    friend class deploytest;
 };
 
 #endif // DEPLOY_H

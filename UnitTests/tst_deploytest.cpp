@@ -11,7 +11,9 @@
 #include <deploy.h>
 #include <windependenciesscanner.h>
 
+#include <QByteArray>
 #include <QDir>
+#include <thread>
 // add necessary includes here
 
 class deploytest : public QObject
@@ -26,8 +28,8 @@ private slots:
     void initTestCase();
     void cleanupTestCase();
     void testDeployUtils();
-    void testDeploy();
-    void testDeployScaner();
+    void testDeployTarget();
+    void testStrip();
 
 };
 
@@ -120,7 +122,7 @@ void deploytest::testDeployUtils() {
 
 }
 
-void deploytest::testDeploy() {
+void deploytest::testDeployTarget() {
 
     Deploy *deploy = new Deploy();
     QStringList targets;
@@ -159,12 +161,41 @@ void deploytest::testDeploy() {
 
     delete deploy;
     targets.clear();
-
-
 }
 
-void deploytest::testDeployScaner() {
+void deploytest::testStrip() {
 
+    QDir dir;
+    dir.mkpath("./test/binTargetDir/");
+    QFile testLib ("./test/binTargetDir/debugLib.so");
+
+    qint64 sizeBefor = 0;
+    qint64 sizeAfter = 0;
+
+    if (testLib.open(QIODevice::ReadWrite| QIODevice::Truncate)) {
+        QFile resData(":/debugLib");
+        if (resData.open(QIODevice::ReadOnly)) {
+            QByteArray tempData = resData.readAll();
+            sizeBefor = tempData.size();
+            testLib.write(tempData.data(), tempData.size());
+            resData.close();
+        }
+
+        testLib.close();
+    }
+
+    Deploy *deploy = new Deploy();
+    QVERIFY(deploy->strip("./test/binTargetDir"));
+
+    if (testLib.open(QIODevice::ReadOnly)) {
+        sizeAfter = testLib.size();
+        testLib.close();
+    }
+
+    dir.setPath("./test/binTargetDir/");
+    dir.removeRecursively();
+
+    QVERIFY(sizeBefor > sizeAfter);
 }
 
 QTEST_APPLESS_MAIN(deploytest)
