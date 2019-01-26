@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018 QuasarApp.
+# Copyright (C) 2018-2019 QuasarApp.
 # Distributed under the lgplv3 software license, see the accompanying
 # Everyone is permitted to copy and distribute verbatim copies
 # of this license document, but changing it is not allowed.
@@ -21,3 +21,5 @@ contains(DEFINES, WITH_TESTS) {
 CQtDeployer.depends=QuasarAppLib
 
 QuasarAppLib.file = $$PWD/QuasarAppLib/QuasarApp.pro
+
+win32:include('$$PWD/CQtDeployerWinBuild.pri')

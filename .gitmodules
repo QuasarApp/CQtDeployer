@@ -7,3 +7,6 @@
 [submodule "qtTools"]
 	path = qtTools
 	url = https://github.com/qt/qttools.git
+[submodule "CQtDeployerBinaries"]
+	path = CQtDeployerBinaries
+	url = https://github.com/QuasarApp/CQtDeployerBinaries.git

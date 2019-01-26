@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018 QuasarApp.
+# Copyright (C) 2018-2019 QuasarApp.
 # Distributed under the lgplv3 software license, see the accompanying
 # Everyone is permitted to copy and distribute verbatim copies
 # of this license document, but changing it is not allowed.
@@ -32,6 +32,7 @@ isEmpty(PREFIX){
 }
 include('$$PWD/../QuasarAppLib/QuasarLib.pri')
 include('$$PWD/../QuasarAppLib/Etalons/qmake/install_prefix.pri')
+win32:include('$$PWD/CQtDeployerWinBuild.pri')
 
 install_data.files += $$DESTDIR/$$runfiletype
 install_data.files += $$QUASARAPP_LIB_OUTPUT_DIR/$$libfiletype
@@ -63,7 +64,9 @@ DISTFILES += \
     ../sharedBuild.sh \
     ../README.md \
     ../staticBuildCrossWin.sh \
-    ../staticBuildWin.bat
+    ../sharedBuild.bat
+
+
 
 win32: LIBS += -lshlwapi
 win32: RC_ICONS = $$PWD/../res/icon.ico
