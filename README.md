@@ -38,6 +38,7 @@ Key differences of this program:
 |  -extraPlugin [list,params] | set additional path for extraPlugin of app                      |
 |  -recursiveDepth [params]   | set Depth for recursive search of libs (default 0)              |
 |  -targetDir [params]        | set target Dir for binaryes (default is path of first target)   |
+|  noStrip                    | skip strip step                                                 |
 |  verbose                    | show debug log                                                  |
 
 
@@ -95,7 +96,8 @@ Console QtDeployer является консольной реализацией 
 |  -extraPlugin [list,params] | Установить дополнительный путь для extraPlugin приложения |
 |  -recursiveDepth [params]   | Установит глубену поиска библиотек (по умолчанию 0)       |
 |  -targetDir [params]        | Установит целевой коталог (по умолчанию это путь к первому развертываемому файлу)|
-|  verbose                    | Показ дебаг лог                                        |
+|  noStrip                    | пропустить шаг strip                                      |
+|  verbose                    | Показ дебаг лога                                          |
 
 
 #### Пример: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
