@@ -24,3 +24,6 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES +=  tst_deploytest.cpp
+
+RESOURCES += \
+    res.qrc

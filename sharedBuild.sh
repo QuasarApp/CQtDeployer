@@ -13,25 +13,15 @@ BASE_DIR=$(dirname "$(readlink -f "$0")")
 QTLIBS=( libQt5Sql.so libQt5Xml.so libQt5Core.so libQt5Test.so libQt5Network.so libQt5Concurrent.so)
 
 RELEASE_DIR=$BASE_DIR/distro
-TEMP_INSTALL_DIR=$PWD/tempInstall
-CQDEPLOYER_DIR=$BASE_DIR/build/release
-QUASARAPP_DIR=$BASE_DIR/QuasarAppLib/build/release
-
-if [ -e "$PREFIX"]
-then
-    echo "PREFIX is empty, use default install path $RELEASE_DIR"
-else
-    echo "use PREFIX path!"
-    RELEASE_DIR=$PREFIX
-fi
-
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TEMP_INSTALL_DIR
-
+CQDEPLOYER_DIR=$BASE_DIR/CQtDeployer/build/release
+DEPLOYER=$BASE_DIR/CQtDeployerBinaries/Linux/cqtdeployer.sh
 cd $BASE_DIR
-
 
 make clean
 find $BASE_DIR -type f -name 'Makefile' -exec rm {} \;
+find $BASE_DIR/QuasarAppLib -type f -name '*.so*' -exec rm {} \;
+find $BASE_DIR/Deploy -type f -name '*.so*' -exec rm {} \;
+
 rm $BASE_DIR/QuasarAppLib/Makefile.QuasarApp
 rm -rdf $RELEASE_DIR
 
@@ -69,7 +59,7 @@ else
 	export PATH=$PATH:$BASE_DIR/sharedQt
 
 fi
-$QMAKE $BASE_DIR/CQtDeployer.pro PREFIX=$TEMP_INSTALL_DIR
+$QMAKE $BASE_DIR/CQtDeployer.pro -r
 
 make -j$(nproc)
 
@@ -82,13 +72,9 @@ else
     echo "Build is failed!" >&2
     exit 1;
 fi
-make install -j$(nproc)
 
-
+$DEPLOYER -targetDir $RELEASE_DIR -bin $CQDEPLOYER_DIR -libDir $BASE_DIR -recursiveDepth 5 -qmake $QMAKE
 strip $RELEASE_DIR/*
-chmod +x $TEMP_INSTALL_DIR/cqtdeployer
-
-$TEMP_INSTALL_DIR/cqtdeployer -targetDir $RELEASE_DIR -bin $CQDEPLOYER_DIR -libDir $QUASARAPP_DIR -qmake $QMAKE
 
 
 if [ -e "$1" ]
