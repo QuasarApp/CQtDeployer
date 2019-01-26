@@ -5,13 +5,22 @@
 # of this license document, but changing it is not allowed.
 #
 
-QT -= gui
 
-CONFIG += c++14 console
-CONFIG -= app_bundle
+#-------------------------------------------------
+#
+# Project created by QtCreator 2019-01-26T13:55:47
+#
+#-------------------------------------------------
+
+QT       -= gui
+
+TARGET = Deploy
+TEMPLATE = lib
+
+DEFINES += DEPLOY_LIBRARY
 
 # The following define makes your compiler emit warnings if you use
-# any feature of Qt which as been marked deprecated (the exact warnings
+# any feature of Qt which has been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
@@ -28,12 +37,21 @@ CONFIG(release, debug|release): {
 }
 
 include('$$PWD/../QuasarAppLib/QuasarLib.pri')
-include('$$PWD/../Deploy/Deploy.pri')
 
-TARGET = cqtdeployer
 
 SOURCES += \
-        main.cpp \
+        deploy.cpp \
+        deployutils.cpp \
+        windependenciesscanner.cpp \
+        ../qtTools/src/windeployqt/elfreader.cpp \
+        ../qtTools/src/windeployqt/utils.cpp
 
+HEADERS += \
+        deploy.h \
+        deploy_global.h \ 
+        deployutils.h \
+        windependenciesscanner.h\
+        ../qtTools/src/windeployqt/elfreader.h \
+        ../qtTools/src/windeployqt/utils.h
 
-win32: RC_ICONS = $$PWD/../res/icon.ico
+win32: LIBS += -lshlwapi
