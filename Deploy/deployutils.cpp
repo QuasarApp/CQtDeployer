@@ -165,7 +165,7 @@ bool DeployUtils::parseQt(Deploy *deploy) {
 
 bool DeployUtils::isQtLib(const QString &lib) {
     QFileInfo info(lib);
-    return !qtDir.isEmpty() && info.absolutePath().contains(qtDir);
+    return !qtDir.isEmpty() && info.absoluteFilePath().contains(qtDir);
 
 }
 
@@ -173,7 +173,7 @@ bool DeployUtils::isExtraLib(const QString &lib) {
     QFileInfo info(lib);
 
     for (auto i : extraPaths) {
-        if (info.absolutePath().contains(i)) {
+        if (info.absoluteFilePath().contains(i)) {
             return true;
         }
     }
