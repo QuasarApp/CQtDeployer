@@ -41,6 +41,7 @@ void deploytest::initTestCase() {
     qt.mkpath("./test/extraPath/");
     qt.mkpath("./test/extra/");
     qt.mkpath("./test/warning/");
+    qt.mkpath("./test/bins/");
 
     QFile f( "./test/Qt/5.12/generalLib.so");
     if (f.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
@@ -63,6 +64,18 @@ void deploytest::initTestCase() {
     f.setFileName("./test/warning/WarningLib.so");
     if (f.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
         f.write("lib", 3);
+        f.close();
+    }
+
+    f.setFileName("./test/bins/execTarget.exe");
+    if (f.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
+        f.write("exec", 3);
+        f.close();
+    }
+
+    f.setFileName("./test/bins/execTarget");
+    if (f.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
+        f.write("exec", 3);
         f.close();
     }
 }
@@ -108,6 +121,45 @@ void deploytest::testDeployUtils() {
 }
 
 void deploytest::testDeploy() {
+
+    Deploy *deploy = new Deploy();
+    QStringList targets;
+    targets << "./test/bins/execTarget.exe";
+    QVERIFY(deploy->setTargets(targets));
+    delete deploy;
+    targets.clear();
+
+    deploy = new Deploy();
+    targets << "./test/bins/execTarget";
+    QVERIFY(deploy->setTargets(targets));
+    delete deploy;
+    targets.clear();
+
+    deploy = new Deploy();
+    targets << "./test/bins/execTarget.exe" << "./test/bins/execTarget";
+    QVERIFY(deploy->setTargets(targets));
+    delete deploy;
+    targets.clear();
+
+    deploy = new Deploy();
+    targets << "./test/bns/execTarget.exe";
+    QVERIFY(!deploy->setTargets(targets));
+    delete deploy;
+    targets.clear();
+
+    deploy = new Deploy();
+    targets << "./test/bins/";
+    QVERIFY(deploy->setTargets(targets));
+    delete deploy;
+    targets.clear();
+
+    deploy = new Deploy();
+    targets << "./test/bins/" << "./test/warning/";
+    QVERIFY(deploy->setTargets(targets));
+
+    delete deploy;
+    targets.clear();
+
 
 }
 
