@@ -63,7 +63,7 @@ DISTFILES += \
     ../sharedBuild.sh \
     ../README.md \
     ../staticBuildCrossWin.sh \
-    ../staticBuildWin.bat
+    ../sharedBuild.bat
 
 win32: LIBS += -lshlwapi
 win32: RC_ICONS = $$PWD/../res/icon.ico
