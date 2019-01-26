@@ -9,9 +9,15 @@ TEMPLATE = subdirs
 CONFIG += ordered
 
 SUBDIRS += QuasarAppLib \
-    CQtDeployer
+           Deploy \
+           CQtDeployer \
+           UnitTests
 
-contains(DEFINES, WITH_TESTS) {
+contains(DEFINES, WITHOUT_BASE_TESTS) {
+    SUBDIRS -= UnitTests
+}
+
+contains(DEFINES, WITH_ALL_TESTS) {
     SUBDIRS += \
     tests/TestOnlyC \
     tests/TestQtWidgets \
@@ -19,7 +25,18 @@ contains(DEFINES, WITH_TESTS) {
 }
 
 CQtDeployer.depends=QuasarAppLib
+CQtDeployer.depends=Deploy
 
 QuasarAppLib.file = $$PWD/QuasarAppLib/QuasarApp.pro
 
 win32:include('$$PWD/CQtDeployerWinBuild.pri')
+
+DISTFILES += \
+    snapBuild.sh \
+    staticBuild.sh \
+    snap/snapcraft.yaml \
+    README.md \
+    sharedBuild.sh \
+    README.md \
+    staticBuildCrossWin.sh \
+    sharedBuild.bat
