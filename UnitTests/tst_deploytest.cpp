@@ -39,6 +39,7 @@ private slots:
     void testDeployTarget();
     void testTranslations();
     void testStrip();
+    void testDeploy();
 
 };
 
@@ -208,6 +209,11 @@ void deploytest::testDeployTarget() {
 
 void deploytest::testStrip() {
 
+#ifdef Q_OS_WIN
+    Deploy *deploy = new Deploy();
+    QVERIFY(deploy->strip("./test/binTargetDir/debugLib.so"));
+    delete deploy;
+#else
     //for one lib
     qint64 sizeBefor = generateLib("./test/binTargetDir/debugLib.so");
     qint64 sizeAfter = 0;
@@ -265,6 +271,16 @@ void deploytest::testStrip() {
                  arg(i).arg(libList[i]).arg(sizeBeforList[i]).arg(sizeAfterList[i]).
                  toLatin1());
     }
+#endif
+}
+
+void deploytest::testDeploy()
+{
+    QuasarAppUtils::Params::parseParams(0, nullptr);
+
+    Deploy *deploy = new Deploy();
+    QVERIFY(!deploy->appDir.isEmpty());
+    delete deploy;
 }
 
 void deploytest::testTranslations() {
