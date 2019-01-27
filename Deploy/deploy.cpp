@@ -243,7 +243,9 @@ void Deploy::deploy() {
     }
 
     if (!onlyCLibs && !QuasarAppUtils::Params::isEndable("noTranslations")) {
-        copyTranslations(DeployUtils::extractTranslation(QtLibs));
+        if (!copyTranslations(DeployUtils::extractTranslation(QtLibs))) {
+            qWarning() << " copy TR ERROR";
+        }
     }
 
     settings.setValue(targetDir, deployedFiles);
@@ -520,8 +522,8 @@ void Deploy::copyPlugins(const QStringList &list) {
 
 bool Deploy::copyTranslations(QStringList list) {
 
-    QDir dir(DeployUtils::qtDir);
-    if (!dir.cd("translations")) {
+    QDir dir(translationDir);
+    if (!dir.exists() || list.isEmpty()) {
         return false;
     }
 
