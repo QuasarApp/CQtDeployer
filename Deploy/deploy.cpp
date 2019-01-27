@@ -932,7 +932,7 @@ bool Deploy::strip(const QString &dir) {
 
         bool res = false;
         for (auto &&i : list) {
-            res = res || strip(i.absoluteFilePath());
+            res = strip(i.absoluteFilePath()) || res;
         }
 
         return res;
