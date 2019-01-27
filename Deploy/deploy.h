@@ -12,9 +12,9 @@
 #include <QString>
 #include <QStringList>
 #include <windependenciesscanner.h>
+#include "deploy_global.h"
 
-
-class Deploy {
+class DEPLOYSHARED_EXPORT Deploy {
   private:
     bool deployQml = false;
     bool onlyCLibs = false;
@@ -32,6 +32,8 @@ class Deploy {
     QMap<QString, bool> targets;
     QString targetDir = "";
     QString qmlDir = "";
+    QString translationDir = "";
+
     QStringList deployEnvironment;
 
     QStringList QtLibs;
@@ -68,6 +70,8 @@ class Deploy {
     void extractPlugins(const QString &lib);
     bool copyPlugin(const QString &plugin);
     void copyPlugins(const QStringList &list);
+    bool copyTranslations(QStringList list);
+
     bool copyFolder(const QString &from, const QString &to,
                     const QStringList &filter = QStringList(),
                     QStringList *listOfCopiedItems = nullptr,

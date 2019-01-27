@@ -16,6 +16,61 @@
 QString DeployUtils::qtDir = "";
 QStringList DeployUtils::extraPaths = QStringList();
 
+QtModuleEntry DeployUtils::qtModuleEntries[] = {
+    { QtBluetoothModule, "bluetooth", "Qt5Bluetooth", nullptr },
+    { QtConcurrentModule, "concurrent", "Qt5Concurrent", "qtbase" },
+    { QtCoreModule, "core", "Qt5Core", "qtbase" },
+    { QtDeclarativeModule, "declarative", "Qt5Declarative", "qtquick1" },
+    { QtDesignerModule, "designer", "Qt5Designer", nullptr },
+    { QtDesignerComponents, "designercomponents", "Qt5DesignerComponents", nullptr },
+    { QtEnginioModule, "enginio", "Enginio", nullptr },
+    { QtGamePadModule, "gamepad", "Qt5Gamepad", nullptr },
+    { QtGuiModule, "gui", "Qt5Gui", "qtbase" },
+    { QtHelpModule, "qthelp", "Qt5Help", "qt_help" },
+    { QtMultimediaModule, "multimedia", "Qt5Multimedia", "qtmultimedia" },
+    { QtMultimediaWidgetsModule, "multimediawidgets", "Qt5MultimediaWidgets", "qtmultimedia" },
+    { QtMultimediaQuickModule, "multimediaquick", "Qt5MultimediaQuick_p", "qtmultimedia" },
+    { QtNetworkModule, "network", "Qt5Network", "qtbase" },
+    { QtNfcModule, "nfc", "Qt5Nfc", nullptr },
+    { QtOpenGLModule, "opengl", "Qt5OpenGL", nullptr },
+    { QtPositioningModule, "positioning", "Qt5Positioning", nullptr },
+    { QtPrintSupportModule, "printsupport", "Qt5PrintSupport", nullptr },
+    { QtQmlModule, "qml", "Qt5Qml", "qtdeclarative" },
+    { QtQmlToolingModule, "qmltooling", "qmltooling", nullptr },
+    { QtQuickModule, "quick", "Qt5Quick", "qtdeclarative" },
+    { QtQuickParticlesModule, "quickparticles", "Qt5QuickParticles", nullptr },
+    { QtQuickWidgetsModule, "quickwidgets", "Qt5QuickWidgets", nullptr },
+    { QtScriptModule, "script", "Qt5Script", "qtscript" },
+    { QtScriptToolsModule, "scripttools", "Qt5ScriptTools", "qtscript" },
+    { QtSensorsModule, "sensors", "Qt5Sensors", nullptr },
+    { QtSerialPortModule, "serialport", "Qt5SerialPort", "qtserialport" },
+    { QtSqlModule, "sql", "Qt5Sql", "qtbase" },
+    { QtSvgModule, "svg", "Qt5Svg", nullptr },
+    { QtTestModule, "test", "Qt5Test", "qtbase" },
+    { QtWebKitModule, "webkit", "Qt5WebKit", nullptr },
+    { QtWebKitWidgetsModule, "webkitwidgets", "Qt5WebKitWidgets", nullptr },
+    { QtWebSocketsModule, "websockets", "Qt5WebSockets", nullptr },
+    { QtWidgetsModule, "widgets", "Qt5Widgets", "qtbase" },
+    { QtWinExtrasModule, "winextras", "Qt5WinExtras", nullptr },
+    { QtXmlModule, "xml", "Qt5Xml", "qtbase" },
+    { QtXmlPatternsModule, "xmlpatterns", "Qt5XmlPatterns", "qtxmlpatterns" },
+    { QtWebEngineCoreModule, "webenginecore", "Qt5WebEngineCore", nullptr },
+    { QtWebEngineModule, "webengine", "Qt5WebEngine", "qtwebengine" },
+    { QtWebEngineWidgetsModule, "webenginewidgets", "Qt5WebEngineWidgets", nullptr },
+    { Qt3DCoreModule, "3dcore", "Qt53DCore", nullptr },
+    { Qt3DRendererModule, "3drenderer", "Qt53DRender", nullptr },
+    { Qt3DQuickModule, "3dquick", "Qt53DQuick", nullptr },
+    { Qt3DQuickRendererModule, "3dquickrenderer", "Qt53DQuickRender", nullptr },
+    { Qt3DInputModule, "3dinput", "Qt53DInput", nullptr },
+    { Qt3DAnimationModule, "3danimation", "Qt53DAnimation", nullptr },
+    { Qt3DExtrasModule, "3dextras", "Qt53DExtras", nullptr },
+    { QtLocationModule, "geoservices", "Qt5Location", nullptr },
+    { QtWebChannelModule, "webchannel", "Qt5WebChannel", nullptr },
+    { QtTextToSpeechModule, "texttospeech", "Qt5TextToSpeech", nullptr },
+    { QtSerialBusModule, "serialbus", "Qt5SerialBus", nullptr },
+    { QtWebViewModule, "webview", "Qt5WebView", nullptr }
+};
+
 int DeployUtils::getLibPriority(const QString &lib) {
 
     if (!QFileInfo(lib).isFile()) {
@@ -67,6 +122,7 @@ void DeployUtils::help() {
     qInfo() << "   -recursiveDepth [params] : set Depth for recursive search of libs (default 0)";
     qInfo() << "   -targetDir [params]      : set target Dir for binaryes (default is path of first target)";
     qInfo() << "   noStrip                  : skip strip step";
+    qInfo() << "   noTranslations           : skip translations files";
 
     qInfo() << "   verbose                  : show debug log";
 
@@ -162,6 +218,21 @@ bool DeployUtils::parseQt(Deploy *deploy) {
     deploy->setQtDir(dir.absolutePath());
 
     return true;
+}
+
+QStringList DeployUtils::extractTranslation(const QStringList &libs) {
+    QSet<QString> res;
+    const size_t qtModulesCount = sizeof(qtModuleEntries) / sizeof(QtModuleEntry);
+
+    for (auto &&lib: libs) {
+        for (size_t i = 0; i < qtModulesCount; ++i) {
+            if (lib.contains(qtModuleEntries[i].libraryName) &&
+                    qtModuleEntries[i].translation) {
+                res.insert(qtModuleEntries[i].translation);
+            }
+        }
+    }
+    return res.toList();
 }
 
 bool DeployUtils::isQtLib(const QString &lib) {

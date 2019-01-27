@@ -11,9 +11,9 @@
 #include <QMultiMap>
 #include <QStringList>
 #include "../qtTools/src/windeployqt/utils.h"
+#include "deploy_global.h"
 
-
-class WinDependenciesScanner {
+class DEPLOYSHARED_EXPORT WinDependenciesScanner {
 private:
     QStringList _env;
     QMap<QString, QString> _EnvLibs;
