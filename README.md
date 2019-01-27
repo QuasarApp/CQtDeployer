@@ -39,6 +39,7 @@ Key differences of this program:
 |  -recursiveDepth [params]   | set Depth for recursive search of libs (default 0)              |
 |  -targetDir [params]        | set target Dir for binaryes (default is path of first target)   |
 |  noStrip                    | skip strip step                                                 |
+|  noTranslations             | skip translations files                                         |
 |  verbose                    | show debug log                                                  |
 
 
@@ -97,6 +98,7 @@ Console QtDeployer является консольной реализацией 
 |  -recursiveDepth [params]   | Установит глубену поиска библиотек (по умолчанию 0)       |
 |  -targetDir [params]        | Установит целевой коталог (по умолчанию это путь к первому развертываемому файлу)|
 |  noStrip                    | пропустить шаг strip                                      |
+|  noTranslations             | пропустить файлы переводов                                |
 |  verbose                    | Показ дебаг лога                                          |
 
 

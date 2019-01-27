@@ -37,6 +37,7 @@ private slots:
     void cleanupTestCase();
     void testDeployUtils();
     void testDeployTarget();
+    void testTranslations();
     void testStrip();
 
 };
@@ -46,7 +47,7 @@ deploytest::deploytest(){}
 int deploytest::generateLib(const QString &paath)
 {
     QDir dir;
-    dir.mkpath("./test/binTargetDir/");
+    dir.mkpath(QFileInfo(paath).absolutePath());
     QFile testLib (paath);
 
     int size = 0;
@@ -264,6 +265,66 @@ void deploytest::testStrip() {
                  arg(i).arg(libList[i]).arg(sizeBeforList[i]).arg(sizeAfterList[i]).
                  toLatin1());
     }
+}
+
+void deploytest::testTranslations() {
+    QStringList trList = {
+        ("./test/QtDir/translations/qtbase_ru.qm"),
+        ("./test/QtDir/translations/qtbase_en.qm"),
+        ("./test/QtDir/translations/qtmultimedia_en.qm"),
+        ("./test/QtDir/translations/qtmultimedia_ru.qm"),
+        ("./test/QtDir/translations/qtdeclarative_en.qm"),
+        ("./test/QtDir/translations/qtdeclarative_ru.qm"),
+
+    };
+
+    QStringList res = {
+        ("qtbase_ru.qm"),
+        ("qtbase_en.qm"),
+        ("qtmultimedia_en.qm"),
+        ("qtmultimedia_ru.qm"),
+    };
+
+    QStringList libList = {
+        (QFileInfo("./test/target/Qt5Core.so").absoluteFilePath()),
+        (QFileInfo("./test/target/Qt5Nfc.so").absoluteFilePath()),
+        (QFileInfo("./test/target/Qt5MultimediaWidgets.dll").absoluteFilePath()),
+
+    };
+
+    DeployUtils::qtDir = QFileInfo("./test/QtDir/").absoluteFilePath();
+
+
+    Deploy *deploy = new Deploy();
+
+    for (auto &&i: trList) {
+        generateLib(i);
+    }
+
+    for (auto &&i: libList) {
+        generateLib(i);
+    }
+
+    deploy->translationDir = QFileInfo("./test/QtDir/translations/").absoluteFilePath();
+    deploy->targetDir = QFileInfo("./test/deploy/").absoluteFilePath();
+
+    auto trans = DeployUtils::extractTranslation(libList);
+    QVERIFY(trans.size() == 2);
+    QVERIFY(deploy->copyTranslations(trans));
+
+    QDir d("./test/deploy/translations") ;
+    QVERIFY(d.exists());
+
+    auto realList = d.entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
+    QVERIFY(realList.size() == 4);
+
+    for(auto i: realList) {
+
+        QVERIFY(res.contains(i.fileName()));
+    }
+
+    deleteLib("./test/deploy");
+
 }
 
 QTEST_APPLESS_MAIN(deploytest)

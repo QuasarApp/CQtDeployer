@@ -46,6 +46,14 @@ void Deploy::setQmake(const QString &value) {
 
     qmlDir = dir.absolutePath();
     QuasarAppUtils::Params::verboseLog("qmlDir = " + qmlDir);
+
+    dir = (info.absoluteDir());
+    if (!dir.cdUp() || !dir.cd("translations")) {
+        QuasarAppUtils::Params::verboseLog("get translations fail!");
+    }
+
+    translationDir = dir.absolutePath();
+    QuasarAppUtils::Params::verboseLog("translations = " + translationDir);
 }
 
 bool Deploy::initDir(const QString &path) {
@@ -165,6 +173,7 @@ bool Deploy::createRunScript(const QString &target) {
             "export QML_IMPORT_PATH=\"$BASE_DIR\"/qml:QML_IMPORT_PATH\n"
             "export QML2_IMPORT_PATH=\"$BASE_DIR\"/qml:QML2_IMPORT_PATH\n"
             "export QT_PLUGIN_PATH=\"$BASE_DIR\"/plugins:QT_PLUGIN_PATH\n"
+            "export QTDIR=\"$BASE_DIR\"\n"
             "export "
             "QT_QPA_PLATFORM_PLUGIN_PATH=\"$BASE_DIR\"/plugins/"
             "platforms:QT_QPA_PLATFORM_PLUGIN_PATH\n"
@@ -231,6 +240,10 @@ void Deploy::deploy() {
 
     if (!QuasarAppUtils::Params::isEndable("noStrip") && !strip(targetDir)) {
         QuasarAppUtils::Params::verboseLog("strip failed!");
+    }
+
+    if (!onlyCLibs && !QuasarAppUtils::Params::isEndable("noTranslations")) {
+        copyTranslations(DeployUtils::extractTranslation(QtLibs));
     }
 
     settings.setValue(targetDir, deployedFiles);
@@ -503,6 +516,27 @@ void Deploy::copyPlugins(const QStringList &list) {
             extract(info.absoluteFilePath());
         }
     }
+}
+
+bool Deploy::copyTranslations(QStringList list) {
+
+    QDir dir(DeployUtils::qtDir);
+    if (!dir.cd("translations")) {
+        return false;
+    }
+
+    QStringList filters;
+    for (auto &&i: list) {
+        filters.push_back("*" + i + "*");
+    }
+
+    auto listItems = dir.entryInfoList(filters, QDir::Files | QDir::NoDotAndDotDot);
+
+    for (auto &&i: listItems) {
+        copyFile(i.absoluteFilePath(), targetDir + "/translations");
+    }
+
+    return true;
 }
 
 bool Deploy::copyFolder(const QString &from, const QString &to, const QStringList &filter,
