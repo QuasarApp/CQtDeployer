@@ -22,6 +22,14 @@ class deploytest : public QObject
 
 public:
     deploytest();
+    /**
+     * @brief generateLib
+     * @param paath
+     * @return size of lib
+     */
+    int generateLib(const QString& paath);
+    void deleteLib(const QString& paath);
+
     ~deploytest();
 
 private slots:
@@ -34,6 +42,40 @@ private slots:
 };
 
 deploytest::deploytest(){}
+
+int deploytest::generateLib(const QString &paath)
+{
+    QDir dir;
+    dir.mkpath("./test/binTargetDir/");
+    QFile testLib (paath);
+
+    int size = 0;
+
+    if (testLib.open(QIODevice::ReadWrite| QIODevice::Truncate)) {
+        QFile resData(":/debugLib");
+        if (resData.open(QIODevice::ReadOnly)) {
+            QByteArray tempData = resData.readAll();
+            size = tempData.size();
+            testLib.write(tempData.data(), tempData.size());
+            resData.close();
+        }
+
+        testLib.close();
+    }
+
+    return size;
+}
+
+void deploytest::deleteLib(const QString &paath)
+{
+    QFileInfo info(paath);
+    if (info.isDir()) {
+        QFile::remove(info.absoluteFilePath());
+    } else {
+        QDir qt(info.absoluteFilePath());
+        qt.removeRecursively();
+    }
+}
 
 deploytest::~deploytest(){}
 
@@ -165,37 +207,63 @@ void deploytest::testDeployTarget() {
 
 void deploytest::testStrip() {
 
-    QDir dir;
-    dir.mkpath("./test/binTargetDir/");
-    QFile testLib ("./test/binTargetDir/debugLib.so");
-
-    qint64 sizeBefor = 0;
+    //for one lib
+    qint64 sizeBefor = generateLib("./test/binTargetDir/debugLib.so");
     qint64 sizeAfter = 0;
 
-    if (testLib.open(QIODevice::ReadWrite| QIODevice::Truncate)) {
-        QFile resData(":/debugLib");
-        if (resData.open(QIODevice::ReadOnly)) {
-            QByteArray tempData = resData.readAll();
-            sizeBefor = tempData.size();
-            testLib.write(tempData.data(), tempData.size());
-            resData.close();
-        }
-
-        testLib.close();
-    }
-
     Deploy *deploy = new Deploy();
-    QVERIFY(deploy->strip("./test/binTargetDir"));
+    QVERIFY(deploy->strip("./test/binTargetDir/debugLib.so"));
 
+    QFile testLib ("./test/binTargetDir/debugLib.so");
     if (testLib.open(QIODevice::ReadOnly)) {
         sizeAfter = testLib.size();
         testLib.close();
     }
 
-    dir.setPath("./test/binTargetDir/");
-    dir.removeRecursively();
+    deleteLib("./test/binTargetDir");
+    delete deploy;
 
     QVERIFY(sizeBefor > sizeAfter);
+
+
+    //for folder
+    QStringList libList = {
+        ("./test/binTargetDir/debugLib1.so"),
+        ("./test/binTargetDir/debugLib2.so.1.2"),
+        ("./test/binTargetDir/debugLib3.so.1"),
+        ("./test/binTargetDir/debugLib4.so.1.0.0"),
+        ("./test/binTargetDir/debugLib.dll"),
+        ("./test/binTargetDir/debugLib1.dll")
+    };
+    QList<qint64> sizeBeforList = {};
+
+    for (auto i: libList) {
+        sizeBeforList.push_back(generateLib(i));
+    }
+
+    QList<qint64> sizeAfterList;
+
+    deploy = new Deploy();
+    QVERIFY(deploy->strip("./test/binTargetDir"));
+
+    for(auto i: libList) {
+        QFile testLib (i);
+        if (testLib.open(QIODevice::ReadOnly)) {
+            sizeAfterList.push_back(testLib.size());
+            testLib.close();
+        }
+    }
+
+    deleteLib("./test/binTargetDir");
+
+    QVERIFY(sizeBeforList.size() == sizeAfterList.size());
+
+    for (int i = 0; i < sizeAfterList.size(); ++i) {
+        QVERIFY2(sizeBeforList[i] > sizeAfterList[i],
+                 QString("index %0, lib: %1 size befor:%2, sizeAfter:%3").
+                 arg(i).arg(libList[i]).arg(sizeBeforList[i]).arg(sizeAfterList[i]).
+                 toLatin1());
+    }
 }
 
 QTEST_APPLESS_MAIN(deploytest)
