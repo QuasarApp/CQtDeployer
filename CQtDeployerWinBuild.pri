@@ -7,7 +7,7 @@
 
 win32:CONFIG(release, debug|release): {
     DEPLOYER = $$PWD/CQtDeployerBinaries/Windows/cqtdeployer.exe
-    DEPLOY_TARGET = $$PWD/build/release/cqtdeployer.exe
+    DEPLOY_TARGET = $$PWD/CQtDeployer/build/release/cqtdeployer.exe
     BASE_DEPLOY_FLAGS = clear -qmake $$QMAKE_QMAKE -targetDir $$PWD/distro -libDir $$PWD/ -recursiveDepth 5
 
     deployTarget.commands = $$DEPLOYER $$BASE_DEPLOY_FLAGS -bin $$DEPLOY_TARGET
