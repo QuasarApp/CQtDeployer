@@ -404,7 +404,7 @@ void Deploy::extract(const QString &file, bool isExtractPlugins) {
     else if (sufix.isEmpty() || sufix.contains("so", Qt::CaseSensitive)) {
         extractLinuxLib(file, isExtractPlugins);
     } else {
-        qCritical() << "file with sufix " << sufix << " not supported!";
+        QuasarAppUtils::Params::verboseLog("file with sufix " + sufix + " not supported!");
     }
 
 }
