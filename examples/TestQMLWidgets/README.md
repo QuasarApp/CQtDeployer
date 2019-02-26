@@ -13,3 +13,7 @@
     cqtdeployerexample
 ``` 
 Done!
+
+
+# Warning 
+    snap install cqtdeployer --classic - not work because, install on classic mode not supported, use install application from [github](https://github.com/QuasarApp/Console-QtDeployer/releases)
