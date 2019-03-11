@@ -563,7 +563,7 @@ bool Deploy::copyFolder(const QString &from, const QString &to, const QStringLis
             }
 
             if (!skipFilter.isEmpty()) {
-                qInfo() << item << " ignored by filter " << skipFilter;
+                qInfo() << item.absoluteFilePath() << " ignored by filter " << skipFilter;
                 continue;
             }
 
