@@ -13,6 +13,17 @@
 #include "../qtTools/src/windeployqt/utils.h"
 #include "deploy_global.h"
 
+struct LibInfo {
+    Platform platform = Platform::UnknownPlatform;
+    bool is32bit = false;
+    QString name;
+    QString path;
+
+    bool operator == (const LibInfo& other);
+
+    QString fullPath();
+};
+
 class DEPLOYSHARED_EXPORT WinDependenciesScanner {
 private:
     QStringList _env;
@@ -20,6 +31,8 @@ private:
     Platform platformFromMkSpec(const QString &xSpec);
     QMap<QString, QString> qMakeAll(QString *errorMessage,
                                     const QString &binary = "qmake");
+
+    bool fillLibInfo(LibInfo& info ,const QString& file);
 public:
     explicit WinDependenciesScanner();
 

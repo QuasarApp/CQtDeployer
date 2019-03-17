@@ -44,7 +44,8 @@ SOURCES += \
         deployutils.cpp \
         windependenciesscanner.cpp \
         ../qtTools/src/windeployqt/elfreader.cpp \
-        ../qtTools/src/windeployqt/utils.cpp
+        ../qtTools/src/windeployqt/utils.cpp \
+    pe.cpp
 
 HEADERS += \
         deploy.h \
@@ -52,6 +53,7 @@ HEADERS += \
         deployutils.h \
         windependenciesscanner.h\
         ../qtTools/src/windeployqt/elfreader.h \
-        ../qtTools/src/windeployqt/utils.h
+        ../qtTools/src/windeployqt/utils.h \
+    pe.h
 
 win32: LIBS += -lshlwapi

@@ -17,6 +17,8 @@ chmod a+rx $BASE_DIR/wrapper/bin/desktop-launch
 echo "Start static build"
 $BASE_DIR/staticBuild.sh Q_OS_LINUX_SNAP
 
+chmod a+rx $BASE_DIR/distro/cqtdeployer
+
 if [ $? -eq 0 ]
 then
     echo ""

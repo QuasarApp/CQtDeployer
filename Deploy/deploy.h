@@ -86,8 +86,7 @@ class DEPLOYSHARED_EXPORT Deploy {
     bool extractQmlAll();
     bool extractQmlFromSource(const QString &sourceDir);
     QString filterQmlPath(const QString &path);
-    void extractLinuxLib(const QString & file, bool isExtractPlugins);
-    void extractWindowsLib(const QString & file, bool isExtractPlugins);
+    void extractLib(const QString & file, bool isExtractPlugins);
 
     void addEnv(const QString& dir);
     QString concatEnv() const;
