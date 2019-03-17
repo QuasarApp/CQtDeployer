@@ -4,13 +4,16 @@
 #include <QString>
 
 struct LIB_META_INFO {
-    unsigned int
-}
+    unsigned short mashine = 0x0;
+    unsigned short type = 0x0;
+    unsigned int addressImports = 0x0;
+    unsigned int sizeImportTable = 0x0;
+};
 
-class PE
-{
+class PE {
+
 private:
-
+    bool fillMetaInfo(LIB_META_INFO& info, const QString &file);
 
 public:
     enum class MashineTypesS: unsigned short {
@@ -31,6 +34,9 @@ public:
 
     constexpr static unsigned int PE_MAGIC = 0x00004550;
     constexpr static unsigned int INDEX_PE_MAGIC = 0x80;
+    constexpr static unsigned int INDEX_MAGIC = INDEX_PE_MAGIC + 0x16;
+    constexpr static unsigned int INDEX_IMPORTS_32 = INDEX_MAGIC + 0x68;
+    constexpr static unsigned int INDEX_IMPORTS_64 = INDEX_MAGIC + 0x78;
 
     bool is32bit(const QString& file);
     bool dependecies(QStringList& lisr, const QString& file);
