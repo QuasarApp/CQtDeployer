@@ -1,8 +1,7 @@
 #include "pe.h"
 
 #include <QFile>
-
-
+#include <QFileInfo>
 
 bool PE::fillMetaInfo(LIB_META_INFO &info, const QString &file) {
     QFile f(file);
@@ -69,24 +68,34 @@ bool PE::fillMetaInfo(LIB_META_INFO &info, const QString &file) {
     return true;
 }
 
-//TODO is sucks rewrite!
-bool PE::is32bit(const QString &file) {
+bool PE::is32bit(const QString &file, const LIB_META_INFO * info) {
 
-    LIB_META_INFO meta;
+    if (!info) {
+        LIB_META_INFO meta;
 
-    if (!fillMetaInfo(meta, file)) {
-        return false;
+        if (!fillMetaInfo(meta, file)) {
+            return false;
+        }
+
+        return static_cast<RunType>(meta.type) == RunType::_32bit;
     }
 
-    return static_cast<RunType>(meta.type) == RunType::_32bit;
+    return static_cast<RunType>(info->type) == RunType::_32bit;
 }
 
-bool PE::dependecies(QStringList &list, const QString &file) {
-    // TODO
+bool PE::dependecies(QStringList &list, const QString &file,
+                     const LIB_META_INFO * info) {
+
+
     LIB_META_INFO meta;
 
-    if (!fillMetaInfo(meta, file)) {
-        return false;
+    if (!info) {
+
+        if (!fillMetaInfo(meta, file)) {
+            return false;
+        }
+    } else {
+        meta = std::move(*info);
     }
 
     QFile f(file);
@@ -102,7 +111,7 @@ bool PE::dependecies(QStringList &list, const QString &file) {
         return false;
     }
 
-    QByteArray data = f.read(meta.sizeImportTable);
+    auto data = f.read(meta.sizeImportTable).split(char(0x0));
 
     f.close();
 
@@ -110,13 +119,39 @@ bool PE::dependecies(QStringList &list, const QString &file) {
         return false;
     }
 
-    // TODO
-
+    for (QString i : data) {
+        if (i.contains(".dll")) {
+            list.push_back(i);
+        }
+    }
 
     return true;
 }
 
-PE::PE()
-{
+PE::PE() {
 
+}
+
+LibInfo &&PE::getLibInfo(const QString &lib) {
+    LibInfo info;
+    LIB_META_INFO meta;
+
+    if (!fillMetaInfo(meta, lib)) {
+        return std::move(info);
+    }
+
+    info.name = QFileInfo(lib).fileName();
+    info.path = QFileInfo(lib).filePath();
+
+    if (static_cast<RunType>(meta.type) == RunType::_32bit) {
+        info.platform = Platform::Win32;
+    } else if (static_cast<RunType>(meta.type) == RunType::_64bit) {
+        info.platform = Platform::Win64;
+    } else {
+        info.platform = Platform::UnknownPlatform;
+    }
+
+    dependecies(info.dependncies, lib, &meta);
+
+    return std::move(info);
 }

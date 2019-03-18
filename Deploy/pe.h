@@ -2,6 +2,7 @@
 #define PE_H
 
 #include <QString>
+#include "igetlibinfo.h"
 
 struct LIB_META_INFO {
     unsigned short mashine = 0x0;
@@ -10,7 +11,7 @@ struct LIB_META_INFO {
     unsigned int sizeImportTable = 0x0;
 };
 
-class PE {
+class PE : public IGetLibInfo {
 
 private:
     bool fillMetaInfo(LIB_META_INFO& info, const QString &file);
@@ -38,9 +39,15 @@ public:
     constexpr static unsigned int INDEX_IMPORTS_32 = INDEX_MAGIC + 0x68;
     constexpr static unsigned int INDEX_IMPORTS_64 = INDEX_MAGIC + 0x78;
 
-    bool is32bit(const QString& file);
-    bool dependecies(QStringList& lisr, const QString& file);
+    bool is32bit(const QString& file, const LIB_META_INFO *info = nullptr);
+    bool dependecies(QStringList& lisr, const QString& file,
+                     const LIB_META_INFO *info = nullptr);
     PE();
+    ~PE();
+
+    // IGetLibInfo interface
+public:
+    LibInfo &&getLibInfo(const QString& lib);
 };
 
 #endif // PE_H

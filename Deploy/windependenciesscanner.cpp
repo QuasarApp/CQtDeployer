@@ -13,48 +13,48 @@
 #include <QDebug>
 
 
-struct Options {
-    enum DebugDetection {
-        DebugDetectionAuto,
-        DebugDetectionForceDebug,
-        DebugDetectionForceRelease
-    };
+//struct Options {
+//    enum DebugDetection {
+//        DebugDetectionAuto,
+//        DebugDetectionForceDebug,
+//        DebugDetectionForceRelease
+//    };
 
-    enum AngleDetection {
-        AngleDetectionAuto,
-        AngleDetectionForceOn,
-        AngleDetectionForceOff
-    };
+//    enum AngleDetection {
+//        AngleDetectionAuto,
+//        AngleDetectionForceOn,
+//        AngleDetectionForceOff
+//    };
 
-    bool plugins = true;
-    bool libraries = true;
-    bool quickImports = true;
-    bool translations = true;
-    bool systemD3dCompiler = true;
-    bool compilerRunTime = false;
-    AngleDetection angleDetection = AngleDetectionAuto;
-    bool softwareRasterizer = true;
-    Platform platform = Windows;
-    quint64 additionalLibraries = 0;
-    quint64 disabledLibraries = 0;
-    unsigned updateFileFlags = 0;
-    QStringList qmlDirectories; // Project's QML files.
-    QString directory;
-    QString translationsDirectory; // Translations target directory
-    QString libraryDirectory;
-    QString pluginDirectory;
-    QStringList binaries;
-    JsonOutput *json = nullptr;
-    ListOption list = ListNone;
-    DebugDetection debugDetection = DebugDetectionAuto;
-    bool deployPdb = false;
-    bool dryRun = false;
-    bool patchQt = true;
+//    bool plugins = true;
+//    bool libraries = true;
+//    bool quickImports = true;
+//    bool translations = true;
+//    bool systemD3dCompiler = true;
+//    bool compilerRunTime = false;
+//    AngleDetection angleDetection = AngleDetectionAuto;
+//    bool softwareRasterizer = true;
+//    Platform platform = Windows;
+//    quint64 additionalLibraries = 0;
+//    quint64 disabledLibraries = 0;
+//    unsigned updateFileFlags = 0;
+//    QStringList qmlDirectories; // Project's QML files.
+//    QString directory;
+//    QString translationsDirectory; // Translations target directory
+//    QString libraryDirectory;
+//    QString pluginDirectory;
+//    QStringList binaries;
+//    JsonOutput *json = nullptr;
+//    ListOption list = ListNone;
+//    DebugDetection debugDetection = DebugDetectionAuto;
+//    bool deployPdb = false;
+//    bool dryRun = false;
+//    bool patchQt = true;
 
-    inline bool isWinRt() const {
-        return platform == WinRtArm || platform == WinRtIntel;
-    }
-};
+//    inline bool isWinRt() const {
+//        return platform == WinRtArm || platform == WinRtIntel;
+//    }
+//};
 
 WinDependenciesScanner::WinDependenciesScanner() {}
 
@@ -137,24 +137,24 @@ void WinDependenciesScanner::setEnvironment(const QStringList &env) {
 
 }
 
-Platform WinDependenciesScanner::platformFromMkSpec(const QString &xSpec)
-{
-    if (xSpec == QLatin1String("linux-g++"))
-        return Unix;
-    if (xSpec.startsWith(QLatin1String("win32-")))
-        return xSpec.contains(QLatin1String("g++")) ? WindowsMinGW : Windows;
-    if (xSpec.startsWith(QLatin1String("winrt-x")))
-        return WinRtIntel;
-    if (xSpec.startsWith(QLatin1String("winrt-arm")))
-        return WinRtArm;
-    if (xSpec.startsWith(QLatin1String("wince"))) {
-        if (xSpec.contains(QLatin1String("-x86-")))
-            return WinCEIntel;
-        if (xSpec.contains(QLatin1String("-arm")))
-            return WinCEArm;
-    }
-    return UnknownPlatform;
-}
+//Platform WinDependenciesScanner::platformFromMkSpec(const QString &xSpec)
+//{
+//    if (xSpec == QLatin1String("linux-g++"))
+//        return Unix;
+//    if (xSpec.startsWith(QLatin1String("win32-")))
+//        return xSpec.contains(QLatin1String("g++")) ? WindowsMinGW : Windows;
+//    if (xSpec.startsWith(QLatin1String("winrt-x")))
+//        return WinRtIntel;
+//    if (xSpec.startsWith(QLatin1String("winrt-arm")))
+//        return WinRtArm;
+//    if (xSpec.startsWith(QLatin1String("wince"))) {
+//        if (xSpec.contains(QLatin1String("-x86-")))
+//            return WinCEIntel;
+//        if (xSpec.contains(QLatin1String("-arm")))
+//            return WinCEArm;
+//    }
+//    return UnknownPlatform;
+//}
 
 QStringList WinDependenciesScanner::scan(const QString &path, Platform platfr,
                                          const QString& qmake) {
@@ -170,7 +170,7 @@ QStringList WinDependenciesScanner::scan(const QString &path, Platform platfr,
     }
 
     QStringList dep;
-    readExecutable(path, platfr, &errorMessage, &dep);
+//    readExecutable(path, platfr, &errorMessage, &dep);
 
     if (!errorMessage.isEmpty()) {
         qCritical() << errorMessage;
@@ -189,14 +189,4 @@ QStringList WinDependenciesScanner::scan(const QString &path, Platform platfr,
 
 WinDependenciesScanner::~WinDependenciesScanner() {
 
-}
-
-bool LibInfo::operator ==(const LibInfo &other) {
-    return platform == other.platform &&
-            name == other.name &&
-            is32bit == other.is32bit;
-}
-
-QString LibInfo::fullPath() {
-    return path + "/" + name;
 }

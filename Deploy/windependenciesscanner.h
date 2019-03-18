@@ -10,19 +10,9 @@
 
 #include <QMultiMap>
 #include <QStringList>
-#include "../qtTools/src/windeployqt/utils.h"
 #include "deploy_global.h"
+#include "structs.h"
 
-struct LibInfo {
-    Platform platform = Platform::UnknownPlatform;
-    bool is32bit = false;
-    QString name;
-    QString path;
-
-    bool operator == (const LibInfo& other);
-
-    QString fullPath();
-};
 
 class DEPLOYSHARED_EXPORT WinDependenciesScanner {
 private:
