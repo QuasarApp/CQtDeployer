@@ -128,7 +128,7 @@ bool PE::dependecies(QStringList &list, const QString &file,
     return true;
 }
 
-PE::PE() {
+PE::PE(): IGetLibInfo () {
 
 }
 

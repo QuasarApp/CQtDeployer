@@ -18,9 +18,6 @@ class DEPLOYSHARED_EXPORT WinDependenciesScanner {
 private:
     QStringList _env;
     QMap<QString, QString> _EnvLibs;
-    Platform platformFromMkSpec(const QString &xSpec);
-    QMap<QString, QString> qMakeAll(QString *errorMessage,
-                                    const QString &binary = "qmake");
 
     bool fillLibInfo(LibInfo& info ,const QString& file);
 public:
