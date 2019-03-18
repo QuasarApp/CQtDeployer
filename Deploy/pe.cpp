@@ -155,3 +155,7 @@ LibInfo &&PE::getLibInfo(const QString &lib) {
 
     return std::move(info);
 }
+
+PE::~PE(){
+
+}

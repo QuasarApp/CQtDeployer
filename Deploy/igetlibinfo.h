@@ -6,9 +6,9 @@
 class IGetLibInfo
 {
 public:
-    IGetLibInfo();
-    virtual LibInfo &&getLibInfo(const QString& lib);
-    virtual ~IGetLibInfo();
+    IGetLibInfo() = default;
+    virtual LibInfo &&getLibInfo(const QString& lib) = 0;
+    virtual ~IGetLibInfo() = default;
 
 };
 
