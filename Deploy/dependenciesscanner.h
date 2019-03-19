@@ -12,24 +12,36 @@
 #include <QStringList>
 #include "deploy_global.h"
 #include "structs.h"
+#include "pe.h"
+
+enum class PrivateScaner: unsigned char {
+   UNKNOWN,
+   PE,
+   ELF
+};
+
+class DEPLOYSHARED_EXPORT DependenciesScanner {
 
 
-class DEPLOYSHARED_EXPORT WinDependenciesScanner {
 private:
     QStringList _env;
     QMap<QString, QString> _EnvLibs;
 
+    PE _peScaner;
+
+    PrivateScaner getScaner(const QString& lib) const;
+
     bool fillLibInfo(LibInfo& info ,const QString& file);
 public:
-    explicit WinDependenciesScanner();
+    explicit DependenciesScanner();
 
     void setEnvironment(const QStringList &env);
 
-    QStringList scan(const QString& path,
-                     Platform platfr = UnknownPlatform,
-                     const QString &qmake = "qmake");
+    QStringList scan(const QString& path);
 
-    ~WinDependenciesScanner();
+    ~DependenciesScanner();
+
+    friend class deploytest;
 };
 
 #endif // WINDEPENDENCIESSCANNER_H

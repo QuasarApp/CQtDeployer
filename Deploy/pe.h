@@ -44,7 +44,7 @@ public:
                      const LIB_META_INFO *info = nullptr);
     PE();
 
-    LibInfo &&getLibInfo(const QString& lib) override;
+    bool getLibInfo(const QString& lib, LibInfo& info) override;
 
     ~PE() override;
 

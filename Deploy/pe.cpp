@@ -132,12 +132,11 @@ PE::PE(): IGetLibInfo () {
 
 }
 
-LibInfo &&PE::getLibInfo(const QString &lib) {
-    LibInfo info;
+bool PE::getLibInfo(const QString &lib, LibInfo &info) {
     LIB_META_INFO meta;
 
     if (!fillMetaInfo(meta, lib)) {
-        return std::move(info);
+        return false;
     }
 
     info.name = QFileInfo(lib).fileName();
@@ -153,7 +152,7 @@ LibInfo &&PE::getLibInfo(const QString &lib) {
 
     dependecies(info.dependncies, lib, &meta);
 
-    return std::move(info);
+    return info.isValid();
 }
 
 PE::~PE(){

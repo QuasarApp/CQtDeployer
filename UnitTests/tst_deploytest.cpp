@@ -9,11 +9,13 @@
 #include <quasarapp.h>
 #include <deployutils.h>
 #include <deploy.h>
-#include <windependenciesscanner.h>
+#include <dependenciesscanner.h>
 
+#include <QMap>
 #include <QByteArray>
 #include <QDir>
 #include <thread>
+#include "libcreator.h"
 // add necessary includes here
 
 class deploytest : public QObject
@@ -40,6 +42,7 @@ private slots:
     void testTranslations();
     void testStrip();
     void testDeploy();
+    void testExtractLib();
 
 };
 
@@ -281,6 +284,29 @@ void deploytest::testDeploy()
     Deploy *deploy = new Deploy();
     QVERIFY(!deploy->appDir.isEmpty());
     delete deploy;
+}
+
+void deploytest::testExtractLib() {
+    LibCreator creator("./");
+    auto libs = creator.getLibs();
+    auto deb = creator.getLibsDep();
+    auto platforms = creator.getLibplatform();
+
+    DependenciesScanner scaner;
+
+    LibInfo info;
+
+    for (auto &&lib : libs) {
+        QVERIFY(scaner.fillLibInfo(info, lib));
+        QVERIFY(info.isValid());
+        QVERIFY(info.name == QFileInfo(lib).fileName());
+        QVERIFY(info.path == QFileInfo(lib).absolutePath());
+        QVERIFY(info.fullPath() == QFileInfo(lib).absoluteFilePath());
+        QVERIFY(info.platform == platforms.value(lib));
+        QVERIFY(info.dependncies == deb.value(lib));
+
+    }
+
 }
 
 void deploytest::testTranslations() {

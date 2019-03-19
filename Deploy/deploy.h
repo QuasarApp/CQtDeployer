@@ -11,7 +11,7 @@
 #include <QSettings>
 #include <QString>
 #include <QStringList>
-#include <windependenciesscanner.h>
+#include <dependenciesscanner.h>
 #include "deploy_global.h"
 
 class DEPLOYSHARED_EXPORT Deploy {
@@ -45,7 +45,7 @@ class DEPLOYSHARED_EXPORT Deploy {
 
     QString appDir;
 
-    WinDependenciesScanner winScaner;
+    DependenciesScanner winScaner;
 
     bool fileActionPrivate(const QString &file, const QString &target,
                            QStringList *mask, bool isMove);

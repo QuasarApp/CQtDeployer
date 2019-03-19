@@ -20,6 +20,8 @@ struct LibInfo {
     bool operator == (const LibInfo& other);
 
     QString fullPath();
+
+    bool isValid() const;
 };
 
 #endif // LIBINFO_H

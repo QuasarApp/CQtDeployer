@@ -5,21 +5,46 @@
  * of this license document, but changing it is not allowed.
  */
 
-#include "windependenciesscanner.h"
+#include "dependenciesscanner.h"
 #include "deployutils.h"
 
 #include <QList>
 #include <QDir>
 #include <QDebug>
 
-WinDependenciesScanner::WinDependenciesScanner() {}
+DependenciesScanner::DependenciesScanner() {}
 
 
-bool WinDependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) {
+PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
 
+    QFileInfo info(lib);
+
+    auto sufix = info.completeSuffix();
+
+    if (sufix.contains("dll", Qt::CaseSensitive) ||
+            sufix.contains("exe", Qt::CaseSensitive)) {
+        return PrivateScaner::PE;
+    } else if (sufix.isEmpty() || sufix.contains("so", Qt::CaseSensitive)) {
+        return PrivateScaner::ELF;
+    }
+
+    return PrivateScaner::UNKNOWN;
 }
 
-void WinDependenciesScanner::setEnvironment(const QStringList &env) {
+bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) {
+
+   auto scaner = getScaner(file);
+
+   switch (scaner) {
+   case PrivateScaner::PE: {
+       return _peScaner.getLibInfo(file, info);
+   }
+
+   default: return false;
+   }
+}
+
+void DependenciesScanner::setEnvironment(const QStringList &env) {
     QDir dir;
     for (auto i : env) {
 
@@ -44,18 +69,12 @@ void WinDependenciesScanner::setEnvironment(const QStringList &env) {
 
 }
 
-QStringList WinDependenciesScanner::scan(const QString &path, Platform platfr,
-                                         const QString& qmake) {
+QStringList DependenciesScanner::scan(const QString &path) {
     QStringList result;
 
     QString errorMessage;
 
-    if (platfr == Platform::UnknownPlatform) {
-
-    }
-
     QStringList dep;
-//    readExecutable(path, platfr, &errorMessage, &dep);
 
     if (!errorMessage.isEmpty()) {
         qCritical() << errorMessage;
@@ -72,6 +91,6 @@ QStringList WinDependenciesScanner::scan(const QString &path, Platform platfr,
     return result;
 }
 
-WinDependenciesScanner::~WinDependenciesScanner() {
+DependenciesScanner::~DependenciesScanner() {
 
 }

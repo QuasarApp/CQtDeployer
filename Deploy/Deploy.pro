@@ -42,16 +42,16 @@ include('$$PWD/../QuasarAppLib/QuasarLib.pri')
 SOURCES += \
         deploy.cpp \
         deployutils.cpp \
-        windependenciesscanner.cpp \
     pe.cpp \
     igetlibinfo.cpp \
-    structs.cpp
+    structs.cpp \
+    dependenciesscanner.cpp
 
 HEADERS += \
         deploy.h \
         deploy_global.h \ 
         deployutils.h \
-        windependenciesscanner.h\
     pe.h \
     igetlibinfo.h \
-    structs.h
+    structs.h \
+    dependenciesscanner.h

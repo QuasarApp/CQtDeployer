@@ -8,3 +8,8 @@ bool LibInfo::operator ==(const LibInfo &other) {
 QString LibInfo::fullPath() {
     return path + "/" + name;
 }
+
+bool LibInfo::isValid() const {
+    return platform != Platform::UnknownPlatform &&
+            name.size() && path.size();
+}

@@ -613,7 +613,7 @@ QString Deploy::filterQmlPath(const QString &path) {
 void Deploy::extractLib(const QString &file, bool isExtractPlugins) {
     qInfo() << "extract lib :" << file;
 
-    auto data = winScaner.scan(file, Platform::UnknownPlatform, qmake);
+    auto data = winScaner.scan(file);
 
     for (QString &line : data) {
         line = line.simplified();
