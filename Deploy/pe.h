@@ -19,8 +19,8 @@ private:
     constexpr static unsigned int PE_MAGIC = 0x00004550;
     constexpr static unsigned int INDEX_PE_MAGIC = 0x80;
     constexpr static unsigned int INDEX_MAGIC = INDEX_PE_MAGIC + 0x18;
-    constexpr static unsigned int INDEX_IMPORTS_32 = INDEX_MAGIC + 104;
-    constexpr static unsigned int INDEX_IMPORTS_64 = INDEX_MAGIC + 120;
+    constexpr static unsigned int INDEX_IMPORTS_32 = INDEX_PE_MAGIC + 0x68;
+    constexpr static unsigned int INDEX_IMPORTS_64 = INDEX_PE_MAGIC + 0x78;
 
 public:
     enum class MashineTypesS: unsigned short {
