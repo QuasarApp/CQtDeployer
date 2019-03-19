@@ -104,8 +104,6 @@ bool PE::dependecies(QStringList &list, const QString &file,
         return false;
     }
 
-    f.close();
-
     if (!f.seek(meta.addressImports)) {
         f.close();
         return false;
@@ -140,7 +138,7 @@ bool PE::getLibInfo(const QString &lib, LibInfo &info) {
     }
 
     info.name = QFileInfo(lib).fileName();
-    info.path = QFileInfo(lib).filePath();
+    info.path = QFileInfo(lib).absolutePath();
 
     if (static_cast<RunType>(meta.type) == RunType::_32bit) {
         info.platform = Platform::Win32;

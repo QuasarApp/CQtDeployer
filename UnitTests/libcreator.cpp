@@ -25,8 +25,8 @@ void LibCreator::createLib(const QString &resLib,
             target.close();
 
             copyedLibs.push_back(target.fileName());
-            libDep.insert(resLib, dep);
-            libplatform.insert(resLib, platform);
+            libDep.insert(target.fileName(), dep);
+            libplatform.insert(target.fileName(), platform);
         }
 
         lib.close();
