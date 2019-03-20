@@ -298,7 +298,6 @@ void deploytest::testExtractLib() {
 
     for (auto &&lib : libs) {
         QVERIFY(scaner.fillLibInfo(info, lib));
-        QVERIFY(info.isValid());
         QVERIFY(info.name == QFileInfo(lib).fileName());
         QVERIFY(info.path == QFileInfo(lib).absolutePath());
         QVERIFY(info.fullPath() == QFileInfo(lib).absoluteFilePath());
