@@ -1,6 +1,7 @@
 #ifndef PE_H
 #define PE_H
 
+#include <QFile>
 #include <QString>
 #include "igetlibinfo.h"
 
@@ -14,13 +15,14 @@ struct LIB_META_INFO {
 class PE : public IGetLibInfo {
 
 private:
+    int findIndexPE(QFile &file);
     bool fillMetaInfo(LIB_META_INFO& info, const QString &file);
 
     constexpr static unsigned int PE_MAGIC = 0x00004550;
     constexpr static unsigned int INDEX_PE_MAGIC = 0x80;
-    constexpr static unsigned int INDEX_MAGIC = INDEX_PE_MAGIC + 0x18;
-    constexpr static unsigned int INDEX_IMPORTS_32 = INDEX_PE_MAGIC + 0x68;
-    constexpr static unsigned int INDEX_IMPORTS_64 = INDEX_PE_MAGIC + 0x78;
+    constexpr static unsigned int INDEX_MAGIC = 0x18;
+    constexpr static unsigned int INDEX_IMPORTS_32 = 0x68;
+    constexpr static unsigned int INDEX_IMPORTS_64 = 0x78;
 
 public:
     enum class MashineTypesS: unsigned short {

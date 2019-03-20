@@ -3,6 +3,33 @@
 #include <QFile>
 #include <QFileInfo>
 
+int PE::findIndexPE(QFile &file) {
+
+    if (!file.isOpen()) {
+        return -1;
+    }
+
+    int limit = 0xFF;
+    int currentSeack = INDEX_PE_MAGIC;
+    unsigned int PE = 0x0;
+
+    while (currentSeack <= limit) {
+        if (!file.seek(currentSeack)) {
+            return -1;
+        }
+
+        file.read(reinterpret_cast<char*>(&PE), sizeof (PE));
+
+        if (PE == PE_MAGIC) {
+            return currentSeack;
+        }
+
+        currentSeack++;
+    }
+
+    return -1;
+}
+
 bool PE::fillMetaInfo(LIB_META_INFO &info, const QString &file) {
     QFile f(file);
 
@@ -16,24 +43,20 @@ bool PE::fillMetaInfo(LIB_META_INFO &info, const QString &file) {
         return false;
     }
 
-    SEEK(INDEX_PE_MAGIC);
+    int peAddress = findIndexPE(f);
 
-    unsigned int PE = 0x0;
-    f.read(reinterpret_cast<char*>(&PE), sizeof (PE));
-
-    if (PE != PE_MAGIC) {
-        f.close();
+    if (peAddress < 0) {
         return false;
     }
 
     unsigned short mashine = 0x0;
-    SEEK(INDEX_PE_MAGIC + sizeof (PE));
+    SEEK(static_cast<unsigned int>(peAddress) + sizeof (unsigned short));
 
     f.read(reinterpret_cast<char*>(&mashine), sizeof (mashine));
 
     info.mashine = mashine;
 
-    SEEK(INDEX_MAGIC);
+    SEEK(static_cast<unsigned int>(peAddress) + INDEX_MAGIC);
 
     unsigned short magic = 0x0;
     f.read(reinterpret_cast<char*>(&magic), sizeof (magic));
@@ -42,9 +65,9 @@ bool PE::fillMetaInfo(LIB_META_INFO &info, const QString &file) {
 
     unsigned int importTableIndex = 0;
     if (static_cast<RunType>(info.type) == RunType::_32bit) {
-        importTableIndex = INDEX_IMPORTS_32;
+        importTableIndex = static_cast<unsigned int>(peAddress) + INDEX_IMPORTS_32;
     } else if (static_cast<RunType>(info.type) == RunType::_64bit) {
-        importTableIndex = INDEX_IMPORTS_64;
+        importTableIndex = static_cast<unsigned int>(peAddress) + INDEX_IMPORTS_64;
     } else {
         f.close();
         return false;
