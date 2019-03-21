@@ -50,6 +50,13 @@ typedef unsigned int DWORD;
 #define IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT   	13   // Delay Load Import Descriptors
 #define IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR 	14   // COM Runtime descriptor
 
+#define ALIGN_DOWN(x, align)  (x & ~(align-1))
+#define ALIGN_UP(x, align)    ((x & (align-1))?ALIGN_DOWN(x,align)+align:x)
+
+// sectionAligment - выравнивание для секции. Значение можно узнать в Optional-header.
+// sectionVitualAddress - RVA секции - хранится непосредственно в секции
+// ALIGN_UP() - функция, определяющая сколько занимает секция в памяти, учитывая выравнивание
+
 struct IMAGE_DATA_DIRECTORY {
     DWORD VirtualAddress;
     DWORD Size;
@@ -121,31 +128,27 @@ struct IMAGE_SECTION_HEADER {
   DWORD Characteristics;
 };
 
+class ROW_CONVERTER {
+
+private:
+    int defSection(DWORD rva);
+
+    DWORD rvaToOff(DWORD rva);
+
+    QList<IMAGE_SECTION_HEADER> sections;
+    DWORD sectionAligment;
+
+public:
+    ROW_CONVERTER(QList<IMAGE_SECTION_HEADER> sctions, DWORD align);
+    DWORD convert(DWORD rva);
+};
+
 class PE : public IGetLibInfo {
 
 private:
 
-//    int defSection(DWORD rva)
-//    {
-//        for (int i = 0; i < numberOfSection; ++i)
-//        {
-//            DWORD start = sections[i].VirtualAddress;
-//            DWORD end = start + ALIGN_UP(sections[i].VirtualSize, sectionAligment);
-
-//            if(rva >= start && rva < end)
-//                return i;
-//        }
-//        return -1;
-//    }
-
-//    DWORD rvaToOff(DWORD rva)
-//    {
-//        int indexSection = defSection(rva);
-//        if(indexSection != -1)
-//            return rva - sections[indexSection].VirtualAddress + sections[indexSection].PointerToRawData;
-//        else
-//            return 0;
-//    }
+    bool readSectionsHeaders(QList<IMAGE_SECTION_HEADER>& sections, const QFile &file);
+    DWORD readSectionAligment(const QFile &file);
 
     int findIndexPE(QFile &file);
     bool fillMetaInfo(LIB_META_INFO& info, const QString &file);

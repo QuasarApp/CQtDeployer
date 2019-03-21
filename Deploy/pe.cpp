@@ -3,6 +3,16 @@
 #include <QFile>
 #include <QFileInfo>
 
+bool PE::readSectionsHeaders(QList<IMAGE_SECTION_HEADER> &sections,
+                             const QFile& file) {
+
+    return false;
+}
+
+DWORD PE::readSectionAligment(const QFile& file) {
+    return 0;
+}
+
 int PE::findIndexPE(QFile &file) {
 
     if (!file.isOpen()) {
@@ -89,9 +99,16 @@ bool PE::fillMetaInfo(LIB_META_INFO &info, const QString &file) {
 
     IMAGE_DATA_DIRECTORY import = {};
 
+    QList<IMAGE_SECTION_HEADER> sectionHeader;
+    if (!readSectionsHeaders(sectionHeader, f)) {
+        return false;
+    }
+
+    ROW_CONVERTER converter(sectionHeader, readSectionAligment(f));
+
     f.read(reinterpret_cast<char*>(&import), sizeof (import));
 
-    info.addressImports = import.VirtualAddress;
+    info.addressImports = converter.convert(import.VirtualAddress);
     info.sizeImportTable = import.Size;
 
     f.close();
@@ -185,4 +202,32 @@ bool PE::getLibInfo(const QString &lib, LibInfo &info) {
 
 PE::~PE(){
 
+}
+
+int ROW_CONVERTER::defSection(DWORD rva) {
+    for (int i = 0; i < sections.size(); ++i)
+    {
+        DWORD start = sections[i].VirtualAddress;
+        DWORD end = start + ALIGN_UP(sections[i].Misc.VirtualSize, sectionAligment);
+        if(rva >= start && rva < end)
+            return i;
+    }
+    return -1;
+}
+
+DWORD ROW_CONVERTER::rvaToOff(DWORD rva) {
+    int indexSection = defSection(rva);
+    if(indexSection != -1)
+        return rva - sections[indexSection].VirtualAddress + sections[indexSection].PointerToRawData;
+    else
+        return 0;
+}
+
+ROW_CONVERTER::ROW_CONVERTER(QList<IMAGE_SECTION_HEADER> sctions, DWORD align) {
+    sections = sctions;
+    sectionAligment = align;
+}
+
+DWORD ROW_CONVERTER::convert(DWORD rva) {
+    return rvaToOff(rva);
 }
