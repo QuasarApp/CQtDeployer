@@ -2,30 +2,74 @@
 
 #include <QFile>
 #include <QFileInfo>
+#include <QVector>
 
-bool PE::readSectionsHeaders(QList<IMAGE_SECTION_HEADER> &sections,
-                             const QFile& file) {
+bool PE::readSectionsHeaders(const LIB_META_INFO & info,
+                             QVector<IMAGE_SECTION_HEADER> &sections,
+                             QFile& file) {
+
+    if (!file.isOpen()) {
+        return false;
+    }
+
+    sections.clear();
+
+    if (static_cast<RunType>(info.type) == RunType::_32bit) {
+        if (!file.seek(info.PEIndex + SECTION_HEADER_32)) {
+            return false;
+        }
+
+        sections.resize(info.rawSectionCount);
+        file.read(reinterpret_cast<char*>(sections.data()),
+                  sizeof (IMAGE_SECTION_HEADER) * info.rawSectionCount);
+
+        return true;
+    }
+    else if (static_cast<RunType>(info.type) == RunType::_64bit) {
+
+        if (!file.seek(info.PEIndex + SECTION_HEADER_64)) {
+            return false;
+        }
+
+        sections.resize(info.rawSectionCount);
+        file.read(reinterpret_cast<char*>(sections.data()),
+                  sizeof (IMAGE_SECTION_HEADER) * info.rawSectionCount);
+        return true;
+    }
 
     return false;
 }
 
-DWORD PE::readSectionAligment(const QFile& file) {
-    return 0;
-}
-
-int PE::findIndexPE(QFile &file) {
+DWORD PE::readSectionAligment(const LIB_META_INFO &info, QFile& file) {
 
     if (!file.isOpen()) {
-        return -1;
+        return false;
     }
 
-    int limit = 0x400;
-    int currentSeeck = INDEX_PE_MAGIC;
-    unsigned int PE = 0x0;
+    if (!file.seek(info.PEIndex + SECTION_ALIGMENT_INDEX_32_64)) {
+        return false;
+    }
+
+    DWORD sectionAlign;
+
+    file.read(reinterpret_cast<char*>(&sectionAlign), sizeof (sectionAlign));
+
+    return sectionAlign;
+}
+
+unsigned short PE::findIndexPE(QFile &file) {
+
+    if (!file.isOpen()) {
+        return 0;
+    }
+
+    unsigned short limit = 0x400;
+    unsigned short currentSeeck = INDEX_PE_MAGIC;
+    unsigned short PE = 0x0;
 
     while (currentSeeck <= limit) {
         if (!file.seek(currentSeeck)) {
-            return -1;
+            return 0;
         }
 
         file.read(reinterpret_cast<char*>(&PE), sizeof (PE));
@@ -37,7 +81,7 @@ int PE::findIndexPE(QFile &file) {
         currentSeeck++;
     }
 
-    return -1;
+    return 0;
 }
 
 bool PE::fillMetaInfo(LIB_META_INFO &info, const QString &file) {
@@ -53,20 +97,22 @@ bool PE::fillMetaInfo(LIB_META_INFO &info, const QString &file) {
         return false;
     }
 
-    int peAddress = findIndexPE(f);
+    info.PEIndex = findIndexPE(f);
 
-    if (peAddress < 0) {
+    if (!info.PEIndex) {
         return false;
     }
 
-    unsigned short mashine = 0x0;
-    SEEK(static_cast<unsigned int>(peAddress) + sizeof (unsigned int));
+    SEEK(info.PEIndex + sizeof (unsigned int));
+    f.read(reinterpret_cast<char*>(&info.mashine), sizeof (info.mashine));
 
-    f.read(reinterpret_cast<char*>(&mashine), sizeof (mashine));
+    SEEK(info.PEIndex +
+         sizeof (unsigned int) +
+         sizeof (info.mashine));
+    f.read(reinterpret_cast<char*>(&info.rawSectionCount),
+           sizeof (info.rawSectionCount));
 
-    info.mashine = mashine;
-
-    SEEK(static_cast<unsigned int>(peAddress) + INDEX_MAGIC);
+    SEEK(info.PEIndex + INDEX_MAGIC);
 
     unsigned short magic = 0x0;
     f.read(reinterpret_cast<char*>(&magic), sizeof (magic));
@@ -74,39 +120,29 @@ bool PE::fillMetaInfo(LIB_META_INFO &info, const QString &file) {
     info.type = magic;
 
     unsigned int importTableIndex = 0;
-    unsigned int rvaIndex = 0;
 
     if (static_cast<RunType>(info.type) == RunType::_32bit) {
-        importTableIndex = static_cast<unsigned int>(peAddress) + INDEX_IMPORTS_32;
-        rvaIndex = static_cast<unsigned int>(peAddress) + NUMBER_RVA_AND_SIZES_32;
+        importTableIndex = info.PEIndex + INDEX_IMPORTS_32;
 
     } else if (static_cast<RunType>(info.type) == RunType::_64bit) {
-        importTableIndex = static_cast<unsigned int>(peAddress) + INDEX_IMPORTS_64;
-        rvaIndex = static_cast<unsigned int>(peAddress) + NUMBER_RVA_AND_SIZES_64;
+        importTableIndex = info.PEIndex + INDEX_IMPORTS_64;
     } else {
         f.close();
         return false;
     }
 
-
-    SEEK(rvaIndex);
-
-    unsigned int NumberOfRvaAndSizes = 0;
-
-    f.read(reinterpret_cast<char*>(&NumberOfRvaAndSizes), sizeof (NumberOfRvaAndSizes));
-
     SEEK(importTableIndex);
 
     IMAGE_DATA_DIRECTORY import = {};
+    f.read(reinterpret_cast<char*>(&import), sizeof (import));
 
-    QList<IMAGE_SECTION_HEADER> sectionHeader;
-    if (!readSectionsHeaders(sectionHeader, f)) {
+    QVector<IMAGE_SECTION_HEADER> sectionHeader;
+    if (!readSectionsHeaders(info, sectionHeader, f)) {
         return false;
     }
 
-    ROW_CONVERTER converter(sectionHeader, readSectionAligment(f));
+    ROW_CONVERTER converter(sectionHeader, readSectionAligment(info, f));
 
-    f.read(reinterpret_cast<char*>(&import), sizeof (import));
 
     info.addressImports = converter.convert(import.VirtualAddress);
     info.sizeImportTable = import.Size;
@@ -205,10 +241,9 @@ PE::~PE(){
 }
 
 int ROW_CONVERTER::defSection(DWORD rva) {
-    for (int i = 0; i < sections.size(); ++i)
-    {
+    for (int i = 0; i < sections.size(); ++i) {
         DWORD start = sections[i].VirtualAddress;
-        DWORD end = start + ALIGN_UP(sections[i].Misc.VirtualSize, sectionAligment);
+        DWORD end = start + ALIGN_UP(sections[i].VirtualSize, sectionAligment);
         if(rva >= start && rva < end)
             return i;
     }
@@ -218,12 +253,13 @@ int ROW_CONVERTER::defSection(DWORD rva) {
 DWORD ROW_CONVERTER::rvaToOff(DWORD rva) {
     int indexSection = defSection(rva);
     if(indexSection != -1)
-        return rva - sections[indexSection].VirtualAddress + sections[indexSection].PointerToRawData;
+        return rva - sections[indexSection].VirtualAddress +
+                sections[indexSection].PointerToRawData;
     else
         return 0;
 }
 
-ROW_CONVERTER::ROW_CONVERTER(QList<IMAGE_SECTION_HEADER> sctions, DWORD align) {
+ROW_CONVERTER::ROW_CONVERTER(QVector<IMAGE_SECTION_HEADER> sctions, DWORD align) {
     sections = sctions;
     sectionAligment = align;
 }

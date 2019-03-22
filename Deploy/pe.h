@@ -3,6 +3,7 @@
 
 #include <QFile>
 #include <QString>
+#include <QVector>
 #include "igetlibinfo.h"
 
 //Alghoritm of read dll file
@@ -21,6 +22,8 @@
 struct LIB_META_INFO {
     unsigned short mashine = 0x0;
     unsigned short type = 0x0;
+    unsigned short PEIndex = 0x0;
+    unsigned short rawSectionCount = 0x0;
     unsigned int addressImports = 0x0;
     unsigned int sizeImportTable = 0x0;
 };
@@ -114,10 +117,7 @@ struct IMAGE_NT_HEADERS {
 
 struct IMAGE_SECTION_HEADER {
   BYTE  Name[IMAGE_SIZEOF_SHORT_NAME];
-  union {
-    DWORD PhysicalAddress;
-    DWORD VirtualSize;
-  } Misc;
+  DWORD VirtualSize;
   DWORD VirtualAddress;
   DWORD SizeOfRawData;
   DWORD PointerToRawData;
@@ -135,11 +135,11 @@ private:
 
     DWORD rvaToOff(DWORD rva);
 
-    QList<IMAGE_SECTION_HEADER> sections;
+    QVector<IMAGE_SECTION_HEADER> sections;
     DWORD sectionAligment;
 
 public:
-    ROW_CONVERTER(QList<IMAGE_SECTION_HEADER> sctions, DWORD align);
+    ROW_CONVERTER(QVector<IMAGE_SECTION_HEADER> sctions, DWORD align);
     DWORD convert(DWORD rva);
 };
 
@@ -147,10 +147,13 @@ class PE : public IGetLibInfo {
 
 private:
 
-    bool readSectionsHeaders(QList<IMAGE_SECTION_HEADER>& sections, const QFile &file);
-    DWORD readSectionAligment(const QFile &file);
+    bool readSectionsHeaders(const LIB_META_INFO & info,
+                             QVector<IMAGE_SECTION_HEADER> &sections,
+                             QFile &file);
+    DWORD readSectionAligment(const LIB_META_INFO &info,
+                              QFile &file);
 
-    int findIndexPE(QFile &file);
+    unsigned short findIndexPE(QFile &file);
     bool fillMetaInfo(LIB_META_INFO& info, const QString &file);
 
     constexpr static unsigned int PE_MAGIC = 0x00004550;
@@ -158,8 +161,12 @@ private:
     constexpr static unsigned int INDEX_MAGIC = 0x18;
     constexpr static unsigned int INDEX_IMPORTS_32 = 104;
     constexpr static unsigned int INDEX_IMPORTS_64 = 120;
-    constexpr static unsigned int NUMBER_RVA_AND_SIZES_32 = 92;
-    constexpr static unsigned int NUMBER_RVA_AND_SIZES_64 = 108;
+
+    constexpr static unsigned int SECTION_HEADER_32 = 224;
+    constexpr static unsigned int SECTION_HEADER_64 = 240;
+
+    constexpr static unsigned int SECTION_ALIGMENT_INDEX_32_64 = 32;
+
 
 public:
     enum class MashineTypesS: unsigned short {
