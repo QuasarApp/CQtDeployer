@@ -302,7 +302,10 @@ void deploytest::testExtractLib() {
         QVERIFY(info.path == QFileInfo(lib).absolutePath());
         QVERIFY(info.fullPath() == QFileInfo(lib).absoluteFilePath());
         QVERIFY(info.platform == platforms.value(lib));
-        QVERIFY(info.dependncies == deb.value(lib));
+
+        for (auto &dep : deb.value(lib)) {
+            QVERIFY(info.dependncies.contains( dep, Qt::CaseInsensitive));
+        }
 
     }
 

@@ -66,7 +66,6 @@ void LibCreator::initLinux64() {
 
 void LibCreator::initWin32() {
     createLib(":/win32mingw.dll", {
-                  "libEGL.dll",
                   "libgcc_s_dw2-1.dll",
                   "KERNEL32.dll",
                   "msvcrt.dll",
@@ -74,15 +73,15 @@ void LibCreator::initWin32() {
               },
               Platform::Win32 );
     createLib(":/win32mingw.exe",{
-                  " Qt5Core.dll",
-                  " Qt5Gui.dll",
-                  " Qt5Qml.dll",
-                  " Qt5Widgets.dll",
-                  " libgcc_s_dw2-1.dll",
-                  " KERNEL32.dll",
-                  " msvcrt.dll",
-                  " SHELL32.dll",
-                  " libstdc++-6.dll",
+                  "Qt5Core.dll",
+                  "Qt5Gui.dll",
+                  "Qt5Qml.dll",
+                  "Qt5Widgets.dll",
+                  "libgcc_s_dw2-1.dll",
+                  "KERNEL32.dll",
+                  "msvcrt.dll",
+                  "SHELL32.dll",
+                  "libstdc++-6.dll",
               },
               Platform::Win32
               );
