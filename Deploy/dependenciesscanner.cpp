@@ -33,12 +33,15 @@ PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
 
 bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) {
 
+   info.clear();
    auto scaner = getScaner(file);
 
    switch (scaner) {
    case PrivateScaner::PE: {
        return _peScaner.getLibInfo(file, info);
    }
+   case PrivateScaner::ELF:
+       return _elfScaner.getLibInfo(file, info);
 
    default: return false;
    }

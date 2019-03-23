@@ -46,7 +46,9 @@ SOURCES += \
     pe.cpp \
     igetlibinfo.cpp \
     structs.cpp \
-    dependenciesscanner.cpp
+    dependenciesscanner.cpp \
+    ../qtTools/src/windeployqt/elfreader.cpp \
+    elf.cpp
 
 HEADERS += \
         deploy.h \
@@ -55,4 +57,6 @@ HEADERS += \
     pe.h \
     igetlibinfo.h \
     structs.h \
-    dependenciesscanner.h
+    dependenciesscanner.h \
+    ../qtTools/src/windeployqt/elfreader.h \
+    elf.h

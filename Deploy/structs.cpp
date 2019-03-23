@@ -9,6 +9,13 @@ QString LibInfo::fullPath() {
     return path + "/" + name;
 }
 
+void LibInfo::clear() {
+    path = "";
+    name = "";
+    platform = Platform::UnknownPlatform;
+    dependncies.clear();
+}
+
 bool LibInfo::isValid() const {
     return platform != Platform::UnknownPlatform &&
             name.size() && path.size();

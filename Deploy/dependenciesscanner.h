@@ -13,6 +13,7 @@
 #include "deploy_global.h"
 #include "structs.h"
 #include "pe.h"
+#include "elf.h"
 
 enum class PrivateScaner: unsigned char {
    UNKNOWN,
@@ -28,6 +29,7 @@ private:
     QMap<QString, QString> _EnvLibs;
 
     PE _peScaner;
+    ELF _elfScaner;
 
     PrivateScaner getScaner(const QString& lib) const;
 

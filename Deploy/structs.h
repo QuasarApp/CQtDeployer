@@ -8,7 +8,8 @@ enum Platform {
     UnknownPlatform = 0x0,
     Win32,
     Win64,
-    Unix
+    Unix32,
+    Unix64
 };
 
 struct LibInfo {
@@ -20,6 +21,8 @@ struct LibInfo {
     bool operator == (const LibInfo& other);
 
     QString fullPath();
+
+    void clear();
 
     bool isValid() const;
 };

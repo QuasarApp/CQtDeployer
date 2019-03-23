@@ -42,13 +42,8 @@ void LibCreator::initLinux64() {
                   "libstdc++.so.6",
                   "libgcc_s.so.1",
                   "libc.so.6",
-                  "libgcc_s.so.1",
-                  "libQt5Core.so.5",
-                  "libc.so.6",
-                  "libQt5Network.so.5",
-                  "libstdc++.so.6:",
               },
-              Platform::Unix);
+              Platform::Unix64);
     createLib(":/linux64.so", {
                   "libQt5Core.so.5",
                   "libpthread.so.0",
@@ -56,11 +51,9 @@ void LibCreator::initLinux64() {
                   "libm.so.6",
                   "libgcc_s.so.1",
                   "libc.so.6",
-                  "libSignalProcessorCommon.so.1",
-                  "libc.so.6",
-                  "libQt5Core.so.5",
+
               },
-              Platform::Unix);
+              Platform::Unix64);
 
 }
 
@@ -176,7 +169,7 @@ LibCreator::LibCreator(const QString &path) {
     this->path = path;
     initWin32();
     initWin64();
-    //initLinux64();
+    initLinux64();
 }
 
 const QStringList &LibCreator::getLibs() const {
