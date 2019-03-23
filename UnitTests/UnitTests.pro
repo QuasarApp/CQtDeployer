@@ -17,13 +17,19 @@ CONFIG(release, debug|release): {
 
 include('$$PWD/../QuasarAppLib/QuasarLib.pri')
 include('$$PWD/../Deploy/Deploy.pri')
+include('$$PWD/../pe/pe-parser-library/pe-parser.pri')
+
 
 CONFIG += qt console warn_on depend_includepath testcase
 CONFIG -= app_bundle
 
 TEMPLATE = app
 
-SOURCES +=  tst_deploytest.cpp
+SOURCES +=  tst_deploytest.cpp \
+    libcreator.cpp
 
 RESOURCES += \
     res.qrc
+
+HEADERS += \
+    libcreator.h

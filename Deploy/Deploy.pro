@@ -37,21 +37,26 @@ CONFIG(release, debug|release): {
 }
 
 include('$$PWD/../QuasarAppLib/QuasarLib.pri')
+include('$$PWD/../pe/pe-parser-library/pe-parser.pri')
 
 
 SOURCES += \
         deploy.cpp \
         deployutils.cpp \
-        windependenciesscanner.cpp \
-        ../qtTools/src/windeployqt/elfreader.cpp \
-        ../qtTools/src/windeployqt/utils.cpp
+    pe.cpp \
+    igetlibinfo.cpp \
+    structs.cpp \
+    dependenciesscanner.cpp \
+    ../qtTools/src/windeployqt/elfreader.cpp \
+    elf.cpp
 
 HEADERS += \
         deploy.h \
         deploy_global.h \ 
         deployutils.h \
-        windependenciesscanner.h\
-        ../qtTools/src/windeployqt/elfreader.h \
-        ../qtTools/src/windeployqt/utils.h
-
-win32: LIBS += -lshlwapi
+    pe.h \
+    igetlibinfo.h \
+    structs.h \
+    dependenciesscanner.h \
+    ../qtTools/src/windeployqt/elfreader.h \
+    elf.h

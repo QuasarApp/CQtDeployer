@@ -1,5 +1,15 @@
 <RCC>
     <qresource prefix="/">
         <file alias="debugLib">testRes/debugLibData</file>
+        <file alias="linux64.so">testRes/Unix/lib.so.1</file>
+        <file alias="linux64">testRes/Unix/Start</file>
+        <file alias="win32mingw.exe">testRes/win32/mingw/hanoi-towers.exe</file>
+        <file alias="win32mingw.dll">testRes/win32/mingw/libEGL.dll</file>
+        <file alias="win32msvc.dll">testRes/win32/msvc/qtaudio_windows.dll</file>
+        <file alias="win32msvc.exe">testRes/win32/msvc/TestStart.exe</file>
+        <file alias="win64mingw.exe">testRes/win64/mingw/cqtdeployer.exe</file>
+        <file alias="win64mingw.dll">testRes/win64/mingw/Deploy.dll</file>
+        <file alias="win64msvc.exe">testRes/win64/msvc/exe.exe</file>
+        <file alias="win64msvc.dll">testRes/win64/msvc/lib.dll</file>
     </qresource>
 </RCC>

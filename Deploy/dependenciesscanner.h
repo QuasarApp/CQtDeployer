@@ -10,26 +10,40 @@
 
 #include <QMultiMap>
 #include <QStringList>
-#include "../qtTools/src/windeployqt/utils.h"
 #include "deploy_global.h"
+#include "structs.h"
+#include "pe.h"
+#include "elf.h"
 
-class DEPLOYSHARED_EXPORT WinDependenciesScanner {
+enum class PrivateScaner: unsigned char {
+   UNKNOWN,
+   PE,
+   ELF
+};
+
+class DEPLOYSHARED_EXPORT DependenciesScanner {
+
+
 private:
     QStringList _env;
     QMap<QString, QString> _EnvLibs;
-    Platform platformFromMkSpec(const QString &xSpec);
-    QMap<QString, QString> qMakeAll(QString *errorMessage,
-                                    const QString &binary = "qmake");
+
+    PE _peScaner;
+    ELF _elfScaner;
+
+    PrivateScaner getScaner(const QString& lib) const;
+
+    bool fillLibInfo(LibInfo& info ,const QString& file);
 public:
-    explicit WinDependenciesScanner();
+    explicit DependenciesScanner();
 
     void setEnvironment(const QStringList &env);
 
-    QStringList scan(const QString& path,
-                     Platform platfr = UnknownPlatform,
-                     const QString &qmake = "qmake");
+    QStringList scan(const QString& path);
 
-    ~WinDependenciesScanner();
+    ~DependenciesScanner();
+
+    friend class deploytest;
 };
 
 #endif // WINDEPENDENCIESSCANNER_H

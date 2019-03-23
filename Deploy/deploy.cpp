@@ -396,13 +396,10 @@ void Deploy::extract(const QString &file, bool isExtractPlugins) {
     auto sufix = info.completeSuffix();
 
     if (sufix.contains("dll", Qt::CaseSensitive) ||
-            sufix.contains("exe", Qt::CaseSensitive)) {
+            sufix.contains("exe", Qt::CaseSensitive) ||
+            sufix.isEmpty() || sufix.contains("so", Qt::CaseSensitive)) {
 
-        winScaner.setEnvironment(deployEnvironment);
-        extractWindowsLib(file, isExtractPlugins);
-    }
-    else if (sufix.isEmpty() || sufix.contains("so", Qt::CaseSensitive)) {
-        extractLinuxLib(file, isExtractPlugins);
+        extractLib(file, isExtractPlugins);
     } else {
         QuasarAppUtils::Params::verboseLog("file with sufix " + sufix + " not supported!");
     }
@@ -613,75 +610,10 @@ QString Deploy::filterQmlPath(const QString &path) {
     return "";
 }
 
-void Deploy::extractLinuxLib(const QString &file, bool isExtractPlugins) {
+void Deploy::extractLib(const QString &file, bool isExtractPlugins) {
     qInfo() << "extract lib :" << file;
 
-    QProcessEnvironment env;
-
-    env.insert("LD_LIBRARY_PATH", concatEnv());
-    env.insert("QML_IMPORT_PATH", DeployUtils::qtDir + "/qml");
-    env.insert("QML2_IMPORT_PATH", DeployUtils::qtDir + "/qml");
-    env.insert("QT_PLUGIN_PATH", DeployUtils::qtDir + "/plugins");
-    env.insert("QT_QPA_PLATFORM_PLUGIN_PATH", DeployUtils::qtDir + "/plugins/platforms");
-
-    QProcess P;
-    P.setProcessEnvironment(env);
-    P.start("ldd " + file, QProcess::ReadOnly);
-
-    if (!P.waitForStarted())
-        return;
-    if (!P.waitForFinished())
-        return;
-
-    auto data = QString(P.readAll());
-
-    for (QString &line : data.split("\n", QString::SkipEmptyParts)) {
-        line = line.simplified();
-        auto innerlist = line.split(" ");
-
-        if (innerlist.count() < 3) {
-            QuasarAppUtils::Params::verboseLog(" the lib is not found: " + line);
-            continue;
-        }
-        line = innerlist[2];
-
-        if (!line.startsWith("/")) {
-            continue;
-        }
-
-        bool isIgnore = false;
-        for (auto ignore : ignoreList) {
-            if (line.contains(ignore)) {
-                QuasarAppUtils::Params::verboseLog(line + " ignored by filter" + ignore);
-                isIgnore = true;
-            }
-        }
-
-        if (isIgnore) {
-            continue;
-        }
-
-        if ((DeployUtils::isQtLib(line) || DeployUtils::isExtraLib(line)) && !QtLibs.contains(line)) {
-            QtLibs << line;
-            extractLinuxLib(line, isExtractPlugins);
-            if (isExtractPlugins) {
-                extractPlugins(line);
-            }
-            continue;
-        }
-
-        if ((QuasarAppUtils::Params::isEndable("deploy-not-qt") || onlyCLibs) &&
-                !noQTLibs.contains(line)) {
-            noQTLibs << line;
-            extractLinuxLib(line, isExtractPlugins);
-        }
-    }
-}
-
-void Deploy::extractWindowsLib(const QString &file, bool isExtractPlugins) {
-    qInfo() << "extract lib :" << file;
-
-    auto data = winScaner.scan(file, Platform::UnknownPlatform, qmake);
+    auto data = winScaner.scan(file);
 
     for (QString &line : data) {
         line = line.simplified();
@@ -701,7 +633,7 @@ void Deploy::extractWindowsLib(const QString &file, bool isExtractPlugins) {
 
         if ((DeployUtils::isQtLib(line) || DeployUtils::isExtraLib(line)) && !QtLibs.contains(line)) {
             QtLibs << line;
-            extractWindowsLib(line, isExtractPlugins);
+            extractLib(line, isExtractPlugins);
             if (isExtractPlugins) {
                 extractPlugins(line);
             }
@@ -711,7 +643,7 @@ void Deploy::extractWindowsLib(const QString &file, bool isExtractPlugins) {
         if ((onlyCLibs || QuasarAppUtils::Params::isEndable("deploy-not-qt")) &&
                 !noQTLibs.contains(line)) {
             noQTLibs << line;
-            extractWindowsLib(line, isExtractPlugins);
+            extractLib(line, isExtractPlugins);
         }
     }
 }
@@ -796,6 +728,8 @@ bool Deploy::smartMoveTargets() {
     }
 
     targets = temp;
+
+    winScaner.setEnvironment(deployEnvironment);
 
     return result;
 }

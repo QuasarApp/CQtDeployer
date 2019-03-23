@@ -9,6 +9,7 @@ TEMPLATE = subdirs
 CONFIG += ordered
 
 SUBDIRS += QuasarAppLib \
+           Pe \
            Deploy \
            CQtDeployer \
            UnitTests
@@ -28,6 +29,7 @@ CQtDeployer.depends=QuasarAppLib
 CQtDeployer.depends=Deploy
 
 QuasarAppLib.file = $$PWD/QuasarAppLib/QuasarApp.pro
+Pe.file = $$PWD/pe/pe-parser-library/pe-parser.pro
 
 win32:include('$$PWD/CQtDeployerWinBuild.pri')
 
