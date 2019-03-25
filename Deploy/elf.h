@@ -1,6 +1,6 @@
 #ifndef ELF_H
 #define ELF_H
-#include "../qtTools/src/windeployqt/elfreader.h"
+#include "../qtTools/src/shared/winutils/elfreader.h"
 
 #include "igetlibinfo.h"
 
