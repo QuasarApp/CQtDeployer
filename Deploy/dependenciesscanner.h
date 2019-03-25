@@ -11,7 +11,6 @@
 #include <QMultiMap>
 #include <QStringList>
 #include "deploy_global.h"
-#include "structs.h"
 #include "pe.h"
 #include "elf.h"
 

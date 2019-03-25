@@ -4,7 +4,7 @@
 #include <QFileInfo>
 #include <QSet>
 #include <QVector>
-#include <parse.h>
+#include <parser-library/parse.h>
 
 #include <bits/stl_set.h>
 

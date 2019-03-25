@@ -37,7 +37,7 @@ CONFIG(release, debug|release): {
 }
 
 include('$$PWD/../QuasarAppLib/QuasarLib.pri')
-include('$$PWD/../pe/pe-parser-library/pe-parser.pri')
+include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
 
 
 SOURCES += \
@@ -45,7 +45,6 @@ SOURCES += \
         deployutils.cpp \
     pe.cpp \
     igetlibinfo.cpp \
-    structs.cpp \
     dependenciesscanner.cpp \
     ../qtTools/src/windeployqt/elfreader.cpp \
     elf.cpp
@@ -56,7 +55,6 @@ HEADERS += \
         deployutils.h \
     pe.h \
     igetlibinfo.h \
-    structs.h \
     dependenciesscanner.h \
     ../qtTools/src/windeployqt/elfreader.h \
     elf.h

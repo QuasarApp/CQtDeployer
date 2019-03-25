@@ -16,6 +16,29 @@
 QString DeployUtils::qtDir = "";
 QStringList DeployUtils::extraPaths = QStringList();
 
+
+bool LibInfo::operator ==(const LibInfo &other) {
+    return platform == other.platform &&
+            name == other.name;
+}
+
+QString LibInfo::fullPath() {
+    return path + "/" + name;
+}
+
+void LibInfo::clear() {
+    path = "";
+    name = "";
+    platform = Platform::UnknownPlatform;
+    dependncies.clear();
+}
+
+bool LibInfo::isValid() const {
+    return platform != Platform::UnknownPlatform &&
+            name.size() && path.size();
+}
+
+
 QtModuleEntry DeployUtils::qtModuleEntries[] = {
     { QtBluetoothModule, "bluetooth", "Qt5Bluetooth", nullptr },
     { QtConcurrentModule, "concurrent", "Qt5Concurrent", "qtbase" },

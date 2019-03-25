@@ -1,7 +1,7 @@
 #ifndef IGETLIBINFO_H
 #define IGETLIBINFO_H
 
-#include "structs.h"
+#include "deployutils.h"
 
 class IGetLibInfo
 {

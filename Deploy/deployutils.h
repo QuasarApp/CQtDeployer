@@ -19,6 +19,30 @@ struct DEPLOYSHARED_EXPORT QtModuleEntry {
     const char *translation;
 };
 
+
+enum Platform {
+    UnknownPlatform = 0x0,
+    Win32,
+    Win64,
+    Unix32,
+    Unix64
+};
+
+struct DEPLOYSHARED_EXPORT LibInfo {
+    Platform platform = Platform::UnknownPlatform;
+    QString name;
+    QString path;
+    QStringList dependncies;
+
+    bool operator == (const LibInfo& other);
+
+    QString fullPath();
+
+    void clear();
+
+    bool isValid() const;
+};
+
 class Deploy;
 
 class DEPLOYSHARED_EXPORT DeployUtils

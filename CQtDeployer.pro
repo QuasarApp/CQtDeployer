@@ -29,7 +29,7 @@ CQtDeployer.depends=QuasarAppLib
 CQtDeployer.depends=Deploy
 
 QuasarAppLib.file = $$PWD/QuasarAppLib/QuasarApp.pro
-Pe.file = $$PWD/pe/pe-parser-library/pe-parser.pro
+Pe.file = $$PWD/pe/pe-parser-library/pe-parser-library.pro
 
 win32:include('$$PWD/CQtDeployerWinBuild.pri')
 

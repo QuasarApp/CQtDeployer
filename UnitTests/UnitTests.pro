@@ -17,7 +17,7 @@ CONFIG(release, debug|release): {
 
 include('$$PWD/../QuasarAppLib/QuasarLib.pri')
 include('$$PWD/../Deploy/Deploy.pri')
-include('$$PWD/../pe/pe-parser-library/pe-parser.pri')
+include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
 
 
 CONFIG += qt console warn_on depend_includepath testcase
