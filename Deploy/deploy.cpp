@@ -613,11 +613,9 @@ QString Deploy::filterQmlPath(const QString &path) {
 void Deploy::extractLib(const QString &file, bool isExtractPlugins) {
     qInfo() << "extract lib :" << file;
 
-    auto data = winScaner.scan(file);
+    auto data = scaner.scan(file);
 
     for (QString &line : data) {
-        line = line.simplified();
-
         bool isIgnore = false;
         for (auto ignore : ignoreList) {
             if (line.contains(ignore)) {
@@ -729,7 +727,7 @@ bool Deploy::smartMoveTargets() {
 
     targets = temp;
 
-    winScaner.setEnvironment(deployEnvironment);
+    scaner.setEnvironment(deployEnvironment);
 
     return result;
 }

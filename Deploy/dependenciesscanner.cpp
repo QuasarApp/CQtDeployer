@@ -7,7 +7,7 @@
 
 #include "dependenciesscanner.h"
 #include "deployutils.h"
-
+#include "quasarapp.h"
 #include <QList>
 #include <QDir>
 #include <QDebug>
@@ -29,6 +29,29 @@ PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
     }
 
     return PrivateScaner::UNKNOWN;
+}
+
+QMultiMap<libPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
+        const QString &libName) {
+
+    auto values = _EnvLibs.values(libName);
+    QMultiMap<libPriority, LibInfo> res;
+
+    for (auto & lib : values) {
+        LibInfo info;
+
+        if (!fillLibInfo(info, lib)) {
+            QuasarAppUtils::Params::verboseLog(
+                        "error extract lib info from " + lib + "(" + libName + ")");
+            continue;
+        }
+
+        info.priority = DeployUtils::getLibPriority(info.fullPath());
+
+        res.insertMulti(info.priority, info);
+    }
+
+    return res;
 }
 
 bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) {
@@ -56,7 +79,8 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
             continue;
         }
 
-        auto list = dir.entryInfoList(QStringList() << "*.dll",
+        auto list = dir.entryInfoList(QStringList() << "*.dll" << ".DLL"
+                                      << "*.SO*" << "*.so*",
                                   QDir::Files| QDir::NoDotAndDotDot);
 
         for (auto i : list) {
@@ -65,7 +89,7 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
             auto oldPriority = DeployUtils::getLibPriority(_EnvLibs.value(i.fileName(), ""));
 
             if (newPriority > oldPriority)
-                _EnvLibs.insert(i.fileName(), i.absoluteFilePath());
+                _EnvLibs.insertMulti(i.fileName(), i.absoluteFilePath());
         }
 
     }
@@ -75,20 +99,16 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
 QStringList DependenciesScanner::scan(const QString &path) {
     QStringList result;
 
-    QString errorMessage;
+    LibInfo info;
 
-    QStringList dep;
-
-    if (!errorMessage.isEmpty()) {
-        qCritical() << errorMessage;
+    if (!fillLibInfo(info, path)) {
         return result;
     }
 
-    for (auto i : dep) {
-        QString lib(i);
-        if (_EnvLibs.count(lib)) {
-            result.push_back(_EnvLibs.value(lib));
-        }
+    for (auto i : info.dependncies) {
+
+        auto libs = getLibsFromEnvirement(i);
+        result.push_back(libs.first().fullPath());
     }
 
     return result;

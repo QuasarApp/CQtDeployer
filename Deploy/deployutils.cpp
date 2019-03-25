@@ -22,6 +22,22 @@ bool LibInfo::operator ==(const LibInfo &other) {
             name == other.name;
 }
 
+bool operator <=(const LibInfo &left, const LibInfo &right){
+    return !operator>(left, right);
+}
+
+bool operator >=(const LibInfo &left, const LibInfo &right) {
+    return !operator<(left, right);
+}
+
+bool operator <(const LibInfo &left, const LibInfo &right){
+    return left.priority < right.priority;
+}
+
+bool operator >(const LibInfo &left, const LibInfo &right) {
+    return left.priority > right.priority;
+}
+
 QString LibInfo::fullPath() {
     return path + "/" + name;
 }
@@ -94,21 +110,21 @@ QtModuleEntry DeployUtils::qtModuleEntries[] = {
     { QtWebViewModule, "webview", "Qt5WebView", nullptr }
 };
 
-int DeployUtils::getLibPriority(const QString &lib) {
+libPriority DeployUtils::getLibPriority(const QString &lib) {
 
     if (!QFileInfo(lib).isFile()) {
-        return 0;
+        return NotFile;
     }
 
     if (isQtLib(lib)) {
-        return 3;
+        return QtLib;
     }
 
     if (isExtraLib(lib)) {
-        return 2;
+        return ExtraLib;
     }
 
-    return 1;
+    return GeneralLib;
 }
 
 void DeployUtils::verboseLog(const QString &str) {

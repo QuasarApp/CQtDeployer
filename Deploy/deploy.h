@@ -45,7 +45,7 @@ class DEPLOYSHARED_EXPORT Deploy {
 
     QString appDir;
 
-    DependenciesScanner winScaner;
+    DependenciesScanner scaner;
 
     bool fileActionPrivate(const QString &file, const QString &target,
                            QStringList *mask, bool isMove);
