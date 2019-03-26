@@ -26,10 +26,12 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES +=  tst_deploytest.cpp \
-    libcreator.cpp
+    libcreator.cpp \
+    qmlcreator.cpp
 
 RESOURCES += \
     res.qrc
 
 HEADERS += \
-    libcreator.h
+    libcreator.h \
+    qmlcreator.h

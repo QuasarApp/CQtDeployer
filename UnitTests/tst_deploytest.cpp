@@ -10,12 +10,14 @@
 #include <deployutils.h>
 #include <deploy.h>
 #include <dependenciesscanner.h>
+#include <qml.h>
 
 #include <QMap>
 #include <QByteArray>
 #include <QDir>
 #include <thread>
 #include "libcreator.h"
+#include "qmlcreator.h"
 // add necessary includes here
 
 class deploytest : public QObject
@@ -43,6 +45,7 @@ private slots:
     void testStrip();
     void testDeploy();
     void testExtractLib();
+    void testQmlExtract();
 
 };
 
@@ -309,6 +312,28 @@ void deploytest::testExtractLib() {
 
     }
 
+}
+
+void deploytest::testQmlExtract() {
+    QmlCreator creator("./");
+    auto imports = creator.getQmlImports();
+
+    auto qmlFiles = creator.getCopyedQml();
+
+
+    QML scaner("./");
+
+
+    for (auto &&file : qmlFiles) {
+
+
+        auto fileImports = scaner.extractImportsFromFile(file);
+
+        for (auto &file : imports.value(file)) {
+            QVERIFY(fileImports.contains(file, Qt::CaseInsensitive));
+        }
+
+    }
 }
 
 void deploytest::testTranslations() {
