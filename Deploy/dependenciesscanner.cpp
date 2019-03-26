@@ -108,7 +108,14 @@ QStringList DependenciesScanner::scan(const QString &path) {
     for (auto i : info.dependncies) {
 
         auto libs = getLibsFromEnvirement(i);
-        result.push_back(libs.first().fullPath());
+        while (libs.size()) {
+            auto lib = libs.take(libs.firstKey());
+            if (lib.platform == info.platform) {
+                result.push_back(lib.fullPath());
+                break;
+            }
+        }
+
     }
 
     return result;
