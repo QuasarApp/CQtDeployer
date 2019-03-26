@@ -25,13 +25,14 @@ class DEPLOYSHARED_EXPORT DependenciesScanner {
 
 private:
     QStringList _env;
-    QMap<QString, QString> _EnvLibs;
+    QMultiHash<QString, QString> _EnvLibs;
 
     PE _peScaner;
     ELF _elfScaner;
 
     PrivateScaner getScaner(const QString& lib) const;
 
+    QMultiMap<libPriority, LibInfo> getLibsFromEnvirement(const QString& libName);
     bool fillLibInfo(LibInfo& info ,const QString& file);
 public:
     explicit DependenciesScanner();

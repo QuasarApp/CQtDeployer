@@ -48,7 +48,7 @@ else
 
 		        rm -rdf $BASE_DIR/sharedQt
 		        git clean -xdf
-		        ./configure -confirm-license -prefix $BASE_DIR/sharedQt -release -shared -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility
+                        ./configure -confirm-license -prefix $BASE_DIR/sharedQt -release -shared -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility
 		        make install -j$(nproc)
 			break
 		fi

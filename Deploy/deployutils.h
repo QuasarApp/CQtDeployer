@@ -28,13 +28,25 @@ enum Platform {
     Unix64
 };
 
+enum libPriority : int {
+    NotFile = 0x0,
+    GeneralLib,
+    ExtraLib,
+    QtLib,
+};
+
 struct DEPLOYSHARED_EXPORT LibInfo {
     Platform platform = Platform::UnknownPlatform;
     QString name;
     QString path;
     QStringList dependncies;
+    libPriority priority = NotFile;
 
     bool operator == (const LibInfo& other);
+    friend bool operator > (const LibInfo& left, const LibInfo& right);
+    friend bool operator < (const LibInfo& left, const LibInfo& right);
+    friend bool operator >= (const LibInfo& left, const LibInfo& right);
+    friend bool operator <= (const LibInfo& left, const LibInfo& right);
 
     QString fullPath();
 
@@ -113,7 +125,7 @@ public:
 
     static bool isQtLib(const QString &lib);
     static bool isExtraLib(const QString &lib);
-    static int getLibPriority(const QString &lib);
+    static libPriority getLibPriority(const QString &lib);
     static void verboseLog(const QString &str);
     static void help();
     static bool parseQt(Deploy *deploy);
