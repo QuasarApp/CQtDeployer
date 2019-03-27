@@ -12,7 +12,8 @@ BASE_DIR=$(dirname "$(readlink -f "$0")")
 echo "clean build dir"
 rm -rfd $BASE_DIR/distro
 
-chmod a+rx $BASE_DIR/wrapper/bin/desktop-launch
+chmod 777 $BASE_DIR/QuasarAppLib/Etalons/snap/wrapper -R
+chmod a+rx $BASE_DIR/QuasarAppLib/Etalons/snap/wrapper/bin/desktop-launch
 
 echo "Start static build"
 $BASE_DIR/staticBuild.sh Q_OS_LINUX_SNAP
@@ -29,6 +30,6 @@ else
     exit 1
 fi
 
-snapcraft clean cqtdeployer -s pull
+snapcraft clean cqtdeployer
 
 snapcraft
