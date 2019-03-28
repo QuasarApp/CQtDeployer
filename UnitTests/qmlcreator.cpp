@@ -35,10 +35,11 @@ void QmlCreator::createQml(const QString &qmlFile, const QStringList &imports) {
 
 void QmlCreator::initQml() {
     createQml(":/qmlFile.qml", {
-                  "QtQuick",
-                  "QtQuick.Controls.Material",
-                  "QtQuick.Controls2",
-                  "QtQuick.Layouts"
+                  "2#QtQuick",
+                  "2#QtQuick/Controls/Material",
+                  "2#QtQuick/Controls",
+                  "1#QtQuick/Controls",
+                  "1#QtQuick/Layouts"
               });
 }
 

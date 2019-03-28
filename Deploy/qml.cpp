@@ -2,6 +2,7 @@
 
 #include <QDir>
 #include <QFile>
+#include <quasarapp.h>
 
 QStringList QML::extractImportsFromFile(const QString &filepath) {
     QStringList imports;
@@ -36,23 +37,65 @@ QStringList QML::extractImportsFromFile(const QString &filepath) {
     return imports;
 }
 
-bool QML::extractImportsFromDir(const QString &path, qmlDep &dep, bool recursive) {
+bool QML::extractImportsFromDir(const QString &path, bool recursive) {
     QDir dir(path);
-    auto infoList = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs);
+    auto infoList = dir.entryInfoList(QStringList() << "*.qml" << "*.QML"
+                                      ,QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs);
 
     for (auto &&info: infoList) {
 
         if (info.isFile()) {
-            extractImportsFromFile(info.absoluteFilePath());
+            auto imports = extractImportsFromFile(info.absoluteFilePath());
+            for (auto import : imports) {
+                if (!_imports.contains(import)) {
+                    _imports.insert(import);
+                    extractImportsFromDir(getPathFromImport(import), false);
+                }
+            }
+        } else if (recursive) {
+            extractImportsFromDir(info.absoluteFilePath(), recursive);
         }
-
     }
 
     return true;
 }
 
 QString QML::getPathFromImport(const QString &import) {
+    auto importData = import.split("#");
+    auto words = importData.value(1).split(QRegExp("/\\"));
 
+    bool isSecond = importData.first() == "2";
+
+    QString path;
+    for (auto i = words.rbegin(); i != words.rend(); ++i) {
+        QString word = *i;
+        if (isSecond && secondVersions.contains(*i)) {
+            isSecond = false;
+            word.push_back(".2");
+        }
+
+        path.push_front(word + "/");
+    }
+
+    return QFileInfo(_qmlRoot + "/" + path).absoluteFilePath();
+}
+
+bool QML::deployPath(const QString &path, QStringList &res) {
+    QDir dir(path);
+    auto infoList = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs);
+
+    for (auto info : infoList) {
+        if (info.fileName().contains(".so.debug") ||
+                info.fileName().contains("d.dll")) {
+            QuasarAppUtils::Params::verboseLog("sciped debug lib " +
+                                               info.absoluteFilePath());
+            continue;
+        }
+
+        res.push_back(info.absoluteFilePath());
+    }
+
+    return true;
 }
 
 bool QML::scanQmlTree(const QString &qmlTree) {
@@ -75,6 +118,30 @@ bool QML::scanQmlTree(const QString &qmlTree) {
     return true;
 }
 
+void QML::addImport() {
+
+}
+
 QML::QML(const QString &qmlRoot) {
     _qmlRoot = qmlRoot;
+
+}
+
+bool QML::scan(QStringList &res, const QString& _qmlProjectDir) {
+
+    if (!scanQmlTree(_qmlRoot)) {
+        return false;
+    }
+
+    if (!extractImportsFromDir(_qmlProjectDir, true)) {
+        return false;
+    }
+
+    for (auto &&import : _imports) {
+        if (!deployPath(getPathFromImport(import), res)) {
+            QuasarAppUtils::Params::verboseLog("deploy qml import failed (" + import + ")");
+        }
+    }
+
+    return true;
 }
