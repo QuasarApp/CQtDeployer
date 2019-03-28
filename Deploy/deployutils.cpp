@@ -162,6 +162,8 @@ void DeployUtils::help() {
     qInfo() << "   -targetDir [params]      : set target Dir for binaryes (default is path of first target)";
     qInfo() << "   noStrip                  : skip strip step";
     qInfo() << "   noTranslations           : skip translations files";
+    qInfo() << "   qmlExtern                : use qml external scanner (qmlimportscaner)";
+    qInfo() << "                            | not work without qmake and in snap package";
 
     qInfo() << "   verbose                  : show debug log";
 

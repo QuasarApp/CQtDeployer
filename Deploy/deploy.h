@@ -13,6 +13,7 @@
 #include <QStringList>
 #include <dependenciesscanner.h>
 #include "deploy_global.h"
+#include "qml.h"
 
 class DEPLOYSHARED_EXPORT Deploy {
   private:
@@ -22,7 +23,8 @@ class DEPLOYSHARED_EXPORT Deploy {
     QStringList deployedFiles;
 
     QSettings settings;
-    QString qmlScaner = "";
+    QString externQmlScaner = "";
+
     QString qmake = "";
     /**
      * @brief targets

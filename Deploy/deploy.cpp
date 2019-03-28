@@ -24,12 +24,12 @@ bool Deploy::getDeployQml() const { return deployQml; }
 
 void Deploy::setDeployQml(bool value) { deployQml = value; }
 
-QString Deploy::getQmlScaner() const { return qmlScaner; }
+QString Deploy::getQmlScaner() const { return externQmlScaner; }
 
 void Deploy::setQmlScaner(const QString &value) {
-    qmlScaner = QDir::fromNativeSeparators(value);
-    QuasarAppUtils::Params::verboseLog("qmlScaner = " + qmlScaner);
-    deployQml = QFileInfo(qmlScaner).isFile();
+    externQmlScaner = QDir::fromNativeSeparators(value);
+    QuasarAppUtils::Params::verboseLog("qmlScaner = " + externQmlScaner);
+    deployQml = QFileInfo(externQmlScaner).isFile();
 }
 
 QString Deploy::getQmake() const { return qmake; }
@@ -42,6 +42,7 @@ void Deploy::setQmake(const QString &value) {
 
     if (!dir.cdUp() || !dir.cd("qml")) {
         QuasarAppUtils::Params::verboseLog("get qml fail!");
+        return;
     }
 
     qmlDir = dir.absolutePath();
@@ -50,6 +51,7 @@ void Deploy::setQmake(const QString &value) {
     dir = (info.absoluteDir());
     if (!dir.cdUp() || !dir.cd("translations")) {
         QuasarAppUtils::Params::verboseLog("get translations fail!");
+        return;
     }
 
     translationDir = dir.absolutePath();
@@ -749,7 +751,7 @@ QStringList Deploy::extractImportsFromDir(const QString &filepath) {
     env.insert("QT_QPA_PLATFORM_PLUGIN_PATH", DeployUtils::qtDir + "/plugins/platforms");
 
     p.setProcessEnvironment(env);
-    p.setProgram(qmlScaner);
+    p.setProgram(externQmlScaner);
     p.setArguments(QStringList()
                    << "-rootPath" << filepath << "-importPath" << qmlDir);
     p.start();
@@ -831,16 +833,31 @@ bool Deploy::extractQmlFromSource(const QString& sourceDir) {
         return false;
     }
 
-    QStringList plugins = extractImportsFromDir(info.absoluteFilePath());
+    QStringList plugins;
     QStringList listItems;
+    QStringList filter;
 
-    for (auto &&i: plugins) {
-        QuasarAppUtils::Params::verboseLog(i);
+
+    if (QuasarAppUtils::Params::isEndable("qmlExtern")) {
+
+        qInfo() << "use extern qml scaner!";
+
+        plugins = extractImportsFromDir(info.absoluteFilePath());
+        filter << ".so.debug" << "d.dll";
+
+    } else {
+        qInfo() << "use own qml scaner!";
+
+        QML ownQmlScaner(qmlDir);
+
+        if (!ownQmlScaner.scan(plugins, info.absoluteFilePath())) {
+            QuasarAppUtils::Params::verboseLog("qml scaner run failed!");
+            return false;
+        }
     }
 
     if (!copyFolder(qmlDir, targetDir + "/qml",
-                    QStringList() << ".so.debug" << "d.dll",
-                    &listItems, &plugins)) {
+                    filter , &listItems, &plugins)) {
         return false;
     }
 

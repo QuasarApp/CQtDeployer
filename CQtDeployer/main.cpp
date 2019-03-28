@@ -14,7 +14,7 @@
 #include <QList>
 
 
-int main(int argc, char *argv[]) {
+int main(int argc, const char *argv[]) {
 
     QCoreApplication::setOrganizationName("QuasarApp");
     QCoreApplication::setOrganizationDomain("https://github.com/QuasarApp");

@@ -108,6 +108,13 @@ QStringList DependenciesScanner::scan(const QString &path) {
     for (auto i : info.dependncies) {
 
         auto libs = getLibsFromEnvirement(i);
+
+        if (!libs.size()) {
+            QuasarAppUtils::Params::verboseLog("lib for dependese " + i + " not findet!!",
+                                               QuasarAppUtils::Warning);
+            continue;
+        }
+
         result.push_back(libs.first().fullPath());
     }
 

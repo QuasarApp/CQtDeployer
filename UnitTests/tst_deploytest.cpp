@@ -47,6 +47,7 @@ private slots:
     void testExtractLib();
     void testQmlExtract();
 
+    void mainTestOnlyC();
 };
 
 deploytest::deploytest(){}
@@ -334,6 +335,26 @@ void deploytest::testQmlExtract() {
         }
 
     }
+}
+
+void deploytest::mainTestOnlyC()
+{
+#ifdef WITH_ALL_TESTS
+    int argc = 3;
+    const char * argv[] = {"./", "-bin", "./../../../tests/build/TestOnlyC"};
+
+    QVERIFY(QuasarAppUtils::Params::parseParams(argc, argv));
+
+    Deploy deploy;
+
+    QVERIFY(DeployUtils::parseQt(&deploy));
+
+    deploy.deploy();
+
+    QDir info("./Distro");
+    QVERIFY(info.removeRecursively());
+
+#endif
 }
 
 void deploytest::testTranslations() {
