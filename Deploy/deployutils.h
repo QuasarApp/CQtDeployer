@@ -12,6 +12,16 @@
 #include <QDebug>
 #include "deploy_global.h"
 
+enum MSVCVersion: int {
+    MSVC_Unknown = 0x0,
+    MSVC_x64 = 0x01,
+    MSVC_x32 = 0x02,
+    MSVC_13 = 0x10,
+    MSVC_15 = 0x20,
+    MSVC_17 = 0x40,
+    MSVC_19 = 0x80,
+};
+
 struct DEPLOYSHARED_EXPORT QtModuleEntry {
     quint64 module;
     const char *option;
@@ -59,6 +69,10 @@ class Deploy;
 
 class DEPLOYSHARED_EXPORT DeployUtils
 {
+
+private:
+    static QString getMSVCName(MSVCVersion msvc);
+    static QString getMSVCVersion(MSVCVersion msvc);
 
 public:
     enum QtModule : quint64
@@ -122,6 +136,9 @@ public:
     static QString qtDir;
     static QStringList extraPaths;
     static QtModuleEntry qtModuleEntries[];
+
+    static MSVCVersion getMSVC(const QString & _qmake);
+    static QString getVCredist(const QString & _qmake);
 
     static bool isQtLib(const QString &lib);
     static bool isExtraLib(const QString &lib);
