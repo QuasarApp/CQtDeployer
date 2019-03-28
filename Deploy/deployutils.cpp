@@ -235,6 +235,68 @@ QStringList DeployUtils::extractTranslation(const QStringList &libs) {
     return res.toList();
 }
 
+MSVCVersion DeployUtils::getMSVC(const QString &_qmake) {
+    QFileInfo qmake(_qmake);
+
+    int res = MSVCVersion::MSVC_Unknown;
+
+    if (!qmake.isFile()) {
+        QuasarAppUtils::Params::verboseLog("qmake is wrong!");
+        return static_cast<MSVCVersion>(res);
+    }
+
+    QDir dir = qmake.absoluteDir();
+
+    if (!dir.cdUp()) {
+        QuasarAppUtils::Params::verboseLog("is not standart qt repo");
+        return static_cast<MSVCVersion>(res);
+    }
+
+    auto msvcPath = dir.absolutePath();
+
+    if (!(dir.cdUp() && dir.cdUp())) {
+        QuasarAppUtils::Params::verboseLog("is not standart qt repo");
+        return static_cast<MSVCVersion>(res);
+    }
+
+    if (!msvcPath.contains("msvc")) {
+        QuasarAppUtils::Params::verboseLog("vcredis not defined");
+        return static_cast<MSVCVersion>(res);
+    }
+
+    auto base = msvcPath.mid(msvcPath.indexOf("msvc"), 11);
+    auto version = base.mid(4 , 4);
+    auto type = base.right(2);
+
+    if (version == "2013") {
+        res |= MSVC_13;
+    }
+    else if (version == "2015") {
+        res |= MSVC_15;
+    }
+    else if (version == "2017") {
+        res |= MSVC_17;
+    }
+    else if (version == "2019") {
+        res |= MSVC_19;
+    }
+
+    if (type == "32") {
+        res |= MSVC_x32;
+    }
+    else if (type == "64") {
+        res |= MSVC_x64;
+    }
+
+    return static_cast<MSVCVersion>(res);
+}
+
+QString DeployUtils::getVCredist(const QString &_qmake) {
+    auto msvc = getMSVC(_qmake);
+
+    return "";
+}
+
 bool DeployUtils::isQtLib(const QString &lib) {
     QFileInfo info(lib);
     return !qtDir.isEmpty() && info.absoluteFilePath().contains(qtDir);
