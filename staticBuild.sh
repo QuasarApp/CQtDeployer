@@ -10,7 +10,7 @@
 IS_SNAP="$1"
 QT_DIR=staticQt
 
-if [ -e "$IS_SNAP"]
+if [ -e "$IS_SNAP" ]
 then
     echo "build for snap"
     SNAP_DEFINES="$IS_SNAP"
