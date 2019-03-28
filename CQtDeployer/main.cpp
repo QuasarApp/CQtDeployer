@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
     Deploy deploy;
 
     if (!DeployUtils::parseQt(&deploy)) {
-        qCritical() << "qt parse error";
+        qCritical() << "error parse imput data";
         DeployUtils::help();
         exit(1);
     }

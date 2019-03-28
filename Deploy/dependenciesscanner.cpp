@@ -84,12 +84,7 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
                                   QDir::Files| QDir::NoDotAndDotDot);
 
         for (auto i : list) {
-
-            auto newPriority = DeployUtils::getLibPriority(i.absoluteFilePath());
-            auto oldPriority = DeployUtils::getLibPriority(_EnvLibs.value(i.fileName(), ""));
-
-            if (newPriority > oldPriority)
-                _EnvLibs.insertMulti(i.fileName(), i.absoluteFilePath());
+            _EnvLibs.insertMulti(i.fileName(), i.absoluteFilePath());
         }
 
     }
@@ -109,7 +104,7 @@ QStringList DependenciesScanner::scan(const QString &path) {
 
         auto libs = getLibsFromEnvirement(i);
         while (libs.size()) {
-            auto lib = libs.take(libs.firstKey());
+            auto lib = libs.take(libs.lastKey());
             if (lib.platform == info.platform) {
                 result.push_back(lib.fullPath());
                 break;
