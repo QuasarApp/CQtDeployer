@@ -1,6 +1,7 @@
 #ifndef QML_H
 #define QML_H
 
+#include <QSet>
 #include <QStringList>
 
 struct qmlDep {
@@ -16,7 +17,10 @@ private:
     bool extractImportsFromDir(const QString &path, qmlDep& dep, bool recursive = false);
     QString getPathFromImport(const QString& import);
 
+    bool scanQmlTree(const QString& qmlTree);
+
     QString _qmlRoot = "";
+    QSet<QString> secondVersions;
 
 public:
     QML(const QString& qmlRoot);

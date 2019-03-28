@@ -55,6 +55,26 @@ QString QML::getPathFromImport(const QString &import) {
 
 }
 
+bool QML::scanQmlTree(const QString &qmlTree) {
+    QDir dir(qmlTree);
+
+    if (!dir.isReadable()) {
+        return false;
+    }
+
+    auto list = dir.entryInfoList( QDir::Dirs | QDir::NoDotAndDotDot);
+
+    for (auto &&info : list) {
+       scanQmlTree(info.absoluteFilePath());
+
+       if (info.fileName().contains(".2")) {
+           secondVersions.insert(info.absoluteFilePath());
+       }
+    }
+
+    return true;
+}
+
 QML::QML(const QString &qmlRoot) {
     _qmlRoot = qmlRoot;
 }
