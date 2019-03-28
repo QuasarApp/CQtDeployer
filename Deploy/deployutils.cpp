@@ -294,6 +294,51 @@ MSVCVersion DeployUtils::getMSVC(const QString &_qmake) {
 QString DeployUtils::getVCredist(const QString &_qmake) {
     auto msvc = getMSVC(_qmake);
 
+    QFileInfo qmake(_qmake);
+
+    QDir dir = qmake.absoluteDir();
+
+    if (!(dir.cdUp() && dir.cdUp() && dir.cdUp() && dir.cd("vcredist"))) {
+        QuasarAppUtils::Params::verboseLog("redist not findet!");
+        return "";
+    }
+
+    auto infoList = dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
+
+    auto name = getMSVCName(msvc);
+    auto version = getMSVCVersion(msvc);
+
+    for (auto &&info: infoList) {
+        auto file = QFileInfo(info).fileName();
+        if (file.contains(name) && file.contains(version)) {
+            return info.absoluteFilePath();
+        }
+    }
+
+    return "";
+}
+
+QString DeployUtils::getMSVCName(MSVCVersion msvc) {
+    if (msvc | MSVCVersion::MSVC_13) {
+        return "msvc2013";
+    } else if (msvc | MSVCVersion::MSVC_15) {
+        return "msvc2015";
+    } else if (msvc | MSVCVersion::MSVC_17) {
+        return "msvc2017";
+    } else if (msvc | MSVCVersion::MSVC_19) {
+        return "msvc2019";
+    }
+
+    return "";
+}
+
+QString DeployUtils::getMSVCVersion(MSVCVersion msvc) {
+    if (msvc | MSVCVersion::MSVC_x32) {
+        return "x86";
+    } else if (msvc | MSVCVersion::MSVC_x64) {
+        return "x64";
+    }
+
     return "";
 }
 

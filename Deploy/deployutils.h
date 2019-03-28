@@ -34,6 +34,10 @@ class Deploy;
 class DEPLOYSHARED_EXPORT DeployUtils
 {
 
+private:
+    static QString getMSVCName(MSVCVersion msvc);
+    static QString getMSVCVersion(MSVCVersion msvc);
+
 public:
     enum QtModule : quint64
     {
