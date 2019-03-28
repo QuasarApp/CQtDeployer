@@ -78,6 +78,18 @@ void Deploy::setTargetDir() {
     }
 }
 
+bool Deploy::deployMSVC() {
+    qInfo () << "try deploy msvc";
+
+    auto msvcInstaller = DeployUtils::getVCredist(qmake);
+
+    if (msvcInstaller.isEmpty()) {
+        return false;
+    }
+
+    return copyFile(msvcInstaller, targetDir);
+}
+
 bool Deploy::setTargets(const QStringList &value) {
 
     bool isfillList = false;
@@ -246,6 +258,10 @@ void Deploy::deploy() {
         if (!copyTranslations(DeployUtils::extractTranslation(QtLibs))) {
             qWarning() << " copy TR ERROR";
         }
+    }
+
+    if (!deployMSVC()) {
+        QuasarAppUtils::Params::verboseLog("deploy msvc failed");
     }
 
     settings.setValue(targetDir, deployedFiles);

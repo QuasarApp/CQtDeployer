@@ -96,6 +96,7 @@ class DEPLOYSHARED_EXPORT Deploy {
 
     bool initDir(const QString &path);
     void setTargetDir();
+    bool deployMSVC();
 
 public:
     Deploy();

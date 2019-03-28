@@ -43,7 +43,7 @@ private slots:
     void testStrip();
     void testDeploy();
     void testExtractLib();
-
+    void testMSVC();
 };
 
 deploytest::deploytest(){}
@@ -277,8 +277,7 @@ void deploytest::testStrip() {
 #endif
 }
 
-void deploytest::testDeploy()
-{
+void deploytest::testDeploy() {
     QuasarAppUtils::Params::parseParams(0, nullptr);
 
     Deploy *deploy = new Deploy();
@@ -308,6 +307,33 @@ void deploytest::testExtractLib() {
         }
 
     }
+
+}
+
+void deploytest::testMSVC() {
+    QString testPath = "./Qt/5.11.2/msvc2017_64/bin/";
+    QString testqmakepath = testPath +"qmake";
+
+    QDir d;
+    QDir oldDir("./Qt");
+    oldDir.removeRecursively();
+    QVERIFY(d.mkpath(testPath));
+
+    QFile file(testqmakepath);
+
+    QVERIFY(file.open(QIODevice::ReadWrite | QIODevice::Truncate));
+
+    QVERIFY(file.write("test"));
+
+    file.close();
+
+
+    auto msvc = DeployUtils::getMSVC(testqmakepath);
+
+    QVERIFY(msvc & MSVCVersion::MSVC_17);
+    QVERIFY(msvc & MSVCVersion::MSVC_x64);
+
+    QVERIFY(file.remove());
 
 }
 
