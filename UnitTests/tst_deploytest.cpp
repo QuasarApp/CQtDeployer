@@ -48,6 +48,9 @@ private slots:
     void testQmlExtract();
 
     void mainTestOnlyC();
+    void mainTestQMake();
+    void mainTestQML();
+
 };
 
 deploytest::deploytest(){}
@@ -355,6 +358,34 @@ void deploytest::mainTestOnlyC()
     QVERIFY(info.removeRecursively());
 
 #endif
+}
+
+void deploytest::mainTestQMake() {
+#ifdef WITH_ALL_TESTS
+
+    QString QtDir = QT_BASE_DIR;
+
+
+    int argc = 3;
+    const char * argv[] = {"./",
+                           "-bin", "./../../../tests/build/TestOnlyC"};
+
+    QVERIFY(QuasarAppUtils::Params::parseParams(argc, argv));
+
+    Deploy deploy;
+
+    QVERIFY(DeployUtils::parseQt(&deploy));
+
+    deploy.deploy();
+
+    QDir info("./Distro");
+    QVERIFY(info.removeRecursively());
+
+#endif
+}
+
+void deploytest::mainTestQML() {
+
 }
 
 void deploytest::testTranslations() {
