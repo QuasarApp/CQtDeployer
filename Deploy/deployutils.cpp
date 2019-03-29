@@ -198,8 +198,6 @@ bool DeployUtils::parseQt(Deploy *deploy) {
         deploy->clear();
     }
 
-    deploy->initEnvirement();
-
     int limit = 0;
 
     if (QuasarAppUtils::Params::isEndable("recursiveDepth")) {
@@ -226,7 +224,7 @@ bool DeployUtils::parseQt(Deploy *deploy) {
 
     if (!info.isFile() || (info.baseName() != "qmake")) {
         qInfo() << "deploy only C libs because qmake is not found";
-        deploy->setOnlyCLibs(true);
+        QuasarAppUtils::Params::setEnable("deploy-not-qt", true);
         return true;
     }
 

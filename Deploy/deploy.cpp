@@ -210,6 +210,8 @@ void Deploy::createQConf() {
 void Deploy::deploy() {
     qInfo() << "target deploy started!!";
 
+    initEnvirement();
+
     if (QuasarAppUtils::Params::isEndable("ignore")) {
         auto list = QuasarAppUtils::Params::getStrArg("ignore").split(',');
         ignoreList.append(list);
@@ -225,18 +227,15 @@ void Deploy::deploy() {
         }
     }
 
-    if (!onlyCLibs)
-        copyPlugins(neededPlugins);
+    copyPlugins(neededPlugins);
 
-    if (!onlyCLibs && deployQml && !extractQml()) {
+    if (deployQml && !extractQml()) {
         qCritical() << "qml not extacted!";
     }
 
-    if (!onlyCLibs) {
-        copyFiles(QtLibs);
-    }
+    copyFiles(QtLibs);
 
-    if (onlyCLibs || QuasarAppUtils::Params::isEndable("deploy-not-qt")) {
+    if (QuasarAppUtils::Params::isEndable("deploy-not-qt")) {
         copyFiles(noQTLibs);
     }
 
@@ -244,7 +243,7 @@ void Deploy::deploy() {
         QuasarAppUtils::Params::verboseLog("strip failed!");
     }
 
-    if (!onlyCLibs && !QuasarAppUtils::Params::isEndable("noTranslations")) {
+    if (!QuasarAppUtils::Params::isEndable("noTranslations")) {
         if (!copyTranslations(DeployUtils::extractTranslation(QtLibs))) {
             qWarning() << " copy TR ERROR";
         }
@@ -264,8 +263,6 @@ void Deploy::setQtDir(const QString &value) {
     addEnv(DeployUtils::qtDir + "/lib");
 #endif
 }
-
-void Deploy::setOnlyCLibs(bool value) { onlyCLibs = value; }
 
 void Deploy::setExtraPath(const QStringList &value) {
     QDir dir;
@@ -640,7 +637,7 @@ void Deploy::extractLib(const QString &file, bool isExtractPlugins) {
             continue;
         }
 
-        if ((onlyCLibs || QuasarAppUtils::Params::isEndable("deploy-not-qt")) &&
+        if ((QuasarAppUtils::Params::isEndable("deploy-not-qt")) &&
                 !noQTLibs.contains(line)) {
             noQTLibs << line;
             extractLib(line, isExtractPlugins);
@@ -950,9 +947,34 @@ void Deploy::initEnvirement() {
     addEnv(env.value("LD_LIBRARY_PATH"));
     addEnv(env.value("PATH"));
 
+    if (QuasarAppUtils::Params::isEndable("deploy-not-qt")) {
+        QStringList dirs;
+        dirs.append(getDirsRecursive("/lib"));
+        dirs.append(getDirsRecursive("/usr/lib"));
+
+        for (auto &&i : dirs) {
+            addEnv(i);
+        }
+    }
+
     if (deployEnvironment.size() < 2) {
         qWarning() << "system environment is empty";
     }
+}
+
+QStringList Deploy::getDirsRecursive(const QString &path) {
+    QDir dir(path);
+
+    QStringList res;
+
+    auto list = dir.entryInfoList(QDir::Dirs| QDir::NoDotAndDotDot);
+
+    for (auto &&subDir: list) {
+        res.push_back(subDir.absoluteFilePath());
+        res.append(getDirsRecursive(subDir.absoluteFilePath()));
+    }
+
+    return res;
 }
 
 

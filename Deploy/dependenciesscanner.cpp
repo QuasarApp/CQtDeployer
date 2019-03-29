@@ -56,18 +56,18 @@ QMultiMap<libPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
 
 bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) {
 
-   info.clear();
-   auto scaner = getScaner(file);
+    info.clear();
+    auto scaner = getScaner(file);
 
-   switch (scaner) {
-   case PrivateScaner::PE: {
-       return _peScaner.getLibInfo(file, info);
-   }
-   case PrivateScaner::ELF:
-       return _elfScaner.getLibInfo(file, info);
+    switch (scaner) {
+    case PrivateScaner::PE: {
+        return _peScaner.getLibInfo(file, info);
+    }
+    case PrivateScaner::ELF:
+        return _elfScaner.getLibInfo(file, info);
 
-   default: return false;
-   }
+    default: return false;
+    }
 }
 
 void DependenciesScanner::setEnvironment(const QStringList &env) {
@@ -81,15 +81,11 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
 
         auto list = dir.entryInfoList(QStringList() << "*.dll" << ".DLL"
                                       << "*.SO*" << "*.so*",
-                                  QDir::Files| QDir::NoDotAndDotDot);
+                                      QDir::Files| QDir::NoDotAndDotDot);
 
         for (auto i : list) {
 
-            auto newPriority = DeployUtils::getLibPriority(i.absoluteFilePath());
-            auto oldPriority = DeployUtils::getLibPriority(_EnvLibs.value(i.fileName(), ""));
-
-            if (newPriority > oldPriority)
-                _EnvLibs.insertMulti(i.fileName(), i.absoluteFilePath());
+            _EnvLibs.insertMulti(i.fileName(), i.absoluteFilePath());
         }
 
     }
@@ -115,7 +111,15 @@ QStringList DependenciesScanner::scan(const QString &path) {
             continue;
         }
 
-        result.push_back(libs.first().fullPath());
+        auto lib = libs.begin();
+
+        while (lib != libs.end() &&
+               lib.value().platform != info.platform) lib++;
+
+        if (lib != libs.end())
+            result.push_back(lib->fullPath());
+
+
     }
 
     return result;
