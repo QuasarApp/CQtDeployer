@@ -26,7 +26,7 @@ class deploytest : public QObject
 
 private:
     bool runProcess(const QString& DistroPath, const QString& filename);
-
+    QStringList getFilesFromDir(const QString& dir);
 public:
     deploytest();
     /**
@@ -59,6 +59,7 @@ private slots:
 bool deploytest::runProcess(const QString &DistroPath, const QString &filename) {
 
     QProcess p;
+    p.setEnvironment(QStringList());
 
 #ifdef Q_OS_UNIX
     p.setProgram(DistroPath + "/" + filename + ".sh");
@@ -81,6 +82,25 @@ bool deploytest::runProcess(const QString &DistroPath, const QString &filename) 
     }
 
     return p.exitCode() == 0;
+}
+
+QStringList deploytest::getFilesFromDir(const QString &path) {
+        QDir dir(path);
+
+        QStringList res;
+
+        auto list = dir.entryInfoList(QDir::Dirs| QDir::Files| QDir::NoDotAndDotDot);
+
+        for (auto &&subDir: list) {
+
+            if (subDir.isFile()) {
+                res.push_back(subDir.fileName());
+            } else {
+                res.append(getFilesFromDir(subDir.absoluteFilePath()));
+            }
+        }
+
+        return res;
 }
 
 deploytest::deploytest(){}
@@ -431,6 +451,7 @@ void deploytest::mainTestQMake() {
     QVERIFY(info.removeRecursively());
     QVERIFY(run);
 
+
 #endif
 }
 
@@ -462,8 +483,39 @@ void deploytest::mainTestQML() {
 
     bool run = runProcess("./Distro", "TestQMLWidgets");
 
+    auto ownScaner = getFilesFromDir("./Distro/qml");
+
+
     QVERIFY(info.removeRecursively());
     QVERIFY(run);
+
+
+    QVERIFY(QFileInfo(QtDir).isDir());
+
+    argc = 10;
+    const char * argv2[] = {"./",
+                           "-bin", "./../../../tests/build/TestQMLWidgets",
+                           "-qmlDir", "./../../../tests/TestQMLWidgets",
+                           "-qmake", QtDir.toLatin1() + "/bin/qmake",
+                           "-targetDir", "./Distro", "qmlExtern"};
+
+
+    QVERIFY(QuasarAppUtils::Params::parseParams(argc, argv2));
+
+    Deploy deploy2;
+
+    QVERIFY(DeployUtils::parseQt(&deploy2));
+
+    deploy2.deploy();
+
+    auto externScaner = getFilesFromDir("./Distro/qml");
+
+
+    QVERIFY(info.removeRecursively());
+    QVERIFY(run);
+
+    QVERIFY(ownScaner == externScaner);
+
 
 #endif
 }

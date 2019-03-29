@@ -62,14 +62,25 @@ bool QML::extractImportsFromDir(const QString &path, bool recursive) {
 
 QString QML::getPathFromImport(const QString &import) {
     auto importData = import.split("#");
-    auto words = importData.value(1).split(QRegExp("/\\"));
+
+    int index;
+
+    if (importData.size() == 2)
+        index = 1;
+    else if (!importData.isEmpty()) {
+        index = 0;
+    } else {
+        return "";
+    }
+
+    auto words = importData.value(index).split(QRegExp("[/\\\\]"));
 
     bool isSecond = importData.first() == "2";
 
     QString path;
     for (auto i = words.rbegin(); i != words.rend(); ++i) {
         QString word = *i;
-        if (isSecond && secondVersions.contains(*i)) {
+        if (isSecond && secondVersions.contains(word)) {
             isSecond = false;
             word.push_back(".2");
         }
@@ -108,11 +119,11 @@ bool QML::scanQmlTree(const QString &qmlTree) {
     auto list = dir.entryInfoList( QDir::Dirs | QDir::NoDotAndDotDot);
 
     for (auto &&info : list) {
+       if (info.fileName().contains(".2")) {
+           secondVersions.insert(info.fileName().left(info.fileName().size() - 2));
+       }
        scanQmlTree(info.absoluteFilePath());
 
-       if (info.fileName().contains(".2")) {
-           secondVersions.insert(info.absoluteFilePath());
-       }
     }
 
     return true;
