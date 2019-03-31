@@ -483,9 +483,6 @@ void deploytest::mainTestQML() {
 
     bool run = runProcess("./Distro", "TestQMLWidgets");
 
-    auto ownScaner = getFilesFromDir("./Distro/qml");
-
-
     QVERIFY(info.removeRecursively());
     QVERIFY(run);
 
@@ -507,14 +504,10 @@ void deploytest::mainTestQML() {
     QVERIFY(DeployUtils::parseQt(&deploy2));
 
     deploy2.deploy();
-
-    auto externScaner = getFilesFromDir("./Distro/qml");
-
+    run = runProcess("./Distro", "TestQMLWidgets");
 
     QVERIFY(info.removeRecursively());
     QVERIFY(run);
-
-    QVERIFY(ownScaner == externScaner);
 
 
 #endif

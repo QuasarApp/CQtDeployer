@@ -49,7 +49,7 @@ bool QML::extractImportsFromDir(const QString &path, bool recursive) {
             for (auto import : imports) {
                 if (!_imports.contains(import)) {
                     _imports.insert(import);
-                    extractImportsFromDir(getPathFromImport(import), false);
+                    extractImportsFromDir(getPathFromImport(import), recursive);
                 }
             }
         } else if (recursive) {
@@ -149,9 +149,7 @@ bool QML::scan(QStringList &res, const QString& _qmlProjectDir) {
     }
 
     for (auto &&import : _imports) {
-        if (!deployPath(getPathFromImport(import), res)) {
-            QuasarAppUtils::Params::verboseLog("deploy qml import failed (" + import + ")");
-        }
+        res.push_back(getPathFromImport(import));
     }
 
     return true;
