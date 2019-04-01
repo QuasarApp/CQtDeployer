@@ -856,7 +856,6 @@ bool Deploy::extractQmlFromSource(const QString& sourceDir) {
         qInfo() << "use extern qml scaner!";
 
         plugins = extractImportsFromDir(info.absoluteFilePath());
-        filter << ".so.debug" << "d.dll";
 
     } else {
         qInfo() << "use own qml scaner!";
