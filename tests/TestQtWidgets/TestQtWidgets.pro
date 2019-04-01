@@ -36,4 +36,7 @@ FORMS += \
 
 DESTDIR="$$PWD/../build"
 
+RESOURCES += \
+    conf.qrc
+
 

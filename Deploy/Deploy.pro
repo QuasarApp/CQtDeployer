@@ -47,7 +47,8 @@ SOURCES += \
     igetlibinfo.cpp \
     dependenciesscanner.cpp \
     ../qtTools/src/shared/winutils/elfreader.cpp \
-    elf.cpp
+    elf.cpp \
+    qml.cpp
 
 HEADERS += \
         deploy.h \
@@ -57,4 +58,5 @@ HEADERS += \
     igetlibinfo.h \
     dependenciesscanner.h \
     ../qtTools/src/shared/winutils/elfreader.h \
-    elf.h
+    elf.h \
+    qml.h

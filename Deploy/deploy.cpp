@@ -24,12 +24,12 @@ bool Deploy::getDeployQml() const { return deployQml; }
 
 void Deploy::setDeployQml(bool value) { deployQml = value; }
 
-QString Deploy::getQmlScaner() const { return qmlScaner; }
+QString Deploy::getQmlScaner() const { return externQmlScaner; }
 
 void Deploy::setQmlScaner(const QString &value) {
-    qmlScaner = QDir::fromNativeSeparators(value);
-    QuasarAppUtils::Params::verboseLog("qmlScaner = " + qmlScaner);
-    deployQml = QFileInfo(qmlScaner).isFile();
+    externQmlScaner = QDir::fromNativeSeparators(value);
+    QuasarAppUtils::Params::verboseLog("qmlScaner = " + externQmlScaner);
+    deployQml = QFileInfo(externQmlScaner).isFile();
 }
 
 QString Deploy::getQmake() const { return qmake; }
@@ -42,6 +42,7 @@ void Deploy::setQmake(const QString &value) {
 
     if (!dir.cdUp() || !dir.cd("qml")) {
         QuasarAppUtils::Params::verboseLog("get qml fail!");
+        return;
     }
 
     qmlDir = dir.absolutePath();
@@ -50,6 +51,7 @@ void Deploy::setQmake(const QString &value) {
     dir = (info.absoluteDir());
     if (!dir.cdUp() || !dir.cd("translations")) {
         QuasarAppUtils::Params::verboseLog("get translations fail!");
+        return;
     }
 
     translationDir = dir.absolutePath();
@@ -220,6 +222,8 @@ void Deploy::createQConf() {
 void Deploy::deploy() {
     qInfo() << "target deploy started!!";
 
+    initEnvirement();
+
     if (QuasarAppUtils::Params::isEndable("ignore")) {
         auto list = QuasarAppUtils::Params::getStrArg("ignore").split(',');
         ignoreList.append(list);
@@ -235,18 +239,15 @@ void Deploy::deploy() {
         }
     }
 
-    if (!onlyCLibs)
-        copyPlugins(neededPlugins);
+    copyPlugins(neededPlugins);
 
-    if (!onlyCLibs && deployQml && !extractQml()) {
+    if (deployQml && !extractQml()) {
         qCritical() << "qml not extacted!";
     }
 
-    if (!onlyCLibs) {
-        copyFiles(QtLibs);
-    }
+    copyFiles(QtLibs);
 
-    if (onlyCLibs || QuasarAppUtils::Params::isEndable("deploy-not-qt")) {
+    if (QuasarAppUtils::Params::isEndable("deploy-not-qt")) {
         copyFiles(noQTLibs);
     }
 
@@ -254,7 +255,7 @@ void Deploy::deploy() {
         QuasarAppUtils::Params::verboseLog("strip failed!");
     }
 
-    if (!onlyCLibs && !QuasarAppUtils::Params::isEndable("noTranslations")) {
+    if (!QuasarAppUtils::Params::isEndable("noTranslations")) {
         if (!copyTranslations(DeployUtils::extractTranslation(QtLibs))) {
             qWarning() << " copy TR ERROR";
         }
@@ -278,8 +279,6 @@ void Deploy::setQtDir(const QString &value) {
     addEnv(DeployUtils::qtDir + "/lib");
 #endif
 }
-
-void Deploy::setOnlyCLibs(bool value) { onlyCLibs = value; }
 
 void Deploy::setExtraPath(const QStringList &value) {
     QDir dir;
@@ -323,7 +322,7 @@ bool Deploy::fileActionPrivate(const QString &file, const QString &target,
     bool copy = !masks;
     if (masks) {
         for (auto mask : *masks) {
-            if (info.absolutePath().contains(mask)) {
+            if (info.absoluteFilePath().contains(mask)) {
                 copy = true;
                 break;
             }
@@ -654,7 +653,7 @@ void Deploy::extractLib(const QString &file, bool isExtractPlugins) {
             continue;
         }
 
-        if ((onlyCLibs || QuasarAppUtils::Params::isEndable("deploy-not-qt")) &&
+        if ((QuasarAppUtils::Params::isEndable("deploy-not-qt")) &&
                 !noQTLibs.contains(line)) {
             noQTLibs << line;
             extractLib(line, isExtractPlugins);
@@ -765,7 +764,7 @@ QStringList Deploy::extractImportsFromDir(const QString &filepath) {
     env.insert("QT_QPA_PLATFORM_PLUGIN_PATH", DeployUtils::qtDir + "/plugins/platforms");
 
     p.setProcessEnvironment(env);
-    p.setProgram(qmlScaner);
+    p.setProgram(externQmlScaner);
     p.setArguments(QStringList()
                    << "-rootPath" << filepath << "-importPath" << qmlDir);
     p.start();
@@ -847,16 +846,31 @@ bool Deploy::extractQmlFromSource(const QString& sourceDir) {
         return false;
     }
 
-    QStringList plugins = extractImportsFromDir(info.absoluteFilePath());
+    QStringList plugins;
     QStringList listItems;
+    QStringList filter;
 
-    for (auto &&i: plugins) {
-        QuasarAppUtils::Params::verboseLog(i);
+
+    if (QuasarAppUtils::Params::isEndable("qmlExtern")) {
+
+        qInfo() << "use extern qml scaner!";
+
+        plugins = extractImportsFromDir(info.absoluteFilePath());
+        filter << ".so.debug" << "d.dll";
+
+    } else {
+        qInfo() << "use own qml scaner!";
+
+        QML ownQmlScaner(qmlDir);
+
+        if (!ownQmlScaner.scan(plugins, info.absoluteFilePath())) {
+            QuasarAppUtils::Params::verboseLog("qml scaner run failed!");
+            return false;
+        }
     }
 
     if (!copyFolder(qmlDir, targetDir + "/qml",
-                    QStringList() << ".so.debug" << "d.dll",
-                    &listItems, &plugins)) {
+                    filter , &listItems, &plugins)) {
         return false;
     }
 
@@ -949,9 +963,34 @@ void Deploy::initEnvirement() {
     addEnv(env.value("LD_LIBRARY_PATH"));
     addEnv(env.value("PATH"));
 
+    if (QuasarAppUtils::Params::isEndable("deploy-not-qt")) {
+        QStringList dirs;
+        dirs.append(getDirsRecursive("/lib"));
+        dirs.append(getDirsRecursive("/usr/lib"));
+
+        for (auto &&i : dirs) {
+            addEnv(i);
+        }
+    }
+
     if (deployEnvironment.size() < 2) {
         qWarning() << "system environment is empty";
     }
+}
+
+QStringList Deploy::getDirsRecursive(const QString &path) {
+    QDir dir(path);
+
+    QStringList res;
+
+    auto list = dir.entryInfoList(QDir::Dirs| QDir::NoDotAndDotDot);
+
+    for (auto &&subDir: list) {
+        res.push_back(subDir.absoluteFilePath());
+        res.append(getDirsRecursive(subDir.absoluteFilePath()));
+    }
+
+    return res;
 }
 
 

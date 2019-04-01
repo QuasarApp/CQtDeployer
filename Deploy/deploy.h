@@ -13,16 +13,17 @@
 #include <QStringList>
 #include <dependenciesscanner.h>
 #include "deploy_global.h"
+#include "qml.h"
 
 class DEPLOYSHARED_EXPORT Deploy {
   private:
     bool deployQml = false;
-    bool onlyCLibs = false;
     int depchLimit = 0;
     QStringList deployedFiles;
 
     QSettings settings;
-    QString qmlScaner = "";
+    QString externQmlScaner = "";
+
     QString qmake = "";
     /**
      * @brief targets
@@ -101,6 +102,7 @@ class DEPLOYSHARED_EXPORT Deploy {
 public:
     Deploy();
     void initEnvirement();
+    QStringList getDirsRecursive(const QString& path);
 
     bool getDeployQml() const;
     void setDeployQml(bool value);
@@ -121,7 +123,6 @@ public:
     void setQtDir(const QString &value);
 
     void clear();
-    void setOnlyCLibs(bool value);
     void setExtraPath(const QStringList &value);
     void setExtraPlugins(const QStringList &value);
     void setDepchLimit(int value);
