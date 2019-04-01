@@ -306,7 +306,7 @@ bool Deploy::fileActionPrivate(const QString &file, const QString &target,
     bool copy = !masks;
     if (masks) {
         for (auto mask : *masks) {
-            if (info.absolutePath().contains(mask)) {
+            if (info.absoluteFilePath().contains(mask)) {
                 copy = true;
                 break;
             }
