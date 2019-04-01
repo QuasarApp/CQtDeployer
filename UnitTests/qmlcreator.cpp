@@ -38,7 +38,6 @@ void QmlCreator::initQml() {
                   "2#QtQuick",
                   "2#QtQuick/Controls/Material",
                   "2#QtQuick/Controls",
-                  "1#QtQuick/Controls",
                   "1#QtQuick/Layouts"
               });
 }
