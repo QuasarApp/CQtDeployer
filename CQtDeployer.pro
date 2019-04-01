@@ -41,4 +41,5 @@ DISTFILES += \
     sharedBuild.sh \
     README.md \
     staticBuildCrossWin.sh \
-    sharedBuild.bat
+    sharedBuild.bat \
+    sharedBuildCrossWin.sh
