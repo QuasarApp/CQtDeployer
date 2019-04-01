@@ -20,16 +20,21 @@ include('$$PWD/../Deploy/Deploy.pri')
 include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
 
 
+QT_DIR = $$dirname(QMAKE_QMAKE)/../
+DEFINES+=QT_BASE_DIR='\\"$$QT_DIR\\"'
+
 CONFIG += qt console warn_on depend_includepath testcase
 CONFIG -= app_bundle
 
 TEMPLATE = app
 
 SOURCES +=  tst_deploytest.cpp \
-    libcreator.cpp
+    libcreator.cpp \
+    qmlcreator.cpp
 
 RESOURCES += \
     res.qrc
 
 HEADERS += \
-    libcreator.h
+    libcreator.h \
+    qmlcreator.h

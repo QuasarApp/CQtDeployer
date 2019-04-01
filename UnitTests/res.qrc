@@ -11,5 +11,6 @@
         <file alias="win64mingw.dll">testRes/win64/mingw/Deploy.dll</file>
         <file alias="win64msvc.exe">testRes/win64/msvc/exe.exe</file>
         <file alias="win64msvc.dll">testRes/win64/msvc/lib.dll</file>
+        <file alias="qmlFile.qml">testRes/qml/Scene.qml</file>
     </qresource>
 </RCC>

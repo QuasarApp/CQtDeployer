@@ -38,7 +38,9 @@ Key differences of this program:
 |  -targetDir [params]        | set target Dir for binaryes (default is path of first target)   |
 |  noStrip                    | skip strip step                                                 |
 |  noTranslations             | skip translations files                                         |
-|  verbose                    | show debug log                                                  |
+|  qmlExtern                  | use qml external scanner (qmlimportscaner)                      |
+|                             | not work without qmake and in snap package                      |
+|  -verbose [0-3]             | show debug log                                                  |
 
 
 
@@ -58,12 +60,6 @@ You can download the latest version of the application [here](https://github.com
 
 ### Snap 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/cqtdeployer)
-
-#### Attention!!!
-This application may not work stably in an isolated container. To solve these problems, use the console installation in the Classic box.
-```bash
-snap install cqtdeployer --classic 
-```
 
 ## Donate
 If you want to help the project, then you can donate a small amount to our bitcoin wallet.
@@ -106,9 +102,11 @@ Console QtDeployer является консольной реализацией 
 |  -extraPlugin [list,params] | Установить дополнительный путь для extraPlugin приложения |
 |  -recursiveDepth [params]   | Установит глубену поиска библиотек (по умолчанию 0)       |
 |  -targetDir [params]        | Установит целевой коталог (по умолчанию это путь к первому развертываемому файлу)|
-|  noStrip                    | пропустить шаг strip                                      |
-|  noTranslations             | пропустить файлы переводов                                |
-|  verbose                    | Показ дебаг лога                                          |
+|  noStrip                    | Пропустить шаг strip                                      |
+|  noTranslations             | Пропустить файлы переводов                                |
+|  qmlExtern                  | Использовать внешний сканер qml (qmlimportscaner)         |
+|                             | не работает без qmake и в snap                            |
+|  -verbose [0-3]             | Показ дебаг лога                                          |
 
 
 #### Пример: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
@@ -123,12 +121,6 @@ Console QtDeployer является консольной реализацией 
 
 ### Snap
 [![Загрузите из Snap Store](https://snapcraft.io/static/images/badges/ru/snap-store-black.svg)](https://snapcraft.io/cqtdeployer)
-
-#### Внимание!!!
-это приложение может работать не стабильно в изолированном контейнере, Для решения этих проблемм используйте становку через консоль в рижеми Classic
-```bash
-snap install cqtdeployer --classic 
-```
 
 
 ## Установить

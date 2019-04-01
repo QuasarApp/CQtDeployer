@@ -56,18 +56,18 @@ QMultiMap<libPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
 
 bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) {
 
-   info.clear();
-   auto scaner = getScaner(file);
+    info.clear();
+    auto scaner = getScaner(file);
 
-   switch (scaner) {
-   case PrivateScaner::PE: {
-       return _peScaner.getLibInfo(file, info);
-   }
-   case PrivateScaner::ELF:
-       return _elfScaner.getLibInfo(file, info);
+    switch (scaner) {
+    case PrivateScaner::PE: {
+        return _peScaner.getLibInfo(file, info);
+    }
+    case PrivateScaner::ELF:
+        return _elfScaner.getLibInfo(file, info);
 
-   default: return false;
-   }
+    default: return false;
+    }
 }
 
 void DependenciesScanner::setEnvironment(const QStringList &env) {
@@ -81,9 +81,10 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
 
         auto list = dir.entryInfoList(QStringList() << "*.dll" << ".DLL"
                                       << "*.SO*" << "*.so*",
-                                  QDir::Files| QDir::NoDotAndDotDot);
+                                      QDir::Files| QDir::NoDotAndDotDot);
 
         for (auto i : list) {
+
             _EnvLibs.insertMulti(i.fileName(), i.absoluteFilePath());
         }
 
@@ -103,13 +104,21 @@ QStringList DependenciesScanner::scan(const QString &path) {
     for (auto i : info.dependncies) {
 
         auto libs = getLibsFromEnvirement(i);
-        while (libs.size()) {
-            auto lib = libs.take(libs.lastKey());
-            if (lib.platform == info.platform) {
-                result.push_back(lib.fullPath());
-                break;
-            }
+
+        if (!libs.size()) {
+            QuasarAppUtils::Params::verboseLog("lib for dependese " + i + " not findet!!",
+                                               QuasarAppUtils::Warning);
+            continue;
         }
+
+        auto lib = libs.begin();
+
+        while (lib != libs.end() &&
+               lib.value().platform != info.platform) lib++;
+
+        if (lib != libs.end())
+            result.push_back(lib->fullPath());
+
 
     }
 

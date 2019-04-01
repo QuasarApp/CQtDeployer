@@ -7,3 +7,6 @@ SOURCES += \
         main.cpp
 
 DESTDIR="$$PWD/../build"
+
+RESOURCES += \
+    conf.qrc

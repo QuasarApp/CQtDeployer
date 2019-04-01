@@ -10,18 +10,25 @@
 #include <deployutils.h>
 #include <deploy.h>
 #include <dependenciesscanner.h>
+#include <qml.h>
 
 #include <QMap>
 #include <QByteArray>
 #include <QDir>
 #include <thread>
 #include "libcreator.h"
+#include "qmlcreator.h"
 // add necessary includes here
 
 class deploytest : public QObject
 {
     Q_OBJECT
 
+private:
+    bool runProcess(const QString& DistroPath,
+                    const QString& filename,
+                    const QString &qt = "");
+    QStringList getFilesFromDir(const QString& dir);
 public:
     deploytest();
     /**
@@ -31,6 +38,10 @@ public:
      */
     int generateLib(const QString& paath);
     void deleteLib(const QString& paath);
+
+    bool mainTestOnlyC();
+    bool mainTestQMake();
+    bool mainTestQML();
 
     ~deploytest();
 
@@ -43,8 +54,83 @@ private slots:
     void testStrip();
     void testDeploy();
     void testExtractLib();
+    void testQmlExtrct();
+
+    void mainTests();
     void testMSVC();
 };
+
+bool deploytest::runProcess(const QString &DistroPath,
+                            const QString &filename,
+                            const QString& qt) {
+
+    QProcess p;
+
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+
+    if (qt.size()) {
+        auto val = env.value("LD_LIBRARY_PATH","").remove(qt);
+        env.insert("LD_LIBRARY_PATH", val);
+
+        val = env.value("PATH","").remove(qt);
+        env.insert("PATH", val);
+
+        env.insert("QTDIR", "");
+    } else {
+        env.clear();
+        env.insert("QTDIR", "");
+
+    }
+    p.setProcessEnvironment(env);
+
+#ifdef Q_OS_UNIX
+    p.setProgram(DistroPath + "/" + filename + ".sh");
+#else
+    p.setProgram(DistroPath + "/" + filename + ".exe");
+#endif
+
+    p.start();
+
+    if (!p.waitForFinished(1000)) {
+        return false;
+    }
+
+    QString str = p.readAll();
+    if (p.exitCode()) {
+        qCritical() << p.errorString();
+    }
+
+    if (p.exitCode()) {
+        qWarning() << "exitCode == " <<  p.exitCode();
+    }
+
+    if (str.contains("failed to load component", Qt::CaseInsensitive)
+            || str.contains("is not installed", Qt::CaseInsensitive) ||
+            str.contains("error", Qt::CaseInsensitive)) {
+        return false;
+    }
+
+    return p.exitCode() == 0;
+}
+
+QStringList deploytest::getFilesFromDir(const QString &path) {
+        QDir dir(path);
+
+        QStringList res;
+
+        auto list = dir.entryInfoList(QDir::Dirs| QDir::Files| QDir::NoDotAndDotDot);
+
+        for (auto &&subDir: list) {
+
+            if (subDir.isFile()) {
+                res.push_back(subDir.fileName());
+            } else {
+                res.append(getFilesFromDir(subDir.absoluteFilePath()));
+            }
+        }
+
+        return res;
+}
 
 deploytest::deploytest(){}
 
@@ -335,6 +421,188 @@ void deploytest::testMSVC() {
 
     QVERIFY(file.remove());
 
+}
+
+void deploytest::testQmlExtract() {
+    QmlCreator creator("./");
+    auto imports = creator.getQmlImports();
+
+    auto qmlFiles = creator.getCopyedQml();
+
+
+    QML scaner("./");
+
+
+    for (auto &&file : qmlFiles) {
+
+
+        auto fileImports = scaner.extractImportsFromFile(file);
+
+        for (auto &file : imports.value(file)) {
+            QVERIFY(fileImports.contains(file, Qt::CaseInsensitive));
+        }
+
+    }
+}
+
+void deploytest::mainTests() {
+#ifdef WITH_ALL_TESTS
+    QVERIFY(mainTestOnlyC());
+    QVERIFY(mainTestQMake());
+    QVERIFY(mainTestQML());
+#endif
+}
+
+bool deploytest::mainTestOnlyC() {
+#ifdef WITH_ALL_TESTS
+    int argc = 5;
+    const char * argv[] = {"./",
+                           "-bin", "./../../../tests/build/TestOnlyC",
+                           "-targetDir", "./Distro"};
+
+    if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
+        return false;
+    }
+
+    Deploy deploy;
+
+    if (!DeployUtils::parseQt(&deploy)) {
+        return false;
+    }
+
+    deploy.deploy();
+
+    if (!QFileInfo("./Distro").isDir()) {
+        return false;
+    }
+
+    QDir info("./Distro");
+
+    bool run = runProcess("./Distro", "TestOnlyC");
+    if (!info.removeRecursively()) {
+        return false;
+    }
+
+    return run;
+
+#endif
+}
+
+bool deploytest::mainTestQMake() {
+#ifdef WITH_ALL_TESTS
+
+    QFileInfo QtDir = QFileInfo(QT_BASE_DIR);
+
+    if (!QtDir.isDir()) {
+        return false;
+    }
+
+    int argc = 7;
+    const char * argv[] = {"./",
+                           "-bin", "./../../../tests/build/QtWidgetsProject",
+                           "-qmake", (QtDir.absoluteFilePath() + "/bin/qmake").toLatin1(),
+                           "-targetDir", "./Distro"};
+
+    if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
+        return false;
+    }
+
+    Deploy deploy;
+
+    if (!DeployUtils::parseQt(&deploy)) {
+        return false;
+    }
+
+    deploy.deploy();
+
+    QDir info("./Distro");
+
+    if (!QFileInfo("./Distro").isDir()) {
+        return false;
+    }
+
+    bool run = runProcess("./Distro", "QtWidgetsProject", QtDir.absoluteFilePath());
+
+    if (!info.removeRecursively()) {
+        return false;
+    }
+
+    return run;
+#endif
+}
+
+bool deploytest::mainTestQML() {
+
+#ifdef WITH_ALL_TESTS
+
+    QFileInfo QtDir = QFileInfo(QT_BASE_DIR);
+
+    if (!QtDir.isDir()) {
+        return false;
+    }
+
+    int argc = 9;
+    const char * argv[] = {"./",
+                           "-bin", "./../../../tests/build/TestQMLWidgets",
+                           "-qmlDir", "./../../../tests/TestQMLWidgets",
+                           "-qmake", (QtDir.absoluteFilePath() + "/bin/qmake").toLatin1(),
+                           "-targetDir", "./Distro"};
+
+    if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
+        return false;
+    }
+
+    Deploy deploy;
+
+    if (!DeployUtils::parseQt(&deploy)) {
+        return false;
+    }
+
+    deploy.deploy();
+
+    QDir info("./Distro");
+
+    bool run = runProcess("./Distro", "TestQMLWidgets", QtDir.absoluteFilePath());
+
+    if (!info.removeRecursively()) {
+        return false;
+    }
+
+    if (!run ) {
+        return false;
+    }
+
+    if (!QFileInfo(QtDir).isDir()) {
+        return false;
+    }
+
+    argc = 10;
+    const char * argv2[] = {"./",
+                           "-bin", "./../../../tests/build/TestQMLWidgets",
+                           "-qmlDir", "./../../../tests/TestQMLWidgets",
+                           "-qmake", (QtDir.absoluteFilePath() + "/bin/qmake").toLatin1(),
+                           "-targetDir", "./Distro", "qmlExtern"};
+
+    if (!QuasarAppUtils::Params::parseParams(argc, argv2)) {
+        return false;
+    }
+
+    Deploy deploy2;
+
+    if (!DeployUtils::parseQt(&deploy2)) {
+        return false;
+    }
+
+    deploy2.deploy();
+    run = runProcess("./Distro", "TestQMLWidgets", QtDir.absoluteFilePath());
+
+    if (!info.removeRecursively()) {
+        return false;
+    }
+
+    return run;
+
+#endif
 }
 
 void deploytest::testTranslations() {
