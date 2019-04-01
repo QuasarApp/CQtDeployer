@@ -420,10 +420,13 @@ void deploytest::testMSVC() {
     QVERIFY(msvc & MSVCVersion::MSVC_x64);
 
     QVERIFY(file.remove());
+    QDir dir("./Qt");
+    dir.removeRecursively();
+
 
 }
 
-void deploytest::testQmlExtract() {
+void deploytest::testQmlExtrct() {
     QmlCreator creator("./");
     auto imports = creator.getQmlImports();
 
