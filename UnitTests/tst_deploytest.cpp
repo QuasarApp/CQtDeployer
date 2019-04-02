@@ -442,8 +442,8 @@ void deploytest::testQmlExtrct() {
 
         auto fileImports = scaner.extractImportsFromFile(file);
 
-        for (auto &file : imports.value(file)) {
-            QVERIFY(fileImports.contains(file, Qt::CaseInsensitive));
+        for (auto &fil : imports.value(file)) {
+            QVERIFY(fileImports.contains(fil, Qt::CaseInsensitive));
         }
 
     }

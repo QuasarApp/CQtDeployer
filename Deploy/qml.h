@@ -3,8 +3,9 @@
 
 #include <QSet>
 #include <QStringList>
+#include "deploy_global.h"
 
-class QML {
+class DEPLOYSHARED_EXPORT QML {
 private:
     QStringList extractImportsFromFile(const QString &filepath);
     bool extractImportsFromDir(const QString &path, bool recursive = false);

@@ -60,4 +60,6 @@ distro/
 staticQt/
 staticQtWin64/
 build
-
+UnitTests/release/*
+UnitTests/debug/*
+UnitTests/res_qmlcache.qrc
