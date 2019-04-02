@@ -33,6 +33,8 @@ Makefile*
 stage/*
 prime/*
 parts/*
+*cqtdeployer_resource.rc
+sharedQtWin64/*
 
 # Qt unit tests
 target_wrapper.*
@@ -58,4 +60,6 @@ distro/
 staticQt/
 staticQtWin64/
 build
-
+UnitTests/release/*
+UnitTests/debug/*
+UnitTests/res_qmlcache.qrc

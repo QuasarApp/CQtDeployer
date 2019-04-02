@@ -1,11 +1,11 @@
-#ifndef QML_H
-#define QML_H
+#ifndef QML_DEPLY_H
+#define QML_DEPLY_H
 
 #include <QSet>
 #include <QStringList>
+#include "deploy_global.h"
 
-class QML
-{
+class DEPLOYSHARED_EXPORT QML {
 private:
     QStringList extractImportsFromFile(const QString &filepath);
     bool extractImportsFromDir(const QString &path, bool recursive = false);
@@ -25,4 +25,4 @@ public:
     friend class deploytest;
 };
 
-#endif // QML_H
+#endif // QML_DEPLY_H

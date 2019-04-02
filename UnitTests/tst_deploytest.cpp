@@ -360,6 +360,7 @@ void deploytest::testStrip() {
                  arg(i).arg(libList[i]).arg(sizeBeforList[i]).arg(sizeAfterList[i]).
                  toLatin1());
     }
+
 #endif
 }
 
@@ -441,8 +442,8 @@ void deploytest::testQmlExtrct() {
 
         auto fileImports = scaner.extractImportsFromFile(file);
 
-        for (auto &file : imports.value(file)) {
-            QVERIFY(fileImports.contains(file, Qt::CaseInsensitive));
+        for (auto &fil : imports.value(file)) {
+            QVERIFY(fileImports.contains(fil, Qt::CaseInsensitive));
         }
 
     }
@@ -487,6 +488,8 @@ bool deploytest::mainTestOnlyC() {
     }
 
     return run;
+#else
+    return false;
 
 #endif
 }
@@ -531,6 +534,8 @@ bool deploytest::mainTestQMake() {
     }
 
     return run;
+#else
+    return false;
 #endif
 }
 
@@ -604,6 +609,8 @@ bool deploytest::mainTestQML() {
     }
 
     return run;
+#else
+    return false;
 
 #endif
 }
