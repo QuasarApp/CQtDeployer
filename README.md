@@ -22,7 +22,7 @@ Key differences of this program:
 |   -bin    [list, params]    | deployment binry or directory. example -bin ~/my/project/bin/,~/my/project/bin.exe|
 |   -binDir [params]          | folder with deployment binaries with recursive search. WARNING this flag support only 'so', 'dll' and 'exe' files. If you want deploy linux binary then use '-bin' flag |
 |   -qmlDir [params]          | qml datadir. for example -qmlDir ~/my/project/qml               |
-|   deploy-not-qt             | deploy all libs                                                 |
+|   deploySystem              | deploy all libs                                                 |
 |   -qmake  [params]          | qmake path. for example                                         |
 |                             | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake                             |
 |   -ignore [list,params]     | ignore filter for libs                                          |
@@ -88,7 +88,7 @@ Console QtDeployer является консольной реализацией 
 |   -bin    [list, params]    | Развертываемый файл или папка. пример -bin ~/my/project/bin/,~/my/project/bin.exe|
 |   -binDir [params]          | Папка с развертываемыми файлами (с рекурсивным поиском). ВНИМАНИЕ! Этот флаг поддерживает только файлы 'so', 'dll' и 'exe'. Если вы хотите развернуть бинарный файл Linux, используйте флаг '-bin'  |
 |   -qmlDir [params]          | Папка qml. пример -qmlDir ~/my/project/qml                |
-|   deploy-not-qt             | Копировать все библиотеки                                 |
+|   deploySystem              | Копировать все библиотеки                                 |
 |   -qmake  [params]          | Путь к qmake. пример                                      |
 |                             | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake                       |
 |   -ignore [list,params]     | Список библиотек для игнорирования                        |

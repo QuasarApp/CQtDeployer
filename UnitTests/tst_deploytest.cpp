@@ -247,12 +247,10 @@ void deploytest::testDeployUtils() {
 
     //getLibPriority
 
-    QVERIFY(DeployUtils::getLibPriority("./tst/Qt/5.12/generalLib.so") == 0);
-    QVERIFY(DeployUtils::getLibPriority("./test/Qt/5.12/generalLib.so") == 3);
-    QVERIFY(DeployUtils::getLibPriority("./test/extraPath/ExtraLib.so") == 2);
-    QVERIFY(DeployUtils::getLibPriority("./test/extra/ExtraLib.so") == 1);
-
-
+    QVERIFY(DeployUtils::getLibPriority("./tst/Qt/5.12/generalLib.so") == NotFile);
+    QVERIFY(DeployUtils::getLibPriority("./test/Qt/5.12/generalLib.so") == QtLib);
+    QVERIFY(DeployUtils::getLibPriority("./test/extraPath/ExtraLib.so") == ExtraLib);
+    QVERIFY(DeployUtils::getLibPriority("./test/extra/ExtraLib.so") == SystemLib);
 }
 
 void deploytest::testDeployTarget() {
@@ -460,9 +458,27 @@ void deploytest::mainTests() {
 bool deploytest::mainTestOnlyC() {
 #ifdef WITH_ALL_TESTS
     int argc = 5;
+#ifdef Q_OS_WIN
+
+    QFileInfo QtDir = QFileInfo(QT_BASE_DIR);
+
+    if (!QtDir.isDir()) {
+        return false;
+    }
+    argc += 2;
+
+    std::string path = (QtDir.absoluteFilePath() + "bin/").toStdString();
+    const char *string = path.c_str();
+
+    const char * argv[] = {"./",
+                           "-bin", "./../../../tests/build/TestOnlyC.exe",
+                           "-targetDir", "./Distro",
+                           "-libDir", string};
+#else
     const char * argv[] = {"./",
                            "-bin", "./../../../tests/build/TestOnlyC",
                            "-targetDir", "./Distro"};
+#endif
 
     if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
         return false;
@@ -504,11 +520,21 @@ bool deploytest::mainTestQMake() {
     }
 
     int argc = 7;
+#ifdef Q_OS_WIN
+
+    std::string path = (QtDir.absoluteFilePath()).toStdString();
+    const char *string = path.c_str();
+
+    const char * argv[] = {"./",
+                           "-bin", "./../../../tests/build/QtWidgetsProject.exe",
+                           "-qmake", string,
+                           "-targetDir", "./Distro"};
+#else
     const char * argv[] = {"./",
                            "-bin", "./../../../tests/build/QtWidgetsProject",
                            "-qmake", (QtDir.absoluteFilePath() + "/bin/qmake").toLatin1(),
                            "-targetDir", "./Distro"};
-
+#endif
     if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
         return false;
     }
@@ -550,11 +576,23 @@ bool deploytest::mainTestQML() {
     }
 
     int argc = 9;
+#ifdef Q_OS_WIN
+    std::string path = (QtDir.absoluteFilePath()).toStdString();
+    const char *string = path.c_str();
+
+    const char * argv[] = {"./",
+                           "-bin", "./../../../tests/build/TestQMLWidgets.exe",
+                           "-qmlDir", "./../../../tests/TestQMLWidgets",
+                           "-qmake", string,
+                           "-targetDir", "./Distro"};
+#else
     const char * argv[] = {"./",
                            "-bin", "./../../../tests/build/TestQMLWidgets",
                            "-qmlDir", "./../../../tests/TestQMLWidgets",
                            "-qmake", (QtDir.absoluteFilePath() + "/bin/qmake").toLatin1(),
                            "-targetDir", "./Distro"};
+#endif
+
 
     if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
         return false;
@@ -585,11 +623,21 @@ bool deploytest::mainTestQML() {
     }
 
     argc = 10;
+#ifdef Q_OS_WIN
+
+    const char * argv2[] = {"./",
+                           "-bin", "./../../../tests/build/TestQMLWidgets.exe",
+                           "-qmlDir", "./../../../tests/TestQMLWidgets",
+                           "-qmake", string,
+                           "-targetDir", "./Distro", "qmlExtern"};
+#else
     const char * argv2[] = {"./",
                            "-bin", "./../../../tests/build/TestQMLWidgets",
                            "-qmlDir", "./../../../tests/TestQMLWidgets",
                            "-qmake", (QtDir.absoluteFilePath() + "/bin/qmake").toLatin1(),
                            "-targetDir", "./Distro", "qmlExtern"};
+#endif
+
 
     if (!QuasarAppUtils::Params::parseParams(argc, argv2)) {
         return false;

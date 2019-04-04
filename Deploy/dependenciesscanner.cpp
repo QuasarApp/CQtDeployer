@@ -34,7 +34,7 @@ PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
 QMultiMap<libPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
         const QString &libName) {
 
-    auto values = _EnvLibs.values(libName);
+    auto values = _EnvLibs.values(libName.toUpper());
     QMultiMap<libPriority, LibInfo> res;
 
     for (auto & lib : values) {
@@ -70,6 +70,30 @@ bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) {
     }
 }
 
+void DependenciesScanner::recursiveDep(const LibInfo &lib, QSet<LibInfo> &res)
+{
+    for (auto i : lib.dependncies) {
+
+        auto libs = getLibsFromEnvirement(i);
+
+        if (!libs.size()) {
+            QuasarAppUtils::Params::verboseLog("lib for dependese " + i + " not findet!!",
+                                               QuasarAppUtils::Warning);
+            continue;
+        }
+
+        auto dep = libs.begin();
+
+        while (dep != libs.end() &&
+               dep.value().platform != lib.platform) dep++;
+
+        if (dep != libs.end() && !res.contains(*dep)) {
+            res.insert(*dep);
+            recursiveDep(lib, res);
+        }
+    }
+}
+
 void DependenciesScanner::setEnvironment(const QStringList &env) {
     QDir dir;
     for (auto i : env) {
@@ -85,15 +109,15 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
 
         for (auto i : list) {
 
-            _EnvLibs.insertMulti(i.fileName(), i.absoluteFilePath());
+            _EnvLibs.insertMulti(i.fileName().toUpper(), i.absoluteFilePath());
         }
 
     }
 
 }
 
-QStringList DependenciesScanner::scan(const QString &path) {
-    QStringList result;
+QSet<LibInfo> DependenciesScanner::scan(const QString &path) {
+    QSet<LibInfo> result;
 
     LibInfo info;
 
@@ -101,26 +125,7 @@ QStringList DependenciesScanner::scan(const QString &path) {
         return result;
     }
 
-    for (auto i : info.dependncies) {
-
-        auto libs = getLibsFromEnvirement(i);
-
-        if (!libs.size()) {
-            QuasarAppUtils::Params::verboseLog("lib for dependese " + i + " not findet!!",
-                                               QuasarAppUtils::Warning);
-            continue;
-        }
-
-        auto lib = libs.begin();
-
-        while (lib != libs.end() &&
-               lib.value().platform != info.platform) lib++;
-
-        if (lib != libs.end())
-            result.push_back(lib->fullPath());
-
-
-    }
+    recursiveDep(info, result);
 
     return result;
 }

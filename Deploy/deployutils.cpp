@@ -18,8 +18,7 @@ QStringList DeployUtils::extraPaths = QStringList();
 
 
 bool LibInfo::operator ==(const LibInfo &other) {
-    return platform == other.platform &&
-            name == other.name;
+    return fullPath() == other.fullPath();
 }
 
 bool operator <=(const LibInfo &left, const LibInfo &right){
@@ -38,7 +37,7 @@ bool operator >(const LibInfo &left, const LibInfo &right) {
     return left.priority > right.priority;
 }
 
-QString LibInfo::fullPath() {
+QString LibInfo::fullPath() const {
     return path + "/" + name;
 }
 
@@ -124,7 +123,7 @@ libPriority DeployUtils::getLibPriority(const QString &lib) {
         return ExtraLib;
     }
 
-    return GeneralLib;
+    return SystemLib;
 }
 
 void DeployUtils::verboseLog(const QString &str) {
@@ -146,7 +145,7 @@ void DeployUtils::help() {
     qInfo() << "                            | WARNING this flag support only 'so', 'dll' and 'exe' files";
     qInfo() << "                            | if you want deploy linux binary then use '-bin' flag";
     qInfo() << "   -qmlDir [params]         : qml datadir of project. for example -qmlDir ~/my/project/qml";
-    qInfo() << "   deploy-not-qt            : deploy all libs";
+    qInfo() << "   deploySystem            : deploy all libs";
     qInfo() << "   -qmake  [params]         : qmake path. for example";
     qInfo() << "                            | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake";
     qInfo() << "   -ignore [list,params]    : ignore filter for libs";
@@ -224,7 +223,6 @@ bool DeployUtils::parseQt(Deploy *deploy) {
 
     if (!info.isFile() || (info.baseName() != "qmake")) {
         qInfo() << "deploy only C libs because qmake is not found";
-        QuasarAppUtils::Params::setEnable("deploy-not-qt", true);
         return true;
     }
 

@@ -39,10 +39,10 @@ enum Platform {
 };
 
 enum libPriority : int {
-    NotFile = 0x0,
-    GeneralLib,
+    QtLib = 0x0,
     ExtraLib,
-    QtLib,
+    SystemLib,
+    NotFile = 0xF,
 };
 
 struct DEPLOYSHARED_EXPORT LibInfo {
@@ -58,7 +58,7 @@ struct DEPLOYSHARED_EXPORT LibInfo {
     friend bool operator >= (const LibInfo& left, const LibInfo& right);
     friend bool operator <= (const LibInfo& left, const LibInfo& right);
 
-    QString fullPath();
+    QString fullPath() const;
 
     void clear();
 

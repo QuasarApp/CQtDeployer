@@ -34,12 +34,15 @@ private:
 
     QMultiMap<libPriority, LibInfo> getLibsFromEnvirement(const QString& libName);
     bool fillLibInfo(LibInfo& info ,const QString& file);
+
+    void recursiveDep(const LibInfo& lib, QSet<LibInfo> &res);
+
 public:
     explicit DependenciesScanner();
 
     void setEnvironment(const QStringList &env);
 
-    QStringList scan(const QString& path);
+    QSet<LibInfo> scan(const QString& path);
 
     ~DependenciesScanner();
 
