@@ -24,8 +24,9 @@ bool ELF::getLibInfo(const QString &lib, LibInfo &info) {
     info.setName(QFileInfo(lib).fileName());
     info.setPath(QFileInfo(lib).absolutePath());
 
-    for (auto &i : reader.dependencies()) {
-        info.addDependncies(i);
+    auto dep = reader.dependencies();
+    for (auto &i : dep) {
+        info.addDependncies(i.toUpper());
     }
 
     return true;

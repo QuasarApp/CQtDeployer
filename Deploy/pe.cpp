@@ -64,7 +64,7 @@ bool PE::getLibInfo(const QString &lib, LibInfo &info) {
     }
 
     info.setName(QFileInfo(lib).fileName());
-    info.setName(QFileInfo(lib).absolutePath());
+    info.setPath(QFileInfo(lib).absolutePath());
 
     if (!getDep(parsedPeLib->internal, info)) {
         return false;

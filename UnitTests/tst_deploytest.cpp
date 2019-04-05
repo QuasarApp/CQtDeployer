@@ -388,7 +388,8 @@ void deploytest::testExtractLib() {
         QVERIFY(info.getPlatform() == platforms.value(lib));
 
         for (auto &dep : deb.value(lib)) {
-            QVERIFY(info.getDependncies().contains(dep.toUpper()));
+            bool test = info.getDependncies().contains(dep.toUpper());
+            QVERIFY(test);
         }
 
     }

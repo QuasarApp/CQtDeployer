@@ -89,10 +89,6 @@ bool LibInfo::isValid() const {
             name.size() && path.size();
 }
 
-bool LibInfo::isScaned() const {
-    return allDep.size();
-}
-
 uint qHash(const LibInfo &info) {
     return qHash(info.fullPath());
 }

@@ -75,28 +75,20 @@ bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) {
 
 void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res)
 {
-    bool isScaned = _scanedLibs.contains(lib.fullPath());
+    if (_scanedLibs.contains(lib.fullPath())) {
+        auto scanedLib = _scanedLibs.value(lib.fullPath());
 
-    for (auto i : lib.dependncies) {
-
-        if (isScaned) {
-            auto scanedLib = _scanedLibs.value(i);
-
-            if (!scanedLib.isValid()) {
-                qCritical() << "no valid lib in scaned libs list!";
-                return;
-            }
-
-            if (!scanedLib.isScaned()) {
-                qCritical() << "lib not scaned!";
-                return;
-            }
-
-            res.insert(scanedLib);
-
-            continue;
+        if (!scanedLib.isValid()) {
+            qCritical() << "no valid lib in scaned libs list!";
+            return;
         }
 
+        res.unite(scanedLib.allDep);
+
+        return;
+    }
+
+    for (auto i : lib.dependncies) {
 
         auto libs = getLibsFromEnvirement(i);
 
@@ -111,14 +103,24 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res)
         while (dep != libs.end() &&
                dep.value().platform != lib.platform) dep++;
 
-        if (dep != libs.end() && !res.contains(*dep)) {
+        if (dep != libs.end()) {
+            LibInfo scanedLib = _scanedLibs.value(dep->fullPath());
+
+            if (!scanedLib.isValid()) {
+                auto listDep =  QSet<LibInfo>();
+
+                recursiveDep(*dep, listDep);
+
+                dep->allDep = listDep;
+                _scanedLibs.insert(dep->fullPath(), *dep);
+
+                res.unite(listDep);
+            } else {
+                res.unite(scanedLib.allDep);
+            }
             res.insert(*dep);
-            recursiveDep(*dep, res);
         }
     }
-
-    lib.allDep = res;
-    _scanedLibs.insert(lib.fullPath(), lib);
 }
 
 void DependenciesScanner::setEnvironment(const QStringList &env) {
