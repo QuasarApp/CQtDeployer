@@ -13,6 +13,8 @@
 #include "deploy_global.h"
 #include "pe.h"
 #include "elf.h"
+#include "libinfo.h"
+
 
 enum class PrivateScaner: unsigned char {
    UNKNOWN,
@@ -26,6 +28,7 @@ class DEPLOYSHARED_EXPORT DependenciesScanner {
 private:
     QStringList _env;
     QMultiHash<QString, QString> _EnvLibs;
+    QHash<QString, LibInfo> _scanedLibs;
 
     PE _peScaner;
     ELF _elfScaner;
@@ -35,7 +38,7 @@ private:
     QMultiMap<libPriority, LibInfo> getLibsFromEnvirement(const QString& libName);
     bool fillLibInfo(LibInfo& info ,const QString& file);
 
-    void recursiveDep(const LibInfo& lib, QSet<LibInfo> &res);
+    void recursiveDep(LibInfo& lib, QSet<LibInfo> &res);
 
 public:
     explicit DependenciesScanner();
@@ -47,6 +50,7 @@ public:
     ~DependenciesScanner();
 
     friend class deploytest;
+    void clearScaned();
 };
 
 #endif // WINDEPENDENCIESSCANNER_H

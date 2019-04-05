@@ -2,6 +2,7 @@
 #define IGETLIBINFO_H
 
 #include "deployutils.h"
+#include "libinfo.h"
 
 class IGetLibInfo
 {

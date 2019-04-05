@@ -14,6 +14,9 @@
 
 DependenciesScanner::DependenciesScanner() {}
 
+void DependenciesScanner::clearScaned() {
+    _scanedLibs.clear();
+}
 
 PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
 
@@ -46,9 +49,9 @@ QMultiMap<libPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
             continue;
         }
 
-        info.priority = DeployUtils::getLibPriority(info.fullPath());
+        info.setPriority(DeployUtils::getLibPriority(info.fullPath()));
 
-        res.insertMulti(info.priority, info);
+        res.insertMulti(info.getPriority(), info);
     }
 
     return res;
@@ -70,9 +73,30 @@ bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) {
     }
 }
 
-void DependenciesScanner::recursiveDep(const LibInfo &lib, QSet<LibInfo> &res)
+void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res)
 {
+    bool isScaned = _scanedLibs.contains(lib.fullPath());
+
     for (auto i : lib.dependncies) {
+
+        if (isScaned) {
+            auto scanedLib = _scanedLibs.value(i);
+
+            if (!scanedLib.isValid()) {
+                qCritical() << "no valid lib in scaned libs list!";
+                return;
+            }
+
+            if (!scanedLib.isScaned()) {
+                qCritical() << "lib not scaned!";
+                return;
+            }
+
+            res.insert(scanedLib);
+
+            continue;
+        }
+
 
         auto libs = getLibsFromEnvirement(i);
 
@@ -89,9 +113,12 @@ void DependenciesScanner::recursiveDep(const LibInfo &lib, QSet<LibInfo> &res)
 
         if (dep != libs.end() && !res.contains(*dep)) {
             res.insert(*dep);
-            recursiveDep(lib, res);
+            recursiveDep(*dep, res);
         }
     }
+
+    lib.allDep = res;
+    _scanedLibs.insert(lib.fullPath(), lib);
 }
 
 void DependenciesScanner::setEnvironment(const QStringList &env) {

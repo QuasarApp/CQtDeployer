@@ -458,7 +458,7 @@ void Deploy::extractPlugins(const QString &lib) {
 
     qInfo() << "extrac plugin for " << lib;
 
-    if (lib.contains("Qt5Gui") && !neededPlugins.contains("imageformats")) {
+    if ((lib.contains("Qt5Gui")) && !neededPlugins.contains("imageformats")) {
         neededPlugins << "imageformats"
                       << "iconengines"
                       << "xcbglintegrations"
@@ -649,14 +649,13 @@ void Deploy::extractLib(const QString &file, bool isExtractPlugins) {
             continue;
         }
 
-        if (line.priority != libPriority::SystemLib && !neadedLibs.contains(line.fullPath())) {
+        if (line.getPriority() != libPriority::SystemLib && !neadedLibs.contains(line.fullPath())) {
             neadedLibs << line.fullPath();
             if (isExtractPlugins) {
                 extractPlugins(line.fullPath());
             }
-            continue;
         } else if (QuasarAppUtils::Params::isEndable("deploySystem") &&
-                    line.priority == libPriority::SystemLib &&
+                    line.getPriority() == libPriority::SystemLib &&
                     !systemLibs.contains(line.fullPath())) {
             systemLibs << line.fullPath();
         }
@@ -679,27 +678,29 @@ void Deploy::addEnv(const QString &dir) {
         return;
     }
 
-    if (dir.contains(appDir)) {
-        QuasarAppUtils::Params::verboseLog("is cqtdeployer dir!: " + dir + " app dir : " + appDir);
+    auto path = QFileInfo(dir).absoluteFilePath();
+
+    if (path.contains(appDir)) {
+        QuasarAppUtils::Params::verboseLog("is cqtdeployer dir!: " + path + " app dir : " + appDir);
         return;
     }
 
-    if (!QFileInfo(dir).isDir()) {
-        QuasarAppUtils::Params::verboseLog("is not dir!! :" + dir);
+    if (!QFileInfo(path).isDir()) {
+        QuasarAppUtils::Params::verboseLog("is not dir!! :" + path);
         return;
     }
 
-    if (deployEnvironment.contains(dir)) {
-        QuasarAppUtils::Params::verboseLog ("Environment alredy added: " + dir);
+    if (deployEnvironment.contains(path)) {
+        QuasarAppUtils::Params::verboseLog ("Environment alredy added: " + path);
         return;
     }
 
-    if (dir.contains(targetDir)) {
-        QuasarAppUtils::Params::verboseLog ("Skip paths becouse it is target : " + dir);
+    if (path.contains(targetDir)) {
+        QuasarAppUtils::Params::verboseLog ("Skip paths becouse it is target : " + path);
         return;
     }
 
-    deployEnvironment.push_back(QDir::fromNativeSeparators(dir));
+    deployEnvironment.push_back(QDir::fromNativeSeparators(path));
 }
 
 QString Deploy::concatEnv() const {

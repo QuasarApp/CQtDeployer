@@ -382,13 +382,13 @@ void deploytest::testExtractLib() {
 
     for (auto &&lib : libs) {
         QVERIFY(scaner.fillLibInfo(info, lib));
-        QVERIFY(info.name == QFileInfo(lib).fileName());
-        QVERIFY(info.path == QFileInfo(lib).absolutePath());
+        QVERIFY(info.getName() == QFileInfo(lib).fileName());
+        QVERIFY(info.getPath() == QFileInfo(lib).absolutePath());
         QVERIFY(info.fullPath() == QFileInfo(lib).absoluteFilePath());
-        QVERIFY(info.platform == platforms.value(lib));
+        QVERIFY(info.getPlatform() == platforms.value(lib));
 
         for (auto &dep : deb.value(lib)) {
-            QVERIFY(info.dependncies.contains( dep, Qt::CaseInsensitive));
+            QVERIFY(info.getDependncies().contains(dep.toUpper()));
         }
 
     }
@@ -522,12 +522,11 @@ bool deploytest::mainTestQMake() {
     int argc = 7;
 #ifdef Q_OS_WIN
 
-    std::string path = (QtDir.absoluteFilePath()).toStdString();
-    const char *string = path.c_str();
-
+    std::string qmakePath = (QtDir.absoluteFilePath() + "bin/qmake.exe").toStdString();
+    const char *qmake = qmakePath.c_str();
     const char * argv[] = {"./",
                            "-bin", "./../../../tests/build/QtWidgetsProject.exe",
-                           "-qmake", string,
+                           "-qmake", qmake,
                            "-targetDir", "./Distro"};
 #else
     const char * argv[] = {"./",
@@ -577,13 +576,13 @@ bool deploytest::mainTestQML() {
 
     int argc = 9;
 #ifdef Q_OS_WIN
-    std::string path = (QtDir.absoluteFilePath()).toStdString();
-    const char *string = path.c_str();
+    std::string qmakePath = (QtDir.absoluteFilePath() + "bin/qmake.exe").toStdString();
+    const char *qmake = qmakePath.c_str();
 
     const char * argv[] = {"./",
                            "-bin", "./../../../tests/build/TestQMLWidgets.exe",
                            "-qmlDir", "./../../../tests/TestQMLWidgets",
-                           "-qmake", string,
+                           "-qmake", qmake,
                            "-targetDir", "./Distro"};
 #else
     const char * argv[] = {"./",
@@ -628,7 +627,7 @@ bool deploytest::mainTestQML() {
     const char * argv2[] = {"./",
                            "-bin", "./../../../tests/build/TestQMLWidgets.exe",
                            "-qmlDir", "./../../../tests/TestQMLWidgets",
-                           "-qmake", string,
+                           "-qmake", qmake,
                            "-targetDir", "./Distro", "qmlExtern"};
 #else
     const char * argv2[] = {"./",
