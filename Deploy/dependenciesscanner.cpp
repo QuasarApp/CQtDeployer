@@ -45,7 +45,8 @@ QMultiMap<libPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
 
         if (!fillLibInfo(info, lib)) {
             QuasarAppUtils::Params::verboseLog(
-                        "error extract lib info from " + lib + "(" + libName + ")");
+                        "error extract lib info from " + lib + "(" + libName + ")",
+                        QuasarAppUtils::VerboseLvl::Warning);
             continue;
         }
 
@@ -75,6 +76,9 @@ bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) {
 
 void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res)
 {
+    QuasarAppUtils::Params::verboseLog("get recursive dependencies of " + lib.fullPath(),
+                                       QuasarAppUtils::Info);
+
     if (_scanedLibs.contains(lib.fullPath())) {
         auto scanedLib = _scanedLibs.value(lib.fullPath());
 
@@ -103,11 +107,13 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res)
         while (dep != libs.end() &&
                dep.value().platform != lib.platform) dep++;
 
-        if (dep != libs.end()) {
+        if (dep != libs.end() && !res.contains(*dep)) {
+            res.insert(*dep);
+
             LibInfo scanedLib = _scanedLibs.value(dep->fullPath());
 
             if (!scanedLib.isValid()) {
-                auto listDep =  QSet<LibInfo>();
+                auto listDep =  res;
 
                 recursiveDep(*dep, listDep);
 
@@ -118,7 +124,6 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res)
             } else {
                 res.unite(scanedLib.allDep);
             }
-            res.insert(*dep);
         }
     }
 }

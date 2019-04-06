@@ -191,24 +191,34 @@ bool DeployUtils::parseQt(Deploy *deploy) {
 
     basePath = info.absolutePath();
     deploy->setQmake(qmake);
-#ifdef Q_OS_WIN
-    auto scaner = basePath + QDir::separator() + "qmlimportscanner.exe";
-#else
-    auto scaner = basePath + QDir::separator() + "qmlimportscanner";
-#endif
-    auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir");
 
+    auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir");
     QDir dir(basePath);
 
-    if (QFileInfo::exists(qmlDir) && QFileInfo::exists(scaner)) {
 
-        deploy->setDeployQml(true);
-        deploy->setQmlScaner(scaner);
+    if (QuasarAppUtils::Params::isEndable("qmlExtern")) {
 
-    } else if (QuasarAppUtils::Params::isEndable("allQmlDependes")) {
+#ifdef Q_OS_WIN
+        auto scaner = basePath + QDir::separator() + "qmlimportscanner.exe";
+#else
+        auto scaner = basePath + QDir::separator() + "qmlimportscanner";
+#endif
+        if ( !QFileInfo::exists(scaner)) {
+            QuasarAppUtils::Params::verboseLog("qml scaner not defined, using own scaner!",
+                                               QuasarAppUtils::VerboseLvl::Warning);
+            QuasarAppUtils::Params::setEnable("qmlExtern", false);
+        } else {
+            deploy->setQmlScaner(scaner);
+        }
+    }
+
+    if (QFileInfo::exists(qmlDir) ||
+            QuasarAppUtils::Params::isEndable("allQmlDependes")) {
         deploy->setDeployQml(true);
+
     } else {
-        qCritical() << "wrong qml dir!";
+        QuasarAppUtils::Params::verboseLog("wrong qml dir!",
+                                           QuasarAppUtils::VerboseLvl::Error);
     }
 
     if (!dir.cdUp()) {

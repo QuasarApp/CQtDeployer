@@ -28,7 +28,8 @@ QString Deploy::getQmlScaner() const { return externQmlScaner; }
 
 void Deploy::setQmlScaner(const QString &value) {
     externQmlScaner = QDir::fromNativeSeparators(value);
-    QuasarAppUtils::Params::verboseLog("qmlScaner = " + externQmlScaner);
+    QuasarAppUtils::Params::verboseLog("qmlScaner = " + externQmlScaner,
+                                       QuasarAppUtils::VerboseLvl::Info);
     deployQml = QFileInfo(externQmlScaner).isFile();
 }
 
@@ -580,12 +581,16 @@ bool Deploy::copyFolder(const QString &from, const QString &to, const QStringLis
             }
 
             if (!skipFilter.isEmpty()) {
-                qInfo() << item.absoluteFilePath() << " ignored by filter " << skipFilter;
+                QuasarAppUtils::Params::verboseLog(
+                            item.absoluteFilePath() + " ignored by filter " + skipFilter,
+                            QuasarAppUtils::VerboseLvl::Info);
                 continue;
             }
 
             if (!copyFile(item.absoluteFilePath(), to , mask)) {
-                qWarning() << "not copied file " << to + "/" + item.fileName();
+                QuasarAppUtils::Params::verboseLog(
+                            "not copied file " + to + "/" + item.fileName(),
+                            QuasarAppUtils::VerboseLvl::Warning);
                 continue;
             }
 

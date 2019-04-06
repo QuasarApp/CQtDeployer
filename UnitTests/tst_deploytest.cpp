@@ -453,6 +453,7 @@ void deploytest::mainTests() {
     QVERIFY(mainTestOnlyC());
     QVERIFY(mainTestQMake());
     QVERIFY(mainTestQML());
+
 #endif
 }
 
