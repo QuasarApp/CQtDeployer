@@ -54,10 +54,13 @@ snap/\.snapcraft/
 \.buildconfig
 
 sharedQt/
+sharedQtWin32/
+sharedQtWin64/
 
 distro/
 
 staticQt/
+staticQtWin32/
 staticQtWin64/
 build
 UnitTests/release/*

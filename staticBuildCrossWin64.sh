@@ -8,9 +8,9 @@
 #
 
 IS_SNAP="$1"
-QT_DIR=staticQt
+QT_DIR=staticQtWin64
 
-if [ -e "$IS_SNAP" ]
+if [ -e "$PREFIX"]
 then
     echo "build for snap"
     SNAP_DEFINES="$IS_SNAP"
@@ -33,13 +33,10 @@ fi
 
 cd $BASE_DIR
 
-git submodule update --init --recursive
+#git submodule update --init --recursive
 
 make clean
 find $BASE_DIR -type f -name 'Makefile' -exec rm {} \;
-find $BASE_DIR/QuasarAppLib -type f -name '*.a*' -exec rm {} \;
-find $BASE_DIR/Deploy -type f -name '*.a*' -exec rm {} \;
-
 rm $BASE_DIR/QuasarAppLib/Makefile.QuasarApp
 rm -rdf $RELEASE_DIR
 
@@ -54,8 +51,8 @@ do
 	    echo "$var - not exits!. rebuild qt ..."
             rm -rdf $BASE_DIR/$QT_DIR
             git clean -xdf
-            git checkout v5.11.3
-            ./configure -confirm-license -prefix $BASE_DIR/$QT_DIR -release -static -optimize-size -qt-pcre -qt-zlib -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility
+            git checkout v5.12.2
+            ./configure -xplatform win32-g++ -device-option CROSS_COMPILE=x86_64-w64-mingw32- -confirm-license -prefix $BASE_DIR/$QT_DIR -release -optimize-size -static -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility    
             make install -j$(nproc)
 	    break
 	fi
@@ -65,7 +62,7 @@ cd ..
 rm -rdf $BASE_DIR/build
 
 export PATH=$PATH:$BASE_DIR/$QT_DIR
-$BASE_DIR/$QT_DIR/bin/qmake -r QMAKE_LFLAGS+="-static -static-libgcc -static-libstdc++" $BASE_DIR/CQtDeployer.pro DEFINES+="$SNAP_DEFINES" DEFINES+=WITHOUT_BASE_TESTS
+$BASE_DIR/$QT_DIR/bin/qmake QMAKE_LFLAGS+="-static" -r $BASE_DIR/CQtDeployer.pro
 
 make -j$(nproc)
 
@@ -81,7 +78,7 @@ fi
 
 mkdir -p $RELEASE_DIR
 
-cp $BASE_DIR/CQtDeployer/build/release/cqtdeployer $RELEASE_DIR/
+cp $BASE_DIR/build/release/cqtdeployer $RELEASE_DIR/
 
 strip $RELEASE_DIR/*
 
