@@ -91,7 +91,7 @@ bool deploytest::runProcess(const QString &DistroPath,
 
     p.start();
 
-    if (!p.waitForFinished(1000)) {
+    if (!p.waitForFinished(10000)) {
         return false;
     }
 

@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     w.show();
 
 
-//    QTimer::singleShot(200, [&a](){ a.exit(0);});
+    QTimer::singleShot(200, [&a](){ a.exit(0);});
 
 
     return a.exec();
