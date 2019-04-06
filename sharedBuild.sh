@@ -11,6 +11,7 @@ declare -a QTLIBS
 
 BASE_DIR=$(dirname "$(readlink -f "$0")")
 QTLIBS=( libQt5Sql.so libQt5Xml.so libQt5Core.so libQt5Test.so libQt5Network.so libQt5Concurrent.so)
+QT_DIR=sharedQt
 
 RELEASE_DIR=$BASE_DIR/distro
 CQDEPLOYER_DIR=$BASE_DIR/CQtDeployer/build/release
@@ -33,31 +34,31 @@ then
 
 else
 	echo "use qmake from build!"
-        QMAKE=$BASE_DIR/sharedQt/bin/qmake
+        QMAKE=$BASE_DIR/$QT_DIR/bin/qmake
 
 	cd $BASE_DIR/qtBase
 
 
 	for var in "${QTLIBS[@]}"
 	do
-		    if [ -e "$BASE_DIR/sharedQt/lib/$var" ]
-		then
-			echo "$var - ok"
-		else
-			echo "$var - not exits!. rebuild qt ..."
+            if [ -e "$BASE_DIR/$QT_DIR/lib/$var" ]
+            then
+                echo "$var - ok"
+            else
+                echo "$var - not exits!. rebuild qt ..."
 
-		        rm -rdf $BASE_DIR/sharedQt
-		        git clean -xdf
-                        git checkout v5.12.2
-                        ./configure -confirm-license -prefix $BASE_DIR/sharedQt -release -shared -no-opengl -no-openssl -opensource -nomake tests -nomake examples -qt-pcre -no-gui -no-widgets -no-dbus -no-accessibility
-		        make install -j$(nproc)
-			break
-		fi
+                rm -rdf $BASE_DIR/$QT_DIR
+                git clean -xdf
+                git checkout v5.11.3
+                ./configure -confirm-license -prefix $BASE_DIR/$QT_DIR -release -shared -no-opengl -no-openssl -opensource -nomake tests -nomake examples -qt-pcre -no-gui -no-widgets -no-dbus -no-accessibility
+                make install -j$(nproc)
+                break
+            fi
 	done
 	
 	cd ..
 
-	export PATH=$PATH:$BASE_DIR/sharedQt
+        export PATH=$PATH:$BASE_DIR/$QT_DIR
 
 fi
 $QMAKE $BASE_DIR/CQtDeployer.pro -r

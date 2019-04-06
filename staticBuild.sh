@@ -54,7 +54,7 @@ do
 	    echo "$var - not exits!. rebuild qt ..."
             rm -rdf $BASE_DIR/$QT_DIR
             git clean -xdf
-            git checkout v5.12.2
+            git checkout v5.11.3
             ./configure -confirm-license -prefix $BASE_DIR/$QT_DIR -release -static -optimize-size -qt-pcre -qt-zlib -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility
             make install -j$(nproc)
 	    break
