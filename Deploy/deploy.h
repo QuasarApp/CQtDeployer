@@ -37,9 +37,8 @@ class DEPLOYSHARED_EXPORT Deploy {
 
     QStringList deployEnvironment;
 
-    QStringList QtLibs;
-    QStringList noQTLibs;
-    QStringList qmlLibs;
+    QStringList neadedLibs;
+    QStringList systemLibs;
     QStringList neededPlugins;
     QStringList ignoreList;
     QStringList extraPlugins;

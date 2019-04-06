@@ -13,7 +13,7 @@ class PE : public IGetLibInfo {
 
 private:
 
-    bool getDep(peparse::parsed_pe_internal *, QStringList& res);
+    bool getDep(peparse::parsed_pe_internal *, LibInfo &res);
 
 public:
 

@@ -39,30 +39,10 @@ enum Platform {
 };
 
 enum libPriority : int {
-    NotFile = 0x0,
-    GeneralLib,
+    QtLib = 0x0,
     ExtraLib,
-    QtLib,
-};
-
-struct DEPLOYSHARED_EXPORT LibInfo {
-    Platform platform = Platform::UnknownPlatform;
-    QString name;
-    QString path;
-    QStringList dependncies;
-    libPriority priority = NotFile;
-
-    bool operator == (const LibInfo& other);
-    friend bool operator > (const LibInfo& left, const LibInfo& right);
-    friend bool operator < (const LibInfo& left, const LibInfo& right);
-    friend bool operator >= (const LibInfo& left, const LibInfo& right);
-    friend bool operator <= (const LibInfo& left, const LibInfo& right);
-
-    QString fullPath();
-
-    void clear();
-
-    bool isValid() const;
+    SystemLib,
+    NotFile = 0xF,
 };
 
 class Deploy;
