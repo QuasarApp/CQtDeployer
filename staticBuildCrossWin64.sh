@@ -8,7 +8,7 @@
 #
 
 IS_SNAP="$1"
-QT_DIR=sharedQtWin64
+QT_DIR=staticQtWin64
 
 if [ -e "$PREFIX"]
 then
@@ -19,7 +19,7 @@ fi
 declare -a QTLIBS
 
 BASE_DIR=$(dirname "$(readlink -f "$0")")
-QTLIBS=( libQt5Sql.dll libQt5Xml.dll libQt5Core.dll libQt5Test.dll libQt5Network.dll libQt5Bootstrap.dll libQt5Concurrent.dll)
+QTLIBS=( libQt5Sql.a libQt5Xml.a libQt5Core.a libQt5Test.a libQt5Network.a libQt5Bootstrap.a libQt5Concurrent.a)
 
 RELEASE_DIR=$BASE_DIR/distro
 
@@ -50,8 +50,9 @@ do
 	else
 	    echo "$var - not exits!. rebuild qt ..."
             rm -rdf $BASE_DIR/$QT_DIR
-            git clean -xdf    
-            ./configure -xplatform win32-g++ -device-option CROSS_COMPILE=x86_64-w64-mingw32- -confirm-license -prefix $BASE_DIR/$QT_DIR -release -qt-pcre -optimize-size -shared -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility
+            git clean -xdf
+            git checkout v5.11.3
+            ./configure -xplatform win32-g++ -device-option CROSS_COMPILE=x86_64-w64-mingw32- -confirm-license -prefix $BASE_DIR/$QT_DIR -release -optimize-size -static -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility    
             make install -j$(nproc)
 	    break
 	fi
@@ -61,7 +62,7 @@ cd ..
 rm -rdf $BASE_DIR/build
 
 export PATH=$PATH:$BASE_DIR/$QT_DIR
-$BASE_DIR/$QT_DIR/bin/qmake -r $BASE_DIR/CQtDeployer.pro
+$BASE_DIR/$QT_DIR/bin/qmake QMAKE_LFLAGS+="-static" -r $BASE_DIR/CQtDeployer.pro
 
 make -j$(nproc)
 
