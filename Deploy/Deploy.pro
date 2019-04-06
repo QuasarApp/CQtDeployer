@@ -13,7 +13,7 @@
 #-------------------------------------------------
 
 QT       -= gui
-
+CONFIG += c++17
 TARGET = Deploy
 TEMPLATE = lib
 

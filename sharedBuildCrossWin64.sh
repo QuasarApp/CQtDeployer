@@ -45,18 +45,20 @@ cd $BASE_DIR/qtBase
 for var in "${QTLIBS[@]}"
 do
         if [ -e "$BASE_DIR/$QT_DIR/lib/$var" ]
-	then
-	    echo "$var - ok"
-	else
-	    echo "$var - not exits!. rebuild qt ..."
+        then
+            echo "$var - ok"
+        else
+            echo "$var - not exits!. rebuild qt ..."
             rm -rdf $BASE_DIR/$QT_DIR
-            git clean -xdf    
-            ./configure -xplatform win32-g++ -device-option CROSS_COMPILE=x86_64-w64-mingw32- -confirm-license -prefix $BASE_DIR/$QT_DIR -release -qt-pcre -optimize-size -shared -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility
+            git clean -xdf
+            git checkout v5.12.2
+
+            ./configure -xplatform win32-g++ -device-option CROSS_COMPILE=x86_64-w64-mingw32- -confirm-license -prefix $BASE_DIR/$QT_DIR -release -optimize-size -shared -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility
             make install -j$(nproc)
-	    break
-	fi
+            break
+        fi
 done
-	
+
 cd ..
 rm -rdf $BASE_DIR/build
 
@@ -66,7 +68,7 @@ $BASE_DIR/$QT_DIR/bin/qmake -r $BASE_DIR/CQtDeployer.pro
 make -j$(nproc)
 
 if [ $? -eq 0 ]
-then    
+then
     echo ""
     echo "Build is successfully completed!"
 else
