@@ -28,7 +28,8 @@ QString Deploy::getQmlScaner() const { return externQmlScaner; }
 
 void Deploy::setQmlScaner(const QString &value) {
     externQmlScaner = QDir::fromNativeSeparators(value);
-    QuasarAppUtils::Params::verboseLog("qmlScaner = " + externQmlScaner);
+    QuasarAppUtils::Params::verboseLog("qmlScaner = " + externQmlScaner,
+                                       QuasarAppUtils::VerboseLvl::Info);
     deployQml = QFileInfo(externQmlScaner).isFile();
 }
 
@@ -245,10 +246,10 @@ void Deploy::deploy() {
         qCritical() << "qml not extacted!";
     }
 
-    copyFiles(QtLibs);
+    copyFiles(neadedLibs);
 
-    if (QuasarAppUtils::Params::isEndable("deploy-not-qt")) {
-        copyFiles(noQTLibs);
+    if (QuasarAppUtils::Params::isEndable("deploySystem")) {
+        copyFiles(systemLibs);
     }
 
     if (!QuasarAppUtils::Params::isEndable("noStrip") && !strip(targetDir)) {
@@ -256,7 +257,7 @@ void Deploy::deploy() {
     }
 
     if (!QuasarAppUtils::Params::isEndable("noTranslations")) {
-        if (!copyTranslations(DeployUtils::extractTranslation(QtLibs))) {
+        if (!copyTranslations(DeployUtils::extractTranslation(neadedLibs))) {
             qWarning() << " copy TR ERROR";
         }
     }
@@ -339,6 +340,11 @@ bool Deploy::fileActionPrivate(const QString &file, const QString &target,
 
     if (!initDir(info.absolutePath())) {
         return false;
+    }
+
+    if (QFileInfo(file).absoluteFilePath() ==
+            QFileInfo(target + QDir::separator() + name).absoluteFilePath()) {
+        return true;
     }
 
     if (QuasarAppUtils::Params::isEndable("always-overwrite") &&
@@ -453,7 +459,7 @@ void Deploy::extractPlugins(const QString &lib) {
 
     qInfo() << "extrac plugin for " << lib;
 
-    if (lib.contains("Qt5Gui") && !neededPlugins.contains("imageformats")) {
+    if ((lib.contains("Qt5Gui")) && !neededPlugins.contains("imageformats")) {
         neededPlugins << "imageformats"
                       << "iconengines"
                       << "xcbglintegrations"
@@ -575,12 +581,16 @@ bool Deploy::copyFolder(const QString &from, const QString &to, const QStringLis
             }
 
             if (!skipFilter.isEmpty()) {
-                qInfo() << item.absoluteFilePath() << " ignored by filter " << skipFilter;
+                QuasarAppUtils::Params::verboseLog(
+                            item.absoluteFilePath() + " ignored by filter " + skipFilter,
+                            QuasarAppUtils::VerboseLvl::Info);
                 continue;
             }
 
             if (!copyFile(item.absoluteFilePath(), to , mask)) {
-                qWarning() << "not copied file " << to + "/" + item.fileName();
+                QuasarAppUtils::Params::verboseLog(
+                            "not copied file " + to + "/" + item.fileName(),
+                            QuasarAppUtils::VerboseLvl::Warning);
                 continue;
             }
 
@@ -630,11 +640,11 @@ void Deploy::extractLib(const QString &file, bool isExtractPlugins) {
 
     auto data = scaner.scan(file);
 
-    for (QString &line : data) {
+    for (auto &line : data) {
         bool isIgnore = false;
         for (auto ignore : ignoreList) {
-            if (line.contains(ignore)) {
-                QuasarAppUtils::Params::verboseLog(line + " ignored by filter" + ignore);
+            if (line.fullPath().contains(ignore)) {
+                QuasarAppUtils::Params::verboseLog(line.fullPath() + " ignored by filter" + ignore);
                 isIgnore = true;
                 continue;
             }
@@ -644,19 +654,15 @@ void Deploy::extractLib(const QString &file, bool isExtractPlugins) {
             continue;
         }
 
-        if ((DeployUtils::isQtLib(line) || DeployUtils::isExtraLib(line)) && !QtLibs.contains(line)) {
-            QtLibs << line;
-            extractLib(line, isExtractPlugins);
+        if (line.getPriority() != libPriority::SystemLib && !neadedLibs.contains(line.fullPath())) {
+            neadedLibs << line.fullPath();
             if (isExtractPlugins) {
-                extractPlugins(line);
+                extractPlugins(line.fullPath());
             }
-            continue;
-        }
-
-        if ((QuasarAppUtils::Params::isEndable("deploy-not-qt")) &&
-                !noQTLibs.contains(line)) {
-            noQTLibs << line;
-            extractLib(line, isExtractPlugins);
+        } else if (QuasarAppUtils::Params::isEndable("deploySystem") &&
+                    line.getPriority() == libPriority::SystemLib &&
+                    !systemLibs.contains(line.fullPath())) {
+            systemLibs << line.fullPath();
         }
     }
 }
@@ -677,27 +683,29 @@ void Deploy::addEnv(const QString &dir) {
         return;
     }
 
-    if (dir.contains(appDir)) {
-        QuasarAppUtils::Params::verboseLog("is cqtdeployer dir!: " + dir + " app dir : " + appDir);
+    auto path = QFileInfo(dir).absoluteFilePath();
+
+    if (path.contains(appDir)) {
+        QuasarAppUtils::Params::verboseLog("is cqtdeployer dir!: " + path + " app dir : " + appDir);
         return;
     }
 
-    if (!QFileInfo(dir).isDir()) {
-        QuasarAppUtils::Params::verboseLog("is not dir!! :" + dir);
+    if (!QFileInfo(path).isDir()) {
+        QuasarAppUtils::Params::verboseLog("is not dir!! :" + path);
         return;
     }
 
-    if (deployEnvironment.contains(dir)) {
-        QuasarAppUtils::Params::verboseLog ("Environment alredy added: " + dir);
+    if (deployEnvironment.contains(path)) {
+        QuasarAppUtils::Params::verboseLog ("Environment alredy added: " + path);
         return;
     }
 
-    if (dir.contains(targetDir)) {
-        QuasarAppUtils::Params::verboseLog ("Skip paths becouse it is target : " + dir);
+    if (path.contains(targetDir)) {
+        QuasarAppUtils::Params::verboseLog ("Skip paths becouse it is target : " + path);
         return;
     }
 
-    deployEnvironment.push_back(QDir::fromNativeSeparators(dir));
+    deployEnvironment.push_back(QDir::fromNativeSeparators(path));
 }
 
 QString Deploy::concatEnv() const {
@@ -962,7 +970,7 @@ void Deploy::initEnvirement() {
     addEnv(env.value("LD_LIBRARY_PATH"));
     addEnv(env.value("PATH"));
 
-    if (QuasarAppUtils::Params::isEndable("deploy-not-qt")) {
+    if (QuasarAppUtils::Params::isEndable("deploySystem")) {
         QStringList dirs;
         dirs.append(getDirsRecursive("/lib"));
         dirs.append(getDirsRecursive("/usr/lib"));

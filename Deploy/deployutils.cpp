@@ -17,44 +17,6 @@ QString DeployUtils::qtDir = "";
 QStringList DeployUtils::extraPaths = QStringList();
 
 
-bool LibInfo::operator ==(const LibInfo &other) {
-    return platform == other.platform &&
-            name == other.name;
-}
-
-bool operator <=(const LibInfo &left, const LibInfo &right){
-    return !operator>(left, right);
-}
-
-bool operator >=(const LibInfo &left, const LibInfo &right) {
-    return !operator<(left, right);
-}
-
-bool operator <(const LibInfo &left, const LibInfo &right){
-    return left.priority < right.priority;
-}
-
-bool operator >(const LibInfo &left, const LibInfo &right) {
-    return left.priority > right.priority;
-}
-
-QString LibInfo::fullPath() {
-    return path + "/" + name;
-}
-
-void LibInfo::clear() {
-    path = "";
-    name = "";
-    platform = Platform::UnknownPlatform;
-    dependncies.clear();
-}
-
-bool LibInfo::isValid() const {
-    return platform != Platform::UnknownPlatform &&
-            name.size() && path.size();
-}
-
-
 QtModuleEntry DeployUtils::qtModuleEntries[] = {
     { QtBluetoothModule, "bluetooth", "Qt5Bluetooth", nullptr },
     { QtConcurrentModule, "concurrent", "Qt5Concurrent", "qtbase" },
@@ -124,7 +86,7 @@ libPriority DeployUtils::getLibPriority(const QString &lib) {
         return ExtraLib;
     }
 
-    return GeneralLib;
+    return SystemLib;
 }
 
 void DeployUtils::verboseLog(const QString &str) {
@@ -146,7 +108,7 @@ void DeployUtils::help() {
     qInfo() << "                            | WARNING this flag support only 'so', 'dll' and 'exe' files";
     qInfo() << "                            | if you want deploy linux binary then use '-bin' flag";
     qInfo() << "   -qmlDir [params]         : qml datadir of project. for example -qmlDir ~/my/project/qml";
-    qInfo() << "   deploy-not-qt            : deploy all libs";
+    qInfo() << "   deploySystem            : deploy all libs";
     qInfo() << "   -qmake  [params]         : qmake path. for example";
     qInfo() << "                            | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake";
     qInfo() << "   -ignore [list,params]    : ignore filter for libs";
@@ -224,30 +186,39 @@ bool DeployUtils::parseQt(Deploy *deploy) {
 
     if (!info.isFile() || (info.baseName() != "qmake")) {
         qInfo() << "deploy only C libs because qmake is not found";
-        QuasarAppUtils::Params::setEnable("deploy-not-qt", true);
         return true;
     }
 
     basePath = info.absolutePath();
     deploy->setQmake(qmake);
-#ifdef Q_OS_WIN
-    auto scaner = basePath + QDir::separator() + "qmlimportscanner.exe";
-#else
-    auto scaner = basePath + QDir::separator() + "qmlimportscanner";
-#endif
-    auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir");
 
+    auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir");
     QDir dir(basePath);
 
-    if (QFileInfo::exists(qmlDir) && QFileInfo::exists(scaner)) {
 
-        deploy->setDeployQml(true);
-        deploy->setQmlScaner(scaner);
+    if (QuasarAppUtils::Params::isEndable("qmlExtern")) {
 
-    } else if (QuasarAppUtils::Params::isEndable("allQmlDependes")) {
+#ifdef Q_OS_WIN
+        auto scaner = basePath + QDir::separator() + "qmlimportscanner.exe";
+#else
+        auto scaner = basePath + QDir::separator() + "qmlimportscanner";
+#endif
+        if ( !QFileInfo::exists(scaner)) {
+            QuasarAppUtils::Params::verboseLog("qml scaner not defined, using own scaner!",
+                                               QuasarAppUtils::VerboseLvl::Warning);
+            QuasarAppUtils::Params::setEnable("qmlExtern", false);
+        } else {
+            deploy->setQmlScaner(scaner);
+        }
+    }
+
+    if (QFileInfo::exists(qmlDir) ||
+            QuasarAppUtils::Params::isEndable("allQmlDependes")) {
         deploy->setDeployQml(true);
+
     } else {
-        qCritical() << "wrong qml dir!";
+        QuasarAppUtils::Params::verboseLog("wrong qml dir!",
+                                           QuasarAppUtils::VerboseLvl::Error);
     }
 
     if (!dir.cdUp()) {

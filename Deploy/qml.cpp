@@ -39,20 +39,26 @@ QStringList QML::extractImportsFromFile(const QString &filepath) {
 
 bool QML::extractImportsFromDir(const QString &path, bool recursive) {
     QDir dir(path);
-    auto infoList = dir.entryInfoList(QStringList() << "*.qml" << "*.QML"
-                                      ,QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs);
 
-    for (auto &&info: infoList) {
+    if (!dir.isReadable()) {
+        return false;
+    }
 
-        if (info.isFile()) {
-            auto imports = extractImportsFromFile(info.absoluteFilePath());
-            for (auto import : imports) {
-                if (!_imports.contains(import)) {
-                    _imports.insert(import);
-                    extractImportsFromDir(getPathFromImport(import), recursive);
-                }
+    auto files = dir.entryInfoList(QStringList() << "*.qml" << "*.QML", QDir::Files);
+    auto dirs = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs);
+
+    for (auto &&info: files) {
+        auto imports = extractImportsFromFile(info.absoluteFilePath());
+        for (auto import : imports) {
+            if (!_imports.contains(import)) {
+                _imports.insert(import);
+                extractImportsFromDir(getPathFromImport(import), recursive);
             }
-        } else if (recursive) {
+        }
+    }
+
+    if (recursive) {
+        for (auto &&info: dirs) {
             extractImportsFromDir(info.absoluteFilePath(), recursive);
         }
     }
@@ -119,10 +125,10 @@ bool QML::scanQmlTree(const QString &qmlTree) {
     auto list = dir.entryInfoList( QDir::Dirs | QDir::NoDotAndDotDot);
 
     for (auto &&info : list) {
-       if (info.fileName().contains(".2")) {
-           secondVersions.insert(info.fileName().left(info.fileName().size() - 2));
-       }
-       scanQmlTree(info.absoluteFilePath());
+        if (info.fileName().contains(".2")) {
+            secondVersions.insert(info.fileName().left(info.fileName().size() - 2));
+        }
+        scanQmlTree(info.absoluteFilePath());
 
     }
 

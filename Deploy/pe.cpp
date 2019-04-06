@@ -33,7 +33,7 @@ struct parsed_pe_internal {
 
 }
 
-bool PE::getDep(peparse::parsed_pe_internal * internal, QStringList &res) {
+bool PE::getDep(peparse::parsed_pe_internal * internal, LibInfo &res) {
     auto imports = internal->imports;
 
     std::set<std::string> filter;
@@ -41,11 +41,11 @@ bool PE::getDep(peparse::parsed_pe_internal * internal, QStringList &res) {
     for ( auto &i : imports) {
         if (!filter.count(i.moduleName)) {
             filter.insert(i.moduleName);
-            res.push_back(QString::fromStdString(i.moduleName));
+            res.addDependncies(QString::fromStdString(i.moduleName));
         }
     }
 
-    return res.size();
+    return res.getDependncies().size();
 }
 
 PE::PE(): IGetLibInfo () {
@@ -56,17 +56,17 @@ bool PE::getLibInfo(const QString &lib, LibInfo &info) {
     auto parsedPeLib = peparse::ParsePEFromFile(lib.toLatin1());
 
     if (static_cast<RunType>(parsedPeLib->peHeader.nt.OptionalMagic) == RunType::_32bit) {
-        info.platform = Platform::Win32;
+        info.setPlatform(Platform::Win32);
     } else if (static_cast<RunType>(parsedPeLib->peHeader.nt.OptionalMagic) == RunType::_64bit) {
-        info.platform = Platform::Win64;
+        info.setPlatform(Platform::Win64);
     } else {
-        info.platform = Platform::UnknownPlatform;
+        info.setPlatform(Platform::UnknownPlatform);
     }
 
-    info.name = QFileInfo(lib).fileName();
-    info.path = QFileInfo(lib).absolutePath();
+    info.setName(QFileInfo(lib).fileName());
+    info.setPath(QFileInfo(lib).absolutePath());
 
-    if (!getDep(parsedPeLib->internal, info.dependncies)) {
+    if (!getDep(parsedPeLib->internal, info)) {
         return false;
     }
 

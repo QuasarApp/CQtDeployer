@@ -14,6 +14,9 @@
 
 DependenciesScanner::DependenciesScanner() {}
 
+void DependenciesScanner::clearScaned() {
+    _scanedLibs.clear();
+}
 
 PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
 
@@ -34,7 +37,7 @@ PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
 QMultiMap<libPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
         const QString &libName) {
 
-    auto values = _EnvLibs.values(libName);
+    auto values = _EnvLibs.values(libName.toUpper());
     QMultiMap<libPriority, LibInfo> res;
 
     for (auto & lib : values) {
@@ -42,13 +45,14 @@ QMultiMap<libPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
 
         if (!fillLibInfo(info, lib)) {
             QuasarAppUtils::Params::verboseLog(
-                        "error extract lib info from " + lib + "(" + libName + ")");
+                        "error extract lib info from " + lib + "(" + libName + ")",
+                        QuasarAppUtils::VerboseLvl::Warning);
             continue;
         }
 
-        info.priority = DeployUtils::getLibPriority(info.fullPath());
+        info.setPriority(DeployUtils::getLibPriority(info.fullPath()));
 
-        res.insertMulti(info.priority, info);
+        res.insertMulti(info.getPriority(), info);
     }
 
     return res;
@@ -70,6 +74,60 @@ bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) {
     }
 }
 
+void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res)
+{
+    QuasarAppUtils::Params::verboseLog("get recursive dependencies of " + lib.fullPath(),
+                                       QuasarAppUtils::Info);
+
+    if (_scanedLibs.contains(lib.fullPath())) {
+        auto scanedLib = _scanedLibs.value(lib.fullPath());
+
+        if (!scanedLib.isValid()) {
+            qCritical() << "no valid lib in scaned libs list!";
+            return;
+        }
+
+        res.unite(scanedLib.allDep);
+
+        return;
+    }
+
+    for (auto i : lib.dependncies) {
+
+        auto libs = getLibsFromEnvirement(i);
+
+        if (!libs.size()) {
+            QuasarAppUtils::Params::verboseLog("lib for dependese " + i + " not findet!!",
+                                               QuasarAppUtils::Warning);
+            continue;
+        }
+
+        auto dep = libs.begin();
+
+        while (dep != libs.end() &&
+               dep.value().platform != lib.platform) dep++;
+
+        if (dep != libs.end() && !res.contains(*dep)) {
+            res.insert(*dep);
+
+            LibInfo scanedLib = _scanedLibs.value(dep->fullPath());
+
+            if (!scanedLib.isValid()) {
+                auto listDep =  res;
+
+                recursiveDep(*dep, listDep);
+
+                dep->allDep = listDep;
+                _scanedLibs.insert(dep->fullPath(), *dep);
+
+                res.unite(listDep);
+            } else {
+                res.unite(scanedLib.allDep);
+            }
+        }
+    }
+}
+
 void DependenciesScanner::setEnvironment(const QStringList &env) {
     QDir dir;
     for (auto i : env) {
@@ -85,15 +143,15 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
 
         for (auto i : list) {
 
-            _EnvLibs.insertMulti(i.fileName(), i.absoluteFilePath());
+            _EnvLibs.insertMulti(i.fileName().toUpper(), i.absoluteFilePath());
         }
 
     }
 
 }
 
-QStringList DependenciesScanner::scan(const QString &path) {
-    QStringList result;
+QSet<LibInfo> DependenciesScanner::scan(const QString &path) {
+    QSet<LibInfo> result;
 
     LibInfo info;
 
@@ -101,26 +159,7 @@ QStringList DependenciesScanner::scan(const QString &path) {
         return result;
     }
 
-    for (auto i : info.dependncies) {
-
-        auto libs = getLibsFromEnvirement(i);
-
-        if (!libs.size()) {
-            QuasarAppUtils::Params::verboseLog("lib for dependese " + i + " not findet!!",
-                                               QuasarAppUtils::Warning);
-            continue;
-        }
-
-        auto lib = libs.begin();
-
-        while (lib != libs.end() &&
-               lib.value().platform != info.platform) lib++;
-
-        if (lib != libs.end())
-            result.push_back(lib->fullPath());
-
-
-    }
+    recursiveDep(info, result);
 
     return result;
 }
