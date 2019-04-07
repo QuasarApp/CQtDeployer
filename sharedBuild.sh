@@ -50,7 +50,7 @@ else
                 rm -rdf $BASE_DIR/$QT_DIR
                 git clean -xdf
                 git checkout v5.11.3
-                ./configure -confirm-license -prefix $BASE_DIR/$QT_DIR -release -shared -no-opengl -no-openssl -opensource -nomake tests -nomake examples -qt-pcre -no-gui -no-widgets -no-dbus -no-accessibility
+                ./configure -confirm-license -prefix $BASE_DIR/$QT_DIR -release -shared -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility
                 make install -j$(nproc)
                 break
             fi
@@ -76,7 +76,6 @@ else
 fi
 
 $DEPLOYER -targetDir $RELEASE_DIR -bin $CQDEPLOYER_DIR -libDir $BASE_DIR -recursiveDepth 5 -qmake $QMAKE
-strip $RELEASE_DIR/*
 
 
 if [ -e "$1" ]
