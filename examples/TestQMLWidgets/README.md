@@ -2,15 +2,17 @@
  You need to build your project with your own qt version
 
 ```bash
-    snap install cqtdeployer --classic
-    git clone https://github.com/QuasarApp/Console-QtDeployer.git
-    cd Console-QtDeployer/examples/TestQMLWidgets
-    /path/to/your/qmake/bin/qmake TestQMLWidgets.pro
-    make 
+    cd ~/                                                           # go to home dir 
+    snap install cqtdeployer                                        # install cqtdeployer from snap store 
+    git clone https://github.com/QuasarApp/Console-QtDeployer.git   # clone this project
+    cd Console-QtDeployer/examples/TestQMLWidgets                   # go to folder with example
+    /path/to/your/qmake/bin/qmake TestQMLWidgets.pro                # run your qmake for this example 
+    make                                                            # build example
     cqtdeployer -bin ./build/TestQMLWidgets -qmake /path/to/your/qmake/bin/qmake -qmlDir ./ -targetDir ./distro
-    snapcraft
-    snap install cqtdeployerexample_0.1_amd64.snap --dangerous
-    cqtdeployerexample
+                                                                    # run cqtdeployer for deploy example project
+    snapcraft                                                       # create snapcraft build
+    snap install cqtdeployerexample_0.1_amd64.snap --dangerous      # install this example 
+    cqtdeployerexample                                              # check 
 ``` 
 Done!
 
