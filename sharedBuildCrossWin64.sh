@@ -19,7 +19,7 @@ fi
 declare -a QTLIBS
 
 BASE_DIR=$(dirname "$(readlink -f "$0")")
-QTLIBS=( libQt5Sql.dll libQt5Xml.dll libQt5Core.dll libQt5Test.dll libQt5Network.dll libQt5Bootstrap.dll libQt5Concurrent.dll)
+QTLIBS=( Qt5Sql.dll Qt5Xml.dll Qt5Core.dll Qt5Test.dll Qt5Network.dll Qt5Concurrent.dll)
 
 RELEASE_DIR=$BASE_DIR/distro
 
@@ -44,7 +44,7 @@ cd $BASE_DIR/qtBase
 
 for var in "${QTLIBS[@]}"
 do
-        if [ -e "$BASE_DIR/$QT_DIR/lib/$var" ]
+        if [ -e "$BASE_DIR/$QT_DIR/bin/$var" ]
         then
             echo "$var - ok"
         else
@@ -54,7 +54,8 @@ do
             git checkout v5.12.2
 
             ./configure -xplatform win32-g++ -device-option CROSS_COMPILE=x86_64-w64-mingw32- -confirm-license -prefix $BASE_DIR/$QT_DIR -release -optimize-size -shared -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility
-            make install -j$(nproc)
+            make -j$(nproc)
+            make install
             break
         fi
 done

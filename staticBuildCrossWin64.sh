@@ -53,8 +53,9 @@ do
             git clean -xdf
             git checkout v5.12.2
             ./configure -xplatform win32-g++ -device-option CROSS_COMPILE=x86_64-w64-mingw32- -confirm-license -prefix $BASE_DIR/$QT_DIR -release -optimize-size -static -no-opengl -no-openssl -opensource -nomake tests -nomake examples -no-gui -no-widgets -no-dbus -no-accessibility    
-            make install -j$(nproc)
-	    break
+            make -j$(nproc)
+            make install
+            break
 	fi
 done
 	
