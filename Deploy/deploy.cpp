@@ -857,7 +857,7 @@ bool Deploy::extractQmlFromSource(const QString& sourceDir) {
     QStringList plugins;
     QStringList listItems;
     QStringList filter;
-    filter << ".so.debug" << "d.dll";
+    filter << ".so.debug" << "d.dll" << ".pdb";
 
     if (QuasarAppUtils::Params::isEndable("qmlExtern")) {
 
