@@ -6,8 +6,9 @@
 The Console QtDeployer is console veriosn of the [QtDeployer](https://quasarapp.github.io/QtDeployer/).
 
 Key differences of this program:
-* Performance-this program deploys the application several times faster (up to 10 seconds)
-* Flexibility-this application has flags that will help you configure the deployment as you need and your project
+* Performance: this program deploys the application several times faster (up to 10 seconds)
+* Flexibility: this application's got flags that help you to configure the deployment for your or your project's needs
+
 
 
 ### How to use
