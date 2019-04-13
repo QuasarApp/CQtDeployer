@@ -18,7 +18,7 @@ Key differences of this program:
 #### Options:
 | Option                      | Descriptiion                                                    |
 |-----------------------------|-----------------------------------------------------------------|
-|   help / h                  | Shows help files.                                                      |
+|   help / h                  | Shows help.                                                     |
 |   always-overwrite          | Copies files and replaces the existing ones.                      |
 |   -bin    [list, params]    | Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe|
 |   -binDir [params]          | A folder which includes deployable files (recursive search). WARNING: this flag supports  'so', 'dll' and 'exe' files only. Use '-bin' flag if you want to deploy linux binary files |
@@ -38,7 +38,7 @@ Key differences of this program:
 |  -recursiveDepth [params]   | Sets the Depth of recursive search of the libs (default 0)              |
 |  -targetDir [params]        | Sets target directory(by default it is the path to the first deployable file)   |
 |  noStrip                    | Skips strip step                                                 |
-|  noTranslations             | Skips the files which include translations.                                         |
+|  noTranslations             | Skips the translations files.                                         |
 |  qmlExtern                  | Use qml external scanner (qmlimportscaner)                      |
 |                             | It doesn't work without qmake and inside a snap package                      |
 |  -verbose [0-3]             | Shows debug log                                                  |
