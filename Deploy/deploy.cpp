@@ -315,6 +315,10 @@ void Deploy::setExtraPlugins(const QStringList &value) {
 
 void Deploy::setDepchLimit(int value) { depchLimit = value; }
 
+void Deploy::setIgnoreEnvList(const QStringList &value) {
+    ignoreEnvList = value;
+}
+
 bool Deploy::fileActionPrivate(const QString &file, const QString &target,
                                QStringList *masks, bool isMove) {
 
@@ -684,6 +688,12 @@ void Deploy::addEnv(const QString &dir) {
     }
 
     auto path = QFileInfo(dir).absoluteFilePath();
+
+    for (QString & i :ignoreEnvList) {
+        if (path.contains(i)) {
+            return;
+        }
+    }
 
     if (path.contains(appDir)) {
         QuasarAppUtils::Params::verboseLog("is cqtdeployer dir!: " + path + " app dir : " + appDir);

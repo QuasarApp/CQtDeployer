@@ -41,6 +41,7 @@ class DEPLOYSHARED_EXPORT Deploy {
     QStringList systemLibs;
     QStringList neededPlugins;
     QStringList ignoreList;
+    QStringList ignoreEnvList;
     QStringList extraPlugins;
 
     QString appDir;
@@ -127,6 +128,7 @@ public:
     void setDepchLimit(int value);
 
     friend class deploytest;
+    void setIgnoreEnvList(const QStringList &value);
 };
 
 #endif // DEPLOY_H

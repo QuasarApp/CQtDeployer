@@ -29,6 +29,8 @@ private:
                     const QString& filename,
                     const QString &qt = "");
     QStringList getFilesFromDir(const QString& dir);
+
+
 public:
     deploytest();
     /**
@@ -42,6 +44,8 @@ public:
     bool mainTestOnlyC();
     bool mainTestQMake();
     bool mainTestQML();
+    bool testEnvIgnore();
+
 
     ~deploytest();
 
@@ -130,6 +134,75 @@ QStringList deploytest::getFilesFromDir(const QString &path) {
         }
 
         return res;
+}
+
+bool deploytest::testEnvIgnore()
+{
+#ifdef WITH_ALL_TESTS
+
+    QFileInfo QtDir = QFileInfo(QT_BASE_DIR);
+
+    if (!QtDir.isDir()) {
+        return false;
+    }
+
+    int argc = 9;
+    std::string qmakePath = (QtDir.absoluteFilePath() + "bin/qmake.exe").toStdString();
+    std::string qtPath = (QtDir.absoluteFilePath()).toStdString();
+
+    const char *qmake = qmakePath.c_str();
+    const char *qt = qtPath.c_str();
+#ifdef Q_OS_WIN
+
+    const char * argv[] = {"./",
+                           "-bin", "./../../../tests/build/QtWidgetsProject.exe",
+                           "-qmake", qmake,
+                           "-ignoreEnv", qt,
+                           "-targetDir", "./Distro"};
+#else
+    const char * argv[] = {"./",
+                           "-bin", "./../../../tests/build/QtWidgetsProject",
+                           "-qmake", qmake,
+                           "-ignoreEnv", qt,
+
+                           "-targetDir", "./Distro"};
+#endif
+    if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
+        return false;
+    }
+
+    Deploy deploy;
+
+    if (!DeployUtils::parseQt(&deploy)) {
+        return false;
+    }
+
+    deploy.deploy();
+
+    if (!QFileInfo("./Distro").isDir()) {
+        return false;
+    }
+#ifdef Q_OS_WIN
+    QDir info("./Distro");
+
+#else
+    QDir info("./Distro/lib");
+#endif
+
+    for (auto &i :info.entryInfoList()) {
+        if (i.fileName().contains("Qt")) {
+            return false;
+        }
+
+    }
+    if (!info.removeRecursively()) {
+        return false;
+    }
+
+    return true;
+#else
+    return false;
+#endif
 }
 
 deploytest::deploytest(){}
@@ -453,6 +526,8 @@ void deploytest::mainTests() {
     QVERIFY(mainTestOnlyC());
     QVERIFY(mainTestQMake());
     QVERIFY(mainTestQML());
+    QVERIFY(testEnvIgnore());
+
 
 #endif
 }
@@ -564,6 +639,9 @@ bool deploytest::mainTestQMake() {
 #else
     return false;
 #endif
+
+
+
 }
 
 bool deploytest::mainTestQML() {

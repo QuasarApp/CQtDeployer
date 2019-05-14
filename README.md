@@ -19,29 +19,31 @@ Key differences of this program:
 | Option                      | Descriptiion                                                    |
 |-----------------------------|-----------------------------------------------------------------|
 |   help / h                  | Shows help.                                                     |
-|   always-overwrite          | Copies files and replaces the existing ones.                      |
+|   always-overwrite          | Copies files and replaces the existing ones.                    |
 |   -bin    [list, params]    | Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe|
 |   -binDir [params]          | A folder which includes deployable files (recursive search). WARNING: this flag supports  'so', 'dll' and 'exe' files only. Use '-bin' flag if you want to deploy linux binary files |
-|   -qmlDir [params]          | Qml data dir. For example -qmlDir ~/my/project/qml               |
-|   deploySystem              | Deploys all the libs                                                 |
+|   -qmlDir [params]          | Qml data dir. For example -qmlDir ~/my/project/qml              |
+|   deploySystem              | Deploys all the libs                                            |
 |   -qmake  [params]          | Qmake path. For example                                         |
 |                             | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake                             |
-|   -ignore [list,params]     | The list of the libs to ignore.                                          |
+|   -ignore [list,params]     | The list of the libs to ignore.                                 |
 |                             | For example -ignore libicudata.so.56,libicudata2.so.56          |
-|   clear                     | Deletes deployable files of the previous session.                                      |
+|   -ignoreEnv [list,params]  | The list of the environment to ignore.                          |
+|                             | For example -ignoreEnv /bad/dir,/my/bad/Dir                     |
+|   clear                     | Deletes deployable files of the previous session.               |
 |                             | For example -runScript myApp.sh                                 |
-|  allQmlDependes             | Extracts all the qml libraries.              |
-|                             | (not recommended, as it takes great amount of computer memory)               |
-|  -libDir [list,params]      | Sets additional paths for extra libs of an app.                         |
+|  allQmlDependes             | Extracts all the qml libraries.                                 |
+|                             | (not recommended, as it takes great amount of computer memory)  |
+|  -libDir [list,params]      | Sets additional paths for extra libs of an app.                 |
 |                             | For example -libDir ~/myLib,~/newLibs                           |
-|  -extraPlugin [list,params] | Sets an additional path to extraPlugin of an app                      |
-|  -recursiveDepth [params]   | Sets the Depth of recursive search of the libs (default 0)              |
-|  -targetDir [params]        | Sets target directory(by default it is the path to the first deployable file)   |
-|  noStrip                    | Skips strip step                                                 |
-|  noTranslations             | Skips the translations files.                                         |
+|  -extraPlugin [list,params] | Sets an additional path to extraPlugin of an app                |
+|  -recursiveDepth [params]   | Sets the Depth of recursive search of the libs (default 0)      |
+|  -targetDir [params]        | Sets target directory(by default it is the path to the first deployable file)|
+|  noStrip                    | Skips strip step                                                |
+|  noTranslations             | Skips the translations files.                                   |
 |  qmlExtern                  | Use qml external scanner (qmlimportscaner)                      |
-|                             | It doesn't work without qmake and inside a snap package                      |
-|  -verbose [0-3]             | Shows debug log                                                  |
+|                             | It doesn't work without qmake and inside a snap package         |
+|  -verbose [0-3]             | Shows debug log                                                 |
 
 
 
@@ -94,6 +96,8 @@ Console QtDeployer является консольной реализацией 
 |                             | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake                       |
 |   -ignore [list,params]     | Список библиотек для игнорирования                        |
 |                             | Пример -ignore libicudata.so.56,libicudata2.so.56         |
+|   -ignoreEnv [list,params]  | Список путей для игнорирования.                          |
+|                             | Пример -ignoreEnv /bad/dir,/my/bad/Dir                                |
 |   clear                     | Удаляет все старые файлы (с прошлого запуска)              |
 |                             | пример -runScript myApp.sh                                |
 |  allQmlDependes             | Извлекает все библиотеки qml.          |
