@@ -32,6 +32,8 @@ QuasarAppLib.file = $$PWD/QuasarAppLib/QuasarApp.pro
 Pe.file = $$PWD/pe/pe-parser-library/pe-parser-library.pro
 
 win32:include('$$PWD/CQtDeployerWinBuild.pri')
+include('$$PWD/installer/installer.pri')
+include($$PWD/test.pri)
 
 DISTFILES += \
     snapBuild.sh \
