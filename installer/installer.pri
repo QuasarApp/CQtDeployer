@@ -133,7 +133,7 @@ message( ONLINE_REPO_DIR $$ONLINE_REPO_DIR)
 
 releaseSnap.commands = snapcraft push *snap
 buildSnap.commands = snapcraft
-clearSnap.commands = rm -f *snap
+clearSnap.commands = rm -f *.snap
 
 unix:release.depends += clearSnap
 unix:release.depends += buildSnap
