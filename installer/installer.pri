@@ -131,10 +131,11 @@ message( ONLINE_REPO_DIR $$ONLINE_REPO_DIR)
                            $$PWD/../Distro/$$OUT_FILE
 }
 
-releaseSnap.commands = snapcraft push
+releaseSnap.commands = snapcraft push *snap
 buildSnap.commands = snapcraft
+clearSnap.commands = rm -f *snap
 
-
+unix:release.depends += clearSnap
 unix:release.depends += buildSnap
 unix:release.depends += releaseSnap
 
@@ -151,5 +152,6 @@ QMAKE_EXTRA_TARGETS += \
     deploy \
     create_repo \
     release \
+    clearSnap \
     releaseSnap \
     buildSnap
