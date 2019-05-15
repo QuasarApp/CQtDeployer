@@ -131,13 +131,18 @@ message( ONLINE_REPO_DIR $$ONLINE_REPO_DIR)
                            $$PWD/../Distro/$$OUT_FILE
 }
 
+releaseSnap.commands = snapcraft push
+buildSnap.commands = snapcraft
+
+
+unix:release.depends += buildSnap
+unix:release.depends += releaseSnap
+
 OTHER_FILES += \
     $$PWD/config/*.xml \
     $$PWD/config/*.js \
     $$PWD/config/*.ts \
     $$PWD/config/*.css \
-    $$PWD/packages/Installer/meta/* \
-    $$PWD/packages/Installer/data/app.check \
     $$PWD/packages/cqtdeployer/meta/* \
 
 
@@ -146,3 +151,5 @@ QMAKE_EXTRA_TARGETS += \
     deploy \
     create_repo \
     release \
+    releaseSnap \
+    buildSnap
