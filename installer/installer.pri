@@ -140,10 +140,7 @@ unix:release.depends += buildSnap
 unix:release.depends += releaseSnap
 
 OTHER_FILES += \
-    $$PWD/config/*.xml \
-    $$PWD/config/*.js \
-    $$PWD/config/*.ts \
-    $$PWD/config/*.css \
+    $$PWD/config/*.* \
     $$PWD/packages/cqtdeployer/meta/* \
 
 
