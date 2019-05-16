@@ -131,7 +131,7 @@ message( ONLINE_REPO_DIR $$ONLINE_REPO_DIR)
                            $$PWD/../Distro/$$OUT_FILE
 }
 
-releaseSnap.commands = snapcraft push *snap
+releaseSnap.commands = snapcraft push *.snap
 buildSnap.commands = snapcraft
 clearSnap.commands = rm -f *.snap
 
