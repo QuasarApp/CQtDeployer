@@ -114,7 +114,7 @@ void DeployUtils::help() {
     qInfo() << "   -ignore [list,params]    : The list of the libs to ignore.";
     qInfo() << "                            | For example -ignore libicudata.so.56,libicudata2.so.56";
     qInfo() << "   -ignoreEnv [list,params] : The list of the environment to ignore";
-    qInfo() << "                            | for example -ignoreEnv /bad/dir,/my/bad/Dir";
+    qInfo() << "                            | For example -ignoreEnv /bad/dir,/my/bad/Dir";
     qInfo() << "   clear                    : Deletes deployable files of the previous session.";
     qInfo() << "   allQmlDependes           : Extracts all the qml libraries.";
     qInfo() << "                            | (not recommended, as it takes great amount of computer memory)";

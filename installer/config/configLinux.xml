@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <WizardDefaultWidth>640px</WizardDefaultWidth>
+    <WizardDefaultHeight>400px</WizardDefaultHeight>
+    <Name>CQtDeployer</Name>
+    <Version>1.2.1</Version>
+    <Title>CQtDeployer</Title>
+    <Publisher>QuasarApp</Publisher>
+    <StartMenuDir>CQtDeployer</StartMenuDir>
+    <TargetDir>@HomeDir@/CQtDeployer</TargetDir>
+    <InstallActionColumnVisible>true</InstallActionColumnVisible>
+    <RemoveTargetDir>true</RemoveTargetDir>
+    <ControlScript>controlScript.js</ControlScript>
+    <MaintenanceToolName>CQtDeployerTool</MaintenanceToolName>
+    <WizardStyle>Classic</WizardStyle>
+    <StyleSheet>style.css</StyleSheet>
+    <Banner>banner.png</Banner>
+    <Logo>logo.png</Logo>
+
+    <RemoteRepositories>
+        <Repository>
+            <Url>http://178.124.160.6:3030/CQtDeployer/Linux</Url>
+            <Enabled>1</Enabled>
+            <DisplayName>QuasarApp</DisplayName>
+        </Repository>
+    </RemoteRepositories>
+</Installer>

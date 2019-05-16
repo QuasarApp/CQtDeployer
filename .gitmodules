@@ -1,15 +1,9 @@
 [submodule "QuasarAppLib"]
 	path = QuasarAppLib
 	url = https://github.com/QuasarApp/QuasarAppLib.git
-[submodule "qtBase"]
-	path = qtBase
-	url = https://github.com/qt/qtbase.git
 [submodule "qtTools"]
 	path = qtTools
 	url = https://github.com/qt/qttools.git
-[submodule "CQtDeployerBinaries"]
-	path = CQtDeployerBinaries
-	url = https://github.com/QuasarApp/CQtDeployerBinaries.git
 [submodule "pe"]
 	path = pe
 	url = https://github.com/QuasarApp/pe-parse.git

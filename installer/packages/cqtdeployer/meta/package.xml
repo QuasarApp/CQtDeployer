@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>CQtDeployer</DisplayName>
+    <Description>CQtDeployer</Description>
+    <Version>1.2.1</Version>
+    <Default>true</Default>
+    <ForcedInstallation>false</ForcedInstallation>
+    <Script>installscript.js</Script>
+    <ReleaseDate>2019-05-14</ReleaseDate>
+    <SortingPriority>200</SortingPriority>
+    <Translations>
+        <Translation>ru.qm</Translation>
+    </Translations>
+</Package>

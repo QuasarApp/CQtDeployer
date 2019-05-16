@@ -21,6 +21,7 @@ object_script.*.Debug
 *.qbs.user
 *.qbs.user.*
 *.moc
+*.qm
 moc_*.cpp
 moc_*.h
 qrc_*.cpp
@@ -58,6 +59,9 @@ sharedQtWin32/
 sharedQtWin64/
 
 distro/
+Distro/
+deployTests/
+installer/packages/cqtdeployer/data/
 
 staticQt/
 staticQtWin32/
