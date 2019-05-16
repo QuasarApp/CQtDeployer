@@ -91,7 +91,7 @@ for(command, commands) {
     system($$command)|error("Failed to run: $$command")
 }
 
-BASE_DEPLOY_FLAGS = clear -qmake $$QMAKE_QMAKE -libDir $$PWD/../ -recursiveDepth 3
+BASE_DEPLOY_FLAGS = clear -qmake $$QMAKE_QMAKE -libDir $$PWD/../ -recursiveDepth 4
 BASE_DEPLOY_FLAGS_SNAKE = $$BASE_DEPLOY_FLAGS -targetDir $$PWD/packages/cqtdeployer/data
 
 deploy_dep.commands += $$DEPLOYER -bin $$DEPLOY_TARGET $$BASE_DEPLOY_FLAGS_SNAKE
@@ -140,10 +140,7 @@ unix:release.depends += buildSnap
 unix:release.depends += releaseSnap
 
 OTHER_FILES += \
-    $$PWD/config/*.xml \
-    $$PWD/config/*.js \
-    $$PWD/config/*.ts \
-    $$PWD/config/*.css \
+    $$PWD/config/*.* \
     $$PWD/packages/cqtdeployer/meta/* \
 
 
