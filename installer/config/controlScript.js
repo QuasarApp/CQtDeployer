@@ -16,6 +16,8 @@ function generateTr() {
 
 Controller.prototype.uninstallationFinished = function()
 {
+    homeDir = installer.value("HomeDir", "");
+
     console.log("hometDir "  + homeDir)
 
     if (systemInfo.kernelType === "winnt") {

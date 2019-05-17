@@ -20,6 +20,9 @@
 #include <QRegularExpression>
 #include <quasarapp.h>
 
+#include <fstream>
+
+
 bool Deploy::getDeployQml() const { return deployQml; }
 
 void Deploy::setDeployQml(bool value) { deployQml = value; }
@@ -358,10 +361,30 @@ bool Deploy::fileActionPrivate(const QString &file, const QString &target,
 
     qInfo() << ((isMove)? "move :": "copy :") << file;
 
+    QFile sourceFile(file);
+
     if (!((isMove)?
-          QFile::rename(file, target + QDir::separator() + name):
-          QFile::copy(file, target + QDir::separator() + name))) {
-        return false;
+          sourceFile.rename(target + QDir::separator() + name):
+          sourceFile.copy(target + QDir::separator() + name))) {
+
+        QuasarAppUtils::Params::verboseLog("Qt Operation fail " + file + " >> " + target + QDir::separator() + name +
+                                           " Qt error: " + sourceFile.errorString(),
+                                           QuasarAppUtils::Warning);
+
+        std::ifstream  src(file.toStdString(),
+                           std::ios::binary);
+        std::ofstream  dst((target + QDir::separator() + name).toStdString(),
+                           std::ios::binary);
+
+        dst << src.rdbuf();
+
+        if (!QFileInfo::exists(target + QDir::separator() + name)) {
+            QuasarAppUtils::Params::verboseLog("std Operation fail file not copied. "
+                                               "Сheck if you have access to the target dir",
+                                               QuasarAppUtils::Error);
+            return false;
+
+        }
     }
 
     deployedFiles += target + QDir::separator() + name;

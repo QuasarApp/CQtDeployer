@@ -223,8 +223,8 @@ bool DeployUtils::parseQt(Deploy *deploy) {
         deploy->setDeployQml(true);
 
     } else {
-        QuasarAppUtils::Params::verboseLog("wrong qml dir!",
-                                           QuasarAppUtils::VerboseLvl::Error);
+        QuasarAppUtils::Params::verboseLog("qml dir not exits!",
+                                           QuasarAppUtils::VerboseLvl::Warning);
     }
 
     if (!dir.cdUp()) {
