@@ -21,16 +21,15 @@ contains(QMAKE_HOST.os, Linux):{
 
 BINARY_LIST
 REPO_LIST
-exists( $$QT_DIR/../../../Tools/QtInstallerFramework/3.0/bin/ ) {
-      message( "QtInstallerFramework v3.0: yes" )
-      BINARY_LIST += $$QT_DIR/../../../Tools/QtInstallerFramework/3.0/bin/binarycreator
-      REPO_LIST += $$QT_DIR/../../../Tools/QtInstallerFramework/3.0/bin/repogen
 
-}
-exists( $$QT_DIR/../../../Tools/QtInstallerFramework/2.0/bin/ ) {
-      message( "QtInstallerFramework v2.0: yes" )
-      BINARY_LIST += $$QT_DIR/../../../Tools/QtInstallerFramework/2.0/bin/binarycreator
-      REPO_LIST += $$QT_DIR/../../../Tools/QtInstallerFramework/2.0/bin/repogen
+sopprted_versions = 3.1 3.0 2.0
+for(val, sopprted_versions) {
+
+    exists( $$QT_DIR/../../../Tools/QtInstallerFramework/$$val/bin/ ) {
+          message( "QtInstallerFramework v$$val: yes" )
+          BINARY_LIST += $$QT_DIR/../../../Tools/QtInstallerFramework/$$val/bin/binarycreator
+          REPO_LIST += $$QT_DIR/../../../Tools/QtInstallerFramework/$$val/bin/repogen
+    }
 }
 
 isEmpty (BINARY_LIST) {
