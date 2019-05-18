@@ -131,7 +131,7 @@ message( ONLINE_REPO_DIR $$ONLINE_REPO_DIR)
 }
 
 releaseSnap.commands = snapcraft push *.snap
-buildSnap.commands = snapcraft –-destructive-mode
+buildSnap.commands = snapcraft --destructive-mode
 clearSnap.commands = rm -f *.snap
 chmodSnap.commands = chmod 777 -R $$PWD/packages/cqtdeployer/data
 
