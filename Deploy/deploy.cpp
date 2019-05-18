@@ -277,11 +277,10 @@ QString Deploy::getQtDir() const { return DeployUtils::qtDir; }
 void Deploy::setQtDir(const QString &value) {
     DeployUtils::qtDir = QDir::fromNativeSeparators(value);
     addEnv(DeployUtils::qtDir);
-#ifdef Q_OS_WIN
-    addEnv(DeployUtils::qtDir + "/bin");
-#else
+
     addEnv(DeployUtils::qtDir + "/lib");
-#endif
+    addEnv(DeployUtils::qtDir + "/bin");
+
 }
 
 void Deploy::setExtraPath(const QStringList &value) {
