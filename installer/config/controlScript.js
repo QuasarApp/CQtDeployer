@@ -60,11 +60,21 @@ Controller.prototype.installationFinished = function()
         }
 
         installer.execute("DELETE", ["C:\Windows\system32\cqtdeployer.exe"])
-        installer.execute("mklink", [targetDir + "\cqtdeployer.exe", "C:\Windows\system32\cqtdeployer.exe"])
+        installer.execute("MKLINK", ["C:\Windows\system32\cqtdeployer.exe", targetDir + "\cqtdeployer.exe"])
 
         installer.dropAdminRights();
 
     } else {
+
+        if (!installer.fileExists(homeDir + "/.local/bin")) {
+            installer.execute("mkpath", ["-p", homeDir + "/.local/bin"]);
+
+            QMessageBox["warning"](qsTr("install in system"), qsTr("Installer"),
+                qsTr("The \"~/local/bin\" folder was not initialized, you may need to reboot to work correctly!"),
+                                   QMessageBox.Ok);
+
+        }
+
         installer.execute("ln", ["-sf", targetDir + "/cqtdeployer.sh",
                                  homeDir + "/.local/bin/cqtdeployer"])
     }
