@@ -68,7 +68,11 @@ Controller.prototype.installationFinished = function()
 
         if (!installer.fileExists(homeDir + "/.local/bin")) {
             installer.execute("mkpath", ["-p", homeDir + "/.local/bin"]);
-            // add reboot flag
+
+            QMessageBox["warning"](qsTr("install in system"), qsTr("Installer"),
+                qsTr("The \"~/local/bin\" folder was not initialized, you may need to reboot to work correctly!"),
+                                   QMessageBox.Ok);
+
         }
 
         installer.execute("ln", ["-sf", targetDir + "/cqtdeployer.sh",
