@@ -130,7 +130,7 @@ message( ONLINE_REPO_DIR $$ONLINE_REPO_DIR)
                            $$PWD/../Distro/$$OUT_FILE
 }
 
-releaseSnap.commands = chmod 777 -R $$PWD/../prime && snapcraft push *.snap
+releaseSnap.commands = rm *.snap -rdf && chmod 777 -R $$PWD/../prime && snapcraft push *.snap
 buildSnap.commands = snapcraft
 clearSnap.commands = rm parts prime stage *.snap -rdf
 chmodSnap.commands = chmod 777 -R $$PWD/packages/cqtdeployer/data
