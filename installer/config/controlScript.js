@@ -60,11 +60,17 @@ Controller.prototype.installationFinished = function()
         }
 
         installer.execute("DELETE", ["C:\Windows\system32\cqtdeployer.exe"])
-        installer.execute("mklink", [targetDir + "\cqtdeployer.exe", "C:\Windows\system32\cqtdeployer.exe"])
+        installer.execute("MKLINK", ["C:\Windows\system32\cqtdeployer.exe", targetDir + "\cqtdeployer.exe"])
 
         installer.dropAdminRights();
 
     } else {
+
+        if (!installer.fileExists(homeDir + "/.local/bin")) {
+            installer.execute("mkpath", ["-p", homeDir + "/.local/bin"]);
+            // add reboot flag
+        }
+
         installer.execute("ln", ["-sf", targetDir + "/cqtdeployer.sh",
                                  homeDir + "/.local/bin/cqtdeployer"])
     }
