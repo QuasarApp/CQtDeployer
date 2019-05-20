@@ -20,19 +20,7 @@ Controller.prototype.uninstallationFinished = function()
 
     console.log("hometDir "  + homeDir)
 
-    if (systemInfo.kernelType === "winnt") {
-        if (!installer.gainAdminRights()) {
-            QMessageBox["warning"](qsTr("install in system"), qsTr("Installer"),
-                qsTr("To uninstall cqtdeployer on your system, you need administrator rights!. "), QMessageBox.Ok);
-
-            return;
-        }
-
-        installer.execute("DELETE", ["C:\Windows\system32\cqtdeployer.exe"])
-
-        installer.dropAdminRights();
-
-    } else {
+    if (systemInfo.kernelType === "linux") {
         installer.execute("rm", ["-f", homeDir + "/.local/bin/cqtdeployer"])
     }
 
@@ -48,23 +36,7 @@ Controller.prototype.installationFinished = function()
     console.log("targetDir "  + targetDir)
     console.log("hometDir "  + homeDir)
 
-    if (systemInfo.kernelType === "winnt") {
-        if (!installer.gainAdminRights()) {
-            QMessageBox["warning"](qsTr("install in system"), qsTr("Installer"),
-                qsTr("To install cqtdeployer on your system, you need administrator rights!. ") +
-                qsTr("The installation was successful, but cqtdeployer will not be available from the console. ") +
-                qsTr("To take advantage of this program you will need to enter the full path to it. ") +
-                qsTr("Example: ") + targetDir + "\cqtdeployer.exe", QMessageBox.Ok);
-
-            return;
-        }
-
-        installer.execute("DELETE", ["C:\Windows\system32\cqtdeployer.exe"])
-        installer.execute("mklink", [targetDir + "\cqtdeployer.exe", "C:\Windows\system32\cqtdeployer.exe"])
-
-        installer.dropAdminRights();
-
-    } else {
+    if (systemInfo.kernelType === "linux") {
         installer.execute("ln", ["-sf", targetDir + "/cqtdeployer.sh",
                                  homeDir + "/.local/bin/cqtdeployer"])
     }
