@@ -20,11 +20,11 @@ Component.prototype.createOperations = function()
 
         component.addElevatedOperation("CreateShortcut",
                                "@TargetDir@/cqtdeployer.exe",
-                               "C:/Windows/system32/cqtdeployer.lnk");
+                               "C:/Windows/system32/cqtdeployer");
 
         component.addElevatedOperation("CreateShortcut",
                                "@TargetDir@/cqtdeployer.exe",
-                               "C:/Windows/system32/cqtdeployer.lnk");
+                               "C:/Windows/system32/cqtdeployer");
         console.log("create icons!!! on Windows end");
 
     }
