@@ -13,18 +13,20 @@ Component.prototype.createOperations = function()
 {
 //    // call default implementation to actually install README.txt!
     component.createOperations();
+    console.log("create icons!!! on Windows begin");
 
     if (systemInfo.kernelType === "winnt") {
 
-        console.log("create icons!!! on Windows");
 
         component.addElevatedOperation("CreateShortcut",
                                "@TargetDir@/cqtdeployer.exe",
-                               "C:\Windows\system32\cqtdeployer");
+                               "C:\Windows\system32\cqtdeployer.lnk");
 
         component.addElevatedOperation("CreateShortcut",
                                "@TargetDir@/cqtdeployer.exe",
-                               "C:\Windows\system32\cqtdeployer");
+                               "C:\Windows\system32\cqtdeployer.lnk");
+        console.log("create icons!!! on Windows end");
+
     }
 
 
