@@ -20,7 +20,19 @@ Controller.prototype.uninstallationFinished = function()
 
     console.log("hometDir "  + homeDir)
 
-    if (systemInfo.kernelType === "linux") {
+    if (systemInfo.kernelType === "winnt") {
+        if (!installer.gainAdminRights()) {
+            QMessageBox["warning"](qsTr("install in system"), qsTr("Installer"),
+                qsTr("To uninstall cqtdeployer on your system, you need administrator rights!. "), QMessageBox.Ok);
+
+            return;
+        }
+
+        installer.execute("DELETE", ["C:\Windows\system32\cqtdeployer"])
+
+        installer.dropAdminRights();
+
+    } else {
         installer.execute("rm", ["-f", homeDir + "/.local/bin/cqtdeployer"])
     }
 
@@ -37,6 +49,16 @@ Controller.prototype.installationFinished = function()
     console.log("hometDir "  + homeDir)
 
     if (systemInfo.kernelType === "linux") {
+
+	if (!installer.fileExists(homeDir + "/.local/bin")) {
+            installer.execute("mkpath", ["-p", homeDir + "/.local/bin"]);
+
+            QMessageBox["warning"](qsTr("install in system"), qsTr("Installer"),
+                qsTr("The \"~/local/bin\" folder was not initialized, you may need to reboot to work correctly!"),
+                                   QMessageBox.Ok);
+
+        }
+
         installer.execute("ln", ["-sf", targetDir + "/cqtdeployer.sh",
                                  homeDir + "/.local/bin/cqtdeployer"])
     }
