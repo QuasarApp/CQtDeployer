@@ -8,6 +8,7 @@ The Console QtDeployer is console veriosn of the [QtDeployer](https://quasarapp.
 Key differences of this program:
 * Performance: this program deploys the application several times faster (up to 10 seconds)
 * Flexibility: this application's got flags that help you to configure the deployment for your or your project's needs
+* Crossdeploy: this application's fupport windows and linux distrebutives, This means that you can use it not only to deploy a project for your platform, but also to deploy a project on Linux for Windows and vice versa. 
 
 
 
