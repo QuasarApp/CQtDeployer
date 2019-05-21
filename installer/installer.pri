@@ -5,7 +5,7 @@ DEPLOY_TARGET = $$PWD/../CQtDeployer/build/release
 win32:LUPDATE = $$QT_DIR/lupdate.exe
 win32:LRELEASE = $$QT_DIR/lrelease.exe
 
-win32:DEPLOYER = cqtdeployer.exe
+win32:DEPLOYER = %cqtdeployer%
 
 win32:OUT_FILE = CQtDeployerInstaller.exe
 
