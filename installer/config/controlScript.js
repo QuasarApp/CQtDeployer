@@ -50,7 +50,7 @@ Controller.prototype.installationFinished = function()
 
     if (systemInfo.kernelType === "winnt") {
 
-        installer.execute("SETX", [ "cqtdeployer", targetDir + "\cqtdeployer.exe"])
+        installer.execute("SETX", [ "cqtdeployer", targetDir + "/cqtdeployer.exe"])
 
         QMessageBox["information"](qsTr("install in system"), qsTr("Installer"),
             qsTr("CQtDeployer successfully installed on your computer to use the call \"%cqtdeployer%\"."),
