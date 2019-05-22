@@ -23,10 +23,10 @@ Key differences of this program:
 |   -bin    [list, params]    | Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe|
 |   -binDir [params]          | A folder which includes deployable files (recursive search). WARNING: this flag supports  'so', 'dll' and 'exe' files only. Use '-bin' flag if you want to deploy linux binary files |
 |   -qmlDir [params]          | Qml data dir. For example -qmlDir ~/my/project/qml              |
-|   deploySystem              | Deploys all the libs                                            |
+|   deploySystem              | Deploys all libs                                            |
 |   -qmake  [params]          | Qmake path. For example                                         |
 |                             | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake                             |
-|   -ignore [list,params]     | The list of the libs to ignore.                                 |
+|   -ignore [list,params]     | The list of libs to ignore.                                 |
 |                             | For example -ignore libicudata.so.56,libicudata2.so.56          |
 |   -ignoreEnv [list,params]  | The list of the environment to ignore.                          |
 |                             | For example -ignoreEnv /bad/dir,/my/bad/Dir                     |
@@ -37,7 +37,7 @@ Key differences of this program:
 |  -libDir [list,params]      | Sets additional paths for extra libs of an app.                 |
 |                             | For example -libDir ~/myLib,~/newLibs                           |
 |  -extraPlugin [list,params] | Sets an additional path to extraPlugin of an app                |
-|  -recursiveDepth [params]   | Sets the Depth of recursive search of the libs (default 0)      |
+|  -recursiveDepth [params]   | Sets the Depth of recursive search of libs (default 0)      |
 |  -targetDir [params]        | Sets target directory(by default it is the path to the first deployable file)|
 |  noStrip                    | Skips strip step                                                |
 |  noTranslations             | Skips the translations files.                                   |
