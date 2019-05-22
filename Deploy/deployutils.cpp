@@ -108,10 +108,10 @@ void DeployUtils::help() {
     qInfo() << "                            | WARNING: this flag supports 'so', 'dll' and 'exe' files only.";
     qInfo() << "                            | Use '-bin' flag if you want to deploy linux binary files";
     qInfo() << "   -qmlDir [params]         : Qml data dir. For example -qmlDir ~/my/project/qml";
-    qInfo() << "   deploy-not-qt            : Deploys all the libs";
+    qInfo() << "   deploySystem            : Deploys all libs";
     qInfo() << "   -qmake  [params]         : Qmake path.";
     qInfo() << "                            | For example -qmake ~/Qt/5.11.1/gcc_64/bin/qmake";
-    qInfo() << "   -ignore [list,params]    : The list of the libs to ignore.";
+    qInfo() << "   -ignore [list,params]    : The list of libs to ignore.";
     qInfo() << "                            | For example -ignore libicudata.so.56,libicudata2.so.56";
     qInfo() << "   -ignoreEnv [list,params] : The list of the environment to ignore";
     qInfo() << "                            | For example -ignoreEnv /bad/dir,/my/bad/Dir";
@@ -121,7 +121,7 @@ void DeployUtils::help() {
     qInfo() << "   -libDir [list,params]    : Sets additional paths for extra libs of an app.";
     qInfo() << "                            | For example -libDir /myLib,/newLibs ";
     qInfo() << "   -extraPlugin[list,params]: Sets an additional path to extraPlugin of an app";
-    qInfo() << "   -recursiveDepth [params] : Sets the Depth of recursive search of the libs (default 0)";
+    qInfo() << "   -recursiveDepth [params] : Sets the Depth of recursive search of libs (default 0)";
     qInfo() << "   -targetDir [params]      : Sets target directory(by default it is the path to the first deployable file)";
     qInfo() << "   noStrip                  : Skips strip step";
     qInfo() << "   noTranslations           : Skips the translations files.";
