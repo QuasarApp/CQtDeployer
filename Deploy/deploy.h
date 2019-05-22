@@ -129,6 +129,7 @@ public:
 
     friend class deploytest;
     void setIgnoreEnvList(const QStringList &value);
+    void initIgnoreList();
 };
 
 #endif // DEPLOY_H

@@ -195,9 +195,16 @@ bool Deploy::createRunScript(const QString &target) {
             "export "
             "QT_QPA_PLATFORM_PLUGIN_PATH=\"$BASE_DIR\"/plugins/"
             "platforms:QT_QPA_PLATFORM_PLUGIN_PATH\n"
+            "%2"
             "\"$BASE_DIR\"/bin/%1 \"$@\"";
 
     content = content.arg(QFileInfo(target).fileName());
+
+    auto ld_index = deployedFiles.indexOf(QRegExp("ld-linux.so"));
+    if (ld_index >= 0) {
+        content = content.arg(QString("export LD_PRELOAD=\"$BASE_DIR\"/lib/%0").
+            arg(QFileInfo(deployedFiles[ld_index]).fileName()));
+    }
 
     QString fname = targetDir + QDir::separator() + QFileInfo(target).baseName()+ ".sh";
 
@@ -223,15 +230,26 @@ void Deploy::createQConf() {
 
 }
 
+void Deploy::initIgnoreList()
+{
+    if (QuasarAppUtils::Params::isEndable("ignore")) {
+        auto list = QuasarAppUtils::Params::getStrArg("ignore").split(',');
+        ignoreList.append(list);
+    }
+
+    if (QuasarAppUtils::Params::isEndable("noLibc")) {
+        ignoreList.append("libc.so");
+        ignoreList.append("ld-linux.so");
+
+    }
+}
+
 void Deploy::deploy() {
     qInfo() << "target deploy started!!";
 
     initEnvirement();
 
-    if (QuasarAppUtils::Params::isEndable("ignore")) {
-        auto list = QuasarAppUtils::Params::getStrArg("ignore").split(',');
-        ignoreList.append(list);
-    }
+    initIgnoreList();
 
     smartMoveTargets();
 
