@@ -48,6 +48,7 @@ class DEPLOYSHARED_EXPORT Deploy {
 
     DependenciesScanner scaner;
 
+    int find(const QString& str, const QStringList& list) const;
     bool fileActionPrivate(const QString &file, const QString &target,
                            QStringList *mask, bool isMove);
 

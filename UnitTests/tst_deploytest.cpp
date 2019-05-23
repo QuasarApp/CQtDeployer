@@ -476,13 +476,17 @@ void deploytest::testDeployLdLinux() {
     int argc = 3;
     deploy->targetDir = "./test/bins/sh";
     QVERIFY(QDir("./").mkpath("./test/bins/sh/"));
+    QFile  f("");
 
     const char * argv[] = {"./",
                            "-bin", "./test/bins/execTarget"};
     QVERIFY(QuasarAppUtils::Params::parseParams(argc, argv));
     QString file = "./test/bins/sh/execTarget.sh";
     QVERIFY(deploy->createRunScript(file));
-    QString text = QFile (file).readAll();
+    f.setFileName(file);
+    QVERIFY(f.open(QIODevice::ReadOnly));
+    QString text = f.readAll();
+    f.close();
     QVERIFY(!text.contains("LD_PRELOAD"));
 
     deploy->initIgnoreList();
@@ -496,8 +500,21 @@ void deploytest::testDeployLdLinux() {
     QVERIFY(QuasarAppUtils::Params::parseParams(argc, argv2));
     file = "./test/bins/sh/execTarget2.sh";
     QVERIFY(deploy->createRunScript(file));
-    text = QFile (file).readAll();
+    f.setFileName(file);
+    QVERIFY(f.open(QIODevice::ReadOnly));
+    text = f.readAll();
+    f.close();
+    QVERIFY(!text.contains("LD_PRELOAD"));
+
+    file = "./test/bins/sh/execTarget5.sh";
+    deploy->deployedFiles.push_back("ld-linux-x86-64.so.2");
+    QVERIFY(deploy->createRunScript(file));
+    f.setFileName(file);
+    QVERIFY(f.open(QIODevice::ReadOnly));
+    text = f.readAll();
+    f.close();
     QVERIFY(text.contains("LD_PRELOAD"));
+
     deploy->initIgnoreList();
     QVERIFY(!deploy->ignoreList.contains("libc.so"));
     QVERIFY(!deploy->ignoreList.contains("ld-linux.so"));
@@ -509,11 +526,14 @@ void deploytest::testDeployLdLinux() {
     QVERIFY(QuasarAppUtils::Params::parseParams(argc, argv3));
     file = "./test/bins/sh/execTarget3.sh";
     QVERIFY(deploy->createRunScript(file));
-    text = QFile (file).readAll();
+    f.setFileName(file);
+    QVERIFY(f.open(QIODevice::ReadOnly));
+    text = f.readAll();
+    f.close();
     QVERIFY(!text.contains("LD_PRELOAD"));
     deploy->initIgnoreList();
     QVERIFY(deploy->ignoreList.contains("libc.so"));
-    QVERIFY(deploy->ignoreList.contains("ld-linux.so"));
+    QVERIFY(!deploy->ignoreList.contains("ld-linux.so"));
 
 
     argc = 4;
@@ -522,12 +542,16 @@ void deploytest::testDeployLdLinux() {
                             "noLibc"};
     QVERIFY(QuasarAppUtils::Params::parseParams(argc, argv4));
     file = "./test/bins/sh/execTarget4.sh";
+
     QVERIFY(deploy->createRunScript(file));
-    text = QFile (file).readAll();
-    QVERIFY(text.contains("LD_PRELOAD"));
+    f.setFileName(file);
+    QVERIFY(f.open(QIODevice::ReadOnly));
+    text = f.readAll();
+    f.close();
+    QVERIFY(!text.contains("LD_PRELOAD"));
     deploy->initIgnoreList();
     QVERIFY(deploy->ignoreList.contains("libc.so"));
-    QVERIFY(deploy->ignoreList.contains("ld-linux.so"));
+    QVERIFY(!deploy->ignoreList.contains("ld-linux.so"));
 
     QVERIFY(QDir("./test/bins/sh/").removeRecursively());
 

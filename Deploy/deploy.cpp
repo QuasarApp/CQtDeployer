@@ -199,15 +199,17 @@ bool Deploy::createRunScript(const QString &target) {
             "\"$BASE_DIR\"/bin/%1 \"$@\"";
 
     content = content.arg(QFileInfo(target).fileName());
-
-    auto ld_index = deployedFiles.indexOf(QRegExp("ld-linux.so"));
+    int ld_index = find("ld-linux",deployedFiles);
 
     if (ld_index >= 0 && QuasarAppUtils::Params::isEndable("deploySystem") &&
             !QuasarAppUtils::Params::isEndable("noLibc")) {
 
-        content = content.arg(QString("export LD_PRELOAD=\"$BASE_DIR\"/lib/%0").
+        content = content.arg(QString("\nexport LD_PRELOAD=\"$BASE_DIR\"/lib/%0\n").
             arg(QFileInfo(deployedFiles[ld_index]).fileName()));
+    } else {
+        content = content.arg("");
     }
+
 
     QString fname = targetDir + QDir::separator() + QFileInfo(target).baseName()+ ".sh";
 
@@ -242,7 +244,6 @@ void Deploy::initIgnoreList()
 
     if (QuasarAppUtils::Params::isEndable("noLibc")) {
         ignoreList.append("libc.so");
-        ignoreList.append("ld-linux.so");
 
     }
 }
@@ -346,6 +347,14 @@ void Deploy::setExtraPlugins(const QStringList &value) {
 }
 
 void Deploy::setDepchLimit(int value) { depchLimit = value; }
+
+int Deploy::find(const QString &str, const QStringList &list) const {
+    for (int i = 0 ; i < list.size(); ++i) {
+        if (list[i].contains(str))
+            return i;
+    }
+    return -1;
+}
 
 bool Deploy::fileActionPrivate(const QString &file, const QString &target,
                                QStringList *masks, bool isMove) {
