@@ -162,16 +162,6 @@ bool DeployUtils::parseQt(Deploy *deploy) {
         deploy->clear();
     }
 
-    if (QuasarAppUtils::Params::isEndable("ignoreEnv")) {
-        auto ignoreList = QuasarAppUtils::Params::getStrArg("ignoreEnv").split(',');
-
-        if (QuasarAppUtils::Params::isEndable("noLibc")) {
-            ignoreList.push_back("/lib");
-        }
-
-        deploy->setIgnoreEnvList(ignoreList);
-    }
-
     int limit = 0;
 
     if (QuasarAppUtils::Params::isEndable("recursiveDepth")) {

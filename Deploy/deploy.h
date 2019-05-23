@@ -99,6 +99,9 @@ class DEPLOYSHARED_EXPORT Deploy {
     void setTargetDir();
     bool deployMSVC();
 
+    void initIgnoreEnvList();
+    void initIgnoreList();
+
 public:
     Deploy();
     void initEnvirement();
@@ -128,8 +131,6 @@ public:
     void setDepchLimit(int value);
 
     friend class deploytest;
-    void setIgnoreEnvList(const QStringList &value);
-    void initIgnoreList();
 };
 
 #endif // DEPLOY_H

@@ -201,7 +201,10 @@ bool Deploy::createRunScript(const QString &target) {
     content = content.arg(QFileInfo(target).fileName());
 
     auto ld_index = deployedFiles.indexOf(QRegExp("ld-linux.so"));
-    if (ld_index >= 0) {
+
+    if (ld_index >= 0 && QuasarAppUtils::Params::isEndable("deploySystem") &&
+            !QuasarAppUtils::Params::isEndable("noLibc")) {
+
         content = content.arg(QString("export LD_PRELOAD=\"$BASE_DIR\"/lib/%0").
             arg(QFileInfo(deployedFiles[ld_index]).fileName()));
     }
@@ -242,6 +245,15 @@ void Deploy::initIgnoreList()
         ignoreList.append("ld-linux.so");
 
     }
+}
+
+void Deploy::initIgnoreEnvList()
+{
+    if (QuasarAppUtils::Params::isEndable("ignoreEnv")) {
+        auto ignoreList = QuasarAppUtils::Params::getStrArg("ignoreEnv").split(',');
+        ignoreEnvList.append(ignoreList);
+    }
+
 }
 
 void Deploy::deploy() {
@@ -334,10 +346,6 @@ void Deploy::setExtraPlugins(const QStringList &value) {
 }
 
 void Deploy::setDepchLimit(int value) { depchLimit = value; }
-
-void Deploy::setIgnoreEnvList(const QStringList &value) {
-    ignoreEnvList = value;
-}
 
 bool Deploy::fileActionPrivate(const QString &file, const QString &target,
                                QStringList *masks, bool isMove) {
@@ -1022,7 +1030,8 @@ void Deploy::initEnvirement() {
 
     if (QuasarAppUtils::Params::isEndable("deploySystem")) {
         QStringList dirs;
-        dirs.append(getDirsRecursive("/lib"));
+        if (!QuasarAppUtils::Params::isEndable("noLibc"))
+            dirs.append(getDirsRecursive("/lib"));
         dirs.append(getDirsRecursive("/usr/lib"));
 
         for (auto &&i : dirs) {
