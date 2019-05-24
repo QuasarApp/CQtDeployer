@@ -195,9 +195,21 @@ bool Deploy::createRunScript(const QString &target) {
             "export "
             "QT_QPA_PLATFORM_PLUGIN_PATH=\"$BASE_DIR\"/plugins/"
             "platforms:QT_QPA_PLATFORM_PLUGIN_PATH\n"
+            "%2"
             "\"$BASE_DIR\"/bin/%1 \"$@\"";
 
     content = content.arg(QFileInfo(target).fileName());
+    int ld_index = find("ld-linux",deployedFiles);
+
+    if (ld_index >= 0 && QuasarAppUtils::Params::isEndable("deploySystem") &&
+            !QuasarAppUtils::Params::isEndable("noLibc")) {
+
+        content = content.arg(QString("\nexport LD_PRELOAD=\"$BASE_DIR\"/lib/%0\n").
+            arg(QFileInfo(deployedFiles[ld_index]).fileName()));
+    } else {
+        content = content.arg("");
+    }
+
 
     QString fname = targetDir + QDir::separator() + QFileInfo(target).baseName()+ ".sh";
 
@@ -223,24 +235,40 @@ void Deploy::createQConf() {
 
 }
 
-void Deploy::deploy() {
-    qInfo() << "target deploy started!!";
-
-    initEnvirement();
-
+void Deploy::initIgnoreList()
+{
     if (QuasarAppUtils::Params::isEndable("ignore")) {
         auto list = QuasarAppUtils::Params::getStrArg("ignore").split(',');
         ignoreList.append(list);
     }
 
+    if (QuasarAppUtils::Params::isEndable("noLibc")) {
+        ignoreList.append("libc.so");
+
+    }
+}
+
+void Deploy::initIgnoreEnvList()
+{
+    if (QuasarAppUtils::Params::isEndable("ignoreEnv")) {
+        auto ignoreList = QuasarAppUtils::Params::getStrArg("ignoreEnv").split(',');
+        ignoreEnvList.append(ignoreList);
+    }
+
+}
+
+void Deploy::deploy() {
+    qInfo() << "target deploy started!!";
+
+    initIgnoreEnvList();
+    initEnvirement();
+
+    initIgnoreList();
+
     smartMoveTargets();
 
     for (auto i = targets.cbegin(); i != targets.cend(); ++i) {
         extract(i.key());
-
-        if (i.value() && !createRunScript(i.key())) {
-            qCritical() << "run script not created!";
-        }
     }
 
     copyPlugins(neededPlugins);
@@ -267,6 +295,12 @@ void Deploy::deploy() {
 
     if (!deployMSVC()) {
         QuasarAppUtils::Params::verboseLog("deploy msvc failed");
+    }
+
+    for (auto i = targets.cbegin(); i != targets.cend(); ++i) {
+        if (i.value() && !createRunScript(i.key())) {
+            qCritical() << "run script not created!";
+        }
     }
 
     settings.setValue(targetDir, deployedFiles);
@@ -317,8 +351,12 @@ void Deploy::setExtraPlugins(const QStringList &value) {
 
 void Deploy::setDepchLimit(int value) { depchLimit = value; }
 
-void Deploy::setIgnoreEnvList(const QStringList &value) {
-    ignoreEnvList = value;
+int Deploy::find(const QString &str, const QStringList &list) const {
+    for (int i = 0 ; i < list.size(); ++i) {
+        if (list[i].contains(str))
+            return i;
+    }
+    return -1;
 }
 
 bool Deploy::fileActionPrivate(const QString &file, const QString &target,
@@ -1004,7 +1042,8 @@ void Deploy::initEnvirement() {
 
     if (QuasarAppUtils::Params::isEndable("deploySystem")) {
         QStringList dirs;
-        dirs.append(getDirsRecursive("/lib"));
+        if (!QuasarAppUtils::Params::isEndable("noLibc"))
+            dirs.append(getDirsRecursive("/lib"));
         dirs.append(getDirsRecursive("/usr/lib"));
 
         for (auto &&i : dirs) {

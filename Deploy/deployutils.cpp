@@ -108,7 +108,8 @@ void DeployUtils::help() {
     qInfo() << "                            | WARNING: this flag supports 'so', 'dll' and 'exe' files only.";
     qInfo() << "                            | Use '-bin' flag if you want to deploy linux binary files";
     qInfo() << "   -qmlDir [params]         : Qml data dir. For example -qmlDir ~/my/project/qml";
-    qInfo() << "   deploySystem            : Deploys all libs";
+    qInfo() << "   deploySystem             : Deploys all libs";
+    qInfo() << "   noLibc                   : Skip Deploys libc and ld-linux libs";
     qInfo() << "   -qmake  [params]         : Qmake path.";
     qInfo() << "                            | For example -qmake ~/Qt/5.11.1/gcc_64/bin/qmake";
     qInfo() << "   -ignore [list,params]    : The list of libs to ignore.";
@@ -159,11 +160,6 @@ bool DeployUtils::parseQt(Deploy *deploy) {
     if (QuasarAppUtils::Params::isEndable("clear")) {
         qInfo() << "clear old data";
         deploy->clear();
-    }
-
-    if (QuasarAppUtils::Params::isEndable("ignoreEnv")) {
-        auto ignoreList = QuasarAppUtils::Params::getStrArg("ignoreEnv").split(',');
-        deploy->setIgnoreEnvList(ignoreList);
     }
 
     int limit = 0;

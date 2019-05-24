@@ -23,10 +23,11 @@ Key differences of this program:
 |   -bin    [list, params]    | Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe|
 |   -binDir [params]          | A folder which includes deployable files (recursive search). WARNING: this flag supports  'so', 'dll' and 'exe' files only. Use '-bin' flag if you want to deploy linux binary files |
 |   -qmlDir [params]          | Qml data dir. For example -qmlDir ~/my/project/qml              |
-|   deploySystem              | Deploys all libs                                            |
+|   deploySystem              | Deploys all libraries                                           |
+|   noLibc                    | Skip Deploys libc and ld-linux libs                             |
 |   -qmake  [params]          | Qmake path. For example                                         |
 |                             | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake                             |
-|   -ignore [list,params]     | The list of libs to ignore.                                 |
+|   -ignore [list,params]     | The list of libs to ignore.                                     |
 |                             | For example -ignore libicudata.so.56,libicudata2.so.56          |
 |   -ignoreEnv [list,params]  | The list of the environment to ignore.                          |
 |                             | For example -ignoreEnv /bad/dir,/my/bad/Dir                     |
@@ -91,7 +92,8 @@ Console QtDeployer является консольной реализацией 
 |   -bin    [list, params]    | Развертываемый файл или папка. пример -bin ~/my/project/bin/,~/my/project/bin.exe|
 |   -binDir [params]          | Папка с развертываемыми файлами (с рекурсивным поиском). ВНИМАНИЕ! Этот флаг поддерживает только файлы 'so', 'dll' и 'exe'. Если вы хотите развернуть бинарный файл Linux, используйте флаг '-bin'  |
 |   -qmlDir [params]          | Папка qml. пример -qmlDir ~/my/project/qml                |
-|   deploySystem              | Копирует все библиотеки                                 |
+|   deploySystem              | Копирует все библиотеки кроме libc                        |
+|   deployLibc                | Копирует libc и все остальные библиотеки                  |
 |   -qmake  [params]          | Путь к qmake. пример                                      |
 |                             | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake                       |
 |   -ignore [list,params]     | Список библиотек для игнорирования                        |
