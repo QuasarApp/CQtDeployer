@@ -260,6 +260,7 @@ void Deploy::initIgnoreEnvList()
 void Deploy::deploy() {
     qInfo() << "target deploy started!!";
 
+    initIgnoreEnvList();
     initEnvirement();
 
     initIgnoreList();
