@@ -48,6 +48,7 @@ class DEPLOYSHARED_EXPORT Deploy {
 
     DependenciesScanner scaner;
 
+    int find(const QString& str, const QStringList& list) const;
     bool fileActionPrivate(const QString &file, const QString &target,
                            QStringList *mask, bool isMove);
 
@@ -99,6 +100,9 @@ class DEPLOYSHARED_EXPORT Deploy {
     void setTargetDir();
     bool deployMSVC();
 
+    void initIgnoreEnvList();
+    void initIgnoreList();
+
 public:
     Deploy();
     void initEnvirement();
@@ -128,7 +132,6 @@ public:
     void setDepchLimit(int value);
 
     friend class deploytest;
-    void setIgnoreEnvList(const QStringList &value);
 };
 
 #endif // DEPLOY_H
