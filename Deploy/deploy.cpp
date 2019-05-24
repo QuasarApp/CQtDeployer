@@ -268,10 +268,6 @@ void Deploy::deploy() {
 
     for (auto i = targets.cbegin(); i != targets.cend(); ++i) {
         extract(i.key());
-
-        if (i.value() && !createRunScript(i.key())) {
-            qCritical() << "run script not created!";
-        }
     }
 
     copyPlugins(neededPlugins);
@@ -298,6 +294,12 @@ void Deploy::deploy() {
 
     if (!deployMSVC()) {
         QuasarAppUtils::Params::verboseLog("deploy msvc failed");
+    }
+
+    for (auto i = targets.cbegin(); i != targets.cend(); ++i) {
+        if (i.value() && !createRunScript(i.key())) {
+            qCritical() << "run script not created!";
+        }
     }
 
     settings.setValue(targetDir, deployedFiles);
