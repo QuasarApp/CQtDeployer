@@ -116,6 +116,10 @@ create_repo.commands = $$REPOGEN \
                         -p $$PWD/packages \
                         $$ONLINE_REPO_DIR
 
+chmodSnap.commands = chmod 777 -R $$PWD/packages/cqtdeployer/data
+unix:release.depends += chmodSnap
+
+
 message( ONLINE_REPO_DIR $$ONLINE_REPO_DIR)
 !isEmpty( ONLINE ) {
 
@@ -133,10 +137,8 @@ message( ONLINE_REPO_DIR $$ONLINE_REPO_DIR)
 releaseSnap.commands = rm *.snap -rdf && chmod 777 -R $$PWD/../prime && snapcraft && snapcraft push *.snap # bad patern
 buildSnap.commands = snapcraft
 clearSnap.commands = rm parts prime stage *.snap -rdf
-chmodSnap.commands = chmod 777 -R $$PWD/packages/cqtdeployer/data
 
 unix:release.depends += clearSnap
-unix:release.depends += chmodSnap
 unix:release.depends += buildSnap
 unix:release.depends += releaseSnap
 
