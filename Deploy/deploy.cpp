@@ -254,7 +254,13 @@ void Deploy::initIgnoreEnvList()
         auto ignoreList = QuasarAppUtils::Params::getStrArg("ignoreEnv").split(',');
 
         for (auto &i : ignoreList) {
-            ignoreEnvList.append(QFileInfo(i).absolutePath());
+            auto path = QFileInfo(i).absoluteFilePath();
+
+            if (path.right(1) == "/" || path.right(1) == "\\") {
+                path.remove(path.size() - 1);
+            }
+
+            ignoreEnvList.append(path);
         }
     }
 
@@ -262,11 +268,6 @@ void Deploy::initIgnoreEnvList()
 
 void Deploy::deploy() {
     qInfo() << "target deploy started!!";
-
-    initIgnoreEnvList();
-    initEnvirement();
-
-    initIgnoreList();
 
     smartMoveTargets();
 
@@ -1087,5 +1088,11 @@ Deploy::Deploy() {
 #endif
 
     QuasarAppUtils::Params::verboseLog("appDir = " + appDir);
+
+    initIgnoreEnvList();
+    initEnvirement();
+
+    initIgnoreList();
+
 }
 
