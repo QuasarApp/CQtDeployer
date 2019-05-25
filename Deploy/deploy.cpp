@@ -254,7 +254,7 @@ void Deploy::initIgnoreEnvList()
         auto ignoreList = QuasarAppUtils::Params::getStrArg("ignoreEnv").split(',');
 
         for (auto &i : ignoreList) {
-            ignoreEnvList.append(QFileInfo(i).absoluteFilePath());
+            ignoreEnvList.append(QFileInfo(i).absolutePath());
         }
     }
 

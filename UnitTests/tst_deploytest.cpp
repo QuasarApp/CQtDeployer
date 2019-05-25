@@ -150,8 +150,11 @@ bool deploytest::testEnvIgnore()
 
     int argc = 9;
     std::string qmakePath = (QtDir.absoluteFilePath() + "bin/qmake.exe").toStdString();
-    std::string qtPath = (QtDir.absoluteFilePath()).toStdString();
-
+#ifdef Q_OS_WIN
+    std::string qtPath = (QtDir.absoluteFilePath() + "bin/").toStdString();
+#else
+    std::string qtPath = (QtDir.absoluteFilePath() + "lib/").toStdString();
+#endif
     const char *qmake = qmakePath.c_str();
     const char *qt = qtPath.c_str();
 #ifdef Q_OS_WIN
