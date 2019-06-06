@@ -1,7 +1,7 @@
 # Welcome to the Console Qt Deployer!
 # ![Logo](/res/icon.png)
 
-***************************
+****************************
 ## What is Console Qt Deployer
 The CQtDeployer is application for extract all depends library of executable and create launch script for your application.
 
