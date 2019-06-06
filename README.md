@@ -3,7 +3,8 @@
 
 ***************************
 ## What is Console Qt Deployer
-The Console QtDeployer is console veriosn of the [QtDeployer](https://quasarapp.github.io/QtDeployer/).
+The CQtDeployer is application for extract all depends library of executable and create launch script for your application.
+
 
 Key differences of this program:
 * Performance: this program deploys the application several times faster (up to 10 seconds)
@@ -81,7 +82,7 @@ If you want to support the project,you can donate into our bitcoin wallet.
 ***************************
 ***************************
 
-Console QtDeployer является консольной реализацией [QtDeployer](https://quasarapp.github.io/QtDeployer/).
+Qt CQtDeployer - это приложением для извлечения всех зависимых библиотек исполняемого файла и создает сценарий запуска для вашего приложения.
 
 Основные отличия этой программы:
 * Производительность - эта программа развертывает приложение в несколько раз быстрее (до 10 секунд)
