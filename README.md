@@ -1,5 +1,5 @@
 # Welcome to the Console Qt Deployer!
-# ![Logo](/res/icon.png)
+# ![Logo](/res/cqtdeployerbannersmall.jpg)
 
 ****************************
 ## What is Console Qt Deployer
