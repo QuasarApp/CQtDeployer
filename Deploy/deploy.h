@@ -102,12 +102,14 @@ class DEPLOYSHARED_EXPORT Deploy {
     void setTargetDir();
     bool deployMSVC();
 
-    void initIgnoreEnvList();
-    void initIgnoreList();
 
 public:
     Deploy();
     void initEnvirement();
+    void initIgnoreEnvList();
+    void initIgnoreList();
+
+
     QStringList getDirsRecursive(const QString& path);
 
     bool getDeployQml() const;

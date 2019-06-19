@@ -284,7 +284,7 @@ void Deploy::initIgnoreEnvList()
             auto path = QFileInfo(i).absoluteFilePath();
 
             if (path.right(1) == "/" || path.right(1) == "\\") {
-                path.remove(path.size() - 1);
+                path.remove(path.size() - 1, 1);
             }
 
             ignoreEnvList.append(path);
@@ -1144,11 +1144,6 @@ Deploy::Deploy() {
 #endif
 
     QuasarAppUtils::Params::verboseLog("appDir = " + appDir);
-
-    initIgnoreEnvList();
-    initEnvirement();
-
-    initIgnoreList();
 
 }
 
