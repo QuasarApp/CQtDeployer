@@ -74,6 +74,7 @@ class DEPLOYSHARED_EXPORT Deploy {
     void copyPlugins(const QStringList &list);
     bool copyTranslations(QStringList list);
 
+    bool createQConf();
     bool copyFolder(const QString &from, const QString &to,
                     const QStringList &filter = QStringList(),
                     QStringList *listOfCopiedItems = nullptr,
@@ -83,6 +84,7 @@ class DEPLOYSHARED_EXPORT Deploy {
 
     bool strip(const QString &dir);
 
+    bool addToDeployed(const QString& path);
     QStringList extractImportsFromDir(const QString &dirpath);
     QFileInfoList findFilesInsideDir(const QString &name, const QString &dirpath);
     bool extractQmlAll();
@@ -120,7 +122,6 @@ public:
     bool setTargetsRecursive(const QString& dir);
 
     bool createRunScript(const QString &target);
-    void createQConf();
 
     void deploy();
     QString getQtDir() const;

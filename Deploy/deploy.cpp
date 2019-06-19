@@ -65,7 +65,7 @@ void Deploy::setQmake(const QString &value) {
 bool Deploy::initDir(const QString &path) {
 
     if (!QFileInfo::exists(path)) {
-        deployedFiles += path;
+        addToDeployed(path);
         if (!QDir().mkpath(path)) {
             return false;
         }
@@ -199,7 +199,7 @@ bool Deploy::createRunScript(const QString &target) {
             "\"$BASE_DIR\"/bin/%1 \"$@\"";
 
     content = content.arg(QFileInfo(target).fileName());
-    int ld_index = find("ld-linux",deployedFiles);
+    int ld_index = find("ld-linux", deployedFiles);
 
     if (ld_index >= 0 && QuasarAppUtils::Params::isEndable("deploySystem") &&
             !QuasarAppUtils::Params::isEndable("noLibc")) {
@@ -222,7 +222,7 @@ bool Deploy::createRunScript(const QString &target) {
     F.flush();
     F.close();
 
-    deployedFiles += fname;
+    addToDeployed(fname);
 
     return F.setPermissions(QFileDevice::ExeOther | QFileDevice::WriteOther |
                             QFileDevice::ReadOther | QFileDevice::ExeUser |
@@ -231,8 +231,35 @@ bool Deploy::createRunScript(const QString &target) {
                             QFileDevice::ReadOwner);
 }
 
-void Deploy::createQConf() {
+bool Deploy::createQConf() {
 
+    QString content =
+            "[Paths]\n"
+            "Prefix= ./\n"
+            "Libraries= ./\n"
+            "Plugins= ./plugins\n"
+            "Imports= ./qml\n"
+            "Qml2Imports= ./qml\n";
+
+
+    QString fname = targetDir + QDir::separator() + "qt.conf";
+
+    QFile F(fname);
+    if (!F.open(QIODevice::WriteOnly)) {
+        return false;
+    }
+
+    F.write(content.toUtf8());
+    F.flush();
+    F.close();
+
+    addToDeployed(fname);
+
+    return F.setPermissions(QFileDevice::ExeOther | QFileDevice::WriteOther |
+                            QFileDevice::ReadOther | QFileDevice::ExeUser |
+                            QFileDevice::WriteUser | QFileDevice::ReadUser |
+                            QFileDevice::ExeOwner | QFileDevice::WriteOwner |
+                            QFileDevice::ReadOwner);
 }
 
 void Deploy::initIgnoreList()
@@ -301,10 +328,21 @@ void Deploy::deploy() {
         QuasarAppUtils::Params::verboseLog("deploy msvc failed");
     }
 
+    bool targetWindows = false;
+
     for (auto i = targets.cbegin(); i != targets.cend(); ++i) {
+
+        if (QFileInfo(i.key()).completeSuffix() == "exe") {
+            targetWindows = true;
+        }
+
         if (i.value() && !createRunScript(i.key())) {
             qCritical() << "run script not created!";
         }
+    }
+
+    if (targetWindows && !createQConf()) {
+        QuasarAppUtils::Params::verboseLog("create qt.conf failr", QuasarAppUtils::Warning);
     }
 
     settings.setValue(targetDir, deployedFiles);
@@ -428,8 +466,7 @@ bool Deploy::fileActionPrivate(const QString &file, const QString &target,
         }
     }
 
-    deployedFiles += target + QDir::separator() + name;
-
+    addToDeployed(target + QDir::separator() + name);
     return true;
 }
 
@@ -816,7 +853,7 @@ bool Deploy::smartMoveTargets() {
             result = false;
         }
 
-        deployedFiles += targetPath;
+        addToDeployed(targetPath);
 
         temp.insert(targetPath + "/" + target.fileName(), i.value());
 
@@ -982,13 +1019,24 @@ void Deploy::clear() {
 
     deployedFiles = settings.value(targetDir, QStringList()).toStringList();
 
+    QStringList deployedDirs = {};
+
     for (auto file : deployedFiles) {
         if (QFileInfo(file).isFile()) {
             QFile::remove(file);
         } else {
+            deployedDirs += file;
             QDir(file).removeRecursively();
         }
     }
+
+    for (auto & dir: deployedDirs) {
+        QDir qdir(dir);
+        if (!qdir.entryList(QDir::NoDotAndDotDot).count()) {
+            qdir.removeRecursively();
+        }
+    }
+
     deployedFiles.clear();
 
 }
@@ -1036,6 +1084,14 @@ bool Deploy::strip(const QString &dir) {
         return P.exitCode() == 0;
     }
 #endif
+}
+
+bool Deploy::addToDeployed(const QString& path) {
+    auto info = QFileInfo(path);
+    if (info.isFile() || !info.exists()) {
+        deployedFiles += info.absoluteFilePath();
+    }
+    return true;
 }
 
 void Deploy::initEnvirement() {
