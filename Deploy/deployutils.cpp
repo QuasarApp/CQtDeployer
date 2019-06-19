@@ -157,6 +157,11 @@ bool DeployUtils::parseQt(Deploy *deploy) {
         }
     }
 
+    deploy->initIgnoreEnvList();
+    deploy->initEnvirement();
+
+    deploy->initIgnoreList();
+
     if (QuasarAppUtils::Params::isEndable("clear")) {
         qInfo() << "clear old data";
         deploy->clear();
