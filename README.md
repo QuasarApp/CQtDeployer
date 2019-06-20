@@ -1,8 +1,8 @@
-# CQtDeployer [![Console Qt Deployer](https://snapcraft.io/cqtdeployer/badge.svg)](https://snapcraft.io/cqtdeployer)
+# CQtDeployer [![CQtDeployer](https://snapcraft.io/cqtdeployer/badge.svg)](https://snapcraft.io/cqtdeployer)
 # ![Logo](/res/cqtdeployerbannersmall.jpg)
 
 ****************************
-## What is Console Qt Deployer
+## What is CQtDeployer
 The CQtDeployer is application for extract all depends library of executable and create launch script for your application.
 
 
