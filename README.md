@@ -1,4 +1,4 @@
-# Welcome to the Console Qt Deployer!
+# CQtDeployer [![Console Qt Deployer](https://snapcraft.io/cqtdeployer/badge.svg)](https://snapcraft.io/cqtdeployer)
 # ![Logo](/res/cqtdeployerbannersmall.jpg)
 
 ****************************
