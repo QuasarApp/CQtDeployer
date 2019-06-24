@@ -17,6 +17,8 @@ Key differences of this program:
 
 #### Example: cqtdeployer <-bin    [params]> [options]
 
+#### cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.12.4/gcc_64/bin/qmake clear
+
 #### Options:
 | Option                      | Descriptiion                                                    |
 |-----------------------------|-----------------------------------------------------------------|
