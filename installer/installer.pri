@@ -1,4 +1,7 @@
-QT_DIR = $$dirname(QMAKE_QMAKE)
+QT_DIR= $$[QT_HOST_BINS]
+
+win32:QMAKE_BIN= $$QT_DIR/qmake.exe
+
 #QML_DIR = $$PWD/../Snake/
 DEPLOY_TARGET = $$PWD/../CQtDeployer/build/release
 
@@ -12,6 +15,7 @@ win32:OUT_FILE = CQtDeployerInstaller.exe
 contains(QMAKE_HOST.os, Linux):{
     LUPDATE = $$QT_DIR/lupdate
     LRELEASE = $$QT_DIR/lrelease
+    QMAKE_BIN= $$QT_DIR/qmake
 
     DEPLOYER = cqtdeployer
 
@@ -90,7 +94,7 @@ for(command, commands) {
     system($$command)|error("Failed to run: $$command")
 }
 
-BASE_DEPLOY_FLAGS = clear -qmake $$QMAKE_QMAKE -libDir $$PWD/../ -recursiveDepth 4
+BASE_DEPLOY_FLAGS = clear -qmake $$QMAKE_BIN -libDir $$PWD/../ -recursiveDepth 4
 BASE_DEPLOY_FLAGS_SNAKE = $$BASE_DEPLOY_FLAGS -targetDir $$PWD/packages/cqtdeployer/data
 
 deploy_dep.commands += $$DEPLOYER -bin $$DEPLOY_TARGET $$BASE_DEPLOY_FLAGS_SNAKE
