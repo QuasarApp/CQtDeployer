@@ -7,13 +7,13 @@
 
 TEMPLATE = subdirs
 CONFIG += ordered
-
+!android {
 SUBDIRS += QuasarAppLib \
            Pe \
            Deploy \
            CQtDeployer \
            UnitTests
-
+}
 contains(DEFINES, WITHOUT_BASE_TESTS) {
     SUBDIRS -= UnitTests
 }
