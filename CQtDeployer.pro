@@ -31,7 +31,7 @@ CQtDeployer.depends=Deploy
 QuasarAppLib.file = $$PWD/QuasarAppLib/QuasarApp.pro
 Pe.file = $$PWD/pe/pe-parser-library/pe-parser-library.pro
 
-include('$$PWD/installer/installer.pri')
+include('$$PWD/installer/installerCQtDeployer.pri')
 include($$PWD/test.pri)
 
 DISTFILES += \
