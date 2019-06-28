@@ -7,3 +7,6 @@
 [submodule "pe"]
 	path = pe
 	url = https://github.com/QuasarApp/pe-parse.git
+[submodule "installer"]
+	path = installer
+	url = git@github.com:QuasarApp/DesktopInstaller.git
