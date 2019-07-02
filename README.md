@@ -60,7 +60,7 @@ Key differences of this program:
   - qmake -r
   - make -j$(nproc)
   - make deploy
-  - ./Distro/CQtDeployerInstaller
+  - ./Distro/CQtDeployerInstaller.run
 
 ## Build for Windows
   - install qt and qt QtInstallFrameWork from [qtInstaller](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
@@ -133,7 +133,7 @@ Qt CQtDeployer - это приложением для извлечения вс�
   - qmake -r
   - make -j$(nproc)
   - make deploy
-  - ./Distro/CQtDeployerInstaller
+  - ./Distro/CQtDeployerInstaller.run
   
 ## Build для Windows
   - установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
