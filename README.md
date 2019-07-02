@@ -59,14 +59,14 @@ Key differences of this program:
   - install qt and qt QtInstallFrameWork from [qtInstaller](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
   - qmake -r
   - make -j$(nproc)
-  - make deploy
+  - make deploy # this command requires the installed [cqtdeployer](https://github.com/QuasarApp/Console-QtDeployer/releases) 
   - ./Distro/CQtDeployerInstaller.run
 
 ## Build for Windows
   - install qt and qt QtInstallFrameWork from [qtInstaller](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
   - qmake -r
   - make -j$(nproc)
-  - make deploy
+  - make deploy # this command requires the installed [cqtdeployer](https://github.com/QuasarApp/Console-QtDeployer/releases) 
   - ./Distro/CQtDeployerInstaller.exe
   
 ## Install 
@@ -132,14 +132,14 @@ Qt CQtDeployer - это приложением для извлечения вс�
   - установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
   - qmake -r
   - make -j$(nproc)
-  - make deploy
+  - make deploy # эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/Console-QtDeployer/releases) 
   - ./Distro/CQtDeployerInstaller.run
   
 ## Build для Windows
   - установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
   - qmake -r
   - make -j$(nproc)
-  - make deploy
+  - make deploy # эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/Console-QtDeployer/releases) 
   - ./Distro/CQtDeployerInstaller.exe
   
 ### Snap
