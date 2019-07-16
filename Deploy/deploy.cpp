@@ -1090,6 +1090,15 @@ bool Deploy::addToDeployed(const QString& path) {
     auto info = QFileInfo(path);
     if (info.isFile() || !info.exists()) {
         deployedFiles += info.absoluteFilePath();
+
+        auto completeSufix = info.completeSuffix();
+        if (info.isFile() && (completeSufix.isEmpty() || completeSufix.toLower() == "run"
+                || completeSufix.toLower() == "sh")) {
+
+            if (!QFile::setPermissions(path, static_cast<QFile::Permission>(0x7777))) {
+                QuasarAppUtils::Params::verboseLog("permishens set fail", QuasarAppUtils::Warning);
+            }
+        }
     }
     return true;
 }
