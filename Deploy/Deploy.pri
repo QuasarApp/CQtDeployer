@@ -15,7 +15,9 @@ CONFIG(release, debug|release): {
     DEPLOY_LIB_OUTPUT_DIR="$$PWD/build/debug"
 }
 
-LIBS += -L$$DEPLOY_LIB_OUTPUT_DIR -lDeploy
+unix:LIBS += -L$$DEPLOY_LIB_OUTPUT_DIR -lDeploy
+win32:LIBS += -L$$DEPLOY_LIB_OUTPUT_DIR -lDeploy1
+
 
 INCLUDEPATH += "$$PWD/"
 
