@@ -127,6 +127,9 @@ public:
     static void help();
     static bool parseQt(Deploy *deploy);
     static QStringList extractTranslation(const QStringList& libs);
+    static QString getAppVersion();
+    static QString getQtVersion();
+    static void printVersion();
 
 };
 

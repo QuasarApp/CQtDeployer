@@ -26,6 +26,12 @@ int main(int argc, const char *argv[]) {
         exit(0);
     };
 
+    if (!(QuasarAppUtils::Params::isEndable("v") ||
+            QuasarAppUtils::Params::isEndable("version"))) {
+        DeployUtils::printVersion();
+        exit(0);
+    }
+
     if (QuasarAppUtils::Params::isEndable("h") ||
         QuasarAppUtils::Params::isEndable("help")) {
         DeployUtils::help();

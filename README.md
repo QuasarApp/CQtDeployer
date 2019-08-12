@@ -45,6 +45,7 @@ Key differences of this program:
 |  qmlExtern                  | Use qml external scanner (qmlimportscaner)                      |
 |                             | It doesn't work without qmake and inside a snap package         |
 |  -verbose [0-3]             | Shows debug log                                                 |
+|   v / version               | Shows compiled version                                          |
 
 
 
@@ -114,6 +115,7 @@ Console QtDeployer является консольной реализацией 
 |  qmlExtern                  | Использует внешний сканер qml (qmlimportscaner)         |
 |                             | не работает без qmake и в snap                            |
 |  -verbose [0-3]             | Показывает дебаг лога                                          |
+|  v / version                | Показывает версию приложения                                          |
 
 
 #### Пример: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
