@@ -49,6 +49,7 @@ Key differences of this program:
 |  qmlExtern                  | Use qml external scanner (qmlimportscaner)                      |
 |                             | It doesn't work without qmake and inside a snap package         |
 |  -verbose [0-3]             | Shows debug log                                                 |
+|   v / version               | Shows compiled version                                          |
 
 
 
@@ -124,6 +125,7 @@ Qt CQtDeployer - это приложением для извлечения вс�
 |  qmlExtern                  | Использует внешний сканер qml (qmlimportscaner)         |
 |                             | не работает без qmake и в snap                            |
 |  -verbose [0-3]             | Показывает дебаг лога                                          |
+|  v / version                | Показывает версию приложения                                          |
 
 
 #### Пример: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.12.4/gcc_64/bin/qmake clear

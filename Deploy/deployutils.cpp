@@ -12,6 +12,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
+#include <QLibraryInfo>
 
 QString DeployUtils::qtDir = "";
 QStringList DeployUtils::extraPaths = QStringList();
@@ -96,7 +97,7 @@ void DeployUtils::verboseLog(const QString &str) {
 }
 
 void DeployUtils::help() {
-    qInfo() << "";
+    qInfo() << "CQtDeployer version: " + getAppVersion();
     qInfo() << "Usage: cqtdeployer <-bin    [params]> [options]";
     qInfo() << "";
     qInfo() << "Options:";
@@ -130,6 +131,7 @@ void DeployUtils::help() {
     qInfo() << "                            | It doesn't work without qmake and inside a snap package";
 
     qInfo() << "   verbose [1,2,3]          : show debug log";
+    qInfo() << "   v / version                : show compiled version";
 
     qInfo() << "";
     qInfo() << "Example: cqtdeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear";
@@ -250,6 +252,23 @@ QStringList DeployUtils::extractTranslation(const QStringList &libs) {
         }
     }
     return res.toList();
+}
+
+QString DeployUtils::getAppVersion() {
+    return APP_VERSION;
+}
+
+QString DeployUtils::getQtVersion() {
+#ifdef QT_VERSION_STR
+    return QT_VERSION_STR;
+#else
+    return "without qt";
+#endif
+}
+
+void DeployUtils::printVersion() {
+    qInfo() << "CQtDeployer: " + getAppVersion();
+    qInfo() << "Qt: " +  getQtVersion();
 }
 
 MSVCVersion DeployUtils::getMSVC(const QString &_qmake) {
