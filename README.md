@@ -13,7 +13,6 @@ Key differences of this program:
 * Crossdeploy: this application's support windows and linux distrebutives, This means that you can use it not only to deploy a project for your platform, but also to deploy a project on Linux for Windows and vice versa. 
 
 
-
 ### How to use
 
 #### Example: cqtdeployer <-bin    [params]> [options]
