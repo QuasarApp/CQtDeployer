@@ -3,11 +3,6 @@
 
 ****************************
 
-## Warning 
-Due to technical problems, online installers are temporarily unavailable.
-You can still install the latest version of the application from [SnapStore](https://snapcraft.io/cqtdeployer)
-
-
 ## What is CQtDeployer
 The CQtDeployer is application for extract all depends library of executable and create launch script for your application.
 
