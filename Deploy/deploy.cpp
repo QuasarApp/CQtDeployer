@@ -5,6 +5,22 @@
  * of this license document, but changing it is not allowed.
  */
 
+#include "deploy.h"
+#include "deployutils.h"
+#include <QCoreApplication>
+#include <QDebug>
+#include <QDir>
+#include <QDirIterator>
+#include <QFile>
+#include <QFileInfo>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QProcess>
+#include <QRegularExpression>
+#include <quasarapp.h>
+
+#include <fstream>
 
 
 bool Deploy::getDeployQml() const { return deployQml; }
