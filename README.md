@@ -47,7 +47,6 @@ Key differences of this program:
 |  noTranslations             | Skips the translations files.                                   |
 |  qmlExtern                  | Use qml external scanner (qmlimportscaner)                      |
 |                             | It doesn't work without qmake and inside a snap package         |
-|  -verbose [0-3]             | Shows debug log                                                 |
 |   v / version               | Shows compiled version                                          |
 
 
