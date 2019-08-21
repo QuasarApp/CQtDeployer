@@ -34,7 +34,7 @@ void Deploy::setQmlScaner(const QString &value) {
     QuasarAppUtils::Params::verboseLog("qmlScaner = " + externQmlScaner,
                                        QuasarAppUtils::VerboseLvl::Info);
     deployQml = QFileInfo(externQmlScaner).isFile();
-}
+
 
 QString Deploy::getQmake() const { return qmake; }
 
