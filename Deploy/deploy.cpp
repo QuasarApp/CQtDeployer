@@ -1023,16 +1023,19 @@ void Deploy::clear() {
         sortedOldData.insert(i.size(), QFileInfo(i));
     }
 
-    for (auto it = sortedOldData.begin(); it != sortedOldData.end(); ++it) {
-        if (it.value().isFile()) {
-            QFile::remove(it.value().absoluteFilePath());
-            qInfo() << "Remove " << it.value().absoluteFilePath() << " becouse it is deployed file";
+    for (auto it = sortedOldData.end(); it != sortedOldData.begin(); --it) {
+
+        auto index = it - 1;
+
+        if (index.value().isFile()) {
+            QFile::remove(index.value().absoluteFilePath());
+            qInfo() << "Remove " << index.value().absoluteFilePath() << " becouse it is deployed file";
 
         } else {
-            QDir qdir(it.value().absoluteFilePath());
+            QDir qdir(index.value().absoluteFilePath());
             if (!qdir.entryList(QDir::NoDotAndDotDot | QDir::AllEntries).count()) {
                 qdir.removeRecursively();
-                qInfo() << "Remove " << it.value().absoluteFilePath() << " becouse it is empty";
+                qInfo() << "Remove " << index.value().absoluteFilePath() << " becouse it is empty";
             }
         }
     }
