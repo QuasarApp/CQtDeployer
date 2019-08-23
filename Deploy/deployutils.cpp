@@ -131,17 +131,13 @@ void DeployUtils::help() {
     { "   noTranslations           : Skips the translations files." },
     { "   qmlExtern                : Use the qml external scanner (qmlimportscaner)" },
     { "                            | It doesn't work without qmake and inside a snap package" },
-    { "   v / version              : show compiled version" },
+    { "   v / version              : Shows compiled version" },
+    { "   verbose [1-3]            : Shows debug log" },
+
     { "" },
-
-    { "Extra options:" }};
-
-    help.append(QuasarAppUtils::Params::getparamsHelp());
-
-    help.append({
     { "" },
     { "Example: cqtdeployer -bin myApp -qmlDir ~/Qt/5.14.0/gcc_64/qml -qmake ~/Qt/5.14.0/gcc_64/bin/qmake clear" },
-    { "Example (only C libs): cqtdeployer -bin myApp clear" }});
+    { "Example (only C libs): cqtdeployer -bin myApp clear" }};
 
     QuasarAppUtils::Params::showHelp(help);
 
