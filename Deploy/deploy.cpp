@@ -1018,21 +1018,22 @@ void Deploy::clear() {
     qInfo() << "clear start!";
 
     deployedFiles = settings.value(targetDir, QStringList()).toStringList();
-
-    QStringList deployedDirs = {};
-
-    for (auto file : deployedFiles) {
-        if (QFileInfo(file).isFile()) {
-            QFile::remove(file);
-        } else {
-            deployedDirs += file;
-        }
+    QMap<int, QFileInfo> sortedOldData;
+    for (auto& i :deployedFiles) {
+        sortedOldData.insert(i.size(), QFileInfo(i));
     }
 
-    for (auto & dir: deployedDirs) {
-        QDir qdir(dir);
-        if (!qdir.entryList(QDir::NoDotAndDotDot).count()) {
-            qdir.removeRecursively();
+    for (auto it = sortedOldData.begin(); it != sortedOldData.end(); ++it) {
+        if (it.value().isFile()) {
+            QFile::remove(it.value().absoluteFilePath());
+            qInfo() << "Remove " << it.value().absoluteFilePath() << " becouse it is deployed file";
+
+        } else {
+            QDir qdir(it.value().absoluteFilePath());
+            if (!qdir.entryList(QDir::NoDotAndDotDot | QDir::AllEntries).count()) {
+                qdir.removeRecursively();
+                qInfo() << "Remove " << it.value().absoluteFilePath() << " becouse it is empty";
+            }
         }
     }
 
