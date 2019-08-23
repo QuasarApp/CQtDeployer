@@ -20,6 +20,8 @@ int main(int argc, const char *argv[]) {
     QCoreApplication::setOrganizationDomain("https://github.com/QuasarApp");
     QCoreApplication::setApplicationName("CQtDeployer");
 
+    QuasarAppUtils::Params::setEnable("noWriteInFileLog", true);
+
     if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
         qWarning() << "wrong parametrs";
         DeployUtils::help();
