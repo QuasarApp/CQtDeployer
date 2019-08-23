@@ -120,6 +120,7 @@ void DeployUtils::help() {
     { "   -ignoreEnv [list,params] : The list of the environment to ignore" },
     { "                            | For example -ignoreEnv /bad/dir,/my/bad/Dir" },
     { "   clear                    : Deletes deployable files of the previous session." },
+    { "   force-clear              : Deletes the destination directory before deployment." },
     { "   allQmlDependes           : Extracts all the qml libraries." },
     { "                            | (not recommended, as it takes great amount of computer memory)" },
     { "   -libDir [list,params]    : Sets additional paths for extra libs of an app." },
@@ -170,9 +171,10 @@ bool DeployUtils::parseQt(Deploy *deploy) {
 
     deploy->initIgnoreList();
 
-    if (QuasarAppUtils::Params::isEndable("clear")) {
+    if (QuasarAppUtils::Params::isEndable("clear") ||
+            QuasarAppUtils::Params::isEndable("force-clear")) {
         qInfo() << "clear old data";
-        deploy->clear();
+        deploy->clear(QuasarAppUtils::Params::isEndable("force-clear"));
     }
 
     int limit = 0;

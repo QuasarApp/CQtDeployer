@@ -1034,9 +1034,20 @@ bool Deploy::extractQml() {
     }
 }
 
-void Deploy::clear() {
+void Deploy::clear(bool force) {
 
     qInfo() << "clear start!";
+
+    if (force) {
+        qInfo() << "clear force! " << targetDir;
+
+        if (QDir(targetDir).removeRecursively()) {
+            return;
+        }
+
+        QuasarAppUtils::Params::verboseLog("Remove target Dir fail, try remove old deployemend files",
+                                           QuasarAppUtils::Warning);
+    }
 
     deployedFiles = settings.value(targetDir, QStringList()).toStringList();
     QMap<int, QFileInfo> sortedOldData;
