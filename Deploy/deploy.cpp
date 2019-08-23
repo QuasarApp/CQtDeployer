@@ -1026,7 +1026,6 @@ void Deploy::clear() {
             QFile::remove(file);
         } else {
             deployedDirs += file;
-            QDir(file).removeRecursively();
         }
     }
 
