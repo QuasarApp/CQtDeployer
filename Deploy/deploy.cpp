@@ -875,7 +875,6 @@ bool Deploy::smartMoveTargets() {
             result = false;
         }
 
-        addToDeployed(targetPath);
 
         temp.insert(targetPath + "/" + target.fileName(), i.value());
 
