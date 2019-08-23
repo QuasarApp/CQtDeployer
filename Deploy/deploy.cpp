@@ -1020,7 +1020,7 @@ void Deploy::clear() {
     deployedFiles = settings.value(targetDir, QStringList()).toStringList();
     QMap<int, QFileInfo> sortedOldData;
     for (auto& i :deployedFiles) {
-        sortedOldData.insert(i.size(), QFileInfo(i));
+        sortedOldData.insertMulti(i.size(), QFileInfo(i));
     }
 
     for (auto it = sortedOldData.end(); it != sortedOldData.begin(); --it) {
