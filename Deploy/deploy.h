@@ -55,6 +55,9 @@ class DEPLOYSHARED_EXPORT Deploy {
     void copyFiles(const QStringList &files);
     bool copyFile(const QString &file, const QString &target,
                   QStringList *mask = nullptr);
+    bool removeFile(const QString &file);
+    bool removeFile(const QFileInfo &file);
+
     /**
      * @brief smartCopyFile
      * @param file

@@ -19,6 +19,8 @@
 #include <QProcess>
 #include <QRegularExpression>
 #include <quasarapp.h>
+#include <stdio.h>
+
 
 #include <fstream>
 
@@ -434,7 +436,7 @@ bool Deploy::fileActionPrivate(const QString &file, const QString &target,
     }
 
     if (QuasarAppUtils::Params::isEndable("always-overwrite") &&
-            info.exists() && !QFile::remove(target + QDir::separator() + name)) {
+            info.exists() && !removeFile( target + QDir::separator() + name)) {
         return false;
     }
 
@@ -490,6 +492,26 @@ bool Deploy::copyFile(const QString &file, const QString &target,
                       QStringList *masks) {
 
     return fileActionPrivate(file, target, masks, false);
+}
+
+bool Deploy::removeFile(const QFileInfo &file) {
+
+    if (!QFile::remove(file.absoluteFilePath())) {
+        QuasarAppUtils::Params::verboseLog("Qt Operation fail (remove file) " + file.absoluteFilePath(),
+                                           QuasarAppUtils::Warning);
+
+        if (remove(file.absoluteFilePath().toLatin1())) {
+            QuasarAppUtils::Params::verboseLog("std Operation fail file not removed." + file.absoluteFilePath(),
+                                               QuasarAppUtils::Error);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool Deploy::removeFile(const QString &file) {
+    return removeFile(QFileInfo (file));
 }
 
 bool Deploy::smartCopyFile(const QString &file, const QString &target, QStringList *mask) {
@@ -1028,8 +1050,9 @@ void Deploy::clear() {
         auto index = it - 1;
 
         if (index.value().isFile()) {
-            QFile::remove(index.value().absoluteFilePath());
-            qInfo() << "Remove " << index.value().absoluteFilePath() << " becouse it is deployed file";
+            if (removeFile(index.value())) {
+                qInfo() << "Remove " << index.value().absoluteFilePath() << " becouse it is deployed file";
+            }
 
         } else {
             QDir qdir(index.value().absoluteFilePath());
