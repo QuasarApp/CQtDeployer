@@ -97,45 +97,55 @@ void DeployUtils::verboseLog(const QString &str) {
 }
 
 void DeployUtils::help() {
-    qInfo() << "CQtDeployer version: " + getAppVersion();
-    qInfo() << "Usage: cqtdeployer <-bin    [params]> [options]";
-    qInfo() << "";
-    qInfo() << "Options:";
-    qInfo() << "   help / h                 : Shows help.";
-    qInfo() << "   always-overwrite         : Copies files and replaces the existing ones.";
-    qInfo() << "   -bin    [list, params]   : Deployable file or folder.";
-    qInfo() << "                            | For example -bin /my/project/bin/,/my/project/bin.exe";
-    qInfo() << "   -binDir [params]         : A folder which includes deployable files (recursive search).";
-    qInfo() << "                            | WARNING: this flag supports 'so', 'dll' and 'exe' files only.";
-    qInfo() << "                            | Use '-bin' flag if you want to deploy linux binary files";
-    qInfo() << "   -qmlDir [params]         : Qml data dir. For example -qmlDir ~/my/project/qml";
-    qInfo() << "   deploySystem             : Deploys all libs";
-    qInfo() << "   noLibc                   : Skip Deploys libc and ld-linux libs";
-    qInfo() << "   -qmake  [params]         : Qmake path.";
-    qInfo() << "                            | For example -qmake ~/Qt/5.11.1/gcc_64/bin/qmake";
-    qInfo() << "   -ignore [list,params]    : The list of libs to ignore.";
-    qInfo() << "                            | For example -ignore libicudata.so.56,libicudata2.so.56";
-    qInfo() << "   -ignoreEnv [list,params] : The list of the environment to ignore";
-    qInfo() << "                            | For example -ignoreEnv /bad/dir,/my/bad/Dir";
-    qInfo() << "   clear                    : Deletes deployable files of the previous session.";
-    qInfo() << "   allQmlDependes           : Extracts all the qml libraries.";
-    qInfo() << "                            | (not recommended, as it takes great amount of computer memory)";
-    qInfo() << "   -libDir [list,params]    : Sets additional paths for extra libs of an app.";
-    qInfo() << "                            | For example -libDir /myLib,/newLibs ";
-    qInfo() << "   -extraPlugin[list,params]: Sets an additional path to extraPlugin of an app";
-    qInfo() << "   -recursiveDepth [params] : Sets the Depth of recursive search of libs (default 0)";
-    qInfo() << "   -targetDir [params]      : Sets target directory(by default it is the path to the first deployable file)";
-    qInfo() << "   noStrip                  : Skips strip step";
-    qInfo() << "   noTranslations           : Skips the translations files.";
-    qInfo() << "   qmlExtern                : Use the qml external scanner (qmlimportscaner)";
-    qInfo() << "                            | It doesn't work without qmake and inside a snap package";
 
-    qInfo() << "   verbose [1,2,3]          : show debug log";
-    qInfo() << "   v / version                : show compiled version";
+    QStringList help = {
+    { "CQtDeployer version: " + getAppVersion()},
+    { "Usage: cqtdeployer <-bin    [params]> [options]"},
+    { "" },
+    { "Options:" },
+    { "   help / h                 : Shows help." },
+    { "   always-overwrite         : Copies files and replaces the existing ones." },
+    { "   -bin    [list, params]   : Deployable file or folder." },
+    { "                            | For example -bin /my/project/bin/,/my/project/bin.exe" },
+    { "   -binDir [params]         : A folder which includes deployable files (recursive search)." },
+    { "                            | WARNING: this flag supports 'so', 'dll' and 'exe' files only." },
+    { "                            | Use '-bin' flag if you want to deploy linux binary files" },
+    { "   -qmlDir [params]         : Qml data dir. For example -qmlDir ~/my/project/qml" },
+    { "   deploySystem             : Deploys all libs" },
+    { "   noLibc                   : Skip Deploys libc and ld-linux libs" },
+    { "   -qmake  [params]         : Qmake path." },
+    { "                            | For example -qmake ~/Qt/5.11.1/gcc_64/bin/qmake" },
+    { "   -ignore [list,params]    : The list of libs to ignore." },
+    { "                            | For example -ignore libicudata.so.56,libicudata2.so.56" },
+    { "   -ignoreEnv [list,params] : The list of the environment to ignore" },
+    { "                            | For example -ignoreEnv /bad/dir,/my/bad/Dir" },
+    { "   clear                    : Deletes deployable files of the previous session." },
+    { "   allQmlDependes           : Extracts all the qml libraries." },
+    { "                            | (not recommended, as it takes great amount of computer memory)" },
+    { "   -libDir [list,params]    : Sets additional paths for extra libs of an app." },
+    { "                            | For example -libDir /myLib,/newLibs " },
+    { "   -extraPlugin[list,params]: Sets an additional path to extraPlugin of an app" },
+    { "   -recursiveDepth [params] : Sets the Depth of recursive search of libs (default 0)" },
+    { "   -targetDir [params]      : Sets target directory(by default it is the path to the first deployable file)" },
+    { "   noStrip                  : Skips strip step" },
+    { "   noTranslations           : Skips the translations files." },
+    { "   qmlExtern                : Use the qml external scanner (qmlimportscaner)" },
+    { "                            | It doesn't work without qmake and inside a snap package" },
+    { "   v / version              : show compiled version" },
+    { "" },
 
-    qInfo() << "";
-    qInfo() << "Example: cqtdeployer -bin myApp -qmlDir ~/Qt/5.11.1/gcc_64/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear";
-    qInfo() << "Example (only C libs): cqtdeployer -bin myApp clear";
+    { "Extra options:" }};
+
+    help.append(QuasarAppUtils::Params::getparamsHelp());
+
+    help.append({
+    { "" },
+    { "Example: cqtdeployer -bin myApp -qmlDir ~/Qt/5.14.0/gcc_64/qml -qmake ~/Qt/5.14.0/gcc_64/bin/qmake clear" },
+    { "Example (only C libs): cqtdeployer -bin myApp clear" }});
+
+    QuasarAppUtils::Params::showHelp(help);
+
+
 }
 
 bool DeployUtils::parseQt(Deploy *deploy) {
