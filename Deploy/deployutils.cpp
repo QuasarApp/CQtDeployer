@@ -163,22 +163,8 @@ void DeployUtils::help() {
 }
 
 bool DeployUtils::parseQtClearMode(Deploy *deploy) {
-    auto bin = QuasarAppUtils::Params::getStrArg("bin").split(',');
-
-    if (!deploy->setTargets(bin)) {
-
-        auto binDir = QuasarAppUtils::Params::getStrArg("binDir");
-        if (!(deploy->setTargetsRecursive(binDir) || deploy->setTargets({"./"}))) {
-            qCritical() << "setTargetDir fail!";
-            return false;
-        }
-    }
-
-    if (QuasarAppUtils::Params::isEndable("clear") ||
-            QuasarAppUtils::Params::isEndable("force-clear")) {
-        qInfo() << "clear old data";
-        deploy->clear(QuasarAppUtils::Params::isEndable("force-clear"));
-    }
+    deploy->setTargetDir("./");
+    deploy->clear(QuasarAppUtils::Params::isEndable("force-clear"));
 
     return true;
 
@@ -192,13 +178,9 @@ bool DeployUtils::parseQtInfoMode() {
         return true;
     }
 
-    if (QuasarAppUtils::Params::isEndable("h") ||
-        QuasarAppUtils::Params::isEndable("help")) {
-        DeployUtils::help();
-        return true;
-    }
+    DeployUtils::help();
+    return true;
 
-    return false;
 }
 
 bool DeployUtils::parseQtDeployMode(Deploy *deploy) {

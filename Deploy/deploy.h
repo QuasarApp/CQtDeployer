@@ -102,7 +102,6 @@ class DEPLOYSHARED_EXPORT Deploy {
     bool setBinDir(const QString& dir, bool recursive = false);
 
     bool initDir(const QString &path);
-    void setTargetDir();
     bool deployMSVC();
 
 
@@ -136,6 +135,8 @@ public:
     void setExtraPath(const QStringList &value);
     void setExtraPlugins(const QStringList &value);
     void setDepchLimit(int value);
+    void setTargetDir(const QString &target = "");
+
 
     friend class deploytest;
 };
