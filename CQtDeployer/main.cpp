@@ -28,30 +28,12 @@ int main(int argc, const char *argv[]) {
     };
     QuasarAppUtils::Params::setEnable("noWriteInFileLog", true);
 
-
-    if ((QuasarAppUtils::Params::isEndable("v") ||
-            QuasarAppUtils::Params::isEndable("version"))) {
-        DeployUtils::printVersion();
-        exit(0);
-    }
-
-    if (QuasarAppUtils::Params::isEndable("h") ||
-        QuasarAppUtils::Params::isEndable("help")) {
-        DeployUtils::help();
-        exit(0);
-    }
-
     Deploy deploy;
 
     if (!DeployUtils::parseQt(&deploy)) {
         qCritical() << "error parse imput data";
-        DeployUtils::help();
         exit(1);
     }
-
-    deploy.deploy();
-
-    qInfo() << "deploy done!";
 
     return 0;
 }

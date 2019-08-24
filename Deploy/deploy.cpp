@@ -781,13 +781,13 @@ void Deploy::extractLib(const QString &file, bool isExtractPlugins) {
             continue;
         }
 
-        if (line.getPriority() != libPriority::SystemLib && !neadedLibs.contains(line.fullPath())) {
+        if (line.getPriority() != LibPriority::SystemLib && !neadedLibs.contains(line.fullPath())) {
             neadedLibs << line.fullPath();
             if (isExtractPlugins) {
                 extractPlugins(line.fullPath());
             }
         } else if (QuasarAppUtils::Params::isEndable("deploySystem") &&
-                    line.getPriority() == libPriority::SystemLib &&
+                    line.getPriority() == LibPriority::SystemLib &&
                     !systemLibs.contains(line.fullPath())) {
             systemLibs << line.fullPath();
         }

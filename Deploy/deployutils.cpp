@@ -73,7 +73,7 @@ QtModuleEntry DeployUtils::qtModuleEntries[] = {
     { QtWebViewModule, "webview", "Qt5WebView", nullptr }
 };
 
-libPriority DeployUtils::getLibPriority(const QString &lib) {
+LibPriority DeployUtils::getLibPriority(const QString &lib) {
 
     if (!QFileInfo(lib).isFile()) {
         return NotFile;
@@ -94,6 +94,23 @@ void DeployUtils::verboseLog(const QString &str) {
     if (QuasarAppUtils::Params::isEndable("verbose")) {
         qDebug() << str;
     }
+}
+
+#define C(X) QuasarAppUtils::Params::isEndable(X)
+RunMode DeployUtils::getMode() {
+    if (C("help") || C("h") || C("v") || C("version")) {
+        return RunMode::Info;
+    }
+
+    if (C("bin") || C("binDir")) {
+        return RunMode::Deploy;
+    }
+
+    if (C("clear") || C("force-clear")) {
+        return RunMode::Clear;
+    }
+
+    return RunMode::Info;
 }
 
 void DeployUtils::help() {
@@ -145,23 +162,53 @@ void DeployUtils::help() {
 
 }
 
-bool DeployUtils::parseQt(Deploy *deploy) {
-
-    if (!(QuasarAppUtils::Params::isEndable("bin") ||
-            QuasarAppUtils::Params::isEndable("binDir"))) {
-        qWarning() << "you need to use -bin or -binDir flags";
-        return false;
-    }
-
+bool DeployUtils::parseQtClearMode(Deploy *deploy) {
     auto bin = QuasarAppUtils::Params::getStrArg("bin").split(',');
-    bin.removeAll("");
 
     if (!deploy->setTargets(bin)) {
 
         auto binDir = QuasarAppUtils::Params::getStrArg("binDir");
+        if (!(deploy->setTargetsRecursive(binDir) || deploy->setTargets({"./"}))) {
+            qCritical() << "setTargetDir fail!";
+            return false;
+        }
+    }
 
-        if (!deploy->setTargetsRecursive(binDir)) {
-            qCritical() << "error init targeet dir";
+    if (QuasarAppUtils::Params::isEndable("clear") ||
+            QuasarAppUtils::Params::isEndable("force-clear")) {
+        qInfo() << "clear old data";
+        deploy->clear(QuasarAppUtils::Params::isEndable("force-clear"));
+    }
+
+    return true;
+
+}
+
+bool DeployUtils::parseQtInfoMode() {
+
+    if ((QuasarAppUtils::Params::isEndable("v") ||
+            QuasarAppUtils::Params::isEndable("version"))) {
+        DeployUtils::printVersion();
+        return true;
+    }
+
+    if (QuasarAppUtils::Params::isEndable("h") ||
+        QuasarAppUtils::Params::isEndable("help")) {
+        DeployUtils::help();
+        return true;
+    }
+
+    return false;
+}
+
+bool DeployUtils::parseQtDeployMode(Deploy *deploy) {
+    auto bin = QuasarAppUtils::Params::getStrArg("bin").split(',');
+
+    if (!deploy->setTargets(bin)) {
+
+        auto binDir = QuasarAppUtils::Params::getStrArg("binDir");
+        if (!(deploy->setTargetsRecursive(binDir) || deploy->setTargets({"./"}))) {
+            qCritical() << "setTargetDir fail!";
             return false;
         }
     }
@@ -244,7 +291,49 @@ bool DeployUtils::parseQt(Deploy *deploy) {
 
     deploy->setQtDir(dir.absolutePath());
 
+    deploy->deploy();
+    qInfo() << "deploy done!";
+
     return true;
+}
+
+bool DeployUtils::parseQt(Deploy *deploy) {    
+    switch (getMode()) {
+    case RunMode::Info: {
+        qInfo() << "selected info mode" ;
+
+        if (!parseQtInfoMode()) {
+            qCritical() << "info mode fail!";
+            return false;
+        }
+
+        return true;
+    }
+    case RunMode::Clear: {
+        qInfo() << "selected clear mode" ;
+
+        if (!parseQtClearMode(deploy)) {
+            qCritical() << "clear mode fail!";
+            return false;
+        }
+
+        return true;
+    }
+
+    case RunMode::Deploy: {
+        qInfo() << "selected deploy mode" ;
+
+        if (!parseQtDeployMode(deploy)) {
+            qCritical() << "deploy mode fail!";
+            return false;
+        }
+
+        return true;
+    }
+
+    }
+
+    return false;
 }
 
 QStringList DeployUtils::extractTranslation(const QStringList &libs) {

@@ -64,11 +64,11 @@ void LibInfo::setDependncies(const QSet<QString> &value) {
     dependncies = value;
 }
 
-libPriority LibInfo::getPriority() const {
+LibPriority LibInfo::getPriority() const {
     return priority;
 }
 
-void LibInfo::setPriority(const libPriority &value) {
+void LibInfo::setPriority(const LibPriority &value) {
     priority = value;
 }
 
