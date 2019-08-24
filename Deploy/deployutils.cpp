@@ -273,9 +273,6 @@ bool DeployUtils::parseQtDeployMode(Deploy *deploy) {
 
     deploy->setQtDir(dir.absolutePath());
 
-    deploy->deploy();
-    qInfo() << "deploy done!";
-
     return true;
 }
 
@@ -309,6 +306,9 @@ bool DeployUtils::parseQt(Deploy *deploy) {
             qCritical() << "deploy mode fail!";
             return false;
         }
+
+        deploy->deploy();
+        qInfo() << "deploy done!";
 
         return true;
     }
