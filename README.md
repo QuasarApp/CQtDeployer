@@ -1,9 +1,11 @@
-# Welcome to the Console Qt Deployer!
-# ![Logo](/res/icon.png)
+# CQtDeployer [![CQtDeployer](https://snapcraft.io/cqtdeployer/badge.svg)](https://snapcraft.io/cqtdeployer)
+# ![Logo](https://i.ibb.co/phDBvfr/qt.png)
 
-***************************
-## What is Console Qt Deployer
-The Console QtDeployer is console veriosn of the [QtDeployer](https://quasarapp.github.io/QtDeployer/).
+****************************
+
+## What is CQtDeployer
+The CQtDeployer is application for extract all depends library of executable and create launch script for your application.
+
 
 Key differences of this program:
 * Performance: this program deploys the application several times faster (up to 10 seconds)
@@ -11,10 +13,11 @@ Key differences of this program:
 * Crossdeploy: this application's support windows and linux distrebutives, This means that you can use it not only to deploy a project for your platform, but also to deploy a project on Linux for Windows and vice versa. 
 
 
-
 ### How to use
 
 #### Example: cqtdeployer <-bin    [params]> [options]
+
+#### cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.12.4/gcc_64/bin/qmake clear
 
 #### Options:
 | Option                      | Descriptiion                                                    |
@@ -51,21 +54,21 @@ Key differences of this program:
 
 
 
-#### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
+#### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.12.4/gcc_64/bin/qmake clear
 
 
 ## Build for Linux 
   - install qt and qt QtInstallFrameWork from [qtInstaller](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
   - qmake -r
   - make -j$(nproc)
-  - make deploy
-  - ./Distro/CQtDeployerInstaller
+  - make deploy # this command requires the installed [cqtdeployer](https://github.com/QuasarApp/Console-QtDeployer/releases) 
+  - ./Distro/CQtDeployerInstaller.run
 
 ## Build for Windows
   - install qt and qt QtInstallFrameWork from [qtInstaller](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
   - qmake -r
   - make -j$(nproc)
-  - make deploy
+  - make deploy # this command requires the installed [cqtdeployer](https://github.com/QuasarApp/Console-QtDeployer/releases) 
   - ./Distro/CQtDeployerInstaller.exe
   
 ## Install 
@@ -83,7 +86,7 @@ If you want to support the project,you can donate into our bitcoin wallet.
 ***************************
 ***************************
 
-Console QtDeployer является консольной реализацией [QtDeployer](https://quasarapp.github.io/QtDeployer/).
+Qt CQtDeployer - это приложением для извлечения всех зависимых библиотек исполняемого файла и создает сценарий запуска для вашего приложения.
 
 Основные отличия этой программы:
 * Производительность - эта программа развертывает приложение в несколько раз быстрее (до 10 секунд)
@@ -104,7 +107,7 @@ Console QtDeployer является консольной реализацией 
 |   deploySystem              | Копирует все библиотеки кроме libc                        |
 |   deployLibc                | Копирует libc и все остальные библиотеки                  |
 |   -qmake  [params]          | Путь к qmake. пример                                      |
-|                             | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake                       |
+|                             | -qmake ~/Qt/5.12.4/gcc_64/bin/qmake                       |
 |   -ignore [list,params]     | Список библиотек для игнорирования                        |
 |                             | Пример -ignore libicudata.so.56,libicudata2.so.56         |
 |   -ignoreEnv [list,params]  | Список путей для игнорирования.                          |
@@ -127,20 +130,20 @@ Console QtDeployer является консольной реализацией 
 |  v / version                | Показывает версию приложения                                          |
 
 
-#### Пример: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
+#### Пример: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.12.4/gcc_64/bin/qmake clear
 
 ## Build для Linux 
   - установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
   - qmake -r
   - make -j$(nproc)
-  - make deploy
-  - ./Distro/CQtDeployerInstaller
+  - make deploy # эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/Console-QtDeployer/releases) 
+  - ./Distro/CQtDeployerInstaller.run
   
 ## Build для Windows
   - установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
   - qmake -r
   - make -j$(nproc)
-  - make deploy
+  - make deploy # эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/Console-QtDeployer/releases) 
   - ./Distro/CQtDeployerInstaller.exe
   
 ### Snap
