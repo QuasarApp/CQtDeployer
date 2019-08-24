@@ -36,6 +36,7 @@ Key differences of this program:
 |   -ignoreEnv [list,params]  | The list of the environment to ignore.                          |
 |                             | For example -ignoreEnv /bad/dir,/my/bad/Dir                     |
 |   clear                     | Deletes deployable files of the previous session.               |
+|   force-clear               | Deletes the destination directory before deployment.            |
 |                             | For example -runScript myApp.sh                                 |
 |  allQmlDependes             | Extracts all the qml libraries.                                 |
 |                             | (not recommended, as it takes great amount of computer memory)  |
@@ -112,6 +113,7 @@ Qt CQtDeployer - это приложением для извлечения вс�
 |   -ignoreEnv [list,params]  | Список путей для игнорирования.                          |
 |                             | Пример -ignoreEnv /bad/dir,/my/bad/Dir                                |
 |   clear                     | Удаляет все старые файлы (с прошлого запуска)              |
+|   force-clear               | Удаляет целевую директорию перед развертыванием              |
 |                             | пример -runScript myApp.sh                                |
 |  allQmlDependes             | Извлекает все библиотеки qml.          |
 |                             | (не рекомендуется, так как занимает много памяти)         |

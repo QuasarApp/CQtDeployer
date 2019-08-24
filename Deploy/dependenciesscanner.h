@@ -35,7 +35,7 @@ private:
 
     PrivateScaner getScaner(const QString& lib) const;
 
-    QMultiMap<libPriority, LibInfo> getLibsFromEnvirement(const QString& libName);
+    QMultiMap<LibPriority, LibInfo> getLibsFromEnvirement(const QString& libName);
     bool fillLibInfo(LibInfo& info ,const QString& file);
 
     void recursiveDep(LibInfo& lib, QSet<LibInfo> &res);

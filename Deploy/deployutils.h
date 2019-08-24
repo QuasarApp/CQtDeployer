@@ -38,11 +38,17 @@ enum Platform {
     Unix64
 };
 
-enum libPriority : int {
+enum LibPriority : int {
     QtLib = 0x0,
     ExtraLib,
     SystemLib,
     NotFile = 0xF,
+};
+
+enum class RunMode: int {
+    Info,
+    Deploy,
+    Clear
 };
 
 class Deploy;
@@ -54,6 +60,9 @@ private:
     static QString getMSVCName(MSVCVersion msvc);
     static QString getMSVCVersion(MSVCVersion msvc);
 
+    static bool parseQtDeployMode(Deploy *deploy);
+    static bool parseQtInfoMode();
+    static bool parseQtClearMode(Deploy *deploy);
 public:
     enum QtModule : quint64
     {
@@ -122,8 +131,9 @@ public:
 
     static bool isQtLib(const QString &lib);
     static bool isExtraLib(const QString &lib);
-    static libPriority getLibPriority(const QString &lib);
+    static LibPriority getLibPriority(const QString &lib);
     static void verboseLog(const QString &str);
+    static RunMode getMode();
     static void help();
     static bool parseQt(Deploy *deploy);
     static QStringList extractTranslation(const QStringList& libs);

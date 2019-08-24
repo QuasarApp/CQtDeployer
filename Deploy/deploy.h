@@ -55,6 +55,9 @@ class DEPLOYSHARED_EXPORT Deploy {
     void copyFiles(const QStringList &files);
     bool copyFile(const QString &file, const QString &target,
                   QStringList *mask = nullptr);
+    bool removeFile(const QString &file);
+    bool removeFile(const QFileInfo &file);
+
     /**
      * @brief smartCopyFile
      * @param file
@@ -99,7 +102,6 @@ class DEPLOYSHARED_EXPORT Deploy {
     bool setBinDir(const QString& dir, bool recursive = false);
 
     bool initDir(const QString &path);
-    void setTargetDir();
     bool deployMSVC();
 
 
@@ -129,10 +131,12 @@ public:
     QString getQtDir() const;
     void setQtDir(const QString &value);
 
-    void clear();
+    void clear(bool);
     void setExtraPath(const QStringList &value);
     void setExtraPlugins(const QStringList &value);
     void setDepchLimit(int value);
+    void setTargetDir(const QString &target = "");
+
 
     friend class deploytest;
 };

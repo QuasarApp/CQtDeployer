@@ -34,11 +34,11 @@ PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
     return PrivateScaner::UNKNOWN;
 }
 
-QMultiMap<libPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
+QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
         const QString &libName) {
 
     auto values = _EnvLibs.values(libName.toUpper());
-    QMultiMap<libPriority, LibInfo> res;
+    QMultiMap<LibPriority, LibInfo> res;
 
     for (auto & lib : values) {
         LibInfo info;

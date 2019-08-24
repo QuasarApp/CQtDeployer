@@ -19,6 +19,8 @@
 #include <QProcess>
 #include <QRegularExpression>
 #include <quasarapp.h>
+#include <stdio.h>
+
 
 #include <fstream>
 
@@ -74,10 +76,12 @@ bool Deploy::initDir(const QString &path) {
     return true;
 }
 
-void Deploy::setTargetDir() {
-    if (QuasarAppUtils::Params::isEndable("targetDir")) {
-        targetDir = QuasarAppUtils::Params::getStrArg("targetDir");
+void Deploy::setTargetDir(const QString &target) {
 
+    if (target.size() && QFileInfo(target).isDir()) {
+        targetDir = QFileInfo(target).absoluteFilePath();
+    } else if (QuasarAppUtils::Params::isEndable("targetDir")) {
+        targetDir = QuasarAppUtils::Params::getStrArg("targetDir");
     } else {
         targetDir = QFileInfo(targets.begin().key()).absolutePath() + "/Distro";
         qInfo () << "flag targetDir not  used." << "use default target dir :" << targetDir;
@@ -434,7 +438,7 @@ bool Deploy::fileActionPrivate(const QString &file, const QString &target,
     }
 
     if (QuasarAppUtils::Params::isEndable("always-overwrite") &&
-            info.exists() && !QFile::remove(target + QDir::separator() + name)) {
+            info.exists() && !removeFile( target + QDir::separator() + name)) {
         return false;
     }
 
@@ -490,6 +494,26 @@ bool Deploy::copyFile(const QString &file, const QString &target,
                       QStringList *masks) {
 
     return fileActionPrivate(file, target, masks, false);
+}
+
+bool Deploy::removeFile(const QFileInfo &file) {
+
+    if (!QFile::remove(file.absoluteFilePath())) {
+        QuasarAppUtils::Params::verboseLog("Qt Operation fail (remove file) " + file.absoluteFilePath(),
+                                           QuasarAppUtils::Warning);
+
+        if (remove(file.absoluteFilePath().toLatin1())) {
+            QuasarAppUtils::Params::verboseLog("std Operation fail file not removed." + file.absoluteFilePath(),
+                                               QuasarAppUtils::Error);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool Deploy::removeFile(const QString &file) {
+    return removeFile(QFileInfo (file));
 }
 
 bool Deploy::smartCopyFile(const QString &file, const QString &target, QStringList *mask) {
@@ -759,13 +783,13 @@ void Deploy::extractLib(const QString &file, bool isExtractPlugins) {
             continue;
         }
 
-        if (line.getPriority() != libPriority::SystemLib && !neadedLibs.contains(line.fullPath())) {
+        if (line.getPriority() != LibPriority::SystemLib && !neadedLibs.contains(line.fullPath())) {
             neadedLibs << line.fullPath();
             if (isExtractPlugins) {
                 extractPlugins(line.fullPath());
             }
         } else if (QuasarAppUtils::Params::isEndable("deploySystem") &&
-                    line.getPriority() == libPriority::SystemLib &&
+                    line.getPriority() == LibPriority::SystemLib &&
                     !systemLibs.contains(line.fullPath())) {
             systemLibs << line.fullPath();
         }
@@ -853,7 +877,6 @@ bool Deploy::smartMoveTargets() {
             result = false;
         }
 
-        addToDeployed(targetPath);
 
         temp.insert(targetPath + "/" + target.fileName(), i.value());
 
@@ -1013,26 +1036,41 @@ bool Deploy::extractQml() {
     }
 }
 
-void Deploy::clear() {
+void Deploy::clear(bool force) {
 
     qInfo() << "clear start!";
+
+    if (force) {
+        qInfo() << "clear force! " << targetDir;
+
+        if (QDir(targetDir).removeRecursively()) {
+            return;
+        }
+
+        QuasarAppUtils::Params::verboseLog("Remove target Dir fail, try remove old deployemend files",
+                                           QuasarAppUtils::Warning);
+    }
 
     deployedFiles = settings.value(targetDir, QStringList()).toStringList();
     QMap<int, QFileInfo> sortedOldData;
     for (auto& i :deployedFiles) {
-        sortedOldData.insert(i.size(), QFileInfo(i));
+        sortedOldData.insertMulti(i.size(), QFileInfo(i));
     }
 
-    for (auto it = sortedOldData.begin(); it != sortedOldData.end(); ++it) {
-        if (it.value().isFile()) {
-            QFile::remove(it.value().absoluteFilePath());
-            qInfo() << "Remove " << it.value().absoluteFilePath() << " becouse it is deployed file";
+    for (auto it = sortedOldData.end(); it != sortedOldData.begin(); --it) {
+
+        auto index = it - 1;
+
+        if (index.value().isFile()) {
+            if (removeFile(index.value())) {
+                qInfo() << "Remove " << index.value().absoluteFilePath() << " becouse it is deployed file";
+            }
 
         } else {
-            QDir qdir(it.value().absoluteFilePath());
+            QDir qdir(index.value().absoluteFilePath());
             if (!qdir.entryList(QDir::NoDotAndDotDot | QDir::AllEntries).count()) {
                 qdir.removeRecursively();
-                qInfo() << "Remove " << it.value().absoluteFilePath() << " becouse it is empty";
+                qInfo() << "Remove " << index.value().absoluteFilePath() << " becouse it is empty";
             }
         }
     }
