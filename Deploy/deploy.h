@@ -132,7 +132,7 @@ public:
     QString getQtDir() const;
     void setQtDir(const QString &value);
 
-    void clear();
+    void clear(bool);
     void setExtraPath(const QStringList &value);
     void setExtraPlugins(const QStringList &value);
     void setDepchLimit(int value);
