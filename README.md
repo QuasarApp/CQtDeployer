@@ -8,6 +8,7 @@ The Console QtDeployer is console veriosn of the [QtDeployer](https://quasarapp.
 Key differences of this program:
 * Performance: this program deploys the application several times faster (up to 10 seconds)
 * Flexibility: this application's got flags that help you to configure the deployment for your or your project's needs
+* Crossdeploy: this application's support windows and linux distrebutives, This means that you can use it not only to deploy a project for your platform, but also to deploy a project on Linux for Windows and vice versa. 
 
 
 
@@ -54,13 +55,19 @@ Key differences of this program:
 
 
 ## Build for Linux 
-  -  ./staticBuild
-  -  ./sharedBuild
-  -  ./snapBuild
+  - install qt and qt QtInstallFrameWork from [qtInstaller](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
+  - qmake -r
+  - make -j$(nproc)
+  - make deploy
+  - ./Distro/CQtDeployerInstaller
 
 ## Build for Windows
- - from qtCreator
-
+  - install qt and qt QtInstallFrameWork from [qtInstaller](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
+  - qmake -r
+  - make -j$(nproc)
+  - make deploy
+  - ./Distro/CQtDeployerInstaller.exe
+  
 ## Install 
 You can download the latest version of the application [here](https://github.com/QuasarApp/Console-QtDeployer/releases).
 
@@ -81,7 +88,7 @@ Console QtDeployer является консольной реализацией 
 Основные отличия этой программы:
 * Производительность - эта программа развертывает приложение в несколько раз быстрее (до 10 секунд)
 * Гибкость - это приложение имеет флаги, которые помогут вам настроить деплоинг под ваши нужды и нужды вашего проекта
-
+* Crossdeploy: приложение поддерживает Windows и дистрибутивы Linux, это означает, что вы можете использовать его не только для развертывания проекта для вашей платформы, но и для развертывания проекта в Linux для Windows и наоборот.
 
 ### Как использовать
 #### пример : cqtdeployer <-bin    [params]> [options]
@@ -123,13 +130,19 @@ Console QtDeployer является консольной реализацией 
 #### Пример: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.11.1/gcc_64/bin/qmake clear
 
 ## Build для Linux 
-  -  ./staticBuild
-  -  ./sharedBuild
-  -  ./snapBuild
+  - установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
+  - qmake -r
+  - make -j$(nproc)
+  - make deploy
+  - ./Distro/CQtDeployerInstaller
   
 ## Build для Windows
- - Из qtCreator
-
+  - установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
+  - qmake -r
+  - make -j$(nproc)
+  - make deploy
+  - ./Distro/CQtDeployerInstaller.exe
+  
 ### Snap
 [![Загрузите из Snap Store](https://snapcraft.io/static/images/badges/ru/snap-store-black.svg)](https://snapcraft.io/cqtdeployer)
 
