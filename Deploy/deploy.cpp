@@ -191,14 +191,14 @@ bool Deploy::createRunScript(const QString &target) {
             "#!/bin/sh\n"
             "BASE_DIR=$(dirname \"$(readlink -f \"$0\")\")\n"
             "export "
-            "LD_LIBRARY_PATH=\"$BASE_DIR\"/lib:\"$BASE_DIR\":$LD_LIBRARY_PATH\n"
-            "export QML_IMPORT_PATH=\"$BASE_DIR\"/qml:QML_IMPORT_PATH\n"
-            "export QML2_IMPORT_PATH=\"$BASE_DIR\"/qml:QML2_IMPORT_PATH\n"
-            "export QT_PLUGIN_PATH=\"$BASE_DIR\"/plugins:QT_PLUGIN_PATH\n"
+            "LD_LIBRARY_PATH=\"$BASE_DIR\"" + distro.getLibOutDir() + ":\"$BASE_DIR\":$LD_LIBRARY_PATH\n"
+            "export QML_IMPORT_PATH=\"$BASE_DIR\"" + distro.getQmlOutDir() + ":QML_IMPORT_PATH\n"
+            "export QML2_IMPORT_PATH=\"$BASE_DIR\"" + distro.getQmlOutDir() + ":QML2_IMPORT_PATH\n"
+            "export QT_PLUGIN_PATH=\"$BASE_DIR\"" + distro.getPluginsOutDir() + ":QT_PLUGIN_PATH\n"
             "export QTDIR=\"$BASE_DIR\"\n"
             "export "
-            "QT_QPA_PLATFORM_PLUGIN_PATH=\"$BASE_DIR\"/plugins/"
-            "platforms:QT_QPA_PLATFORM_PLUGIN_PATH\n"
+            "QT_QPA_PLATFORM_PLUGIN_PATH=\"$BASE_DIR\"" + distro.getPluginsOutDir() +
+            "/platforms:QT_QPA_PLATFORM_PLUGIN_PATH\n"
             "%2"
             "\"$BASE_DIR\"/bin/%1 \"$@\"";
 
@@ -208,12 +208,11 @@ bool Deploy::createRunScript(const QString &target) {
     if (ld_index >= 0 && QuasarAppUtils::Params::isEndable("deploySystem") &&
             !QuasarAppUtils::Params::isEndable("noLibc")) {
 
-        content = content.arg(QString("\nexport LD_PRELOAD=\"$BASE_DIR\"/lib/%0\n").
+        content = content.arg(QString("\nexport LD_PRELOAD=\"$BASE_DIR\"" + distro.getLibOutDir() + "/%0\n").
             arg(QFileInfo(deployedFiles[ld_index]).fileName()));
     } else {
         content = content.arg("");
     }
-
 
     QString fname = targetDir + QDir::separator() + QFileInfo(target).baseName()+ ".sh";
 
