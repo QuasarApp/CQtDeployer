@@ -24,19 +24,21 @@ private:
     QString resOutDeir;
     QString pluginsOutDir;
 
+    QString getCanonicalPath(QString path) const;
+
 public:
     DistroStruct();
-    QString getLibOutDir() const;
+    QString getLibOutDir(const QString& basePath = "/") const;
     void setLibOutDir(const QString &value);
-    QString getBinOutDir() const;
+    QString getBinOutDir(const QString& basePath = "/") const;
     void setBinOutDir(const QString &value);
-    QString getQmlOutDir() const;
+    QString getQmlOutDir(const QString& basePath = "/") const;
     void setQmlOutDir(const QString &value);
-    QString getTrOutDir() const;
+    QString getTrOutDir(const QString& basePath = "/") const;
     void setTrOutDir(const QString &value);
-    QString getResOutDeir() const;
+    QString getResOutDeir(const QString& basePath = "/") const;
     void setResOutDeir(const QString &value);
-    QString getPluginsOutDir() const;
+    QString getPluginsOutDir(const QString& basePath = "/") const;
     void setPluginsOutDir(const QString &value);
 };
 

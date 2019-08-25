@@ -1,5 +1,7 @@
 #include "distrostruct.h"
 
+#include <QRegExp>
+
 //#
 //# Copyright (C) 2018-2019 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
@@ -7,52 +9,64 @@
 //# of this license document, but changing it is not allowed.
 //#
 
-QString DistroStruct::getLibOutDir() const {
-    return libOutDir;
+QString DistroStruct::getLibOutDir(const QString &basePath) const {
+    return getRelativePath(basePath) + libOutDir;
 }
 
 void DistroStruct::setLibOutDir(const QString &value) {
     libOutDir = value;
 }
 
-QString DistroStruct::getBinOutDir() const {
-    return binOutDir;
+QString DistroStruct::getBinOutDir(const QString &basePath) const {
+    return getRelativePath(basePath) + binOutDir;
 }
 
 void DistroStruct::setBinOutDir(const QString &value) {
     binOutDir = value;
 }
 
-QString DistroStruct::getQmlOutDir() const {
-    return qmlOutDir;
+QString DistroStruct::getQmlOutDir(const QString &basePath) const {
+    return getRelativePath(basePath) + qmlOutDir;
 }
 
 void DistroStruct::setQmlOutDir(const QString &value) {
     qmlOutDir = value;
 }
 
-QString DistroStruct::getTrOutDir() const {
-    return trOutDir;
+QString DistroStruct::getTrOutDir(const QString &basePath) const {
+    return getRelativePath(basePath) + trOutDir;
 }
 
 void DistroStruct::setTrOutDir(const QString &value) {
     trOutDir = value;
 }
 
-QString DistroStruct::getResOutDeir() const {
-    return resOutDeir;
+QString DistroStruct::getResOutDeir(const QString &basePath) const {
+    return getRelativePath(basePath) + resOutDeir;
 }
 
 void DistroStruct::setResOutDeir(const QString &value) {
     resOutDeir = value;
 }
 
-QString DistroStruct::getPluginsOutDir() const {
-    return pluginsOutDir;
+QString DistroStruct::getPluginsOutDir(const QString &basePath) const {
+    return getRelativePath(basePath) + pluginsOutDir;
 }
 
 void DistroStruct::setPluginsOutDir(const QString &value) {
     pluginsOutDir = value;
+}
+
+QString DistroStruct::getRelativePath(QString path) const {
+    if (!path.size() || !(path[0] == "/" || path[0] == "\\"))
+        return "";
+
+    int count = path.count(QRegExp("[\\/]")) - 1;
+    for (int i = 0; i < count; ++i) {
+        path += "../";
+    }
+
+    return path;
 }
 
 DistroStruct::DistroStruct() {
