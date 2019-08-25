@@ -24,7 +24,7 @@ private:
     QString resOutDeir;
     QString pluginsOutDir;
 
-    QString getCanonicalPath(QString path) const;
+    QString getRelativePath(QString path) const;
 
 public:
     DistroStruct();
