@@ -10,11 +10,12 @@
 #define DISTROSTRUCT_H
 
 #include <QString>
+#include <deploy_global.h>
 
 /**
  * @brief The DistroStruct class
  */
-class DistroStruct
+class DEPLOYSHARED_EXPORT DistroStruct
 {
 private:
     QString libOutDir;

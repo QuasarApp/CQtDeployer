@@ -11,6 +11,7 @@
 #include <deploy.h>
 #include <dependenciesscanner.h>
 #include <qml.h>
+#include <QList>
 
 #include <QMap>
 #include <QByteArray>
@@ -61,6 +62,7 @@ private slots:
     void testDeployLdLinux();
 
     void testQmlExtrct();
+    void testDistroStruct();
 
     void mainTests();
     void testMSVC();
@@ -610,6 +612,18 @@ void deploytest::testQmlExtrct() {
         }
 
     }
+}
+
+void deploytest::testDistroStruct() {
+    DistroStruct distro;
+
+    auto cases = QList<QPair<QString,QString>>{
+        {"", ""},
+        {"/", "/"},
+        {"/res","/res/../"},
+        {"/res/","/res/../"},
+        {"\\","\\"},
+    };
 }
 
 void deploytest::mainTests() {
