@@ -200,7 +200,7 @@ bool Deploy::createRunScript(const QString &target) {
             "QT_QPA_PLATFORM_PLUGIN_PATH=\"$BASE_DIR\"" + distro.getPluginsOutDir() +
             "/platforms:QT_QPA_PLATFORM_PLUGIN_PATH\n"
             "%2"
-            "\"$BASE_DIR\"/bin/%1 \"$@\"";
+            "\"$BASE_DIR\"" + distro.getBinOutDir() + "%1 \"$@\"";
 
     content = content.arg(QFileInfo(target).fileName());
     int ld_index = find("ld-linux", deployedFiles);
