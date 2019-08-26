@@ -100,11 +100,11 @@ DistroStruct::DistroStruct() {
 
 #ifdef Q_OS_LINUX
 
-    setLibOutDir(QuasarAppUtils::Params::getStrArg("binOut", "/bin"));
+    setBinOutDir(QuasarAppUtils::Params::getStrArg("binOut", "/bin"));
     setLibOutDir(QuasarAppUtils::Params::getStrArg("libOut", "/lib"));
 
 #else
-    setLibOutDir(QuasarAppUtils::Params::getStrArg("binOut", "/"));
+    setBinOutDir(QuasarAppUtils::Params::getStrArg("binOut", "/"));
     setLibOutDir(QuasarAppUtils::Params::getStrArg("libOut", "/"));
 #endif
 
