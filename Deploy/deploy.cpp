@@ -208,7 +208,7 @@ bool Deploy::createRunScript(const QString &target) {
     if (ld_index >= 0 && QuasarAppUtils::Params::isEndable("deploySystem") &&
             !QuasarAppUtils::Params::isEndable("noLibc")) {
 
-        content = content.arg(QString("\nexport LD_PRELOAD=\"$BASE_DIR\"" + distro.getLibOutDir() + "/%0\n").
+        content = content.arg(QString("\nexport LD_PRELOAD=\"$BASE_DIR\"" + distro.getLibOutDir() + "%0\n").
             arg(QFileInfo(deployedFiles[ld_index]).fileName()));
     } else {
         content = content.arg("");
