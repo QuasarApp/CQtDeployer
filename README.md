@@ -50,6 +50,7 @@ Key differences of this program:
 |  -libOut [params]           | Sets path to libraries out directory                            |
 |  -trOut [params]            | Sets path to translations out directory                         |
 |  -pluginOut [params]        | Sets path to plugins out directory                              |
+|  -binOut [params]           | Sets path to binary out directory                               |
 |  -verbose [0-3]             | Shows debug log                                                 |
 |   v / version               | Shows compiled version                                          |
 
@@ -131,6 +132,7 @@ Console QtDeployer является консольной реализацией 
 |  -libOut [params]           | Установит путь к папке с зависимостями                            |
 |  -trOut [params]            | Установит путь к папке с файламми переводов                         |
 |  -pluginOut [params]        | Установит путь к папке с плагинами                               |
+|  -binOut [params]           | Установит путь к папке с исполняемыми файлами                               |
 |  -verbose [0-3]             | Показывает дебаг лога                                          |
 |  v / version                | Показывает версию приложения                                          |
 

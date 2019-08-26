@@ -22,7 +22,7 @@ private:
     QString binOutDir;
     QString qmlOutDir;
     QString trOutDir;
-    QString resOutDeir;
+    QString resOutDir;
     QString pluginsOutDir;
 
     QString getRelativePath(QString path) const;
@@ -38,8 +38,8 @@ public:
     void setQmlOutDir(const QString &value);
     QString getTrOutDir(const QString& basePath = "/") const;
     void setTrOutDir(const QString &value);
-    QString getResOutDeir(const QString& basePath = "/") const;
-    void setResOutDeir(const QString &value);
+    QString getResOutDir(const QString& basePath = "/") const;
+    void setResOutDir(const QString &value);
     QString getPluginsOutDir(const QString& basePath = "/") const;
     void setPluginsOutDir(const QString &value);
     QString getRootDir(const QString& basePath = "/") const;

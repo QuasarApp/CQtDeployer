@@ -42,12 +42,12 @@ void DistroStruct::setTrOutDir(const QString &value) {
     trOutDir = fixPath(value);
 }
 
-QString DistroStruct::getResOutDeir(const QString &basePath) const {
-    return getRelativePath(basePath) + resOutDeir;
+QString DistroStruct::getResOutDir(const QString &basePath) const {
+    return getRelativePath(basePath) + resOutDir;
 }
 
-void DistroStruct::setResOutDeir(const QString &value) {
-    resOutDeir = fixPath(value);
+void DistroStruct::setResOutDir(const QString &value) {
+    resOutDir = fixPath(value);
 }
 
 QString DistroStruct::getPluginsOutDir(const QString &basePath) const {
@@ -100,22 +100,18 @@ DistroStruct::DistroStruct() {
 
 #ifdef Q_OS_LINUX
 
-    QuasarAppUtils::Params::isEndable()
-
-    setBinOutDir("/bin");
-    setLibOutDir("/lib");
+    setLibOutDir(QuasarAppUtils::Params::getStrArg("binOut", "/bin"));
+    setLibOutDir(QuasarAppUtils::Params::getStrArg("libOut", "/lib"));
 
 #else
-    setBinOutDir("/");
-    setLibOutDir("/");
-
-    appDir = QuasarAppUtils::Params::getStrArg("appPath");
+    setLibOutDir(QuasarAppUtils::Params::getStrArg("binOut", "/"));
+    setLibOutDir(QuasarAppUtils::Params::getStrArg("libOut", "/"));
 #endif
 
-    setQmlOutDir("/qml");
-    setResOutDeir("/res");
-    setPluginsOutDir("/plugins");
-    setTrOutDir("/translations");
 
+    setQmlOutDir(QuasarAppUtils::Params::getStrArg("qmlOut", "/qml"));
+    setTrOutDir(QuasarAppUtils::Params::getStrArg("trOut", "/translations"));
+    setPluginsOutDir(QuasarAppUtils::Params::getStrArg("pluginOut", "/plugins"));
+    setResOutDir("/resources");
 
 }
