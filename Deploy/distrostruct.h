@@ -26,6 +26,7 @@ private:
     QString pluginsOutDir;
 
     QString getRelativePath(QString path) const;
+    QString fixPath(const QString& path) const;
 
 public:
     DistroStruct();

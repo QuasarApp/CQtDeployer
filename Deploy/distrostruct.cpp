@@ -1,4 +1,5 @@
 #include "distrostruct.h"
+#include <quasarapp.h>
 
 #include <QRegExp>
 
@@ -14,7 +15,7 @@ QString DistroStruct::getLibOutDir(const QString &basePath) const {
 }
 
 void DistroStruct::setLibOutDir(const QString &value) {
-    libOutDir = value;
+    libOutDir = fixPath(value);
 }
 
 QString DistroStruct::getBinOutDir(const QString &basePath) const {
@@ -22,7 +23,7 @@ QString DistroStruct::getBinOutDir(const QString &basePath) const {
 }
 
 void DistroStruct::setBinOutDir(const QString &value) {
-    binOutDir = value;
+    binOutDir = fixPath(value);
 }
 
 QString DistroStruct::getQmlOutDir(const QString &basePath) const {
@@ -30,7 +31,7 @@ QString DistroStruct::getQmlOutDir(const QString &basePath) const {
 }
 
 void DistroStruct::setQmlOutDir(const QString &value) {
-    qmlOutDir = value;
+    qmlOutDir = fixPath(value);
 }
 
 QString DistroStruct::getTrOutDir(const QString &basePath) const {
@@ -38,7 +39,7 @@ QString DistroStruct::getTrOutDir(const QString &basePath) const {
 }
 
 void DistroStruct::setTrOutDir(const QString &value) {
-    trOutDir = value;
+    trOutDir = fixPath(value);
 }
 
 QString DistroStruct::getResOutDeir(const QString &basePath) const {
@@ -46,7 +47,7 @@ QString DistroStruct::getResOutDeir(const QString &basePath) const {
 }
 
 void DistroStruct::setResOutDeir(const QString &value) {
-    resOutDeir = value;
+    resOutDeir = fixPath(value);
 }
 
 QString DistroStruct::getPluginsOutDir(const QString &basePath) const {
@@ -54,7 +55,7 @@ QString DistroStruct::getPluginsOutDir(const QString &basePath) const {
 }
 
 void DistroStruct::setPluginsOutDir(const QString &value) {
-    pluginsOutDir = value;
+    pluginsOutDir = fixPath(value);
 }
 
 QString DistroStruct::getRootDir(const QString &basePath) const {
@@ -87,6 +88,34 @@ QString DistroStruct::getRelativePath(QString path) const {
     return path;
 }
 
+QString DistroStruct::fixPath(const QString &path) const{
+
+    if (path.right(1) != '/')
+        return path + '/';
+
+    return path;
+}
+
 DistroStruct::DistroStruct() {
+
+#ifdef Q_OS_LINUX
+
+    QuasarAppUtils::Params::isEndable()
+
+    setBinOutDir("/bin");
+    setLibOutDir("/lib");
+
+#else
+    setBinOutDir("/");
+    setLibOutDir("/");
+
+    appDir = QuasarAppUtils::Params::getStrArg("appPath");
+#endif
+
+    setQmlOutDir("/qml");
+    setResOutDeir("/res");
+    setPluginsOutDir("/plugins");
+    setTrOutDir("/translations");
+
 
 }

@@ -1169,23 +1169,13 @@ Deploy::Deploy() {
 
 #ifdef Q_OS_LINUX
     appDir = QuasarAppUtils::Params::getStrArg("appPath");
-    distro.setBinOutDir("/bin");
-    distro.setLibOutDir("/lib");
 
     if (appDir.right(4) == "/bin") {
         appDir = appDir.left(appDir.size() - 4);
     }
 #else
-    distro.setBinOutDir("/");
-    distro.setLibOutDir("/");
-
     appDir = QuasarAppUtils::Params::getStrArg("appPath");
 #endif
-
-    distro.setQmlOutDir("/qml");
-    distro.setResOutDeir("/res");
-    distro.setPluginsOutDir("/plugins");
-    distro.setTrOutDir("/translations");
 
     QuasarAppUtils::Params::verboseLog("appDir = " + appDir);
 
