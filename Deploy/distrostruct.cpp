@@ -57,6 +57,10 @@ void DistroStruct::setPluginsOutDir(const QString &value) {
     pluginsOutDir = value;
 }
 
+QString DistroStruct::getRootDir(const QString &basePath) const {
+    return getRelativePath(basePath);
+}
+
 QString DistroStruct::getRelativePath(QString path) const {
 
     path.replace('\\', '/');
