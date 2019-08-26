@@ -58,10 +58,24 @@ void DistroStruct::setPluginsOutDir(const QString &value) {
 }
 
 QString DistroStruct::getRelativePath(QString path) const {
-    if (!path.size() || !(path[0] == "/" || path[0] == "\\"))
-        return "";
 
-    int count = path.count(QRegExp("[\\/]")) - 1;
+    path.replace('\\', '/');
+
+    int index = -1;
+    do {
+        path.replace("//", "/");
+    } while ((index = path.indexOf("//")) >= 0);
+
+    if (path.left(1) != '/') {
+        path.insert(0, '/');
+    }
+
+    if (path.right(1) != '/') {
+        path.insert(path.size(), '/');
+    }
+
+    int count = path.count('/') - 1;
+
     for (int i = 0; i < count; ++i) {
         path += "../";
     }

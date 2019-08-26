@@ -41,6 +41,8 @@ public:
     void setResOutDeir(const QString &value);
     QString getPluginsOutDir(const QString& basePath = "/") const;
     void setPluginsOutDir(const QString &value);
+
+    friend class deploytest;
 };
 
 #endif // DISTROSTRUCT_H

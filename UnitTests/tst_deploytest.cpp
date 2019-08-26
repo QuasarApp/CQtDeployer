@@ -618,12 +618,33 @@ void deploytest::testDistroStruct() {
     DistroStruct distro;
 
     auto cases = QList<QPair<QString,QString>>{
-        {"", ""},
+        {"", "/"},
         {"/", "/"},
         {"/res","/res/../"},
         {"/res/","/res/../"},
-        {"\\","\\"},
+        {"/res/type","/res/type/../../"},
+        {"/res/type/","/res/type/../../"},
+        {"res/type","/res/type/../../"},
+        {"res/type/","/res/type/../../"},
+        {"res//type/","/res/type/../../"},
+        {"res////type/","/res/type/../../"},
+        {"//res///type/////","/res/type/../../"},
+        {"\\", "/"},
+        {"\\res","/res/../"},
+        {"\\res\\","/res/../"},
+        {"\\res\\type","/res/type/../../"},
+        {"\\res\\type\\","/res/type/../../"},
+        {"res\\type","/res/type/../../"},
+        {"res\\type\\","/res/type/../../"},
+        {"res\\\\type\\","/res/type/../../"},
+        {"res\\\\\\\\type\\","/res/type/../../"},
+        {"\\\\res\\\\\\type\\\\\\\\\\","/res/type/../../"},
     };
+
+    for (auto &i: cases) {
+        QVERIFY(distro.getRelativePath(i.first) == i.second);
+    }
+
 }
 
 void deploytest::mainTests() {
