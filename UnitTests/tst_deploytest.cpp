@@ -644,6 +644,7 @@ void deploytest::testDistroStruct() {
 
     for (auto &i: cases) {
         QVERIFY(distro.getRelativePath(i.first) == i.second);
+    }
 }
 
 void deploytest::testSetTargetDir() {
