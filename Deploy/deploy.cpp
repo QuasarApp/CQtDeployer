@@ -248,7 +248,10 @@ bool Deploy::createQConf() {
             "Qml2Imports= " + distro.getQmlOutDir(distro.getBinOutDir()) + "\n";
 
 
-    QString fname = targetDir + QDir::separator() + "qt.conf";
+    content.replace("//", "/");
+    content = QDir::toNativeSeparators(content);
+
+    QString fname = targetDir + distro.getBinOutDir() + "qt.conf";
 
     QFile F(fname);
     if (!F.open(QIODevice::WriteOnly)) {
