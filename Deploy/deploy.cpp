@@ -78,10 +78,10 @@ bool Deploy::initDir(const QString &path) {
 
 void Deploy::setTargetDir(const QString &target) {
 
-    if (target.size() && QFileInfo(target).isDir()) {
-        targetDir = QFileInfo(target).absoluteFilePath();
-    } else if (QuasarAppUtils::Params::isEndable("targetDir")) {
+    if (QuasarAppUtils::Params::isEndable("targetDir")) {
         targetDir = QuasarAppUtils::Params::getStrArg("targetDir");
+    } else if (target.size() && QFileInfo(target).isDir()) {
+        targetDir = QFileInfo(target).absoluteFilePath();
     } else {
         targetDir = QFileInfo(targets.begin().key()).absolutePath() + "/Distro";
         qInfo () << "flag targetDir not  used." << "use default target dir :" << targetDir;
