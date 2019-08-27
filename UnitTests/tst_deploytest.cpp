@@ -61,6 +61,7 @@ private slots:
     void testDeployLdLinux();
 
     void testQmlExtrct();
+    void testSetTargetDir();
 
     void mainTests();
     void testMSVC();
@@ -610,6 +611,28 @@ void deploytest::testQmlExtrct() {
         }
 
     }
+}
+
+void deploytest::testSetTargetDir() {
+
+    Deploy dep;
+
+    dep.setTargetDir();
+
+    QVERIFY(dep.targetDir == QFileInfo("./Distro").absoluteFilePath());
+    dep.setTargetDir("./ff");
+    QVERIFY(dep.targetDir == QFileInfo("./ff").absoluteFilePath());
+
+    int argc = 3;
+    const char * argv[] = {"", "-targetDir", "./Distro2"};
+
+    QuasarAppUtils::Params::parseParams(argc, argv);
+
+    dep.setTargetDir();
+    QVERIFY(dep.targetDir == QFileInfo("./Distro2").absoluteFilePath());
+    dep.setTargetDir("./ff");
+    QVERIFY(dep.targetDir == QFileInfo("./Distro2").absoluteFilePath());
+
 }
 
 void deploytest::mainTests() {
