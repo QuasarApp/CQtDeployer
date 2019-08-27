@@ -4,7 +4,6 @@
 
 #include "igetlibinfo.h"
 
-
 class ELF : public IGetLibInfo
 {
 

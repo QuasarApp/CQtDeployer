@@ -11,6 +11,7 @@
 #include <deploy.h>
 #include <dependenciesscanner.h>
 #include <qml.h>
+#include <QList>
 
 #include <QMap>
 #include <QByteArray>
@@ -61,6 +62,7 @@ private slots:
     void testDeployLdLinux();
 
     void testQmlExtrct();
+    void testDistroStruct();
     void testSetTargetDir();
 
     void mainTests();
@@ -611,6 +613,37 @@ void deploytest::testQmlExtrct() {
         }
 
     }
+}
+
+void deploytest::testDistroStruct() {
+    DistroStruct distro;
+
+    auto cases = QList<QPair<QString,QString>>{
+        {"", "/"},
+        {"/", "/"},
+        {"/res","/res/../"},
+        {"/res/","/res/../"},
+        {"/res/type","/res/type/../../"},
+        {"/res/type/","/res/type/../../"},
+        {"res/type","/res/type/../../"},
+        {"res/type/","/res/type/../../"},
+        {"res//type/","/res/type/../../"},
+        {"res////type/","/res/type/../../"},
+        {"//res///type/////","/res/type/../../"},
+        {"\\", "/"},
+        {"\\res","/res/../"},
+        {"\\res\\","/res/../"},
+        {"\\res\\type","/res/type/../../"},
+        {"\\res\\type\\","/res/type/../../"},
+        {"res\\type","/res/type/../../"},
+        {"res\\type\\","/res/type/../../"},
+        {"res\\\\type\\","/res/type/../../"},
+        {"res\\\\\\\\type\\","/res/type/../../"},
+        {"\\\\res\\\\\\type\\\\\\\\\\","/res/type/../../"},
+    };
+
+    for (auto &i: cases) {
+        QVERIFY(distro.getRelativePath(i.first) == i.second);
 }
 
 void deploytest::testSetTargetDir() {

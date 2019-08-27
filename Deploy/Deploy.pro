@@ -47,22 +47,24 @@ include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
 SOURCES += \
         deploy.cpp \
         deployutils.cpp \
-    pe.cpp \
-    igetlibinfo.cpp \
-    dependenciesscanner.cpp \
-    ../qtTools/src/shared/winutils/elfreader.cpp \
-    elf.cpp \
-    qml.cpp \
-    libinfo.cpp
+        distrostruct.cpp \
+        pe.cpp \
+        igetlibinfo.cpp \
+        dependenciesscanner.cpp \
+        ../qtTools/src/shared/winutils/elfreader.cpp \
+        elf.cpp \
+        qml.cpp \
+        libinfo.cpp
 
 HEADERS += \
         deploy.h \
-        deploy_global.h \ 
+        deploy_global.h \
+        distrostruct.h \
         deployutils.h \
-    pe.h \
-    igetlibinfo.h \
-    dependenciesscanner.h \
-    ../qtTools/src/shared/winutils/elfreader.h \
-    elf.h \
-    qml.h \
-    libinfo.h
+        pe.h \
+        igetlibinfo.h \
+        dependenciesscanner.h \
+        ../qtTools/src/shared/winutils/elfreader.h \
+        elf.h \
+        qml.h \
+        libinfo.h

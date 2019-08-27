@@ -13,6 +13,7 @@
 #include <QStringList>
 #include <dependenciesscanner.h>
 #include "deploy_global.h"
+#include "distrostruct.h"
 #include "qml.h"
 
 class DEPLOYSHARED_EXPORT Deploy {
@@ -20,6 +21,7 @@ class DEPLOYSHARED_EXPORT Deploy {
     bool deployQml = false;
     int depchLimit = 0;
     QStringList deployedFiles;
+    DistroStruct distro;
 
     QSettings settings;
     QString externQmlScaner = "";

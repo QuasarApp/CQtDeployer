@@ -43,12 +43,17 @@ Key differences of this program:
 |  -libDir [list,params]      | Sets additional paths for extra libs of an app.                 |
 |                             | For example -libDir ~/myLib,~/newLibs                           |
 |  -extraPlugin [list,params] | Sets an additional path to extraPlugin of an app                |
-|  -recursiveDepth [params]   | Sets the Depth of recursive search of libs (default 0)      |
+|  -recursiveDepth [params]   | Sets the Depth of recursive search of libs (default 0)          |
 |  -targetDir [params]        | Sets target directory(by default it is the path to the first deployable file)|
 |  noStrip                    | Skips strip step                                                |
 |  noTranslations             | Skips the translations files.                                   |
 |  qmlExtern                  | Use qml external scanner (qmlimportscaner)                      |
 |                             | It doesn't work without qmake and inside a snap package         |
+|  -qmlOut [params]           | Sets path to qml out directory                                  |
+|  -libOut [params]           | Sets path to libraries out directory                            |
+|  -trOut [params]            | Sets path to translations out directory                         |
+|  -pluginOut [params]        | Sets path to plugins out directory                              |
+|  -binOut [params]           | Sets path to binary out directory                               |
 |  -verbose [0-3]             | Shows debug log                                                 |
 |   v / version               | Shows compiled version                                          |
 
@@ -126,6 +131,11 @@ Qt CQtDeployer - это приложением для извлечения вс�
 |  noTranslations             | Пропускает файлы переводов                                |
 |  qmlExtern                  | Использует внешний сканер qml (qmlimportscaner)         |
 |                             | не работает без qmake и в snap                            |
+|  -qmlOut [params]           | Установит путь к папке с qml                                  |
+|  -libOut [params]           | Установит путь к папке с зависимостями                            |
+|  -trOut [params]            | Установит путь к папке с файламми переводов                         |
+|  -pluginOut [params]        | Установит путь к папке с плагинами                               |
+|  -binOut [params]           | Установит путь к папке с исполняемыми файлами                               |
 |  -verbose [0-3]             | Показывает дебаг лога                                          |
 |  v / version                | Показывает версию приложения                                          |
 
