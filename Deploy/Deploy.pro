@@ -19,7 +19,7 @@ TEMPLATE = lib
 
 DEFINES += DEPLOY_LIBRARY
 
-VERSION = 1.2.3.2
+VERSION = 1.3.0.0
 
 DEFINES += APP_VERSION='\\"$$VERSION\\"'
 
@@ -47,22 +47,24 @@ include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
 SOURCES += \
         deploy.cpp \
         deployutils.cpp \
-    pe.cpp \
-    igetlibinfo.cpp \
-    dependenciesscanner.cpp \
-    ../qtTools/src/shared/winutils/elfreader.cpp \
-    elf.cpp \
-    qml.cpp \
-    libinfo.cpp
+        distrostruct.cpp \
+        pe.cpp \
+        igetlibinfo.cpp \
+        dependenciesscanner.cpp \
+        ../qtTools/src/shared/winutils/elfreader.cpp \
+        elf.cpp \
+        qml.cpp \
+        libinfo.cpp
 
 HEADERS += \
         deploy.h \
-        deploy_global.h \ 
+        deploy_global.h \
+        distrostruct.h \
         deployutils.h \
-    pe.h \
-    igetlibinfo.h \
-    dependenciesscanner.h \
-    ../qtTools/src/shared/winutils/elfreader.h \
-    elf.h \
-    qml.h \
-    libinfo.h
+        pe.h \
+        igetlibinfo.h \
+        dependenciesscanner.h \
+        ../qtTools/src/shared/winutils/elfreader.h \
+        elf.h \
+        qml.h \
+        libinfo.h

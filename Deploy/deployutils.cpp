@@ -149,6 +149,11 @@ void DeployUtils::help() {
     { "   noTranslations           : Skips the translations files." },
     { "   qmlExtern                : Use the qml external scanner (qmlimportscaner)" },
     { "                            | It doesn't work without qmake and inside a snap package" },
+    { "   -qmlOut [params]         : Sets path to qml out directory" },
+    { "   -libOut [params]         : Sets path to libraries out directory" },
+    { "   -trOut [params]          : Sets path to translations out directory" },
+    { "   -pluginOut [params]      : Sets path to plugins out directory" },
+    { "   -binOut [params]         : Sets path to binary out directory" },
     { "   v / version              : Shows compiled version" },
     { "   verbose [1-3]            : Shows debug log" },
 
