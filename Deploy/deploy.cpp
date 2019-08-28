@@ -112,10 +112,10 @@ bool Deploy::createRunScriptWindows(const QString &target) {
     QString content =
             "@echo off \n"
             "SET BASE_DIR=%~dp0 \n"
-            "SET PATH = %PATH%;%BASE_DIR%" + distro.getLibOutDir(); + "\n"
-            "%BASE_DIR%\\" + distro.getBinOutDir() + "%1 %* \n";
+            "SET PATH = %PATH%;%BASE_DIR%" + distro.getLibOutDir() + "\n"
+            "%BASE_DIR%\\" + distro.getBinOutDir() + "%0 %1 \n";
 
-    content = content.arg(QFileInfo(target).fileName());
+    content = content.arg(QFileInfo(target).fileName()).arg("%*");
     content = QDir::toNativeSeparators(content);
 
     QString fname = targetDir + QDir::separator() + QFileInfo(target).baseName()+ ".bat";
@@ -287,7 +287,7 @@ bool Deploy::createQConf() {
 
     QString content =
             "[Paths]\n"
-            "Prefix= ./" + distro.getRootDir(distro.getBinOutDir()) + "\n"
+            "Prefix= ./\n"
             "Libraries= ." + distro.getLibOutDir(distro.getBinOutDir()) + "\n"
             "Plugins= ." + distro.getPluginsOutDir(distro.getBinOutDir()) + "\n"
             "Imports= ." + distro.getQmlOutDir(distro.getBinOutDir()) + "\n"

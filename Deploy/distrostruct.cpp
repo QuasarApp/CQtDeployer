@@ -1,8 +1,6 @@
 #include "distrostruct.h"
 #include <quasarapp.h>
 
-#include <QRegExp>
-
 //#
 //# Copyright (C) 2018-2019 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
@@ -15,7 +13,7 @@ QString DistroStruct::getLibOutDir(const QString &basePath) const {
 }
 
 void DistroStruct::setLibOutDir(const QString &value) {
-    libOutDir = fixPath(value);
+    libOutDir = toFullPath(value);
 }
 
 QString DistroStruct::getBinOutDir(const QString &basePath) const {
@@ -23,7 +21,7 @@ QString DistroStruct::getBinOutDir(const QString &basePath) const {
 }
 
 void DistroStruct::setBinOutDir(const QString &value) {
-    binOutDir = fixPath(value);
+    binOutDir = toFullPath(value);
 }
 
 QString DistroStruct::getQmlOutDir(const QString &basePath) const {
@@ -31,7 +29,7 @@ QString DistroStruct::getQmlOutDir(const QString &basePath) const {
 }
 
 void DistroStruct::setQmlOutDir(const QString &value) {
-    qmlOutDir = fixPath(value);
+    qmlOutDir = toFullPath(value);
 }
 
 QString DistroStruct::getTrOutDir(const QString &basePath) const {
@@ -39,7 +37,7 @@ QString DistroStruct::getTrOutDir(const QString &basePath) const {
 }
 
 void DistroStruct::setTrOutDir(const QString &value) {
-    trOutDir = fixPath(value);
+    trOutDir = toFullPath(value);
 }
 
 QString DistroStruct::getResOutDir(const QString &basePath) const {
@@ -47,7 +45,7 @@ QString DistroStruct::getResOutDir(const QString &basePath) const {
 }
 
 void DistroStruct::setResOutDir(const QString &value) {
-    resOutDir = fixPath(value);
+    resOutDir = toFullPath(value);
 }
 
 QString DistroStruct::getPluginsOutDir(const QString &basePath) const {
@@ -55,15 +53,14 @@ QString DistroStruct::getPluginsOutDir(const QString &basePath) const {
 }
 
 void DistroStruct::setPluginsOutDir(const QString &value) {
-    pluginsOutDir = fixPath(value);
+    pluginsOutDir = toFullPath(value);
 }
 
 QString DistroStruct::getRootDir(const QString &basePath) const {
     return getRelativePath(basePath);
 }
 
-QString DistroStruct::getRelativePath(QString path) const {
-
+QString DistroStruct::toFullPath(QString path) const {
     path.replace('\\', '/');
 
     int index = -1;
@@ -79,6 +76,32 @@ QString DistroStruct::getRelativePath(QString path) const {
         path.insert(path.size(), '/');
     }
 
+    return path;
+}
+
+QString DistroStruct::stripPath(QString path) const {
+    path.replace('\\', '/');
+
+    int index = -1;
+    do {
+        path.replace("//", "/");
+    } while ((index = path.indexOf("//")) >= 0);
+
+    if (path.left(1) == '/') {
+        path = path.right(path.size() - 1);
+    }
+
+    if (path.right(1) != '/') {
+        path = path.left(path.size() - 1);
+    }
+
+    return path;
+}
+
+QString DistroStruct::getRelativePath(QString path) const {
+
+    path = toFullPath(path);
+
     int left = path.indexOf('/', 0) + 1;
     int righy = path.indexOf('/', left);
 
@@ -89,14 +112,6 @@ QString DistroStruct::getRelativePath(QString path) const {
         left = left + 3;
         righy = path.indexOf('/', left);
     }
-
-    return path;
-}
-
-QString DistroStruct::fixPath(const QString &path) const{
-
-    if (path.right(1) != '/')
-        return path + '/';
 
     return path;
 }
