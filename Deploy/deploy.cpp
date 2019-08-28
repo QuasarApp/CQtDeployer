@@ -1099,6 +1099,10 @@ void Deploy::clear(bool force) {
 
         auto index = it - 1;
 
+        if (!index.value().exists()) {
+            continue;
+        }
+
         if (index.value().isFile()) {
             if (removeFile(index.value())) {
                 qInfo() << "Remove " << index.value().absoluteFilePath() << " becouse it is deployed file";
