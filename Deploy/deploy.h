@@ -30,7 +30,6 @@ class DEPLOYSHARED_EXPORT Deploy {
     /**
      * @brief targets
      * key - path
-     * value - create wrapper
      */
     QMap<QString, bool> targets;
     QString targetDir = "";
@@ -105,6 +104,9 @@ class DEPLOYSHARED_EXPORT Deploy {
 
     bool initDir(const QString &path);
     bool deployMSVC();
+
+    bool createRunScriptWindows(const QString &target);
+    bool createRunScriptLinux(const QString &target);
 
 
 public:

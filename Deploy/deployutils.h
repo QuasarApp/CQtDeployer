@@ -52,6 +52,7 @@ enum class RunMode: int {
 };
 
 class Deploy;
+class QFileInfo;
 
 class DEPLOYSHARED_EXPORT DeployUtils
 {
@@ -140,6 +141,7 @@ public:
     static QString getAppVersion();
     static QString getQtVersion();
     static void printVersion();
+    static bool isExecutable(const QFileInfo &file);
 
 };
 

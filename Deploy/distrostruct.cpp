@@ -79,10 +79,15 @@ QString DistroStruct::getRelativePath(QString path) const {
         path.insert(path.size(), '/');
     }
 
-    int count = path.count('/') - 1;
+    int left = path.indexOf('/', 0) + 1;
+    int righy = path.indexOf('/', left);
 
-    for (int i = 0; i < count; ++i) {
-        path += "../";
+    while (righy > 0) {
+
+        path.replace(left, righy - left, "..");
+
+        left = left + 3;
+        righy = path.indexOf('/', left);
     }
 
     return path;

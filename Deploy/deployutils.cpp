@@ -355,6 +355,11 @@ void DeployUtils::printVersion() {
     qInfo() << "Qt: " +  getQtVersion();
 }
 
+bool DeployUtils::isExecutable(const QFileInfo& file) {
+    auto sufix = file.completeSuffix();
+    return sufix.contains("exe", Qt::CaseInsensitive) || sufix.contains("run", Qt::CaseInsensitive) || sufix.isEmpty();
+}
+
 MSVCVersion DeployUtils::getMSVC(const QString &_qmake) {
     QFileInfo qmake(_qmake);
 
