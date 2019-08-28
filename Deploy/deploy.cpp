@@ -112,8 +112,8 @@ bool Deploy::createRunScriptWindows(const QString &target) {
     QString content =
             "@echo off \n"
             "SET BASE_DIR=%~dp0 \n"
-            "SET PATH = %PATH%;%BASE_DIR%" + distro.getLibOutDir() + "\n"
-            "%BASE_DIR%\\" + distro.getBinOutDir() + "%0 %1 \n";
+            "SET PATH=\"%BASE_DIR%" + distro.getLibOutDir() + ";%PATH%\"\n"
+            "start \"\" \"%BASE_DIR%" + distro.getBinOutDir() + "%0\" %1 \n";
 
     content = content.arg(QFileInfo(target).fileName()).arg("%*");
     content = QDir::toNativeSeparators(content);
