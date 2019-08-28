@@ -103,6 +103,89 @@ bool Deploy::deployMSVC() {
     return copyFile(msvcInstaller, targetDir);
 }
 
+bool Deploy::createRunScriptWindows(const QString &target) {
+
+    if (distro.getBinOutDir() == distro.getLibOutDir() ) {
+        return true;
+    }
+
+    QString content =
+            "@echo off \n"
+            "SET BASE_DIR=%~dp0\n"
+            "SET PATH=%BASE_DIR%" + distro.getLibOutDir() + ";%PATH%\n"
+            "start \"\" \"%BASE_DIR%" + distro.getBinOutDir() + "%0\" %1 \n";
+
+    content = content.arg(QFileInfo(target).fileName()).arg("%*");
+    content = QDir::toNativeSeparators(content);
+
+    QString fname = targetDir + QDir::separator() + QFileInfo(target).baseName()+ ".bat";
+
+    QFile F(fname);
+    if (!F.open(QIODevice::WriteOnly)) {
+        return false;
+    }
+
+    F.write(content.toUtf8());
+    F.flush();
+    F.close();
+
+    addToDeployed(fname);
+
+    return F.setPermissions(QFileDevice::ExeOther | QFileDevice::WriteOther |
+                            QFileDevice::ReadOther | QFileDevice::ExeUser |
+                            QFileDevice::WriteUser | QFileDevice::ReadUser |
+                            QFileDevice::ExeOwner | QFileDevice::WriteOwner |
+                            QFileDevice::ReadOwner);
+}
+
+bool Deploy::createRunScriptLinux(const QString &target) {
+    QString content =
+            "#!/bin/sh\n"
+            "BASE_DIR=$(dirname \"$(readlink -f \"$0\")\")\n"
+            "export "
+            "LD_LIBRARY_PATH=\"$BASE_DIR\"" + distro.getLibOutDir() + ":\"$BASE_DIR\":$LD_LIBRARY_PATH\n"
+            "export QML_IMPORT_PATH=\"$BASE_DIR\"" + distro.getQmlOutDir() + ":QML_IMPORT_PATH\n"
+            "export QML2_IMPORT_PATH=\"$BASE_DIR\"" + distro.getQmlOutDir() + ":QML2_IMPORT_PATH\n"
+            "export QT_PLUGIN_PATH=\"$BASE_DIR\"" + distro.getPluginsOutDir() + ":QT_PLUGIN_PATH\n"
+            "export QTDIR=\"$BASE_DIR\"\n"
+            "export "
+            "QT_QPA_PLATFORM_PLUGIN_PATH=\"$BASE_DIR\"" + distro.getPluginsOutDir() +
+            "/platforms:QT_QPA_PLATFORM_PLUGIN_PATH\n"
+            "%2"
+            "\"$BASE_DIR\"" + distro.getBinOutDir() + "%1 \"$@\"";
+
+    content = content.arg(QFileInfo(target).fileName());
+    int ld_index = find("ld-linux", deployedFiles);
+
+    if (ld_index >= 0 && QuasarAppUtils::Params::isEndable("deploySystem") &&
+            !QuasarAppUtils::Params::isEndable("noLibc")) {
+
+        content = content.arg(QString("\nexport LD_PRELOAD=\"$BASE_DIR\"" + distro.getLibOutDir() + "%0\n").
+            arg(QFileInfo(deployedFiles[ld_index]).fileName()));
+    } else {
+        content = content.arg("");
+    }
+
+    QString fname = targetDir + QDir::separator() + QFileInfo(target).baseName()+ ".sh";
+
+    QFile F(fname);
+    if (!F.open(QIODevice::WriteOnly)) {
+        return false;
+    }
+
+    F.write(content.toUtf8());
+    F.flush();
+    F.close();
+
+    addToDeployed(fname);
+
+    return F.setPermissions(QFileDevice::ExeOther | QFileDevice::WriteOther |
+                            QFileDevice::ReadOther | QFileDevice::ExeUser |
+                            QFileDevice::WriteUser | QFileDevice::ReadUser |
+                            QFileDevice::ExeOwner | QFileDevice::WriteOwner |
+                            QFileDevice::ReadOwner);
+}
+
 bool Deploy::setTargets(const QStringList &value) {
 
     bool isfillList = false;
@@ -117,7 +200,7 @@ bool Deploy::setTargets(const QStringList &value) {
 
             auto sufix = targetInfo.completeSuffix();
 
-            targets.insert(QDir::fromNativeSeparators(i), sufix.isEmpty());
+            targets.insert(QDir::fromNativeSeparators(i), DeployUtils::isExecutable(targetInfo));
             isfillList = true;
         }
         else if (targetInfo.isDir()) {
@@ -182,7 +265,7 @@ bool Deploy::setBinDir(const QString &dir, bool recursive) {
         }
 
         result = true;
-        targets.insert(QDir::fromNativeSeparators(file.absoluteFilePath()), sufix.isEmpty());
+        targets.insert(QDir::fromNativeSeparators(file.absoluteFilePath()), DeployUtils::isExecutable(file));
     }
 
     return result;
@@ -190,65 +273,31 @@ bool Deploy::setBinDir(const QString &dir, bool recursive) {
 
 bool Deploy::createRunScript(const QString &target) {
 
-    QString content =
-            "#!/bin/sh\n"
-            "BASE_DIR=$(dirname \"$(readlink -f \"$0\")\")\n"
-            "export "
-            "LD_LIBRARY_PATH=\"$BASE_DIR\"" + distro.getLibOutDir() + ":\"$BASE_DIR\":$LD_LIBRARY_PATH\n"
-            "export QML_IMPORT_PATH=\"$BASE_DIR\"" + distro.getQmlOutDir() + ":QML_IMPORT_PATH\n"
-            "export QML2_IMPORT_PATH=\"$BASE_DIR\"" + distro.getQmlOutDir() + ":QML2_IMPORT_PATH\n"
-            "export QT_PLUGIN_PATH=\"$BASE_DIR\"" + distro.getPluginsOutDir() + ":QT_PLUGIN_PATH\n"
-            "export QTDIR=\"$BASE_DIR\"\n"
-            "export "
-            "QT_QPA_PLATFORM_PLUGIN_PATH=\"$BASE_DIR\"" + distro.getPluginsOutDir() +
-            "/platforms:QT_QPA_PLATFORM_PLUGIN_PATH\n"
-            "%2"
-            "\"$BASE_DIR\"" + distro.getBinOutDir() + "%1 \"$@\"";
+    QFileInfo info(target);
+    auto sufix = info.completeSuffix();
 
-    content = content.arg(QFileInfo(target).fileName());
-    int ld_index = find("ld-linux", deployedFiles);
-
-    if (ld_index >= 0 && QuasarAppUtils::Params::isEndable("deploySystem") &&
-            !QuasarAppUtils::Params::isEndable("noLibc")) {
-
-        content = content.arg(QString("\nexport LD_PRELOAD=\"$BASE_DIR\"" + distro.getLibOutDir() + "%0\n").
-            arg(QFileInfo(deployedFiles[ld_index]).fileName()));
-    } else {
-        content = content.arg("");
+    if (sufix.contains("exe", Qt::CaseSensitive)) {
+        return createRunScriptWindows(target);
     }
 
-    QString fname = targetDir + QDir::separator() + QFileInfo(target).baseName()+ ".sh";
-
-    QFile F(fname);
-    if (!F.open(QIODevice::WriteOnly)) {
-        return false;
-    }
-
-    F.write(content.toUtf8());
-    F.flush();
-    F.close();
-
-    addToDeployed(fname);
-
-    return F.setPermissions(QFileDevice::ExeOther | QFileDevice::WriteOther |
-                            QFileDevice::ReadOther | QFileDevice::ExeUser |
-                            QFileDevice::WriteUser | QFileDevice::ReadUser |
-                            QFileDevice::ExeOwner | QFileDevice::WriteOwner |
-                            QFileDevice::ReadOwner);
+    return createRunScriptLinux(target);
 }
 
 bool Deploy::createQConf() {
 
     QString content =
             "[Paths]\n"
-            "Prefix= " + distro.getRootDir(distro.getBinOutDir()) + "\n"
-            "Libraries= " + distro.getLibOutDir(distro.getBinOutDir()) + "\n"
-            "Plugins= " + distro.getPluginsOutDir(distro.getBinOutDir()) + "\n"
-            "Imports= " + distro.getQmlOutDir(distro.getBinOutDir()) + "\n"
-            "Qml2Imports= " + distro.getQmlOutDir(distro.getBinOutDir()) + "\n";
+            "Prefix= ./\n"
+            "Libraries= ." + distro.getLibOutDir(distro.getBinOutDir()) + "\n"
+            "Plugins= ." + distro.getPluginsOutDir(distro.getBinOutDir()) + "\n"
+            "Imports= ." + distro.getQmlOutDir(distro.getBinOutDir()) + "\n"
+            "Qml2Imports= ." + distro.getQmlOutDir(distro.getBinOutDir()) + "\n";
 
 
-    QString fname = targetDir + QDir::separator() + "qt.conf";
+    content.replace("//", "/");
+    content = QDir::fromNativeSeparators(content);
+
+    QString fname = targetDir + distro.getBinOutDir() + "qt.conf";
 
     QFile F(fname);
     if (!F.open(QIODevice::WriteOnly)) {
@@ -1049,6 +1098,10 @@ void Deploy::clear(bool force) {
     for (auto it = sortedOldData.end(); it != sortedOldData.begin(); --it) {
 
         auto index = it - 1;
+
+        if (!index.value().exists()) {
+            continue;
+        }
 
         if (index.value().isFile()) {
             if (removeFile(index.value())) {
