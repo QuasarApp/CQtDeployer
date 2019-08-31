@@ -307,9 +307,11 @@ void Deploy::deploy() {
         extract(i.key());
     }
 
-    PluginsParser pluginsParser
+    PluginsParser pluginsParser(&scaner);
 
-    copyPlugins();
+    QStringList plugins;
+    pluginsParser.scan(DeployUtils::qtDir + "plugins", plugins);
+    copyPlugins(plugins);
 
     if (deployQml && !extractQml()) {
         qCritical() << "qml not extacted!";
