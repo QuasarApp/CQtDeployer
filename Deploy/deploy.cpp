@@ -7,6 +7,7 @@
 
 #include "deploy.h"
 #include "deployutils.h"
+#include "pluginsparser.h"
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
@@ -306,7 +307,9 @@ void Deploy::deploy() {
         extract(i.key());
     }
 
-    copyPlugins(neededPlugins);
+    PluginsParser pluginsParser
+
+    copyPlugins();
 
     if (deployQml && !extractQml()) {
         qCritical() << "qml not extacted!";
@@ -540,7 +543,7 @@ bool Deploy::moveFile(const QString &file, const QString &target, QStringList *m
     return fileActionPrivate(file, target, masks, true);
 }
 
-void Deploy::extract(const QString &file, bool isExtractPlugins) {
+void Deploy::extract(const QString &file) {
     QFileInfo info(file);
 
     auto sufix = info.completeSuffix();
@@ -549,7 +552,7 @@ void Deploy::extract(const QString &file, bool isExtractPlugins) {
             sufix.contains("exe", Qt::CaseSensitive) ||
             sufix.isEmpty() || sufix.contains("so", Qt::CaseSensitive)) {
 
-        extractLib(file, isExtractPlugins);
+        extractLib(file);
     } else {
         QuasarAppUtils::Params::verboseLog("file with sufix " + sufix + " not supported!");
     }
@@ -584,41 +587,6 @@ QString Deploy::recursiveInvairement(int depch, QDir &dir) {
     return res;
 }
 
-void Deploy::extractPlugins(const QString &lib) {
-
-    qInfo() << "extrac plugin for " << lib;
-
-    if ((lib.contains("Qt5Gui")) && !neededPlugins.contains("imageformats")) {
-        neededPlugins << "imageformats"
-                      << "iconengines"
-                      << "xcbglintegrations"
-                      << "platforms";
-    } else if (lib.contains("Qt5Sql") &&
-               !neededPlugins.contains("sqldrivers")) {
-        neededPlugins << "sqldrivers";
-    } else if (lib.contains("Qt5Gamepad") &&
-               !neededPlugins.contains("gamepads")) {
-        neededPlugins << "gamepads";
-    } else if (lib.contains("Qt5PrintSupport") &&
-               !neededPlugins.contains("printsupport")) {
-        neededPlugins << "printsupport";
-    } else if (lib.contains("Qt5Sensors") &&
-               !neededPlugins.contains("sensors")) {
-        neededPlugins << "sensors"
-                      << "sensorgestures";
-    } else if (lib.contains("Qt5Positioning") &&
-               !neededPlugins.contains("geoservices")) {
-        neededPlugins << "geoservices"
-                      << "position"
-                      << "geometryloaders";
-    } else if (lib.contains("Qt5Multimedia") &&
-               !neededPlugins.contains("audio")) {
-        neededPlugins << "audio"
-                      << "mediaservice"
-                      << "playlistformats";
-    }
-}
-
 bool Deploy::copyPlugin(const QString &plugin) {
     QDir dir(DeployUtils::qtDir);
     if (!dir.cd("plugins")) {
@@ -637,7 +605,7 @@ bool Deploy::copyPlugin(const QString &plugin) {
     }
 
     for (auto item : listItems) {
-        extract(item, false);
+        extract(item);
     }
 
     return true;
@@ -764,7 +732,7 @@ QString Deploy::filterQmlPath(const QString &path) {
     return "";
 }
 
-void Deploy::extractLib(const QString &file, bool isExtractPlugins) {
+void Deploy::extractLib(const QString &file) {
     qInfo() << "extract lib :" << file;
 
     auto data = scaner.scan(file);
@@ -785,9 +753,6 @@ void Deploy::extractLib(const QString &file, bool isExtractPlugins) {
 
         if (line.getPriority() != LibPriority::SystemLib && !neadedLibs.contains(line.fullPath())) {
             neadedLibs << line.fullPath();
-            if (isExtractPlugins) {
-                extractPlugins(line.fullPath());
-            }
         } else if (QuasarAppUtils::Params::isEndable("deploySystem") &&
                     line.getPriority() == LibPriority::SystemLib &&
                     !systemLibs.contains(line.fullPath())) {
@@ -966,7 +931,7 @@ bool Deploy::extractQmlAll() {
     }
 
     for (auto item : listItems) {
-        extract(item, false);
+        extract(item);
     }
 
     return true;
@@ -995,6 +960,7 @@ bool Deploy::extractQmlFromSource(const QString& sourceDir) {
 
     if (QuasarAppUtils::Params::isEndable("qmlExtern")) {
 
+        ///  @todo remove in verison 1.3
         qInfo() << "use extern qml scaner!";
 
         plugins = extractImportsFromDir(info.absoluteFilePath());
@@ -1016,7 +982,7 @@ bool Deploy::extractQmlFromSource(const QString& sourceDir) {
     }
 
     for (auto item : listItems) {
-        extract(item, false);
+        extract(item);
     }
 
     return true;

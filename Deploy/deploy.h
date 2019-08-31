@@ -39,7 +39,6 @@ class DEPLOYSHARED_EXPORT Deploy {
 
     QStringList neadedLibs;
     QStringList systemLibs;
-    QStringList neededPlugins;
     QStringList ignoreList;
     QStringList ignoreEnvList;
     QStringList extraPlugins;
@@ -70,9 +69,8 @@ class DEPLOYSHARED_EXPORT Deploy {
 
     bool moveFile(const QString &file, const QString &target,
                   QStringList *mask = nullptr);
-    void extract(const QString &file, bool isExtractPlugins = true);
+    void extract(const QString &file);
     QString recursiveInvairement(int depch, QDir &dir);
-    void extractPlugins(const QString &lib);
     bool copyPlugin(const QString &plugin);
     void copyPlugins(const QStringList &list);
     bool copyTranslations(QStringList list);
@@ -93,7 +91,7 @@ class DEPLOYSHARED_EXPORT Deploy {
     bool extractQmlAll();
     bool extractQmlFromSource(const QString &sourceDir);
     QString filterQmlPath(const QString &path);
-    void extractLib(const QString & file, bool isExtractPlugins);
+    void extractLib(const QString & file);
 
     void addEnv(const QString& dir);
     QString concatEnv() const;
