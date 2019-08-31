@@ -13,7 +13,7 @@ class PE : public IGetLibInfo {
 
 private:
 
-    bool getDep(peparse::parsed_pe_internal *, LibInfo &res);
+    bool getDep(peparse::parsed_pe_internal *, LibInfo &res) const;
 
 public:
 
@@ -25,7 +25,7 @@ public:
     };
     PE();
 
-    bool getLibInfo(const QString& lib, LibInfo& info) override;
+    bool getLibInfo(const QString& lib, LibInfo& info) const override;
 
     ~PE() override;
 

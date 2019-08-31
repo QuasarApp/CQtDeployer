@@ -73,6 +73,31 @@ QtModuleEntry DeployUtils::qtModuleEntries[] = {
     { QtWebViewModule, "webview", "Qt5WebView", nullptr }
 };
 
+DeployUtils::QtModule DeployUtils::getQtModule(const QString& path) {
+    auto priority = DeployUtils::getLibPriority(path);
+
+    if (priority != QtLib) {
+        return DeployUtils::QtModule::NONE;
+    }
+
+    int modulesCount = sizeof (qtModuleEntries) / sizeof (QtModuleEntry);
+
+    auto lIbName = QFileInfo(path).fileName();
+
+    for (int i = 0; i < modulesCount; ++i) {
+        if (lIbName.contains(qtModuleEntries[i].libraryName)) {
+            return static_cast<DeployUtils::QtModule>(qtModuleEntries[i].module);
+        }
+    }
+
+    return DeployUtils::QtModule::NONE;
+}
+
+void DeployUtils::addQtModule(DeployUtils::QtModule &module, const QString &path) {
+    module = static_cast<DeployUtils::QtModule>(
+                static_cast<quint64>(module) | static_cast<quint64>(getQtModule(path)));
+}
+
 LibPriority DeployUtils::getLibPriority(const QString &lib) {
 
     if (!QFileInfo(lib).isFile()) {

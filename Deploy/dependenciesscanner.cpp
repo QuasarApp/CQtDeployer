@@ -16,6 +16,12 @@ DependenciesScanner::DependenciesScanner() {}
 
 void DependenciesScanner::clearScaned() {
     _scanedLibs.clear();
+    _qtModules = DeployUtils::QtModule::NONE;
+}
+
+DeployUtils::QtModule DependenciesScanner::getQtModules() const
+{
+    return _qtModules;
 }
 
 PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
@@ -35,7 +41,7 @@ PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
 }
 
 QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
-        const QString &libName) {
+        const QString &libName) const {
 
     auto values = _EnvLibs.values(libName.toUpper());
     QMultiMap<LibPriority, LibInfo> res;
@@ -58,7 +64,7 @@ QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
     return res;
 }
 
-bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) {
+bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) const {
 
     info.clear();
     auto scaner = getScaner(file);
@@ -74,8 +80,7 @@ bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) {
     }
 }
 
-void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res)
-{
+void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res) {
     QuasarAppUtils::Params::verboseLog("get recursive dependencies of " + lib.fullPath(),
                                        QuasarAppUtils::Info);
 
@@ -119,6 +124,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res)
 
                 dep->allDep = listDep;
                 _scanedLibs.insert(dep->fullPath(), *dep);
+                DeployUtils::addQtModule(_qtModules, dep->fullPath());
 
                 res.unite(listDep);
             } else {

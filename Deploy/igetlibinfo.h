@@ -8,7 +8,7 @@ class IGetLibInfo
 {
 public:
     IGetLibInfo() = default;
-    virtual bool getLibInfo(const QString& lib, LibInfo& info) = 0;
+    virtual bool getLibInfo(const QString& lib, LibInfo& info) const = 0;
     virtual ~IGetLibInfo() = default;
 
 };

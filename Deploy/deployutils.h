@@ -66,6 +66,7 @@ private:
 public:
     enum QtModule : quint64
     {
+        NONE                      = 0x0000000000000000,
         QtBluetoothModule         = 0x0000000000000001,
         QtConcurrentModule        = 0x0000000000000002,
         QtCoreModule              = 0x0000000000000004,
@@ -132,6 +133,9 @@ public:
     static bool isQtLib(const QString &lib);
     static bool isExtraLib(const QString &lib);
     static LibPriority getLibPriority(const QString &lib);
+    static DeployUtils::QtModule getQtModule(const QString& path);
+    static void addQtModule(DeployUtils::QtModule& module, const QString& path);
+
     static void verboseLog(const QString &str);
     static RunMode getMode();
     static void help();
