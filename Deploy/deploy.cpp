@@ -593,7 +593,7 @@ bool Deploy::copyPlugin(const QString &plugin) {
 
     QStringList listItems;
 
-    if (!copyFolder(plugin, targetDir + "/plugins/" + plugin,
+    if (!copyFolder(plugin, targetDir + "/plugins/" + QFileInfo(plugin).fileName(),
                     QStringList() << ".so.debug" << "d.dll", &listItems)) {
         return false;
     }
