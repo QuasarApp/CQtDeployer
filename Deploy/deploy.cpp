@@ -310,7 +310,7 @@ void Deploy::deploy() {
     PluginsParser pluginsParser(&scaner);
 
     QStringList plugins;
-    pluginsParser.scan(DeployUtils::qtDir + "plugins", plugins);
+    pluginsParser.scan(DeployUtils::qtDir + "/plugins", plugins);
     copyPlugins(plugins);
 
     if (deployQml && !extractQml()) {
@@ -590,18 +590,10 @@ QString Deploy::recursiveInvairement(int depch, QDir &dir) {
 }
 
 bool Deploy::copyPlugin(const QString &plugin) {
-    QDir dir(DeployUtils::qtDir);
-    if (!dir.cd("plugins")) {
-        return false;
-    }
-
-    if (!dir.cd(plugin)) {
-        return false;
-    }
 
     QStringList listItems;
 
-    if (!copyFolder(dir.absolutePath(), targetDir + "/plugins/" + plugin,
+    if (!copyFolder(plugin, targetDir + "/plugins/" + plugin,
                     QStringList() << ".so.debug" << "d.dll", &listItems)) {
         return false;
     }
