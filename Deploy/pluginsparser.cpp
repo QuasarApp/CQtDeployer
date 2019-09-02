@@ -38,7 +38,14 @@ static const PluginModuleMapping pluginModuleMappings[] =
     {"sceneparsers", DeployUtils::QtModule::Qt3DRendererModule},
     {"renderplugins", DeployUtils::QtModule::Qt3DRendererModule},
     {"geometryloaders", DeployUtils::QtModule::Qt3DRendererModule},
-    {"webview", DeployUtils::QtModule::QtWebViewModule}
+    {"webview", DeployUtils::QtModule::QtWebViewModule},
+    {"xcbglintegrations", DeployUtils::QtModule::QtGuiModule},
+    {"wayland-decoration-client", DeployUtils::QtModule::QtGuiModule},
+    {"wayland-graphics-integration-client", DeployUtils::QtModule::QtGuiModule},
+    {"wayland-graphics-integration-server", DeployUtils::QtModule::QtGuiModule},
+    {"wayland-shell-integration", DeployUtils::QtModule::QtGuiModule},
+
+
 };
 
 quint64 PluginsParser::qtModuleForPlugin(const QString &subDirName) {
