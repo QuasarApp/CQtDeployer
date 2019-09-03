@@ -1,7 +1,7 @@
 #ifndef IGETLIBINFO_H
 #define IGETLIBINFO_H
 
-#include "deployutils.h"
+#include "deploycore.h"
 #include "libinfo.h"
 
 class IGetLibInfo

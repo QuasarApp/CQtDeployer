@@ -6,7 +6,7 @@
  */
 
 #include "deploy.h"
-#include "deployutils.h"
+#include "deploycore.h"
 #include "pluginsparser.h"
 #include <QCoreApplication>
 #include <QDebug>
@@ -65,18 +65,6 @@ void Deploy::setQmake(const QString &value) {
     QuasarAppUtils::Params::verboseLog("translations = " + translationDir);
 }
 
-bool Deploy::initDir(const QString &path) {
-
-    if (!QFileInfo::exists(path)) {
-        addToDeployed(path);
-        if (!QDir().mkpath(path)) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 void Deploy::setTargetDir(const QString &target) {
 
     if (target.size() && QFileInfo(target).isDir()) {
@@ -92,7 +80,7 @@ void Deploy::setTargetDir(const QString &target) {
 bool Deploy::deployMSVC() {
     qInfo () << "try deploy msvc";
 
-    auto msvcInstaller = DeployUtils::getVCredist(qmake);
+    auto msvcInstaller = DeployCore::getVCredist(qmake);
 
     if (msvcInstaller.isEmpty()) {
         return false;
@@ -120,13 +108,13 @@ bool Deploy::setTargets(const QStringList &value) {
         }
         else if (targetInfo.isDir()) {
             if (!setBinDir(i)) {
-                DeployUtils::verboseLog(i + " du not contains executable binaries!");
+                DeployCore::verboseLog(i + " du not contains executable binaries!");
                 continue;
             }
             isfillList = true;
 
         } else {
-            DeployUtils::verboseLog(targetInfo.absoluteFilePath() + " not exits!");
+            DeployCore::verboseLog(targetInfo.absoluteFilePath() + " not exits!");
         }
     }
 
@@ -152,10 +140,10 @@ bool Deploy::setTargetsRecursive(const QString &dir) {
 bool Deploy::setBinDir(const QString &dir, bool recursive) {
     QDir d(dir);
     if (dir.isEmpty() || !d.exists()) {
-        DeployUtils::verboseLog(dir + " dir not exits!");
+        DeployCore::verboseLog(dir + " dir not exits!");
         return false;
     }
-    DeployUtils::verboseLog("setBinDir check path: " + dir);
+    DeployCore::verboseLog("setBinDir check path: " + dir);
     QFileInfoList list;
 
     if (recursive) {
@@ -310,7 +298,7 @@ void Deploy::deploy() {
     PluginsParser pluginsParser(&scaner);
 
     QStringList plugins;
-    pluginsParser.scan(DeployUtils::qtDir + "/plugins", plugins);
+    pluginsParser.scan(DeployCore::qtDir + "/plugins", plugins);
     copyPlugins(plugins);
 
     if (deployQml && !extractQml()) {
@@ -328,7 +316,7 @@ void Deploy::deploy() {
     }
 
     if (!QuasarAppUtils::Params::isEndable("noTranslations")) {
-        if (!copyTranslations(DeployUtils::extractTranslation(neadedLibs))) {
+        if (!copyTranslations(DeployCore::extractTranslation(neadedLibs))) {
             qWarning() << " copy TR ERROR";
         }
     }
@@ -357,14 +345,14 @@ void Deploy::deploy() {
     settings.setValue(targetDir, deployedFiles);
 }
 
-QString Deploy::getQtDir() const { return DeployUtils::qtDir; }
+QString Deploy::getQtDir() const { return DeployCore::qtDir; }
 
 void Deploy::setQtDir(const QString &value) {
-    DeployUtils::qtDir = QDir::fromNativeSeparators(value);
-    addEnv(DeployUtils::qtDir);
+    DeployCore::qtDir = QDir::fromNativeSeparators(value);
+    addEnv(DeployCore::qtDir);
 
-    addEnv(DeployUtils::qtDir + "/lib");
-    addEnv(DeployUtils::qtDir + "/bin");
+    addEnv(DeployCore::qtDir + "/lib");
+    addEnv(DeployCore::qtDir + "/bin");
 
 }
 
@@ -380,7 +368,7 @@ void Deploy::setExtraPath(const QStringList &value) {
             }
 
             dir.setPath(info.absoluteFilePath());
-            DeployUtils::extraPaths.push_back(
+            DeployCore::extraPaths.push_back(
                         QDir::fromNativeSeparators(info.absoluteFilePath()));
             addEnv(recursiveInvairement(0, dir));
         } else {
@@ -408,157 +396,6 @@ int Deploy::find(const QString &str, const QStringList &list) const {
             return i;
     }
     return -1;
-}
-
-bool Deploy::fileActionPrivate(const QString &file, const QString &target,
-                               QStringList *masks, bool isMove) {
-
-    auto info = QFileInfo(file);
-
-    bool copy = !masks;
-    if (masks) {
-        for (auto mask : *masks) {
-            if (info.absoluteFilePath().contains(mask)) {
-                copy = true;
-                break;
-            }
-        }
-    }
-
-    if (!copy) {
-        QuasarAppUtils::Params::verboseLog(((isMove)? "skip move :": "skip copy :" + file));
-        return false;
-    }
-
-    auto name = info.fileName();
-    info.setFile(target + QDir::separator() + name);
-
-    if (!initDir(info.absolutePath())) {
-        return false;
-    }
-
-    if (QFileInfo(file).absoluteFilePath() ==
-            QFileInfo(target + QDir::separator() + name).absoluteFilePath()) {
-        return true;
-    }
-
-    if (QuasarAppUtils::Params::isEndable("always-overwrite") &&
-            info.exists() && !removeFile( target + QDir::separator() + name)) {
-        return false;
-    }
-
-    qInfo() << ((isMove)? "move :": "copy :") << file;
-
-    QFile sourceFile(file);
-
-    if (!((isMove)?
-          sourceFile.rename(target + QDir::separator() + name):
-          sourceFile.copy(target + QDir::separator() + name))) {
-
-        QuasarAppUtils::Params::verboseLog("Qt Operation fail " + file + " >> " + target + QDir::separator() + name +
-                                           " Qt error: " + sourceFile.errorString(),
-                                           QuasarAppUtils::Warning);
-
-        std::ifstream  src(file.toStdString(),
-                           std::ios::binary);
-        std::ofstream  dst((target + QDir::separator() + name).toStdString(),
-                           std::ios::binary);
-
-        dst << src.rdbuf();
-
-        if (!QFileInfo::exists(target + QDir::separator() + name)) {
-            QuasarAppUtils::Params::verboseLog("std Operation fail file not copied. "
-                                               "Сheck if you have access to the target dir",
-                                               QuasarAppUtils::Error);
-            return false;
-
-        }
-    }
-
-    addToDeployed(target + QDir::separator() + name);
-    return true;
-}
-
-void Deploy::copyFiles(const QStringList &files) {
-    for (auto file : files) {
-        QFileInfo target(file);
-        auto targetPath = targetDir + QDir::separator() + "lib";
-        if (target.completeSuffix().contains("dll", Qt::CaseInsensitive) ||
-                target.completeSuffix().contains("exe", Qt::CaseInsensitive)) {
-
-            targetPath = targetDir;
-        }
-
-        if (!smartCopyFile(file, targetPath)) {
-            QuasarAppUtils::Params::verboseLog(file + " not copied");
-        }
-    }
-}
-
-bool Deploy::copyFile(const QString &file, const QString &target,
-                      QStringList *masks) {
-
-    return fileActionPrivate(file, target, masks, false);
-}
-
-bool Deploy::removeFile(const QFileInfo &file) {
-
-    if (!QFile::remove(file.absoluteFilePath())) {
-        QuasarAppUtils::Params::verboseLog("Qt Operation fail (remove file) " + file.absoluteFilePath(),
-                                           QuasarAppUtils::Warning);
-
-        if (remove(file.absoluteFilePath().toLatin1())) {
-            QuasarAppUtils::Params::verboseLog("std Operation fail file not removed." + file.absoluteFilePath(),
-                                               QuasarAppUtils::Error);
-            return false;
-        }
-    }
-
-    return true;
-}
-
-bool Deploy::removeFile(const QString &file) {
-    return removeFile(QFileInfo (file));
-}
-
-bool Deploy::smartCopyFile(const QString &file, const QString &target, QStringList *mask) {
-    if (file.contains(targetDir)) {
-        if (!moveFile(file, target, mask)) {
-            QuasarAppUtils::Params::verboseLog(" file not moved! try copy");
-
-            if (!copyFile(file, target, mask)) {
-                qCritical() << "not copy target to bin dir " << file;
-                return false;
-            };
-        };
-    } else {
-        if (!copyFile(file, target, mask)) {
-            qCritical() << "not copy target to bin dir " << file;
-            return false;
-        };
-    }
-
-    return true;
-}
-
-bool Deploy::moveFile(const QString &file, const QString &target, QStringList *masks) {
-    return fileActionPrivate(file, target, masks, true);
-}
-
-void Deploy::extract(const QString &file) {
-    QFileInfo info(file);
-
-    auto sufix = info.completeSuffix();
-
-    if (sufix.contains("dll", Qt::CaseSensitive) ||
-            sufix.contains("exe", Qt::CaseSensitive) ||
-            sufix.isEmpty() || sufix.contains("so", Qt::CaseSensitive)) {
-
-        extractLib(file);
-    } else {
-        QuasarAppUtils::Params::verboseLog("file with sufix " + sufix + " not supported!");
-    }
-
 }
 
 QString Deploy::recursiveInvairement(int depch, QDir &dir) {
@@ -650,49 +487,7 @@ bool Deploy::copyTranslations(QStringList list) {
     return true;
 }
 
-bool Deploy::copyFolder(const QString &from, const QString &to, const QStringList &filter,
-                        QStringList *listOfCopiedItems, QStringList *mask) {
 
-    QDir fromDir(from);
-
-    auto list = fromDir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries);
-
-    for (auto &&item : list) {
-        if (QFileInfo(item).isDir()) {
-
-            copyFolder(item.absoluteFilePath(), to + "/" + item.fileName(), filter, listOfCopiedItems, mask);
-        } else {
-
-            QString skipFilter = "";
-            for (auto && i: filter) {
-                if (item.fileName().contains(i)) {
-                    skipFilter = i;
-                    break;
-                }
-            }
-
-            if (!skipFilter.isEmpty()) {
-                QuasarAppUtils::Params::verboseLog(
-                            item.absoluteFilePath() + " ignored by filter " + skipFilter,
-                            QuasarAppUtils::VerboseLvl::Info);
-                continue;
-            }
-
-            if (!copyFile(item.absoluteFilePath(), to , mask)) {
-                QuasarAppUtils::Params::verboseLog(
-                            "not copied file " + to + "/" + item.fileName(),
-                            QuasarAppUtils::VerboseLvl::Warning);
-                continue;
-            }
-
-            if (listOfCopiedItems) {
-                *listOfCopiedItems << to + "/" + item.fileName();
-            }
-        }
-    }
-
-    return true;
-}
 
 QFileInfoList Deploy::findFilesInsideDir(const QString &name,
                                          const QString &dirpath) {
@@ -859,10 +654,10 @@ QStringList Deploy::extractImportsFromDir(const QString &filepath) {
     QProcessEnvironment env;
 
     env.insert("LD_LIBRARY_PATH", concatEnv());
-    env.insert("QML_IMPORT_PATH", DeployUtils::qtDir + "/qml");
-    env.insert("QML2_IMPORT_PATH", DeployUtils::qtDir + "/qml");
-    env.insert("QT_PLUGIN_PATH", DeployUtils::qtDir + "/plugins");
-    env.insert("QT_QPA_PLATFORM_PLUGIN_PATH", DeployUtils::qtDir + "/plugins/platforms");
+    env.insert("QML_IMPORT_PATH", DeployCore::qtDir + "/qml");
+    env.insert("QML2_IMPORT_PATH", DeployCore::qtDir + "/qml");
+    env.insert("QT_PLUGIN_PATH", DeployCore::qtDir + "/plugins");
+    env.insert("QT_QPA_PLATFORM_PLUGIN_PATH", DeployCore::qtDir + "/plugins/platforms");
 
     p.setProcessEnvironment(env);
     p.setProgram(externQmlScaner);
@@ -996,109 +791,20 @@ bool Deploy::extractQml() {
     }
 }
 
-void Deploy::clear(bool force) {
+void Deploy::extract(const QString &file) {
+    QFileInfo info(file);
 
-    qInfo() << "clear start!";
+    auto sufix = info.completeSuffix();
 
-    if (force) {
-        qInfo() << "clear force! " << targetDir;
+    if (sufix.contains("dll", Qt::CaseSensitive) ||
+            sufix.contains("exe", Qt::CaseSensitive) ||
+            sufix.isEmpty() || sufix.contains("so", Qt::CaseSensitive)) {
 
-        if (QDir(targetDir).removeRecursively()) {
-            return;
-        }
-
-        QuasarAppUtils::Params::verboseLog("Remove target Dir fail, try remove old deployemend files",
-                                           QuasarAppUtils::Warning);
-    }
-
-    deployedFiles = settings.value(targetDir, QStringList()).toStringList();
-    QMap<int, QFileInfo> sortedOldData;
-    for (auto& i :deployedFiles) {
-        sortedOldData.insertMulti(i.size(), QFileInfo(i));
-    }
-
-    for (auto it = sortedOldData.end(); it != sortedOldData.begin(); --it) {
-
-        auto index = it - 1;
-
-        if (index.value().isFile()) {
-            if (removeFile(index.value())) {
-                qInfo() << "Remove " << index.value().absoluteFilePath() << " becouse it is deployed file";
-            }
-
-        } else {
-            QDir qdir(index.value().absoluteFilePath());
-            if (!qdir.entryList(QDir::NoDotAndDotDot | QDir::AllEntries).count()) {
-                qdir.removeRecursively();
-                qInfo() << "Remove " << index.value().absoluteFilePath() << " becouse it is empty";
-            }
-        }
-    }
-
-    deployedFiles.clear();
-
-}
-
-bool Deploy::strip(const QString &dir) {
-
-#ifdef Q_OS_WIN
-    Q_UNUSED(dir);
-    return true;
-#else
-    QFileInfo info(dir);
-
-    if (!info.exists()) {
-        QuasarAppUtils::Params::verboseLog("dir not exits!");
-        return false;
-    }
-
-    if (info.isDir()) {
-        QDir d(dir);
-        auto list = d.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
-
-        bool res = false;
-        for (auto &&i : list) {
-            res = strip(i.absoluteFilePath()) || res;
-        }
-
-        return res;
+        extractLib(file);
     } else {
-
-        auto sufix = info.completeSuffix();
-        if (!sufix.contains("so") && !sufix.contains("dll")) {
-            return false;
-        }
-
-        QProcess P;
-        P.setProgram("strip");
-        P.setArguments(QStringList() << info.absoluteFilePath());
-        P.start();
-
-        if (!P.waitForStarted())
-            return false;
-        if (!P.waitForFinished())
-            return false;
-
-        return P.exitCode() == 0;
+        QuasarAppUtils::Params::verboseLog("file with sufix " + sufix + " not supported!");
     }
-#endif
-}
 
-bool Deploy::addToDeployed(const QString& path) {
-    auto info = QFileInfo(path);
-    if (info.isFile() || !info.exists()) {
-        deployedFiles += info.absoluteFilePath();
-
-        auto completeSufix = info.completeSuffix();
-        if (info.isFile() && (completeSufix.isEmpty() || completeSufix.toLower() == "run"
-                || completeSufix.toLower() == "sh")) {
-
-            if (!QFile::setPermissions(path, static_cast<QFile::Permission>(0x7777))) {
-                QuasarAppUtils::Params::verboseLog("permishens set fail", QuasarAppUtils::Warning);
-            }
-        }
-    }
-    return true;
 }
 
 void Deploy::initEnvirement() {
@@ -1137,7 +843,6 @@ QStringList Deploy::getDirsRecursive(const QString &path) {
 
     return res;
 }
-
 
 Deploy::Deploy() {
 #ifdef Q_OS_LINUX

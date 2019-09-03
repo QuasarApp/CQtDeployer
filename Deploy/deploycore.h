@@ -53,7 +53,7 @@ enum class RunMode: int {
 
 class Deploy;
 
-class DEPLOYSHARED_EXPORT DeployUtils
+class DEPLOYSHARED_EXPORT DeployCore
 {
 
 private:
@@ -121,7 +121,7 @@ public:
         Qt3DExtrasModule          = 0x0008000000000000
     };
 
-    DeployUtils() = delete;
+    DeployCore() = delete;
 
     static QString qtDir;
     static QStringList extraPaths;
@@ -133,8 +133,8 @@ public:
     static bool isQtLib(const QString &lib);
     static bool isExtraLib(const QString &lib);
     static LibPriority getLibPriority(const QString &lib);
-    static DeployUtils::QtModule getQtModule(const QString& path);
-    static void addQtModule(DeployUtils::QtModule& module, const QString& path);
+    static DeployCore::QtModule getQtModule(const QString& path);
+    static void addQtModule(DeployCore::QtModule& module, const QString& path);
 
     static void verboseLog(const QString &str);
     static RunMode getMode();

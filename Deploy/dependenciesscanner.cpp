@@ -6,7 +6,7 @@
  */
 
 #include "dependenciesscanner.h"
-#include "deployutils.h"
+#include "deploycore.h"
 #include "quasarapp.h"
 #include <QList>
 #include <QDir>
@@ -16,10 +16,10 @@ DependenciesScanner::DependenciesScanner() {}
 
 void DependenciesScanner::clearScaned() {
     _scanedLibs.clear();
-    _qtModules = DeployUtils::QtModule::NONE;
+    _qtModules = DeployCore::QtModule::NONE;
 }
 
-DeployUtils::QtModule DependenciesScanner::getQtModules() const
+DeployCore::QtModule DependenciesScanner::getQtModules() const
 {
     return _qtModules;
 }
@@ -56,7 +56,7 @@ QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
             continue;
         }
 
-        info.setPriority(DeployUtils::getLibPriority(info.fullPath()));
+        info.setPriority(DeployCore::getLibPriority(info.fullPath()));
 
         res.insertMulti(info.getPriority(), info);
     }
@@ -124,7 +124,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res) {
 
                 dep->allDep = listDep;
                 _scanedLibs.insert(dep->fullPath(), *dep);
-                DeployUtils::addQtModule(_qtModules, dep->fullPath());
+                DeployCore::addQtModule(_qtModules, dep->fullPath());
 
                 res.unite(listDep);
             } else {

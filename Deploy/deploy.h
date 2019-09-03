@@ -19,7 +19,6 @@ class DEPLOYSHARED_EXPORT Deploy {
   private:
     bool deployQml = false;
     int depchLimit = 0;
-    QStringList deployedFiles;
 
     QSettings settings;
     QString externQmlScaner = "";
@@ -48,27 +47,7 @@ class DEPLOYSHARED_EXPORT Deploy {
     DependenciesScanner scaner;
 
     int find(const QString& str, const QStringList& list) const;
-    bool fileActionPrivate(const QString &file, const QString &target,
-                           QStringList *mask, bool isMove);
 
-    void copyFiles(const QStringList &files);
-    bool copyFile(const QString &file, const QString &target,
-                  QStringList *mask = nullptr);
-    bool removeFile(const QString &file);
-    bool removeFile(const QFileInfo &file);
-
-    /**
-     * @brief smartCopyFile
-     * @param file
-     * @param target
-     * @param mask
-     * @return if file in target dir try move file else copy
-     */
-    bool smartCopyFile(const QString &file, const QString &target,
-                       QStringList *mask = nullptr);
-
-    bool moveFile(const QString &file, const QString &target,
-                  QStringList *mask = nullptr);
     void extract(const QString &file);
     QString recursiveInvairement(int depch, QDir &dir);
     bool copyPlugin(const QString &plugin);
@@ -76,16 +55,10 @@ class DEPLOYSHARED_EXPORT Deploy {
     bool copyTranslations(QStringList list);
 
     bool createQConf();
-    bool copyFolder(const QString &from, const QString &to,
-                    const QStringList &filter = QStringList(),
-                    QStringList *listOfCopiedItems = nullptr,
-                    QStringList *mask = nullptr);
 
     bool extractQml();
 
-    bool strip(const QString &dir);
 
-    bool addToDeployed(const QString& path);
     QStringList extractImportsFromDir(const QString &dirpath);
     QFileInfoList findFilesInsideDir(const QString &name, const QString &dirpath);
     bool extractQmlAll();
@@ -99,7 +72,6 @@ class DEPLOYSHARED_EXPORT Deploy {
     bool isLib(const QFileInfo &file);
     bool setBinDir(const QString& dir, bool recursive = false);
 
-    bool initDir(const QString &path);
     bool deployMSVC();
 
 

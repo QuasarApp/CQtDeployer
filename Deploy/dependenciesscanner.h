@@ -27,7 +27,7 @@ class DEPLOYSHARED_EXPORT DependenciesScanner {
 
 private:
 
-    DeployUtils::QtModule _qtModules;
+    DeployCore::QtModule _qtModules;
 
     QStringList _env;
     QMultiHash<QString, QString> _EnvLibs;
@@ -54,7 +54,7 @@ public:
 
     friend class deploytest;
     void clearScaned();
-    DeployUtils::QtModule getQtModules() const;
+    DeployCore::QtModule getQtModules() const;
 };
 
 #endif // WINDEPENDENCIESSCANNER_H
