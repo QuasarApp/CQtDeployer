@@ -1,6 +1,7 @@
 #ifndef COPYPASTEMANAGER_H
 #define COPYPASTEMANAGER_H
 #include <QFileInfo>
+#include <QSet>
 #include <QStringList>
 #include <deploy_global.h>
 
@@ -14,11 +15,11 @@ private:
                            QStringList *mask, bool isMove);
 
     bool initDir(const QString &path);
+    QSet<QString> _deployedFiles;
 
-    DeployedFiles * _deployedFiles = nullptr;
 
 public:
-    CopyPasteManager(DeployedFiles * deplyed);
+    CopyPasteManager();
 
     void copyFiles(const QStringList &files, const QString &targetDir);
     bool copyFile(const QString &file, const QString &target,
@@ -46,6 +47,15 @@ public:
                     QStringList *mask = nullptr);
 
     void clear(bool);
+
+    QStringList deployedFiles() const;
+    void setDeployedFiles(const QSet<QString> &deployedFiles);
+
+    QStringList getDeployedFilesStringList() const;
+    void setDeployedFiles(const QStringList &value);
+
+    bool strip(const QString &dir) const;
+    bool addToDeployed(const QString& path);
 
 };
 

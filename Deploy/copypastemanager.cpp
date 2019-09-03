@@ -2,18 +2,16 @@
 #include <QDir>
 #include <quasarapp.h>
 #include "deploycore.h"
-#include "deployedfiles.h"
+#include <QProcess>
 #include <fstream>
 
-CopyPasteManager::CopyPasteManager(DeployedFiles *deplyed) {
-    assert(deplyed);
-    _deployedFiles = deplyed;
+CopyPasteManager::CopyPasteManager() {
 }
 
 bool CopyPasteManager::initDir(const QString &path) {
 
     if (!QFileInfo::exists(path)) {
-        _deployedFiles->addToDeployed(path);
+        addToDeployed(path);
         if (!QDir().mkpath(path)) {
             return false;
         }
@@ -22,11 +20,93 @@ bool CopyPasteManager::initDir(const QString &path) {
     return true;
 }
 
+
+QSet<QString> CopyPasteManager::getDeployedFiles() const {
+    return _deployedFiles;
+}
+
+void CopyPasteManager::setDeployedFiles(const QSet<QString> &value) {
+    _deployedFiles = value;
+}
+
+QStringList CopyPasteManager::getDeployedFilesStringList() const {
+    return _deployedFiles.toList();
+}
+
+void CopyPasteManager::setDeployedFiles(const QStringList &value) {
+    _deployedFiles.clear();
+    _deployedFiles.fromList(value);
+}
+
+
+bool CopyPasteManager::addToDeployed(const QString& path) {
+    auto info = QFileInfo(path);
+    if (info.isFile() || !info.exists()) {
+        _deployedFiles += info.absoluteFilePath();
+
+        auto completeSufix = info.completeSuffix();
+        if (info.isFile() && (completeSufix.isEmpty() || completeSufix.toLower() == "run"
+                || completeSufix.toLower() == "sh")) {
+
+            if (!QFile::setPermissions(path, static_cast<QFile::Permission>(0x7777))) {
+                QuasarAppUtils::Params::verboseLog("permishens set fail", QuasarAppUtils::Warning);
+            }
+        }
+    }
+    return true;
+}
+
+bool CopyPasteManager::strip(const QString &dir) const {
+
+#ifdef Q_OS_WIN
+    Q_UNUSED(dir);
+    return true;
+#else
+    QFileInfo info(dir);
+
+    if (!info.exists()) {
+        QuasarAppUtils::Params::verboseLog("dir not exits!");
+        return false;
+    }
+
+    if (info.isDir()) {
+        QDir d(dir);
+        auto list = d.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+
+        bool res = false;
+        for (auto &&i : list) {
+            res = strip(i.absoluteFilePath()) || res;
+        }
+
+        return res;
+    } else {
+
+        auto sufix = info.completeSuffix();
+        if (!sufix.contains("so") && !sufix.contains("dll")) {
+            return false;
+        }
+
+        QProcess P;
+        P.setProgram("strip");
+        P.setArguments(QStringList() << info.absoluteFilePath());
+        P.start();
+
+        if (!P.waitForStarted())
+            return false;
+        if (!P.waitForFinished())
+            return false;
+
+        return P.exitCode() == 0;
+    }
+#endif
+}
+
+
 bool CopyPasteManager::fileActionPrivate(const QString &file, const QString &target,
-                               QStringList *masks, bool isMove) {
-
+                                         QStringList *masks, bool isMove) {
+    
     auto info = QFileInfo(file);
-
+    
     bool copy = !masks;
     if (masks) {
         for (auto mask : *masks) {
@@ -87,7 +167,7 @@ bool CopyPasteManager::fileActionPrivate(const QString &file, const QString &tar
         }
     }
 
-    _deployedFiles->addToDeployed(target + QDir::separator() + name);
+    addToDeployed(target + QDir::separator() + name);
     return true;
 }
 
@@ -178,9 +258,8 @@ void CopyPasteManager::clear(bool force, const QString& targetDir) {
                                            QuasarAppUtils::Warning);
     }
 
-    auto deployedFiles = _deployedFiles->getDeployedFiles();
     QMap<int, QFileInfo> sortedOldData;
-    for (auto& i :deployedFiles) {
+    for (auto& i : _deployedFiles) {
         sortedOldData.insertMulti(i.size(), QFileInfo(i));
     }
 
@@ -202,7 +281,7 @@ void CopyPasteManager::clear(bool force, const QString& targetDir) {
         }
     }
 
-    deployedFiles.clear();
+    _deployedFiles.clear();
 }
 
 void CopyPasteManager::copyFiles(const QStringList &files, const QString& targetDir) {

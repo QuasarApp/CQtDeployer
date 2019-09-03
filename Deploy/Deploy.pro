@@ -48,7 +48,6 @@ SOURCES += \
     copypastemanager.cpp \
     deploy.cpp \
     deploycore.cpp \
-    deployedfiles.cpp \
     deployparams.cpp \
     pe.cpp \
     igetlibinfo.cpp \
@@ -64,7 +63,6 @@ HEADERS += \
     deploy.h \
     deploy_global.h \
     deploycore.h \
-    deployedfiles.h \
     deployparams.h \
     pe.h \
     igetlibinfo.h \
