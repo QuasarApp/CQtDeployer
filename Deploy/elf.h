@@ -10,7 +10,7 @@ class ELF : public IGetLibInfo
 public:
     ELF();
 
-    bool getLibInfo(const QString &lib, LibInfo &info);
+    bool getLibInfo(const QString &lib, LibInfo &info) const override;
 };
 
 #endif // ELF_H
