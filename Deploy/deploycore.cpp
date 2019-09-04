@@ -85,7 +85,7 @@ DeployCore::QtModule DeployCore::getQtModule(const QString& path) {
     auto lIbName = QFileInfo(path).fileName();
 
     for (int i = 0; i < modulesCount; ++i) {
-        if (lIbName.contains(qtModuleEntries[i].libraryName)) {
+        if (lIbName.contains(qtModuleEntries[i].libraryName)) {            
             return static_cast<DeployCore::QtModule>(qtModuleEntries[i].module);
         }
     }
@@ -94,8 +94,17 @@ DeployCore::QtModule DeployCore::getQtModule(const QString& path) {
 }
 
 void DeployCore::addQtModule(DeployCore::QtModule &module, const QString &path) {
+
+    auto mod = getQtModule(path);
+    QuasarAppUtils::Params::verboseLog("add new module from path " + path  +
+                                       " module value " + QString::number(mod),
+                                       QuasarAppUtils::Info);
+
+
     module = static_cast<DeployCore::QtModule>(
-                static_cast<quint64>(module) | static_cast<quint64>(getQtModule(path)));
+                static_cast<quint64>(module) | static_cast<quint64>(mod));
+
+
 }
 
 LibPriority DeployCore::getLibPriority(const QString &lib) {
