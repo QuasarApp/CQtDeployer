@@ -52,7 +52,7 @@ public:
 private slots:
     void initTestCase();
     void cleanupTestCase();
-    void testDeployUtils();
+    void testDeployCore();
     void testDeployTarget();
     void testTranslations();
     void testStrip();
@@ -179,7 +179,7 @@ bool deploytest::testEnvIgnore()
 
     Deploy deploy;
 
-    if (!DeployUtils::parseQt(&deploy)) {
+    if (!DeployCore::parseQt(&deploy)) {
         return false;
     }
 
@@ -300,7 +300,7 @@ void deploytest::cleanupTestCase() {
 
 }
 
-void deploytest::testDeployUtils() {
+void deploytest::testDeployCore() {
     QString qtDir = "./test/Qt/5.12/";
     QStringList extraPathes = QStringList() << QFileInfo("./test/extraPath/").absoluteFilePath();
 
@@ -677,7 +677,7 @@ bool deploytest::mainTestOnlyC() {
 
     Deploy deploy;
 
-    if (!DeployUtils::parseQt(&deploy)) {
+    if (!DeployCore::parseQt(&deploy)) {
         return false;
     }
 
@@ -731,7 +731,7 @@ bool deploytest::mainTestQMake() {
 
     Deploy deploy;
 
-    if (!DeployUtils::parseQt(&deploy)) {
+    if (!DeployCore::parseQt(&deploy)) {
         return false;
     }
 
@@ -793,7 +793,7 @@ bool deploytest::mainTestQML() {
 
     Deploy deploy;
 
-    if (!DeployUtils::parseQt(&deploy)) {
+    if (!DeployCore::parseQt(&deploy)) {
         return false;
     }
 
@@ -838,7 +838,7 @@ bool deploytest::mainTestQML() {
 
     Deploy deploy2;
 
-    if (!DeployUtils::parseQt(&deploy2)) {
+    if (!DeployCore::parseQt(&deploy2)) {
         return false;
     }
 
