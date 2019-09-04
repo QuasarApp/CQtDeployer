@@ -124,7 +124,7 @@ bool Deploy::createRunScriptWindows(const QString &target) {
     F.flush();
     F.close();
 
-    addToDeployed(fname);
+    _fileManager.addToDeployed(fname);
 
     return F.setPermissions(QFileDevice::ExeOther | QFileDevice::WriteOther |
                             QFileDevice::ReadOther | QFileDevice::ExeUser |
@@ -150,13 +150,13 @@ bool Deploy::createRunScriptLinux(const QString &target) {
             "\"$BASE_DIR\"" + distro.getBinOutDir() + "%1 \"$@\"";
 
     content = content.arg(QFileInfo(target).fileName());
-    int ld_index = find("ld-linux", deployedFiles);
+    int ld_index = find("ld-linux", _fileManager.getDeployedFilesStringList());
 
     if (ld_index >= 0 && QuasarAppUtils::Params::isEndable("deploySystem") &&
             !QuasarAppUtils::Params::isEndable("noLibc")) {
 
         content = content.arg(QString("\nexport LD_PRELOAD=\"$BASE_DIR\"" + distro.getLibOutDir() + "%0\n").
-            arg(QFileInfo(deployedFiles[ld_index]).fileName()));
+            arg(QFileInfo(_fileManager.getDeployedFilesStringList()[ld_index]).fileName()));
     } else {
         content = content.arg("");
     }
@@ -172,7 +172,7 @@ bool Deploy::createRunScriptLinux(const QString &target) {
     F.flush();
     F.close();
 
-    addToDeployed(fname);
+    _fileManager.addToDeployed(fname);
 
     return F.setPermissions(QFileDevice::ExeOther | QFileDevice::WriteOther |
                             QFileDevice::ReadOther | QFileDevice::ExeUser |
@@ -195,7 +195,7 @@ bool Deploy::setTargets(const QStringList &value) {
 
             auto sufix = targetInfo.completeSuffix();
 
-            targets.insert(QDir::fromNativeSeparators(i), DeployUtils::isExecutable(targetInfo));
+            targets.insert(QDir::fromNativeSeparators(i), DeployCore::isExecutable(targetInfo));
             isfillList = true;
         }
         else if (targetInfo.isDir()) {
@@ -260,7 +260,7 @@ bool Deploy::setBinDir(const QString &dir, bool recursive) {
         }
 
         result = true;
-        targets.insert(QDir::fromNativeSeparators(file.absoluteFilePath()), DeployUtils::isExecutable(file));
+        targets.insert(QDir::fromNativeSeparators(file.absoluteFilePath()), DeployCore::isExecutable(file));
     }
 
     return result;
@@ -679,7 +679,7 @@ bool Deploy::smartMoveTargets() {
         QFileInfo target(i.key());
         auto targetPath = targetDir + (isLib(target) ? distro.getLibOutDir() : distro.getBinOutDir());
 
-        if (!smartCopyFile(target.absoluteFilePath(), targetPath)) {
+        if (!_fileManager.smartCopyFile(target.absoluteFilePath(), targetPath, targetDir)) {
             result = false;
         }
 
