@@ -289,7 +289,6 @@ void Deploy::initIgnoreEnvList()
             ignoreEnvList.append(path);
         }
     }
-
 }
 
 void Deploy::deploy() {
@@ -301,15 +300,16 @@ void Deploy::deploy() {
         extract(i.key());
     }
 
+    if (deployQml && !extractQml()) {
+        qCritical() << "qml not extacted!";
+    }
+
     PluginsParser pluginsParser(&scaner);
 
     QStringList plugins;
     pluginsParser.scan(DeployCore::qtDir + "/plugins", plugins);
     copyPlugins(plugins);
 
-    if (deployQml && !extractQml()) {
-        qCritical() << "qml not extacted!";
-    }
 
     _fileManager.copyFiles(neadedLibs, targetDir);
 
