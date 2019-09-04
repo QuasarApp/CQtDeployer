@@ -1,6 +1,7 @@
 #include "pluginsparser.h"
 #include <QDir>
 #include <dependenciesscanner.h>
+#include <quasarapp.h>
 
 PluginsParser::PluginsParser(DependenciesScanner* scaner)
 {
@@ -65,10 +66,16 @@ bool PluginsParser::scan(const QString& pluginPath,
                          QStringList &resDependencies) {
 
     auto modules = _libScaner->getQtModules();
-    auto plugins = QDir(pluginPath).entryInfoList(QDir::Dirs);
+    auto plugins = QDir(pluginPath).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+    QuasarAppUtils::Params::verboseLog("Modules Number :" + QString::number(modules), QuasarAppUtils::Info);
 
     for (auto &&plugin: plugins) {
-        if (modules & qtModuleForPlugin(plugin.fileName())) {
+        auto module = qtModuleForPlugin(plugin.fileName());
+        if (modules & module) {
+
+            QuasarAppUtils::Params::verboseLog("deploye plugin : " + plugin.absoluteFilePath(), QuasarAppUtils::Info);
+
             resDependencies.append(plugin.absoluteFilePath());
         }
     }
