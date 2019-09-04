@@ -375,7 +375,7 @@ void deploytest::testDeployTarget() {
 void deploytest::testStrip() {
 
 #ifdef Q_OS_WIN
-    Deploy *deploy = new Deploy();
+    FileManager *deploy = new FileManager();
     QVERIFY(deploy->strip("./test/binTargetDir/debugLib.so"));
     delete deploy;
 #else
