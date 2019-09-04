@@ -262,6 +262,7 @@ void FileManager::clear(const QString& targetDir, bool force) {
                                            QuasarAppUtils::Warning);
     }
 
+    ;
     QMap<int, QFileInfo> sortedOldData;
     for (auto& i : _deployedFiles) {
         sortedOldData.insertMulti(i.size(), QFileInfo(i));
@@ -270,6 +271,10 @@ void FileManager::clear(const QString& targetDir, bool force) {
     for (auto it = sortedOldData.end(); it != sortedOldData.begin(); --it) {
 
         auto index = it - 1;
+
+        if (!index.value().exists()) {
+            continue;
+        }
 
         if (index.value().isFile()) {
             if (removeFile(index.value())) {
