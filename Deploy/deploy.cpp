@@ -75,6 +75,12 @@ void Deploy::setTargetDir(const QString &target) {
         targetDir = QFileInfo(targets.begin().key()).absolutePath() + "/Distro";
         qInfo () << "flag targetDir not  used." << "use default target dir :" << targetDir;
     }
+
+    _fileManager.loadDeployemendFiles(targetDir);
+}
+
+void Deploy::clear(bool force) {
+    _fileManager.clear(targetDir, force);
 }
 
 bool Deploy::deployMSVC() {
@@ -86,7 +92,7 @@ bool Deploy::deployMSVC() {
         return false;
     }
 
-    return copyFile(msvcInstaller, targetDir);
+    return _fileManager.copyFile(msvcInstaller, targetDir);
 }
 
 bool Deploy::setTargets(const QStringList &value) {
@@ -192,13 +198,13 @@ bool Deploy::createRunScript(const QString &target) {
             "\"$BASE_DIR\"/bin/%1 \"$@\"";
 
     content = content.arg(QFileInfo(target).fileName());
-    int ld_index = find("ld-linux", deployedFiles);
+    int ld_index = find("ld-linux", _fileManager.getDeployedFilesStringList());
 
     if (ld_index >= 0 && QuasarAppUtils::Params::isEndable("deploySystem") &&
             !QuasarAppUtils::Params::isEndable("noLibc")) {
 
         content = content.arg(QString("\nexport LD_PRELOAD=\"$BASE_DIR\"/lib/%0\n").
-            arg(QFileInfo(deployedFiles[ld_index]).fileName()));
+            arg(QFileInfo(_fileManager.getDeployedFilesStringList()[ld_index]).fileName()));
     } else {
         content = content.arg("");
     }
@@ -215,7 +221,7 @@ bool Deploy::createRunScript(const QString &target) {
     F.flush();
     F.close();
 
-    addToDeployed(fname);
+    _fileManager.addToDeployed(fname);
 
     return F.setPermissions(QFileDevice::ExeOther | QFileDevice::WriteOther |
                             QFileDevice::ReadOther | QFileDevice::ExeUser |
@@ -246,7 +252,7 @@ bool Deploy::createQConf() {
     F.flush();
     F.close();
 
-    addToDeployed(fname);
+    _fileManager.addToDeployed(fname);
 
     return F.setPermissions(QFileDevice::ExeOther | QFileDevice::WriteOther |
                             QFileDevice::ReadOther | QFileDevice::ExeUser |
@@ -305,13 +311,13 @@ void Deploy::deploy() {
         qCritical() << "qml not extacted!";
     }
 
-    copyFiles(neadedLibs);
+    _fileManager.copyFiles(neadedLibs, targetDir);
 
     if (QuasarAppUtils::Params::isEndable("deploySystem")) {
-        copyFiles(systemLibs);
+        _fileManager.copyFiles(systemLibs, targetDir);
     }
 
-    if (!QuasarAppUtils::Params::isEndable("noStrip") && !strip(targetDir)) {
+    if (!QuasarAppUtils::Params::isEndable("noStrip") && !_fileManager.strip(targetDir)) {
         QuasarAppUtils::Params::verboseLog("strip failed!");
     }
 
@@ -342,7 +348,8 @@ void Deploy::deploy() {
         QuasarAppUtils::Params::verboseLog("create qt.conf failr", QuasarAppUtils::Warning);
     }
 
-    settings.setValue(targetDir, deployedFiles);
+    _fileManager.saveDeploymendFiles(targetDir);
+
 }
 
 QString Deploy::getQtDir() const { return DeployCore::qtDir; }
@@ -430,7 +437,7 @@ bool Deploy::copyPlugin(const QString &plugin) {
 
     QStringList listItems;
 
-    if (!copyFolder(plugin, targetDir + "/plugins/" + QFileInfo(plugin).fileName(),
+    if (!_fileManager.copyFolder(plugin, targetDir + "/plugins/" + QFileInfo(plugin).fileName(),
                     QStringList() << ".so.debug" << "d.dll", &listItems)) {
         return false;
     }
@@ -455,11 +462,11 @@ void Deploy::copyPlugins(const QStringList &list) {
         info.setFile(extraPlugin);
         if (info.isDir()) {
 
-            copyFolder(info.absoluteFilePath(),
+            _fileManager.copyFolder(info.absoluteFilePath(),
                        targetDir + "/plugins/" + info.baseName(),
                        QStringList() << ".so.debug" << "d.dll");
         } else {
-            copyFile(info.absoluteFilePath(),
+            _fileManager.copyFile(info.absoluteFilePath(),
                      targetDir + QDir::separator() + "plugins");
             extract(info.absoluteFilePath());
         }
@@ -481,7 +488,7 @@ bool Deploy::copyTranslations(QStringList list) {
     auto listItems = dir.entryInfoList(filters, QDir::Files | QDir::NoDotAndDotDot);
 
     for (auto &&i: listItems) {
-        copyFile(i.absoluteFilePath(), targetDir + "/translations");
+        _fileManager.copyFile(i.absoluteFilePath(), targetDir + "/translations");
     }
 
     return true;
@@ -627,7 +634,7 @@ bool Deploy::smartMoveTargets() {
 
         }
 
-        if (!smartCopyFile(target.absoluteFilePath(), targetPath)) {
+        if (!_fileManager.smartCopyFile(target.absoluteFilePath(), targetPath, targetDir)) {
             result = false;
         }
 
@@ -713,7 +720,7 @@ bool Deploy::extractQmlAll() {
 
     QStringList listItems;
 
-    if (!copyFolder(qmlDir, targetDir + "/qml",
+    if (!_fileManager.copyFolder(qmlDir, targetDir + "/qml",
                     QStringList() << ".so.debug" << "d.dll",
                     &listItems)) {
         return false;
@@ -765,7 +772,7 @@ bool Deploy::extractQmlFromSource(const QString& sourceDir) {
         }
     }
 
-    if (!copyFolder(qmlDir, targetDir + "/qml",
+    if (!_fileManager.copyFolder(qmlDir, targetDir + "/qml",
                     filter , &listItems, &plugins)) {
         return false;
     }

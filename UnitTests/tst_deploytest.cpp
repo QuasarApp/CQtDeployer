@@ -383,7 +383,7 @@ void deploytest::testStrip() {
     qint64 sizeBefor = generateLib("./test/binTargetDir/debugLib.so");
     qint64 sizeAfter = 0;
 
-    Deploy *deploy = new Deploy();
+    FileManager *deploy = new FileManager();
     QVERIFY(deploy->strip("./test/binTargetDir/debugLib.so"));
 
     QFile testLib ("./test/binTargetDir/debugLib.so");
@@ -415,7 +415,7 @@ void deploytest::testStrip() {
 
     QList<qint64> sizeAfterList;
 
-    deploy = new Deploy();
+    deploy = new FileManager();
     QVERIFY(deploy->strip("./test/binTargetDir"));
 
     for(auto i: libList) {
@@ -510,7 +510,7 @@ void deploytest::testDeployLdLinux() {
     QVERIFY(!text.contains("LD_PRELOAD"));
 
     file = "./test/bins/sh/execTarget5.sh";
-    deploy->deployedFiles.push_back("ld-linux-x86-64.so.2");
+    deploy->_fileManager.addToDeployed("ld-linux-x86-64.so.2");
     QVERIFY(deploy->createRunScript(file));
     f.setFileName(file);
     QVERIFY(f.open(QIODevice::ReadOnly));

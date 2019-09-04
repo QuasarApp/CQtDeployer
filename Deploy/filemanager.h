@@ -8,7 +8,7 @@
 
 class DeployedFiles;
 
-class DEPLOYSHARED_EXPORT CopyPasteManager
+class DEPLOYSHARED_EXPORT FileManager
 {
 private:
     bool fileActionPrivate(const QString &file, const QString &target,
@@ -19,7 +19,7 @@ private:
 
 
 public:
-    CopyPasteManager();
+    FileManager();
 
     void copyFiles(const QStringList &files, const QString &targetDir);
     bool copyFile(const QString &file, const QString &target,
@@ -46,17 +46,17 @@ public:
                     QStringList *listOfCopiedItems = nullptr,
                     QStringList *mask = nullptr);
 
-    void clear(bool);
+    void clear(const QString& targetDir, bool force);
 
-    QStringList deployedFiles() const;
-    void setDeployedFiles(const QSet<QString> &deployedFiles);
 
     QStringList getDeployedFilesStringList() const;
-    void setDeployedFiles(const QStringList &value);
+    QSet<QString> getDeployedFiles() const;
 
     bool strip(const QString &dir) const;
     bool addToDeployed(const QString& path);
 
+    void saveDeploymendFiles(const QString &targetDir);
+    void loadDeployemendFiles(const QString &targetDir);
 };
 
 #endif // COPYPASTEMANAGER_H

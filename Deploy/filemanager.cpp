@@ -1,14 +1,14 @@
-#include "copypastemanager.h"
+#include "filemanager.h"
 #include <QDir>
 #include <quasarapp.h>
 #include "deploycore.h"
 #include <QProcess>
 #include <fstream>
 
-CopyPasteManager::CopyPasteManager() {
+FileManager::FileManager() {
 }
 
-bool CopyPasteManager::initDir(const QString &path) {
+bool FileManager::initDir(const QString &path) {
 
     if (!QFileInfo::exists(path)) {
         addToDeployed(path);
@@ -21,25 +21,24 @@ bool CopyPasteManager::initDir(const QString &path) {
 }
 
 
-QSet<QString> CopyPasteManager::getDeployedFiles() const {
+QSet<QString> FileManager::getDeployedFiles() const {
     return _deployedFiles;
 }
 
-void CopyPasteManager::setDeployedFiles(const QSet<QString> &value) {
-    _deployedFiles = value;
-}
-
-QStringList CopyPasteManager::getDeployedFilesStringList() const {
+QStringList FileManager::getDeployedFilesStringList() const {
     return _deployedFiles.toList();
 }
 
-void CopyPasteManager::setDeployedFiles(const QStringList &value) {
+void FileManager::loadDeployemendFiles(const QString &targetDir) {
+    auto settings = QuasarAppUtils::Settings::get();
+    QStringList deployedFiles = settings->getValue(targetDir, {}).toStringList();
+
     _deployedFiles.clear();
-    _deployedFiles.fromList(value);
+    _deployedFiles.fromList(deployedFiles);
 }
 
 
-bool CopyPasteManager::addToDeployed(const QString& path) {
+bool FileManager::addToDeployed(const QString& path) {
     auto info = QFileInfo(path);
     if (info.isFile() || !info.exists()) {
         _deployedFiles += info.absoluteFilePath();
@@ -56,7 +55,12 @@ bool CopyPasteManager::addToDeployed(const QString& path) {
     return true;
 }
 
-bool CopyPasteManager::strip(const QString &dir) const {
+void FileManager::saveDeploymendFiles(const QString& targetDir) {
+    auto settings = QuasarAppUtils::Settings::get();
+    settings->setValue(targetDir, getDeployedFilesStringList());
+}
+
+bool FileManager::strip(const QString &dir) const {
 
 #ifdef Q_OS_WIN
     Q_UNUSED(dir);
@@ -83,7 +87,7 @@ bool CopyPasteManager::strip(const QString &dir) const {
 
         auto sufix = info.completeSuffix();
         if (!sufix.contains("so") && !sufix.contains("dll")) {
-            return false;
+            return true;
         }
 
         QProcess P;
@@ -102,7 +106,7 @@ bool CopyPasteManager::strip(const QString &dir) const {
 }
 
 
-bool CopyPasteManager::fileActionPrivate(const QString &file, const QString &target,
+bool FileManager::fileActionPrivate(const QString &file, const QString &target,
                                          QStringList *masks, bool isMove) {
     
     auto info = QFileInfo(file);
@@ -171,11 +175,11 @@ bool CopyPasteManager::fileActionPrivate(const QString &file, const QString &tar
     return true;
 }
 
-bool CopyPasteManager::removeFile(const QString &file) {
+bool FileManager::removeFile(const QString &file) {
     return removeFile(QFileInfo (file));
 }
 
-bool CopyPasteManager::smartCopyFile(const QString &file, const QString &target,
+bool FileManager::smartCopyFile(const QString &file, const QString &target,
                                      const QString& targetDir, QStringList *mask) {
     if (file.contains(targetDir)) {
         if (!moveFile(file, target, mask)) {
@@ -196,11 +200,11 @@ bool CopyPasteManager::smartCopyFile(const QString &file, const QString &target,
     return true;
 }
 
-bool CopyPasteManager::moveFile(const QString &file, const QString &target, QStringList *masks) {
+bool FileManager::moveFile(const QString &file, const QString &target, QStringList *masks) {
     return fileActionPrivate(file, target, masks, true);
 }
 
-bool CopyPasteManager::copyFolder(const QString &from, const QString &to, const QStringList &filter,
+bool FileManager::copyFolder(const QString &from, const QString &to, const QStringList &filter,
                         QStringList *listOfCopiedItems, QStringList *mask) {
 
     QDir fromDir(from);
@@ -244,7 +248,7 @@ bool CopyPasteManager::copyFolder(const QString &from, const QString &to, const 
     return true;
 }
 
-void CopyPasteManager::clear(bool force, const QString& targetDir) {
+void FileManager::clear(const QString& targetDir, bool force) {
     qInfo() << "clear start!";
 
     if (force) {
@@ -284,7 +288,7 @@ void CopyPasteManager::clear(bool force, const QString& targetDir) {
     _deployedFiles.clear();
 }
 
-void CopyPasteManager::copyFiles(const QStringList &files, const QString& targetDir) {
+void FileManager::copyFiles(const QStringList &files, const QString& targetDir) {
     for (auto file : files) {
         QFileInfo target(file);
         auto targetPath = targetDir + QDir::separator() + "lib";
@@ -300,13 +304,13 @@ void CopyPasteManager::copyFiles(const QStringList &files, const QString& target
     }
 }
 
-bool CopyPasteManager::copyFile(const QString &file, const QString &target,
+bool FileManager::copyFile(const QString &file, const QString &target,
                       QStringList *masks) {
 
     return fileActionPrivate(file, target, masks, false);
 }
 
-bool CopyPasteManager::removeFile(const QFileInfo &file) {
+bool FileManager::removeFile(const QFileInfo &file) {
 
     if (!QFile::remove(file.absoluteFilePath())) {
         QuasarAppUtils::Params::verboseLog("Qt Operation fail (remove file) " + file.absoluteFilePath(),

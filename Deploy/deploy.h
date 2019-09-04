@@ -8,11 +8,11 @@
 #ifndef DEPLOY_H
 #define DEPLOY_H
 #include <QDir>
-#include <QSettings>
 #include <QString>
 #include <QStringList>
 #include <dependenciesscanner.h>
 #include "deploy_global.h"
+#include "filemanager.h"
 #include "qml.h"
 
 class DEPLOYSHARED_EXPORT Deploy {
@@ -20,7 +20,6 @@ class DEPLOYSHARED_EXPORT Deploy {
     bool deployQml = false;
     int depchLimit = 0;
 
-    QSettings settings;
     QString externQmlScaner = "";
 
     QString qmake = "";
@@ -45,6 +44,7 @@ class DEPLOYSHARED_EXPORT Deploy {
     QString appDir;
 
     DependenciesScanner scaner;
+    FileManager _fileManager;
 
     int find(const QString& str, const QStringList& list) const;
 
@@ -101,11 +101,11 @@ public:
     QString getQtDir() const;
     void setQtDir(const QString &value);
 
-    void clear(bool);
     void setExtraPath(const QStringList &value);
     void setExtraPlugins(const QStringList &value);
     void setDepchLimit(int value);
     void setTargetDir(const QString &target = "");
+    void clear(bool force);
 
 
     friend class deploytest;
