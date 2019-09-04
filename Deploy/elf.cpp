@@ -7,7 +7,7 @@ ELF::ELF()
 
 }
 
-bool ELF::getLibInfo(const QString &lib, LibInfo &info) {
+bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
     ElfReader reader(lib);
 
     auto headers = reader.readHeaders();

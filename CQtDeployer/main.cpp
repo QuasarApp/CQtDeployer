@@ -7,7 +7,7 @@
 
 #include "deploy.h"
 #include "quasarapp.h"
-#include "deployutils.h"
+#include "deploycore.h"
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
@@ -23,14 +23,14 @@ int main(int argc, const char *argv[]) {
 
     if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
         qWarning() << "wrong parametrs";
-        DeployUtils::help();
+        DeployCore::help();
         exit(0);
     };
     QuasarAppUtils::Params::setEnable("noWriteInFileLog", true);
 
     Deploy deploy;
 
-    if (!DeployUtils::parseQt(&deploy)) {
+    if (!DeployCore::parseQt(&deploy)) {
         qCritical() << "error parse imput data";
         exit(1);
     }

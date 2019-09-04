@@ -7,7 +7,7 @@
 
 #include <QtTest>
 #include <quasarapp.h>
-#include <deployutils.h>
+#include <deploycore.h>
 #include <deploy.h>
 #include <dependenciesscanner.h>
 #include <qml.h>
@@ -304,32 +304,32 @@ void deploytest::testDeployUtils() {
     QString qtDir = "./test/Qt/5.12/";
     QStringList extraPathes = QStringList() << QFileInfo("./test/extraPath/").absoluteFilePath();
 
-    DeployUtils::qtDir = QFileInfo(qtDir).absoluteFilePath();
-    DeployUtils::extraPaths = extraPathes;
+    DeployCore::qtDir = QFileInfo(qtDir).absoluteFilePath();
+    DeployCore::extraPaths = extraPathes;
 
     // qt Dir
-    QVERIFY(DeployUtils::isQtLib("./test/Qt/5.12/myLib.so"));
-    QVERIFY(!DeployUtils::isQtLib("/myQtDur/Qt/5.11/myLib.so"));
-    QVERIFY(!DeployUtils::isQtLib("/mQtDur/Qt/5.12/myLib.so"));
-    QVERIFY(DeployUtils::isQtLib("./test/Qt/5.12/myLib/testlibs/mylib.so"));
+    QVERIFY(DeployCore::isQtLib("./test/Qt/5.12/myLib.so"));
+    QVERIFY(!DeployCore::isQtLib("/myQtDur/Qt/5.11/myLib.so"));
+    QVERIFY(!DeployCore::isQtLib("/mQtDur/Qt/5.12/myLib.so"));
+    QVERIFY(DeployCore::isQtLib("./test/Qt/5.12/myLib/testlibs/mylib.so"));
 
     // extra Dir
-    QVERIFY(!DeployUtils::isExtraLib("./test/Qt/5.12/myLib.so"));
-    QVERIFY(!DeployUtils::isExtraLib("/myQtDur/Qt/5.11/myLib.so"));
-    QVERIFY(!DeployUtils::isExtraLib("/mQtDur/Qt/5.12/myLib.so"));
-    QVERIFY(!DeployUtils::isExtraLib("./test/Qt/5.12/myLib/testlibs/mylib.so"));
+    QVERIFY(!DeployCore::isExtraLib("./test/Qt/5.12/myLib.so"));
+    QVERIFY(!DeployCore::isExtraLib("/myQtDur/Qt/5.11/myLib.so"));
+    QVERIFY(!DeployCore::isExtraLib("/mQtDur/Qt/5.12/myLib.so"));
+    QVERIFY(!DeployCore::isExtraLib("./test/Qt/5.12/myLib/testlibs/mylib.so"));
 
-    QVERIFY(DeployUtils::isExtraLib("./test/extraPath/Qt/5.12/myLib.so"));
-    QVERIFY(DeployUtils::isExtraLib("./test/extraPath/Qt/5/myLib.so"));
-    QVERIFY(DeployUtils::isExtraLib("./test/extraPath/myLib.so"));
-    QVERIFY(DeployUtils::isExtraLib("./test/extraPath/Qt/5.12/myLib/testlibs/mylib.so"));
+    QVERIFY(DeployCore::isExtraLib("./test/extraPath/Qt/5.12/myLib.so"));
+    QVERIFY(DeployCore::isExtraLib("./test/extraPath/Qt/5/myLib.so"));
+    QVERIFY(DeployCore::isExtraLib("./test/extraPath/myLib.so"));
+    QVERIFY(DeployCore::isExtraLib("./test/extraPath/Qt/5.12/myLib/testlibs/mylib.so"));
 
     //getLibPriority
 
-    QVERIFY(DeployUtils::getLibPriority("./tst/Qt/5.12/generalLib.so") == NotFile);
-    QVERIFY(DeployUtils::getLibPriority("./test/Qt/5.12/generalLib.so") == QtLib);
-    QVERIFY(DeployUtils::getLibPriority("./test/extraPath/ExtraLib.so") == ExtraLib);
-    QVERIFY(DeployUtils::getLibPriority("./test/extra/ExtraLib.so") == SystemLib);
+    QVERIFY(DeployCore::getLibPriority("./tst/Qt/5.12/generalLib.so") == NotFile);
+    QVERIFY(DeployCore::getLibPriority("./test/Qt/5.12/generalLib.so") == QtLib);
+    QVERIFY(DeployCore::getLibPriority("./test/extraPath/ExtraLib.so") == ExtraLib);
+    QVERIFY(DeployCore::getLibPriority("./test/extra/ExtraLib.so") == SystemLib);
 }
 
 void deploytest::testDeployTarget() {
@@ -376,7 +376,7 @@ void deploytest::testDeployTarget() {
 void deploytest::testStrip() {
 
 #ifdef Q_OS_WIN
-    Deploy *deploy = new Deploy();
+    FileManager *deploy = new FileManager();
     QVERIFY(deploy->strip("./test/binTargetDir/debugLib.so"));
     delete deploy;
 #else
@@ -384,7 +384,7 @@ void deploytest::testStrip() {
     qint64 sizeBefor = generateLib("./test/binTargetDir/debugLib.so");
     qint64 sizeAfter = 0;
 
-    Deploy *deploy = new Deploy();
+    FileManager *deploy = new FileManager();
     QVERIFY(deploy->strip("./test/binTargetDir/debugLib.so"));
 
     QFile testLib ("./test/binTargetDir/debugLib.so");
@@ -416,7 +416,7 @@ void deploytest::testStrip() {
 
     QList<qint64> sizeAfterList;
 
-    deploy = new Deploy();
+    deploy = new FileManager();
     QVERIFY(deploy->strip("./test/binTargetDir"));
 
     for(auto i: libList) {
@@ -511,7 +511,7 @@ void deploytest::testDeployLdLinux() {
     QVERIFY(!text.contains("LD_PRELOAD"));
 
     file = "./test/bins/sh/execTarget5.sh";
-    deploy->deployedFiles.push_back("ld-linux-x86-64.so.2");
+    deploy->_fileManager.addToDeployed("ld-linux-x86-64.so.2");
     QVERIFY(deploy->createRunScript(file));
     f.setFileName(file);
     QVERIFY(f.open(QIODevice::ReadOnly));
@@ -579,7 +579,7 @@ void deploytest::testMSVC() {
     file.close();
 
 
-    auto msvc = DeployUtils::getMSVC(testqmakepath);
+    auto msvc = DeployCore::getMSVC(testqmakepath);
 
     QVERIFY(msvc & MSVCVersion::MSVC_17);
     QVERIFY(msvc & MSVCVersion::MSVC_x64);
@@ -881,7 +881,7 @@ void deploytest::testTranslations() {
 
     };
 
-    DeployUtils::qtDir = QFileInfo("./test/QtDir/").absoluteFilePath();
+    DeployCore::qtDir = QFileInfo("./test/QtDir/").absoluteFilePath();
 
 
     Deploy *deploy = new Deploy();
@@ -897,7 +897,7 @@ void deploytest::testTranslations() {
     deploy->translationDir = QFileInfo("./test/QtDir/translations/").absoluteFilePath();
     deploy->targetDir = QFileInfo("./test/deploy/").absoluteFilePath();
 
-    auto trans = DeployUtils::extractTranslation(libList);
+    auto trans = DeployCore::extractTranslation(libList);
     QVERIFY(trans.size() == 2);
     QVERIFY(deploy->copyTranslations(trans));
 
