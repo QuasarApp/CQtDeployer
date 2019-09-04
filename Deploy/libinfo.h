@@ -1,6 +1,6 @@
 #ifndef LIBINFO_H
 #define LIBINFO_H
-#include "deployutils.h"
+#include "deploycore.h"
 
 
 class DEPLOYSHARED_EXPORT LibInfo {

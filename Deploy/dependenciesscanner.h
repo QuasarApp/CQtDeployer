@@ -26,6 +26,9 @@ class DEPLOYSHARED_EXPORT DependenciesScanner {
 
 
 private:
+
+    DeployCore::QtModule _qtModules = DeployCore::NONE;
+
     QStringList _env;
     QMultiHash<QString, QString> _EnvLibs;
     QHash<QString, LibInfo> _scanedLibs;
@@ -35,8 +38,8 @@ private:
 
     PrivateScaner getScaner(const QString& lib) const;
 
-    QMultiMap<LibPriority, LibInfo> getLibsFromEnvirement(const QString& libName);
-    bool fillLibInfo(LibInfo& info ,const QString& file);
+    QMultiMap<LibPriority, LibInfo> getLibsFromEnvirement(const QString& libName) const;
+    bool fillLibInfo(LibInfo& info ,const QString& file) const;
 
     void recursiveDep(LibInfo& lib, QSet<LibInfo> &res);
 
@@ -51,6 +54,7 @@ public:
 
     friend class deploytest;
     void clearScaned();
+    DeployCore::QtModule getQtModules() const;
 };
 
 #endif // WINDEPENDENCIESSCANNER_H
