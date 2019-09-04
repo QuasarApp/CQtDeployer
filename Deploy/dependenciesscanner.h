@@ -27,7 +27,7 @@ class DEPLOYSHARED_EXPORT DependenciesScanner {
 
 private:
 
-    DeployCore::QtModule _qtModules;
+    DeployCore::QtModule _qtModules = DeployCore::NONE;
 
     QStringList _env;
     QMultiHash<QString, QString> _EnvLibs;

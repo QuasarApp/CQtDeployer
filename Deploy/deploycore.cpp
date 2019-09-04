@@ -95,6 +95,9 @@ DeployCore::QtModule DeployCore::getQtModule(const QString& path) {
 
 void DeployCore::addQtModule(DeployCore::QtModule &module, const QString &path) {
 
+    QuasarAppUtils::Params::verboseLog("current module " + QString::number(module),
+                                       QuasarAppUtils::Info);
+
     auto mod = getQtModule(path);
     QuasarAppUtils::Params::verboseLog("add new module from path " + path  +
                                        " module value " + QString::number(mod),
