@@ -17,6 +17,10 @@ public:
     void setDeployEnvironment(const QStringList &deployEnvironment);
     QStringList ignoreEnvList() const;
     void setIgnoreEnvList(const QStringList &ignoreEnvList);
+
+    void addEnv(const QString &dir, const QString &appDir, const QString &targetDir);
+
+    int size() const;
 };
 
 #endif // ENVIREMENT_H

@@ -333,52 +333,7 @@ void Deploy::extractLib(const QString &file) {
     }
 }
 
-void Deploy::addEnv(const QString &dir) {
 
-    char separator = ':';
-
-#ifdef Q_OS_WIN
-    separator = ';';
-#endif
-
-    if (dir.contains(separator)) {
-        auto list = dir.split(separator);
-        for (auto i : list) {
-            addEnv(i);
-        }
-        return;
-    }
-
-    auto path = QFileInfo(dir).absoluteFilePath();
-
-    for (QString & i :ignoreEnvList) {
-        if (path.contains(i)) {
-            return;
-        }
-    }
-
-    if (path.contains(appDir)) {
-        QuasarAppUtils::Params::verboseLog("is cqtdeployer dir!: " + path + " app dir : " + appDir);
-        return;
-    }
-
-    if (!QFileInfo(path).isDir()) {
-        QuasarAppUtils::Params::verboseLog("is not dir!! :" + path);
-        return;
-    }
-
-    if (deployEnvironment.contains(path)) {
-        QuasarAppUtils::Params::verboseLog ("Environment alredy added: " + path);
-        return;
-    }
-
-    if (path.contains(targetDir)) {
-        QuasarAppUtils::Params::verboseLog ("Skip paths becouse it is target : " + path);
-        return;
-    }
-
-    deployEnvironment.push_back(QDir::fromNativeSeparators(path));
-}
 
 QString Deploy::concatEnv() const {
 
@@ -591,6 +546,8 @@ void Deploy::extract(const QString &file) {
 }
 
 Deploy::Deploy() {
+    _fileManager.loadDeployemendFiles(targetDir);
+
 #ifdef Q_OS_LINUX
     appDir = QuasarAppUtils::Params::getStrArg("appPath");
 

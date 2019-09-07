@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
+#include <QProcess>
 #include "deploycore.h"
 #include "quasarapp.h"
 
@@ -69,24 +70,23 @@ bool CQT::parseQtInfoMode() {
 }
 
 bool CQT::parseQtClearMode() {
-    deploy->setTargetDir("./");
+    setTargetDir("./");
 }
 
 void CQT::setTargetDir(const QString &target) {
 
     if (QuasarAppUtils::Params::isEndable("targetDir")) {
-        targetDir = QFileInfo(QuasarAppUtils::Params::getStrArg("targetDir")).absoluteFilePath();
+        _config.targetDir = QFileInfo(QuasarAppUtils::Params::getStrArg("targetDir")).absoluteFilePath();
     } else if (target.size()) {
-        targetDir = QFileInfo(target).absoluteFilePath();
+        _config.targetDir = QFileInfo(target).absoluteFilePath();
     } else {
-        if (targets.size())
-            targetDir = QFileInfo(targets.begin().key()).absolutePath() + "/Distro";
+        if (_config.targets.size())
+            _config.targetDir = QFileInfo(
+                        _config.targets.begin().key()).absolutePath() + "/Distro";
 
-        targetDir = QFileInfo("./Distro").absoluteFilePath();
-        qInfo () << "flag targetDir not  used." << "use default target dir :" << targetDir;
+        _config.targetDir = QFileInfo("./Distro").absoluteFilePath();
+        qInfo () << "flag targetDir not  used." << "use default target dir :" << _config.targetDir;
     }
-
-    _fileManager.loadDeployemendFiles(targetDir);
 }
 
 bool CQT::setTargets(const QStringList &value) {
@@ -103,7 +103,7 @@ bool CQT::setTargets(const QStringList &value) {
 
             auto sufix = targetInfo.completeSuffix();
 
-            targets.insert(QDir::fromNativeSeparators(i), sufix.isEmpty());
+            _config.targets.insert(QDir::fromNativeSeparators(i), sufix.isEmpty());
             isfillList = true;
         }
         else if (targetInfo.isDir()) {
@@ -168,7 +168,7 @@ bool CQT::setBinDir(const QString &dir, bool recursive) {
         }
 
         result = true;
-        targets.insert(QDir::fromNativeSeparators(file.absoluteFilePath()), sufix.isEmpty());
+        _config.targets.insert(QDir::fromNativeSeparators(file.absoluteFilePath()), sufix.isEmpty());
     }
 
     return result;
@@ -178,11 +178,11 @@ void CQT::initIgnoreList()
 {
     if (QuasarAppUtils::Params::isEndable("ignore")) {
         auto list = QuasarAppUtils::Params::getStrArg("ignore").split(',');
-        ignoreList.append(list);
+        _config.ignoreList.append(list);
     }
 
     if (QuasarAppUtils::Params::isEndable("noLibc")) {
-        ignoreList.append("libc.so");
+        _config.ignoreList.append("libc.so");
 
     }
 }
@@ -190,6 +190,8 @@ void CQT::initIgnoreList()
 void CQT::initIgnoreEnvList() {
     if (QuasarAppUtils::Params::isEndable("ignoreEnv")) {
         auto ignoreList = QuasarAppUtils::Params::getStrArg("ignoreEnv").split(',');
+
+        QStringList ignoreEnvList;
 
         for (auto &i : ignoreList) {
             auto path = QFileInfo(i).absoluteFilePath();
@@ -200,20 +202,22 @@ void CQT::initIgnoreEnvList() {
 
             ignoreEnvList.append(path);
         }
+
+        _config.envirement.setIgnoreEnvList(ignoreEnvList);
     }
 }
 
 void CQT::setQmlScaner(const QString &value) {
-    externQmlScaner = QDir::fromNativeSeparators(value);
-    QuasarAppUtils::Params::verboseLog("qmlScaner = " + externQmlScaner,
+    _config.externQmlScaner = QDir::fromNativeSeparators(value);
+    QuasarAppUtils::Params::verboseLog("qmlScaner = " + _config.externQmlScaner,
                                        QuasarAppUtils::VerboseLvl::Info);
-    deployQml = QFileInfo(externQmlScaner).isFile();
+    _config.deployQml = QFileInfo(_config.externQmlScaner).isFile();
 }
 
 void CQT::setQmake(const QString &value) {
-    qmake = QDir::fromNativeSeparators(value);
+    _config.qmake = QDir::fromNativeSeparators(value);
 
-    QFileInfo info(qmake);
+    QFileInfo info(_config.qmake);
     QDir dir = info.absoluteDir();
 
     if (!dir.cdUp() || !dir.cd("qml")) {
@@ -221,8 +225,8 @@ void CQT::setQmake(const QString &value) {
         return;
     }
 
-    qmlDir = dir.absolutePath();
-    QuasarAppUtils::Params::verboseLog("qmlDir = " + qmlDir);
+    _config.qmlDir = dir.absolutePath();
+    QuasarAppUtils::Params::verboseLog("qmlDir = " + _config.qmlDir);
 
     dir = (info.absoluteDir());
     if (!dir.cdUp() || !dir.cd("translations")) {
@@ -230,16 +234,15 @@ void CQT::setQmake(const QString &value) {
         return;
     }
 
-    translationDir = dir.absolutePath();
-    QuasarAppUtils::Params::verboseLog("translations = " + translationDir);
+    _config.translationDir = dir.absolutePath();
+    QuasarAppUtils::Params::verboseLog("translations = " + _config.translationDir);
 }
 
 void CQT::setQtDir(const QString &value) {
-    DeployCore::qtDir = QDir::fromNativeSeparators(value);
-    addEnv(DeployCore::qtDir);
-
-    addEnv(DeployCore::qtDir + "/lib");
-    addEnv(DeployCore::qtDir + "/bin");
+    _config.qtDir = QDir::fromNativeSeparators(value);
+    _config.envirement.addEnv(_config.qtDir, _config.appDir, _config.targetDir);
+    _config.envirement.addEnv(_config.qtDir + "/lib", _config.appDir, _config.targetDir);
+    _config.envirement.addEnv(_config.qtDir + "/bin", _config.appDir, _config.targetDir);
 
 }
 
@@ -249,15 +252,15 @@ void CQT::setExtraPath(const QStringList &value) {
     for (auto i : value) {
         QFileInfo info(i);
         if (info.isDir()) {
-            if (targets.contains(info.absoluteFilePath())) {
+            if (_config.targets.contains(info.absoluteFilePath())) {
                 QuasarAppUtils::Params::verboseLog("skip the extra lib path becouse it is target!");
                 continue;
             }
 
             dir.setPath(info.absoluteFilePath());
-            DeployCore::extraPaths.push_back(
+            _config.extraPaths.push_back(
                         QDir::fromNativeSeparators(info.absoluteFilePath()));
-            addEnv(recursiveInvairement(0, dir));
+            _config.envirement.addEnv(recursiveInvairement(0, dir), _config.appDir, _config.targetDir);
         } else {
             QuasarAppUtils::Params::verboseLog(i + " does not exist! and skiped");
         }
@@ -268,7 +271,7 @@ void CQT::setExtraPlugins(const QStringList &value) {
     for (auto i : value) {
         QFileInfo info(i);
         if (info.exists()) {
-            extraPlugins.append(info.absoluteFilePath());
+            _config.extraPlugins.append(info.absoluteFilePath());
         } else {
             QuasarAppUtils::Params::verboseLog(i + " does not exist! and skiped");
         }
@@ -283,7 +286,7 @@ QString CQT::recursiveInvairement(int depch, QDir &dir) {
     separator = ';';
 #endif
 
-    if (!dir.exists() || depch >= depchLimit) {
+    if (!dir.exists() || depch >= _config.depchLimit) {
         return dir.absolutePath();
     }
 
@@ -305,9 +308,9 @@ QString CQT::recursiveInvairement(int depch, QDir &dir) {
 
 void CQT::initEnvirement() {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    _config.envirement.addEnv(env.value("LD_LIBRARY_PATH"), _config.appDir, _config.targetDir);
+    _config.envirement.addEnv(env.value("PATH"), _config.appDir, _config.targetDir);
 
-    addEnv(env.value("LD_LIBRARY_PATH"));
-    addEnv(env.value("PATH"));
 
     if (QuasarAppUtils::Params::isEndable("deploySystem")) {
         QStringList dirs;
@@ -316,11 +319,11 @@ void CQT::initEnvirement() {
         dirs.append(getDirsRecursive("/usr/lib"));
 
         for (auto &&i : dirs) {
-            addEnv(i);
+            _config.envirement.addEnv(i, _config.appDir, _config.targetDir);
         }
     }
 
-    if (deployEnvironment.size() < 2) {
+    if (_config.envirement.size() < 2) {
         qWarning() << "system environment is empty";
     }
 }

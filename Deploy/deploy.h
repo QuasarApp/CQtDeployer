@@ -28,7 +28,6 @@ class DEPLOYSHARED_EXPORT Deploy {
     int find(const QString& str, const QStringList& list) const;
 
     void extract(const QString &file);
-    QString recursiveInvairement(int depch, QDir &dir);
     bool copyPlugin(const QString &plugin);
     void copyPlugins(const QStringList &list);
     bool copyTranslations(QStringList list);
@@ -56,34 +55,14 @@ class DEPLOYSHARED_EXPORT Deploy {
 
 public:
     Deploy();
-    void initEnvirement();
-    void initIgnoreEnvList();
-    void initIgnoreList();
-
-
-    QStringList getDirsRecursive(const QString& path);
 
     bool getDeployQml() const;
     void setDeployQml(bool value);
 
-    QString getQmlScaner() const;
-    void setQmlScaner(const QString &value);
-    QString getQmake() const;
-    void setQmake(const QString &value);
-    bool setTargets(const QStringList &value);
-
-    bool setTargetsRecursive(const QString& dir);
-
     bool createRunScript(const QString &target);
 
     void deploy();
-    QString getQtDir() const;
-    void setQtDir(const QString &value);
 
-    void setExtraPath(const QStringList &value);
-    void setExtraPlugins(const QStringList &value);
-    void setDepchLimit(int value);
-    void setTargetDir(const QString &target = "");
     void clear(bool force);
 
 

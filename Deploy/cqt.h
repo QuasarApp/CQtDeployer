@@ -1,5 +1,7 @@
 #ifndef CQT_H
 #define CQT_H
+#include "envirement.h"
+
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -27,6 +29,7 @@ struct DeployConfig {
      * value - create wrapper
      */
     QMap<QString, bool> targets;
+    Envirement envirement;
 };
 
 /**
@@ -44,10 +47,10 @@ private:
     bool parseQtInfoMode();
     bool parseQtClearMode();
 
-    void setTargetDir(const QString &target);
+    void setTargetDir(const QString &target = "");
     bool setTargets(const QStringList &value);
     bool setTargetsRecursive(const QString &dir);
-    bool setBinDir(const QString &dir, bool recursive);
+    bool setBinDir(const QString &dir, bool recursive = false);
 
 
     void initIgnoreList();
