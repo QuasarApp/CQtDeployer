@@ -17,31 +17,10 @@
 
 class DEPLOYSHARED_EXPORT Deploy {
   private:
-    bool deployQml = false;
-    int depchLimit = 0;
-
-    QString externQmlScaner = "";
-
-    QString qmake = "";
-    /**
-     * @brief targets
-     * key - path
-     * value - create wrapper
-     */
-    QMap<QString, bool> targets;
-    QString targetDir = "";
-    QString qmlDir = "";
-    QString translationDir = "";
-
-    QStringList deployEnvironment;
 
     QStringList neadedLibs;
     QStringList systemLibs;
-    QStringList ignoreList;
-    QStringList ignoreEnvList;
-    QStringList extraPlugins;
 
-    QString appDir;
 
     DependenciesScanner scaner;
     FileManager _fileManager;

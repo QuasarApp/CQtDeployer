@@ -49,6 +49,7 @@ SOURCES += \
     deploy.cpp \
     deploycore.cpp \
     deployparams.cpp \
+    envirement.cpp \
     filemanager.cpp \
     pe.cpp \
     igetlibinfo.cpp \
@@ -65,6 +66,7 @@ HEADERS += \
     deploy_global.h \
     deploycore.h \
     deployparams.h \
+    envirement.h \
     filemanager.h \
     pe.h \
     igetlibinfo.h \

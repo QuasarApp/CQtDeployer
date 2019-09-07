@@ -14,8 +14,8 @@
 #include <QFileInfo>
 #include <QLibraryInfo>
 
-QString DeployCore::qtDir = "";
-QStringList DeployCore::extraPaths = QStringList();
+//QString DeployCore::qtDir = "";
+//QStringList DeployCore::extraPaths = QStringList();
 
 
 QtModuleEntry DeployCore::qtModuleEntries[] = {
@@ -200,7 +200,6 @@ void DeployCore::help() {
 }
 
 bool DeployCore::parseQtClearMode(Deploy *deploy) {
-    deploy->setTargetDir("./");
     deploy->clear(QuasarAppUtils::Params::isEndable("force-clear"));
 
     return true;
@@ -314,45 +313,6 @@ bool DeployCore::parseQtDeployMode(Deploy *deploy) {
 }
 
 bool DeployCore::parseQt(Deploy *deploy) {
-    switch (getMode()) {
-    case RunMode::Info: {
-        qInfo() << "selected info mode" ;
-
-        if (!parseQtInfoMode()) {
-            qCritical() << "info mode fail!";
-            return false;
-        }
-
-        return true;
-    }
-    case RunMode::Clear: {
-        qInfo() << "selected clear mode" ;
-
-        if (!parseQtClearMode(deploy)) {
-            qCritical() << "clear mode fail!";
-            return false;
-        }
-
-        return true;
-    }
-
-    case RunMode::Deploy: {
-        qInfo() << "selected deploy mode" ;
-
-        if (!parseQtDeployMode(deploy)) {
-            qCritical() << "deploy mode fail!";
-            return false;
-        }
-
-        deploy->deploy();
-        qInfo() << "deploy done!";
-
-        return true;
-    }
-
-    }
-
-    return false;
 }
 
 QStringList DeployCore::extractTranslation(const QStringList &libs) {

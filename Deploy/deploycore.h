@@ -60,9 +60,6 @@ private:
     static QString getMSVCName(MSVCVersion msvc);
     static QString getMSVCVersion(MSVCVersion msvc);
 
-    static bool parseQtDeployMode(Deploy *deploy);
-    static bool parseQtInfoMode();
-    static bool parseQtClearMode(Deploy *deploy);
 public:
     enum QtModule : quint64
     {
@@ -123,8 +120,7 @@ public:
 
     DeployCore() = delete;
 
-    static QString qtDir;
-    static QStringList extraPaths;
+
     static QtModuleEntry qtModuleEntries[];
 
     static MSVCVersion getMSVC(const QString & _qmake);
