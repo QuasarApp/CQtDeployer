@@ -43,7 +43,6 @@ Key differences of this program:
 |  -targetDir [params]        | Sets target directory(by default it is the path to the first deployable file)|
 |  noStrip                    | Skips strip step                                                |
 |  noTranslations             | Skips the translations files.                                   |
-|  qmlExtern                  | Use qml external scanner (qmlimportscaner)                      |
 |                             | It doesn't work without qmake and inside a snap package         |
 |  -verbose [0-3]             | Shows debug log                                                 |
 |   v / version               | Shows compiled version                                          |
@@ -114,7 +113,6 @@ Console QtDeployer является консольной реализацией 
 |  -targetDir [params]        | Устанавливает целевой каталог (по умолчанию это путь к первому развертываемому файлу)|
 |  noStrip                    | Пропускает шаг strip                                      |
 |  noTranslations             | Пропускает файлы переводов                                |
-|  qmlExtern                  | Использует внешний сканер qml (qmlimportscaner)         |
 |                             | не работает без qmake и в snap                            |
 |  -verbose [0-3]             | Показывает дебаг лога                                          |
 |  v / version                | Показывает версию приложения                                          |

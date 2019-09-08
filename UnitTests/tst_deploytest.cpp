@@ -8,7 +8,7 @@
 #include <QtTest>
 #include <quasarapp.h>
 #include <deploycore.h>
-#include <deploy.h>
+#include <extracter.h>
 #include <dependenciesscanner.h>
 #include <qml.h>
 
@@ -334,38 +334,38 @@ void deploytest::testDeployCore() {
 
 void deploytest::testDeployTarget() {
 
-    Deploy *deploy = new Deploy();
+    Extracter *deploy = new Extracter();
     QStringList targets;
     targets << "./test/bins/execTarget.exe";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new Deploy();
+    deploy = new Extracter();
     targets << "./test/bins/execTarget";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new Deploy();
+    deploy = new Extracter();
     targets << "./test/bins/execTarget.exe" << "./test/bins/execTarget";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new Deploy();
+    deploy = new Extracter();
     targets << "./test/bns/execTarget.exe";
     QVERIFY(!deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new Deploy();
+    deploy = new Extracter();
     targets << "./test/bins/";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new Deploy();
+    deploy = new Extracter();
     targets << "./test/bins/" << "./test/warning/";
     QVERIFY(deploy->setTargets(targets));
 
@@ -444,7 +444,7 @@ void deploytest::testStrip() {
 void deploytest::testDeploy() {
     QuasarAppUtils::Params::parseParams(0, nullptr);
 
-    Deploy *deploy = new Deploy();
+    Extracter *deploy = new Extracter();
     QVERIFY(!deploy->appDir.isEmpty());
     delete deploy;
 }
@@ -476,7 +476,7 @@ void deploytest::testExtractLib() {
 }
 
 void deploytest::testDeployLdLinux() {
-    auto deploy = new Deploy();
+    auto deploy = new Extracter();
     int argc = 3;
     deploy->targetDir = "./test/bins/sh";
     QVERIFY(QDir("./").mkpath("./test/bins/sh/"));
@@ -615,7 +615,7 @@ void deploytest::testQmlExtrct() {
 
 void deploytest::testSetTargetDir() {
 
-    Deploy dep;
+    Extracter dep;
 
     dep.setTargetDir();
 
@@ -884,7 +884,7 @@ void deploytest::testTranslations() {
     DeployCore::qtDir = QFileInfo("./test/QtDir/").absoluteFilePath();
 
 
-    Deploy *deploy = new Deploy();
+    Extracter *deploy = new Extracter();
 
     for (auto &&i: trList) {
         generateLib(i);

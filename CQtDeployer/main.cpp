@@ -5,13 +5,14 @@
  * of this license document, but changing it is not allowed.
  */
 
-#include "deploy.h"
+#include "extracter.h"
 #include "quasarapp.h"
 #include "deploycore.h"
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
 #include <QList>
+#include <deploy.h>
 
 
 int main(int argc, const char *argv[]) {
@@ -25,15 +26,16 @@ int main(int argc, const char *argv[]) {
         qWarning() << "wrong parametrs";
         DeployCore::help();
         exit(0);
-    };
+    }
     QuasarAppUtils::Params::setEnable("noWriteInFileLog", true);
+
 
     Deploy deploy;
 
-    if (!DeployCore::parseQt(&deploy)) {
+    if (!deploy.prepare()) {
         qCritical() << "error parse imput data";
         exit(1);
     }
 
-    return 0;
+    return deploy.deploy();
 }

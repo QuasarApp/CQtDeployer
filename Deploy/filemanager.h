@@ -6,7 +6,6 @@
 #include <deploy_global.h>
 
 
-class DeployedFiles;
 
 class DEPLOYSHARED_EXPORT FileManager
 {

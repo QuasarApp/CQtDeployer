@@ -21,6 +21,7 @@ public:
     void addEnv(const QString &dir, const QString &appDir, const QString &targetDir);
 
     int size() const;
+    QString concatEnv() const;
 };
 
 #endif // ENVIREMENT_H

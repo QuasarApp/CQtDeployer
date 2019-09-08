@@ -20,6 +20,8 @@ private:
 public:
     PluginsParser(DependenciesScanner *scaner);
     bool scan(const QString &pluginPath, QStringList& resDependencies);
+
+
 };
 
 #endif // QTMODULES_H

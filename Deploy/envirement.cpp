@@ -75,6 +75,24 @@ int Envirement::size() const {
     return _deployEnvironment.size();
 }
 
+QString Envirement::concatEnv() const {
+
+    if (_deployEnvironment.isEmpty()) {
+        return "";
+    }
+
+    QString result = _deployEnvironment.first();
+    for (auto i: _deployEnvironment) {
+#ifdef  Q_OS_UNIX
+        result += (":" + i);
+#else
+        result += (";" + i);
+#endif
+    }
+
+    return result;
+}
+
 Envirement::Envirement()
 {
 

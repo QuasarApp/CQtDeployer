@@ -9,6 +9,7 @@
 #include <QMap>
 #include <QDir>
 
+class FileManager;
 
 struct DeployConfig {
     QString qmake = "";
@@ -40,7 +41,7 @@ class CQT
 private:
 
     DeployConfig _config;
-
+    FileManager *_fileManager;
     bool createFromDeploy() const;
     bool loadFromFile();
     bool parseQtDeployMode();
@@ -68,12 +69,14 @@ private:
     void initEnvirement();
 
     QStringList getDirsRecursive(const QString &path);
+
+    bool smartMoveTargets();
+
 public:
-    CQT();
+    CQT(FileManager *filemanager);
     bool parseParams();
 
-    DeployConfig config() const;
-    void setConfig(const DeployConfig &config);
+    const DeployConfig* config() const;
 };
 
 #endif // CQT_H

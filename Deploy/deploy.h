@@ -7,66 +7,27 @@
 
 #ifndef DEPLOY_H
 #define DEPLOY_H
-#include <QDir>
-#include <QString>
-#include <QStringList>
-#include <dependenciesscanner.h>
+
 #include "deploy_global.h"
-#include "filemanager.h"
-#include "qml.h"
 
-class DEPLOYSHARED_EXPORT Deploy {
-  private:
+class CQT;
+class Extracter;
+class FileManager;
 
-    QStringList neadedLibs;
-    QStringList systemLibs;
+class DEPLOYSHARED_EXPORT Deploy
+{
+private:
 
-
-    DependenciesScanner scaner;
-    FileManager _fileManager;
-
-    int find(const QString& str, const QStringList& list) const;
-
-    void extract(const QString &file);
-    bool copyPlugin(const QString &plugin);
-    void copyPlugins(const QStringList &list);
-    bool copyTranslations(QStringList list);
-
-    bool createQConf();
-
-    bool extractQml();
-
-
-    QStringList extractImportsFromDir(const QString &dirpath);
-    QFileInfoList findFilesInsideDir(const QString &name, const QString &dirpath);
-    bool extractQmlAll();
-    bool extractQmlFromSource(const QString &sourceDir);
-    QString filterQmlPath(const QString &path);
-    void extractLib(const QString & file);
-
-    void addEnv(const QString& dir);
-    QString concatEnv() const;
-    bool smartMoveTargets();
-    bool isLib(const QFileInfo &file);
-    bool setBinDir(const QString& dir, bool recursive = false);
-
-    bool deployMSVC();
+    CQT * _paramsParser;
+    Extracter *_extracter;
+    FileManager *_fileManager;
 
 
 public:
     Deploy();
+    bool prepare();
+    int deploy();
 
-    bool getDeployQml() const;
-    void setDeployQml(bool value);
-
-    bool createRunScript(const QString &target);
-
-    void deploy();
-
-    void clear(bool force);
-
-
-    friend class deploytest;
 };
 
 #endif // DEPLOY_H

@@ -48,8 +48,8 @@ SOURCES += \
     cqt.cpp \
     deploy.cpp \
     deploycore.cpp \
-    deployparams.cpp \
     envirement.cpp \
+    extracter.cpp \
     filemanager.cpp \
     pe.cpp \
     igetlibinfo.cpp \
@@ -65,8 +65,8 @@ HEADERS += \
     deploy.h \
     deploy_global.h \
     deploycore.h \
-    deployparams.h \
     envirement.h \
+    extracter.h \
     filemanager.h \
     pe.h \
     igetlibinfo.h \

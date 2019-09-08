@@ -4,6 +4,7 @@
 #include <QFileInfo>
 #include <QProcess>
 #include "deploycore.h"
+#include "filemanager.h"
 #include "quasarapp.h"
 
 bool CQT::parseParams() {
@@ -16,6 +17,8 @@ bool CQT::parseParams() {
             return false;
         }
 
+        DeployCore::_config = &_config;
+
         return true;
     }
     case RunMode::Clear: {
@@ -25,6 +28,8 @@ bool CQT::parseParams() {
             qCritical() << "clear mode fail!";
             return false;
         }
+
+        DeployCore::_config = &_config;
 
         return true;
     }
@@ -37,6 +42,8 @@ bool CQT::parseParams() {
             return false;
         }
 
+        DeployCore::_config = &_config;
+
         return true;
     }
 
@@ -45,12 +52,8 @@ bool CQT::parseParams() {
     return false;
 }
 
-DeployConfig CQT::config() const {
-
-}
-
-void CQT::setConfig(const DeployConfig &config) {
-    _config = config;
+const DeployConfig *CQT::config() const {
+    return &_config;
 }
 
 bool CQT::createFromDeploy() const {
@@ -63,14 +66,88 @@ bool CQT::loadFromFile() {
 
 bool CQT::parseQtDeployMode() {
 
+    auto bin = QuasarAppUtils::Params::getStrArg("bin").split(',');
+
+    if (!setTargets(bin)) {
+
+        auto binDir = QuasarAppUtils::Params::getStrArg("binDir");
+        if (!(setTargetsRecursive(binDir) || setTargets({"./"}))) {
+            qCritical() << "setTargetDir fail!";
+            return false;
+        }
+    }
+
+    initIgnoreEnvList();
+    initEnvirement();
+    initIgnoreList();
+
+    _config.depchLimit = 0;
+
+    if (QuasarAppUtils::Params::isEndable("recursiveDepth")) {
+        bool ok;
+        _config.depchLimit = QuasarAppUtils::Params::getArg("recursiveDepth").toInt(&ok);
+        if (!ok) {
+            _config.depchLimit = 0;
+            qWarning() << "recursiveDepth is invalid! use default value 0";
+        }
+    }
+
+    auto listLibDir = QuasarAppUtils::Params::getStrArg("libDir").split(",");
+    auto listExtraPlugin =
+            QuasarAppUtils::Params::getStrArg("extraPlugin").split(",");
+    setExtraPath(listLibDir);
+    setExtraPlugins(listExtraPlugin);
+
+    auto qmake = QuasarAppUtils::Params::getStrArg("qmake");
+    QString basePath = "";
+
+    QFileInfo info(qmake);
+
+    if (!info.isFile() || (info.baseName() != "qmake")) {
+        qInfo() << "deploy only C libs because qmake is not found";
+        return true;
+    }
+
+    basePath = info.absolutePath();
+    setQmake(qmake);
+
+    auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir");
+    QDir dir(basePath);
+
+    if (QFileInfo::exists(qmlDir) ||
+            QuasarAppUtils::Params::isEndable("allQmlDependes")) {
+        _config.deployQml = true;
+
+    } else {
+        QuasarAppUtils::Params::verboseLog("qml dir not exits!",
+                                           QuasarAppUtils::VerboseLvl::Warning);
+    }
+
+    if (!dir.cdUp()) {
+        return false;
+    }
+
+    setQtDir(dir.absolutePath());
+
+    return true;
 }
 
 bool CQT::parseQtInfoMode() {
+    if ((QuasarAppUtils::Params::isEndable("v") ||
+            QuasarAppUtils::Params::isEndable("version"))) {
+        DeployCore::printVersion();
+        return true;
+    }
 
+    DeployCore::help();
+
+    return true;
 }
 
 bool CQT::parseQtClearMode() {
     setTargetDir("./");
+
+    return true;
 }
 
 void CQT::setTargetDir(const QString &target) {
@@ -343,8 +420,50 @@ QStringList CQT::getDirsRecursive(const QString &path) {
     return res;
 }
 
+bool CQT::smartMoveTargets() {
+
+    QMap<QString, bool> temp;
+    bool result = true;
+    for (auto i = _config.targets.cbegin(); i != _config.targets.cend(); ++i) {
+
+        QFileInfo target(i.key());
+        auto targetPath = _config.targetDir + (DeployCore::isLib(target) ? "/lib" : "/bin");
+
+        if (target.completeSuffix().contains("dll", Qt::CaseInsensitive) ||
+                target.completeSuffix().contains("exe", Qt::CaseInsensitive)) {
+
+            targetPath = _config.targetDir;
+
+        }
+
+        if (!_fileManager->smartCopyFile(target.absoluteFilePath(), targetPath, _config.targetDir)) {
+            result = false;
+        }
 
 
-CQT::CQT() {
-    
+        temp.insert(targetPath + "/" + target.fileName(), i.value());
+
+    }
+
+    _config.targets = temp;
+
+    return result;
+}
+
+CQT::CQT(FileManager *filemanager):
+    _fileManager(filemanager) {
+
+    assert(_fileManager);
+
+#ifdef Q_OS_LINUX
+    _config.appDir = QuasarAppUtils::Params::getStrArg("appPath");
+
+    if (_config.appDir.right(4) == "/bin") {
+        _config.appDir = _config.appDir.left(_config.appDir.size() - 4);
+    }
+#else
+    _config.appDir = QuasarAppUtils::Params::getStrArg("appPath");
+#endif
+
+    QuasarAppUtils::Params::verboseLog("appDir = " + _config.appDir);
 }
