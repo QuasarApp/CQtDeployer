@@ -31,6 +31,7 @@ struct DeployConfig {
      */
     QMap<QString, bool> targets;
     Envirement envirement;
+
 };
 
 /**
@@ -77,6 +78,8 @@ public:
     bool parseParams();
 
     const DeployConfig* config() const;
+    friend class deploytest;
+
 };
 
 #endif // CQT_H

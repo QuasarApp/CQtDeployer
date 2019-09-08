@@ -11,6 +11,8 @@
 #include <extracter.h>
 #include <dependenciesscanner.h>
 #include <qml.h>
+#include <deploy.h>
+#include <cqt.h>
 
 #include <QMap>
 #include <QByteArray>
@@ -179,7 +181,7 @@ bool deploytest::testEnvIgnore()
 
     Deploy deploy;
 
-    if (!DeployCore::parseQt(&deploy)) {
+    if (!deploy.prepare()) {
         return false;
     }
 
@@ -300,72 +302,74 @@ void deploytest::cleanupTestCase() {
 
 }
 
-void deploytest::testDeployCore() {
-    QString qtDir = "./test/Qt/5.12/";
-    QStringList extraPathes = QStringList() << QFileInfo("./test/extraPath/").absoluteFilePath();
+//void deploytest::testDeployCore() {
+//    QString qtDir = "./test/Qt/5.12/";
+//    QStringList extraPathes = QStringList() << QFileInfo("./test/extraPath/").absoluteFilePath();
 
-    DeployCore::qtDir = QFileInfo(qtDir).absoluteFilePath();
-    DeployCore::extraPaths = extraPathes;
+//    DeployCore::_config->qtDir = QFileInfo(qtDir).absoluteFilePath();
+//    DeployCore::_config->extraPaths = extraPathes;
 
-    // qt Dir
-    QVERIFY(DeployCore::isQtLib("./test/Qt/5.12/myLib.so"));
-    QVERIFY(!DeployCore::isQtLib("/myQtDur/Qt/5.11/myLib.so"));
-    QVERIFY(!DeployCore::isQtLib("/mQtDur/Qt/5.12/myLib.so"));
-    QVERIFY(DeployCore::isQtLib("./test/Qt/5.12/myLib/testlibs/mylib.so"));
+//    // qt Dir
+//    QVERIFY(DeployCore::isQtLib("./test/Qt/5.12/myLib.so"));
+//    QVERIFY(!DeployCore::isQtLib("/myQtDur/Qt/5.11/myLib.so"));
+//    QVERIFY(!DeployCore::isQtLib("/mQtDur/Qt/5.12/myLib.so"));
+//    QVERIFY(DeployCore::isQtLib("./test/Qt/5.12/myLib/testlibs/mylib.so"));
 
-    // extra Dir
-    QVERIFY(!DeployCore::isExtraLib("./test/Qt/5.12/myLib.so"));
-    QVERIFY(!DeployCore::isExtraLib("/myQtDur/Qt/5.11/myLib.so"));
-    QVERIFY(!DeployCore::isExtraLib("/mQtDur/Qt/5.12/myLib.so"));
-    QVERIFY(!DeployCore::isExtraLib("./test/Qt/5.12/myLib/testlibs/mylib.so"));
+//    // extra Dir
+//    QVERIFY(!DeployCore::isExtraLib("./test/Qt/5.12/myLib.so"));
+//    QVERIFY(!DeployCore::isExtraLib("/myQtDur/Qt/5.11/myLib.so"));
+//    QVERIFY(!DeployCore::isExtraLib("/mQtDur/Qt/5.12/myLib.so"));
+//    QVERIFY(!DeployCore::isExtraLib("./test/Qt/5.12/myLib/testlibs/mylib.so"));
 
-    QVERIFY(DeployCore::isExtraLib("./test/extraPath/Qt/5.12/myLib.so"));
-    QVERIFY(DeployCore::isExtraLib("./test/extraPath/Qt/5/myLib.so"));
-    QVERIFY(DeployCore::isExtraLib("./test/extraPath/myLib.so"));
-    QVERIFY(DeployCore::isExtraLib("./test/extraPath/Qt/5.12/myLib/testlibs/mylib.so"));
+//    QVERIFY(DeployCore::isExtraLib("./test/extraPath/Qt/5.12/myLib.so"));
+//    QVERIFY(DeployCore::isExtraLib("./test/extraPath/Qt/5/myLib.so"));
+//    QVERIFY(DeployCore::isExtraLib("./test/extraPath/myLib.so"));
+//    QVERIFY(DeployCore::isExtraLib("./test/extraPath/Qt/5.12/myLib/testlibs/mylib.so"));
 
-    //getLibPriority
+//    //getLibPriority
 
-    QVERIFY(DeployCore::getLibPriority("./tst/Qt/5.12/generalLib.so") == NotFile);
-    QVERIFY(DeployCore::getLibPriority("./test/Qt/5.12/generalLib.so") == QtLib);
-    QVERIFY(DeployCore::getLibPriority("./test/extraPath/ExtraLib.so") == ExtraLib);
-    QVERIFY(DeployCore::getLibPriority("./test/extra/ExtraLib.so") == SystemLib);
-}
+//    QVERIFY(DeployCore::getLibPriority("./tst/Qt/5.12/generalLib.so") == NotFile);
+//    QVERIFY(DeployCore::getLibPriority("./test/Qt/5.12/generalLib.so") == QtLib);
+//    QVERIFY(DeployCore::getLibPriority("./test/extraPath/ExtraLib.so") == ExtraLib);
+//    QVERIFY(DeployCore::getLibPriority("./test/extra/ExtraLib.so") == SystemLib);
+//}
 
 void deploytest::testDeployTarget() {
 
-    Extracter *deploy = new Extracter();
+    FileManager file;
+    CQT *deploy = new CQT(&file);
+
     QStringList targets;
     targets << "./test/bins/execTarget.exe";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new Extracter();
+    deploy = new CQT(&file);
     targets << "./test/bins/execTarget";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new Extracter();
+    deploy = new CQT(&file);
     targets << "./test/bins/execTarget.exe" << "./test/bins/execTarget";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new Extracter();
+    deploy = new CQT(&file);
     targets << "./test/bns/execTarget.exe";
     QVERIFY(!deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new Extracter();
+    deploy = new CQT(&file);
     targets << "./test/bins/";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new Extracter();
+    deploy = new CQT(&file);
     targets << "./test/bins/" << "./test/warning/";
     QVERIFY(deploy->setTargets(targets));
 
@@ -375,11 +379,7 @@ void deploytest::testDeployTarget() {
 
 void deploytest::testStrip() {
 
-#ifdef Q_OS_WIN
-    FileManager *deploy = new FileManager();
-    QVERIFY(deploy->strip("./test/binTargetDir/debugLib.so"));
-    delete deploy;
-#else
+#ifdef Q_OS_UNIX
     //for one lib
     qint64 sizeBefor = generateLib("./test/binTargetDir/debugLib.so");
     qint64 sizeAfter = 0;
@@ -441,13 +441,13 @@ void deploytest::testStrip() {
 #endif
 }
 
-void deploytest::testDeploy() {
-    QuasarAppUtils::Params::parseParams(0, nullptr);
+//void deploytest::testDeploy() {
+//    QuasarAppUtils::Params::parseParams(0, nullptr);
 
-    Extracter *deploy = new Extracter();
-    QVERIFY(!deploy->appDir.isEmpty());
-    delete deploy;
-}
+//    Deploy *deploy = new Deploy();
+//    QVERIFY(!->appDir.isEmpty());
+//    delete deploy;
+//}
 
 void deploytest::testExtractLib() {
     LibCreator creator("./");
@@ -476,7 +476,8 @@ void deploytest::testExtractLib() {
 }
 
 void deploytest::testDeployLdLinux() {
-    auto deploy = new Extracter();
+    FileManager files;
+    auto deploy = new Extracter(&files);
     int argc = 3;
     deploy->targetDir = "./test/bins/sh";
     QVERIFY(QDir("./").mkpath("./test/bins/sh/"));
