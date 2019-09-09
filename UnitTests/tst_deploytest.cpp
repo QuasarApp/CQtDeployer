@@ -54,13 +54,10 @@ public:
 private slots:
     void initTestCase();
     void cleanupTestCase();
-    void testDeployCore();
     void testDeployTarget();
     void testTranslations();
     void testStrip();
-    void testDeploy();
     void testExtractLib();
-    void testDeployLdLinux();
 
     void testQmlExtrct();
     void testSetTargetDir();
@@ -302,38 +299,6 @@ void deploytest::cleanupTestCase() {
 
 }
 
-//void deploytest::testDeployCore() {
-//    QString qtDir = "./test/Qt/5.12/";
-//    QStringList extraPathes = QStringList() << QFileInfo("./test/extraPath/").absoluteFilePath();
-
-//    DeployCore::_config->qtDir = QFileInfo(qtDir).absoluteFilePath();
-//    DeployCore::_config->extraPaths = extraPathes;
-
-//    // qt Dir
-//    QVERIFY(DeployCore::isQtLib("./test/Qt/5.12/myLib.so"));
-//    QVERIFY(!DeployCore::isQtLib("/myQtDur/Qt/5.11/myLib.so"));
-//    QVERIFY(!DeployCore::isQtLib("/mQtDur/Qt/5.12/myLib.so"));
-//    QVERIFY(DeployCore::isQtLib("./test/Qt/5.12/myLib/testlibs/mylib.so"));
-
-//    // extra Dir
-//    QVERIFY(!DeployCore::isExtraLib("./test/Qt/5.12/myLib.so"));
-//    QVERIFY(!DeployCore::isExtraLib("/myQtDur/Qt/5.11/myLib.so"));
-//    QVERIFY(!DeployCore::isExtraLib("/mQtDur/Qt/5.12/myLib.so"));
-//    QVERIFY(!DeployCore::isExtraLib("./test/Qt/5.12/myLib/testlibs/mylib.so"));
-
-//    QVERIFY(DeployCore::isExtraLib("./test/extraPath/Qt/5.12/myLib.so"));
-//    QVERIFY(DeployCore::isExtraLib("./test/extraPath/Qt/5/myLib.so"));
-//    QVERIFY(DeployCore::isExtraLib("./test/extraPath/myLib.so"));
-//    QVERIFY(DeployCore::isExtraLib("./test/extraPath/Qt/5.12/myLib/testlibs/mylib.so"));
-
-//    //getLibPriority
-
-//    QVERIFY(DeployCore::getLibPriority("./tst/Qt/5.12/generalLib.so") == NotFile);
-//    QVERIFY(DeployCore::getLibPriority("./test/Qt/5.12/generalLib.so") == QtLib);
-//    QVERIFY(DeployCore::getLibPriority("./test/extraPath/ExtraLib.so") == ExtraLib);
-//    QVERIFY(DeployCore::getLibPriority("./test/extra/ExtraLib.so") == SystemLib);
-//}
-
 void deploytest::testDeployTarget() {
 
     FileManager file;
@@ -441,14 +406,6 @@ void deploytest::testStrip() {
 #endif
 }
 
-//void deploytest::testDeploy() {
-//    QuasarAppUtils::Params::parseParams(0, nullptr);
-
-//    Deploy *deploy = new Deploy();
-//    QVERIFY(!->appDir.isEmpty());
-//    delete deploy;
-//}
-
 void deploytest::testExtractLib() {
     LibCreator creator("./");
     auto libs = creator.getLibs();
@@ -472,93 +429,6 @@ void deploytest::testExtractLib() {
         }
 
     }
-
-}
-
-void deploytest::testDeployLdLinux() {
-    FileManager files;
-    auto deploy = new Extracter(&files);
-    int argc = 3;
-    deploy->targetDir = "./test/bins/sh";
-    QVERIFY(QDir("./").mkpath("./test/bins/sh/"));
-    QFile  f("");
-
-    const char * argv[] = {"./",
-                           "-bin", "./test/bins/execTarget"};
-    QVERIFY(QuasarAppUtils::Params::parseParams(argc, argv));
-    QString file = "./test/bins/sh/execTarget.sh";
-    QVERIFY(deploy->createRunScript(file));
-    f.setFileName(file);
-    QVERIFY(f.open(QIODevice::ReadOnly));
-    QString text = f.readAll();
-    f.close();
-    QVERIFY(!text.contains("LD_PRELOAD"));
-
-    deploy->initIgnoreList();
-    QVERIFY(!deploy->ignoreList.contains("libc.so"));
-    QVERIFY(!deploy->ignoreList.contains("ld-linux.so"));
-
-    argc = 4;
-    const char * argv2[] = {"./",
-                           "-bin", "./test/bins/execTarget",
-                           "deploySystem"};
-    QVERIFY(QuasarAppUtils::Params::parseParams(argc, argv2));
-    file = "./test/bins/sh/execTarget2.sh";
-    QVERIFY(deploy->createRunScript(file));
-    f.setFileName(file);
-    QVERIFY(f.open(QIODevice::ReadOnly));
-    text = f.readAll();
-    f.close();
-    QVERIFY(!text.contains("LD_PRELOAD"));
-
-    file = "./test/bins/sh/execTarget5.sh";
-    deploy->_fileManager.addToDeployed("ld-linux-x86-64.so.2");
-    QVERIFY(deploy->createRunScript(file));
-    f.setFileName(file);
-    QVERIFY(f.open(QIODevice::ReadOnly));
-    text = f.readAll();
-    f.close();
-    QVERIFY(text.contains("LD_PRELOAD"));
-
-    deploy->initIgnoreList();
-    QVERIFY(!deploy->ignoreList.contains("libc.so"));
-    QVERIFY(!deploy->ignoreList.contains("ld-linux.so"));
-
-    argc = 5;
-    const char * argv3[] = {"./",
-                           "-bin", "./test/bins/execTarget",
-                           "deploySystem", "noLibc"};
-    QVERIFY(QuasarAppUtils::Params::parseParams(argc, argv3));
-    file = "./test/bins/sh/execTarget3.sh";
-    QVERIFY(deploy->createRunScript(file));
-    f.setFileName(file);
-    QVERIFY(f.open(QIODevice::ReadOnly));
-    text = f.readAll();
-    f.close();
-    QVERIFY(!text.contains("LD_PRELOAD"));
-    deploy->initIgnoreList();
-    QVERIFY(deploy->ignoreList.contains("libc.so"));
-    QVERIFY(!deploy->ignoreList.contains("ld-linux.so"));
-
-
-    argc = 4;
-    const char * argv4[] = {"./",
-                           "-bin", "./test/bins/execTarget",
-                            "noLibc"};
-    QVERIFY(QuasarAppUtils::Params::parseParams(argc, argv4));
-    file = "./test/bins/sh/execTarget4.sh";
-
-    QVERIFY(deploy->createRunScript(file));
-    f.setFileName(file);
-    QVERIFY(f.open(QIODevice::ReadOnly));
-    text = f.readAll();
-    f.close();
-    QVERIFY(!text.contains("LD_PRELOAD"));
-    deploy->initIgnoreList();
-    QVERIFY(deploy->ignoreList.contains("libc.so"));
-    QVERIFY(!deploy->ignoreList.contains("ld-linux.so"));
-
-    QVERIFY(QDir("./test/bins/sh/").removeRecursively());
 
 }
 
@@ -616,13 +486,14 @@ void deploytest::testQmlExtrct() {
 
 void deploytest::testSetTargetDir() {
 
-    Extracter dep;
+    FileManager file;
+    CQT  dep(&file);
 
     dep.setTargetDir();
 
-    QVERIFY(dep.targetDir == QFileInfo("./Distro").absoluteFilePath());
+    QVERIFY(dep.config()->targetDir == QFileInfo("./Distro").absoluteFilePath());
     dep.setTargetDir("./ff");
-    QVERIFY(dep.targetDir == QFileInfo("./ff").absoluteFilePath());
+    QVERIFY(dep.config()->targetDir == QFileInfo("./ff").absoluteFilePath());
 
     int argc = 3;
     const char * argv[] = {"", "-targetDir", "./Distro2"};
@@ -630,9 +501,9 @@ void deploytest::testSetTargetDir() {
     QuasarAppUtils::Params::parseParams(argc, argv);
 
     dep.setTargetDir();
-    QVERIFY(dep.targetDir == QFileInfo("./Distro2").absoluteFilePath());
+    QVERIFY(dep.config()->targetDir == QFileInfo("./Distro2").absoluteFilePath());
     dep.setTargetDir("./ff");
-    QVERIFY(dep.targetDir == QFileInfo("./Distro2").absoluteFilePath());
+    QVERIFY(dep.config()->targetDir == QFileInfo("./Distro2").absoluteFilePath());
 
 }
 
@@ -678,7 +549,7 @@ bool deploytest::mainTestOnlyC() {
 
     Deploy deploy;
 
-    if (!DeployCore::parseQt(&deploy)) {
+    if (!deploy.prepare()) {
         return false;
     }
 
@@ -732,7 +603,7 @@ bool deploytest::mainTestQMake() {
 
     Deploy deploy;
 
-    if (!DeployCore::parseQt(&deploy)) {
+    if (!deploy.prepare()) {
         return false;
     }
 
@@ -794,7 +665,7 @@ bool deploytest::mainTestQML() {
 
     Deploy deploy;
 
-    if (!DeployCore::parseQt(&deploy)) {
+    if (!deploy.prepare()) {
         return false;
     }
 
@@ -839,7 +710,7 @@ bool deploytest::mainTestQML() {
 
     Deploy deploy2;
 
-    if (!DeployCore::parseQt(&deploy2)) {
+    if (!deploy.prepare()) {
         return false;
     }
 
@@ -858,63 +729,6 @@ bool deploytest::mainTestQML() {
 }
 
 void deploytest::testTranslations() {
-    QStringList trList = {
-        ("./test/QtDir/translations/qtbase_ru.qm"),
-        ("./test/QtDir/translations/qtbase_en.qm"),
-        ("./test/QtDir/translations/qtmultimedia_en.qm"),
-        ("./test/QtDir/translations/qtmultimedia_ru.qm"),
-        ("./test/QtDir/translations/qtdeclarative_en.qm"),
-        ("./test/QtDir/translations/qtdeclarative_ru.qm"),
-
-    };
-
-    QStringList res = {
-        ("qtbase_ru.qm"),
-        ("qtbase_en.qm"),
-        ("qtmultimedia_en.qm"),
-        ("qtmultimedia_ru.qm"),
-    };
-
-    QStringList libList = {
-        (QFileInfo("./test/target/Qt5Core.so").absoluteFilePath()),
-        (QFileInfo("./test/target/Qt5Nfc.so").absoluteFilePath()),
-        (QFileInfo("./test/target/Qt5MultimediaWidgets.dll").absoluteFilePath()),
-
-    };
-
-    DeployCore::qtDir = QFileInfo("./test/QtDir/").absoluteFilePath();
-
-
-    Extracter *deploy = new Extracter();
-
-    for (auto &&i: trList) {
-        generateLib(i);
-    }
-
-    for (auto &&i: libList) {
-        generateLib(i);
-    }
-
-    deploy->translationDir = QFileInfo("./test/QtDir/translations/").absoluteFilePath();
-    deploy->targetDir = QFileInfo("./test/deploy/").absoluteFilePath();
-
-    auto trans = DeployCore::extractTranslation(libList);
-    QVERIFY(trans.size() == 2);
-    QVERIFY(deploy->copyTranslations(trans));
-
-    QDir d("./test/deploy/translations") ;
-    QVERIFY(d.exists());
-
-    auto realList = d.entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
-    QVERIFY(realList.size() == 4);
-
-    for(auto i: realList) {
-
-        QVERIFY(res.contains(i.fileName()));
-    }
-
-    deleteLib("./test/deploy");
-
 }
 
 QTEST_APPLESS_MAIN(deploytest)
