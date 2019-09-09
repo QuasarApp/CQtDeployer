@@ -2,10 +2,11 @@
 #define ENVIREMENT_H
 
 #include <QStringList>
+#include "deploy_global.h"
 
 
 
-class Envirement
+class DEPLOYSHARED_EXPORT Envirement
 {
 private:
     QStringList _ignoreEnvList;

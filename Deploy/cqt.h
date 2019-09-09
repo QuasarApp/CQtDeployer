@@ -8,10 +8,11 @@
 #include <QStringList>
 #include <QMap>
 #include <QDir>
+#include "deploy_global.h"
 
-class FileManager;
+class  FileManager;
 
-struct DeployConfig {
+struct DEPLOYSHARED_EXPORT DeployConfig {
     QString qmake = "";
     QString targetDir = "";
     QString qmlDir = "";
@@ -37,7 +38,7 @@ struct DeployConfig {
 /**
  * @brief The CQT class - it is wrapper for cqt file. qcn it is configuration file of deploying project.
  */
-class CQT
+class DEPLOYSHARED_EXPORT CQT
 {
 private:
 

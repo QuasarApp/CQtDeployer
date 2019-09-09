@@ -2,16 +2,17 @@
 #define QTMODULES_H
 
 #include <QStringList>
+#include "deploy_global.h"
 
 class DependenciesScanner;
 
-struct PluginModuleMapping
+struct DEPLOYSHARED_EXPORT PluginModuleMapping
 {
     const char *directoryName;
     quint64 module;
 };
 
-class PluginsParser
+class DEPLOYSHARED_EXPORT PluginsParser
 {
 private:
     DependenciesScanner *_libScaner = nullptr;
