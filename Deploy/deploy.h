@@ -18,15 +18,18 @@ class DEPLOYSHARED_EXPORT Deploy
 {
 private:
 
-    CQT * _paramsParser;
-    Extracter *_extracter;
-    FileManager *_fileManager;
+    CQT * _paramsParser = nullptr;
+    Extracter *_extracter = nullptr;
+    FileManager *_fileManager = nullptr;
 
+    bool prepare();
+    int deploy();
 
 public:
     Deploy();
-    bool prepare();
-    int deploy();
+    int run();
+    ~Deploy();
+
 
 };
 

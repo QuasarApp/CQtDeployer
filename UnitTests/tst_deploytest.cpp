@@ -178,11 +178,9 @@ bool deploytest::testEnvIgnore()
 
     Deploy deploy;
 
-    if (!deploy.prepare()) {
+    if (deploy.run()) {
         return false;
     }
-
-    deploy.deploy();
 
     if (!QFileInfo("./Distro").isDir()) {
         return false;
@@ -549,11 +547,9 @@ bool deploytest::mainTestOnlyC() {
 
     Deploy deploy;
 
-    if (!deploy.prepare()) {
+    if (deploy.run()) {
         return false;
     }
-
-    deploy.deploy();
 
     if (!QFileInfo("./Distro").isDir()) {
         return false;
@@ -603,11 +599,9 @@ bool deploytest::mainTestQMake() {
 
     Deploy deploy;
 
-    if (!deploy.prepare()) {
+    if (deploy.run()) {
         return false;
     }
-
-    deploy.deploy();
 
     QDir info("./Distro");
 
@@ -665,11 +659,9 @@ bool deploytest::mainTestQML() {
 
     Deploy deploy;
 
-    if (!deploy.prepare()) {
+    if (deploy.run()) {
         return false;
     }
-
-    deploy.deploy();
 
     QDir info("./Distro");
 
@@ -710,11 +702,9 @@ bool deploytest::mainTestQML() {
 
     Deploy deploy2;
 
-    if (!deploy.prepare()) {
+    if (deploy.run()) {
         return false;
     }
-
-    deploy2.deploy();
     run = runProcess("./Distro", "TestQMLWidgets", QtDir.absoluteFilePath());
 
     if (!info.removeRecursively()) {

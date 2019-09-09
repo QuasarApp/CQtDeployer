@@ -44,6 +44,8 @@ bool CQT::parseParams() {
 
         DeployCore::_config = &_config;
 
+        smartMoveTargets();
+
         return true;
     }
 

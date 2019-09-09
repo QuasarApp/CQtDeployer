@@ -14,11 +14,40 @@
 Deploy::Deploy() {
     _fileManager = new FileManager();
     _paramsParser = new CQT(_fileManager);
-    _extracter = new Extracter(_fileManager);
+}
+
+int Deploy::run() {
+
+    if (!prepare()) {
+        return 1;
+    }
+
+    return deploy();
+}
+
+Deploy::~Deploy() {
+
+    if (_extracter) {
+        delete _extracter;
+    }
+
+    if (_paramsParser) {
+        delete _paramsParser;
+    }
+
+    if (_fileManager) {
+        delete _fileManager;
+    }
 }
 
 bool Deploy::prepare() {
-    return _paramsParser->parseParams();
+    if ( !_paramsParser->parseParams()) {
+        return false;
+    }
+
+    _extracter = new Extracter(_fileManager);
+
+    return true;
 }
 
 int Deploy::deploy() {

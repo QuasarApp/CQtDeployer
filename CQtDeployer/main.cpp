@@ -31,11 +31,6 @@ int main(int argc, const char *argv[]) {
 
 
     Deploy deploy;
+    return deploy.run();
 
-    if (!deploy.prepare()) {
-        qCritical() << "error parse imput data";
-        exit(1);
-    }
-
-    return deploy.deploy();
 }
