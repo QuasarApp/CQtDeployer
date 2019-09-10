@@ -167,6 +167,9 @@ void DeployCore::help() {
     { "   -binDir [params]         : A folder which includes deployable files (recursive search)." },
     { "                            | WARNING: this flag supports 'so', 'dll' and 'exe' files only." },
     { "                            | Use '-bin' flag if you want to deploy linux binary files" },
+    { "   -confFile [params]       : path to json file with all deploy config" },
+    { "                            | Use '-bin' flag if you want to deploy linux binary files" },
+
     { "   -qmlDir [params]         : Qml data dir. For example -qmlDir ~/my/project/qml" },
     { "   deploySystem             : Deploys all libs" },
     { "   noLibc                   : Skip Deploys libc and ld-linux libs" },
@@ -197,6 +200,32 @@ void DeployCore::help() {
     { "Example (only C libs): cqtdeployer -bin myApp clear" }};
 
     QuasarAppUtils::Params::showHelp(help);
+}
+
+QStringList DeployCore::helpKeys() {
+    return {
+        "help",
+        "always-overwrite",
+        "bin",
+        "binDir",
+        "qmlDir",
+        "deploySystem",
+        "noLibc",
+        "qmake",
+        "ignore",
+        "ignoreEnv",
+        "clear",
+        "force-clear",
+        "allQmlDependes",
+        "libDir",
+        "extraPlugin",
+        "recursiveDepth",
+        "targetDir",
+        "noStrip",
+        "noTranslations",
+        "version",
+        "verbose"
+    };
 }
 
 QStringList DeployCore::extractTranslation(const QStringList &libs) {

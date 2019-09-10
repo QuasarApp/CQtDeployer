@@ -44,8 +44,8 @@ private:
 
     DeployConfig _config;
     FileManager *_fileManager;
-    bool createFromDeploy() const;
-    bool loadFromFile();
+    bool createFromDeploy(const QString& file) const;
+    bool loadFromFile(const QString& file);
     bool parseQtDeployMode();
     bool parseQtInfoMode();
     bool parseQtClearMode();
@@ -74,6 +74,8 @@ private:
 
     bool smartMoveTargets();
 
+    void writeKey(const QString &key, QJsonObject &) const;
+    void readKey(const QString &key, const QJsonObject &obj) const;
 public:
     CQT(FileManager *filemanager);
     bool parseParams();

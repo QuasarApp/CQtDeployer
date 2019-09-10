@@ -58,12 +58,62 @@ const DeployConfig *CQT::config() const {
     return &_config;
 }
 
-bool CQT::createFromDeploy() const {
+void CQT::writeKey(const QString& key, QJsonObject& obj) const {
+    if (QuasarAppUtils::Params::isEndable(key)) {
+        obj[key] = QuasarAppUtils::Params::getStrArg(key);
+    }
+}
+
+void CQT::readKey(const QString& key, const QJsonObject& obj) const {
+    if (!QuasarAppUtils::Params::isEndable(key)) {
+         QuasarAppUtils::Params::setArg(key, obj[key].toVariant());
+    }
+}
+
+bool CQT::createFromDeploy(const QString& confFile) const {
+    QJsonObject obj;
+
+    for (auto &key :DeployCore::helpKeys()) {
+        writeKey(key, obj);
+    }
+
+    QJsonDocument doc(obj);
+
+    QFile file(confFile);
+
+    if (file.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
+        file.write(doc.toJson());
+        file.close();
+
+        return true;
+    }
+
+    return false;
 
 }
 
-bool CQT::loadFromFile() {
+bool CQT::loadFromFile(const QString& confFile) {
+    QFile file(confFile);
 
+    if (file.open(QIODevice::ReadOnly)) {
+        auto doc = QJsonDocument::fromJson(file.readAll());
+
+        if (!doc.isObject()) {
+            return false;
+        }
+
+        auto obj = doc.object();
+
+        for (auto &key: obj.keys()) {
+            readKey(key, obj);
+        }
+
+        file.close();
+
+        return true;
+    }
+
+    return false;
 }
 
 bool CQT::parseQtDeployMode() {
