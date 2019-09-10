@@ -22,6 +22,7 @@ Key differences of this program:
 |   always-overwrite          | Copies files and replaces the existing ones.                    |
 |   -bin    [list, params]    | Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe|
 |   -binDir [params]          | A folder which includes deployable files (recursive search). WARNING: this flag supports  'so', 'dll' and 'exe' files only. Use '-bin' flag if you want to deploy linux binary files |
+|   -confFile [params]        | The path to the json file with all deployment configurations. Using this file, you can add the necessary options, thereby simplifying the command invocation in the console. However, the parameters in Kansol have a higher priority than in the file. |
 |   -qmlDir [params]          | Qml data dir. For example -qmlDir ~/my/project/qml              |
 |   deploySystem              | Deploys all libraries                                           |
 |   noLibc                    | Skip Deploys libc and ld-linux libs                             |
@@ -92,6 +93,7 @@ Console QtDeployer является консольной реализацией 
 |   always-overwrite          | Копирует файлы с заменой уже существующих                 |
 |   -bin    [list, params]    | Развертываемый файл или папка. пример -bin ~/my/project/bin/,~/my/project/bin.exe|
 |   -binDir [params]          | Папка с развертываемыми файлами (с рекурсивным поиском). ВНИМАНИЕ! Этот флаг поддерживает только файлы 'so', 'dll' и 'exe'. Если вы хотите развернуть бинарный файл Linux, используйте флаг '-bin'  |
+|   -confFile [params]        | Путь к файлу json со всеми конфигурациями развертывания. С помощью этого файла можно добавить нужные опции, тем самым упрастить вызов комманды в консоле. Однако пораметры в кансоле имеют больший приоритет чем в файле. |
 |   -qmlDir [params]          | Папка qml. пример -qmlDir ~/my/project/qml                |
 |   deploySystem              | Копирует все библиотеки кроме libc                        |
 |   deployLibc                | Копирует libc и все остальные библиотеки                  |

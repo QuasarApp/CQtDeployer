@@ -31,6 +31,9 @@ public:
     ~Deploy();
 
 
+    friend class deploytest;
+
+
 };
 
 #endif // DEPLOY_H

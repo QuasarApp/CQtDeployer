@@ -8,6 +8,14 @@
 #include "quasarapp.h"
 
 bool CQT::parseParams() {
+
+    auto path = QuasarAppUtils::Params::getStrArg("confFile");
+    bool createFile = !path.isEmpty();
+    if (path.isEmpty()) {
+        path = QFileInfo("./").absoluteFilePath();
+    }
+    loadFromFile(path);
+
     switch (DeployCore::getMode()) {
     case RunMode::Info: {
         qInfo() << "selected info mode" ;
@@ -19,7 +27,7 @@ bool CQT::parseParams() {
 
         DeployCore::_config = &_config;
 
-        return true;
+        break;
     }
     case RunMode::Clear: {
         qInfo() << "selected clear mode" ;
@@ -31,7 +39,7 @@ bool CQT::parseParams() {
 
         DeployCore::_config = &_config;
 
-        return true;
+        break;
     }
 
     case RunMode::Deploy: {
@@ -46,12 +54,16 @@ bool CQT::parseParams() {
 
         smartMoveTargets();
 
-        return true;
+        break;
     }
 
     }
 
-    return false;
+    if (createFile) {
+        createFromDeploy(path);
+    }
+
+    return true;
 }
 
 const DeployConfig *CQT::config() const {

@@ -153,7 +153,7 @@ RunMode DeployCore::getMode() {
     return RunMode::Info;
 }
 
-void DeployCore::help() {
+QString DeployCore::help() {
 
     QStringList help = {
     { "CQtDeployer version: " + getAppVersion()},
@@ -167,9 +167,10 @@ void DeployCore::help() {
     { "   -binDir [params]         : A folder which includes deployable files (recursive search)." },
     { "                            | WARNING: this flag supports 'so', 'dll' and 'exe' files only." },
     { "                            | Use '-bin' flag if you want to deploy linux binary files" },
-    { "   -confFile [params]       : path to json file with all deploy config" },
-    { "                            | Use '-bin' flag if you want to deploy linux binary files" },
-
+    { "   -confFile [params]       : Path to json file with all deploy config" },
+    { "                            | Using this file, you can add the necessary options, " },
+    { "                            | thereby simplifying the command call in the console. "},
+    { "                            | However, the parameters in Kansol have a higher priority than in the file. "},
     { "   -qmlDir [params]         : Qml data dir. For example -qmlDir ~/my/project/qml" },
     { "   deploySystem             : Deploys all libs" },
     { "   noLibc                   : Skip Deploys libc and ld-linux libs" },
@@ -200,6 +201,8 @@ void DeployCore::help() {
     { "Example (only C libs): cqtdeployer -bin myApp clear" }};
 
     QuasarAppUtils::Params::showHelp(help);
+
+    return help.join(" ");
 }
 
 QStringList DeployCore::helpKeys() {

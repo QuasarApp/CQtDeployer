@@ -20,6 +20,7 @@
 #include <thread>
 #include "libcreator.h"
 #include "qmlcreator.h"
+#include "testutils.h"
 // add necessary includes here
 
 class deploytest : public QObject
@@ -32,6 +33,8 @@ private:
                     const QString &qt = "");
     QStringList getFilesFromDir(const QString& dir);
 
+
+    void runTestParams(const QStringList &list, QSet<QString> *tree = nullptr);
 
 public:
     deploytest();
@@ -54,8 +57,9 @@ public:
 private slots:
     void initTestCase();
     void cleanupTestCase();
+
+    // old tests (not valid)
     void testDeployTarget();
-    void testTranslations();
     void testStrip();
     void testExtractLib();
 
@@ -63,7 +67,12 @@ private slots:
     void testSetTargetDir();
 
     void mainTests();
+
+    // end old tests
+
+    void testHelp();
     void testMSVC();
+
 };
 
 bool deploytest::runProcess(const QString &DistroPath,
@@ -516,6 +525,38 @@ void deploytest::mainTests() {
 #endif
 }
 
+void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree) {
+
+    QuasarAppUtils::Params::parseParams(list);
+
+    Deploy deploy;
+    QVERIFY(deploy.run() == 0);
+
+    if (tree) {
+        TestUtils utils;
+
+        QVERIFY(DeployCore::_config);
+        QVERIFY(!DeployCore::_config->targetDir.isEmpty());
+
+        auto resultTree = utils.getTree(DeployCore::_config->targetDir);
+        auto comapre = utils.compareTree(resultTree, *tree);
+
+        QVERIFY(comapre.size() == 0);
+
+    }
+
+}
+
+void deploytest::testHelp() {
+    runTestParams({"h"});
+    runTestParams({"v"});
+
+    for (auto &key: DeployCore::helpKeys()) {
+        QVERIFY(DeployCore::help().contains(key));
+    }
+
+}
+
 bool deploytest::mainTestOnlyC() {
 #ifdef WITH_ALL_TESTS
     int argc = 5;
@@ -716,9 +757,6 @@ bool deploytest::mainTestQML() {
     return false;
 
 #endif
-}
-
-void deploytest::testTranslations() {
 }
 
 QTEST_APPLESS_MAIN(deploytest)
