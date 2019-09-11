@@ -45,7 +45,7 @@ bool Deploy::prepare() {
         return false;
     }
 
-    _extracter = new Extracter(_fileManager);
+    _extracter = new Extracter(_fileManager, _paramsParser);
 
     return true;
 }

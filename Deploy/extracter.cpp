@@ -169,6 +169,8 @@ void Extracter::deploy() {
                             QuasarAppUtils::Params::isEndable("force-clear"));
     }
 
+    _cqt->smartMoveTargets();
+
     scaner.setEnvironment(DeployCore::_config->envirement.deployEnvironment());
 
     for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
@@ -406,9 +408,11 @@ void Extracter::extract(const QString &file) {
 
 }
 
-Extracter::Extracter(FileManager *fileManager):
-    _fileManager(fileManager) {
+Extracter::Extracter(FileManager *fileManager, CQT *cqt):
+    _fileManager(fileManager),
+    _cqt(cqt) {
 
+    assert(_cqt);
     assert(_fileManager);
     assert(DeployCore::_config);
 }

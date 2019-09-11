@@ -13,6 +13,7 @@
 #include <qml.h>
 #include <deploy.h>
 #include <cqt.h>
+#include <QCryptographicHash>
 
 #include <QMap>
 #include <QByteArray>
@@ -71,6 +72,8 @@ private slots:
     // end old tests
 
     void testHelp();
+    void testOverwrite();
+
     void testMSVC();
 
 };
@@ -554,6 +557,59 @@ void deploytest::testHelp() {
     for (auto &key: DeployCore::helpKeys()) {
         QVERIFY(DeployCore::help().contains(key));
     }
+
+}
+
+void deploytest::testOverwrite() {
+    TestUtils utils;
+
+    auto comapareTree = utils.createTree(
+                {"./Distro/bin/TestOnlyC",
+                 "./Distro/TestOnlyC.sh"});
+
+    runTestParams({"-bin", "./../../../tests/build/TestOnlyC", "clear"}, &comapareTree);
+
+
+    QFile f("./Distro/bin/TestOnlyC");
+
+    QVERIFY(f.open(QIODevice::ReadOnly));
+    auto hashBefor = QCryptographicHash::hash(f.readAll(), QCryptographicHash::Md5);
+    f.close();
+
+    QVERIFY(f.open(QIODevice::WriteOnly | QIODevice::Append));
+    f.write(QByteArray(10, '1'));
+    f.close();
+
+    QVERIFY(f.open(QIODevice::ReadOnly));
+    auto hashAfter = QCryptographicHash::hash(f.readAll(), QCryptographicHash::Md5);
+    f.close();
+
+    QVERIFY(hashAfter != hashBefor);
+
+    comapareTree = utils.createTree(
+                {"./Distro/bin/TestOnlyC",
+                 "./Distro/TestOnlyC.sh"});
+
+    runTestParams({"-bin", "./../../../tests/build/TestOnlyC"}, &comapareTree);
+
+    QVERIFY(f.open(QIODevice::ReadOnly));
+    hashAfter = QCryptographicHash::hash(f.readAll(), QCryptographicHash::Md5);
+    f.close();
+
+    QVERIFY(hashAfter != hashBefor);
+
+
+    comapareTree = utils.createTree(
+                {"./Distro/bin/TestOnlyC",
+                 "./Distro/TestOnlyC.sh"});
+
+    runTestParams({"-bin", "./../../../tests/build/TestOnlyC", "always-overwrite"}, &comapareTree);
+
+    QVERIFY(f.open(QIODevice::ReadOnly));
+    hashAfter = QCryptographicHash::hash(f.readAll(), QCryptographicHash::Md5);
+    f.close();
+
+    QVERIFY(hashAfter == hashBefor);
 
 }
 

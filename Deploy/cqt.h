@@ -72,13 +72,13 @@ private:
 
     QStringList getDirsRecursive(const QString &path);
 
-    bool smartMoveTargets();
 
     void writeKey(const QString &key, QJsonObject &) const;
     void readKey(const QString &key, const QJsonObject &obj) const;
 public:
     CQT(FileManager *filemanager);
     bool parseParams();
+    bool smartMoveTargets();
 
     const DeployConfig* config() const;
     friend class deploytest;

@@ -33,8 +33,8 @@ void FileManager::loadDeployemendFiles(const QString &targetDir) {
     auto settings = QuasarAppUtils::Settings::get();
     QStringList deployedFiles = settings->getValue(targetDir, {}).toStringList();
 
-    _deployedFiles.clear();
-    _deployedFiles.fromList(deployedFiles);
+//    _deployedFiles.clear();
+    _deployedFiles.unite(QSet<QString>::fromList(deployedFiles));
 }
 
 
@@ -155,19 +155,33 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
                                            " Qt error: " + sourceFile.errorString(),
                                            QuasarAppUtils::Warning);
 
-        std::ifstream  src(file.toStdString(),
-                           std::ios::binary);
-        std::ofstream  dst((target + QDir::separator() + name).toStdString(),
-                           std::ios::binary);
 
-        dst << src.rdbuf();
 
-        if (!QFileInfo::exists(target + QDir::separator() + name)) {
-            QuasarAppUtils::Params::verboseLog("std Operation fail file not copied. "
-                                               "Сheck if you have access to the target dir",
-                                               QuasarAppUtils::Error);
+        if (QuasarAppUtils::Params::isEndable("always-overwrite") ||
+                !QFileInfo(target + QDir::separator() + name).exists()) {
+            std::ifstream  src(file.toStdString(),
+                               std::ios::binary);
+
+            std::ofstream  dst((target + QDir::separator() + name).toStdString(),
+                               std::ios::binary);
+
+            dst << src.rdbuf();
+
+            if (!QFileInfo::exists(target + QDir::separator() + name)) {
+                QuasarAppUtils::Params::verboseLog("std Operation fail file not copied. "
+                                                   "Сheck if you have access to the target dir",
+                                                   QuasarAppUtils::Error);
+                return false;
+
+            }
+        } else {
+
+            if (QFileInfo(target + QDir::separator() + name).exists()) {
+                qInfo() << target + QDir::separator() + name << " already exists!";
+                return true;
+            }
+
             return false;
-
         }
     }
 
@@ -188,13 +202,13 @@ bool FileManager::smartCopyFile(const QString &file, const QString &target,
             if (!copyFile(file, target, mask)) {
                 qCritical() << "not copy target to bin dir " << file;
                 return false;
-            };
-        };
+            }
+        }
     } else {
         if (!copyFile(file, target, mask)) {
             qCritical() << "not copy target to bin dir " << file;
             return false;
-        };
+        }
     }
 
     return true;
@@ -262,7 +276,6 @@ void FileManager::clear(const QString& targetDir, bool force) {
                                            QuasarAppUtils::Warning);
     }
 
-    ;
     QMap<int, QFileInfo> sortedOldData;
     for (auto& i : _deployedFiles) {
         sortedOldData.insertMulti(i.size(), QFileInfo(i));

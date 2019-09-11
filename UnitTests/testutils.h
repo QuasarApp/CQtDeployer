@@ -8,6 +8,8 @@ class TestUtils
 public:
     TestUtils();
     QSet<QString> getTree( const QString& path);
+    QSet<QString> createTree( const QStringList& tree);
+
     /**
      * @brief compareTree - compare 2 tree
      * @param leftTree
