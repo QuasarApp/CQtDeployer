@@ -13,12 +13,11 @@ SUBDIRS += QuasarAppLib \
            Deploy \
            CQtDeployer \
            UnitTests
-}
+
 contains(DEFINES, WITHOUT_BASE_TESTS) {
     SUBDIRS -= UnitTests
 }
 
-contains(DEFINES, WITH_ALL_TESTS) {
     SUBDIRS += \
     tests/TestOnlyC \
     tests/TestQtWidgets \
