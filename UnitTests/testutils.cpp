@@ -57,10 +57,3 @@ QHash<QString, int> TestUtils::compareTree(const QSet<QString> &leftTree, const 
     return result;
 }
 
-const char **TestUtils::parseString(const QStringList &list) const
-{
-
-
-}
-
-

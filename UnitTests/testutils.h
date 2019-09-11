@@ -18,8 +18,6 @@ public:
      */
     QHash<QString, int> compareTree(const QSet<QString>& leftTree, const QSet<QString>& rightTree);
 
-    const char ** parseString(const QStringList& list) const;
-
 };
 
 #endif // TESTUTILS_H
