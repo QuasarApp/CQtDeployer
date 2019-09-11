@@ -24,6 +24,8 @@
 #include "testutils.h"
 // add necessary includes here
 
+const QString TestBinDir = TEST_BIN_DIR;
+
 class deploytest : public QObject
 {
     Q_OBJECT
@@ -567,7 +569,7 @@ void deploytest::testOverwrite() {
                 {"./Distro/bin/TestOnlyC",
                  "./Distro/TestOnlyC.sh"});
 
-    runTestParams({"-bin", "./../../../tests/build/TestOnlyC", "clear"}, &comapareTree);
+    runTestParams({"-bin", TestBinDir + "TestOnlyC", "clear"}, &comapareTree);
 
 
     QFile f("./Distro/bin/TestOnlyC");
@@ -590,7 +592,7 @@ void deploytest::testOverwrite() {
                 {"./Distro/bin/TestOnlyC",
                  "./Distro/TestOnlyC.sh"});
 
-    runTestParams({"-bin", "./../../../tests/build/TestOnlyC"}, &comapareTree);
+    runTestParams({"-bin", TestBinDir + "TestOnlyC"}, &comapareTree);
 
     QVERIFY(f.open(QIODevice::ReadOnly));
     hashAfter = QCryptographicHash::hash(f.readAll(), QCryptographicHash::Md5);
@@ -603,7 +605,7 @@ void deploytest::testOverwrite() {
                 {"./Distro/bin/TestOnlyC",
                  "./Distro/TestOnlyC.sh"});
 
-    runTestParams({"-bin", "./../../../tests/build/TestOnlyC", "always-overwrite"}, &comapareTree);
+    runTestParams({"-bin", TestBinDir + "TestOnlyC", "always-overwrite"}, &comapareTree);
 
     QVERIFY(f.open(QIODevice::ReadOnly));
     hashAfter = QCryptographicHash::hash(f.readAll(), QCryptographicHash::Md5);

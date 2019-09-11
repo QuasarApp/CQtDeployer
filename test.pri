@@ -16,3 +16,4 @@ win32:test.commands = $$PWD/deployTests/UnitTests.exe
 QMAKE_EXTRA_TARGETS += \
     deployTest \
     test
+
