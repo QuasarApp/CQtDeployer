@@ -82,6 +82,12 @@ You can download the latest version of the application [here](https://github.com
 ### Snap 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/cqtdeployer)
 
+## Projects using CQtDeployer:
+
+- [QAmigo](https://github.com/QAmigo/QAmigo)
+- [QtSecret](https://github.com/QuasarApp/Qt-Secret)
+- [Hanoi-Towers](https://github.com/QuasarApp/Hanoi-Towers)
+
 ## Donate
 If you want to support the project,you can donate into our bitcoin wallet.
 
@@ -163,6 +169,11 @@ Qt CQtDeployer - это приложением для извлечения вс�
 ## Установить
 Вы можете загрузить последнюю версию приложения [здесь](https://github.com/QuasarApp/Console-QtDeployer/releases).
 
+## Проекты использующие CQtDeployer :
+
+- [QAmigo](https://github.com/QAmigo/QAmigo)
+- [QtSecret](https://github.com/QuasarApp/Qt-Secret)
+- [Hanoi-Towers](https://github.com/QuasarApp/Hanoi-Towers)
 
 ## Пожертвовать
 Если вы хотите помочь проекту, то вы можете пожертвовать небольшую сумму на наш биткойн-кошелек.
