@@ -138,7 +138,7 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
         return true;
     }
 
-    if (QuasarAppUtils::Params::isEndable("always-overwrite") &&
+    if (!QuasarAppUtils::Params::isEndable("noOverwrite") &&
             info.exists() && !removeFile( target + QDir::separator() + name)) {
         return false;
     }
@@ -157,8 +157,8 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
 
 
 
-        if (QuasarAppUtils::Params::isEndable("always-overwrite") ||
-                !QFileInfo(target + QDir::separator() + name).exists()) {
+        if (!(QuasarAppUtils::Params::isEndable("noOverwrite") &&
+                QFileInfo(target + QDir::separator() + name).exists())) {
             std::ifstream  src(file.toStdString(),
                                std::ios::binary);
 

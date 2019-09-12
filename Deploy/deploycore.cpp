@@ -161,7 +161,7 @@ QString DeployCore::help() {
     { "" },
     { "Options:" },
     { "   help / h                 : Shows help." },
-    { "   always-overwrite         : Copies files and replaces the existing ones." },
+    { "   noOverwrite              : Prevents replacing existing files." },
     { "   -bin    [list, params]   : Deployable file or folder." },
     { "                            | For example -bin /my/project/bin/,/my/project/bin.exe" },
     { "   -binDir [params]         : A folder which includes deployable files (recursive search)." },
@@ -208,7 +208,7 @@ QString DeployCore::help() {
 QStringList DeployCore::helpKeys() {
     return {
         "help",
-        "always-overwrite",
+        "noOverwrite",
         "bin",
         "binDir",
         "qmlDir",

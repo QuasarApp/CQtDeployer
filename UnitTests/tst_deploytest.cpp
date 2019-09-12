@@ -555,9 +555,10 @@ void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree) {
 void deploytest::testHelp() {
     runTestParams({"h"});
     runTestParams({"v"});
+    auto help = DeployCore::help();
 
     for (auto &key: DeployCore::helpKeys()) {
-        QVERIFY(DeployCore::help().contains(key));
+        QVERIFY(help.contains(key));
     }
 
 }
@@ -569,7 +570,7 @@ void deploytest::testOverwrite() {
                 {"./Distro/bin/TestOnlyC",
                  "./Distro/TestOnlyC.sh"});
 
-    runTestParams({"-bin", TestBinDir + "TestOnlyC", "clear"}, &comapareTree);
+    runTestParams({"-bin", TestBinDir + "TestOnlyC", "clear", "noOverwrite"}, &comapareTree);
 
 
     QFile f("./Distro/bin/TestOnlyC");
@@ -592,7 +593,7 @@ void deploytest::testOverwrite() {
                 {"./Distro/bin/TestOnlyC",
                  "./Distro/TestOnlyC.sh"});
 
-    runTestParams({"-bin", TestBinDir + "TestOnlyC"}, &comapareTree);
+    runTestParams({"-bin", TestBinDir + "TestOnlyC", "noOverwrite"}, &comapareTree);
 
     QVERIFY(f.open(QIODevice::ReadOnly));
     hashAfter = QCryptographicHash::hash(f.readAll(), QCryptographicHash::Md5);
@@ -605,7 +606,7 @@ void deploytest::testOverwrite() {
                 {"./Distro/bin/TestOnlyC",
                  "./Distro/TestOnlyC.sh"});
 
-    runTestParams({"-bin", TestBinDir + "TestOnlyC", "always-overwrite"}, &comapareTree);
+    runTestParams({"-bin", TestBinDir + "TestOnlyC"}, &comapareTree);
 
     QVERIFY(f.open(QIODevice::ReadOnly));
     hashAfter = QCryptographicHash::hash(f.readAll(), QCryptographicHash::Md5);

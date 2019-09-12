@@ -18,34 +18,35 @@ Key differences of this program:
 #### Options:
 | Option                      | Descriptiion                                                    |
 |-----------------------------|-----------------------------------------------------------------|
-|   help / h                  | Shows help.                                                     |
-|   always-overwrite          | Copies files and replaces the existing ones.                    |
 |   -bin    [list, params]    | Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe|
 |   -binDir [params]          | A folder which includes deployable files (recursive search). WARNING: this flag supports  'so', 'dll' and 'exe' files only. Use '-bin' flag if you want to deploy linux binary files |
 |   -confFile [params]        | The path to the json file with all deployment configurations. Using this file, you can add the necessary options, thereby simplifying the command invocation in the console. However, the parameters in Kansol have a higher priority than in the file. |
 |   -qmlDir [params]          | Qml data dir. For example -qmlDir ~/my/project/qml              |
-|   deploySystem              | Deploys all libraries                                           |
-|   noLibc                    | Skip Deploys libc and ld-linux libs                             |
 |   -qmake  [params]          | Qmake path. For example                                         |
-|                             | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake                             |
+|                             | -qmake ~/Qt/5.14.0/gcc_64/bin/qmake                             |
 |   -ignore [list,params]     | The list of libs to ignore.                                     |
 |                             | For example -ignore libicudata.so.56,libicudata2.so.56          |
 |   -ignoreEnv [list,params]  | The list of the environment to ignore.                          |
 |                             | For example -ignoreEnv /bad/dir,/my/bad/Dir                     |
+|   -libDir [list,params]     | Sets additional paths for extra libs of an app.                 |
+|                             | For example -libDir ~/myLib,~/newLibs                           |
+|   -extraPlugin [list,params]| Sets an additional path to extraPlugin of an app                |
+|   -recursiveDepth [params]  | Sets the Depth of recursive search of libs (default 0)          |
+|   -targetDir [params]       | Sets target directory(by default it is the path to the first deployable file)|
+|   -verbose [0-3]            | Shows debug log                                                 |
+|   deploySystem              | Deploys all libraries                                           |
 |   clear                     | Deletes deployable files of the previous session.               |
 |   force-clear               | Deletes the destination directory before deployment.            |
 |                             | For example -runScript myApp.sh                                 |
-|  allQmlDependes             | Extracts all the qml libraries.                                 |
+|   allQmlDependes            | Extracts all the qml libraries.                                 |
 |                             | (not recommended, as it takes great amount of computer memory)  |
-|  -libDir [list,params]      | Sets additional paths for extra libs of an app.                 |
-|                             | For example -libDir ~/myLib,~/newLibs                           |
-|  -extraPlugin [list,params] | Sets an additional path to extraPlugin of an app                |
-|  -recursiveDepth [params]   | Sets the Depth of recursive search of libs (default 0)      |
-|  -targetDir [params]        | Sets target directory(by default it is the path to the first deployable file)|
-|  noStrip                    | Skips strip step                                                |
-|  noTranslations             | Skips the translations files.                                   |
+|   version / v               | Shows compiled version                                          |
+|   help / h                  | Shows help.                                                     |
+|   noLibc                    | Skip Deploys libc and ld-linux libs                             |
+|   noStrip                   | Skips strip step                                                |
+|   noTranslations            | Skips the translations files.                                   |
 |                             | It doesn't work without qmake and inside a snap package         |
-|  -verbose [0-3]             | Shows debug log                                                 |
+|   noOverwrite               | Prevents replacing existing files.                              |
 |   v / version               | Shows compiled version                                          |
 
 
@@ -90,33 +91,33 @@ Console QtDeployer является консольной реализацией 
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |   help / h                  | Показывает справку                                          |
-|   always-overwrite          | Копирует файлы с заменой уже существующих                 |
 |   -bin    [list, params]    | Развертываемый файл или папка. пример -bin ~/my/project/bin/,~/my/project/bin.exe|
 |   -binDir [params]          | Папка с развертываемыми файлами (с рекурсивным поиском). ВНИМАНИЕ! Этот флаг поддерживает только файлы 'so', 'dll' и 'exe'. Если вы хотите развернуть бинарный файл Linux, используйте флаг '-bin'  |
 |   -confFile [params]        | Путь к файлу json со всеми конфигурациями развертывания. С помощью этого файла можно добавить нужные опции, тем самым упрастить вызов комманды в консоле. Однако пораметры в кансоле имеют больший приоритет чем в файле. |
 |   -qmlDir [params]          | Папка qml. пример -qmlDir ~/my/project/qml                |
-|   deploySystem              | Копирует все библиотеки кроме libc                        |
-|   deployLibc                | Копирует libc и все остальные библиотеки                  |
 |   -qmake  [params]          | Путь к qmake. пример                                      |
-|                             | -qmake ~/Qt/5.11.1/gcc_64/bin/qmake                       |
+|                             | -qmake ~/Qt/5.14.0/gcc_64/bin/qmake                       |
 |   -ignore [list,params]     | Список библиотек для игнорирования                        |
 |                             | Пример -ignore libicudata.so.56,libicudata2.so.56         |
 |   -ignoreEnv [list,params]  | Список путей для игнорирования.                          |
 |                             | Пример -ignoreEnv /bad/dir,/my/bad/Dir                                |
-|   clear                     | Удаляет все старые файлы (с прошлого запуска)              |
-|   force-clear               | Удаляет целевую директорию перед развертыванием              |
-|                             | пример -runScript myApp.sh                                |
-|  allQmlDependes             | Извлекает все библиотеки qml.          |
-|                             | (не рекомендуется, так как занимает много памяти)         |
 |  -libDir [list,params]      | Устанавливает дополнительные пути к библиотекам               |
 |                             | Пример -libDir ~/myLib,~/newLibs                          |
 |  -extraPlugin [list,params] | Устанавливает дополнительный путь для extraPlugin приложения |
 |  -recursiveDepth [params]   | Устанавливает глубину поиска библиотек (по умолчанию 0)       |
 |  -targetDir [params]        | Устанавливает целевой каталог (по умолчанию это путь к первому развертываемому файлу)|
+|  -verbose [0-3]             | Показывает дебаг лога                                          |
+|   deploySystem              | Копирует все библиотеки кроме libc                        |
+|   clear                     | Удаляет все старые файлы (с прошлого запуска)              |
+|   force-clear               | Удаляет целевую директорию перед развертыванием              |
+|                             | пример -runScript myApp.sh                                |
+|  allQmlDependes             | Извлекает все библиотеки qml.          |
+|                             | (не рекомендуется, так как занимает много памяти)         |
+|   noLibc                    | Отключает копирование libc                  |
 |  noStrip                    | Пропускает шаг strip                                      |
 |  noTranslations             | Пропускает файлы переводов                                |
 |                             | не работает без qmake и в snap                            |
-|  -verbose [0-3]             | Показывает дебаг лога                                          |
+|   noOverwrite               | Запрещает замену уже существующих файлов.                |
 |  v / version                | Показывает версию приложения                                          |
 
 
