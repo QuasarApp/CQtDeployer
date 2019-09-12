@@ -73,9 +73,15 @@ private slots:
 
     // end old tests
 
+    // tested flags : help, version
     void testHelp();
+    // tested flags clear noOvervrite
     void testOverwrite();
+
+    // tested flags binDir
     void testBinDir();
+
+    void testConfFile();
 
     void testMSVC();
 
@@ -567,9 +573,15 @@ void deploytest::testHelp() {
 void deploytest::testOverwrite() {
     TestUtils utils;
 
+#ifdef Q_OS_UNIX
     auto comapareTree = utils.createTree(
                 {"./Distro/bin/TestOnlyC",
                  "./Distro/TestOnlyC.sh"});
+#else
+    auto comapareTree = utils.createTree(
+                {"./Distro/TestOnlyC.exe",
+                 "./Distro/qt.conf"});
+#endif
 
     runTestParams({"-bin", TestBinDir + "TestOnlyC", "force-clear", "noOverwrite"}, &comapareTree);
 
@@ -590,10 +602,6 @@ void deploytest::testOverwrite() {
 
     QVERIFY(hashAfter != hashBefor);
 
-    comapareTree = utils.createTree(
-                {"./Distro/bin/TestOnlyC",
-                 "./Distro/TestOnlyC.sh"});
-
     runTestParams({"-bin", TestBinDir + "TestOnlyC", "noOverwrite"}, &comapareTree);
 
     QVERIFY(f.open(QIODevice::ReadOnly));
@@ -602,10 +610,6 @@ void deploytest::testOverwrite() {
 
     QVERIFY(hashAfter != hashBefor);
 
-
-    comapareTree = utils.createTree(
-                {"./Distro/bin/TestOnlyC",
-                 "./Distro/TestOnlyC.sh"});
 
     runTestParams({"-bin", TestBinDir + "TestOnlyC"}, &comapareTree);
 
@@ -620,6 +624,8 @@ void deploytest::testOverwrite() {
 void deploytest::testBinDir() {
     TestUtils utils;
 
+
+#ifdef Q_OS_UNIX
     auto comapareTree = utils.createTree(
                 {"./Distro/bin/TestOnlyC",
                  "./Distro/bin/QtWidgetsProject",
@@ -627,8 +633,73 @@ void deploytest::testBinDir() {
                  "./Distro/TestOnlyC.sh",
                  "./Distro/QtWidgetsProject.sh",
                  "./Distro/TestQMLWidgets.sh"});
+#else
+    auto comapareTree = utils.createTree(
+                {"./Distro/TestOnlyC.exe",
+                 "./Distro/QtWidgetsProject.exe",
+                 "./Distro/TestQMLWidgets.exe",
+                 "./Distro/qt.conf"});
+#endif
+
+
 
     runTestParams({"-binDir", TestBinDir, "clear"}, &comapareTree);
+}
+
+void deploytest::testConfFile() {
+    TestUtils utils;
+
+
+#ifdef Q_OS_UNIX
+    auto comapareTree = utils.createTree(
+                {"./Distro/bin/TestOnlyC",
+                 "./Distro/bin/QtWidgetsProject",
+                 "./Distro/bin/TestQMLWidgets",
+                 "./Distro/TestOnlyC.sh",
+                 "./Distro/QtWidgetsProject.sh",
+                 "./Distro/TestQMLWidgets.sh"});
+#else
+    auto comapareTree = utils.createTree(
+                {"./Distro/TestOnlyC.exe",
+                 "./Distro/QtWidgetsProject.exe",
+                 "./Distro/TestQMLWidgets.exe",
+                 "./Distro/qt.conf"});
+#endif
+
+
+    runTestParams({"-bin", TestBinDir, "clear" ,
+                   "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
+
+
+    QVERIFY(QFile::exists(TestBinDir + "/TestConf.json"));
+    QFile::remove(TestBinDir + "/TestConf.json");
+
+#ifdef Q_OS_UNIX
+    runTestParams({"-binDir", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
+                   "clear" ,
+                   "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
+#else
+    runTestParams({"-binDir", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
+                   "clear" ,
+                   "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
+#endif
+
+    QFile confFile(TestBinDir + "/TestConf.json");
+    QVERIFY(confFile.open(QIODevice::ReadOnly));
+
+    auto data = confFile.readAll();
+
+    QJsonDocument doc;
+    doc.fromJson(data);
+    QVERIFY(!doc.isNull());
+
+    QVERIFY(data.contains("\"binDir\": ["));
+    QVERIFY(data.contains("build/TestOnlyC"));
+    QVERIFY(data.contains("build/QtWidgetsProject"));
+    QVERIFY(data.contains("build/TestQMLWidgets"));
+
+    QVERIFY(data.contains("\"clear\": true"));
+
 
 
 }

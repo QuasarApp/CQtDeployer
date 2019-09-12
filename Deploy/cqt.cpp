@@ -70,13 +70,53 @@ const DeployConfig *CQT::config() const {
 
 void CQT::writeKey(const QString& key, QJsonObject& obj) const {
     if (QuasarAppUtils::Params::isEndable(key)) {
-        obj[key] = QuasarAppUtils::Params::getStrArg(key);
+        auto list = QuasarAppUtils::Params::getStrArg(key).split(',');
+
+        if (list.size() > 1) {
+            QJsonArray array;
+
+            for (auto &i: list) {
+                QJsonValue val;
+                val = i;
+                array.push_back(val);
+            }
+
+            obj[key] = array;
+        } else {
+            if (list.size() && list.first().isEmpty()) {
+                obj[key] = QJsonValue(true);
+            } else {
+                obj[key] = list.first();
+            }
+        }
     }
 }
 
 void CQT::readKey(const QString& key, const QJsonObject& obj) const {
     if (!QuasarAppUtils::Params::isEndable(key)) {
-         QuasarAppUtils::Params::setArg(key, obj[key].toVariant());
+
+         if (obj[key].isArray()) {
+             auto array = obj[key].toArray();
+             QStringList list;
+
+             for (QJsonValue i : array) {
+                 QString val = i.toString();
+                 if (!val.isEmpty()) {
+                     list.push_back(val);
+                 }
+             }
+
+             QuasarAppUtils::Params::setArg(key, list.join(','));
+
+         } else if (obj[key].isObject()) {
+             QString val = obj[key].toString();
+             if (!val.isEmpty()) {
+                 QuasarAppUtils::Params::setArg(key, val);
+             } else {
+                 QuasarAppUtils::Params::setEnable(key, true);
+             }
+         }
+
     }
 }
 
