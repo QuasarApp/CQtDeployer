@@ -108,7 +108,7 @@ void CQT::readKey(const QString& key, const QJsonObject& obj) const {
 
              QuasarAppUtils::Params::setArg(key, list.join(','));
 
-         } else if (obj[key].isObject()) {
+         } else if (!obj[key].isUndefined()) {
              QString val = obj[key].toString();
              if (!val.isEmpty()) {
                  QuasarAppUtils::Params::setArg(key, val);
@@ -339,16 +339,18 @@ bool CQT::setBinDir(const QString &dir, bool recursive) {
             continue;
         }
 
+        auto name = file.fileName();
         auto sufix = file.completeSuffix();
 
-        if (!((!recursive) || sufix.isEmpty() ||  sufix.contains("dll", Qt::CaseInsensitive) ||
-              sufix.contains("so", Qt::CaseInsensitive) || sufix.contains("exe", Qt::CaseInsensitive))) {
-            continue;
+        if (sufix.isEmpty() ||  name.contains(".dll", Qt::CaseInsensitive) ||
+              name.contains(".so", Qt::CaseInsensitive) || name.contains(".exe", Qt::CaseInsensitive)) {
+
+            result = true;
+            _config.targets.insert(QDir::fromNativeSeparators(file.absoluteFilePath()), sufix.isEmpty());
+
         }
 
-        result = true;
-        _config.targets.insert(QDir::fromNativeSeparators(file.absoluteFilePath()), sufix.isEmpty());
-    }
+       }
 
     return result;
 }

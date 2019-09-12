@@ -553,7 +553,10 @@ void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree) {
         auto resultTree = utils.getTree(DeployCore::_config->targetDir);
         auto comapre = utils.compareTree(resultTree, *tree);
 
-        QVERIFY(comapre.size() == 0);
+        if (comapre.size() != 0) {
+            QVERIFY2(false, "runTestParams fail");
+
+        }
 
     }
 
@@ -649,6 +652,7 @@ void deploytest::testBinDir() {
 void deploytest::testConfFile() {
     TestUtils utils;
 
+    QFile::remove(TestBinDir + "/TestConf.json");
 
 #ifdef Q_OS_UNIX
     auto comapareTree = utils.createTree(
@@ -675,11 +679,11 @@ void deploytest::testConfFile() {
     QFile::remove(TestBinDir + "/TestConf.json");
 
 #ifdef Q_OS_UNIX
-    runTestParams({"-binDir", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
+    runTestParams({"-bin", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
                    "clear" ,
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #else
-    runTestParams({"-binDir", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
+    runTestParams({"-bin", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
                    "clear" ,
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #endif
@@ -688,19 +692,28 @@ void deploytest::testConfFile() {
     QVERIFY(confFile.open(QIODevice::ReadOnly));
 
     auto data = confFile.readAll();
+    confFile.close();
 
     QJsonDocument doc;
-    doc.fromJson(data);
+    doc = doc.fromJson(data);
     QVERIFY(!doc.isNull());
 
-    QVERIFY(data.contains("\"binDir\": ["));
+    QVERIFY(data.contains("\"bin\": ["));
     QVERIFY(data.contains("build/TestOnlyC"));
     QVERIFY(data.contains("build/QtWidgetsProject"));
     QVERIFY(data.contains("build/TestQMLWidgets"));
 
     QVERIFY(data.contains("\"clear\": true"));
 
+#ifdef Q_OS_UNIX
+    runTestParams({"-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
+#else
+    runTestParams({"-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 
+#endif
+
+    QVERIFY(QuasarAppUtils::Params::isEndable("clear"));
+    QVERIFY(QuasarAppUtils::Params::isEndable("bin"));
 
 }
 
