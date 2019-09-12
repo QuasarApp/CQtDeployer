@@ -75,6 +75,7 @@ private slots:
 
     void testHelp();
     void testOverwrite();
+    void testBinDir();
 
     void testMSVC();
 
@@ -570,7 +571,7 @@ void deploytest::testOverwrite() {
                 {"./Distro/bin/TestOnlyC",
                  "./Distro/TestOnlyC.sh"});
 
-    runTestParams({"-bin", TestBinDir + "TestOnlyC", "clear", "noOverwrite"}, &comapareTree);
+    runTestParams({"-bin", TestBinDir + "TestOnlyC", "force-clear", "noOverwrite"}, &comapareTree);
 
 
     QFile f("./Distro/bin/TestOnlyC");
@@ -613,6 +614,22 @@ void deploytest::testOverwrite() {
     f.close();
 
     QVERIFY(hashAfter == hashBefor);
+
+}
+
+void deploytest::testBinDir() {
+    TestUtils utils;
+
+    auto comapareTree = utils.createTree(
+                {"./Distro/bin/TestOnlyC",
+                 "./Distro/bin/QtWidgetsProject",
+                 "./Distro/bin/TestQMLWidgets",
+                 "./Distro/TestOnlyC.sh",
+                 "./Distro/QtWidgetsProject.sh",
+                 "./Distro/TestQMLWidgets.sh"});
+
+    runTestParams({"-binDir", TestBinDir, "clear"}, &comapareTree);
+
 
 }
 

@@ -301,7 +301,7 @@ bool CQT::setBinDir(const QString &dir, bool recursive) {
 
         auto sufix = file.completeSuffix();
 
-        if (!((!recursive && sufix.isEmpty()) ||  sufix.contains("dll", Qt::CaseInsensitive) ||
+        if (!((!recursive) || sufix.isEmpty() ||  sufix.contains("dll", Qt::CaseInsensitive) ||
               sufix.contains("so", Qt::CaseInsensitive) || sufix.contains("exe", Qt::CaseInsensitive))) {
             continue;
         }
