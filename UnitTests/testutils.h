@@ -18,6 +18,8 @@ public:
      */
     QHash<QString, int> compareTree(const QSet<QString>& leftTree, const QSet<QString>& rightTree);
 
+private:
+    QString getFilePath(const QString &i);
 };
 
 #endif // TESTUTILS_H

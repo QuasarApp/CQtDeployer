@@ -18,7 +18,7 @@ QSet<QString> TestUtils::getTree(const QString &path) {
     auto result = QSet<QString>{};
 
     if (!info.isDir()) {
-        result.insert(info.absoluteFilePath());
+        result.insert(getFilePath(info.absoluteFilePath()));
         return result;
     }
 
@@ -31,10 +31,23 @@ QSet<QString> TestUtils::getTree(const QString &path) {
     return result;
 }
 
+QString TestUtils::getFilePath(const QString& i) {
+    auto file = QFileInfo(i).absoluteFilePath();
+    auto delimiter = file.lastIndexOf("/");
+    auto shared = file.indexOf(".so.", Qt::CaseInsensitive);
+
+    if (shared > delimiter) {
+        file = file.left(shared);
+        file.push_back(".so");
+    }
+
+    return file;
+}
+
 QSet<QString> TestUtils::createTree(const QStringList &tree) {
     QSet<QString> res;
     for (auto &i : tree) {
-        res.insert(QFileInfo(i).absoluteFilePath());
+        res.insert(getFilePath(i));
     }
 
     return res;
