@@ -32,6 +32,9 @@ class deploytest : public QObject
     Q_OBJECT
 
 private:
+    QSet<QString> qtFilesTree;
+
+
     bool runProcess(const QString& DistroPath,
                     const QString& filename,
                     const QString &qt = "");
@@ -232,7 +235,16 @@ QStringList deploytest::getFilesFromDir(const QString &path) {
 //#endif
 //}
 
-deploytest::deploytest(){}
+deploytest::deploytest() {
+    TestUtils utils;
+
+    auto tempTree = utils.getTree(TestQtDir);
+
+    for (const QString &i: tempTree) {
+        qtFilesTree.insert(QFileInfo(i).fileName());
+    }
+
+}
 
 int deploytest::generateLib(const QString &paath)
 {
@@ -543,9 +555,29 @@ void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree) {
         QVERIFY(!DeployCore::_config->targetDir.isEmpty());
 
         auto resultTree = utils.getTree(DeployCore::_config->targetDir);
+
         auto comapre = utils.compareTree(resultTree, *tree);
 
         if (comapre.size() != 0) {
+
+            bool bug = false;
+
+            for (auto i = comapre.begin(); i != comapre.end(); ++i) {
+
+                if (i.value() == 1) {
+                    qCritical() << "added unnecessary file : " + i.key();
+                    bug = true;
+                } else if (qtFilesTree.contains(QFileInfo(i.key()).fileName())) {
+                    qCritical() << "Missing file : " + i.key();
+                    bug = true;
+                } else {
+                    qWarning() << "File : " + i.key() + " not exits in qt Dir";
+                }
+            }
+
+            if (!bug) {
+                return;
+            }
 
             QJsonObject obj;
             for (auto i : resultTree) {
