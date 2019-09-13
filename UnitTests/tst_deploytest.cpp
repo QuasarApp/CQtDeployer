@@ -25,6 +25,7 @@
 // add necessary includes here
 
 const QString TestBinDir = TEST_BIN_DIR;
+const QString TestQtDir = QT_BASE_DIR;
 
 class deploytest : public QObject
 {
@@ -82,6 +83,8 @@ private slots:
     void testBinDir();
 
     void testConfFile();
+
+    void testQt();
 
     void testMSVC();
 
@@ -526,17 +529,6 @@ void deploytest::testSetTargetDir() {
 
 }
 
-//void deploytest::mainTests() {
-//#ifdef WITH_ALL_TESTS
-//    QVERIFY(mainTestOnlyC());
-//    QVERIFY(mainTestQMake());
-//    QVERIFY(mainTestQML());
-//    QVERIFY(testEnvIgnore());
-
-
-//#endif
-//}
-
 void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree) {
 
     QuasarAppUtils::Params::parseParams(list);
@@ -554,7 +546,22 @@ void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree) {
         auto comapre = utils.compareTree(resultTree, *tree);
 
         if (comapre.size() != 0) {
+
+            QJsonObject obj;
+            for (auto i : resultTree) {
+                obj[i];
+            }
+
+            QJsonDocument doc(obj);
+
+            QFile lasttree("./LastTree.json");
+            lasttree.open(QIODevice::WriteOnly| QIODevice::Truncate);
+
+            lasttree.write(doc.toJson());
+            lasttree.close();
+
             QVERIFY2(false, "runTestParams fail");
+
 
         }
 
@@ -714,6 +721,147 @@ void deploytest::testConfFile() {
 
     QVERIFY(QuasarAppUtils::Params::isEndable("clear"));
     QVERIFY(QuasarAppUtils::Params::isEndable("bin"));
+
+    QFile::remove(TestBinDir + "/TestConf.json");
+}
+
+void deploytest::testQt() {
+    TestUtils utils;
+
+
+#ifdef Q_OS_UNIX
+    auto comapareTree = utils.createTree(
+    {
+        "./Distro/TestQMLWidgets.sh",
+        "./Distro/bin/TestQMLWidgets",
+        "./Distro/lib/libQt5Core.so.5",
+        "./Distro/lib/libQt5DBus.so.5",
+        "./Distro/lib/libQt5EglFSDeviceIntegration.so.5",
+        "./Distro/lib/libQt5Gui.so.5",
+        "./Distro/lib/libQt5Network.so.5",
+        "./Distro/lib/libQt5Qml.so.5",
+        "./Distro/lib/libQt5Quick.so.5",
+        "./Distro/lib/libQt5Svg.so.5",
+        "./Distro/lib/libQt5VirtualKeyboard.so.5",
+        "./Distro/lib/libQt5WaylandClient.so.5",
+        "./Distro/lib/libQt5WaylandCompositor.so.5",
+        "./Distro/lib/libQt5WebSockets.so.5",
+        "./Distro/lib/libQt5Widgets.so.5",
+        "./Distro/lib/libQt5XcbQpa.so.5",
+        "./Distro/lib/libicudata.so.56",
+        "./Distro/lib/libicui18n.so.56",
+        "./Distro/lib/libicuuc.so.56",
+        "./Distro/plugins/bearer/libqconnmanbearer.so",
+        "./Distro/plugins/bearer/libqgenericbearer.so",
+        "./Distro/plugins/bearer/libqnmbearer.so",
+        "./Distro/plugins/iconengines/libqsvgicon.so",
+        "./Distro/plugins/imageformats/libqgif.so",
+        "./Distro/plugins/imageformats/libqicns.so",
+        "./Distro/plugins/imageformats/libqico.so",
+        "./Distro/plugins/imageformats/libqjpeg.so",
+        "./Distro/plugins/imageformats/libqsvg.so",
+        "./Distro/plugins/imageformats/libqtga.so",
+        "./Distro/plugins/imageformats/libqtiff.so",
+        "./Distro/plugins/imageformats/libqwbmp.so",
+        "./Distro/plugins/imageformats/libqwebp.so",
+        "./Distro/plugins/platforminputcontexts/libcomposeplatforminputcontextplugin.so",
+        "./Distro/plugins/platforminputcontexts/libibusplatforminputcontextplugin.so",
+        "./Distro/plugins/platforminputcontexts/libqtvirtualkeyboardplugin.so",
+        "./Distro/plugins/platforms/libqeglfs.so",
+        "./Distro/plugins/platforms/libqlinuxfb.so",
+        "./Distro/plugins/platforms/libqminimal.so",
+        "./Distro/plugins/platforms/libqminimalegl.so",
+        "./Distro/plugins/platforms/libqoffscreen.so",
+        "./Distro/plugins/platforms/libqvnc.so",
+        "./Distro/plugins/platforms/libqwayland-egl.so",
+        "./Distro/plugins/platforms/libqwayland-generic.so",
+        "./Distro/plugins/platforms/libqwayland-xcomposite-egl.so",
+        "./Distro/plugins/platforms/libqwayland-xcomposite-glx.so",
+        "./Distro/plugins/platforms/libqwebgl.so",
+        "./Distro/plugins/platforms/libqxcb.so",
+        "./Distro/plugins/virtualkeyboard/libqtvirtualkeyboard_hangul.so",
+        "./Distro/plugins/virtualkeyboard/libqtvirtualkeyboard_openwnn.so",
+        "./Distro/plugins/virtualkeyboard/libqtvirtualkeyboard_pinyin.so",
+        "./Distro/plugins/virtualkeyboard/libqtvirtualkeyboard_tcime.so",
+        "./Distro/plugins/virtualkeyboard/libqtvirtualkeyboard_thai.so",
+        "./Distro/plugins/wayland-decoration-client/libbradient.so",
+        "./Distro/plugins/wayland-graphics-integration-client/libdmabuf-server.so",
+        "./Distro/plugins/wayland-graphics-integration-client/libdrm-egl-server.so",
+        "./Distro/plugins/wayland-graphics-integration-client/libqt-plugin-wayland-egl.so",
+        "./Distro/plugins/wayland-graphics-integration-client/libshm-emulation-server.so",
+        "./Distro/plugins/wayland-graphics-integration-client/libxcomposite-egl.so",
+        "./Distro/plugins/wayland-graphics-integration-client/libxcomposite-glx.so",
+        "./Distro/plugins/wayland-graphics-integration-server/libdmabuf-server.so",
+        "./Distro/plugins/wayland-graphics-integration-server/libdrm-egl-server.so",
+        "./Distro/plugins/wayland-graphics-integration-server/liblinux-dmabuf-unstable-v1.so",
+        "./Distro/plugins/wayland-graphics-integration-server/libqt-plugin-wayland-egl.so",
+        "./Distro/plugins/wayland-graphics-integration-server/libshm-emulation-server.so",
+        "./Distro/plugins/wayland-graphics-integration-server/libwayland-eglstream-controller.so",
+        "./Distro/plugins/wayland-graphics-integration-server/libxcomposite-egl.so",
+        "./Distro/plugins/wayland-graphics-integration-server/libxcomposite-glx.so",
+        "./Distro/plugins/wayland-shell-integration/libfullscreen-shell-v1.so",
+        "./Distro/plugins/wayland-shell-integration/libivi-shell.so",
+        "./Distro/plugins/wayland-shell-integration/libwl-shell.so",
+        "./Distro/plugins/wayland-shell-integration/libxdg-shell-v5.so",
+        "./Distro/plugins/wayland-shell-integration/libxdg-shell-v6.so",
+        "./Distro/plugins/wayland-shell-integration/libxdg-shell.so",
+        "./Distro/plugins/xcbglintegrations/libqxcb-egl-integration.so",
+        "./Distro/plugins/xcbglintegrations/libqxcb-glx-integration.so",
+        "./Distro/translations/qtbase_ar.qm",
+        "./Distro/translations/qtbase_bg.qm",
+        "./Distro/translations/qtbase_ca.qm",
+        "./Distro/translations/qtbase_cs.qm",
+        "./Distro/translations/qtbase_da.qm",
+        "./Distro/translations/qtbase_de.qm",
+        "./Distro/translations/qtbase_en.qm",
+        "./Distro/translations/qtbase_es.qm",
+        "./Distro/translations/qtbase_fi.qm",
+        "./Distro/translations/qtbase_fr.qm",
+        "./Distro/translations/qtbase_gd.qm",
+        "./Distro/translations/qtbase_he.qm",
+        "./Distro/translations/qtbase_hu.qm",
+        "./Distro/translations/qtbase_it.qm",
+        "./Distro/translations/qtbase_ja.qm",
+        "./Distro/translations/qtbase_ko.qm",
+        "./Distro/translations/qtbase_lv.qm",
+        "./Distro/translations/qtbase_pl.qm",
+        "./Distro/translations/qtbase_ru.qm",
+        "./Distro/translations/qtbase_sk.qm",
+        "./Distro/translations/qtbase_uk.qm",
+        "./Distro/translations/qtbase_zh_TW.qm",
+        "./Distro/translations/qtdeclarative_bg.qm",
+        "./Distro/translations/qtdeclarative_da.qm",
+        "./Distro/translations/qtdeclarative_de.qm",
+        "./Distro/translations/qtdeclarative_en.qm",
+        "./Distro/translations/qtdeclarative_es.qm",
+        "./Distro/translations/qtdeclarative_fi.qm",
+        "./Distro/translations/qtdeclarative_fr.qm",
+        "./Distro/translations/qtdeclarative_hu.qm",
+        "./Distro/translations/qtdeclarative_ja.qm",
+        "./Distro/translations/qtdeclarative_ko.qm",
+        "./Distro/translations/qtdeclarative_lv.qm",
+        "./Distro/translations/qtdeclarative_pl.qm",
+        "./Distro/translations/qtdeclarative_ru.qm",
+        "./Distro/translations/qtdeclarative_sk.qm",
+        "./Distro/translations/qtdeclarative_uk.qm"
+    });
+    QString bin = TestBinDir + "TestQMLWidgets";
+    QString qmake = TestQtDir + "bin/qmake";
+
+#else
+    auto comapareTree = utils.createTree(
+                {"./Distro/TestQMLWidgets.exe",
+                 "./Distro/qt.conf"});
+    QString bin = TestBinDir + "TestQMLWidgets.exe";
+    QString qmake = TestQtDir + "bin/qmake.exe";
+
+#endif
+
+
+
+    runTestParams({"-bin", bin, "clear" ,
+                  "-qmake", qmake,
+                  "-qnlDir", TestBinDir + "/../TestQMLWidgets"}, &comapareTree);
 
 }
 
