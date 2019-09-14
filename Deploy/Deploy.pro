@@ -45,9 +45,11 @@ include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
 
 
 SOURCES += \
+    configparser.cpp \
     deploy.cpp \
     deploycore.cpp \
-    deployparams.cpp \
+    envirement.cpp \
+    extracter.cpp \
     filemanager.cpp \
     pe.cpp \
     igetlibinfo.cpp \
@@ -59,10 +61,12 @@ SOURCES += \
     libinfo.cpp
 
 HEADERS += \
+    configparser.h \
     deploy.h \
     deploy_global.h \
     deploycore.h \
-    deployparams.h \
+    envirement.h \
+    extracter.h \
     filemanager.h \
     pe.h \
     igetlibinfo.h \

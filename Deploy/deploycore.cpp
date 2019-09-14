@@ -5,7 +5,7 @@
  * of this license document, but changing it is not allowed.
  */
 
-#include "deploy.h"
+#include "extracter.h"
 #include "deploycore.h"
 #include "quasarapp.h"
 
@@ -13,10 +13,13 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QLibraryInfo>
+#include <configparser.h>
 
-QString DeployCore::qtDir = "";
-QStringList DeployCore::extraPaths = QStringList();
+//QString DeployCore::qtDir = "";
+//QStringList DeployCore::extraPaths = QStringList();
 
+
+const DeployConfig* DeployCore::_config = nullptr;
 
 QtModuleEntry DeployCore::qtModuleEntries[] = {
     { QtBluetoothModule, "bluetooth", "Qt5Bluetooth", nullptr },
@@ -150,7 +153,7 @@ RunMode DeployCore::getMode() {
     return RunMode::Info;
 }
 
-void DeployCore::help() {
+QString DeployCore::help() {
 
     QStringList help = {
     { "CQtDeployer version: " + getAppVersion()},
@@ -158,12 +161,16 @@ void DeployCore::help() {
     { "" },
     { "Options:" },
     { "   help / h                 : Shows help." },
-    { "   always-overwrite         : Copies files and replaces the existing ones." },
+    { "   noOverwrite              : Prevents replacing existing files." },
     { "   -bin    [list, params]   : Deployable file or folder." },
     { "                            | For example -bin /my/project/bin/,/my/project/bin.exe" },
     { "   -binDir [params]         : A folder which includes deployable files (recursive search)." },
     { "                            | WARNING: this flag supports 'so', 'dll' and 'exe' files only." },
     { "                            | Use '-bin' flag if you want to deploy linux binary files" },
+    { "   -confFile [params]       : Path to json file with all deploy config" },
+    { "                            | Using this file, you can add the necessary options, " },
+    { "                            | thereby simplifying the command call in the console. "},
+    { "                            | However, the parameters in Kansol have a higher priority than in the file. "},
     { "   -qmlDir [params]         : Qml data dir. For example -qmlDir ~/my/project/qml" },
     { "   deploySystem             : Deploys all libs" },
     { "   noLibc                   : Skip Deploys libc and ld-linux libs" },
@@ -184,7 +191,6 @@ void DeployCore::help() {
     { "   -targetDir [params]      : Sets target directory(by default it is the path to the first deployable file)" },
     { "   noStrip                  : Skips strip step" },
     { "   noTranslations           : Skips the translations files." },
-    { "   qmlExtern                : Use the qml external scanner (qmlimportscaner)" },
     { "                            | It doesn't work without qmake and inside a snap package" },
     { "   v / version              : Shows compiled version" },
     { "   verbose [1-3]            : Shows debug log" },
@@ -196,163 +202,33 @@ void DeployCore::help() {
 
     QuasarAppUtils::Params::showHelp(help);
 
-
+    return help.join(" ");
 }
 
-bool DeployCore::parseQtClearMode(Deploy *deploy) {
-    deploy->setTargetDir("./");
-    deploy->clear(QuasarAppUtils::Params::isEndable("force-clear"));
-
-    return true;
-
-}
-
-bool DeployCore::parseQtInfoMode() {
-
-    if ((QuasarAppUtils::Params::isEndable("v") ||
-            QuasarAppUtils::Params::isEndable("version"))) {
-        DeployCore::printVersion();
-        return true;
-    }
-
-    DeployCore::help();
-    return true;
-
-}
-
-bool DeployCore::parseQtDeployMode(Deploy *deploy) {
-    auto bin = QuasarAppUtils::Params::getStrArg("bin").split(',');
-
-    if (!deploy->setTargets(bin)) {
-
-        auto binDir = QuasarAppUtils::Params::getStrArg("binDir");
-        if (!(deploy->setTargetsRecursive(binDir) || deploy->setTargets({"./"}))) {
-            qCritical() << "setTargetDir fail!";
-            return false;
-        }
-    }
-
-    deploy->initIgnoreEnvList();
-    deploy->initEnvirement();
-
-    deploy->initIgnoreList();
-
-    if (QuasarAppUtils::Params::isEndable("clear") ||
-            QuasarAppUtils::Params::isEndable("force-clear")) {
-        qInfo() << "clear old data";
-        deploy->clear(QuasarAppUtils::Params::isEndable("force-clear"));
-    }
-
-    int limit = 0;
-
-    if (QuasarAppUtils::Params::isEndable("recursiveDepth")) {
-        bool ok;
-        limit = QuasarAppUtils::Params::getArg("recursiveDepth").toInt(&ok);
-        if (!ok) {
-            limit = 0;
-            qWarning() << "recursiveDepth is invalid! use default value 0";
-        }
-    }
-
-    deploy->setDepchLimit(limit);
-
-    auto listLibDir = QuasarAppUtils::Params::getStrArg("libDir").split(",");
-    auto listExtraPlugin =
-            QuasarAppUtils::Params::getStrArg("extraPlugin").split(",");
-    deploy->setExtraPath(listLibDir);
-    deploy->setExtraPlugins(listExtraPlugin);
-
-    auto qmake = QuasarAppUtils::Params::getStrArg("qmake");
-    QString basePath = "";
-
-    QFileInfo info(qmake);
-
-    if (!info.isFile() || (info.baseName() != "qmake")) {
-        qInfo() << "deploy only C libs because qmake is not found";
-        return true;
-    }
-
-    basePath = info.absolutePath();
-    deploy->setQmake(qmake);
-
-    auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir");
-    QDir dir(basePath);
-
-
-    if (QuasarAppUtils::Params::isEndable("qmlExtern")) {
-
-#ifdef Q_OS_WIN
-        auto scaner = basePath + QDir::separator() + "qmlimportscanner.exe";
-#else
-        auto scaner = basePath + QDir::separator() + "qmlimportscanner";
-#endif
-        if ( !QFileInfo::exists(scaner)) {
-            QuasarAppUtils::Params::verboseLog("qml scaner not defined, using own scaner!",
-                                               QuasarAppUtils::VerboseLvl::Warning);
-            QuasarAppUtils::Params::setEnable("qmlExtern", false);
-        } else {
-            deploy->setQmlScaner(scaner);
-        }
-    }
-
-    if (QFileInfo::exists(qmlDir) ||
-            QuasarAppUtils::Params::isEndable("allQmlDependes")) {
-        deploy->setDeployQml(true);
-
-    } else {
-        QuasarAppUtils::Params::verboseLog("qml dir not exits!",
-                                           QuasarAppUtils::VerboseLvl::Warning);
-    }
-
-    if (!dir.cdUp()) {
-        return false;
-    }
-
-    deploy->setQtDir(dir.absolutePath());
-
-    return true;
-}
-
-bool DeployCore::parseQt(Deploy *deploy) {
-    switch (getMode()) {
-    case RunMode::Info: {
-        qInfo() << "selected info mode" ;
-
-        if (!parseQtInfoMode()) {
-            qCritical() << "info mode fail!";
-            return false;
-        }
-
-        return true;
-    }
-    case RunMode::Clear: {
-        qInfo() << "selected clear mode" ;
-
-        if (!parseQtClearMode(deploy)) {
-            qCritical() << "clear mode fail!";
-            return false;
-        }
-
-        return true;
-    }
-
-    case RunMode::Deploy: {
-        qInfo() << "selected deploy mode" ;
-
-        if (!parseQtDeployMode(deploy)) {
-            qCritical() << "deploy mode fail!";
-            return false;
-        }
-
-        deploy->deploy();
-        qInfo() << "deploy done!";
-
-        return true;
-    }
-
-    }
-
-    return false;
+QStringList DeployCore::helpKeys() {
+    return {
+        "help",
+        "noOverwrite",
+        "bin",
+        "binDir",
+        "qmlDir",
+        "deploySystem",
+        "noLibc",
+        "qmake",
+        "ignore",
+        "ignoreEnv",
+        "clear",
+        "force-clear",
+        "allQmlDependes",
+        "libDir",
+        "extraPlugin",
+        "recursiveDepth",
+        "targetDir",
+        "noStrip",
+        "noTranslations",
+        "version",
+        "verbose"
+    };
 }
 
 QStringList DeployCore::extractTranslation(const QStringList &libs) {
@@ -385,6 +261,23 @@ QString DeployCore::getQtVersion() {
 void DeployCore::printVersion() {
     qInfo() << "CQtDeployer: " + getAppVersion();
     qInfo() << "Qt: " +  getQtVersion();
+}
+
+int DeployCore::find(const QString &str, const QStringList &list) {
+    for (int i = 0 ; i < list.size(); ++i) {
+        if (list[i].contains(str))
+            return i;
+    }
+    return -1;
+}
+
+bool DeployCore::isLib(const QFileInfo &file) {
+    return file.completeSuffix().contains("so", Qt::CaseInsensitive)
+            || file.completeSuffix().contains("dll", Qt::CaseInsensitive);
+}
+
+bool DeployCore::isPath(const QString &path) {
+    return path.contains('/') || path.contains('\\');
 }
 
 MSVCVersion DeployCore::getMSVC(const QString &_qmake) {
@@ -496,14 +389,14 @@ QString DeployCore::getMSVCVersion(MSVCVersion msvc) {
 
 bool DeployCore::isQtLib(const QString &lib) {
     QFileInfo info(lib);
-    return !qtDir.isEmpty() && info.absoluteFilePath().contains(qtDir);
+    return !_config->qtDir.isEmpty() && info.absoluteFilePath().contains(_config->qtDir);
 
 }
 
 bool DeployCore::isExtraLib(const QString &lib) {
     QFileInfo info(lib);
 
-    for (auto i : extraPaths) {
+    for (auto i : _config->extraPaths) {
         if (info.absoluteFilePath().contains(i)) {
             return true;
         }

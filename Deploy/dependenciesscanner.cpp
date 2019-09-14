@@ -16,12 +16,6 @@ DependenciesScanner::DependenciesScanner() {}
 
 void DependenciesScanner::clearScaned() {
     _scanedLibs.clear();
-    _qtModules = DeployCore::QtModule::NONE;
-}
-
-DeployCore::QtModule DependenciesScanner::getQtModules() const
-{
-    return _qtModules;
 }
 
 PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
@@ -30,8 +24,8 @@ PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
 
     auto sufix = info.completeSuffix();
 
-    if (sufix.contains("dll", Qt::CaseSensitive) ||
-            sufix.contains("exe", Qt::CaseSensitive)) {
+    if (sufix.compare("dll", Qt::CaseSensitive) == 0 ||
+            sufix.compare("exe", Qt::CaseSensitive) == 0) {
         return PrivateScaner::PE;
     } else if (sufix.isEmpty() || sufix.contains("so", Qt::CaseSensitive)) {
         return PrivateScaner::ELF;
@@ -124,7 +118,6 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res) {
 
                 dep->allDep = listDep;
                 _scanedLibs.insert(dep->fullPath(), *dep);
-                DeployCore::addQtModule(_qtModules, dep->fullPath());
 
                 res.unite(listDep);
             } else {
