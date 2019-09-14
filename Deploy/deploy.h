@@ -10,7 +10,7 @@
 
 #include "deploy_global.h"
 
-class CQT;
+class ConfigParser;
 class Extracter;
 class FileManager;
 
@@ -18,7 +18,7 @@ class DEPLOYSHARED_EXPORT Deploy
 {
 private:
 
-    CQT * _paramsParser = nullptr;
+    ConfigParser * _paramsParser = nullptr;
     Extracter *_extracter = nullptr;
     FileManager *_fileManager = nullptr;
 

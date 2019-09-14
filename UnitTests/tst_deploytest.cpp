@@ -12,7 +12,7 @@
 #include <dependenciesscanner.h>
 #include <qml.h>
 #include <deploy.h>
-#include <cqt.h>
+#include <configparser.h>
 #include <QCryptographicHash>
 
 #include <QMap>
@@ -278,7 +278,7 @@ void deploytest::cleanupTestCase() {
 void deploytest::testDeployTarget() {
 
     FileManager file;
-    CQT *deploy = new CQT(&file);
+    ConfigParser *deploy = new ConfigParser(&file);
 
     QStringList targets;
     targets << "./test/bins/execTarget.exe";
@@ -286,31 +286,31 @@ void deploytest::testDeployTarget() {
     delete deploy;
     targets.clear();
 
-    deploy = new CQT(&file);
+    deploy = new ConfigParser(&file);
     targets << "./test/bins/execTarget";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new CQT(&file);
+    deploy = new ConfigParser(&file);
     targets << "./test/bins/execTarget.exe" << "./test/bins/execTarget";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new CQT(&file);
+    deploy = new ConfigParser(&file);
     targets << "./test/bns/execTarget.exe";
     QVERIFY(!deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new CQT(&file);
+    deploy = new ConfigParser(&file);
     targets << "./test/bins/";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new CQT(&file);
+    deploy = new ConfigParser(&file);
     targets << "./test/bins/" << "./test/warning/";
     QVERIFY(deploy->setTargets(targets));
 
@@ -463,7 +463,7 @@ void deploytest::testQmlExtrct() {
 void deploytest::testSetTargetDir() {
 
     FileManager file;
-    CQT  dep(&file);
+    ConfigParser  dep(&file);
 
     dep.setTargetDir();
 
@@ -561,19 +561,22 @@ void deploytest::testOverwrite() {
     TestUtils utils;
 
 #ifdef Q_OS_UNIX
+    QFile f("./Distro/bin/TestOnlyC");
     auto comapareTree = utils.createTree(
     {"./Distro/bin/TestOnlyC",
      "./Distro/TestOnlyC.sh"});
+    QString bin = TestBinDir + "TestOnlyC";
+
 #else
+    QFile f("./Distro/TestOnlyC.exe");
     auto comapareTree = utils.createTree(
     {"./Distro/TestOnlyC.exe",
      "./Distro/qt.conf"});
+    QString bin = TestBinDir + "TestOnlyC.exe";
+
 #endif
 
-    runTestParams({"-bin", TestBinDir + "TestOnlyC", "force-clear", "noOverwrite"}, &comapareTree);
-
-
-    QFile f("./Distro/bin/TestOnlyC");
+    runTestParams({"-bin", bin, "force-clear", "noOverwrite"}, &comapareTree);
 
     QVERIFY(f.open(QIODevice::ReadOnly));
     auto hashBefor = QCryptographicHash::hash(f.readAll(), QCryptographicHash::Md5);
@@ -589,7 +592,7 @@ void deploytest::testOverwrite() {
 
     QVERIFY(hashAfter != hashBefor);
 
-    runTestParams({"-bin", TestBinDir + "TestOnlyC", "noOverwrite"}, &comapareTree);
+    runTestParams({"-bin", bin, "noOverwrite"}, &comapareTree);
 
     QVERIFY(f.open(QIODevice::ReadOnly));
     hashAfter = QCryptographicHash::hash(f.readAll(), QCryptographicHash::Md5);
@@ -598,7 +601,7 @@ void deploytest::testOverwrite() {
     QVERIFY(hashAfter != hashBefor);
 
 
-    runTestParams({"-bin", TestBinDir + "TestOnlyC"}, &comapareTree);
+    runTestParams({"-bin", bin}, &comapareTree);
 
     QVERIFY(f.open(QIODevice::ReadOnly));
     hashAfter = QCryptographicHash::hash(f.readAll(), QCryptographicHash::Md5);
@@ -727,10 +730,7 @@ void deploytest::testQt() {
     bin = TestBinDir + "QtWidgetsProject";
 
 #else
-    auto comapareTree = utils.createTree(
-    {"./Distro/TestQMLWidgets.exe",
-     "./Distro/qt.conf"});
-    QString bin = TestBinDir + "QtWidgetsProject.exe";
+    bin = TestBinDir + "QtWidgetsProject.exe";
 
 #endif
     comapareTree = Modules::qtLibs();
@@ -744,10 +744,10 @@ void deploytest::testQt() {
     bin = TestBinDir + "QtWidgetsProject";
 
 #else
-    auto comapareTree = utils.createTree(
+    comapareTree = utils.createTree(
     {"./Distro/TestQMLWidgets.exe",
      "./Distro/qt.conf"});
-    QString bin = TestBinDir + "QtWidgetsProject.exe";
+    bin = TestBinDir + "QtWidgetsProject.exe";
 
 #endif
 

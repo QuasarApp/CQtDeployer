@@ -128,6 +128,13 @@ QSet<QString> Modules::qtLibs() {
 QSet<QString> Modules::qmlLibs() {
     TestUtils utils;
 
+#ifdef Q_OS_WIN
+    auto tree = utils.createTree(
+    {
+    });
+#else
+
+
     auto tree = utils.createTree(
     {
                     "./Distro/TestQMLWidgets.sh",
@@ -709,6 +716,7 @@ QSet<QString> Modules::qmlLibs() {
                     "./Distro/translations/qtdeclarative_sk.qm",
                     "./Distro/translations/qtdeclarative_uk.qm"
                 });
+#endif
 
     return tree;
 }

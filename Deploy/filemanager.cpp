@@ -310,8 +310,8 @@ void FileManager::copyFiles(const QStringList &files, const QString& targetDir) 
     for (auto file : files) {
         QFileInfo target(file);
         auto targetPath = targetDir + QDir::separator() + "lib";
-        if (target.completeSuffix().contains("dll", Qt::CaseInsensitive) ||
-                target.completeSuffix().contains("exe", Qt::CaseInsensitive)) {
+        if (target.completeSuffix().compare("dll", Qt::CaseInsensitive) == 0 ||
+                target.completeSuffix().compare("exe", Qt::CaseInsensitive) == 0) {
 
             targetPath = targetDir;
         }

@@ -13,7 +13,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QLibraryInfo>
-#include <cqt.h>
+#include <configparser.h>
 
 //QString DeployCore::qtDir = "";
 //QStringList DeployCore::extraPaths = QStringList();

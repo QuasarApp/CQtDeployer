@@ -8,7 +8,7 @@
 #include "extracter.h"
 #include "deploycore.h"
 #include "pluginsparser.h"
-#include "cqt.h"
+#include "configparser.h"
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
@@ -224,7 +224,7 @@ void Extracter::createRunMetaFiles()
 
     for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
 
-        if (QFileInfo(i.key()).completeSuffix() == "exe") {
+        if (QFileInfo(i.key()).completeSuffix().compare("exe", Qt::CaseInsensitive) == 0) {
             targetWindows = true;
         }
 
@@ -435,8 +435,8 @@ void Extracter::extract(const QString &file) {
 
     auto sufix = info.completeSuffix();
 
-    if (sufix.contains("dll", Qt::CaseSensitive) ||
-            sufix.contains("exe", Qt::CaseSensitive) ||
+    if (sufix.compare("dll", Qt::CaseSensitive) == 0 ||
+            sufix.compare("exe", Qt::CaseSensitive) == 0 ||
             sufix.isEmpty() || sufix.contains("so", Qt::CaseSensitive)) {
 
         extractLib(file);
@@ -446,7 +446,7 @@ void Extracter::extract(const QString &file) {
 
 }
 
-Extracter::Extracter(FileManager *fileManager, CQT *cqt):
+Extracter::Extracter(FileManager *fileManager, ConfigParser *cqt):
     _fileManager(fileManager),
     _cqt(cqt) {
 

@@ -35,10 +35,7 @@ struct DEPLOYSHARED_EXPORT DeployConfig {
 
 };
 
-/**
- * @brief The CQT class - it is wrapper for cqt file. qcn it is configuration file of deploying project.
- */
-class DEPLOYSHARED_EXPORT CQT
+class DEPLOYSHARED_EXPORT ConfigParser
 {
 private:
 
@@ -76,7 +73,7 @@ private:
     void writeKey(const QString &key, QJsonObject &) const;
     void readKey(const QString &key, const QJsonObject &obj) const;
 public:
-    CQT(FileManager *filemanager);
+    ConfigParser(FileManager *filemanager);
     bool parseParams();
     bool smartMoveTargets();
 

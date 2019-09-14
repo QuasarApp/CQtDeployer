@@ -5,7 +5,7 @@
  * of this license document, but changing it is not allowed.
  */
 
-#include "cqt.h"
+#include "configparser.h"
 #include "deploy.h"
 #include "extracter.h"
 #include "filemanager.h"
@@ -13,7 +13,7 @@
 
 Deploy::Deploy() {
     _fileManager = new FileManager();
-    _paramsParser = new CQT(_fileManager);
+    _paramsParser = new ConfigParser(_fileManager);
 }
 
 int Deploy::run() {

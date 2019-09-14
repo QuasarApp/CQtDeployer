@@ -15,7 +15,7 @@
 #include "filemanager.h"
 #include "qml.h"
 
-class CQT;
+class ConfigParser;
 
 class DEPLOYSHARED_EXPORT Extracter {
   private:
@@ -26,7 +26,7 @@ class DEPLOYSHARED_EXPORT Extracter {
 
     DependenciesScanner scaner;
     FileManager *_fileManager;
-    CQT *_cqt;
+    ConfigParser *_cqt;
 
     void extract(const QString &file);
     bool copyTranslations(QStringList list);
@@ -63,7 +63,7 @@ class DEPLOYSHARED_EXPORT Extracter {
     void copyExtraPlugins();
 
 public:
-    explicit Extracter(FileManager *fileManager, CQT * cqt);
+    explicit Extracter(FileManager *fileManager, ConfigParser * cqt);
     bool createRunScript(const QString &target);
     void deploy();
 

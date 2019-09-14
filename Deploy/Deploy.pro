@@ -45,7 +45,7 @@ include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
 
 
 SOURCES += \
-    cqt.cpp \
+    configparser.cpp \
     deploy.cpp \
     deploycore.cpp \
     envirement.cpp \
@@ -61,7 +61,7 @@ SOURCES += \
     libinfo.cpp
 
 HEADERS += \
-    cqt.h \
+    configparser.h \
     deploy.h \
     deploy_global.h \
     deploycore.h \
