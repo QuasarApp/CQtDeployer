@@ -841,7 +841,7 @@ void deploytest::testLibDir() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "-libDir", extraPath,
-                   "-recursiveDepth", "5"}, &comapareTree);
+                   "-recursiveDepth", "5"}, &comapareTree, true);
 
 
 }
@@ -931,7 +931,7 @@ void deploytest::testSystemLib() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "deploySystem"
-                  }, &comapareTree);
+                  }, &comapareTree, true);
 
 #ifdef Q_OS_UNIX
 
