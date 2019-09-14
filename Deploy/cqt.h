@@ -70,7 +70,7 @@ private:
 
     void initEnvirement();
 
-    QStringList getDirsRecursive(const QString &path);
+    QStringList getDirsRecursive(const QString &path, int maxDepch = -1, int depch = 0);
 
 
     void writeKey(const QString &key, QJsonObject &) const;

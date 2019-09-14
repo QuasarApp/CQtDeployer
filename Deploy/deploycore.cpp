@@ -276,6 +276,10 @@ bool DeployCore::isLib(const QFileInfo &file) {
             || file.completeSuffix().contains("dll", Qt::CaseInsensitive);
 }
 
+bool DeployCore::isPath(const QString &path) {
+    return path.contains('/') || path.contains('\\');
+}
+
 MSVCVersion DeployCore::getMSVC(const QString &_qmake) {
     QFileInfo qmake(_qmake);
 

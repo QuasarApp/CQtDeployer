@@ -3,11 +3,7 @@
 #include <dependenciesscanner.h>
 #include <quasarapp.h>
 
-PluginsParser::PluginsParser(DependenciesScanner* scaner)
-{
-    assert(scaner);
-
-    _libScaner = scaner;
+PluginsParser::PluginsParser(){
 }
 
 static const PluginModuleMapping pluginModuleMappings[] =
@@ -28,7 +24,7 @@ static const PluginModuleMapping pluginModuleMappings[] =
     {"position", DeployCore::QtModule::QtPositioningModule},
     {"printsupport", DeployCore::QtModule::QtPrintSupportModule},
     {"scenegraph", DeployCore::QtModule::QtQuickModule},
-    {"qmltooling", DeployCore::QtModule::QtQuickModule | DeployCore::QtModule::QtQmlToolingModule},
+    {"qmltooling", DeployCore::QtModule::QtQmlToolingModule},
     {"sensors", DeployCore::QtModule::QtSensorsModule},
     {"sensorgestures", DeployCore::QtModule::QtSensorsModule},
     {"canbus", DeployCore::QtModule::QtSerialBusModule},
@@ -63,16 +59,16 @@ quint64 PluginsParser::qtModuleForPlugin(const QString &subDirName) {
 }
 
 bool PluginsParser::scan(const QString& pluginPath,
-                         QStringList &resDependencies) {
+                         QStringList &resDependencies,
+                         DeployCore::QtModule qtModules) {
 
-    auto modules = _libScaner->getQtModules();
     auto plugins = QDir(pluginPath).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
 
-    QuasarAppUtils::Params::verboseLog("Modules Number :" + QString::number(modules), QuasarAppUtils::Info);
+    QuasarAppUtils::Params::verboseLog("Modules Number :" + QString::number(qtModules), QuasarAppUtils::Info);
 
     for (auto &&plugin: plugins) {
         auto module = qtModuleForPlugin(plugin.fileName());
-        if (modules & module) {
+        if (qtModules & module) {
 
             QuasarAppUtils::Params::verboseLog("deploye plugin : " + plugin.absoluteFilePath(), QuasarAppUtils::Info);
 

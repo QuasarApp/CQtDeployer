@@ -146,6 +146,7 @@ public:
     static void printVersion();
     static int find(const QString &str, const QStringList &list);
     static bool isLib(const QFileInfo &file);
+    static bool isPath(const QString& path);
 
 
 };

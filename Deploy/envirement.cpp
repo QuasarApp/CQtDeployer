@@ -6,22 +6,17 @@
 
 QStringList Envirement::deployEnvironment() const
 {
-    return _deployEnvironment;
-}
-
-void Envirement::setDeployEnvironment(const QStringList &deployEnvironment)
-{
-    _deployEnvironment = deployEnvironment;
+    return _deployEnvironment.toList();
 }
 
 QStringList Envirement::ignoreEnvList() const
 {
-    return _ignoreEnvList;
+    return _ignoreEnvList.toList();
 }
 
 void Envirement::setIgnoreEnvList(const QStringList &ignoreEnvList)
 {
-    _ignoreEnvList = ignoreEnvList;
+    _ignoreEnvList = ignoreEnvList.toSet();
 }
 
 void Envirement::addEnv(const QString &dir, const QString &appDir, const QString& targetDir) {
@@ -42,7 +37,7 @@ void Envirement::addEnv(const QString &dir, const QString &appDir, const QString
 
     auto path = QFileInfo(dir).absoluteFilePath();
 
-    for (QString & i :_ignoreEnvList) {
+    for (QString i :_ignoreEnvList) {
         if (path.contains(i)) {
             return;
         }
@@ -68,7 +63,7 @@ void Envirement::addEnv(const QString &dir, const QString &appDir, const QString
         return;
     }
 
-    _deployEnvironment.push_back(QDir::fromNativeSeparators(path));
+    _deployEnvironment.insert(QDir::fromNativeSeparators(path));
 }
 
 int Envirement::size() const {
@@ -81,7 +76,7 @@ QString Envirement::concatEnv() const {
         return "";
     }
 
-    QString result = _deployEnvironment.first();
+    QString result = *_deployEnvironment.begin();
     for (auto i: _deployEnvironment) {
 #ifdef  Q_OS_UNIX
         result += (":" + i);

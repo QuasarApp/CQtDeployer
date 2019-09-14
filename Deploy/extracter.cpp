@@ -50,28 +50,36 @@ bool Extracter::copyPlugin(const QString &plugin) {
     return true;
 }
 
+void Extracter::copyExtraPlugins() {
+    QFileInfo info;
+
+    for (auto extraPlugin : DeployCore::_config->extraPlugins) {
+
+        if (!DeployCore::isPath(extraPlugin)) {
+            extraPlugin = DeployCore::_config->qtDir + "/plugins/" + extraPlugin;
+        }
+
+        info.setFile(extraPlugin);
+        if (info.isDir() && info.absoluteFilePath().contains(DeployCore::_config->qtDir)) {
+
+            _fileManager->copyFolder(info.absoluteFilePath(),
+                                    DeployCore::_config->targetDir + "/plugins/" + info.baseName(),
+                                    QStringList() << ".so.debug" << "d.dll");
+        } else if (info.exists()) {
+            _fileManager->copyFile(info.absoluteFilePath(),
+                                  DeployCore::_config->targetDir + QDir::separator() + "plugins");
+            extract(info.absoluteFilePath());
+        }
+    }
+}
+
 void Extracter::copyPlugins(const QStringList &list) {
     for (auto plugin : list) {
         if (!copyPlugin(plugin)) {
             qWarning() << plugin << " not copied!";
         }
     }
-    QFileInfo info;
-
-    for (auto extraPlugin : DeployCore::_config->extraPlugins) {
-
-        info.setFile(extraPlugin);
-        if (info.isDir()) {
-
-            _fileManager->copyFolder(info.absoluteFilePath(),
-                                    DeployCore::_config->targetDir + "/plugins/" + info.baseName(),
-                                    QStringList() << ".so.debug" << "d.dll");
-        } else {
-            _fileManager->copyFile(info.absoluteFilePath(),
-                                  DeployCore::_config->targetDir + QDir::separator() + "plugins");
-            extract(info.absoluteFilePath());
-        }
-    }
+    copyExtraPlugins();
 }
 
 bool Extracter::createRunScript(const QString &target) {
@@ -157,10 +165,19 @@ bool Extracter::createQConf() {
 
 
 
-void Extracter::deploy() {
-    qInfo() << "target deploy started!!";
+void Extracter::extractAllTargets() {
+    for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
+        extract(i.key());
+    }
+}
 
+void Extracter::initQtModules() {
+    for (auto i: neadedLibs) {
+        DeployCore::addQtModule(_qtModules, i);
+    }
+}
 
+void Extracter::clear() {
     if (QuasarAppUtils::Params::isEndable("clear") ||
             QuasarAppUtils::Params::isEndable("force-clear")) {
         qInfo() << "clear old data";
@@ -168,26 +185,19 @@ void Extracter::deploy() {
         _fileManager->clear(DeployCore::_config->targetDir,
                             QuasarAppUtils::Params::isEndable("force-clear"));
     }
+}
 
-    _cqt->smartMoveTargets();
-
-    scaner.setEnvironment(DeployCore::_config->envirement.deployEnvironment());
-
-    for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
-        extract(i.key());
-    }
-
-    if (DeployCore::_config->deployQml && !extractQml()) {
-        qCritical() << "qml not extacted!";
-    }
-
-    PluginsParser pluginsParser(&scaner);
+void Extracter::extractPlugins()
+{
+    PluginsParser pluginsParser;
 
     QStringList plugins;
-    pluginsParser.scan(DeployCore::_config->qtDir + "/plugins", plugins);
+    pluginsParser.scan(DeployCore::_config->qtDir + "/plugins", plugins, _qtModules);
     copyPlugins(plugins);
+}
 
-
+void Extracter::copyFiles()
+{
     _fileManager->copyFiles(neadedLibs, DeployCore::_config->targetDir);
 
     if (QuasarAppUtils::Params::isEndable("deploySystem")) {
@@ -197,17 +207,19 @@ void Extracter::deploy() {
     if (!QuasarAppUtils::Params::isEndable("noStrip") && !_fileManager->strip(DeployCore::_config->targetDir)) {
         QuasarAppUtils::Params::verboseLog("strip failed!");
     }
+}
 
+void Extracter::copyTr()
+{
     if (!QuasarAppUtils::Params::isEndable("noTranslations")) {
         if (!copyTranslations(DeployCore::extractTranslation(neadedLibs))) {
             qWarning() << " copy TR ERROR";
         }
     }
+}
 
-    if (!deployMSVC()) {
-        QuasarAppUtils::Params::verboseLog("deploy msvc failed");
-    }
-
+void Extracter::createRunMetaFiles()
+{
     bool targetWindows = false;
 
     for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
@@ -224,11 +236,37 @@ void Extracter::deploy() {
     if (targetWindows && !createQConf()) {
         QuasarAppUtils::Params::verboseLog("create qt.conf failr", QuasarAppUtils::Warning);
     }
+}
+
+void Extracter::deploy() {
+    qInfo() << "target deploy started!!";
+
+    clear();
+    _cqt->smartMoveTargets();
+    scaner.setEnvironment(DeployCore::_config->envirement.deployEnvironment());
+    extractAllTargets();
+
+    if (DeployCore::_config->deployQml && !extractQml()) {
+        qCritical() << "qml not extacted!";
+    }
+
+    initQtModules();
+
+    extractPlugins();
+
+    copyFiles();
+
+    copyTr();
+
+    if (!deployMSVC()) {
+        QuasarAppUtils::Params::verboseLog("deploy msvc failed");
+    }
+
+    createRunMetaFiles();
 
     _fileManager->saveDeploymendFiles(DeployCore::_config->targetDir);
 
     qInfo() << "deploy done!";
-
 
 }
 
@@ -411,6 +449,8 @@ void Extracter::extract(const QString &file) {
 Extracter::Extracter(FileManager *fileManager, CQT *cqt):
     _fileManager(fileManager),
     _cqt(cqt) {
+
+    _qtModules = DeployCore::QtModule::NONE;
 
     assert(_cqt);
     assert(_fileManager);

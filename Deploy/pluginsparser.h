@@ -3,6 +3,7 @@
 
 #include <QStringList>
 #include "deploy_global.h"
+#include "deploycore.h"
 
 class DependenciesScanner;
 
@@ -19,8 +20,9 @@ private:
 
     quint64 qtModuleForPlugin(const QString &subDirName);
 public:
-    PluginsParser(DependenciesScanner *scaner);
-    bool scan(const QString &pluginPath, QStringList& resDependencies);
+    PluginsParser();
+    bool scan(const QString &pluginPath, QStringList& resDependencies,
+              DeployCore::QtModule qtModules);
 
 
 };

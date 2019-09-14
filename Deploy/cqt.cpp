@@ -450,12 +450,8 @@ void CQT::setExtraPath(const QStringList &value) {
 
 void CQT::setExtraPlugins(const QStringList &value) {
     for (auto i : value) {
-        QFileInfo info(i);
-        if (info.exists()) {
-            _config.extraPlugins.append(info.absoluteFilePath());
-        } else {
-            QuasarAppUtils::Params::verboseLog(i + " does not exist! and skiped");
-        }
+        if (!i.isEmpty())
+            _config.extraPlugins.append(i);
     }
 }
 
@@ -496,8 +492,8 @@ void CQT::initEnvirement() {
     if (QuasarAppUtils::Params::isEndable("deploySystem")) {
         QStringList dirs;
         if (!QuasarAppUtils::Params::isEndable("noLibc"))
-            dirs.append(getDirsRecursive("/lib"));
-        dirs.append(getDirsRecursive("/usr/lib"));
+            dirs.append(getDirsRecursive("/lib", 20));
+        dirs.append(getDirsRecursive("/usr/lib", 20));
 
         for (auto &&i : dirs) {
             _config.envirement.addEnv(i, _config.appDir, _config.targetDir);
@@ -509,16 +505,20 @@ void CQT::initEnvirement() {
     }
 }
 
-QStringList CQT::getDirsRecursive(const QString &path) {
+QStringList CQT::getDirsRecursive(const QString &path, int maxDepch, int depch) {
     QDir dir(path);
 
     QStringList res;
+
+    if (maxDepch > 0 && maxDepch < depch) {
+        return res;
+    }
 
     auto list = dir.entryInfoList(QDir::Dirs| QDir::NoDotAndDotDot);
 
     for (auto &&subDir: list) {
         res.push_back(subDir.absoluteFilePath());
-        res.append(getDirsRecursive(subDir.absoluteFilePath()));
+        res.append(getDirsRecursive(subDir.absoluteFilePath(), maxDepch, depch + 1));
     }
 
     return res;

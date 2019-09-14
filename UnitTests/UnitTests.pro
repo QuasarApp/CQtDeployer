@@ -31,6 +31,7 @@ TEMPLATE = app
 
 SOURCES +=  tst_deploytest.cpp \
     libcreator.cpp \
+    modules.cpp \
     qmlcreator.cpp \
     testutils.cpp
 
@@ -39,5 +40,6 @@ RESOURCES += \
 
 HEADERS += \
     libcreator.h \
+    modules.h \
     qmlcreator.h \
     testutils.h

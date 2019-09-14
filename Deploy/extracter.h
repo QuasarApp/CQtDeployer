@@ -19,6 +19,7 @@ class CQT;
 
 class DEPLOYSHARED_EXPORT Extracter {
   private:
+    DeployCore::QtModule _qtModules = DeployCore::NONE;
 
     QStringList neadedLibs;
     QStringList systemLibs;
@@ -45,6 +46,21 @@ class DEPLOYSHARED_EXPORT Extracter {
     bool copyPlugin(const QString &plugin);
     void copyPlugins(const QStringList &list);
 
+
+    void extractAllTargets();
+
+    void initQtModules();
+    void clear();
+
+    void extractPlugins();
+
+    void copyFiles();
+
+    void copyTr();
+
+    void createRunMetaFiles();
+
+    void copyExtraPlugins();
 
 public:
     explicit Extracter(FileManager *fileManager, CQT * cqt);
