@@ -81,3 +81,4 @@ HEADERS += \
     qml.h \
     libinfo.h
 
+STATECHARTS +=
