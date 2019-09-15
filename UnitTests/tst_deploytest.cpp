@@ -14,6 +14,7 @@
 #include <deploy.h>
 #include <configparser.h>
 #include <QCryptographicHash>
+#include <distrostruct.h>
 
 #include <QMap>
 #include <QByteArray>
@@ -64,6 +65,7 @@ private slots:
     void testDeployTarget();
     void testStrip();
     void testExtractLib();
+    void testDistroStruct();
 
     void testQmlExtrct();
     void testSetTargetDir();
