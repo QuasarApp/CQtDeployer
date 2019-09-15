@@ -55,6 +55,9 @@ PE::PE(): IGetLibInfo () {
 bool PE::getLibInfo(const QString &lib, LibInfo &info) const {
     auto parsedPeLib = peparse::ParsePEFromFile(lib.toLatin1());
 
+    if (!parsedPeLib)
+        return false;
+
     if (static_cast<RunType>(parsedPeLib->peHeader.nt.OptionalMagic) == RunType::_32bit) {
         info.setPlatform(Platform::Win32);
     } else if (static_cast<RunType>(parsedPeLib->peHeader.nt.OptionalMagic) == RunType::_64bit) {

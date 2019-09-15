@@ -10,6 +10,7 @@
 
 #include <QStringList>
 #include <QDebug>
+#include <QFileInfo>
 #include "deploy_global.h"
 
 enum MSVCVersion: int {
@@ -51,8 +52,8 @@ enum class RunMode: int {
     Clear
 };
 
-class Deploy;
-class QFileInfo;
+class Extracter;
+class DeployConfig;
 
 class DEPLOYSHARED_EXPORT DeployCore
 {
@@ -61,9 +62,6 @@ private:
     static QString getMSVCName(MSVCVersion msvc);
     static QString getMSVCVersion(MSVCVersion msvc);
 
-    static bool parseQtDeployMode(Deploy *deploy);
-    static bool parseQtInfoMode();
-    static bool parseQtClearMode(Deploy *deploy);
 public:
     enum QtModule : quint64
     {
@@ -124,9 +122,9 @@ public:
 
     DeployCore() = delete;
 
-    static QString qtDir;
-    static QStringList extraPaths;
+
     static QtModuleEntry qtModuleEntries[];
+    static const DeployConfig * _config;
 
     static MSVCVersion getMSVC(const QString & _qmake);
     static QString getVCredist(const QString & _qmake);
@@ -139,12 +137,16 @@ public:
 
     static void verboseLog(const QString &str);
     static RunMode getMode();
-    static void help();
-    static bool parseQt(Deploy *deploy);
+    static QString help();
+    static QStringList helpKeys();
+
     static QStringList extractTranslation(const QStringList& libs);
     static QString getAppVersion();
     static QString getQtVersion();
     static void printVersion();
+    static int find(const QString &str, const QStringList &list);
+    static bool isLib(const QFileInfo &file);
+    static bool isPath(const QString& path);
     static bool isExecutable(const QFileInfo &file);
 
 };

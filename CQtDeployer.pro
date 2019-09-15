@@ -12,17 +12,17 @@ SUBDIRS += QuasarAppLib \
            Pe \
            Deploy \
            CQtDeployer \
-           UnitTests
-}
-contains(DEFINES, WITHOUT_BASE_TESTS) {
-    SUBDIRS -= UnitTests
+           UnitTests \
+           tests/TestOnlyC \
+           tests/TestQtWidgets \
+           tests/TestQMLWidgets
 }
 
-contains(DEFINES, WITH_ALL_TESTS) {
-    SUBDIRS += \
-    tests/TestOnlyC \
-    tests/TestQtWidgets \
-    tests/TestQMLWidgets
+contains(DEFINES, WITHOUT_TESTS) {
+    SUBDIRS -= UnitTests \
+           tests/TestOnlyC \
+           tests/TestQtWidgets \
+           tests/TestQMLWidgets
 }
 
 CQtDeployer.depends=QuasarAppLib

@@ -45,9 +45,12 @@ include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
 
 
 SOURCES += \
+    distrostruct.cpp \
+    configparser.cpp \
     deploy.cpp \
     deploycore.cpp \
-    deployparams.cpp \
+    envirement.cpp \
+    extracter.cpp \
     filemanager.cpp \
     pe.cpp \
     igetlibinfo.cpp \
@@ -56,14 +59,16 @@ SOURCES += \
     elf.cpp \
     pluginsparser.cpp \
     qml.cpp \
-    libinfo.cpp \
-    distrostruct.cpp 
+    libinfo.cpp
 
 HEADERS += \
+    distrostruct.h \
+    configparser.h \
     deploy.h \
     deploy_global.h \
     deploycore.h \
-    deployparams.h \
+    envirement.h \
+    extracter.h \
     filemanager.h \
     pe.h \
     igetlibinfo.h \
@@ -72,7 +77,5 @@ HEADERS += \
     elf.h \
     pluginsparser.h \
     qml.h \
-    libinfo.h \
-    distrostruct.h 
+    libinfo.h
 
-STATECHARTS +=

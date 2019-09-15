@@ -8,29 +8,42 @@
 #include <QtTest>
 #include <quasarapp.h>
 #include <deploycore.h>
-#include <deploy.h>
+#include <extracter.h>
 #include <dependenciesscanner.h>
 #include <qml.h>
-#include <QList>
+#include <deploy.h>
+#include <configparser.h>
+#include <QCryptographicHash>
+#include <distrostruct.h>
 
 #include <QMap>
 #include <QByteArray>
 #include <QDir>
 #include <thread>
 #include "libcreator.h"
+#include "modules.h"
 #include "qmlcreator.h"
+#include "testutils.h"
 // add necessary includes here
+
+const QString TestBinDir = TEST_BIN_DIR;
+const QString TestQtDir = QT_BASE_DIR;
 
 class deploytest : public QObject
 {
     Q_OBJECT
 
 private:
+    QSet<QString> qtFilesTree;
+
+
     bool runProcess(const QString& DistroPath,
                     const QString& filename,
                     const QString &qt = "");
     QStringList getFilesFromDir(const QString& dir);
 
+
+    void runTestParams(const QStringList &list, QSet<QString> *tree = nullptr, bool noWarnings = false);
 
 public:
     deploytest();
@@ -42,31 +55,56 @@ public:
     int generateLib(const QString& paath);
     void deleteLib(const QString& paath);
 
-    bool mainTestOnlyC();
-    bool mainTestQMake();
-    bool mainTestQML();
-    bool testEnvIgnore();
-
-
     ~deploytest();
 
 private slots:
     void initTestCase();
     void cleanupTestCase();
-    void testDeployCore();
+
+    // old tests (not valid)
     void testDeployTarget();
-    void testTranslations();
     void testStrip();
-    void testDeploy();
     void testExtractLib();
-    void testDeployLdLinux();
+    void testDistroStruct();
 
     void testQmlExtrct();
-    void testDistroStruct();
     void testSetTargetDir();
 
-    void mainTests();
+    //    void mainTests();
+
+    // end old tests
+
+    // tested flags : help, version
+    void testHelp();
+    // tested flags clear noOvervrite
+    void testOverwrite();
+
+    // tested flags binDir
+    void testBinDir();
+
+    // tested flags confFile
+    void testConfFile();
+
+    // tested flags qmlDir qmake
+    void testQt();
+
+    // tested flags ignore ignoreEnv
+    void testIgnore();
+
+    // tested flags libDir recursiveDepth
+    void testLibDir();
+
+    // tested flag extraPlugin
+    void testExtraPlugins();
+
+    // tested flag targetDir
+    void testTargetDir();
+
+    // tested flag noLibc deploySystem
+    void testSystemLib();
+
     void testMSVC();
+
 };
 
 bool deploytest::runProcess(const QString &DistroPath,
@@ -123,97 +161,34 @@ bool deploytest::runProcess(const QString &DistroPath,
 }
 
 QStringList deploytest::getFilesFromDir(const QString &path) {
-        QDir dir(path);
+    QDir dir(path);
 
-        QStringList res;
+    QStringList res;
 
-        auto list = dir.entryInfoList(QDir::Dirs| QDir::Files| QDir::NoDotAndDotDot);
+    auto list = dir.entryInfoList(QDir::Dirs| QDir::Files| QDir::NoDotAndDotDot);
 
-        for (auto &&subDir: list) {
+    for (auto &&subDir: list) {
 
-            if (subDir.isFile()) {
-                res.push_back(subDir.fileName());
-            } else {
-                res.append(getFilesFromDir(subDir.absoluteFilePath()));
-            }
+        if (subDir.isFile()) {
+            res.push_back(subDir.fileName());
+        } else {
+            res.append(getFilesFromDir(subDir.absoluteFilePath()));
         }
+    }
 
-        return res;
+    return res;
 }
 
-bool deploytest::testEnvIgnore()
-{
-#ifdef WITH_ALL_TESTS
+deploytest::deploytest() {
+    TestUtils utils;
 
-    QFileInfo QtDir = QFileInfo(QT_BASE_DIR);
+    auto tempTree = utils.getTree(TestQtDir);
 
-    if (!QtDir.isDir()) {
-        return false;
+    for (const QString &i: tempTree) {
+        qtFilesTree.insert(QFileInfo(i).fileName());
     }
 
-    int argc = 9;
-    std::string qmakePath = (QtDir.absoluteFilePath() + "bin/qmake.exe").toStdString();
-#ifdef Q_OS_WIN
-    std::string qtPath = (QtDir.absoluteFilePath() + "bin/").toStdString();
-#else
-    std::string qtPath = (QtDir.absoluteFilePath() + "lib/").toStdString();
-#endif
-    const char *qmake = qmakePath.c_str();
-    const char *qt = qtPath.c_str();
-#ifdef Q_OS_WIN
-
-    const char * argv[] = {"./",
-                           "-bin", "./../../../tests/build/QtWidgetsProject.exe",
-                           "-qmake", qmake,
-                           "-ignoreEnv", qt,
-                           "-targetDir", "./Distro"};
-#else
-    const char * argv[] = {"./",
-                           "-bin", "./../../../tests/build/QtWidgetsProject",
-                           "-qmake", qmake,
-                           "-ignoreEnv", qt,
-
-                           "-targetDir", "./Distro"};
-#endif
-    if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
-        return false;
-    }
-
-    Deploy deploy;
-
-    if (!DeployCore::parseQt(&deploy)) {
-        return false;
-    }
-
-    deploy.deploy();
-
-    if (!QFileInfo("./Distro").isDir()) {
-        return false;
-    }
-#ifdef Q_OS_WIN
-    QDir info("./Distro");
-
-#else
-    QDir info("./Distro/lib");
-#endif
-
-    for (auto &i :info.entryInfoList()) {
-        if (i.fileName().contains("Qt")) {
-            return false;
-        }
-
-    }
-    if (!info.removeRecursively()) {
-        return false;
-    }
-
-    return true;
-#else
-    return false;
-#endif
 }
-
-deploytest::deploytest(){}
 
 int deploytest::generateLib(const QString &paath)
 {
@@ -302,72 +277,42 @@ void deploytest::cleanupTestCase() {
 
 }
 
-void deploytest::testDeployCore() {
-    QString qtDir = "./test/Qt/5.12/";
-    QStringList extraPathes = QStringList() << QFileInfo("./test/extraPath/").absoluteFilePath();
-
-    DeployCore::qtDir = QFileInfo(qtDir).absoluteFilePath();
-    DeployCore::extraPaths = extraPathes;
-
-    // qt Dir
-    QVERIFY(DeployCore::isQtLib("./test/Qt/5.12/myLib.so"));
-    QVERIFY(!DeployCore::isQtLib("/myQtDur/Qt/5.11/myLib.so"));
-    QVERIFY(!DeployCore::isQtLib("/mQtDur/Qt/5.12/myLib.so"));
-    QVERIFY(DeployCore::isQtLib("./test/Qt/5.12/myLib/testlibs/mylib.so"));
-
-    // extra Dir
-    QVERIFY(!DeployCore::isExtraLib("./test/Qt/5.12/myLib.so"));
-    QVERIFY(!DeployCore::isExtraLib("/myQtDur/Qt/5.11/myLib.so"));
-    QVERIFY(!DeployCore::isExtraLib("/mQtDur/Qt/5.12/myLib.so"));
-    QVERIFY(!DeployCore::isExtraLib("./test/Qt/5.12/myLib/testlibs/mylib.so"));
-
-    QVERIFY(DeployCore::isExtraLib("./test/extraPath/Qt/5.12/myLib.so"));
-    QVERIFY(DeployCore::isExtraLib("./test/extraPath/Qt/5/myLib.so"));
-    QVERIFY(DeployCore::isExtraLib("./test/extraPath/myLib.so"));
-    QVERIFY(DeployCore::isExtraLib("./test/extraPath/Qt/5.12/myLib/testlibs/mylib.so"));
-
-    //getLibPriority
-
-    QVERIFY(DeployCore::getLibPriority("./tst/Qt/5.12/generalLib.so") == NotFile);
-    QVERIFY(DeployCore::getLibPriority("./test/Qt/5.12/generalLib.so") == QtLib);
-    QVERIFY(DeployCore::getLibPriority("./test/extraPath/ExtraLib.so") == ExtraLib);
-    QVERIFY(DeployCore::getLibPriority("./test/extra/ExtraLib.so") == SystemLib);
-}
-
 void deploytest::testDeployTarget() {
 
-    Deploy *deploy = new Deploy();
+    FileManager file;
+    ConfigParser *deploy = new ConfigParser(&file);
+
     QStringList targets;
     targets << "./test/bins/execTarget.exe";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new Deploy();
+    deploy = new ConfigParser(&file);
     targets << "./test/bins/execTarget";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new Deploy();
+    deploy = new ConfigParser(&file);
     targets << "./test/bins/execTarget.exe" << "./test/bins/execTarget";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new Deploy();
+    deploy = new ConfigParser(&file);
     targets << "./test/bns/execTarget.exe";
     QVERIFY(!deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new Deploy();
+    deploy = new ConfigParser(&file);
     targets << "./test/bins/";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new Deploy();
+    deploy = new ConfigParser(&file);
     targets << "./test/bins/" << "./test/warning/";
     QVERIFY(deploy->setTargets(targets));
 
@@ -377,11 +322,7 @@ void deploytest::testDeployTarget() {
 
 void deploytest::testStrip() {
 
-#ifdef Q_OS_WIN
-    FileManager *deploy = new FileManager();
-    QVERIFY(deploy->strip("./test/binTargetDir/debugLib.so"));
-    delete deploy;
-#else
+#ifdef Q_OS_UNIX
     //for one lib
     qint64 sizeBefor = generateLib("./test/binTargetDir/debugLib.so");
     qint64 sizeAfter = 0;
@@ -443,14 +384,6 @@ void deploytest::testStrip() {
 #endif
 }
 
-void deploytest::testDeploy() {
-    QuasarAppUtils::Params::parseParams(0, nullptr);
-
-    Deploy *deploy = new Deploy();
-    QVERIFY(!deploy->appDir.isEmpty());
-    delete deploy;
-}
-
 void deploytest::testExtractLib() {
     LibCreator creator("./");
     auto libs = creator.getLibs();
@@ -474,92 +407,6 @@ void deploytest::testExtractLib() {
         }
 
     }
-
-}
-
-void deploytest::testDeployLdLinux() {
-    auto deploy = new Deploy();
-    int argc = 3;
-    deploy->targetDir = "./test/bins/sh";
-    QVERIFY(QDir("./").mkpath("./test/bins/sh/"));
-    QFile  f("");
-
-    const char * argv[] = {"./",
-                           "-bin", "./test/bins/execTarget"};
-    QVERIFY(QuasarAppUtils::Params::parseParams(argc, argv));
-    QString file = "./test/bins/sh/execTarget.sh";
-    QVERIFY(deploy->createRunScript(file));
-    f.setFileName(file);
-    QVERIFY(f.open(QIODevice::ReadOnly));
-    QString text = f.readAll();
-    f.close();
-    QVERIFY(!text.contains("LD_PRELOAD"));
-
-    deploy->initIgnoreList();
-    QVERIFY(!deploy->ignoreList.contains("libc.so"));
-    QVERIFY(!deploy->ignoreList.contains("ld-linux.so"));
-
-    argc = 4;
-    const char * argv2[] = {"./",
-                           "-bin", "./test/bins/execTarget",
-                           "deploySystem"};
-    QVERIFY(QuasarAppUtils::Params::parseParams(argc, argv2));
-    file = "./test/bins/sh/execTarget2.sh";
-    QVERIFY(deploy->createRunScript(file));
-    f.setFileName(file);
-    QVERIFY(f.open(QIODevice::ReadOnly));
-    text = f.readAll();
-    f.close();
-    QVERIFY(!text.contains("LD_PRELOAD"));
-
-    file = "./test/bins/sh/execTarget5.sh";
-    deploy->_fileManager.addToDeployed("ld-linux-x86-64.so.2");
-    QVERIFY(deploy->createRunScript(file));
-    f.setFileName(file);
-    QVERIFY(f.open(QIODevice::ReadOnly));
-    text = f.readAll();
-    f.close();
-    QVERIFY(text.contains("LD_PRELOAD"));
-
-    deploy->initIgnoreList();
-    QVERIFY(!deploy->ignoreList.contains("libc.so"));
-    QVERIFY(!deploy->ignoreList.contains("ld-linux.so"));
-
-    argc = 5;
-    const char * argv3[] = {"./",
-                           "-bin", "./test/bins/execTarget",
-                           "deploySystem", "noLibc"};
-    QVERIFY(QuasarAppUtils::Params::parseParams(argc, argv3));
-    file = "./test/bins/sh/execTarget3.sh";
-    QVERIFY(deploy->createRunScript(file));
-    f.setFileName(file);
-    QVERIFY(f.open(QIODevice::ReadOnly));
-    text = f.readAll();
-    f.close();
-    QVERIFY(!text.contains("LD_PRELOAD"));
-    deploy->initIgnoreList();
-    QVERIFY(deploy->ignoreList.contains("libc.so"));
-    QVERIFY(!deploy->ignoreList.contains("ld-linux.so"));
-
-
-    argc = 4;
-    const char * argv4[] = {"./",
-                           "-bin", "./test/bins/execTarget",
-                            "noLibc"};
-    QVERIFY(QuasarAppUtils::Params::parseParams(argc, argv4));
-    file = "./test/bins/sh/execTarget4.sh";
-
-    QVERIFY(deploy->createRunScript(file));
-    f.setFileName(file);
-    QVERIFY(f.open(QIODevice::ReadOnly));
-    text = f.readAll();
-    f.close();
-    QVERIFY(!text.contains("LD_PRELOAD"));
-    deploy->initIgnoreList();
-    QVERIFY(deploy->ignoreList.contains("libc.so"));
-    QVERIFY(!deploy->ignoreList.contains("ld-linux.so"));
-
-    QVERIFY(QDir("./test/bins/sh/").removeRecursively());
 
 }
 
@@ -649,13 +496,14 @@ void deploytest::testDistroStruct() {
 
 void deploytest::testSetTargetDir() {
 
-    Deploy dep;
+    FileManager file;
+    ConfigParser  dep(&file);
 
     dep.setTargetDir();
 
-    QVERIFY(dep.targetDir == QFileInfo("./Distro").absoluteFilePath());
+    QVERIFY(dep.config()->targetDir == QFileInfo("./Distro").absoluteFilePath());
     dep.setTargetDir("./ff");
-    QVERIFY(dep.targetDir == QFileInfo("./ff").absoluteFilePath());
+    QVERIFY(dep.config()->targetDir == QFileInfo("./ff").absoluteFilePath());
 
     int argc = 3;
     const char * argv[] = {"", "-targetDir", "./Distro2"};
@@ -663,291 +511,496 @@ void deploytest::testSetTargetDir() {
     QuasarAppUtils::Params::parseParams(argc, argv);
 
     dep.setTargetDir();
-    QVERIFY(dep.targetDir == QFileInfo("./Distro2").absoluteFilePath());
+    QVERIFY(dep.config()->targetDir == QFileInfo("./Distro2").absoluteFilePath());
     dep.setTargetDir("./ff");
-    QVERIFY(dep.targetDir == QFileInfo("./Distro2").absoluteFilePath());
+    QVERIFY(dep.config()->targetDir == QFileInfo("./Distro2").absoluteFilePath());
 
 }
 
-void deploytest::mainTests() {
-#ifdef WITH_ALL_TESTS
-    QVERIFY(mainTestOnlyC());
-    QVERIFY(mainTestQMake());
-    QVERIFY(mainTestQML());
-    QVERIFY(testEnvIgnore());
+void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree, bool noWarnings) {
 
-
-#endif
-}
-
-bool deploytest::mainTestOnlyC() {
-#ifdef WITH_ALL_TESTS
-    int argc = 5;
-#ifdef Q_OS_WIN
-
-    QFileInfo QtDir = QFileInfo(QT_BASE_DIR);
-
-    if (!QtDir.isDir()) {
-        return false;
-    }
-    argc += 2;
-
-    std::string path = (QtDir.absoluteFilePath() + "bin/").toStdString();
-    const char *string = path.c_str();
-
-    const char * argv[] = {"./",
-                           "-bin", "./../../../tests/build/TestOnlyC.exe",
-                           "-targetDir", "./Distro",
-                           "-libDir", string};
-#else
-    const char * argv[] = {"./",
-                           "-bin", "./../../../tests/build/TestOnlyC",
-                           "-targetDir", "./Distro"};
-#endif
-
-    if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
-        return false;
-    }
+    QuasarAppUtils::Params::parseParams(list);
 
     Deploy deploy;
+    QVERIFY(deploy.run() == 0);
 
-    if (!DeployCore::parseQt(&deploy)) {
-        return false;
+    if (tree) {
+        TestUtils utils;
+
+        QVERIFY(DeployCore::_config);
+        QVERIFY(!DeployCore::_config->targetDir.isEmpty());
+
+        auto resultTree = utils.getTree(DeployCore::_config->targetDir);
+
+        auto comapre = utils.compareTree(resultTree, *tree);
+
+        if (comapre.size() != 0) {
+
+            bool bug = false;
+
+            for (auto i = comapre.begin(); i != comapre.end(); ++i) {
+
+                if (i.value() == 1) {
+                    qCritical() << "added unnecessary file : " + i.key();
+                    bug = true;
+                } else if (qtFilesTree.contains(QFileInfo(i.key()).fileName())) {
+                    qCritical() << "Missing file : " + i.key();
+                    bug = true;
+                } else if (noWarnings)  {
+                    qCritical() << "File : " + i.key() + " not exits in qt Dir";
+                    bug = true;
+                } else {
+                    qWarning() << "File : " + i.key() + " not exits in qt Dir";
+                }
+            }
+
+            if (!bug) {
+                return;
+            }
+
+            QJsonObject obj;
+            for (auto i : resultTree) {
+                obj[i];
+            }
+
+            QJsonDocument doc(obj);
+
+            QFile lasttree("./LastTree.json");
+            lasttree.open(QIODevice::WriteOnly| QIODevice::Truncate);
+
+            lasttree.write(doc.toJson());
+            lasttree.close();
+
+            QVERIFY2(false, "runTestParams fail");
+
+
+        }
+
     }
-
-    deploy.deploy();
-
-    if (!QFileInfo("./Distro").isDir()) {
-        return false;
-    }
-
-    QDir info("./Distro");
-
-    bool run = runProcess("./Distro", "TestOnlyC");
-    if (!info.removeRecursively()) {
-        return false;
-    }
-
-    return run;
-#else
-    return false;
-
-#endif
-}
-
-bool deploytest::mainTestQMake() {
-#ifdef WITH_ALL_TESTS
-
-    QFileInfo QtDir = QFileInfo(QT_BASE_DIR);
-
-    if (!QtDir.isDir()) {
-        return false;
-    }
-
-    int argc = 7;
-#ifdef Q_OS_WIN
-
-    std::string qmakePath = (QtDir.absoluteFilePath() + "bin/qmake.exe").toStdString();
-    const char *qmake = qmakePath.c_str();
-    const char * argv[] = {"./",
-                           "-bin", "./../../../tests/build/QtWidgetsProject.exe",
-                           "-qmake", qmake,
-                           "-targetDir", "./Distro"};
-#else
-    const char * argv[] = {"./",
-                           "-bin", "./../../../tests/build/QtWidgetsProject",
-                           "-qmake", (QtDir.absoluteFilePath() + "/bin/qmake").toLatin1(),
-                           "-targetDir", "./Distro"};
-#endif
-    if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
-        return false;
-    }
-
-    Deploy deploy;
-
-    if (!DeployCore::parseQt(&deploy)) {
-        return false;
-    }
-
-    deploy.deploy();
-
-    QDir info("./Distro");
-
-    if (!QFileInfo("./Distro").isDir()) {
-        return false;
-    }
-
-    bool run = runProcess("./Distro", "QtWidgetsProject", QtDir.absoluteFilePath());
-
-    if (!info.removeRecursively()) {
-        return false;
-    }
-
-    return run;
-#else
-    return false;
-#endif
-
-
 
 }
 
-bool deploytest::mainTestQML() {
+void deploytest::testHelp() {
+    runTestParams({"h"});
+    runTestParams({"v"});
+    auto help = DeployCore::help();
 
-#ifdef WITH_ALL_TESTS
-
-    QFileInfo QtDir = QFileInfo(QT_BASE_DIR);
-
-    if (!QtDir.isDir()) {
-        return false;
+    for (auto &key: DeployCore::helpKeys()) {
+        QVERIFY(help.contains(key));
     }
 
-    int argc = 9;
-#ifdef Q_OS_WIN
-    std::string qmakePath = (QtDir.absoluteFilePath() + "bin/qmake.exe").toStdString();
-    const char *qmake = qmakePath.c_str();
-
-    const char * argv[] = {"./",
-                           "-bin", "./../../../tests/build/TestQMLWidgets.exe",
-                           "-qmlDir", "./../../../tests/TestQMLWidgets",
-                           "-qmake", qmake,
-                           "-targetDir", "./Distro"};
-#else
-    const char * argv[] = {"./",
-                           "-bin", "./../../../tests/build/TestQMLWidgets",
-                           "-qmlDir", "./../../../tests/TestQMLWidgets",
-                           "-qmake", (QtDir.absoluteFilePath() + "/bin/qmake").toLatin1(),
-                           "-targetDir", "./Distro"};
-#endif
-
-
-    if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
-        return false;
-    }
-
-    Deploy deploy;
-
-    if (!DeployCore::parseQt(&deploy)) {
-        return false;
-    }
-
-    deploy.deploy();
-
-    QDir info("./Distro");
-
-    bool run = runProcess("./Distro", "TestQMLWidgets", QtDir.absoluteFilePath());
-
-    if (!info.removeRecursively()) {
-        return false;
-    }
-
-    if (!run ) {
-        return false;
-    }
-
-    if (!QFileInfo(QtDir).isDir()) {
-        return false;
-    }
-
-    argc = 10;
-#ifdef Q_OS_WIN
-
-    const char * argv2[] = {"./",
-                           "-bin", "./../../../tests/build/TestQMLWidgets.exe",
-                           "-qmlDir", "./../../../tests/TestQMLWidgets",
-                           "-qmake", qmake,
-                           "-targetDir", "./Distro", "qmlExtern"};
-#else
-    const char * argv2[] = {"./",
-                           "-bin", "./../../../tests/build/TestQMLWidgets",
-                           "-qmlDir", "./../../../tests/TestQMLWidgets",
-                           "-qmake", (QtDir.absoluteFilePath() + "/bin/qmake").toLatin1(),
-                           "-targetDir", "./Distro", "qmlExtern"};
-#endif
-
-
-    if (!QuasarAppUtils::Params::parseParams(argc, argv2)) {
-        return false;
-    }
-
-    Deploy deploy2;
-
-    if (!DeployCore::parseQt(&deploy2)) {
-        return false;
-    }
-
-    deploy2.deploy();
-    run = runProcess("./Distro", "TestQMLWidgets", QtDir.absoluteFilePath());
-
-    if (!info.removeRecursively()) {
-        return false;
-    }
-
-    return run;
-#else
-    return false;
-
-#endif
 }
 
-void deploytest::testTranslations() {
-    QStringList trList = {
-        ("./test/QtDir/translations/qtbase_ru.qm"),
-        ("./test/QtDir/translations/qtbase_en.qm"),
-        ("./test/QtDir/translations/qtmultimedia_en.qm"),
-        ("./test/QtDir/translations/qtmultimedia_ru.qm"),
-        ("./test/QtDir/translations/qtdeclarative_en.qm"),
-        ("./test/QtDir/translations/qtdeclarative_ru.qm"),
+void deploytest::testOverwrite() {
+    TestUtils utils;
 
-    };
+#ifdef Q_OS_UNIX
+    QFile f("./Distro/bin/TestOnlyC");
+    auto comapareTree = utils.createTree(
+    {"./Distro/bin/TestOnlyC",
+     "./Distro/TestOnlyC.sh"});
+    QString bin = TestBinDir + "TestOnlyC";
 
-    QStringList res = {
-        ("qtbase_ru.qm"),
-        ("qtbase_en.qm"),
-        ("qtmultimedia_en.qm"),
-        ("qtmultimedia_ru.qm"),
-    };
+#else
+    QFile f("./Distro/TestOnlyC.exe");
+    auto comapareTree = utils.createTree(
+    {"./Distro/TestOnlyC.exe",
+     "./Distro/qt.conf"});
+    QString bin = TestBinDir + "TestOnlyC.exe";
 
-    QStringList libList = {
-        (QFileInfo("./test/target/Qt5Core.so").absoluteFilePath()),
-        (QFileInfo("./test/target/Qt5Nfc.so").absoluteFilePath()),
-        (QFileInfo("./test/target/Qt5MultimediaWidgets.dll").absoluteFilePath()),
+#endif
 
-    };
+    runTestParams({"-bin", bin, "force-clear", "noOverwrite"}, &comapareTree);
 
-    DeployCore::qtDir = QFileInfo("./test/QtDir/").absoluteFilePath();
+    QVERIFY(f.open(QIODevice::ReadOnly));
+    auto hashBefor = QCryptographicHash::hash(f.readAll(), QCryptographicHash::Md5);
+    f.close();
+
+    QVERIFY(f.open(QIODevice::WriteOnly | QIODevice::Append));
+    f.write(QByteArray(10, '1'));
+    f.close();
+
+    QVERIFY(f.open(QIODevice::ReadOnly));
+    auto hashAfter = QCryptographicHash::hash(f.readAll(), QCryptographicHash::Md5);
+    f.close();
+
+    QVERIFY(hashAfter != hashBefor);
+
+    runTestParams({"-bin", bin, "noOverwrite"}, &comapareTree);
+
+    QVERIFY(f.open(QIODevice::ReadOnly));
+    hashAfter = QCryptographicHash::hash(f.readAll(), QCryptographicHash::Md5);
+    f.close();
+
+    QVERIFY(hashAfter != hashBefor);
 
 
-    Deploy *deploy = new Deploy();
+    runTestParams({"-bin", bin}, &comapareTree);
 
-    for (auto &&i: trList) {
-        generateLib(i);
-    }
+    QVERIFY(f.open(QIODevice::ReadOnly));
+    hashAfter = QCryptographicHash::hash(f.readAll(), QCryptographicHash::Md5);
+    f.close();
 
-    for (auto &&i: libList) {
-        generateLib(i);
-    }
+    QVERIFY(hashAfter == hashBefor);
 
-    deploy->translationDir = QFileInfo("./test/QtDir/translations/").absoluteFilePath();
-    deploy->targetDir = QFileInfo("./test/deploy/").absoluteFilePath();
+}
 
-    auto trans = DeployCore::extractTranslation(libList);
-    QVERIFY(trans.size() == 2);
-    QVERIFY(deploy->copyTranslations(trans));
+void deploytest::testBinDir() {
+    TestUtils utils;
 
-    QDir d("./test/deploy/translations") ;
-    QVERIFY(d.exists());
 
-    auto realList = d.entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
-    QVERIFY(realList.size() == 4);
+#ifdef Q_OS_UNIX
+    auto comapareTree = utils.createTree(
+    {"./Distro/bin/TestOnlyC",
+     "./Distro/bin/QtWidgetsProject",
+     "./Distro/bin/TestQMLWidgets",
+     "./Distro/TestOnlyC.sh",
+     "./Distro/QtWidgetsProject.sh",
+     "./Distro/TestQMLWidgets.sh"});
+#else
+    auto comapareTree = utils.createTree(
+    {"./Distro/TestOnlyC.exe",
+     "./Distro/QtWidgetsProject.exe",
+     "./Distro/TestQMLWidgets.exe",
+     "./Distro/qt.conf"});
+#endif
 
-    for(auto i: realList) {
 
-        QVERIFY(res.contains(i.fileName()));
-    }
 
-    deleteLib("./test/deploy");
+    runTestParams({"-binDir", TestBinDir, "clear"}, &comapareTree);
+}
 
+void deploytest::testConfFile() {
+    TestUtils utils;
+
+    QFile::remove(TestBinDir + "/TestConf.json");
+
+#ifdef Q_OS_UNIX
+    auto comapareTree = utils.createTree(
+    {"./Distro/bin/TestOnlyC",
+     "./Distro/bin/QtWidgetsProject",
+     "./Distro/bin/TestQMLWidgets",
+     "./Distro/TestOnlyC.sh",
+     "./Distro/QtWidgetsProject.sh",
+     "./Distro/TestQMLWidgets.sh"});
+#else
+    auto comapareTree = utils.createTree(
+    {"./Distro/TestOnlyC.exe",
+     "./Distro/QtWidgetsProject.exe",
+     "./Distro/TestQMLWidgets.exe",
+     "./Distro/qt.conf"});
+#endif
+
+
+    runTestParams({"-bin", TestBinDir, "clear" ,
+                   "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
+
+
+    QVERIFY(QFile::exists(TestBinDir + "/TestConf.json"));
+    QFile::remove(TestBinDir + "/TestConf.json");
+
+#ifdef Q_OS_UNIX
+    runTestParams({"-bin", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
+                   "clear" ,
+                   "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
+#else
+    runTestParams({"-bin", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
+                   "clear" ,
+                   "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
+#endif
+
+    QFile confFile(TestBinDir + "/TestConf.json");
+    QVERIFY(confFile.open(QIODevice::ReadOnly));
+
+    auto data = confFile.readAll();
+    confFile.close();
+
+    QJsonDocument doc;
+    doc = doc.fromJson(data);
+    QVERIFY(!doc.isNull());
+
+    QVERIFY(data.contains("\"bin\": ["));
+    QVERIFY(data.contains("build/TestOnlyC"));
+    QVERIFY(data.contains("build/QtWidgetsProject"));
+    QVERIFY(data.contains("build/TestQMLWidgets"));
+
+    QVERIFY(data.contains("\"clear\": true"));
+
+#ifdef Q_OS_UNIX
+    runTestParams({"-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
+#else
+    runTestParams({"-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
+
+#endif
+
+    QVERIFY(QuasarAppUtils::Params::isEndable("clear"));
+    QVERIFY(QuasarAppUtils::Params::isEndable("bin"));
+
+    QFile::remove(TestBinDir + "/TestConf.json");
+}
+
+void deploytest::testQt() {
+    TestUtils utils;
+
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestQMLWidgets";
+    QString qmake = TestQtDir + "bin/qmake";
+
+#else
+    QString bin = TestBinDir + "TestQMLWidgets.exe";
+    QString qmake = TestQtDir + "bin/qmake.exe";
+
+#endif
+    auto comapareTree = Modules::qmlLibs();
+
+
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets"}, &comapareTree);
+
+#ifdef Q_OS_UNIX
+    bin = TestBinDir + "QtWidgetsProject";
+
+#else
+    bin = TestBinDir + "QtWidgetsProject.exe";
+
+#endif
+    comapareTree = Modules::qtLibs();
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake}, &comapareTree);
+
+
+#ifdef Q_OS_UNIX
+    comapareTree = Modules::qtWithoutTr();
+    bin = TestBinDir + "QtWidgetsProject";
+
+#else
+    comapareTree = utils.createTree(
+    {"./Distro/TestQMLWidgets.exe",
+     "./Distro/qt.conf"});
+    bin = TestBinDir + "QtWidgetsProject.exe";
+
+#endif
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake, "noTranslations"}, &comapareTree);
+
+}
+
+void deploytest::testIgnore() {
+    TestUtils utils;
+
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "QtWidgetsProject";
+    QString qmake = TestQtDir + "bin/qmake";
+
+#else
+    QString bin = TestBinDir + "QtWidgetsProject.exe";
+    QString qmake = TestQtDir + "bin/qmake.exe";
+
+#endif
+
+    auto comapareTree = utils.createTree(
+    {
+                    "./Distro/QtWidgetsProject.sh",
+                    "./Distro/bin/QtWidgetsProject",
+                    "./Distro/lib/libicudata.so",
+                    "./Distro/lib/libicui18n.so",
+                    "./Distro/lib/libicuuc.so"
+                });
+
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                  "-ignore", "Qt5"}, &comapareTree);
+
+    comapareTree = utils.createTree(
+    {
+                    "./Distro/QtWidgetsProject.sh",
+                    "./Distro/bin/QtWidgetsProject",
+                });
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                  "-ignoreEnv", TestQtDir + "/lib," + TestQtDir + "/bin" }, &comapareTree);
+
+    auto removeTree = utils.createTree({
+                    "./Distro/lib/libQt5VirtualKeyboard.so",
+                });
+
+    comapareTree = Modules::qtLibs() - removeTree;
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                  "-ignore", "VirtualKeyboard"}, &comapareTree);
+
+}
+
+void deploytest::testLibDir() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC";
+    QString extraPath = "/usr/lib";
+
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+    QString extraPath = "/usr/lib";
+
+#endif
+
+    auto comapareTree = utils.createTree(
+    {
+                    "./Distro/TestOnlyC.sh",
+                    "./Distro/bin/TestOnlyC"
+                });
+
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-libDir", extraPath,
+                  }, &comapareTree);
+
+    comapareTree = utils.createTree(
+    {
+        "./Distro/TestOnlyC.sh",
+        "./Distro/bin/TestOnlyC",
+        "./Distro/lib/libstdc++.so",
+        "./Distro/lib/libgcc_s.so"
+    });
+
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-libDir", extraPath,
+                   "-recursiveDepth", "5"}, &comapareTree, true);
+
+
+}
+
+void deploytest::testExtraPlugins() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "QtWidgetsProject";
+    QString extraPath = "/usr/lib";
+    QString qmake = TestQtDir + "bin/qmake";
+
+
+#else
+    QString bin = TestBinDir + "QtWidgetsProject.exe";
+    QString extraPath = "/usr/lib";
+    QString qmake = TestQtDir + "bin/qmake.exe";
+
+
+#endif
+
+    auto comapareTree = Modules::qtLibs();
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                  }, &comapareTree);
+
+
+    auto pluginTree = utils.createTree(
+    {
+                    "./Distro/plugins/sqldrivers/libqsqlodbc.so",
+                    "./Distro/plugins/sqldrivers/libqsqlpsql.so",
+                    "./Distro/plugins/sqldrivers/libqsqlite.so",
+    });
+
+    comapareTree = comapareTree + pluginTree;
+
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-extraPlugin", "sqldrivers"}, &comapareTree);
+}
+
+void deploytest::testTargetDir() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC";
+
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+
+
+#endif
+
+    auto comapareTree = utils.createTree(
+    {"./DistroZ/bin/TestOnlyC",
+     "./DistroZ/TestOnlyC.sh"});
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-targetDir", "./DistroZ"
+                  }, &comapareTree);
+}
+
+void deploytest::testSystemLib() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC";
+
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+
+
+#endif
+
+    auto comapareTree = utils.createTree(
+    {
+         "./Distro/TestOnlyC.sh",
+         "./Distro/bin/TestOnlyC",
+         "./Distro/lib/ld-linux-x86-64.so",
+         "./Distro/lib/libc.so",
+         "./Distro/lib/libgcc_s.so",
+         "./Distro/lib/libm.so",
+         "./Distro/lib/libstdc++.so"
+    });
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "deploySystem"
+                  }, &comapareTree, true);
+
+#ifdef Q_OS_UNIX
+
+    QFile file("./Distro/TestOnlyC.sh");
+
+    QVERIFY(file.open(QIODevice::ReadOnly));
+
+    auto runScript = file.readAll();
+    file.close();
+
+    QVERIFY(runScript.contains("export LD_PRELOAD="));
+
+    comapareTree = utils.createTree(
+    {
+         "./Distro/TestOnlyC.sh",
+         "./Distro/bin/TestOnlyC",
+         "./Distro/lib/libgcc_s.so",
+         "./Distro/lib/libstdc++.so"
+    });
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "deploySystem", "noLibc"
+                  }, &comapareTree, true);
+
+    file.setFileName("./Distro/TestOnlyC.sh");
+
+    QVERIFY(file.open(QIODevice::ReadOnly));
+
+    runScript = file.readAll();
+    file.close();
+
+    QVERIFY(!runScript.contains("export LD_PRELOAD="));
+
+
+#endif
 }
 
 QTEST_APPLESS_MAIN(deploytest)
