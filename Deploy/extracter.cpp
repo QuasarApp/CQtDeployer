@@ -9,6 +9,7 @@
 #include "deploycore.h"
 #include "pluginsparser.h"
 #include "configparser.h"
+#include "metafilemanager.h"
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
@@ -38,8 +39,12 @@ bool Extracter::copyPlugin(const QString &plugin) {
 
     QStringList listItems;
 
-    if (!_fileManager->copyFolder(plugin, DeployCore::_config->targetDir + "/plugins/" + QFileInfo(plugin).fileName(),
-                                 QStringList() << ".so.debug" << "d.dll", &listItems)) {
+    auto pluginPath = DeployCore::_config->targetDir +
+            DeployCore::_config->distroStruct.getPluginsOutDir() +
+            QFileInfo(plugin).fileName();
+
+    if (!_fileManager->copyFolder(plugin, pluginPath,
+                    QStringList() << ".so.debug" << "d.dll", &listItems)) {
         return false;
     }
 
@@ -62,12 +67,11 @@ void Extracter::copyExtraPlugins() {
         info.setFile(extraPlugin);
         if (info.isDir() && info.absoluteFilePath().contains(DeployCore::_config->qtDir)) {
 
-            _fileManager->copyFolder(info.absoluteFilePath(),
-                                    DeployCore::_config->targetDir + "/plugins/" + info.baseName(),
-                                    QStringList() << ".so.debug" << "d.dll");
+            copyPlugin(info.baseName());
+
         } else if (info.exists()) {
             _fileManager->copyFile(info.absoluteFilePath(),
-                                  DeployCore::_config->targetDir + QDir::separator() + "plugins");
+                                  DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getPluginsOutDir());
             extract(info.absoluteFilePath());
         }
     }
@@ -81,89 +85,6 @@ void Extracter::copyPlugins(const QStringList &list) {
     }
     copyExtraPlugins();
 }
-
-bool Extracter::createRunScript(const QString &target) {
-
-    QString content =
-            "#!/bin/sh\n"
-            "BASE_DIR=$(dirname \"$(readlink -f \"$0\")\")\n"
-            "export "
-            "LD_LIBRARY_PATH=\"$BASE_DIR\"/lib:\"$BASE_DIR\":$LD_LIBRARY_PATH\n"
-            "export QML_IMPORT_PATH=\"$BASE_DIR\"/qml:QML_IMPORT_PATH\n"
-            "export QML2_IMPORT_PATH=\"$BASE_DIR\"/qml:QML2_IMPORT_PATH\n"
-            "export QT_PLUGIN_PATH=\"$BASE_DIR\"/plugins:QT_PLUGIN_PATH\n"
-            "export QTDIR=\"$BASE_DIR\"\n"
-            "export "
-            "QT_QPA_PLATFORM_PLUGIN_PATH=\"$BASE_DIR\"/plugins/"
-            "platforms:QT_QPA_PLATFORM_PLUGIN_PATH\n"
-            "%2"
-            "\"$BASE_DIR\"/bin/%1 \"$@\"";
-
-    content = content.arg(QFileInfo(target).fileName());
-    int ld_index = DeployCore::find("ld-linux", _fileManager->getDeployedFilesStringList());
-
-    if (ld_index >= 0 && QuasarAppUtils::Params::isEndable("deploySystem") &&
-            !QuasarAppUtils::Params::isEndable("noLibc")) {
-
-        content = content.arg(QString("\nexport LD_PRELOAD=\"$BASE_DIR\"/lib/%0\n").
-            arg(QFileInfo(_fileManager->getDeployedFilesStringList()[ld_index]).fileName()));
-    } else {
-        content = content.arg("");
-    }
-
-
-    QString fname = DeployCore::_config->targetDir + QDir::separator() + QFileInfo(target).baseName()+ ".sh";
-
-    QFile F(fname);
-    if (!F.open(QIODevice::WriteOnly)) {
-        return false;
-    }
-
-    F.write(content.toUtf8());
-    F.flush();
-    F.close();
-
-    _fileManager->addToDeployed(fname);
-
-    return F.setPermissions(QFileDevice::ExeOther | QFileDevice::WriteOther |
-                            QFileDevice::ReadOther | QFileDevice::ExeUser |
-                            QFileDevice::WriteUser | QFileDevice::ReadUser |
-                            QFileDevice::ExeOwner | QFileDevice::WriteOwner |
-                            QFileDevice::ReadOwner);
-}
-
-bool Extracter::createQConf() {
-
-    QString content =
-            "[Paths]\n"
-            "Prefix= ./\n"
-            "Libraries= ./\n"
-            "Plugins= ./plugins\n"
-            "Imports= ./qml\n"
-            "Qml2Imports= ./qml\n";
-
-
-    QString fname = DeployCore::_config->targetDir + QDir::separator() + "qt.conf";
-
-    QFile F(fname);
-    if (!F.open(QIODevice::WriteOnly)) {
-        return false;
-    }
-
-    F.write(content.toUtf8());
-    F.flush();
-    F.close();
-
-    _fileManager->addToDeployed(fname);
-
-    return F.setPermissions(QFileDevice::ExeOther | QFileDevice::WriteOther |
-                            QFileDevice::ReadOther | QFileDevice::ExeUser |
-                            QFileDevice::WriteUser | QFileDevice::ReadUser |
-                            QFileDevice::ExeOwner | QFileDevice::WriteOwner |
-                            QFileDevice::ReadOwner);
-}
-
-
 
 void Extracter::extractAllTargets() {
     for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
@@ -218,26 +139,6 @@ void Extracter::copyTr()
     }
 }
 
-void Extracter::createRunMetaFiles()
-{
-    bool targetWindows = false;
-
-    for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
-
-        if (QFileInfo(i.key()).completeSuffix().compare("exe", Qt::CaseInsensitive) == 0) {
-            targetWindows = true;
-        }
-
-        if (i.value() && !createRunScript(i.key())) {
-            qCritical() << "run script not created!";
-        }
-    }
-
-    if (targetWindows && !createQConf()) {
-        QuasarAppUtils::Params::verboseLog("create qt.conf failr", QuasarAppUtils::Warning);
-    }
-}
-
 void Extracter::deploy() {
     qInfo() << "target deploy started!!";
 
@@ -262,7 +163,7 @@ void Extracter::deploy() {
         QuasarAppUtils::Params::verboseLog("deploy msvc failed");
     }
 
-    createRunMetaFiles();
+    _metaFileManager->createRunMetaFiles();
 
     _fileManager->saveDeploymendFiles(DeployCore::_config->targetDir);
 
@@ -285,7 +186,7 @@ bool Extracter::copyTranslations(QStringList list) {
     auto listItems = dir.entryInfoList(filters, QDir::Files | QDir::NoDotAndDotDot);
 
     for (auto &&i: listItems) {
-        _fileManager->copyFile(i.absoluteFilePath(), DeployCore::_config->targetDir + "/translations");
+        _fileManager->copyFile(i.absoluteFilePath(), DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getTrOutDir());
     }
 
     return true;
@@ -363,7 +264,8 @@ bool Extracter::extractQmlAll() {
 
     QStringList listItems;
 
-    if (!_fileManager->copyFolder(DeployCore::_config->qmlDir, DeployCore::_config->targetDir + "/qml",
+    if (!_fileManager->copyFolder(DeployCore::_config->qmlDir,
+                                 DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getQmlOutDir(),
                     QStringList() << ".so.debug" << "d.dll",
                     &listItems)) {
         return false;
@@ -404,7 +306,8 @@ bool Extracter::extractQmlFromSource(const QString& sourceDir) {
         return false;
     }
 
-    if (!_fileManager->copyFolder(DeployCore::_config->qmlDir, DeployCore::_config->targetDir + "/qml",
+    if (!_fileManager->copyFolder(DeployCore::_config->qmlDir,
+                                 DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getQmlOutDir(),
                     filter , &listItems, &plugins)) {
         return false;
     }
@@ -455,5 +358,7 @@ Extracter::Extracter(FileManager *fileManager, ConfigParser *cqt):
     assert(_cqt);
     assert(_fileManager);
     assert(DeployCore::_config);
+
+    _metaFileManager = new MetaFileManager(_fileManager);
 }
 

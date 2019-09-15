@@ -183,6 +183,8 @@ bool ConfigParser::parseQtDeployMode() {
     initEnvirement();
     initIgnoreList();
 
+    _config.distroStruct.init();
+
     _config.depchLimit = 0;
 
     if (QuasarAppUtils::Params::isEndable("recursiveDepth")) {
@@ -388,13 +390,6 @@ void ConfigParser::initIgnoreEnvList() {
     }
 }
 
-void ConfigParser::setQmlScaner(const QString &value) {
-    _config.externQmlScaner = QDir::fromNativeSeparators(value);
-    QuasarAppUtils::Params::verboseLog("qmlScaner = " + _config.externQmlScaner,
-                                       QuasarAppUtils::VerboseLvl::Info);
-    _config.deployQml = QFileInfo(_config.externQmlScaner).isFile();
-}
-
 void ConfigParser::setQmake(const QString &value) {
     _config.qmake = QDir::fromNativeSeparators(value);
 
@@ -533,13 +528,13 @@ bool ConfigParser::smartMoveTargets() {
     for (auto i = _config.targets.cbegin(); i != _config.targets.cend(); ++i) {
 
         QFileInfo target(i.key());
-        auto targetPath = _config.targetDir + (DeployCore::isLib(target) ? "/lib" : "/bin");
 
-        if (target.completeSuffix().compare("dll", Qt::CaseInsensitive) == 0 ||
-                target.completeSuffix().compare("exe", Qt::CaseInsensitive) == 0) {
+        QString targetPath = _config.targetDir;
 
-            targetPath = _config.targetDir;
-
+        if (DeployCore::isLib(target)) {
+            targetPath += _config.distroStruct.getLibOutDir();
+        } else {
+            targetPath += _config.distroStruct.getBinOutDir();
         }
 
         if (!_fileManager->smartCopyFile(target.absoluteFilePath(), targetPath, _config.targetDir)) {

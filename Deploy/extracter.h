@@ -16,6 +16,7 @@
 #include "qml.h"
 
 class ConfigParser;
+class MetaFileManager;
 
 class DEPLOYSHARED_EXPORT Extracter {
   private:
@@ -27,11 +28,11 @@ class DEPLOYSHARED_EXPORT Extracter {
     DependenciesScanner scaner;
     FileManager *_fileManager;
     ConfigParser *_cqt;
+    MetaFileManager *_metaFileManager;
 
     void extract(const QString &file);
     bool copyTranslations(QStringList list);
 
-    bool createQConf();
     bool extractQml();
 
     QFileInfoList findFilesInsideDir(const QString &name, const QString &dirpath);
@@ -48,23 +49,14 @@ class DEPLOYSHARED_EXPORT Extracter {
 
 
     void extractAllTargets();
-
     void initQtModules();
     void clear();
-
     void extractPlugins();
-
     void copyFiles();
-
     void copyTr();
-
-    void createRunMetaFiles();
-
     void copyExtraPlugins();
-
 public:
     explicit Extracter(FileManager *fileManager, ConfigParser * cqt);
-    bool createRunScript(const QString &target);
     void deploy();
 
     friend class deploytest;
