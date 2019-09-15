@@ -67,7 +67,7 @@ void Extracter::copyExtraPlugins() {
         info.setFile(extraPlugin);
         if (info.isDir() && info.absoluteFilePath().contains(DeployCore::_config->qtDir)) {
 
-            copyPlugin(info.baseName());
+            copyPlugin(info.absoluteFilePath());
 
         } else if (info.exists()) {
             _fileManager->copyFile(info.absoluteFilePath(),
