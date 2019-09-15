@@ -33,7 +33,7 @@ struct parsed_pe_internal {
 
 }
 
-bool PE::getDep(peparse::parsed_pe_internal * internal, LibInfo &res) {
+bool PE::getDep(peparse::parsed_pe_internal * internal, LibInfo &res) const {
     auto imports = internal->imports;
 
     std::set<std::string> filter;
@@ -52,8 +52,11 @@ PE::PE(): IGetLibInfo () {
 
 }
 
-bool PE::getLibInfo(const QString &lib, LibInfo &info) {
+bool PE::getLibInfo(const QString &lib, LibInfo &info) const {
     auto parsedPeLib = peparse::ParsePEFromFile(lib.toLatin1());
+
+    if (!parsedPeLib)
+        return false;
 
     if (static_cast<RunType>(parsedPeLib->peHeader.nt.OptionalMagic) == RunType::_32bit) {
         info.setPlatform(Platform::Win32);

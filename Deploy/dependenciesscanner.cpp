@@ -6,7 +6,7 @@
  */
 
 #include "dependenciesscanner.h"
-#include "deployutils.h"
+#include "deploycore.h"
 #include "quasarapp.h"
 #include <QList>
 #include <QDir>
@@ -24,8 +24,8 @@ PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
 
     auto sufix = info.completeSuffix();
 
-    if (sufix.contains("dll", Qt::CaseSensitive) ||
-            sufix.contains("exe", Qt::CaseSensitive)) {
+    if (sufix.compare("dll", Qt::CaseSensitive) == 0 ||
+            sufix.compare("exe", Qt::CaseSensitive) == 0) {
         return PrivateScaner::PE;
     } else if (sufix.isEmpty() || sufix.contains("so", Qt::CaseSensitive)) {
         return PrivateScaner::ELF;
@@ -35,7 +35,7 @@ PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
 }
 
 QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
-        const QString &libName) {
+        const QString &libName) const {
 
     auto values = _EnvLibs.values(libName.toUpper());
     QMultiMap<LibPriority, LibInfo> res;
@@ -50,7 +50,7 @@ QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
             continue;
         }
 
-        info.setPriority(DeployUtils::getLibPriority(info.fullPath()));
+        info.setPriority(DeployCore::getLibPriority(info.fullPath()));
 
         res.insertMulti(info.getPriority(), info);
     }
@@ -58,7 +58,7 @@ QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
     return res;
 }
 
-bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) {
+bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) const {
 
     info.clear();
     auto scaner = getScaner(file);
@@ -74,8 +74,7 @@ bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) {
     }
 }
 
-void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res)
-{
+void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res) {
     QuasarAppUtils::Params::verboseLog("get recursive dependencies of " + lib.fullPath(),
                                        QuasarAppUtils::Info);
 

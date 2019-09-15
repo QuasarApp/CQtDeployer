@@ -10,6 +10,7 @@
 
 #include <QStringList>
 #include <QDebug>
+#include <QFileInfo>
 #include "deploy_global.h"
 
 enum MSVCVersion: int {
@@ -51,22 +52,20 @@ enum class RunMode: int {
     Clear
 };
 
-class Deploy;
-class QFileInfo;
+class Extracter;
+class DeployConfig;
 
-class DEPLOYSHARED_EXPORT DeployUtils
+class DEPLOYSHARED_EXPORT DeployCore
 {
 
 private:
     static QString getMSVCName(MSVCVersion msvc);
     static QString getMSVCVersion(MSVCVersion msvc);
 
-    static bool parseQtDeployMode(Deploy *deploy);
-    static bool parseQtInfoMode();
-    static bool parseQtClearMode(Deploy *deploy);
 public:
     enum QtModule : quint64
     {
+        NONE                      = 0x0000000000000000,
         QtBluetoothModule         = 0x0000000000000001,
         QtConcurrentModule        = 0x0000000000000002,
         QtCoreModule              = 0x0000000000000004,
@@ -121,11 +120,11 @@ public:
         Qt3DExtrasModule          = 0x0008000000000000
     };
 
-    DeployUtils() = delete;
+    DeployCore() = delete;
 
-    static QString qtDir;
-    static QStringList extraPaths;
+
     static QtModuleEntry qtModuleEntries[];
+    static const DeployConfig * _config;
 
     static MSVCVersion getMSVC(const QString & _qmake);
     static QString getVCredist(const QString & _qmake);
@@ -133,14 +132,21 @@ public:
     static bool isQtLib(const QString &lib);
     static bool isExtraLib(const QString &lib);
     static LibPriority getLibPriority(const QString &lib);
+    static DeployCore::QtModule getQtModule(const QString& path);
+    static void addQtModule(DeployCore::QtModule& module, const QString& path);
+
     static void verboseLog(const QString &str);
     static RunMode getMode();
-    static void help();
-    static bool parseQt(Deploy *deploy);
+    static QString help();
+    static QStringList helpKeys();
+
     static QStringList extractTranslation(const QStringList& libs);
     static QString getAppVersion();
     static QString getQtVersion();
     static void printVersion();
+    static int find(const QString &str, const QStringList &list);
+    static bool isLib(const QFileInfo &file);
+    static bool isPath(const QString& path);
     static bool isExecutable(const QFileInfo &file);
 
 };

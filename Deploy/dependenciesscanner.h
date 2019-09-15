@@ -26,6 +26,7 @@ class DEPLOYSHARED_EXPORT DependenciesScanner {
 
 
 private:
+
     QStringList _env;
     QMultiHash<QString, QString> _EnvLibs;
     QHash<QString, LibInfo> _scanedLibs;
@@ -35,8 +36,8 @@ private:
 
     PrivateScaner getScaner(const QString& lib) const;
 
-    QMultiMap<LibPriority, LibInfo> getLibsFromEnvirement(const QString& libName);
-    bool fillLibInfo(LibInfo& info ,const QString& file);
+    QMultiMap<LibPriority, LibInfo> getLibsFromEnvirement(const QString& libName) const;
+    bool fillLibInfo(LibInfo& info ,const QString& file) const;
 
     void recursiveDep(LibInfo& lib, QSet<LibInfo> &res);
 

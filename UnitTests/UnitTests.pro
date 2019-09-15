@@ -22,6 +22,7 @@ include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
 
 QT_DIR = $$[QT_HOST_BINS]/../
 DEFINES+=QT_BASE_DIR='\\"$$QT_DIR\\"'
+DEFINES+=TEST_BIN_DIR='\\"$$PWD/../tests/build/\\"'
 
 CONFIG += qt console warn_on depend_includepath testcase
 CONFIG -= app_bundle
@@ -30,11 +31,15 @@ TEMPLATE = app
 
 SOURCES +=  tst_deploytest.cpp \
     libcreator.cpp \
-    qmlcreator.cpp
+    modules.cpp \
+    qmlcreator.cpp \
+    testutils.cpp
 
 RESOURCES += \
     res.qrc
 
 HEADERS += \
     libcreator.h \
-    qmlcreator.h
+    modules.h \
+    qmlcreator.h \
+    testutils.h
