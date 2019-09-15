@@ -29,21 +29,25 @@ private:
     QString stripPath(QString path) const;
     QString getRelativePath(QString path) const;
 
+    void setBinOutDir(const QString &value);
+    void setLibOutDir(const QString &value);
+    void setQmlOutDir(const QString &value);
+    void setTrOutDir(const QString &value);
+    void setResOutDir(const QString &value);
+    void setPluginsOutDir(const QString &value);
+
+
 public:
     DistroStruct();
     QString getLibOutDir(const QString& basePath = "/") const;
-    void setLibOutDir(const QString &value);
     QString getBinOutDir(const QString& basePath = "/") const;
-    void setBinOutDir(const QString &value);
     QString getQmlOutDir(const QString& basePath = "/") const;
-    void setQmlOutDir(const QString &value);
     QString getTrOutDir(const QString& basePath = "/") const;
-    void setTrOutDir(const QString &value);
     QString getResOutDir(const QString& basePath = "/") const;
-    void setResOutDir(const QString &value);
     QString getPluginsOutDir(const QString& basePath = "/") const;
-    void setPluginsOutDir(const QString &value);
     QString getRootDir(const QString& basePath = "/") const;
+
+    void init();
 
     friend class deploytest;
 };

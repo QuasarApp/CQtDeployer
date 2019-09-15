@@ -1,5 +1,6 @@
 #ifndef CQT_H
 #define CQT_H
+#include "distrostruct.h"
 #include "envirement.h"
 
 #include <QJsonObject>
@@ -16,8 +17,6 @@ struct DEPLOYSHARED_EXPORT DeployConfig {
     QString qmake = "";
     QString targetDir = "";
     QString qmlDir = "";
-    QString translationDir = "";
-    QString externQmlScaner = "";
     int depchLimit = 0;
     bool deployQml = false;
     QStringList ignoreList;
@@ -32,6 +31,8 @@ struct DEPLOYSHARED_EXPORT DeployConfig {
      */
     QMap<QString, bool> targets;
     Envirement envirement;
+    DistroStruct distroStruct;
+    QString translationDir;
 
 };
 
@@ -56,7 +57,6 @@ private:
     void initIgnoreList();
     void initIgnoreEnvList();
 
-    void setQmlScaner(const QString &value);
     void setQmake(const QString &value);
     void setQtDir(const QString &value);
 

@@ -1,5 +1,3 @@
-#include "distrostruct.h"
-#include <quasarapp.h>
 
 //#
 //# Copyright (C) 2018-2019 QuasarApp.
@@ -7,6 +5,9 @@
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
 //#
+
+#include "distrostruct.h"
+#include <quasarapp.h>
 
 QString DistroStruct::getLibOutDir(const QString &basePath) const {
     return getRelativePath(basePath) + libOutDir;
@@ -58,6 +59,26 @@ void DistroStruct::setPluginsOutDir(const QString &value) {
 
 QString DistroStruct::getRootDir(const QString &basePath) const {
     return getRelativePath(basePath);
+}
+
+void DistroStruct::init() {
+
+#ifdef Q_OS_LINUX
+
+    setBinOutDir(QuasarAppUtils::Params::getStrArg("binOut", "/bin"));
+    setLibOutDir(QuasarAppUtils::Params::getStrArg("libOut", "/lib"));
+
+#else
+    setBinOutDir(QuasarAppUtils::Params::getStrArg("binOut", "/"));
+    setLibOutDir(QuasarAppUtils::Params::getStrArg("libOut", "/"));
+#endif
+
+
+    setQmlOutDir(QuasarAppUtils::Params::getStrArg("qmlOut", "/qml"));
+    setTrOutDir(QuasarAppUtils::Params::getStrArg("trOut", "/translations"));
+    setPluginsOutDir(QuasarAppUtils::Params::getStrArg("pluginOut", "/plugins"));
+    setResOutDir("/resources");
+
 }
 
 QString DistroStruct::toFullPath(QString path) const {
@@ -118,20 +139,5 @@ QString DistroStruct::getRelativePath(QString path) const {
 
 DistroStruct::DistroStruct() {
 
-#ifdef Q_OS_LINUX
-
-    setBinOutDir(QuasarAppUtils::Params::getStrArg("binOut", "/bin"));
-    setLibOutDir(QuasarAppUtils::Params::getStrArg("libOut", "/lib"));
-
-#else
-    setBinOutDir(QuasarAppUtils::Params::getStrArg("binOut", "/"));
-    setLibOutDir(QuasarAppUtils::Params::getStrArg("libOut", "/"));
-#endif
-
-
-    setQmlOutDir(QuasarAppUtils::Params::getStrArg("qmlOut", "/qml"));
-    setTrOutDir(QuasarAppUtils::Params::getStrArg("trOut", "/translations"));
-    setPluginsOutDir(QuasarAppUtils::Params::getStrArg("pluginOut", "/plugins"));
-    setResOutDir("/resources");
 
 }

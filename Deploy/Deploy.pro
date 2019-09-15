@@ -52,6 +52,7 @@ SOURCES += \
     envirement.cpp \
     extracter.cpp \
     filemanager.cpp \
+    metafilemanager.cpp \
     pe.cpp \
     igetlibinfo.cpp \
     dependenciesscanner.cpp \
@@ -70,6 +71,7 @@ HEADERS += \
     envirement.h \
     extracter.h \
     filemanager.h \
+    metafilemanager.h \
     pe.h \
     igetlibinfo.h \
     dependenciesscanner.h \
