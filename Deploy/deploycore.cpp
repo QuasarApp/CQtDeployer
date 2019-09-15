@@ -153,7 +153,7 @@ RunMode DeployCore::getMode() {
     return RunMode::Info;
 }
 
-QString DeployCore::help() {
+void DeployCore::help() {
 
     QStringList help = {
     { "CQtDeployer version: " + getAppVersion()},
@@ -161,16 +161,12 @@ QString DeployCore::help() {
     { "" },
     { "Options:" },
     { "   help / h                 : Shows help." },
-    { "   noOverwrite              : Prevents replacing existing files." },
+    { "   always-overwrite         : Copies files and replaces the existing ones." },
     { "   -bin    [list, params]   : Deployable file or folder." },
     { "                            | For example -bin /my/project/bin/,/my/project/bin.exe" },
     { "   -binDir [params]         : A folder which includes deployable files (recursive search)." },
     { "                            | WARNING: this flag supports 'so', 'dll' and 'exe' files only." },
     { "                            | Use '-bin' flag if you want to deploy linux binary files" },
-    { "   -confFile [params]       : Path to json file with all deploy config" },
-    { "                            | Using this file, you can add the necessary options, " },
-    { "                            | thereby simplifying the command call in the console. "},
-    { "                            | However, the parameters in Kansol have a higher priority than in the file. "},
     { "   -qmlDir [params]         : Qml data dir. For example -qmlDir ~/my/project/qml" },
     { "   deploySystem             : Deploys all libs" },
     { "   noLibc                   : Skip Deploys libc and ld-linux libs" },
