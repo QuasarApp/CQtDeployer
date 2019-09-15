@@ -471,7 +471,9 @@ QString ConfigParser::recursiveInvairement(int depch, QDir &dir) {
     QString res = "";
 
     for (QFileInfo &i : list) {
-        dir.cd(i.fileName());
+        if (!dir.cd(i.fileName())) {
+            continue;
+        }
         QString temp = recursiveInvairement(depch + 1, dir);
         res += (res.size())? separator + temp: temp;
 
