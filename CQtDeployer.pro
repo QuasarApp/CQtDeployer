@@ -15,14 +15,17 @@ SUBDIRS += QuasarAppLib \
            UnitTests \
            tests/TestOnlyC \
            tests/TestQtWidgets \
-           tests/TestQMLWidgets
+           tests/TestQMLWidgets \
+           tests/quicknanobrowser
 }
 
 contains(DEFINES, WITHOUT_TESTS) {
     SUBDIRS -= UnitTests \
            tests/TestOnlyC \
            tests/TestQtWidgets \
-           tests/TestQMLWidgets
+           tests/TestQMLWidgets \
+           tests/quicknanobrowser
+
 }
 
 CQtDeployer.depends=QuasarAppLib

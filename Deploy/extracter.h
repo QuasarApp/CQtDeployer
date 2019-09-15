@@ -42,6 +42,7 @@ class DEPLOYSHARED_EXPORT Extracter {
     void extractLib(const QString & file);
 
     bool deployMSVC();
+    bool extractWebEngine();
 
 
     bool copyPlugin(const QString &plugin);

@@ -1,0 +1,24 @@
+{
+    "Id": "quicknanobrowser-tango",
+    "Name": "Tango Icon Library",
+    "QDocModule": "qtwebengine",
+    "QtUsage": "Used in WebEngine Quick Nano Browser example.",
+
+    "QtParts": [ "examples" ],
+    "Description": "Selected icons from the Tango Icon Library",
+    "Homepage": "http://tango.freedesktop.org/Tango_Icon_Library",
+    "Version": "0.8.90",
+    "DownloadLocation": "http://tango.freedesktop.org/releases/tango-icon-theme-0.8.90.tar.gz",
+    "LicenseId": "DocumentRef-PublicDomain",
+    "License": "Public Domain",
+    "LicenseFile": "COPYING",
+    "Copyright": "Ulisse Perusin <uli.peru@gmail.com>
+Steven Garrity <sgarrity@silverorange.com>
+Lapo Calamandrei <calamandrei@gmail.com>
+Ryan Collier <rcollier@novell.com>
+Rodney Dawes <dobey@novell.com>
+Andreas Nilsson <nisses.mail@home.se>
+Tuomas Kuosmanen <tigert@tigert.com>
+Garrett LeSage <garrett@novell.com>
+Jakub Steiner <jimmac@novell.com>"
+}

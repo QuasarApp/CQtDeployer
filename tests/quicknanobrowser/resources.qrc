@@ -1,0 +1,15 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/">
+        <file>ApplicationRoot.qml</file>
+        <file>BrowserDialog.qml</file>
+        <file>BrowserWindow.qml</file>
+        <file>DownloadView.qml</file>
+        <file>FullScreenNotification.qml</file>
+    </qresource>
+    <qresource prefix="icons">
+        <file alias="go-next.png">icons/3rdparty/go-next.png</file>
+        <file alias="go-previous.png">icons/3rdparty/go-previous.png</file>
+        <file alias="process-stop.png">icons/3rdparty/process-stop.png</file>
+        <file alias="view-refresh.png">icons/3rdparty/view-refresh.png</file>
+    </qresource>
+</RCC>

@@ -105,6 +105,8 @@ private slots:
 
     void testMSVC();
 
+    void testWebEngine();
+
 };
 
 bool deploytest::runProcess(const QString &DistroPath,
@@ -437,6 +439,36 @@ void deploytest::testMSVC() {
     QDir dir("./Qt");
     dir.removeRecursively();
 
+
+}
+
+void deploytest::testWebEngine() {
+    TestUtils utils;
+
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "quicknanobrowser";
+    QString qmake = TestQtDir + "bin/qmake";
+
+#else
+    QString bin = TestBinDir + "quicknanobrowser.exe";
+    QString qmake = TestQtDir + "bin/qmake.exe";
+
+#endif
+
+    auto comapareTree = utils.createTree(
+    {
+                    "./Distro/QtWidgetsProject.sh",
+                    "./Distro/bin/QtWidgetsProject",
+                    "./Distro/lib/libicudata.so",
+                    "./Distro/lib/libicui18n.so",
+                    "./Distro/lib/libicuuc.so"
+                });
+
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../quicknanobrowser"}, &comapareTree);
 
 }
 

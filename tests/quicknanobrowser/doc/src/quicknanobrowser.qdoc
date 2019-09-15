@@ -1,0 +1,149 @@
+/****************************************************************************
+**
+** Copyright (C) 2016 The Qt Company Ltd.
+** Contact: https://www.qt.io/licensing/
+**
+** This file is part of the documentation of the Qt Toolkit.
+**
+** $QT_BEGIN_LICENSE:FDL$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
+**
+** GNU Free Documentation License Usage
+** Alternatively, this file may be used under the terms of the GNU Free
+** Documentation License version 1.3 as published by the Free Software
+** Foundation and appearing in the file included in the packaging of
+** this file. Please review the following information to ensure
+** the GNU Free Documentation License version 1.3 requirements
+** will be met: https://www.gnu.org/licenses/fdl-1.3.html.
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+/*!
+    \example webengine/quicknanobrowser
+    \title WebEngine Quick Nano Browser
+    \ingroup webengine-examples
+    \brief A web browser implemented using the WebEngineView QML type.
+
+    \image quicknanobrowser-demo.jpg
+
+    \e {Quick Nano Browser} demonstrates how to use the \l{Qt WebEngine QML Types}
+    {Qt WebEngine QML types} to develop a small web browser application that consists of a browser
+    window with a title bar, toolbar, tab view, and status bar. The web content is loaded in a web
+    engine view within the tab view. If certificate errors occur, users are prompted for action in a
+    message dialog. The status bar pops up to display the URL of a hovered link.
+
+    A web page can issue a request for being displayed in fullscreen mode. Users can allow full
+    screen mode by using a toolbar button. They can leave fullscreen mode by using a keyboard
+    shortcut. Additional toolbar buttons enable moving backwards and forwards in the browser
+    history, reloading tab content, and opening a settings menu for enabling the following features:
+    JavaScript, plugins, fullscreen mode, off the record, HTTP disk cache, autoloading images, and
+    ignoring certificate errors.
+
+    \include examples-run.qdocinc
+
+    \section1 Creating the Main Browser Window
+
+    When the browser main window is loaded, it creates an empty tab using the default profile. Each
+    tab is a web engine view that fills the main window.
+
+    We create the main window in the \e BrowserWindow.qml file using the ApplicationWindow type:
+
+    \quotefromfile webengine/quicknanobrowser/BrowserWindow.qml
+    \skipto ApplicationWindow
+    \printuntil currentWebView
+    \dots
+    \skipto width
+    \printuntil title
+
+    We use the TabView Qt Quick control to create an empty tab view that fills the main window. We
+    set the tab active first, to make sure that the tab item is immediately instantiated:
+
+    \skipto TabView
+    \printuntil Component.onCompleted
+
+    The tab contains a web engine view that loads web content:
+
+    \printuntil focus
+
+    We use the \l Action type to create new tabs:
+
+    \quotefromfile webengine/quicknanobrowser/BrowserWindow.qml
+    \skipto reload
+    \skipto Action
+    \printuntil }
+
+    We use the \l TextField Qt Quick Control within a \l ToolBar to create an address bar that
+    shows the current URL and where users can enter another URL:
+
+    \skipto toolBar
+    \printuntil anchors.fill
+    \dots
+    \skipto TextField
+    \printuntil addressBar
+    \dots
+    \skipto focus
+    \printuntil /^\ {16}\}/
+
+    \section1 Handling Certificate Errors
+
+    If the certificate of the site being loaded triggers a certificate error, we call the
+    \l{WebEngineCertificateError::}{defer()} QML method to pause the URL request and wait for user
+    input:
+
+    \quotefromfile webengine/quicknanobrowser/BrowserWindow.qml
+    \skipto onCertificateError
+    \printuntil }
+
+    We use the MessageDialog type to prompt users to continue or cancel the loading of the web page.
+    If users select \uicontrol Yes, we call the
+    \l{WebEngineCertificateError::}{ignoreCertificateError()} method to ignore the error and
+    continue loading content from the URL. If users select \uicontrol No, we call the
+    \l{WebEngineCertificateError::}{rejectCertificate()} method to reject the request and stop
+    loading content from the URL:
+
+    \skipto MessageDialog
+    \printuntil /^\ {4}\}/
+
+    \section1 Entering and Leaving Fullscreen Mode
+
+    We create a menu item for allowing fullscreen mode in a settings menu that we place on the tool
+    bar. Also, we create an action for leaving fullscreen mode by using a keyboard shortcut.
+    We call the \l{FullScreenRequest::}{accept()} method to accept the fullscreen request.
+    The methdod sets the \l{WebEngineView::}{isFullScreen} property to be equal to the
+    \l{FullScreenRequest::}{toggleOn} property.
+
+    \quotefromfile webengine/quicknanobrowser/BrowserWindow.qml
+    \skipto onFullScreenRequested
+    \printuntil /^\ {16}\}/
+
+    When entering fullscreen mode, we display a notification using the FullScreenNotification custom
+    type that we create in \e FullScreenNotification.qml.
+
+    We use the \l Action type in the settings menu to create a shortcut for leaving fullscreen mode
+    by pressing the escape key:
+
+    \quotefromfile webengine/quicknanobrowser/BrowserWindow.qml
+    \skipto Settings
+    \printuntil appSettings
+    \skipto fullScreenSupportEnabled
+    \printuntil Action
+    \skipto Escape
+    \printuntil /^\ {4}\}/
+
+    \section1 Files and Attributions
+
+    The example uses icons from the Tango Icon Library:
+
+    \table
+    \row
+        \li \l{quicknanobrowser-tango}{Tango Icon Library}
+        \li Public Domain
+    \endtable
+*/

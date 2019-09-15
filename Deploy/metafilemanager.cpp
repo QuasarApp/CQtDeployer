@@ -52,6 +52,7 @@ bool MetaFileManager::createRunScriptLinux(const QString &target) {
             "export QML_IMPORT_PATH=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getQmlOutDir() + ":QML_IMPORT_PATH\n"
             "export QML2_IMPORT_PATH=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getQmlOutDir() + ":QML2_IMPORT_PATH\n"
             "export QT_PLUGIN_PATH=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getPluginsOutDir() + ":QT_PLUGIN_PATH\n"
+            "export QTWEBENGINEPROCESS_PATH=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getBinOutDir() + "/QtWebEngineProcess\n"
             "export QTDIR=\"$BASE_DIR\"\n"
             "export "
             "QT_QPA_PLATFORM_PLUGIN_PATH=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getPluginsOutDir() +
