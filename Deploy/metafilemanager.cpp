@@ -118,6 +118,7 @@ bool MetaFileManager::createQConf() {
             "Libraries= ." + DeployCore::_config->distroStruct.getLibOutDir() + "\n"
             "Plugins= ." + DeployCore::_config->distroStruct.getPluginsOutDir() + "\n"
             "Imports= ." + DeployCore::_config->distroStruct.getQmlOutDir() + "\n"
+            "Translations= ." + DeployCore::_config->distroStruct.getTrOutDir() + "\n"
             "Qml2Imports= ." + DeployCore::_config->distroStruct.getQmlOutDir() + "\n";
 
 
