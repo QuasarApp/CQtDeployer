@@ -467,19 +467,18 @@ void deploytest::testSetTargetDir() {
 
     dep.setTargetDir();
 
-    QVERIFY(dep.config()->targetDir == QFileInfo("./Distro").absoluteFilePath());
+    QVERIFY(dep.config()->targetDir == QFileInfo("./" + DISTRO_DIR + "").absoluteFilePath());
     dep.setTargetDir("./ff");
     QVERIFY(dep.config()->targetDir == QFileInfo("./ff").absoluteFilePath());
 
-    int argc = 3;
-    const char * argv[] = {"", "-targetDir", "./Distro2"};
+    QStringList argv = {"-targetDir", "./" + DISTRO_DIR + "2"};
 
-    QuasarAppUtils::Params::parseParams(argc, argv);
+    QuasarAppUtils::Params::parseParams(argv);
 
     dep.setTargetDir();
-    QVERIFY(dep.config()->targetDir == QFileInfo("./Distro2").absoluteFilePath());
+    QVERIFY(dep.config()->targetDir == QFileInfo("./" + DISTRO_DIR + "2").absoluteFilePath());
     dep.setTargetDir("./ff");
-    QVERIFY(dep.config()->targetDir == QFileInfo("./Distro2").absoluteFilePath());
+    QVERIFY(dep.config()->targetDir == QFileInfo("./" + DISTRO_DIR + "2").absoluteFilePath());
 
 }
 
@@ -561,17 +560,17 @@ void deploytest::testOverwrite() {
     TestUtils utils;
 
 #ifdef Q_OS_UNIX
-    QFile f("./Distro/bin/TestOnlyC");
+    QFile f("./" + DISTRO_DIR + "/bin/TestOnlyC");
     auto comapareTree = utils.createTree(
-    {"./Distro/bin/TestOnlyC",
-     "./Distro/TestOnlyC.sh"});
+    {"./" + DISTRO_DIR + "/bin/TestOnlyC",
+     "./" + DISTRO_DIR + "/TestOnlyC.sh"});
     QString bin = TestBinDir + "TestOnlyC";
 
 #else
-    QFile f("./Distro/TestOnlyC.exe");
+    QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
     auto comapareTree = utils.createTree(
-    {"./Distro/TestOnlyC.exe",
-     "./Distro/qt.conf"});
+    {"./" + DISTRO_DIR + "/TestOnlyC.exe",
+     "./" + DISTRO_DIR + "/qt.conf"});
     QString bin = TestBinDir + "TestOnlyC.exe";
 
 #endif
@@ -617,18 +616,18 @@ void deploytest::testBinDir() {
 
 #ifdef Q_OS_UNIX
     auto comapareTree = utils.createTree(
-    {"./Distro/bin/TestOnlyC",
-     "./Distro/bin/QtWidgetsProject",
-     "./Distro/bin/TestQMLWidgets",
-     "./Distro/TestOnlyC.sh",
-     "./Distro/QtWidgetsProject.sh",
-     "./Distro/TestQMLWidgets.sh"});
+    {"./" + DISTRO_DIR + "/bin/TestOnlyC",
+     "./" + DISTRO_DIR + "/bin/QtWidgetsProject",
+     "./" + DISTRO_DIR + "/bin/TestQMLWidgets",
+     "./" + DISTRO_DIR + "/TestOnlyC.sh",
+     "./" + DISTRO_DIR + "/QtWidgetsProject.sh",
+     "./" + DISTRO_DIR + "/TestQMLWidgets.sh"});
 #else
     auto comapareTree = utils.createTree(
-    {"./Distro/TestOnlyC.exe",
-     "./Distro/QtWidgetsProject.exe",
-     "./Distro/TestQMLWidgets.exe",
-     "./Distro/qt.conf"});
+    {"./" + DISTRO_DIR + "/TestOnlyC.exe",
+     "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
+     "./" + DISTRO_DIR + "/TestQMLWidgets.exe",
+     "./" + DISTRO_DIR + "/qt.conf"});
 #endif
 
 
@@ -643,18 +642,18 @@ void deploytest::testConfFile() {
 
 #ifdef Q_OS_UNIX
     auto comapareTree = utils.createTree(
-    {"./Distro/bin/TestOnlyC",
-     "./Distro/bin/QtWidgetsProject",
-     "./Distro/bin/TestQMLWidgets",
-     "./Distro/TestOnlyC.sh",
-     "./Distro/QtWidgetsProject.sh",
-     "./Distro/TestQMLWidgets.sh"});
+    {"./" + DISTRO_DIR + "/bin/TestOnlyC",
+     "./" + DISTRO_DIR + "/bin/QtWidgetsProject",
+     "./" + DISTRO_DIR + "/bin/TestQMLWidgets",
+     "./" + DISTRO_DIR + "/TestOnlyC.sh",
+     "./" + DISTRO_DIR + "/QtWidgetsProject.sh",
+     "./" + DISTRO_DIR + "/TestQMLWidgets.sh"});
 #else
     auto comapareTree = utils.createTree(
-    {"./Distro/TestOnlyC.exe",
-     "./Distro/QtWidgetsProject.exe",
-     "./Distro/TestQMLWidgets.exe",
-     "./Distro/qt.conf"});
+    {"./" + DISTRO_DIR + "/TestOnlyC.exe",
+     "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
+     "./" + DISTRO_DIR + "/TestQMLWidgets.exe",
+     "./" + DISTRO_DIR + "/qt.conf"});
 #endif
 
 
@@ -745,8 +744,8 @@ void deploytest::testQt() {
 
 #else
     comapareTree = utils.createTree(
-    {"./Distro/TestQMLWidgets.exe",
-     "./Distro/qt.conf"});
+    {"./" + DISTRO_DIR + "/TestQMLWidgets.exe",
+     "./" + DISTRO_DIR + "/qt.conf"});
     bin = TestBinDir + "QtWidgetsProject.exe";
 
 #endif
@@ -772,11 +771,11 @@ void deploytest::testIgnore() {
 
     auto comapareTree = utils.createTree(
     {
-                    "./Distro/QtWidgetsProject.sh",
-                    "./Distro/bin/QtWidgetsProject",
-                    "./Distro/lib/libicudata.so",
-                    "./Distro/lib/libicui18n.so",
-                    "./Distro/lib/libicuuc.so"
+                    "./" + DISTRO_DIR + "/QtWidgetsProject.sh",
+                    "./" + DISTRO_DIR + "/bin/QtWidgetsProject",
+                    "./" + DISTRO_DIR + "/lib/libicudata.so",
+                    "./" + DISTRO_DIR + "/lib/libicui18n.so",
+                    "./" + DISTRO_DIR + "/lib/libicuuc.so"
                 });
 
 
@@ -786,8 +785,8 @@ void deploytest::testIgnore() {
 
     comapareTree = utils.createTree(
     {
-                    "./Distro/QtWidgetsProject.sh",
-                    "./Distro/bin/QtWidgetsProject",
+                    "./" + DISTRO_DIR + "/QtWidgetsProject.sh",
+                    "./" + DISTRO_DIR + "/bin/QtWidgetsProject",
                 });
 
     runTestParams({"-bin", bin, "clear" ,
@@ -795,7 +794,7 @@ void deploytest::testIgnore() {
                   "-ignoreEnv", TestQtDir + "/lib," + TestQtDir + "/bin" }, &comapareTree);
 
     auto removeTree = utils.createTree({
-                    "./Distro/lib/libQt5VirtualKeyboard.so",
+                    "./" + DISTRO_DIR + "/lib/libQt5VirtualKeyboard.so",
                 });
 
     comapareTree = Modules::qtLibs() - removeTree;
@@ -821,8 +820,8 @@ void deploytest::testLibDir() {
 
     auto comapareTree = utils.createTree(
     {
-                    "./Distro/TestOnlyC.sh",
-                    "./Distro/bin/TestOnlyC"
+                    "./" + DISTRO_DIR + "/TestOnlyC.sh",
+                    "./" + DISTRO_DIR + "/bin/TestOnlyC"
                 });
 
 
@@ -832,10 +831,10 @@ void deploytest::testLibDir() {
 
     comapareTree = utils.createTree(
     {
-        "./Distro/TestOnlyC.sh",
-        "./Distro/bin/TestOnlyC",
-        "./Distro/lib/libstdc++.so",
-        "./Distro/lib/libgcc_s.so"
+        "./" + DISTRO_DIR + "/TestOnlyC.sh",
+        "./" + DISTRO_DIR + "/bin/TestOnlyC",
+        "./" + DISTRO_DIR + "/lib/libstdc++.so",
+        "./" + DISTRO_DIR + "/lib/libgcc_s.so"
     });
 
 
@@ -872,9 +871,9 @@ void deploytest::testExtraPlugins() {
 
     auto pluginTree = utils.createTree(
     {
-                    "./Distro/plugins/sqldrivers/libqsqlodbc.so",
-                    "./Distro/plugins/sqldrivers/libqsqlpsql.so",
-                    "./Distro/plugins/sqldrivers/libqsqlite.so",
+                    "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlodbc.so",
+                    "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlpsql.so",
+                    "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlite.so",
     });
 
     comapareTree = comapareTree + pluginTree;
@@ -898,11 +897,11 @@ void deploytest::testTargetDir() {
 #endif
 
     auto comapareTree = utils.createTree(
-    {"./DistroZ/bin/TestOnlyC",
-     "./DistroZ/TestOnlyC.sh"});
+    {"./" + DISTRO_DIR + "Z/bin/TestOnlyC",
+     "./" + DISTRO_DIR + "Z/TestOnlyC.sh"});
 
     runTestParams({"-bin", bin, "clear" ,
-                   "-targetDir", "./DistroZ"
+                   "-targetDir", "./" + DISTRO_DIR + "Z"
                   }, &comapareTree);
 }
 
@@ -920,13 +919,13 @@ void deploytest::testSystemLib() {
 
     auto comapareTree = utils.createTree(
     {
-         "./Distro/TestOnlyC.sh",
-         "./Distro/bin/TestOnlyC",
-         "./Distro/lib/ld-linux-x86-64.so",
-         "./Distro/lib/libc.so",
-         "./Distro/lib/libgcc_s.so",
-         "./Distro/lib/libm.so",
-         "./Distro/lib/libstdc++.so"
+         "./" + DISTRO_DIR + "/TestOnlyC.sh",
+         "./" + DISTRO_DIR + "/bin/TestOnlyC",
+         "./" + DISTRO_DIR + "/lib/ld-linux-x86-64.so",
+         "./" + DISTRO_DIR + "/lib/libc.so",
+         "./" + DISTRO_DIR + "/lib/libgcc_s.so",
+         "./" + DISTRO_DIR + "/lib/libm.so",
+         "./" + DISTRO_DIR + "/lib/libstdc++.so"
     });
 
     runTestParams({"-bin", bin, "clear" ,
@@ -935,7 +934,7 @@ void deploytest::testSystemLib() {
 
 #ifdef Q_OS_UNIX
 
-    QFile file("./Distro/TestOnlyC.sh");
+    QFile file("./" + DISTRO_DIR + "/TestOnlyC.sh");
 
     QVERIFY(file.open(QIODevice::ReadOnly));
 
@@ -946,17 +945,17 @@ void deploytest::testSystemLib() {
 
     comapareTree = utils.createTree(
     {
-         "./Distro/TestOnlyC.sh",
-         "./Distro/bin/TestOnlyC",
-         "./Distro/lib/libgcc_s.so",
-         "./Distro/lib/libstdc++.so"
+         "./" + DISTRO_DIR + "/TestOnlyC.sh",
+         "./" + DISTRO_DIR + "/bin/TestOnlyC",
+         "./" + DISTRO_DIR + "/lib/libgcc_s.so",
+         "./" + DISTRO_DIR + "/lib/libstdc++.so"
     });
 
     runTestParams({"-bin", bin, "clear" ,
                    "deploySystem", "noLibc"
                   }, &comapareTree, true);
 
-    file.setFileName("./Distro/TestOnlyC.sh");
+    file.setFileName("./" + DISTRO_DIR + "/TestOnlyC.sh");
 
     QVERIFY(file.open(QIODevice::ReadOnly));
 
