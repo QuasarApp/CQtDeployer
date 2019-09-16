@@ -150,7 +150,7 @@ RunMode DeployCore::getMode() {
         return RunMode::Clear;
     }
 
-    return RunMode::Info;
+    return RunMode::Deploy;
 }
 
 QString DeployCore::help() {
