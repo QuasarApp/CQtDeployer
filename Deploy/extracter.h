@@ -50,7 +50,6 @@ class DEPLOYSHARED_EXPORT Extracter {
     void extractAllTargets();
 
     void initQtModules();
-    void clear();
 
     void extractPlugins();
 
@@ -66,6 +65,7 @@ public:
     explicit Extracter(FileManager *fileManager, ConfigParser * cqt);
     bool createRunScript(const QString &target);
     void deploy();
+    void clear();
 
     friend class deploytest;
 };
