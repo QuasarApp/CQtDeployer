@@ -114,7 +114,7 @@ bool MetaFileManager::createQConf() {
 
     QString content =
             "[Paths]\n"
-            "Prefix= ./\n"
+            "Prefix= ." + DeployCore::_config->distroStruct.getRootDir(DeployCore::_config->distroStruct.getBinOutDir()) + "\n"
             "Libraries= ." + DeployCore::_config->distroStruct.getLibOutDir(DeployCore::_config->distroStruct.getBinOutDir()) + "\n"
             "Plugins= ." + DeployCore::_config->distroStruct.getPluginsOutDir(DeployCore::_config->distroStruct.getBinOutDir()) + "\n"
             "Imports= ." + DeployCore::_config->distroStruct.getQmlOutDir(DeployCore::_config->distroStruct.getBinOutDir()) + "\n"
@@ -145,20 +145,15 @@ bool MetaFileManager::createQConf() {
 }
 
 void MetaFileManager::createRunMetaFiles() {
-    bool targetWindows = false;
 
     for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
-
-        if (QFileInfo(i.key()).completeSuffix().compare("exe", Qt::CaseInsensitive) == 0) {
-            targetWindows = true;
-        }
 
         if (i.value() && !createRunScript(i.key())) {
             qCritical() << "run script not created!";
         }
     }
 
-    if (targetWindows && !createQConf()) {
+    if (!createQConf()) {
         QuasarAppUtils::Params::verboseLog("create qt.conf failr", QuasarAppUtils::Warning);
     }
 }

@@ -630,6 +630,7 @@ void deploytest::testOverwrite() {
     QFile f("./Distro/bin/TestOnlyC");
     auto comapareTree = utils.createTree(
     {"./Distro/bin/TestOnlyC",
+     "./Distro/bin/qt.conf",
      "./Distro/TestOnlyC.sh"});
     QString bin = TestBinDir + "TestOnlyC";
 
@@ -684,11 +685,14 @@ void deploytest::testBinDir() {
 #ifdef Q_OS_UNIX
     auto comapareTree = utils.createTree(
     {"./Distro/bin/TestOnlyC",
+     "./Distro/bin/qt.conf",
      "./Distro/bin/QtWidgetsProject",
      "./Distro/bin/TestQMLWidgets",
+     "./Distro/bin/quicknanobrowser",
      "./Distro/TestOnlyC.sh",
      "./Distro/QtWidgetsProject.sh",
-     "./Distro/TestQMLWidgets.sh"});
+     "./Distro/TestQMLWidgets.sh",
+     "./Distro/quicknanobrowser.sh"});
 #else
     auto comapareTree = utils.createTree(
     {"./Distro/TestOnlyC.exe",
@@ -710,11 +714,14 @@ void deploytest::testConfFile() {
 #ifdef Q_OS_UNIX
     auto comapareTree = utils.createTree(
     {"./Distro/bin/TestOnlyC",
+     "./Distro/bin/qt.conf",
      "./Distro/bin/QtWidgetsProject",
      "./Distro/bin/TestQMLWidgets",
+     "./Distro/bin/quicknanobrowser",
      "./Distro/TestOnlyC.sh",
      "./Distro/QtWidgetsProject.sh",
-     "./Distro/TestQMLWidgets.sh"});
+     "./Distro/TestQMLWidgets.sh",
+     "./Distro/quicknanobrowser.sh"});
 #else
     auto comapareTree = utils.createTree(
     {"./Distro/TestOnlyC.exe",
@@ -839,6 +846,7 @@ void deploytest::testIgnore() {
     auto comapareTree = utils.createTree(
     {
                     "./Distro/QtWidgetsProject.sh",
+                    "./Distro/bin/qt.conf",
                     "./Distro/bin/QtWidgetsProject",
                     "./Distro/lib/libicudata.so",
                     "./Distro/lib/libicui18n.so",
@@ -853,6 +861,7 @@ void deploytest::testIgnore() {
     comapareTree = utils.createTree(
     {
                     "./Distro/QtWidgetsProject.sh",
+                    "./Distro/bin/qt.conf",
                     "./Distro/bin/QtWidgetsProject",
                 });
 
@@ -888,6 +897,7 @@ void deploytest::testLibDir() {
     auto comapareTree = utils.createTree(
     {
                     "./Distro/TestOnlyC.sh",
+                    "./Distro/bin/qt.conf",
                     "./Distro/bin/TestOnlyC"
                 });
 
@@ -899,6 +909,7 @@ void deploytest::testLibDir() {
     comapareTree = utils.createTree(
     {
         "./Distro/TestOnlyC.sh",
+        "./Distro/bin/qt.conf",
         "./Distro/bin/TestOnlyC",
         "./Distro/lib/libstdc++.so",
         "./Distro/lib/libgcc_s.so"
@@ -938,6 +949,7 @@ void deploytest::testExtraPlugins() {
 
     auto pluginTree = utils.createTree(
     {
+                    "./Distro/bin/qt.conf",
                     "./Distro/plugins/sqldrivers/libqsqlodbc.so",
                     "./Distro/plugins/sqldrivers/libqsqlpsql.so",
                     "./Distro/plugins/sqldrivers/libqsqlite.so",
@@ -966,6 +978,7 @@ void deploytest::testTargetDir() {
 
     auto comapareTree = utils.createTree(
     {"./DistroZ/bin/TestOnlyC",
+     "./DistroZ/bin/qt.conf",
      "./DistroZ/TestOnlyC.sh"});
 
     runTestParams({"-bin", bin, "clear" ,
@@ -988,6 +1001,7 @@ void deploytest::testSystemLib() {
     auto comapareTree = utils.createTree(
     {
          "./Distro/TestOnlyC.sh",
+         "./Distro/bin/qt.conf",
          "./Distro/bin/TestOnlyC",
          "./Distro/lib/ld-linux-x86-64.so",
          "./Distro/lib/libc.so",
@@ -1014,6 +1028,7 @@ void deploytest::testSystemLib() {
     comapareTree = utils.createTree(
     {
          "./Distro/TestOnlyC.sh",
+         "./Distro/bin/qt.conf",
          "./Distro/bin/TestOnlyC",
          "./Distro/lib/libgcc_s.so",
          "./Distro/lib/libstdc++.so"

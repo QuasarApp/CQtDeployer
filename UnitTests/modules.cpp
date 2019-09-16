@@ -10,6 +10,7 @@ QSet<QString> Modules::qtLibs() {
 
     auto Tree = utils.createTree(
     {
+                    "./Distro/bin/qt.conf",
                     "./Distro/QtWidgetsProject.sh",
                     "./Distro/bin/QtWidgetsProject",
                     "./Distro/lib/libQt5Core.so",
@@ -137,6 +138,7 @@ QSet<QString> Modules::qmlLibs() {
 
     auto tree = utils.createTree(
     {
+                    "./Distro/bin/qt.conf",
                     "./Distro/TestQMLWidgets.sh",
                     "./Distro/bin/TestQMLWidgets",
                     "./Distro/lib/libQt5Core.so",
@@ -726,6 +728,7 @@ QSet<QString> Modules::qtWithoutTr() {
 
     auto Tree = utils.createTree(
     {
+                    "./Distro/bin/qt.conf",
                     "./Distro/QtWidgetsProject.sh",
                     "./Distro/bin/QtWidgetsProject",
                     "./Distro/lib/libQt5Core.so",
