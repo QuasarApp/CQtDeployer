@@ -50,7 +50,6 @@ class DEPLOYSHARED_EXPORT Extracter {
 
     void extractAllTargets();
     void initQtModules();
-    void clear();
     void extractPlugins();
     void copyFiles();
     void copyTr();
@@ -58,6 +57,7 @@ class DEPLOYSHARED_EXPORT Extracter {
 public:
     explicit Extracter(FileManager *fileManager, ConfigParser * cqt);
     void deploy();
+    void clear();
 
     friend class deploytest;
 };
