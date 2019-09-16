@@ -249,7 +249,7 @@ bool ConfigParser::parseQtInfoMode() {
 }
 
 bool ConfigParser::parseQtClearMode() {
-    setTargetDir("./");
+    setTargetDir("./" + DISTRO_DIR);
 
     return true;
 }
@@ -263,9 +263,9 @@ void ConfigParser::setTargetDir(const QString &target) {
     } else {
         if (_config.targets.size())
             _config.targetDir = QFileInfo(
-                        _config.targets.begin().key()).absolutePath() + "/Distro";
+                        _config.targets.begin().key()).absolutePath() + "/" + DISTRO_DIR;
 
-        _config.targetDir = QFileInfo("./Distro").absoluteFilePath();
+        _config.targetDir = QFileInfo("./" + DISTRO_DIR).absoluteFilePath();
         qInfo () << "flag targetDir not  used." << "use default target dir :" << _config.targetDir;
     }
 }

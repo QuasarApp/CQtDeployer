@@ -52,12 +52,18 @@ bool Deploy::prepare() {
 
 int Deploy::deploy() {
 
-    if (DeployCore::getMode() != RunMode::Deploy) {
-        return 0;
-    }
-
     _fileManager->loadDeployemendFiles(_paramsParser->config()->targetDir);
-    _extracter->deploy();
+
+    switch (DeployCore::getMode() ) {
+    case RunMode::Deploy:
+        _extracter->deploy();
+        break;
+    case RunMode::Clear:
+        _extracter->clear();
+        break;
+    default:
+        break;
+    }
     _fileManager->saveDeploymendFiles(_paramsParser->config()->targetDir);
 
     return 0;

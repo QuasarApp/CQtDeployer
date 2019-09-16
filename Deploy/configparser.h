@@ -11,6 +11,8 @@
 #include <QDir>
 #include "deploy_global.h"
 
+#define DISTRO_DIR QString("DistributionKit")
+
 class  FileManager;
 
 struct DEPLOYSHARED_EXPORT DeployConfig {
