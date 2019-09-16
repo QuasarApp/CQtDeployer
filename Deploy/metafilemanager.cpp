@@ -115,10 +115,10 @@ bool MetaFileManager::createQConf() {
     QString content =
             "[Paths]\n"
             "Prefix= ." + DeployCore::_config->distroStruct.getRootDir(DeployCore::_config->distroStruct.getBinOutDir()) + "\n"
-            "Libraries= ." + DeployCore::_config->distroStruct.getLibOutDir(DeployCore::_config->distroStruct.getBinOutDir()) + "\n"
-            "Plugins= ." + DeployCore::_config->distroStruct.getPluginsOutDir(DeployCore::_config->distroStruct.getBinOutDir()) + "\n"
-            "Imports= ." + DeployCore::_config->distroStruct.getQmlOutDir(DeployCore::_config->distroStruct.getBinOutDir()) + "\n"
-            "Qml2Imports= ." + DeployCore::_config->distroStruct.getQmlOutDir(DeployCore::_config->distroStruct.getBinOutDir()) + "\n";
+            "Libraries= ." + DeployCore::_config->distroStruct.getLibOutDir() + "\n"
+            "Plugins= ." + DeployCore::_config->distroStruct.getPluginsOutDir() + "\n"
+            "Imports= ." + DeployCore::_config->distroStruct.getQmlOutDir() + "\n"
+            "Qml2Imports= ." + DeployCore::_config->distroStruct.getQmlOutDir() + "\n";
 
 
     content.replace("//", "/");
