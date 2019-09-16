@@ -946,6 +946,8 @@ void deploytest::testExtraPlugins() {
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlodbc.so",
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlpsql.so",
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlite.so",
+                    "./" + DISTRO_DIR + "/plugins/lib/libQt5Sql.so",
+
     });
 
     comapareTree = comapareTree + pluginTree;
