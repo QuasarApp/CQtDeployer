@@ -247,7 +247,7 @@ bool ConfigParser::parseQtInfoMode() {
 }
 
 bool ConfigParser::parseQtClearMode() {
-    setTargetDir("./");
+    setTargetDir("./" + DISTRO_DIR);
 
     return true;
 }

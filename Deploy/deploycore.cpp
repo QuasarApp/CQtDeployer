@@ -142,7 +142,7 @@ RunMode DeployCore::getMode() {
         return RunMode::Info;
     }
 
-    if (C("bin") || C("binDir")) {
+    if (QuasarAppUtils::Params::customParamasSize() == 0 || C("bin") || C("binDir")) {
         return RunMode::Deploy;
     }
 
@@ -150,7 +150,7 @@ RunMode DeployCore::getMode() {
         return RunMode::Clear;
     }
 
-    return RunMode::Deploy;
+    return RunMode::Info;
 }
 
 QString DeployCore::help() {

@@ -103,6 +103,8 @@ private slots:
 
     void testMSVC();
 
+    void testEmptyParamsString();
+
 };
 
 bool deploytest::runProcess(const QString &DistroPath,
@@ -436,6 +438,42 @@ void deploytest::testMSVC() {
     dir.removeRecursively();
 
 
+}
+
+void deploytest::testEmptyParamsString() {
+    TestUtils utils;
+
+#ifdef QT_CREATOR
+
+    QDir("./" + DISTRO_DIR).removeRecursively();
+
+    auto comapareTree = utils.createTree({
+                                             "./DistributionKit/UnitTests.sh",
+                                             "./DistributionKit/bin/UnitTests",
+                                         });
+
+    runTestParams({}, &comapareTree);
+
+
+    comapareTree = utils.createTree({});
+
+    runTestParams({"clear"}, &comapareTree);
+
+    comapareTree = utils.createTree({
+                                        "./DistributionKit/UnitTests.sh",
+                                        "./DistributionKit/bin/UnitTests",
+                                    });
+
+
+    runTestParams({"-bin", "./UnitTests"
+                  "-targetDor", "./testDeployDir"}, &comapareTree);
+
+
+    comapareTree = utils.createTree({});
+
+    runTestParams({"clear", "-targetDor", "./testDeployDir"}, &comapareTree);
+
+#endif
 }
 
 void deploytest::testQmlExtrct() {
