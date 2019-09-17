@@ -217,6 +217,14 @@ bool Extracter::copyTranslations(QStringList list) {
         _fileManager->copyFile(i.absoluteFilePath(), DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getTrOutDir());
     }
 
+    auto webEngine = static_cast<quint64>(_qtModules) & static_cast<quint64>(DeployCore::QtModule::QtWebEngineModule);
+
+    if (webEngine) {
+        auto trOut = DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getTrOutDir();
+        auto tr = DeployCore::_config->qtDir + "/translations/qtwebengine_locales";
+        _fileManager->copyFolder(tr, trOut + "/qtwebengine_locales");
+    }
+
     return true;
 }
 

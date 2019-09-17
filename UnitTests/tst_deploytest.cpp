@@ -456,14 +456,7 @@ void deploytest::testWebEngine() {
 
 #endif
 
-    auto comapareTree = utils.createTree(
-    {
-                    "./Distro/QtWidgetsProject.sh",
-                    "./Distro/bin/QtWidgetsProject",
-                    "./Distro/lib/libicudata.so",
-                    "./Distro/lib/libicui18n.so",
-                    "./Distro/lib/libicuuc.so"
-                });
+    auto comapareTree = Modules::qtWebEngine();
 
 
     runTestParams({"-bin", bin, "clear" ,
