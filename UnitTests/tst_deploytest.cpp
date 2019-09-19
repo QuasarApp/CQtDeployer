@@ -446,12 +446,13 @@ void deploytest::testMSVC() {
 void deploytest::testEmptyParamsString() {
     TestUtils utils;
 
-#ifdef QT_CREATOR
+#ifdef WITH_ALL_TESTS
 
     QDir("./" + DISTRO_DIR).removeRecursively();
 
     auto comapareTree = utils.createTree({
                                              "./" + DISTRO_DIR + "/UnitTests.sh",
+                                             "./" + DISTRO_DIR + "/bin/qt.conf",
                                              "./" + DISTRO_DIR + "/bin/UnitTests",
                                          });
 
@@ -464,6 +465,7 @@ void deploytest::testEmptyParamsString() {
 
     comapareTree = utils.createTree({
                                         "./" + DISTRO_DIR + "/UnitTests.sh",
+                                        "./" + DISTRO_DIR + "/bin/qt.conf",
                                         "./" + DISTRO_DIR + "/bin/UnitTests",
                                     });
 
@@ -730,6 +732,11 @@ void deploytest::testBinDir() {
      "./" + DISTRO_DIR + "/qt.conf"});
 #endif
 
+#ifdef WITH_ALL_TESTS
+    comapareTree += utils.createTree(
+    {"./" + DISTRO_DIR + "/bin/quicknanobrowser",
+     "./" + DISTRO_DIR + "/quicknanobrowser.sh"});
+#endif
 
 
     runTestParams({"-binDir", TestBinDir, "clear"}, &comapareTree);
@@ -758,7 +765,7 @@ void deploytest::testConfFile() {
 #endif
 
 #ifdef WITH_ALL_TESTS
-    auto comapareTree = comapareTree + utils.createTree(
+    comapareTree += utils.createTree(
     {"./" + DISTRO_DIR + "/bin/quicknanobrowser",
      "./" + DISTRO_DIR + "/quicknanobrowser.sh"});
 #endif
@@ -877,7 +884,7 @@ void deploytest::testIgnore() {
 
     auto comapareTree = utils.createTree(
     {
-                    "./" + DISTRO_DIR + "/QtWidgetsProject.sh"
+                    "./" + DISTRO_DIR + "/QtWidgetsProject.sh",
                     "./" + DISTRO_DIR + "/bin/qt.conf",
                     "./" + DISTRO_DIR + "/bin/QtWidgetsProject",
                     "./" + DISTRO_DIR + "/lib/libicudata.so",
@@ -893,6 +900,7 @@ void deploytest::testIgnore() {
     comapareTree = utils.createTree(
     {
                     "./" + DISTRO_DIR + "/QtWidgetsProject.sh",
+                    "./" + DISTRO_DIR + "/bin/qt.conf",
                     "./" + DISTRO_DIR + "/bin/QtWidgetsProject",
                 });
 
@@ -928,7 +936,7 @@ void deploytest::testLibDir() {
     auto comapareTree = utils.createTree(
     {
                     "./" + DISTRO_DIR + "/TestOnlyC.sh",
-                    "./" + DISTRO_DIR + "/bin/qt.conf"
+                    "./" + DISTRO_DIR + "/bin/qt.conf",
                     "./" + DISTRO_DIR + "/bin/TestOnlyC"
                 });
 
@@ -940,7 +948,7 @@ void deploytest::testLibDir() {
     comapareTree = utils.createTree(
     {
         "./" + DISTRO_DIR + "/TestOnlyC.sh",
-        "./" + DISTRO_DIR + "/bin/qt.conf"
+        "./" + DISTRO_DIR + "/bin/qt.conf",
         "./" + DISTRO_DIR + "/bin/TestOnlyC",
         "./" + DISTRO_DIR + "/lib/libstdc++.so",
         "./" + DISTRO_DIR + "/lib/libgcc_s.so"
@@ -1033,7 +1041,7 @@ void deploytest::testSystemLib() {
     auto comapareTree = utils.createTree(
     {
          "./" + DISTRO_DIR + "/TestOnlyC.sh",
-         "./" + DISTRO_DIR + "/bin/qt.conf"
+         "./" + DISTRO_DIR + "/bin/qt.conf",
          "./" + DISTRO_DIR + "/bin/TestOnlyC",
          "./" + DISTRO_DIR + "/lib/ld-linux-x86-64.so",
          "./" + DISTRO_DIR + "/lib/libc.so",
@@ -1060,7 +1068,7 @@ void deploytest::testSystemLib() {
     comapareTree = utils.createTree(
     {
          "./" + DISTRO_DIR + "/TestOnlyC.sh",
-         "./" + DISTRO_DIR + "/bin/qt.conf"
+         "./" + DISTRO_DIR + "/bin/qt.conf",
          "./" + DISTRO_DIR + "/bin/TestOnlyC",
          "./" + DISTRO_DIR + "/lib/libgcc_s.so",
          "./" + DISTRO_DIR + "/lib/libstdc++.so"
