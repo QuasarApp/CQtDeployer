@@ -443,6 +443,7 @@ void deploytest::testMSVC() {
 }
 
 void deploytest::testWebEngine() {
+#ifdef WITH_ALL_TESTS
     TestUtils utils;
 
 
@@ -463,6 +464,7 @@ void deploytest::testWebEngine() {
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../quicknanobrowser"}, &comapareTree);
 
+#endif
 }
 
 void deploytest::testQmlExtrct() {
