@@ -35,6 +35,30 @@ bool Extracter::deployMSVC() {
     return _fileManager->copyFile(msvcInstaller, DeployCore::_config->targetDir);
 }
 
+bool Extracter::extractWebEngine() {
+    auto test = static_cast<quint64>(_qtModules) & static_cast<quint64>(DeployCore::QtModule::QtWebEngineModule);
+    if (test) {
+
+#ifdef Q_OS_UNIX
+        auto webEngeneBin = DeployCore::_config->qtDir + "/libexec/QtWebEngineProcess";
+#else
+        auto webEngeneBin = DeployCore::_config->qtDir + "/bin/QtWebEngineProcess.exe";
+#endif
+        auto destWebEngine = DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getBinOutDir();
+        auto resOut = DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getResOutDir();
+        auto res = DeployCore::_config->qtDir + "/resources/";
+
+        if (!_fileManager->copyFile(webEngeneBin, destWebEngine)) {
+            return false;
+        }
+        if (!_fileManager->copyFolder(res, resOut)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool Extracter::copyPlugin(const QString &plugin) {
 
     QStringList listItems;
@@ -159,6 +183,10 @@ void Extracter::deploy() {
 
     copyTr();
 
+    if (!extractWebEngine()) {
+        QuasarAppUtils::Params::verboseLog("deploy webEngine failed", QuasarAppUtils::Error);
+    }
+
     if (!deployMSVC()) {
         QuasarAppUtils::Params::verboseLog("deploy msvc failed");
     }
@@ -187,6 +215,14 @@ bool Extracter::copyTranslations(QStringList list) {
 
     for (auto &&i: listItems) {
         _fileManager->copyFile(i.absoluteFilePath(), DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getTrOutDir());
+    }
+
+    auto webEngine = static_cast<quint64>(_qtModules) & static_cast<quint64>(DeployCore::QtModule::QtWebEngineModule);
+
+    if (webEngine) {
+        auto trOut = DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getTrOutDir();
+        auto tr = DeployCore::_config->qtDir + "/translations/qtwebengine_locales";
+        _fileManager->copyFolder(tr, trOut + "/qtwebengine_locales");
     }
 
     return true;

@@ -52,6 +52,7 @@ bool MetaFileManager::createRunScriptLinux(const QString &target) {
             "export QML_IMPORT_PATH=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getQmlOutDir() + ":QML_IMPORT_PATH\n"
             "export QML2_IMPORT_PATH=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getQmlOutDir() + ":QML2_IMPORT_PATH\n"
             "export QT_PLUGIN_PATH=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getPluginsOutDir() + ":QT_PLUGIN_PATH\n"
+            "export QTWEBENGINEPROCESS_PATH=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getBinOutDir() + "/QtWebEngineProcess\n"
             "export QTDIR=\"$BASE_DIR\"\n"
             "export "
             "QT_QPA_PLATFORM_PLUGIN_PATH=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getPluginsOutDir() +
@@ -113,11 +114,12 @@ bool MetaFileManager::createQConf() {
 
     QString content =
             "[Paths]\n"
-            "Prefix= ./\n"
-            "Libraries= ." + DeployCore::_config->distroStruct.getLibOutDir(DeployCore::_config->distroStruct.getBinOutDir()) + "\n"
-            "Plugins= ." + DeployCore::_config->distroStruct.getPluginsOutDir(DeployCore::_config->distroStruct.getBinOutDir()) + "\n"
-            "Imports= ." + DeployCore::_config->distroStruct.getQmlOutDir(DeployCore::_config->distroStruct.getBinOutDir()) + "\n"
-            "Qml2Imports= ." + DeployCore::_config->distroStruct.getQmlOutDir(DeployCore::_config->distroStruct.getBinOutDir()) + "\n";
+            "Prefix= ." + DeployCore::_config->distroStruct.getRootDir(DeployCore::_config->distroStruct.getBinOutDir()) + "\n"
+            "Libraries= ." + DeployCore::_config->distroStruct.getLibOutDir() + "\n"
+            "Plugins= ." + DeployCore::_config->distroStruct.getPluginsOutDir() + "\n"
+            "Imports= ." + DeployCore::_config->distroStruct.getQmlOutDir() + "\n"
+            "Translations= ." + DeployCore::_config->distroStruct.getTrOutDir() + "\n"
+            "Qml2Imports= ." + DeployCore::_config->distroStruct.getQmlOutDir() + "\n";
 
 
     content.replace("//", "/");
@@ -144,20 +146,15 @@ bool MetaFileManager::createQConf() {
 }
 
 void MetaFileManager::createRunMetaFiles() {
-    bool targetWindows = false;
 
     for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
-
-        if (QFileInfo(i.key()).completeSuffix().compare("exe", Qt::CaseInsensitive) == 0) {
-            targetWindows = true;
-        }
 
         if (i.value() && !createRunScript(i.key())) {
             qCritical() << "run script not created!";
         }
     }
 
-    if (targetWindows && !createQConf()) {
+    if (!createQConf()) {
         QuasarAppUtils::Params::verboseLog("create qt.conf failr", QuasarAppUtils::Warning);
     }
 }
