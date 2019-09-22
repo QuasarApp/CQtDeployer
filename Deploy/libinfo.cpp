@@ -82,16 +82,6 @@ void LibInfo::setQtPath(const QString &value)
     qtPath = value;
 }
 
-int LibInfo::getAbiVersion() const
-{
-    return abiVersion;
-}
-
-void LibInfo::setAbiVersion(int value)
-{
-    abiVersion = value;
-}
-
 QString LibInfo::fullPath() const {
     return path + "/" + name;
 }
@@ -99,7 +89,6 @@ QString LibInfo::fullPath() const {
 void LibInfo::clear() {
     path = "";
     name = "";
-    abiVersion = -1;
     qtPath = "";
     platform = Platform::UnknownPlatform;
     dependncies.clear();

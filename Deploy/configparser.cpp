@@ -366,6 +366,21 @@ void ConfigParser::initIgnoreList()
 
     if (QuasarAppUtils::Params::isEndable("noLibc")) {
         _config.ignoreList.append("libc.so");
+        _config.ignoreList.append("ld-");
+        _config.ignoreList.append("libpthread");
+        _config.ignoreList.append("libm");
+        _config.ignoreList.append("libnsl");
+        _config.ignoreList.append("libdl");
+        _config.ignoreList.append("libutil");
+        _config.ignoreList.append("libresolv");
+        _config.ignoreList.append("libBrokenLocale");
+        _config.ignoreList.append("libBrokenLocale");
+        _config.ignoreList.append("libSegFault");
+        _config.ignoreList.append("libanl");
+        _config.ignoreList.append("libcrypt");
+        _config.ignoreList.append("/gconv/");
+        _config.ignoreList.append("libnss");
+
 
     }
 }

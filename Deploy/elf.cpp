@@ -64,14 +64,6 @@ bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
             break;
         }
 
-        if (i->contains("GLIBC_")) {
-            info.setAbiVersion(std::max(info.getAbiVersion(), getVersionOfTag("GLIBC_", *i)));
-        }
-
-        if (i->contains("GLIBCXX_")) {
-            info.setAbiVersion(std::max(info.getAbiVersion(), getVersionOfTag("GLIBCXX_", *i)));
-        }
-
         if (QFileInfo(*i).isDir()) {
             info.setQtPath(*i);
         }
