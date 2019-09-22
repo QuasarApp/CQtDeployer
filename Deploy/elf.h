@@ -7,6 +7,11 @@
 class ELF : public IGetLibInfo
 {
 
+private:
+    QByteArrayList getDynamicString(ElfReader &reader) const;
+
+    int getVersionOfTag(const QByteArray &tag, QByteArray &source) const;
+
 public:
     ELF();
 
