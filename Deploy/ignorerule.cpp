@@ -34,6 +34,7 @@ bool IgnoreRule::isIgnore(const LibInfo &info) {
 
         bool checkPlatform = ignore.platform == info.getPlatform() || ignore.platform == UnknownPlatform;
         bool checkPriority = ignore.prority <= info.getPriority();
+        bool checkEnvirement = ignore.enfirement.
 
         if (checkPlatform && ignore.prority <= info.getPriority() && ) {
 
