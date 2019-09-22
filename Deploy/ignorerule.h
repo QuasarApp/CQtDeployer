@@ -27,8 +27,7 @@ private:
 
     bool checkOnlytext(const QString& lib);
 
-    void check();
-
+    bool check(const LibInfo &info, const QString &ignoreLabel);
 public:
     IgnoreRule();
     void addRule(const IgnoreData& rule);

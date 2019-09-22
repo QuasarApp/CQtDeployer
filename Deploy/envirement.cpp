@@ -66,6 +66,10 @@ void Envirement::addEnv(const QString &dir, const QString &appDir, const QString
     _deployEnvironment.insert(QDir::fromNativeSeparators(path));
 }
 
+bool Envirement::inThisEnvirement(const QString &file) const {
+    //return _deployEnvironment.contains(file);
+}
+
 int Envirement::size() const {
     return _deployEnvironment.size();
 }

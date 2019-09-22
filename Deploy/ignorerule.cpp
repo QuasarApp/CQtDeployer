@@ -19,20 +19,27 @@ void IgnoreRule::addRule(const IgnoreData &rule) {
     _data.push_back(rule);
 }
 
-void IgnoreRule::check() {
-    for (auto ignore : DeployCore::_config->ignoreList) {
-        if (line.fullPath().contains(ignore)) {
-            QuasarAppUtils::Params::verboseLog(line.fullPath() + " ignored by filter" + ignore);
-            isIgnore = true;
-            continue;
-        }
+bool IgnoreRule::check(const LibInfo &info, const QString& ignoreLabel) {
+    if (info.fullPath().contains(ignoreLabel)) {
+        QuasarAppUtils::Params::verboseLog(info.fullPath() + " ignored by filter" + ignoreLabel);
+        return true;
     }
+
+    return false;
 }
 
 bool IgnoreRule::isIgnore(const LibInfo &info) {
 
+    for (auto &ignore : _data) {
 
+        bool checkPlatform = ignore.platform == info.getPlatform() || ignore.platform == UnknownPlatform;
+        bool checkPriority = ignore.prority <= info.getPriority();
 
+        if (checkPlatform && ignore.prority <= info.getPriority() && ) {
+
+        }
+        ignore.prority >
+    }
 
     check();
 }
