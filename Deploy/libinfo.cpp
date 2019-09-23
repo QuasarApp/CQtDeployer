@@ -72,6 +72,16 @@ void LibInfo::setPriority(const LibPriority &value) {
     priority = value;
 }
 
+QString LibInfo::getQtPath() const
+{
+    return qtPath;
+}
+
+void LibInfo::setQtPath(const QString &value)
+{
+    qtPath = value;
+}
+
 QString LibInfo::fullPath() const {
     return path + "/" + name;
 }
@@ -79,6 +89,7 @@ QString LibInfo::fullPath() const {
 void LibInfo::clear() {
     path = "";
     name = "";
+    qtPath = "";
     platform = Platform::UnknownPlatform;
     dependncies.clear();
     allDep.clear();

@@ -1,10 +1,45 @@
 #include "elf.h"
-
+#include <cmath>
 #include <QFileInfo>
 
 ELF::ELF()
 {
 
+}
+
+QByteArrayList ELF::getDynamicString(ElfReader& reader) const {
+    auto headers = reader.readHeaders();
+
+    for (auto &sectionHeader : headers.sectionHeaders) {
+        if (sectionHeader.name == ".dynstr") {
+            auto arr = reader.readSection(sectionHeader.name).split(0);
+            return arr;
+        }
+    }
+
+    return {};
+}
+
+int ELF::getVersionOfTag(const QByteArray& tag, QByteArray& source) const {
+    auto versions = source.replace(tag, "").split('.');
+
+    int step = static_cast<int>(pow(100, 4));
+    int ver = 0;
+    auto it = versions.begin();
+
+    while (it != versions.end()) {
+        bool ok;
+        int curVer = it->toInt(&ok);
+
+        if (!ok) {
+            return -1;
+        }
+        ver += curVer * step;
+        step /= 100;
+        it++;
+    }
+
+    return ver;
 }
 
 bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
@@ -19,6 +54,20 @@ bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
     } else {
         info.setPlatform(UnknownPlatform);
         return false;
+    }
+
+    auto dynStr = getDynamicString(reader);
+
+    for (auto i = dynStr.rbegin(); i != dynStr.rend(); ++i) {
+
+        if (i->contains("end_")) {
+            break;
+        }
+
+        if (QFileInfo(*i).isDir()) {
+            info.setQtPath(*i);
+        }
+
     }
 
     info.setName(QFileInfo(lib).fileName());

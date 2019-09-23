@@ -43,7 +43,7 @@ void Envirement::addEnv(const QString &dir, const QString &appDir, const QString
         }
     }
 
-    if (path.contains(appDir)) {
+    if (!appDir.isEmpty() && path.contains(appDir)) {
         QuasarAppUtils::Params::verboseLog("is cqtdeployer dir!: " + path + " app dir : " + appDir);
         return;
     }
@@ -58,12 +58,21 @@ void Envirement::addEnv(const QString &dir, const QString &appDir, const QString
         return;
     }
 
-    if (path.contains(targetDir)) {
+    if (!targetDir.isEmpty() && path.contains(targetDir)) {
         QuasarAppUtils::Params::verboseLog ("Skip paths becouse it is target : " + path);
         return;
     }
 
     _deployEnvironment.insert(QDir::fromNativeSeparators(path));
+}
+
+bool Envirement::inThisEnvirement(const QString &file) const {
+    QFileInfo info (file);
+    if (info.isFile()) {
+        return _deployEnvironment.contains(info.absolutePath());
+    }
+
+    return _deployEnvironment.contains(file);
 }
 
 int Envirement::size() const {

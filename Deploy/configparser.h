@@ -2,6 +2,7 @@
 #define CQT_H
 #include "distrostruct.h"
 #include "envirement.h"
+#include "ignorerule.h"
 
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -21,7 +22,7 @@ struct DEPLOYSHARED_EXPORT DeployConfig {
     QString qmlDir = "";
     int depchLimit = 0;
     bool deployQml = false;
-    QStringList ignoreList;
+    IgnoreRule ignoreList;
     QStringList extraPlugins;
     QString appDir;
     QString qtDir;
@@ -66,6 +67,7 @@ private:
     void setExtraPlugins(const QStringList &value);
 
     QString recursiveInvairement(int depch, QDir &dir);
+    QString recursiveInvairement(int depch, const QString &dir);
 
     void initEnvirement();
 

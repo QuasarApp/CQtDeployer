@@ -52,6 +52,7 @@ SOURCES += \
     envirement.cpp \
     extracter.cpp \
     filemanager.cpp \
+    ignorerule.cpp \
     metafilemanager.cpp \
     pe.cpp \
     igetlibinfo.cpp \
@@ -71,6 +72,7 @@ HEADERS += \
     envirement.h \
     extracter.h \
     filemanager.h \
+    ignorerule.h \
     metafilemanager.h \
     pe.h \
     igetlibinfo.h \
