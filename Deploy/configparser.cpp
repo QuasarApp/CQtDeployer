@@ -386,8 +386,6 @@ void ConfigParser::initIgnoreList()
             return rule;
         };
 
-        rule.label = "libc";
-
         _config.ignoreList.addRule(addRule("libc"));
         _config.ignoreList.addRule(addRule("ld-"));
         _config.ignoreList.addRule(addRule("libpthread"));

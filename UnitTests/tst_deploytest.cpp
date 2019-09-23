@@ -187,6 +187,9 @@ deploytest::deploytest() {
 
     auto tempTree = utils.getTree(TestQtDir);
 
+    tempTree += utils.getTree("/lib", 4);
+    tempTree += utils.getTree("/usr/lib", 4);
+
     for (const QString &i: tempTree) {
         qtFilesTree.insert(QFileInfo(i).fileName());
     }

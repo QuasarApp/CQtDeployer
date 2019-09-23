@@ -7,7 +7,7 @@ class TestUtils
 {
 public:
     TestUtils();
-    QSet<QString> getTree( const QString& path);
+    QSet<QString> getTree(const QString& path, int limit = -1, int depch = 0);
     QSet<QString> createTree( const QStringList& tree);
 
     /**
