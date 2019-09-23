@@ -13,6 +13,8 @@
  * ignore file with label and othe rooles
  */
 struct IgnoreData{
+    IgnoreData(const QString& label = "");
+
     QString label;
     Platform platform = UnknownPlatform;
     LibPriority prority = NotFile;
@@ -27,11 +29,11 @@ private:
 
     bool checkOnlytext(const QString& lib);
 
-    bool check(const LibInfo &info, const QString &ignoreLabel);
+    bool check(const LibInfo &info, const QString &ignoreLabel) const;
 public:
     IgnoreRule();
     void addRule(const IgnoreData& rule);
-    bool isIgnore(const LibInfo& info);
+    bool isIgnore(const LibInfo& info) const;
 };
 
 #endif // IGNORERULE_H

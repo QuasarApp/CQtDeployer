@@ -19,7 +19,7 @@ public:
     QStringList ignoreEnvList() const;
     void setIgnoreEnvList(const QStringList &ignoreEnvList);
 
-    void addEnv(const QString &dir, const QString &appDir, const QString &targetDir);
+    void addEnv(const QString &dir, const QString &appDir = "", const QString &targetDir = "");
     // return true if file exits in this envirement
     bool inThisEnvirement(const QString &file) const;
 

@@ -361,25 +361,49 @@ void ConfigParser::initIgnoreList()
 {
     if (QuasarAppUtils::Params::isEndable("ignore")) {
         auto list = QuasarAppUtils::Params::getStrArg("ignore").split(',');
-        _config.ignoreList.append(list);
+
+        for (auto &i : list) {
+            _config.ignoreList.addRule(IgnoreData(i));
+        }
+
     }
 
     if (QuasarAppUtils::Params::isEndable("noLibc")) {
-        _config.ignoreList.append("libc.so");
-        _config.ignoreList.append("ld-");
-        _config.ignoreList.append("libpthread");
-        _config.ignoreList.append("libm");
-        _config.ignoreList.append("libnsl");
-        _config.ignoreList.append("libdl");
-        _config.ignoreList.append("libutil");
-        _config.ignoreList.append("libresolv");
-        _config.ignoreList.append("libBrokenLocale");
-        _config.ignoreList.append("libBrokenLocale");
-        _config.ignoreList.append("libSegFault");
-        _config.ignoreList.append("libanl");
-        _config.ignoreList.append("libcrypt");
-        _config.ignoreList.append("/gconv/");
-        _config.ignoreList.append("libnss");
+
+        IgnoreData rule;
+
+        Envirement env;
+
+        env.addEnv(recursiveInvairement(3 ,"/lib"), "", "");
+        env.addEnv(recursiveInvairement(3 ,"/usr/lib"), "", "");
+
+        rule.prority = SystemLib;
+        rule.platform = Unix32 | Unix64;
+        rule.enfirement = env;
+
+        auto addRule = [&rule](const QString & lib) {
+            rule.label = lib;
+            return rule;
+        };
+
+        rule.label = "libc";
+
+        _config.ignoreList.addRule(addRule("libc"));
+        _config.ignoreList.addRule(addRule("ld-"));
+        _config.ignoreList.addRule(addRule("libpthread"));
+        _config.ignoreList.addRule(addRule("libm"));
+        _config.ignoreList.addRule(addRule("libz"));
+        _config.ignoreList.addRule(addRule("libnsl"));
+        _config.ignoreList.addRule(addRule("libdl"));
+        _config.ignoreList.addRule(addRule("libutil"));
+        _config.ignoreList.addRule(addRule("libresolv"));
+        _config.ignoreList.addRule(addRule("libBrokenLocale"));
+        _config.ignoreList.addRule(addRule("libBrokenLocale"));
+        _config.ignoreList.addRule(addRule("libSegFault"));
+        _config.ignoreList.addRule(addRule("libanl"));
+        _config.ignoreList.addRule(addRule("libcrypt"));
+        _config.ignoreList.addRule(addRule("/gconv/"));
+        _config.ignoreList.addRule(addRule("libnss"));
 
 
     }
@@ -493,6 +517,12 @@ QString ConfigParser::recursiveInvairement(int depch, QDir &dir) {
     res += (res.size())? separator + dir.absolutePath(): dir.absolutePath();
 
     return res;
+}
+
+QString ConfigParser::recursiveInvairement(int depch, const QString &dir) {
+    QDir _dir(dir);
+
+    return recursiveInvairement(depch, _dir);
 }
 
 void ConfigParser::initEnvirement() {

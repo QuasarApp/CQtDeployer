@@ -19,7 +19,7 @@ void IgnoreRule::addRule(const IgnoreData &rule) {
     _data.push_back(rule);
 }
 
-bool IgnoreRule::check(const LibInfo &info, const QString& ignoreLabel) {
+bool IgnoreRule::check(const LibInfo &info, const QString& ignoreLabel) const {
     if (info.fullPath().contains(ignoreLabel)) {
         QuasarAppUtils::Params::verboseLog(info.fullPath() + " ignored by filter" + ignoreLabel);
         return true;
@@ -28,19 +28,22 @@ bool IgnoreRule::check(const LibInfo &info, const QString& ignoreLabel) {
     return false;
 }
 
-bool IgnoreRule::isIgnore(const LibInfo &info) {
+bool IgnoreRule::isIgnore(const LibInfo &info) const {
 
     for (auto &ignore : _data) {
 
         bool checkPlatform = ignore.platform == info.getPlatform() || ignore.platform == UnknownPlatform;
         bool checkPriority = ignore.prority <= info.getPriority();
-        bool checkEnvirement = ignore.enfirement.
+        bool checkEnvirement = ignore.enfirement.inThisEnvirement(info.fullPath());
 
-        if (checkPlatform && ignore.prority <= info.getPriority() && ) {
-
+        if (checkPlatform && checkPriority && checkEnvirement) {
+            return check(info, ignore.label);
         }
-        ignore.prority >
     }
 
-    check();
+    return false;
+}
+
+IgnoreData::IgnoreData(const QString &label) {
+    this->label = label;
 }
