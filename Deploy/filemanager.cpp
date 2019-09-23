@@ -38,7 +38,7 @@ QStringList FileManager::getDeployedFilesStringList() const {
 
 void FileManager::loadDeployemendFiles(const QString &targetDir) {
     auto settings = QuasarAppUtils::Settings::get();
-    QStringList deployedFiles = settings->getValue(targetDir, {}).toStringList();
+    QStringList deployedFiles = settings->getValue(targetDir, "").toStringList();
 
 //    _deployedFiles.clear();
     _deployedFiles.unite(QSet<QString>::fromList(deployedFiles));

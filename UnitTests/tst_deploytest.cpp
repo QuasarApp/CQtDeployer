@@ -762,9 +762,9 @@ void deploytest::testConfFile() {
 #else
     auto comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "/TestOnlyC.exe",
+     "./" + DISTRO_DIR + "/qt.conf",
      "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
-     "./" + DISTRO_DIR + "/TestQMLWidgets.exe",
-     "./" + DISTRO_DIR + "/qt.conf"});
+     "./" + DISTRO_DIR + "/TestQMLWidgets.exe"});
 #endif
 
 #ifdef WITH_ALL_TESTS
