@@ -859,11 +859,9 @@ void deploytest::testQt() {
     bin = TestBinDir + "QtWidgetsProject";
 
 #else
-    comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "/TestQMLWidgets.exe",
-     "./" + DISTRO_DIR + "/qt.conf"});
-    bin = TestBinDir + "QtWidgetsProject.exe";
 
+    bin = TestBinDir + "QtWidgetsProject.exe";
+    comapareTree = Modules::qtWithoutTr();
 #endif
 
     runTestParams({"-bin", bin, "clear" ,
@@ -879,12 +877,6 @@ void deploytest::testIgnore() {
     QString bin = TestBinDir + "QtWidgetsProject";
     QString qmake = TestQtDir + "bin/qmake";
 
-#else
-    QString bin = TestBinDir + "QtWidgetsProject.exe";
-    QString qmake = TestQtDir + "bin/qmake.exe";
-
-#endif
-
     auto comapareTree = utils.createTree(
     {
                     "./" + DISTRO_DIR + "/QtWidgetsProject.sh",
@@ -895,10 +887,30 @@ void deploytest::testIgnore() {
                     "./" + DISTRO_DIR + "/lib/libicuuc.so"
                 });
 
+#else
+    QString bin = TestBinDir + "QtWidgetsProject.exe";
+    QString qmake = TestQtDir + "bin/qmake.exe";
+
+    auto comapareTree = utils.createTree(
+    {
+                    "./" + DISTRO_DIR + "/qt.conf",
+                    "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
+                    "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
+                    "./" + DISTRO_DIR + "/libstdc++-6.dll",
+                    "./" + DISTRO_DIR + "/libwinpthread-1.dll",
+
+                });
+
+#endif
+
+
+
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                   "-ignore", "Qt5"}, &comapareTree);
+
+#ifdef Q_OS_UNIX
 
     comapareTree = utils.createTree(
     {
@@ -907,13 +919,27 @@ void deploytest::testIgnore() {
                     "./" + DISTRO_DIR + "/bin/QtWidgetsProject",
                 });
 
+    auto removeTree = utils.createTree({
+                    "./" + DISTRO_DIR + "/lib/libQt5VirtualKeyboard.so",
+                });
+
+#else
+    comapareTree = utils.createTree(
+    {
+                    "./" + DISTRO_DIR + "/qt.conf",
+                    "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
+                });
+
+    auto removeTree = utils.createTree({
+                    "./" + DISTRO_DIR + "/Qt5VirtualKeyboard.dll",
+                });
+
+#endif
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                   "-ignoreEnv", TestQtDir + "/lib," + TestQtDir + "/bin" }, &comapareTree);
 
-    auto removeTree = utils.createTree({
-                    "./" + DISTRO_DIR + "/lib/libQt5VirtualKeyboard.so",
-                });
+
 
     comapareTree = Modules::qtLibs() - removeTree;
 

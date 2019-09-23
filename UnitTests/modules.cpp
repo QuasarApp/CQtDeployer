@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2018-2019 QuasarApp.
+ * Distributed under the lgplv3 software license, see the accompanying
+ * Everyone is permitted to copy and distribute verbatim copies
+ * of this license document, but changing it is not allowed.
+ */
+
 #include "modules.h"
 #include <configparser.h>
 
@@ -8,7 +15,83 @@ Modules::Modules()
 
 QSet<QString> Modules::qtLibs() {
     TestUtils utils;
+#ifdef Q_OS_WIN
+    auto Tree = utils.createTree(
+    {
+        "./" + DISTRO_DIR + "/Qt5Core.dll",
+        "./" + DISTRO_DIR + "/Qt5Gui.dll",
+        "./" + DISTRO_DIR + "/Qt5Network.dll",
+        "./" + DISTRO_DIR + "/Qt5Qml.dll",
+        "./" + DISTRO_DIR + "/Qt5Quick.dll",
+        "./" + DISTRO_DIR + "/Qt5Svg.dll",
+        "./" + DISTRO_DIR + "/Qt5VirtualKeyboard.dll",
+        "./" + DISTRO_DIR + "/Qt5WebSockets.dll",
+        "./" + DISTRO_DIR + "/Qt5Widgets.dll",
+        "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
+        "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
+        "./" + DISTRO_DIR + "/libstdc++-6.dll",
+        "./" + DISTRO_DIR + "/libwinpthread-1.dll",
+        "./" + DISTRO_DIR + "/plugins/iconengines/qsvgicon.dll",
+        "./" + DISTRO_DIR + "/plugins/imageformats/qgif.dll",
+        "./" + DISTRO_DIR + "/plugins/imageformats/qicns.dll",
+        "./" + DISTRO_DIR + "/plugins/imageformats/qico.dll",
+        "./" + DISTRO_DIR + "/plugins/imageformats/qjpeg.dll",
+        "./" + DISTRO_DIR + "/plugins/imageformats/qsvg.dll",
+        "./" + DISTRO_DIR + "/plugins/imageformats/qtga.dll",
+        "./" + DISTRO_DIR + "/plugins/imageformats/qtiff.dll",
+        "./" + DISTRO_DIR + "/plugins/imageformats/qwbmp.dll",
+        "./" + DISTRO_DIR + "/plugins/imageformats/qwebp.dll",
+        "./" + DISTRO_DIR + "/plugins/platforminputcontexts/qtvirtualkeyboardplugin.dll",
+        "./" + DISTRO_DIR + "/plugins/platforms/qminimal.dll",
+        "./" + DISTRO_DIR + "/plugins/platforms/qoffscreen.dll",
+        "./" + DISTRO_DIR + "/plugins/platforms/qwebgl.dll",
+        "./" + DISTRO_DIR + "/plugins/platforms/qwindows.dll",
+        "./" + DISTRO_DIR + "/plugins/styles/qwindowsvistastyle.dll",
+        "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_hangul.dll",
+        "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_openwnn.dll",
+        "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_pinyin.dll",
+        "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_tcime.dll",
+        "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_thai.dll",
+        "./" + DISTRO_DIR + "/qt.conf",
+        "./" + DISTRO_DIR + "/translations/qtbase_ar.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_bg.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_ca.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_cs.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_da.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_de.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_en.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_es.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_fi.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_fr.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_gd.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_he.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_hu.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_it.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_ja.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_ko.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_lv.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_pl.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_ru.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_sk.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_uk.qm",
+        "./" + DISTRO_DIR + "/translations/qtdeclarative_bg.qm",
+        "./" + DISTRO_DIR + "/translations/qtdeclarative_da.qm",
+        "./" + DISTRO_DIR + "/translations/qtdeclarative_de.qm",
+        "./" + DISTRO_DIR + "/translations/qtdeclarative_en.qm",
+        "./" + DISTRO_DIR + "/translations/qtdeclarative_es.qm",
+        "./" + DISTRO_DIR + "/translations/qtdeclarative_fi.qm",
+        "./" + DISTRO_DIR + "/translations/qtdeclarative_fr.qm",
+        "./" + DISTRO_DIR + "/translations/qtdeclarative_hu.qm",
+        "./" + DISTRO_DIR + "/translations/qtdeclarative_ja.qm",
+        "./" + DISTRO_DIR + "/translations/qtdeclarative_ko.qm",
+        "./" + DISTRO_DIR + "/translations/qtdeclarative_lv.qm",
+        "./" + DISTRO_DIR + "/translations/qtdeclarative_pl.qm",
+        "./" + DISTRO_DIR + "/translations/qtdeclarative_ru.qm",
+        "./" + DISTRO_DIR + "/translations/qtdeclarative_sk.qm",
+        "./" + DISTRO_DIR + "/translations/qtdeclarative_uk.qm"
+    });
 
+#else
     auto Tree = utils.createTree(
     {
                     "./" + DISTRO_DIR + "/bin/qt.conf",
@@ -123,7 +206,7 @@ QSet<QString> Modules::qtLibs() {
                     "./" + DISTRO_DIR + "/translations/qtdeclarative_uk.qm"
                 }
                 );
-
+#endif
     return Tree;
 }
 
@@ -1261,7 +1344,46 @@ QSet<QString> Modules::qmlLibs() {
 
 QSet<QString> Modules::qtWithoutTr() {
     TestUtils utils;
-
+#ifdef Q_OS_WIN
+    auto Tree = utils.createTree(
+    {
+        "./" + DISTRO_DIR + "/Qt5Core.dll",
+        "./" + DISTRO_DIR + "/Qt5Gui.dll",
+        "./" + DISTRO_DIR + "/Qt5Network.dll",
+        "./" + DISTRO_DIR + "/Qt5Qml.dll",
+        "./" + DISTRO_DIR + "/Qt5Quick.dll",
+        "./" + DISTRO_DIR + "/Qt5Svg.dll",
+        "./" + DISTRO_DIR + "/Qt5VirtualKeyboard.dll",
+        "./" + DISTRO_DIR + "/Qt5WebSockets.dll",
+        "./" + DISTRO_DIR + "/Qt5Widgets.dll",
+        "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
+        "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
+        "./" + DISTRO_DIR + "/libstdc++-6.dll",
+        "./" + DISTRO_DIR + "/libwinpthread-1.dll",
+        "./" + DISTRO_DIR + "/plugins/iconengines/qsvgicon.dll",
+        "./" + DISTRO_DIR + "/plugins/imageformats/qgif.dll",
+        "./" + DISTRO_DIR + "/plugins/imageformats/qicns.dll",
+        "./" + DISTRO_DIR + "/plugins/imageformats/qico.dll",
+        "./" + DISTRO_DIR + "/plugins/imageformats/qjpeg.dll",
+        "./" + DISTRO_DIR + "/plugins/imageformats/qsvg.dll",
+        "./" + DISTRO_DIR + "/plugins/imageformats/qtga.dll",
+        "./" + DISTRO_DIR + "/plugins/imageformats/qtiff.dll",
+        "./" + DISTRO_DIR + "/plugins/imageformats/qwbmp.dll",
+        "./" + DISTRO_DIR + "/plugins/imageformats/qwebp.dll",
+        "./" + DISTRO_DIR + "/plugins/platforminputcontexts/qtvirtualkeyboardplugin.dll",
+        "./" + DISTRO_DIR + "/plugins/platforms/qminimal.dll",
+        "./" + DISTRO_DIR + "/plugins/platforms/qoffscreen.dll",
+        "./" + DISTRO_DIR + "/plugins/platforms/qwebgl.dll",
+        "./" + DISTRO_DIR + "/plugins/platforms/qwindows.dll",
+        "./" + DISTRO_DIR + "/plugins/styles/qwindowsvistastyle.dll",
+        "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_hangul.dll",
+        "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_openwnn.dll",
+        "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_pinyin.dll",
+        "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_tcime.dll",
+        "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_thai.dll",
+        "./" + DISTRO_DIR + "/qt.conf"
+    });
+#else
     auto Tree = utils.createTree(
     {
                     "./" + DISTRO_DIR + "/bin/qt.conf",
@@ -1339,7 +1461,7 @@ QSet<QString> Modules::qtWithoutTr() {
                     "./" + DISTRO_DIR + "/plugins/xcbglintegrations/libqxcb-glx-integration.so"
                 }
                 );
-
+#endif
     return Tree;
 }
 

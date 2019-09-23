@@ -193,8 +193,6 @@ void Extracter::deploy() {
 
     _metaFileManager->createRunMetaFiles();
 
-    _fileManager->saveDeploymendFiles(DeployCore::_config->targetDir);
-
     qInfo() << "deploy done!";
 
 }
