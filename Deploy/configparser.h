@@ -1,3 +1,10 @@
+//#
+//# Copyright (C) 2018-2019 QuasarApp.
+//# Distributed under the lgplv3 software license, see the accompanying
+//# Everyone is permitted to copy and distribute verbatim copies
+//# of this license document, but changing it is not allowed.
+//#
+
 #ifndef CQT_H
 #define CQT_H
 #include "distrostruct.h"
