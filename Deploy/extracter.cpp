@@ -268,16 +268,7 @@ void Extracter::extractLib(const QString &file) {
     auto data = scaner.scan(file);
 
     for (auto &line : data) {
-        bool isIgnore = false;
-        for (auto ignore : DeployCore::_config->ignoreList) {
-            if (line.fullPath().contains(ignore)) {
-                QuasarAppUtils::Params::verboseLog(line.fullPath() + " ignored by filter" + ignore);
-                isIgnore = true;
-                continue;
-            }
-        }
-
-        if (isIgnore) {
+        if (DeployCore::_config->ignoreList.isIgnore(line)) {
             continue;
         }
 

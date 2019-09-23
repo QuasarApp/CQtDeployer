@@ -8,8 +8,12 @@ TestUtils::TestUtils()
 
 }
 
-QSet<QString> TestUtils::getTree(const QString &path) {
+QSet<QString> TestUtils::getTree(const QString &path, int limit, int depch) {
     QFileInfo info(path);
+
+    if (limit > 0 && depch >= limit) {
+        return {};
+    }
 
     if (!info.exists()) {
         return {};
@@ -25,7 +29,7 @@ QSet<QString> TestUtils::getTree(const QString &path) {
     QDir dir(info.absoluteFilePath());
     auto list = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
     for (auto &i: list) {
-        result.unite(getTree(i.absoluteFilePath()));
+        result.unite(getTree(i.absoluteFilePath(), limit, depch + 1));
     }
 
     return result;

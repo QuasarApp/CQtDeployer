@@ -11,6 +11,7 @@ private:
     QString name;
     QString path;
     QSet<QString> dependncies;
+    QString qtPath;
     LibPriority priority = NotFile;
 
 public:
@@ -42,6 +43,8 @@ public:
 
     LibPriority getPriority() const;
     void setPriority(const LibPriority &value);
+    QString getQtPath() const;
+    void setQtPath(const QString &value);
 };
 
 uint qHash(const LibInfo& info);
