@@ -74,6 +74,7 @@ QSet<QString> Modules::qtLibs() {
         "./" + DISTRO_DIR + "/translations/qtbase_ru.qm",
         "./" + DISTRO_DIR + "/translations/qtbase_sk.qm",
         "./" + DISTRO_DIR + "/translations/qtbase_uk.qm",
+        "./" + DISTRO_DIR + "/translations/qtbase_zh_TW.qm",
         "./" + DISTRO_DIR + "/translations/qtdeclarative_bg.qm",
         "./" + DISTRO_DIR + "/translations/qtdeclarative_da.qm",
         "./" + DISTRO_DIR + "/translations/qtdeclarative_de.qm",

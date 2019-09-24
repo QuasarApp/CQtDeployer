@@ -51,7 +51,7 @@ Key differences of this program:
 |                             | (not recommended, as it takes great amount of computer memory)  |
 |   version / v               | Shows compiled version                                          |
 |   help / h                  | Shows help.                                                     |
-|   noLibc                    | Skip Deploys libc and ld-linux libs                             |
+|   deploySystem-with-libc    | deploy all libs libs (only linux)                               |
 |   noStrip                   | Skips strip step                                                |
 |   noTranslations            | Skips the translations files.                                   |
 |                             | It doesn't work without qmake and inside a snap package         |
@@ -133,7 +133,7 @@ Qt CQtDeployer - это приложением для извлечения вс�
 |                             | пример -runScript myApp.sh                                |
 |  allQmlDependes             | Извлекает все библиотеки qml.          |
 |                             | (не рекомендуется, так как занимает много памяти)         |
-|   noLibc                    | Отключает копирование libc                  |
+|  deploySystem-with-libc     | Копирует все зависимости в том числе и libc     |
 |  noStrip                    | Пропускает шаг strip                                      |
 |  noTranslations             | Пропускает файлы переводов                                |
 |                             | не работает без qmake и в snap                            |

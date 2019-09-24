@@ -45,9 +45,16 @@ void Envirement::addEnv(const QString &dir, const QString &appDir, const QString
     auto path = QFileInfo(dir).absoluteFilePath();
 
     for (QString i :_ignoreEnvList) {
+
+#ifdef Q_OS_WIN
+        if (path.contains(i, Qt::CaseInsensitive)) {
+            return;
+        }
+#else
         if (path.contains(i)) {
             return;
         }
+#endif
     }
 
     if (!appDir.isEmpty() && path.contains(appDir)) {

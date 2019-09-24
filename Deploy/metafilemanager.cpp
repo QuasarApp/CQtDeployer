@@ -70,8 +70,7 @@ bool MetaFileManager::createRunScriptLinux(const QString &target) {
     content = content.arg(QFileInfo(target).fileName());
     int ld_index = DeployCore::find("ld-linux", _fileManager->getDeployedFilesStringList());
 
-    if (ld_index >= 0 && QuasarAppUtils::Params::isEndable("deploySystem") &&
-            !QuasarAppUtils::Params::isEndable("noLibc")) {
+    if (ld_index >= 0 && QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
 
         content = content.arg(QString("\nexport LD_PRELOAD=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getLibOutDir() + "%0\n").
             arg(QFileInfo(_fileManager->getDeployedFilesStringList()[ld_index]).fileName()));

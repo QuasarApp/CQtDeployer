@@ -1,4 +1,5 @@
 requires(qtConfig(accessibility))
+CONFIG += release
 
 TEMPLATE = app
 TARGET = quicknanobrowser

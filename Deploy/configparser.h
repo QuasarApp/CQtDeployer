@@ -73,8 +73,8 @@ private:
     void setExtraPath(const QStringList &value);
     void setExtraPlugins(const QStringList &value);
 
-    QString recursiveInvairement(int depch, QDir &dir);
-    QString recursiveInvairement(int depch, const QString &dir);
+    QString recursiveInvairement(QDir &dir, int depch = 0, int depchLimit = -1);
+    QString recursiveInvairement(const QString &dir, int depch);
 
     void initEnvirement();
 
