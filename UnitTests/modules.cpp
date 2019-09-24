@@ -1343,6 +1343,13 @@ QSet<QString> Modules::qmlLibs() {
     return tree;
 }
 
+QSet<QString> Modules::outTestLibs() {
+    TestUtils utils;
+    auto Tree = utils.createTree({});
+    return Tree;
+
+}
+
 QSet<QString> Modules::qtWithoutTr() {
     TestUtils utils;
 #ifdef Q_OS_WIN

@@ -22,6 +22,8 @@ public:
 
     static QSet<QString> qtLibs();
     static QSet<QString> qmlLibs();
+    static QSet<QString> outTestLibs();
+
     static QSet<QString> qtWithoutTr();
     static QSet<QString> qtWebEngine();
 

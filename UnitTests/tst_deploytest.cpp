@@ -1102,72 +1102,27 @@ void deploytest::testOutDirs() {
     TestUtils utils;
 
 #ifdef Q_OS_UNIX
-    QString bin = TestBinDir + "TestOnlyC";
-    auto comapareTree = utils.createTree(
-    {
-         "./" + DISTRO_DIR + "/TestOnlyC.sh",
-         "./" + DISTRO_DIR + "/bin/qt.conf",
-         "./" + DISTRO_DIR + "/bin/TestOnlyC",
-         "./" + DISTRO_DIR + "/lib/libgcc_s.so",
-         "./" + DISTRO_DIR + "/lib/libstdc++.so"
-    });
+    QString bin = TestBinDir + "TestQMLWidgets";
+    QString qmake = TestQtDir + "bin/qmake";
+
 #else
-    QString bin = TestBinDir + "TestOnlyC.exe";
+    QString bin = TestBinDir + "TestQMLWidgets.exe";
+    QString qmake = TestQtDir + "bin/qmake.exe";
 
 
 #endif
-
-    comapareTree = utils.createTree(
-    {
-         "./" + DISTRO_DIR + "/TestOnlyC.sh",
-         "./" + DISTRO_DIR + "/qt.conf",
-         "./" + DISTRO_DIR + "/TestOnlyC",
-         "./" + DISTRO_DIR + "/lib/libgcc_s.so",
-         "./" + DISTRO_DIR + "/lib/libstdc++.so"
-    });
+    auto comapareTree = Modules::outTestLibs();
 
     runTestParams({"-bin", bin, "clear" ,
-                   "deploySystem",
-                   "-binOut", "/"
+                   "-binOut", "/lol",
+                   "-libOut", "/lolLib",
+                   "-trOut", "/lolTr",
+                   "-pluginOut", "/p",
+                   "-qmlOut", "/q",
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets"
                   }, &comapareTree, true);
 
-#ifdef Q_OS_UNIX
-
-    QFile file("./" + DISTRO_DIR + "/TestOnlyC.sh");
-
-    QVERIFY(file.open(QIODevice::ReadOnly));
-
-    auto runScript = file.readAll();
-    file.close();
-
-    QVERIFY(runScript.contains("export LD_PRELOAD="));
-
-
-
-    comapareTree = utils.createTree(
-    {
-         "./" + DISTRO_DIR + "/TestOnlyC.sh",
-         "./" + DISTRO_DIR + "/qt.conf",
-         "./" + DISTRO_DIR + "/TestOnlyC",
-         "./" + DISTRO_DIR + "/lib/libgcc_s.so",
-         "./" + DISTRO_DIR + "/lib/libstdc++.so"
-    });
-
-    runTestParams({"-bin", bin, "clear" ,
-                   "deploySystem", "noLibc"
-                  }, &comapareTree, true);
-
-    file.setFileName("./" + DISTRO_DIR + "/TestOnlyC.sh");
-
-    QVERIFY(file.open(QIODevice::ReadOnly));
-
-    runScript = file.readAll();
-    file.close();
-
-    QVERIFY(!runScript.contains("export LD_PRELOAD="));
-
-
-#endif
 }
 
 QTEST_APPLESS_MAIN(deploytest)
