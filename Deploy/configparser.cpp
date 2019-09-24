@@ -175,6 +175,10 @@ bool ConfigParser::loadFromFile(const QString& confFile) {
 
 bool ConfigParser::parseQtDeployMode() {
 
+    if (QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
+        QuasarAppUtils::Params::setEnable("deploySystem", true );
+    }
+
     auto bin = QuasarAppUtils::Params::getStrArg("bin").split(',');
 
     if (!setTargets(bin)) {

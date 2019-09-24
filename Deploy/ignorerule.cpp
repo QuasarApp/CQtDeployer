@@ -43,9 +43,10 @@ bool IgnoreRule::isIgnore(const LibInfo &info) const {
         bool checkPriority = ignore.prority >= info.getPriority();
         bool checkEnvirement = !ignore.enfirement.size() || ignore.enfirement.inThisEnvirement(info.fullPath());
 
-        if (checkPlatform && checkPriority && checkEnvirement) {
-            return check(info, ignore.label);
+        if (checkPlatform && checkPriority && checkEnvirement && check(info, ignore.label)) {
+            return true;
         }
+
     }
 
     return false;
