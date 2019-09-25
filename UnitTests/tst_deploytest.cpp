@@ -1121,7 +1121,7 @@ void deploytest::testOutDirs() {
                    "-qmlOut", "/q",
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets"
-                  }, &comapareTree, true);
+                  }, &comapareTree);
 
     QFile file;
 
