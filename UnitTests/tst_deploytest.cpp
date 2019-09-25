@@ -1037,13 +1037,6 @@ void deploytest::testSystemLib() {
 
 #ifdef Q_OS_UNIX
     QString bin = TestBinDir + "TestOnlyC";
-
-#else
-    QString bin = TestBinDir + "TestOnlyC.exe";
-
-
-#endif
-
     auto comapareTree = utils.createTree(
     {
          "./" + DISTRO_DIR + "/TestOnlyC.sh",
@@ -1052,6 +1045,19 @@ void deploytest::testSystemLib() {
          "./" + DISTRO_DIR + "/lib/libgcc_s.so",
          "./" + DISTRO_DIR + "/lib/libstdc++.so"
     });
+
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+    auto comapareTree = utils.createTree(
+    {
+         "./" + DISTRO_DIR + "/TestOnlyC.sh",
+         "./" + DISTRO_DIR + "/bin/qt.conf",
+         "./" + DISTRO_DIR + "/bin/TestOnlyC",
+         "./" + DISTRO_DIR + "/lib/libgcc_s.so",
+         "./" + DISTRO_DIR + "/lib/libstdc++.so"
+    });
+
+#endif
 
     runTestParams({"-bin", bin, "clear" ,
                    "deploySystem"
@@ -1138,6 +1144,45 @@ void deploytest::testOutDirs() {
     QVERIFY(runScript.contains("Imports= ./q/"));
     QVERIFY(runScript.contains("Translations= ./lolTr/"));
     QVERIFY(runScript.contains("Qml2Imports= ./q/"));
+
+#ifdef Q_OS_WIN
+
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-binOut", "/",
+                   "-libOut", "/lolLib",
+                   "-trOut", "/lolTr",
+                   "-pluginOut", "/p",
+                   "-qmlOut", "/q",
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets"
+                  }, &comapareTree);
+
+    comapareTree -= utils.createTree(
+    {
+         "./" + DISTRO_DIR + "/bin/qt.conf",
+         "./" + DISTRO_DIR + "/bin/TestQMLWidgets.exe",
+    });
+
+    comapareTree -= utils.createTree(
+    {
+         "./" + DISTRO_DIR + "/qt.conf",
+         "./" + DISTRO_DIR + "/TestQMLWidgets.exe",
+         "./" + DISTRO_DIR + "/TestQMLWidgets.bat",
+    });
+
+
+    file.setFileName( "./" + DISTRO_DIR + "/TestQMLWidgets.bat");
+
+    QVERIFY(file.open(QIODevice::ReadOnly));
+
+    runScript = file.readAll();
+    file.close();
+
+    QVERIFY(runScript.contains("TestQMLWidgets.exe"));
+
+
+#endif
 
 }
 
