@@ -8,6 +8,7 @@
 #include "filemanager.h"
 #include <QDir>
 #include <quasarapp.h>
+#include "configparser.h"
 #include "deploycore.h"
 #include <QProcess>
 #include <fstream>
@@ -200,9 +201,10 @@ bool FileManager::removeFile(const QString &file) {
     return removeFile(QFileInfo (file));
 }
 
-bool FileManager::smartCopyFile(const QString &file, const QString &target,
-                                     const QString& targetDir, QStringList *mask) {
-    if (file.contains(targetDir)) {
+bool FileManager::smartCopyFile(const QString &file, const QString &target, QStringList *mask) {
+    auto config = DeployCore::_config;
+
+    if (file.contains(config->targetDir)) {
         if (!moveFile(file, target, mask)) {
             QuasarAppUtils::Params::verboseLog(" file not moved! try copy");
 
@@ -313,17 +315,13 @@ void FileManager::clear(const QString& targetDir, bool force) {
     _deployedFiles.clear();
 }
 
-void FileManager::copyFiles(const QStringList &files, const QString& targetDir) {
+void FileManager::copyLibs(const QStringList &files) {
+    auto config = DeployCore::_config;
+
     for (auto file : files) {
         QFileInfo target(file);
-        auto targetPath = targetDir + QDir::separator() + "lib";
-        if (target.completeSuffix().compare("dll", Qt::CaseInsensitive) == 0 ||
-                target.completeSuffix().compare("exe", Qt::CaseInsensitive) == 0) {
 
-            targetPath = targetDir;
-        }
-
-        if (!smartCopyFile(file, targetPath, targetDir)) {
+        if (!smartCopyFile(file, DeployCore::_config->targetDir + config->distroStruct.getLibOutDir())) {
             QuasarAppUtils::Params::verboseLog(file + " not copied");
         }
     }

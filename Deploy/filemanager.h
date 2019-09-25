@@ -27,7 +27,7 @@ private:
 public:
     FileManager();
 
-    void copyFiles(const QStringList &files, const QString &targetDir);
+    void copyLibs(const QStringList &files);
     bool copyFile(const QString &file, const QString &target,
                   QStringList *mask = nullptr);
 
@@ -41,7 +41,7 @@ public:
      * @param mask
      * @return if file in target dir try move file else copy
      */
-    bool smartCopyFile(const QString &file, const QString &target, const QString &targetDir,
+    bool smartCopyFile(const QString &file, const QString &target,
                        QStringList *mask = nullptr);
 
     bool moveFile(const QString &file, const QString &target,

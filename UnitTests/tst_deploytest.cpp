@@ -1123,6 +1123,22 @@ void deploytest::testOutDirs() {
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets"
                   }, &comapareTree, true);
 
+    QFile file;
+
+    file.setFileName("./" + DISTRO_DIR + "/lol/qt.conf");
+
+    QVERIFY(file.open(QIODevice::ReadOnly));
+
+    auto runScript = file.readAll();
+    file.close();
+
+    QVERIFY(runScript.contains("Prefix= ./../"));
+    QVERIFY(runScript.contains("Libraries= ./lolLib/"));
+    QVERIFY(runScript.contains("Plugins= ./p/"));
+    QVERIFY(runScript.contains("Imports= ./q/"));
+    QVERIFY(runScript.contains("Translations= ./lolTr/"));
+    QVERIFY(runScript.contains("Qml2Imports= ./q/"));
+
 }
 
 QTEST_APPLESS_MAIN(deploytest)

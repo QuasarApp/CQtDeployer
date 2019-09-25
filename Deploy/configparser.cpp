@@ -614,7 +614,7 @@ bool ConfigParser::smartMoveTargets() {
             targetPath += _config.distroStruct.getBinOutDir();
         }
 
-        if (!_fileManager->smartCopyFile(target.absoluteFilePath(), targetPath, _config.targetDir)) {
+        if (!_fileManager->smartCopyFile(target.absoluteFilePath(), targetPath)) {
             result = false;
         }
 

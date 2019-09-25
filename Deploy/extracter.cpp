@@ -143,10 +143,10 @@ void Extracter::extractPlugins()
 
 void Extracter::copyFiles()
 {
-    _fileManager->copyFiles(neadedLibs, DeployCore::_config->targetDir);
+    _fileManager->copyLibs(neadedLibs);
 
     if (QuasarAppUtils::Params::isEndable("deploySystem")) {
-        _fileManager->copyFiles(systemLibs, DeployCore::_config->targetDir);
+        _fileManager->copyLibs(systemLibs);
     }
 
     if (!QuasarAppUtils::Params::isEndable("noStrip") && !_fileManager->strip(DeployCore::_config->targetDir)) {
