@@ -39,7 +39,7 @@ struct DEPLOYSHARED_EXPORT DeployConfig {
      * key - path
      * value - create wrapper
      */
-    QMap<QString, bool> targets;
+    QSet<QString> targets;
     Envirement envirement;
     DistroStruct distroStruct;
     QString translationDir;

@@ -274,7 +274,7 @@ void ConfigParser::setTargetDir(const QString &target) {
     } else {
         if (_config.targets.size())
             _config.targetDir = QFileInfo(
-                        _config.targets.begin().key()).absolutePath() + "/" + DISTRO_DIR;
+                        *_config.targets.begin()).absolutePath() + "/" + DISTRO_DIR;
 
         _config.targetDir = QFileInfo("./" + DISTRO_DIR).absoluteFilePath();
         qInfo () << "flag targetDir not  used." << "use default target dir :" << _config.targetDir;
@@ -295,7 +295,7 @@ bool ConfigParser::setTargets(const QStringList &value) {
 
             auto sufix = targetInfo.completeSuffix();
 
-            _config.targets.insert(QDir::fromNativeSeparators(i), sufix.isEmpty());
+            _config.targets.insert(QDir::fromNativeSeparators(i));
             isfillList = true;
         }
         else if (targetInfo.isDir()) {
@@ -359,7 +359,7 @@ bool ConfigParser::setBinDir(const QString &dir, bool recursive) {
               name.contains(".so", Qt::CaseInsensitive) || name.contains(".exe", Qt::CaseInsensitive)) {
 
             result = true;
-            _config.targets.insert(QDir::fromNativeSeparators(file.absoluteFilePath()), sufix.isEmpty());
+            _config.targets.insert(QDir::fromNativeSeparators(file.absoluteFilePath()));
 
         }
 
@@ -501,8 +501,9 @@ void ConfigParser::setExtraPath(const QStringList &value) {
             }
 
             dir.setPath(info.absoluteFilePath());
-            _config.extraPaths.push_back(
-                        QDir::fromNativeSeparators(info.absoluteFilePath()));
+            auto extraDirs = getDirsRecursive(QDir::fromNativeSeparators(info.absoluteFilePath()), _config.depchLimit);
+            _config.extraPaths.append(extraDirs);
+
             _config.envirement.addEnv(recursiveInvairement(dir), _config.appDir, _config.targetDir);
         } else {
             QuasarAppUtils::Params::verboseLog(i + " does not exist! and skiped");
@@ -582,9 +583,9 @@ void ConfigParser::initEnvirement() {
 QStringList ConfigParser::getDirsRecursive(const QString &path, int maxDepch, int depch) {
     QDir dir(path);
 
-    QStringList res;
+    QStringList res = {path};
 
-    if (maxDepch > 0 && maxDepch < depch) {
+    if (maxDepch >= 0 && maxDepch <= depch) {
         return res;
     }
 
@@ -600,11 +601,11 @@ QStringList ConfigParser::getDirsRecursive(const QString &path, int maxDepch, in
 
 bool ConfigParser::smartMoveTargets() {
 
-    QMap<QString, bool> temp;
+    QSet<QString> temp;
     bool result = true;
     for (auto i = _config.targets.cbegin(); i != _config.targets.cend(); ++i) {
 
-        QFileInfo target(i.key());
+        QFileInfo target(*i);
 
         QString targetPath = _config.targetDir;
 
@@ -619,7 +620,7 @@ bool ConfigParser::smartMoveTargets() {
         }
 
 
-        temp.insert(targetPath + "/" + target.fileName(), i.value());
+        temp.insert(targetPath + "/" + target.fileName());
 
     }
 

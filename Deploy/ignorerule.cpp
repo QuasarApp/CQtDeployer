@@ -40,7 +40,7 @@ bool IgnoreRule::isIgnore(const LibInfo &info) const {
     for (auto &ignore : _data) {
 
         bool checkPlatform = ((ignore.platform & info.getPlatform()) == info.getPlatform()) || ignore.platform == UnknownPlatform;
-        bool checkPriority = ignore.prority >= info.getPriority();
+        bool checkPriority = (ignore.prority <= info.getPriority()) || ignore.prority == NotFile;
         bool checkEnvirement = !ignore.enfirement.size() || ignore.enfirement.inThisEnvirement(info.fullPath());
 
         if (checkPlatform && checkPriority && checkEnvirement && check(info, ignore.label)) {

@@ -155,7 +155,7 @@ void MetaFileManager::createRunMetaFiles() {
 
     for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
 
-        if (i.value() && !createRunScript(i.key())) {
+        if (!createRunScript(*i)) {
             qCritical() << "run script not created!";
         }
     }

@@ -112,7 +112,7 @@ void Extracter::copyPlugins(const QStringList &list) {
 
 void Extracter::extractAllTargets() {
     for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
-        extract(i.key());
+        extract(*i);
     }
 }
 
