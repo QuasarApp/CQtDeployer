@@ -1,3 +1,10 @@
+//#
+//# Copyright (C) 2018-2019 QuasarApp.
+//# Distributed under the lgplv3 software license, see the accompanying
+//# Everyone is permitted to copy and distribute verbatim copies
+//# of this license document, but changing it is not allowed.
+//#
+
 #include "envirement.h"
 #include "quasarapp.h"
 
@@ -38,9 +45,16 @@ void Envirement::addEnv(const QString &dir, const QString &appDir, const QString
     auto path = QFileInfo(dir).absoluteFilePath();
 
     for (QString i :_ignoreEnvList) {
+
+#ifdef Q_OS_WIN
+        if (path.contains(i, Qt::CaseInsensitive)) {
+            return;
+        }
+#else
         if (path.contains(i)) {
             return;
         }
+#endif
     }
 
     if (!appDir.isEmpty() && path.contains(appDir)) {

@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2018-2019 QuasarApp.
+ * Distributed under the lgplv3 software license, see the accompanying
+ * Everyone is permitted to copy and distribute verbatim copies
+ * of this license document, but changing it is not allowed.
+ */
+
 #include "deploycore.h"
 #include "metafilemanager.h"
 
@@ -63,8 +70,7 @@ bool MetaFileManager::createRunScriptLinux(const QString &target) {
     content = content.arg(QFileInfo(target).fileName());
     int ld_index = DeployCore::find("ld-linux", _fileManager->getDeployedFilesStringList());
 
-    if (ld_index >= 0 && QuasarAppUtils::Params::isEndable("deploySystem") &&
-            !QuasarAppUtils::Params::isEndable("noLibc")) {
+    if (ld_index >= 0 && QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
 
         content = content.arg(QString("\nexport LD_PRELOAD=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getLibOutDir() + "%0\n").
             arg(QFileInfo(_fileManager->getDeployedFilesStringList()[ld_index]).fileName()));
@@ -149,7 +155,7 @@ void MetaFileManager::createRunMetaFiles() {
 
     for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
 
-        if (i.value() && !createRunScript(i.key())) {
+        if (!createRunScript(*i)) {
             qCritical() << "run script not created!";
         }
     }

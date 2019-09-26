@@ -1,3 +1,10 @@
+//#
+//# Copyright (C) 2018-2019 QuasarApp.
+//# Distributed under the lgplv3 software license, see the accompanying
+//# Everyone is permitted to copy and distribute verbatim copies
+//# of this license document, but changing it is not allowed.
+//#
+
 #include "configparser.h"
 #include <QDebug>
 #include <QDir>
@@ -168,6 +175,10 @@ bool ConfigParser::loadFromFile(const QString& confFile) {
 
 bool ConfigParser::parseQtDeployMode() {
 
+    if (QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
+        QuasarAppUtils::Params::setEnable("deploySystem", true );
+    }
+
     auto bin = QuasarAppUtils::Params::getStrArg("bin").split(',');
 
     if (!setTargets(bin)) {
@@ -263,7 +274,7 @@ void ConfigParser::setTargetDir(const QString &target) {
     } else {
         if (_config.targets.size())
             _config.targetDir = QFileInfo(
-                        _config.targets.begin().key()).absolutePath() + "/" + DISTRO_DIR;
+                        *_config.targets.begin()).absolutePath() + "/" + DISTRO_DIR;
 
         _config.targetDir = QFileInfo("./" + DISTRO_DIR).absoluteFilePath();
         qInfo () << "flag targetDir not  used." << "use default target dir :" << _config.targetDir;
@@ -284,7 +295,7 @@ bool ConfigParser::setTargets(const QStringList &value) {
 
             auto sufix = targetInfo.completeSuffix();
 
-            _config.targets.insert(QDir::fromNativeSeparators(i), sufix.isEmpty());
+            _config.targets.insert(QDir::fromNativeSeparators(i));
             isfillList = true;
         }
         else if (targetInfo.isDir()) {
@@ -348,7 +359,7 @@ bool ConfigParser::setBinDir(const QString &dir, bool recursive) {
               name.contains(".so", Qt::CaseInsensitive) || name.contains(".exe", Qt::CaseInsensitive)) {
 
             result = true;
-            _config.targets.insert(QDir::fromNativeSeparators(file.absoluteFilePath()), sufix.isEmpty());
+            _config.targets.insert(QDir::fromNativeSeparators(file.absoluteFilePath()));
 
         }
 
@@ -368,50 +379,68 @@ void ConfigParser::initIgnoreList()
 
     }
 
-    if (QuasarAppUtils::Params::isEndable("noLibc")) {
+    IgnoreData ruleUnix, ruleWin;
 
-        IgnoreData rule;
+    Envirement envUnix, envWin;
 
-        Envirement env;
+    if (!QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
 
-        env.addEnv(recursiveInvairement(3 ,"/lib"), "", "");
-        env.addEnv(recursiveInvairement(3 ,"/usr/lib"), "", "");
+        envUnix.addEnv(recursiveInvairement("/lib", 3), "", "");
+        envUnix.addEnv(recursiveInvairement("/usr/lib", 3), "", "");
+        ruleUnix.prority = SystemLib;
+        ruleUnix.platform = Unix32 | Unix64;
+        ruleUnix.enfirement = envUnix;
 
-        rule.prority = SystemLib;
-        rule.platform = Unix32 | Unix64;
-        rule.enfirement = env;
 
-        auto addRule = [&rule](const QString & lib) {
-            rule.label = lib;
-            return rule;
+        auto addRuleUnix = [&ruleUnix](const QString & lib) {
+            ruleUnix.label = lib;
+            return ruleUnix;
         };
 
-        _config.ignoreList.addRule(addRule("libc"));
-        _config.ignoreList.addRule(addRule("ld-"));
-        _config.ignoreList.addRule(addRule("libpthread"));
-        _config.ignoreList.addRule(addRule("libm"));
-        _config.ignoreList.addRule(addRule("libz"));
-        _config.ignoreList.addRule(addRule("libnsl"));
-        _config.ignoreList.addRule(addRule("libdl"));
-        _config.ignoreList.addRule(addRule("libutil"));
-        _config.ignoreList.addRule(addRule("libresolv"));
-        _config.ignoreList.addRule(addRule("libBrokenLocale"));
-        _config.ignoreList.addRule(addRule("libBrokenLocale"));
-        _config.ignoreList.addRule(addRule("libSegFault"));
-        _config.ignoreList.addRule(addRule("libanl"));
-        _config.ignoreList.addRule(addRule("libcrypt"));
-        _config.ignoreList.addRule(addRule("/gconv/"));
-        _config.ignoreList.addRule(addRule("libnss"));
-
-
+        _config.ignoreList.addRule(addRuleUnix("libc"));
+        _config.ignoreList.addRule(addRuleUnix("ld-"));
+        _config.ignoreList.addRule(addRuleUnix("libpthread"));
+        _config.ignoreList.addRule(addRuleUnix("libm"));
+        _config.ignoreList.addRule(addRuleUnix("libz"));
+        _config.ignoreList.addRule(addRuleUnix("libnsl"));
+        _config.ignoreList.addRule(addRuleUnix("libdl"));
+        _config.ignoreList.addRule(addRuleUnix("libutil"));
+        _config.ignoreList.addRule(addRuleUnix("libresolv"));
+        _config.ignoreList.addRule(addRuleUnix("libBrokenLocale"));
+        _config.ignoreList.addRule(addRuleUnix("libBrokenLocale"));
+        _config.ignoreList.addRule(addRuleUnix("libSegFault"));
+        _config.ignoreList.addRule(addRuleUnix("libanl"));
+        _config.ignoreList.addRule(addRuleUnix("libcrypt"));
+        _config.ignoreList.addRule(addRuleUnix("/gconv/"));
+        _config.ignoreList.addRule(addRuleUnix("libnss"));
     }
+
+//    envWin.addEnv(recursiveInvairement("C:/Windows", 3), "", "");
+//    ruleWin.prority = ExtraLib;
+//    ruleWin.platform = Win32 | Win64;
+//    ruleWin.enfirement = envWin;
+
+//    auto addRuleWin = [&ruleWin](const QString & lib) {
+//        ruleWin.label = lib;
+//        return ruleWin;
+//    };
+
+//    _config.ignoreList.addRule(addRuleWin("kernelBase"));
+//    _config.ignoreList.addRule(addRuleWin("gdi32"));
+//    _config.ignoreList.addRule(addRuleWin("kernel32"));
+//    _config.ignoreList.addRule(addRuleWin("msvcrt"));
+//    _config.ignoreList.addRule(addRuleWin("user32"));
 }
 
 void ConfigParser::initIgnoreEnvList() {
+    QStringList ignoreEnvList;
+
+    // remove windows from envirement,
+    ignoreEnvList.push_back(":/Windows");
+
     if (QuasarAppUtils::Params::isEndable("ignoreEnv")) {
         auto ignoreList = QuasarAppUtils::Params::getStrArg("ignoreEnv").split(',');
 
-        QStringList ignoreEnvList;
 
         for (auto &i : ignoreList) {
             auto path = QFileInfo(i).absoluteFilePath();
@@ -422,9 +451,10 @@ void ConfigParser::initIgnoreEnvList() {
 
             ignoreEnvList.append(path);
         }
-
-        _config.envirement.setIgnoreEnvList(ignoreEnvList);
     }
+
+    _config.envirement.setIgnoreEnvList(ignoreEnvList);
+
 }
 
 void ConfigParser::setQmake(const QString &value) {
@@ -471,9 +501,10 @@ void ConfigParser::setExtraPath(const QStringList &value) {
             }
 
             dir.setPath(info.absoluteFilePath());
-            _config.extraPaths.push_back(
-                        QDir::fromNativeSeparators(info.absoluteFilePath()));
-            _config.envirement.addEnv(recursiveInvairement(0, dir), _config.appDir, _config.targetDir);
+            auto extraDirs = getDirsRecursive(QDir::fromNativeSeparators(info.absoluteFilePath()), _config.depchLimit);
+            _config.extraPaths.append(extraDirs);
+
+            _config.envirement.addEnv(recursiveInvairement(dir), _config.appDir, _config.targetDir);
         } else {
             QuasarAppUtils::Params::verboseLog(i + " does not exist! and skiped");
         }
@@ -487,7 +518,7 @@ void ConfigParser::setExtraPlugins(const QStringList &value) {
     }
 }
 
-QString ConfigParser::recursiveInvairement(int depch, QDir &dir) {
+QString ConfigParser::recursiveInvairement(QDir &dir, int depch, int depchLimit ) {
 
     char separator = ':';
 
@@ -495,7 +526,11 @@ QString ConfigParser::recursiveInvairement(int depch, QDir &dir) {
     separator = ';';
 #endif
 
-    if (!dir.exists() || depch >= _config.depchLimit) {
+    if (depchLimit < 0) {
+        depchLimit = _config.depchLimit;
+    }
+
+    if (!dir.exists() || depch >= depchLimit) {
         return dir.absolutePath();
     }
 
@@ -506,7 +541,7 @@ QString ConfigParser::recursiveInvairement(int depch, QDir &dir) {
         if (!dir.cd(i.fileName())) {
             continue;
         }
-        QString temp = recursiveInvairement(depch + 1, dir);
+        QString temp = recursiveInvairement(dir, depch + 1);
         res += (res.size())? separator + temp: temp;
 
         dir.cdUp();
@@ -517,10 +552,10 @@ QString ConfigParser::recursiveInvairement(int depch, QDir &dir) {
     return res;
 }
 
-QString ConfigParser::recursiveInvairement(int depch, const QString &dir) {
+QString ConfigParser::recursiveInvairement(const QString &dir, int depch) {
     QDir _dir(dir);
 
-    return recursiveInvairement(depch, _dir);
+    return recursiveInvairement(_dir, 0, depch);
 }
 
 void ConfigParser::initEnvirement() {
@@ -531,9 +566,9 @@ void ConfigParser::initEnvirement() {
 
     if (QuasarAppUtils::Params::isEndable("deploySystem")) {
         QStringList dirs;
-        if (!QuasarAppUtils::Params::isEndable("noLibc"))
-            dirs.append(getDirsRecursive("/lib", 20));
-        dirs.append(getDirsRecursive("/usr/lib", 20));
+
+        dirs.append(getDirsRecursive("/lib", 10));
+        dirs.append(getDirsRecursive("/usr/lib", 10));
 
         for (auto &&i : dirs) {
             _config.envirement.addEnv(i, _config.appDir, _config.targetDir);
@@ -548,9 +583,9 @@ void ConfigParser::initEnvirement() {
 QStringList ConfigParser::getDirsRecursive(const QString &path, int maxDepch, int depch) {
     QDir dir(path);
 
-    QStringList res;
+    QStringList res = {path};
 
-    if (maxDepch > 0 && maxDepch < depch) {
+    if (maxDepch >= 0 && maxDepch <= depch) {
         return res;
     }
 
@@ -566,11 +601,11 @@ QStringList ConfigParser::getDirsRecursive(const QString &path, int maxDepch, in
 
 bool ConfigParser::smartMoveTargets() {
 
-    QMap<QString, bool> temp;
+    QSet<QString> temp;
     bool result = true;
     for (auto i = _config.targets.cbegin(); i != _config.targets.cend(); ++i) {
 
-        QFileInfo target(i.key());
+        QFileInfo target(*i);
 
         QString targetPath = _config.targetDir;
 
@@ -580,12 +615,12 @@ bool ConfigParser::smartMoveTargets() {
             targetPath += _config.distroStruct.getBinOutDir();
         }
 
-        if (!_fileManager->smartCopyFile(target.absoluteFilePath(), targetPath, _config.targetDir)) {
+        if (!_fileManager->smartCopyFile(target.absoluteFilePath(), targetPath)) {
             result = false;
         }
 
 
-        temp.insert(targetPath + "/" + target.fileName(), i.value());
+        temp.insert(targetPath + "/" + target.fileName());
 
     }
 

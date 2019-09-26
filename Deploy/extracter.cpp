@@ -112,7 +112,7 @@ void Extracter::copyPlugins(const QStringList &list) {
 
 void Extracter::extractAllTargets() {
     for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
-        extract(i.key());
+        extract(*i);
     }
 }
 
@@ -143,10 +143,10 @@ void Extracter::extractPlugins()
 
 void Extracter::copyFiles()
 {
-    _fileManager->copyFiles(neadedLibs, DeployCore::_config->targetDir);
+    _fileManager->copyLibs(neadedLibs);
 
     if (QuasarAppUtils::Params::isEndable("deploySystem")) {
-        _fileManager->copyFiles(systemLibs, DeployCore::_config->targetDir);
+        _fileManager->copyLibs(systemLibs);
     }
 
     if (!QuasarAppUtils::Params::isEndable("noStrip") && !_fileManager->strip(DeployCore::_config->targetDir)) {
@@ -192,8 +192,6 @@ void Extracter::deploy() {
     }
 
     _metaFileManager->createRunMetaFiles();
-
-    _fileManager->saveDeploymendFiles(DeployCore::_config->targetDir);
 
     qInfo() << "deploy done!";
 

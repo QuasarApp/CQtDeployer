@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2018-2019 QuasarApp.
+ * Distributed under the lgplv3 software license, see the accompanying
+ * Everyone is permitted to copy and distribute verbatim copies
+ * of this license document, but changing it is not allowed.
+ */
+
 #include "ignorerule.h"
 #include <quasarapp.h>
 
@@ -33,12 +40,13 @@ bool IgnoreRule::isIgnore(const LibInfo &info) const {
     for (auto &ignore : _data) {
 
         bool checkPlatform = ((ignore.platform & info.getPlatform()) == info.getPlatform()) || ignore.platform == UnknownPlatform;
-        bool checkPriority = ignore.prority >= info.getPriority();
+        bool checkPriority = (ignore.prority <= info.getPriority()) || ignore.prority == NotFile;
         bool checkEnvirement = !ignore.enfirement.size() || ignore.enfirement.inThisEnvirement(info.fullPath());
 
-        if (checkPlatform && checkPriority && checkEnvirement) {
-            return check(info, ignore.label);
+        if (checkPlatform && checkPriority && checkEnvirement && check(info, ignore.label)) {
+            return true;
         }
+
     }
 
     return false;

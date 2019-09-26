@@ -43,6 +43,12 @@ QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
     for (auto & lib : values) {
         LibInfo info;
 
+        auto priority = (DeployCore::getLibPriority(lib));
+
+        if ((priority >= SystemLib) && !QuasarAppUtils::Params::isEndable("deploySystem")) {
+            continue;
+        }
+
         if (!fillLibInfo(info, lib)) {
             QuasarAppUtils::Params::verboseLog(
                         "error extract lib info from " + lib + "(" + libName + ")",
@@ -50,7 +56,7 @@ QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
             continue;
         }
 
-        info.setPriority(DeployCore::getLibPriority(info.fullPath()));
+        info.setPriority(priority);
 
         res.insertMulti(info.getPriority(), info);
     }

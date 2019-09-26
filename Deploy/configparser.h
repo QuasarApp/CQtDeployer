@@ -1,3 +1,10 @@
+//#
+//# Copyright (C) 2018-2019 QuasarApp.
+//# Distributed under the lgplv3 software license, see the accompanying
+//# Everyone is permitted to copy and distribute verbatim copies
+//# of this license document, but changing it is not allowed.
+//#
+
 #ifndef CQT_H
 #define CQT_H
 #include "distrostruct.h"
@@ -32,7 +39,7 @@ struct DEPLOYSHARED_EXPORT DeployConfig {
      * key - path
      * value - create wrapper
      */
-    QMap<QString, bool> targets;
+    QSet<QString> targets;
     Envirement envirement;
     DistroStruct distroStruct;
     QString translationDir;
@@ -66,8 +73,8 @@ private:
     void setExtraPath(const QStringList &value);
     void setExtraPlugins(const QStringList &value);
 
-    QString recursiveInvairement(int depch, QDir &dir);
-    QString recursiveInvairement(int depch, const QString &dir);
+    QString recursiveInvairement(QDir &dir, int depch = 0, int depchLimit = -1);
+    QString recursiveInvairement(const QString &dir, int depch);
 
     void initEnvirement();
 
