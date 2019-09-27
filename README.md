@@ -67,18 +67,18 @@ Key differences of this program:
   - install qt and qt QtInstallFrameWork from [qtInstaller](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
   - qmake -r
   - make -j$(nproc)
-  - make deploy # this command requires the installed [cqtdeployer](https://github.com/QuasarApp/Console-QtDeployer/releases) 
+  - make deploy # this command requires the installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases) 
   - ./Distro/CQtDeployerInstaller.run
 
 ## Build for Windows
   - install qt and qt QtInstallFrameWork from [qtInstaller](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
   - qmake -r
   - make -j$(nproc)
-  - make deploy # this command requires the installed [cqtdeployer](https://github.com/QuasarApp/Console-QtDeployer/releases) 
+  - make deploy # this command requires the installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases) 
   - ./Distro/CQtDeployerInstaller.exe
   
 ## Install 
-You can download the latest version of the application [here](https://github.com/QuasarApp/Console-QtDeployer/releases).
+You can download the latest version of the application [here](https://github.com/QuasarApp/CQtDeployer/releases).
 
 ### Snap 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/cqtdeployer)
@@ -153,14 +153,14 @@ Qt CQtDeployer - это приложением для извлечения вс�
   - установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
   - qmake -r
   - make -j$(nproc)
-  - make deploy # эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/Console-QtDeployer/releases) 
+  - make deploy # эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases) 
   - ./Distro/CQtDeployerInstaller.run
   
 ## Build для Windows
   - установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
   - qmake -r
   - make -j$(nproc)
-  - make deploy # эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/Console-QtDeployer/releases) 
+  - make deploy # эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases) 
   - ./Distro/CQtDeployerInstaller.exe
   
 ### Snap
@@ -168,7 +168,7 @@ Qt CQtDeployer - это приложением для извлечения вс�
 
 
 ## Установить
-Вы можете загрузить последнюю версию приложения [здесь](https://github.com/QuasarApp/Console-QtDeployer/releases).
+Вы можете загрузить последнюю версию приложения [здесь](https://github.com/QuasarApp/CQtDeployer/releases).
 
 ## Проекты использующие CQtDeployer :
 
