@@ -1002,7 +1002,10 @@ void deploytest::testLibDir() {
         "./" + DISTRO_DIR + "/bin/qt.conf",
         "./" + DISTRO_DIR + "/bin/TestOnlyC",
         "./" + DISTRO_DIR + "/lib/libstdc++.so",
-        "./" + DISTRO_DIR + "/lib/libgcc_s.so"
+        "./" + DISTRO_DIR + "/lib/libgcc_s.so",
+        "./" + DISTRO_DIR + "/lib/ld-linux-x86-64.so",
+        "./" + DISTRO_DIR + "/lib/libc.so",
+        "./" + DISTRO_DIR + "/lib/libm.so",
     });
 
 #else
