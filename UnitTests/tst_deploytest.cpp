@@ -45,6 +45,7 @@ private:
 
     void runTestParams(const QStringList &list, QSet<QString> *tree = nullptr, bool noWarnings = false);
 
+    void checkResults(const QSet<QString> &tree, bool noWarnings);
 public:
     deploytest();
     /**
@@ -596,56 +597,93 @@ void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree, boo
     QVERIFY(deploy.run() == 0);
 
     if (tree) {
+        checkResults(*tree, noWarnings);
+    }
+
+#ifdef WITH_SNAP
+#ifdef Q_OS_UNIX
+    if (QFileInfo::exists("/snap/cqtdeployer/current/cqtdeployer.sh") && tree) {
+
         TestUtils utils;
 
-        QVERIFY(DeployCore::_config);
-        QVERIFY(!DeployCore::_config->targetDir.isEmpty());
+        auto targetDir = DeployCore::_config->targetDir;
+        QuasarAppUtils::Params::parseParams(QStringList{"clear",
+                                                        "-targetDir", targetDir,
+                                                        });
+
+        Deploy deployClear;
+        QVERIFY(deployClear.run() == 0);
+
 
         auto resultTree = utils.getTree(DeployCore::_config->targetDir);
 
-        auto comapre = utils.compareTree(resultTree, *tree);
+        QVERIFY(!resultTree.size());
 
-        if (comapre.size() != 0) {
+        QProcess cqtdeployerProcess;
+        cqtdeployerProcess.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+        cqtdeployerProcess.setProgram("cqtdeployer");
+        cqtdeployerProcess.setArguments(list);
 
-            bool bug = false;
+        cqtdeployerProcess.start();
 
-            for (auto i = comapre.begin(); i != comapre.end(); ++i) {
+        QVERIFY(cqtdeployerProcess.waitForStarted());
+        QVERIFY(cqtdeployerProcess.waitForFinished(3000000));
 
-                if (i.value() == 1) {
-                    qCritical() << "added unnecessary file : " + i.key();
-                    bug = true;
-                } else if (qtFilesTree.contains(QFileInfo(i.key()).fileName())) {
-                    qCritical() << "Missing file : " + i.key();
-                    bug = true;
-                } else if (noWarnings)  {
-                    qCritical() << "File : " + i.key() + " not exits in qt Dir";
-                    bug = true;
-                } else {
-                    qWarning() << "File : " + i.key() + " not exits in qt Dir";
-                }
+        checkResults(*tree, noWarnings);
+    }
+#endif
+#endif
+}
+
+void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings) {
+    TestUtils utils;
+
+    QVERIFY(DeployCore::_config);
+    QVERIFY(!DeployCore::_config->targetDir.isEmpty());
+
+    auto resultTree = utils.getTree(DeployCore::_config->targetDir);
+
+    auto comapre = utils.compareTree(resultTree, tree);
+
+    if (comapre.size() != 0) {
+
+        bool bug = false;
+
+        for (auto i = comapre.begin(); i != comapre.end(); ++i) {
+
+            if (i.value() == 1) {
+                qCritical() << "added unnecessary file : " + i.key();
+                bug = true;
+            } else if (qtFilesTree.contains(QFileInfo(i.key()).fileName())) {
+                qCritical() << "Missing file : " + i.key();
+                bug = true;
+            } else if (noWarnings)  {
+                qCritical() << "File : " + i.key() + " not exits in qt Dir";
+                bug = true;
+            } else {
+                qWarning() << "File : " + i.key() + " not exits in qt Dir";
             }
-
-            if (!bug) {
-                return;
-            }
-
-            QJsonObject obj;
-            for (auto i : resultTree) {
-                obj[i];
-            }
-
-            QJsonDocument doc(obj);
-
-            QFile lasttree("./LastTree.json");
-            lasttree.open(QIODevice::WriteOnly| QIODevice::Truncate);
-
-            lasttree.write(doc.toJson());
-            lasttree.close();
-
-            QVERIFY2(false, "runTestParams fail");
-
-
         }
+
+        if (!bug) {
+            return;
+        }
+
+        QJsonObject obj;
+        for (const auto &i : resultTree) {
+            obj[i];
+        }
+
+        QJsonDocument doc(obj);
+
+        QFile lasttree("./LastTree.json");
+        lasttree.open(QIODevice::WriteOnly| QIODevice::Truncate);
+
+        lasttree.write(doc.toJson());
+        lasttree.close();
+
+        QVERIFY2(false, "runTestParams fail");
+
 
     }
 
