@@ -1003,7 +1003,7 @@ void deploytest::testLibDir() {
 
 #ifdef Q_OS_UNIX
     QString bin = TestBinDir + "TestOnlyC";
-    QString extraPath = "/usr/lib";
+    QString extraPath = "/usr/lib,/lib";
 
     auto comapareTree = utils.createTree(
     {
