@@ -77,6 +77,7 @@ private slots:
 
     // tested flags : help, version
     void testHelp();
+
     // tested flags clear noOvervrite
     void testOverwrite();
 
@@ -88,6 +89,9 @@ private slots:
 
     // tested flags qmlDir qmake
     void testQt();
+
+    // tested clear force clear in clear mode
+    void testClear();
 
     // tested flags ignore ignoreEnv
     void testIgnore();
@@ -899,6 +903,16 @@ void deploytest::testQt() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake, "noTranslations"}, &comapareTree);
+
+}
+
+void deploytest::testClear() {
+    TestUtils utils;
+
+
+    auto compareTree = QSet<QString>{};
+
+    runTestParams({"clear"}, &compareTree);
 
 }
 

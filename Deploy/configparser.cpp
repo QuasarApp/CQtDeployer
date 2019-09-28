@@ -646,3 +646,7 @@ ConfigParser::ConfigParser(FileManager *filemanager):
 
     QuasarAppUtils::Params::verboseLog("appDir = " + _config.appDir);
 }
+
+void DeployConfig::reset() {
+    *this = DeployConfig{};
+}

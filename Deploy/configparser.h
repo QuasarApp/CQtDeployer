@@ -44,6 +44,10 @@ struct DEPLOYSHARED_EXPORT DeployConfig {
     DistroStruct distroStruct;
     QString translationDir;
 
+    /**
+     * @brief reset config file to default
+     */
+    void reset();
 };
 
 class DEPLOYSHARED_EXPORT ConfigParser
