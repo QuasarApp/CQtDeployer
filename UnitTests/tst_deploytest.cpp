@@ -15,6 +15,7 @@
 #include <configparser.h>
 #include <QCryptographicHash>
 #include <distrostruct.h>
+#include <pathutils.h>
 
 #include <QMap>
 #include <QByteArray>
@@ -67,6 +68,7 @@ private slots:
     void testStrip();
     void testExtractLib();
     void testDistroStruct();
+    void testRelativeLink();
 
     void testQmlExtrct();
     void testSetTargetDir();
@@ -571,6 +573,21 @@ void deploytest::testDistroStruct() {
     }
 }
 
+void deploytest::testRelativeLink() {
+    auto cases = QList<QList<QString>>{
+        {"", "", "./"},
+        {"/media", "/etc", "./../etc/"},
+        {"/media///", "/etc///", "./../etc/"},
+        {"/media/etc/usr", "/media/etc", "./../"},
+        {"/media/etc", "/media/etc/usr", "./usr/"},
+
+    };
+
+    for (auto &i: cases) {
+        QVERIFY(PathUtils::getRelativeLink(i[0], i[1]) == i[2]);
+    }
+}
+
 void deploytest::testSetTargetDir() {
 
     FileManager file;
@@ -845,16 +862,27 @@ void deploytest::testConfFile() {
     doc = doc.fromJson(data);
     QVERIFY(!doc.isNull());
 
+#ifdef Q_OS_UNIX
+    QVERIFY(!doc.isNull());
+
     QVERIFY(data.contains("\"bin\": ["));
-    QVERIFY(data.contains("build/TestOnlyC"));
-    QVERIFY(data.contains("build/QtWidgetsProject"));
-    QVERIFY(data.contains("build/TestQMLWidgets"));
+    QVERIFY(data.contains("./TestOnlyC"));
+    QVERIFY(data.contains("./QtWidgetsProject"));
+    QVERIFY(data.contains("./TestQMLWidgets"));
 
     QVERIFY(data.contains("\"clear\": true"));
 
-#ifdef Q_OS_UNIX
     runTestParams({"-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #else
+    QVERIFY(!doc.isNull());
+
+    QVERIFY(data.contains("\"bin\": ["));
+    QVERIFY(data.contains("./TestOnlyC.exe"));
+    QVERIFY(data.contains("./QtWidgetsProject.exe"));
+    QVERIFY(data.contains("./TestQMLWidgets.exe"));
+
+    QVERIFY(data.contains("\"clear\": true"));
+
     runTestParams({"-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 
 #endif

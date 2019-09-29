@@ -54,6 +54,7 @@ SOURCES += \
     filemanager.cpp \
     ignorerule.cpp \
     metafilemanager.cpp \
+    pathutils.cpp \
     pe.cpp \
     igetlibinfo.cpp \
     dependenciesscanner.cpp \
@@ -74,6 +75,7 @@ HEADERS += \
     filemanager.h \
     ignorerule.h \
     metafilemanager.h \
+    pathutils.h \
     pe.h \
     igetlibinfo.h \
     dependenciesscanner.h \

@@ -10,6 +10,7 @@
 #include "pluginsparser.h"
 #include "configparser.h"
 #include "metafilemanager.h"
+#include "pathutils.h"
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
@@ -84,7 +85,7 @@ void Extracter::copyExtraPlugins() {
 
     for (auto extraPlugin : DeployCore::_config->extraPlugins) {
 
-        if (!DeployCore::isPath(extraPlugin)) {
+        if (!PathUtils::isPath(extraPlugin)) {
             extraPlugin = DeployCore::_config->qtDir + "/plugins/" + extraPlugin;
         }
 
