@@ -6,6 +6,7 @@
 //#
 
 #include <QString>
+#include "deploy_global.h"
 
 #ifndef PATHUTILS_H
 #define PATHUTILS_H
@@ -14,7 +15,7 @@
  * @brief The PathUtils class
  *
  */
-class PathUtils
+class DEPLOYSHARED_EXPORT PathUtils
 {
 public:
     PathUtils();
