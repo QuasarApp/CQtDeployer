@@ -44,6 +44,10 @@ struct DEPLOYSHARED_EXPORT DeployConfig {
     DistroStruct distroStruct;
     QString translationDir;
 
+    /**
+     * @brief reset config file to default
+     */
+    void reset();
 };
 
 class DEPLOYSHARED_EXPORT ConfigParser
@@ -80,9 +84,9 @@ private:
 
     QStringList getDirsRecursive(const QString &path, int maxDepch = -1, int depch = 0);
 
-
-    void writeKey(const QString &key, QJsonObject &) const;
-    void readKey(const QString &key, const QJsonObject &obj) const;
+    QString getRelativeLink(const QString& from, const QString& to);
+    void writeKey(const QString &key, QJsonObject &, const QString &confFileDir) const;
+    void readKey(const QString &key, const QJsonObject &obj, const QString &confFileDir) const;
 public:
     ConfigParser(FileManager *filemanager);
     bool parseParams();

@@ -7,6 +7,7 @@
 //#
 
 #include "distrostruct.h"
+#include "pathutils.h"
 #include <quasarapp.h>
 
 QString DistroStruct::getLibOutDir(const QString &basePath) const {
@@ -82,59 +83,15 @@ void DistroStruct::init() {
 }
 
 QString DistroStruct::toFullPath(QString path) const {
-    path.replace('\\', '/');
-
-    int index = -1;
-    do {
-        path.replace("//", "/");
-    } while ((index = path.indexOf("//")) >= 0);
-
-    if (path.left(1) != '/') {
-        path.insert(0, '/');
-    }
-
-    if (path.right(1) != '/') {
-        path.insert(path.size(), '/');
-    }
-
-    return path;
+    return PathUtils::toFullPath(path);
 }
 
 QString DistroStruct::stripPath(QString path) const {
-    path.replace('\\', '/');
-
-    int index = -1;
-    do {
-        path.replace("//", "/");
-    } while ((index = path.indexOf("//")) >= 0);
-
-    if (path.left(1) == '/') {
-        path = path.right(path.size() - 1);
-    }
-
-    if (path.right(1) != '/') {
-        path = path.left(path.size() - 1);
-    }
-
-    return path;
+    return PathUtils::stripPath(path);
 }
 
 QString DistroStruct::getRelativePath(QString path) const {
-
-    path = toFullPath(path);
-
-    int left = path.indexOf('/', 0) + 1;
-    int righy = path.indexOf('/', left);
-
-    while (righy > 0) {
-
-        path.replace(left, righy - left, "..");
-
-        left = left + 3;
-        righy = path.indexOf('/', left);
-    }
-
-    return path;
+    return PathUtils::getReleativePath(path);
 }
 
 DistroStruct::DistroStruct() {

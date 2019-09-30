@@ -15,6 +15,7 @@
 #include <configparser.h>
 #include <QCryptographicHash>
 #include <distrostruct.h>
+#include <pathutils.h>
 
 #include <QMap>
 #include <QByteArray>
@@ -45,6 +46,7 @@ private:
 
     void runTestParams(const QStringList &list, QSet<QString> *tree = nullptr, bool noWarnings = false);
 
+    void checkResults(const QSet<QString> &tree, bool noWarnings);
 public:
     deploytest();
     /**
@@ -66,6 +68,7 @@ private slots:
     void testStrip();
     void testExtractLib();
     void testDistroStruct();
+    void testRelativeLink();
 
     void testQmlExtrct();
     void testSetTargetDir();
@@ -76,6 +79,7 @@ private slots:
 
     // tested flags : help, version
     void testHelp();
+
     // tested flags clear noOvervrite
     void testOverwrite();
 
@@ -87,6 +91,9 @@ private slots:
 
     // tested flags qmlDir qmake
     void testQt();
+
+    // tested clear force clear in clear mode
+    void testClear();
 
     // tested flags ignore ignoreEnv
     void testIgnore();
@@ -566,6 +573,21 @@ void deploytest::testDistroStruct() {
     }
 }
 
+void deploytest::testRelativeLink() {
+    auto cases = QList<QList<QString>>{
+        {"", "", "./"},
+        {"/media", "/etc", "./../etc/"},
+        {"/media///", "/etc///", "./../etc/"},
+        {"/media/etc/usr", "/media/etc", "./../"},
+        {"/media/etc", "/media/etc/usr", "./usr/"},
+
+    };
+
+    for (auto &i: cases) {
+        QVERIFY(PathUtils::getRelativeLink(i[0], i[1]) == i[2]);
+    }
+}
+
 void deploytest::testSetTargetDir() {
 
     FileManager file;
@@ -596,56 +618,93 @@ void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree, boo
     QVERIFY(deploy.run() == 0);
 
     if (tree) {
+        checkResults(*tree, noWarnings);
+    }
+
+#ifdef WITH_SNAP
+#ifdef Q_OS_UNIX
+    if (QFileInfo::exists("/snap/cqtdeployer/current/cqtdeployer.sh") && tree) {
+
         TestUtils utils;
 
-        QVERIFY(DeployCore::_config);
-        QVERIFY(!DeployCore::_config->targetDir.isEmpty());
+        auto targetDir = DeployCore::_config->targetDir;
+        QuasarAppUtils::Params::parseParams(QStringList{"clear",
+                                                        "-targetDir", targetDir,
+                                                        });
+
+        Deploy deployClear;
+        QVERIFY(deployClear.run() == 0);
+
 
         auto resultTree = utils.getTree(DeployCore::_config->targetDir);
 
-        auto comapre = utils.compareTree(resultTree, *tree);
+        QVERIFY(!resultTree.size());
 
-        if (comapre.size() != 0) {
+        QProcess cqtdeployerProcess;
+        cqtdeployerProcess.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+        cqtdeployerProcess.setProgram("cqtdeployer");
+        cqtdeployerProcess.setArguments(list);
 
-            bool bug = false;
+        cqtdeployerProcess.start();
 
-            for (auto i = comapre.begin(); i != comapre.end(); ++i) {
+        QVERIFY(cqtdeployerProcess.waitForStarted());
+        QVERIFY(cqtdeployerProcess.waitForFinished(3000000));
 
-                if (i.value() == 1) {
-                    qCritical() << "added unnecessary file : " + i.key();
-                    bug = true;
-                } else if (qtFilesTree.contains(QFileInfo(i.key()).fileName())) {
-                    qCritical() << "Missing file : " + i.key();
-                    bug = true;
-                } else if (noWarnings)  {
-                    qCritical() << "File : " + i.key() + " not exits in qt Dir";
-                    bug = true;
-                } else {
-                    qWarning() << "File : " + i.key() + " not exits in qt Dir";
-                }
+        checkResults(*tree, noWarnings);
+    }
+#endif
+#endif
+}
+
+void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings) {
+    TestUtils utils;
+
+    QVERIFY(DeployCore::_config);
+    QVERIFY(!DeployCore::_config->targetDir.isEmpty());
+
+    auto resultTree = utils.getTree(DeployCore::_config->targetDir);
+
+    auto comapre = utils.compareTree(resultTree, tree);
+
+    if (comapre.size() != 0) {
+
+        bool bug = false;
+
+        for (auto i = comapre.begin(); i != comapre.end(); ++i) {
+
+            if (i.value() == 1) {
+                qCritical() << "added unnecessary file : " + i.key();
+                bug = true;
+            } else if (qtFilesTree.contains(QFileInfo(i.key()).fileName())) {
+                qCritical() << "Missing file : " + i.key();
+                bug = true;
+            } else if (noWarnings)  {
+                qCritical() << "File : " + i.key() + " not exits in qt Dir";
+                bug = true;
+            } else {
+                qWarning() << "File : " + i.key() + " not exits in qt Dir";
             }
-
-            if (!bug) {
-                return;
-            }
-
-            QJsonObject obj;
-            for (auto i : resultTree) {
-                obj[i];
-            }
-
-            QJsonDocument doc(obj);
-
-            QFile lasttree("./LastTree.json");
-            lasttree.open(QIODevice::WriteOnly| QIODevice::Truncate);
-
-            lasttree.write(doc.toJson());
-            lasttree.close();
-
-            QVERIFY2(false, "runTestParams fail");
-
-
         }
+
+        if (!bug) {
+            return;
+        }
+
+        QJsonObject obj;
+        for (const auto &i : resultTree) {
+            obj[i];
+        }
+
+        QJsonDocument doc(obj);
+
+        QFile lasttree("./LastTree.json");
+        lasttree.open(QIODevice::WriteOnly| QIODevice::Truncate);
+
+        lasttree.write(doc.toJson());
+        lasttree.close();
+
+        QVERIFY2(false, "runTestParams fail");
+
 
     }
 
@@ -803,16 +862,27 @@ void deploytest::testConfFile() {
     doc = doc.fromJson(data);
     QVERIFY(!doc.isNull());
 
+#ifdef Q_OS_UNIX
+    QVERIFY(!doc.isNull());
+
     QVERIFY(data.contains("\"bin\": ["));
-    QVERIFY(data.contains("build/TestOnlyC"));
-    QVERIFY(data.contains("build/QtWidgetsProject"));
-    QVERIFY(data.contains("build/TestQMLWidgets"));
+    QVERIFY(data.contains("./TestOnlyC"));
+    QVERIFY(data.contains("./QtWidgetsProject"));
+    QVERIFY(data.contains("./TestQMLWidgets"));
 
     QVERIFY(data.contains("\"clear\": true"));
 
-#ifdef Q_OS_UNIX
     runTestParams({"-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #else
+    QVERIFY(!doc.isNull());
+
+    QVERIFY(data.contains("\"bin\": ["));
+    QVERIFY(data.contains("./TestOnlyC.exe"));
+    QVERIFY(data.contains("./QtWidgetsProject.exe"));
+    QVERIFY(data.contains("./TestQMLWidgets.exe"));
+
+    QVERIFY(data.contains("\"clear\": true"));
+
     runTestParams({"-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 
 #endif
@@ -861,6 +931,16 @@ void deploytest::testQt() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake, "noTranslations"}, &comapareTree);
+
+}
+
+void deploytest::testClear() {
+    TestUtils utils;
+
+
+    auto compareTree = QSet<QString>{};
+
+    runTestParams({"clear"}, &compareTree);
 
 }
 
@@ -965,7 +1045,7 @@ void deploytest::testLibDir() {
 
 #ifdef Q_OS_UNIX
     QString bin = TestBinDir + "TestOnlyC";
-    QString extraPath = "/usr/lib";
+    QString extraPath = "/usr/lib,/lib";
 
     auto comapareTree = utils.createTree(
     {
@@ -1002,7 +1082,10 @@ void deploytest::testLibDir() {
         "./" + DISTRO_DIR + "/bin/qt.conf",
         "./" + DISTRO_DIR + "/bin/TestOnlyC",
         "./" + DISTRO_DIR + "/lib/libstdc++.so",
-        "./" + DISTRO_DIR + "/lib/libgcc_s.so"
+        "./" + DISTRO_DIR + "/lib/libgcc_s.so",
+        "./" + DISTRO_DIR + "/lib/ld-linux-x86-64.so",
+        "./" + DISTRO_DIR + "/lib/libc.so",
+        "./" + DISTRO_DIR + "/lib/libm.so",
     });
 
 #else

@@ -164,6 +164,10 @@ QString DeployCore::help() {
     { "   noOverwrite             : Prevents replacing existing files." },
     { "   -bin    [list, params]   : Deployable file or folder." },
     { "                            | For example -bin /my/project/bin/,/my/project/bin.exe" },
+    { "   -confFile [params]       | The path to the json file with all deployment configurations."},
+    { "                            : Using this file, you can add the necessary options,"},
+    { "                            : thereby simplifying the command invocation in the console."},
+    { "                            : However, the parameters in Kansol have a higher priority than in the file."},
     { "   -binDir [params]         : A folder which includes deployable files (recursive search)." },
     { "                            | WARNING: this flag supports 'so', 'dll' and 'exe' files only." },
     { "                            | Use '-bin' flag if you want to deploy linux binary files" },
@@ -227,6 +231,11 @@ QStringList DeployCore::helpKeys() {
         "targetDir",
         "noStrip",
         "noTranslations",
+        "qmlOut",
+        "libOut",
+        "trOut",
+        "pluginOut",
+        "binOut",
         "version",
         "verbose"
     };
@@ -280,10 +289,6 @@ int DeployCore::find(const QString &str, const QStringList &list) {
 bool DeployCore::isLib(const QFileInfo &file) {
     return file.completeSuffix().contains("so", Qt::CaseInsensitive)
             || file.completeSuffix().contains("dll", Qt::CaseInsensitive);
-}
-
-bool DeployCore::isPath(const QString &path) {
-    return path.contains('/') || path.contains('\\');
 }
 
 MSVCVersion DeployCore::getMSVC(const QString &_qmake) {

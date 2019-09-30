@@ -12,6 +12,7 @@
 #include <QProcess>
 #include "deploycore.h"
 #include "filemanager.h"
+#include "pathutils.h"
 #include "quasarapp.h"
 
 bool ConfigParser::parseParams() {
@@ -75,7 +76,7 @@ const DeployConfig *ConfigParser::config() const {
     return &_config;
 }
 
-void ConfigParser::writeKey(const QString& key, QJsonObject& obj) const {
+void ConfigParser::writeKey(const QString& key, QJsonObject& obj, const QString& confFileDir) const {
     if (QuasarAppUtils::Params::isEndable(key)) {
         auto list = QuasarAppUtils::Params::getStrArg(key).split(',');
 
@@ -85,6 +86,12 @@ void ConfigParser::writeKey(const QString& key, QJsonObject& obj) const {
             for (auto &i: list) {
                 QJsonValue val;
                 val = i;
+
+                if (PathUtils::isPath(i)) {
+                    val = PathUtils::getRelativeLink(
+                                QFileInfo(confFileDir).absoluteFilePath(),
+                                QFileInfo(i).absoluteFilePath());
+                }
                 array.push_back(val);
             }
 
@@ -93,13 +100,24 @@ void ConfigParser::writeKey(const QString& key, QJsonObject& obj) const {
             if (list.size() && list.first().isEmpty()) {
                 obj[key] = QJsonValue(true);
             } else {
-                obj[key] = list.first();
+                auto val = list.first();
+
+                if (PathUtils::isPath(val)) {
+                    val = PathUtils::getRelativeLink(
+                                QFileInfo(confFileDir).absoluteFilePath(),
+                                QFileInfo(val).absoluteFilePath());
+
+                }
+
+                obj[key] = val;
             }
         }
     }
 }
 
-void ConfigParser::readKey(const QString& key, const QJsonObject& obj) const {
+void ConfigParser::readKey(const QString& key, const QJsonObject& obj,
+                           const QString& confFileDir) const {
+
     if (!QuasarAppUtils::Params::isEndable(key)) {
 
          if (obj[key].isArray()) {
@@ -108,8 +126,15 @@ void ConfigParser::readKey(const QString& key, const QJsonObject& obj) const {
 
              for (QJsonValue i : array) {
                  QString val = i.toString();
+
                  if (!val.isEmpty()) {
-                     list.push_back(val);
+                     if (PathUtils::isPath(val)) {
+                         list.push_back(
+                                     QFileInfo(confFileDir + '/' + val).absoluteFilePath());
+
+                     } else {
+                         list.push_back(val);
+                     }
                  }
              }
 
@@ -118,9 +143,15 @@ void ConfigParser::readKey(const QString& key, const QJsonObject& obj) const {
          } else if (!obj[key].isUndefined()) {
              QString val = obj[key].toString();
              if (!val.isEmpty()) {
+
+                 if (PathUtils::isPath(val)) {
+                     val = QFileInfo(confFileDir + '/' + val).absoluteFilePath();
+                 }
+
                  QuasarAppUtils::Params::setArg(key, val);
              } else {
-                 QuasarAppUtils::Params::setEnable(key, true);
+                 auto value = obj[key].toBool(true);
+                 QuasarAppUtils::Params::setEnable(key, value);
              }
          }
 
@@ -131,7 +162,7 @@ bool ConfigParser::createFromDeploy(const QString& confFile) const {
     QJsonObject obj;
 
     for (auto &key :DeployCore::helpKeys()) {
-        writeKey(key, obj);
+        writeKey(key, obj, QFileInfo(confFile).absolutePath());
     }
 
     QJsonDocument doc(obj);
@@ -151,6 +182,7 @@ bool ConfigParser::createFromDeploy(const QString& confFile) const {
 
 bool ConfigParser::loadFromFile(const QString& confFile) {
     QFile file(confFile);
+    QString confFilePath = QFileInfo(confFile).absolutePath();
 
     if (file.open(QIODevice::ReadOnly)) {
         auto doc = QJsonDocument::fromJson(file.readAll());
@@ -162,7 +194,7 @@ bool ConfigParser::loadFromFile(const QString& confFile) {
         auto obj = doc.object();
 
         for (auto &key: obj.keys()) {
-            readKey(key, obj);
+            readKey(key, obj, confFilePath);
         }
 
         file.close();
@@ -645,4 +677,8 @@ ConfigParser::ConfigParser(FileManager *filemanager):
 #endif
 
     QuasarAppUtils::Params::verboseLog("appDir = " + _config.appDir);
+}
+
+void DeployConfig::reset() {
+    *this = DeployConfig{};
 }

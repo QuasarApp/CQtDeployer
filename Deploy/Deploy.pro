@@ -19,7 +19,7 @@ TEMPLATE = lib
 
 DEFINES += DEPLOY_LIBRARY
 
-VERSION = 1.3.0.0
+VERSION = 1.3.0.2
 
 DEFINES += APP_VERSION='\\"$$VERSION\\"'
 
@@ -54,6 +54,7 @@ SOURCES += \
     filemanager.cpp \
     ignorerule.cpp \
     metafilemanager.cpp \
+    pathutils.cpp \
     pe.cpp \
     igetlibinfo.cpp \
     dependenciesscanner.cpp \
@@ -74,6 +75,7 @@ HEADERS += \
     filemanager.h \
     ignorerule.h \
     metafilemanager.h \
+    pathutils.h \
     pe.h \
     igetlibinfo.h \
     dependenciesscanner.h \
