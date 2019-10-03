@@ -24,7 +24,7 @@ Key differences of this program:
 |-----------------------------|-----------------------------------------------------------------|
 |   -bin    [list, params]    | Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe|
 |   -binDir [params]          | A folder which includes deployable files (recursive search).    |
-|   -confFile [params]        | The path to the json file with all deployment configurations. Using this file, you can add the necessary options, thereby simplifying the command invocation in the console. However, the parameters in Kansol have a higher priority than in the file. |
+|   -confFile [params]        | The path to the json file with all deployment configurations. Using this file, you can add the necessary options, thereby simplifying the command invocation in the console. However, the parameters in Kansol have a higher priority than in the file. For more info about this flag see (wiki)[https://github.com/QuasarApp/CQtDeployer/wiki/DeployConfigFileEn]                              |
 |   -qmlDir [params]          | Qml data dir. For example -qmlDir ~/my/project/qml              |
 |   -qmake  [params]          | Qmake path. For example                                         |
 |                             | -qmake ~/Qt/5.14.0/gcc_64/bin/qmake                             |
@@ -114,7 +114,7 @@ Qt CQtDeployer - это приложением для извлечения вс�
 |   help / h                  | Показывает справку                                          |
 |   -bin    [list, params]    | Развертываемый файл или папка. пример -bin ~/my/project/bin/,~/my/project/bin.exe|
 |   -binDir [params]          | Папка с развертываемыми файлами (с рекурсивным поиском). |
-|   -confFile [params]        | Путь к файлу json со всеми конфигурациями развертывания. С помощью этого файла можно добавить нужные опции, тем самым упрастить вызов комманды в консоле. Однако пораметры в кансоле имеют больший приоритет чем в файле. |
+|   -confFile [params]        | Путь к файлу json со всеми конфигурациями развертывания. С помощью этого файла можно добавить нужные опции, тем самым упрастить вызов комманды в консоле. Однако пораметры в кансоле имеют больший приоритет чем в файле. Для получения дополнительной информации об этом флаге см. (Вики)[https://github.com/QuasarApp/CQtDeployer/wiki/DeployConfigFileRu] |
 |   -qmlDir [params]          | Папка qml. пример -qmlDir ~/my/project/qml                |
 |   -qmake  [params]          | Путь к qmake. пример                                      |
 |                             | -qmake ~/Qt/5.14.0/gcc_64/bin/qmake                       |
