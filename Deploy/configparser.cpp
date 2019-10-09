@@ -434,6 +434,7 @@ void ConfigParser::initIgnoreList()
         _config.ignoreList.addRule(addRuleUnix("libpthread"));
         _config.ignoreList.addRule(addRuleUnix("libm"));
         _config.ignoreList.addRule(addRuleUnix("libz"));
+        _config.ignoreList.addRule(addRuleUnix("librt"));
         _config.ignoreList.addRule(addRuleUnix("libnsl"));
         _config.ignoreList.addRule(addRuleUnix("libdl"));
         _config.ignoreList.addRule(addRuleUnix("libutil"));
