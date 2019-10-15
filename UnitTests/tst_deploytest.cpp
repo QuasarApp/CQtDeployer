@@ -1013,6 +1013,17 @@ void deploytest::testIgnore() {
                     "./" + DISTRO_DIR + "/lib/libQt5VirtualKeyboard.so",
                 });
 
+    auto removeTreePlugins = utils.createTree({
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/libqtvirtualkeyboard_hangul.so",
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/libqtvirtualkeyboard_openwnn.so",
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/libqtvirtualkeyboard_pinyin.so",
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/libqtvirtualkeyboard_tcime.so",
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/libqtvirtualkeyboard_thai.so",
+                  "./" + DISTRO_DIR + "/plugins/platforminputcontexts/libqtvirtualkeyboardplugin.so",
+                  "./" + DISTRO_DIR + "/lib/libQt5VirtualKeyboard.so",
+
+                });
+
 #else
     comapareTree = utils.createTree(
     {
@@ -1021,6 +1032,9 @@ void deploytest::testIgnore() {
                 });
 
     auto removeTree = utils.createTree({
+                    "./" + DISTRO_DIR + "/Qt5VirtualKeyboard.dll",
+                });
+    auto removeTreePlugins = utils.createTree({
                     "./" + DISTRO_DIR + "/Qt5VirtualKeyboard.dll",
                 });
 
@@ -1037,6 +1051,12 @@ void deploytest::testIgnore() {
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                   "-ignore", "VirtualKeyboard"}, &comapareTree);
+
+    comapareTree = Modules::qtLibs() - removeTreePlugins;
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                  "-ignore", "VirtualKeyboard,virtualkeyboard"}, &comapareTree);
 
 }
 
