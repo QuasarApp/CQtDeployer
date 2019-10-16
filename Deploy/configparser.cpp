@@ -65,8 +65,9 @@ bool ConfigParser::parseParams() {
 
     }
 
-    if (createFile) {
-        createFromDeploy(path);
+    if (createFile && !createFromDeploy(path)) {
+        QuasarAppUtils::Params::verboseLog("Do not create a deploy config file in " + path,
+                                           QuasarAppUtils::Error);
     }
 
     return true;
@@ -161,8 +162,15 @@ void ConfigParser::readKey(const QString& key, const QJsonObject& obj,
 bool ConfigParser::createFromDeploy(const QString& confFile) const {
     QJsonObject obj;
 
+    auto info = QFileInfo(confFile);
+
     for (auto &key :DeployCore::helpKeys()) {
-        writeKey(key, obj, QFileInfo(confFile).absolutePath());
+        writeKey(key, obj, info.absolutePath());
+    }
+
+    if (!QFile::exists(info.absolutePath()) &&
+            !QDir("/").mkpath(info.absolutePath())) {
+        return false;
     }
 
     QJsonDocument doc(obj);

@@ -811,6 +811,7 @@ void deploytest::testConfFile() {
     TestUtils utils;
 
     QFile::remove(TestBinDir + "/TestConf.json");
+    QFile::remove(TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json");
 
 #ifdef Q_OS_UNIX
     auto comapareTree = utils.createTree(
@@ -891,6 +892,53 @@ void deploytest::testConfFile() {
     QVERIFY(QuasarAppUtils::Params::isEndable("bin"));
 
     QFile::remove(TestBinDir + "/TestConf.json");
+
+
+#ifdef Q_OS_UNIX
+    runTestParams({"-bin", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
+                   "clear" ,
+                   "-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"}, &comapareTree);
+#else
+    runTestParams({"-bin", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
+                   "clear" ,
+                   "-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"}, &comapareTree);
+#endif
+
+    confFile.setFileName(TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json");
+    QVERIFY(confFile.open(QIODevice::ReadOnly));
+
+    data = confFile.readAll();
+    confFile.close();
+
+    doc = doc.fromJson(data);
+    QVERIFY(!doc.isNull());
+
+#ifdef Q_OS_UNIX
+
+    QVERIFY(data.contains("\"bin\": ["));
+    QVERIFY(data.contains("./../../../../../build/TestOnlyC"));
+    QVERIFY(data.contains("./../../../../../build/QtWidgetsProject"));
+    QVERIFY(data.contains("./../../../../../build/TestQMLWidgets"));
+
+    QVERIFY(data.contains("\"clear\": true"));
+
+#else
+
+    QVERIFY(data.contains("\"bin\": ["));
+    QVERIFY(data.contains("./../../../../../build/TestOnlyC.exe"));
+    QVERIFY(data.contains("./../../../../../build/QtWidgetsProject.exe"));
+    QVERIFY(data.contains("./../../../../../build/TestQMLWidgets.exe"));
+
+    QVERIFY(data.contains("\"clear\": true"));
+
+#endif
+    runTestParams({"-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"}, &comapareTree);
+
+    QVERIFY(QuasarAppUtils::Params::isEndable("clear"));
+    QVERIFY(QuasarAppUtils::Params::isEndable("bin"));
+
+    QFile::remove(TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json");
+
 }
 
 void deploytest::testQt() {
