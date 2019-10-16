@@ -130,8 +130,15 @@ void ConfigParser::readKey(const QString& key, const QJsonObject& obj,
 
                  if (!val.isEmpty()) {
                      if (PathUtils::isPath(val)) {
-                         list.push_back(
-                                     QFileInfo(confFileDir + '/' + val).absoluteFilePath());
+                         QString path;
+
+                         if (PathUtils::isAbsalutPath(val)) {
+                             path = QFileInfo(val).absoluteFilePath();
+                         } else {
+                             path = QFileInfo(confFileDir + '/' + val).absoluteFilePath();
+                         }
+
+                         list.push_back(path);
 
                      } else {
                          list.push_back(val);
@@ -146,7 +153,12 @@ void ConfigParser::readKey(const QString& key, const QJsonObject& obj,
              if (!val.isEmpty()) {
 
                  if (PathUtils::isPath(val)) {
-                     val = QFileInfo(confFileDir + '/' + val).absoluteFilePath();
+
+                     if (PathUtils::isAbsalutPath(val)) {
+                         val = QFileInfo(val).absoluteFilePath();
+                     } else {
+                         val = QFileInfo(confFileDir + '/' + val).absoluteFilePath();
+                     }
                  }
 
                  QuasarAppUtils::Params::setArg(key, val);

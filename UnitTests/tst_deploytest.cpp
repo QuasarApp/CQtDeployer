@@ -581,10 +581,25 @@ void deploytest::testRelativeLink() {
         {"/media/etc/usr", "/media/etc", "./../"},
         {"/media/etc", "/media/etc/usr", "./usr/"},
 
+        {"C:/", "C:/", "./"},
+        {"C:\\", "C:/", "./"},
+        {"C:/", "C:\\", "./"},
+
+        {"C:/media", "C:/etc", "./../etc/"},
+        {"C:/media//\\", "C:/etc///", "./../etc/"},
+        {"C:/media/etc/usr", "C:/media/etc", "./../"},
+        {"C:/media\\etc", "C:/media/etc/usr", "./usr/"},
+        {"C:/media/etc", "D:/media/etc/usr", "D:/media/etc/usr"},
+
     };
 
     for (auto &i: cases) {
         QVERIFY(PathUtils::getRelativeLink(i[0], i[1]) == i[2]);
+    }
+
+    for (int i = 1; i < cases.size() - 1; i++) {
+        QVERIFY(PathUtils::isAbsalutPath(cases[i][0]));
+        QVERIFY(!PathUtils::isAbsalutPath(cases[i][2]));
     }
 }
 
@@ -845,11 +860,11 @@ void deploytest::testConfFile() {
 
 #ifdef Q_OS_UNIX
     runTestParams({"-bin", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
-                   "clear" ,
+                   "clear",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #else
     runTestParams({"-bin", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
-                   "clear" ,
+                   "clear" , "-libDir", "L:/never/absalut/path"
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #endif
 
@@ -870,8 +885,13 @@ void deploytest::testConfFile() {
     QVERIFY(data.contains("./TestOnlyC"));
     QVERIFY(data.contains("./QtWidgetsProject"));
     QVERIFY(data.contains("./TestQMLWidgets"));
+//    QVERIFY(data.contains("\"libDir\": \"/never/absalut/path/\""));
 
     QVERIFY(data.contains("\"clear\": true"));
+
+    QVERIFY(confFile.open(QIODevice::ReadOnly | QIODevice::Append));
+    confFile.write(QString("\"libDir\": \"/never/absalut/path/\"").toLatin1());
+    confFile.close();
 
     runTestParams({"-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #else
@@ -881,6 +901,7 @@ void deploytest::testConfFile() {
     QVERIFY(data.contains("./TestOnlyC.exe"));
     QVERIFY(data.contains("./QtWidgetsProject.exe"));
     QVERIFY(data.contains("./TestQMLWidgets.exe"));
+    QVERIFY(data.contains("\"libDir\": \"L:/never/absalut/path/\""));
 
     QVERIFY(data.contains("\"clear\": true"));
 
@@ -890,7 +911,12 @@ void deploytest::testConfFile() {
 
     QVERIFY(QuasarAppUtils::Params::isEndable("clear"));
     QVERIFY(QuasarAppUtils::Params::isEndable("bin"));
-
+    QVERIFY(QuasarAppUtils::Params::isEndable("libDir"));
+#ifdef Q_OS_UNIX
+    QVERIFY(QuasarAppUtils::Params::getStrArg("libDir") == "/never/absalut/path/");
+#else
+    QVERIFY(QuasarAppUtils::Params::getStrArg("libDir") == "L:/never/absalut/path/");
+#endif
     QFile::remove(TestBinDir + "/TestConf.json");
 
 
