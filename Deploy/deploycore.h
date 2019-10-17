@@ -36,13 +36,15 @@ enum Platform {
     Win32           = 0x1,
     Win64           = 0x2,
     Unix32          = 0x4,
-    Unix64          = 0x8
+    Unix64          = 0x8,
+    GeneralFile     = 0xf
 };
 
 enum LibPriority : int {
     QtLib = 0x0,
     ExtraLib,
     SystemLib,
+    ExtraFile,
     NotFile = 0xF,
 };
 

@@ -35,7 +35,7 @@ bool IgnoreRule::check(const LibInfo &info, const QString& ignoreLabel) const {
     return false;
 }
 
-bool IgnoreRule::isIgnore(const LibInfo &info) const {
+const IgnoreData* IgnoreRule::isIgnore(const LibInfo &info) const {
 
     for (auto &ignore : _data) {
 
@@ -44,12 +44,12 @@ bool IgnoreRule::isIgnore(const LibInfo &info) const {
         bool checkEnvirement = !ignore.enfirement.size() || ignore.enfirement.inThisEnvirement(info.fullPath());
 
         if (checkPlatform && checkPriority && checkEnvirement && check(info, ignore.label)) {
-            return true;
+            return &ignore;
         }
 
     }
 
-    return false;
+    return nullptr;
 }
 
 IgnoreData::IgnoreData(const QString &label) {

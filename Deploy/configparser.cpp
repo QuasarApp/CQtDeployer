@@ -18,7 +18,7 @@
 bool ConfigParser::parseParams() {
 
     auto path = QuasarAppUtils::Params::getStrArg("confFile");
-    bool createFile = !path.isEmpty();
+    bool createFile = !(path.isEmpty() || QFile::exists(path));
     if (path.isEmpty()) {
         path = QFileInfo("./").absoluteFilePath();
     }
@@ -65,8 +65,9 @@ bool ConfigParser::parseParams() {
 
     }
 
-    if (createFile) {
-        createFromDeploy(path);
+    if (createFile && !createFromDeploy(path)) {
+        QuasarAppUtils::Params::verboseLog("Do not create a deploy config file in " + path,
+                                           QuasarAppUtils::Error);
     }
 
     return true;
@@ -129,8 +130,15 @@ void ConfigParser::readKey(const QString& key, const QJsonObject& obj,
 
                  if (!val.isEmpty()) {
                      if (PathUtils::isPath(val)) {
-                         list.push_back(
-                                     QFileInfo(confFileDir + '/' + val).absoluteFilePath());
+                         QString path;
+
+                         if (PathUtils::isAbsalutPath(val)) {
+                             path = QFileInfo(val).absoluteFilePath();
+                         } else {
+                             path = QFileInfo(confFileDir + '/' + val).absoluteFilePath();
+                         }
+
+                         list.push_back(path);
 
                      } else {
                          list.push_back(val);
@@ -145,7 +153,12 @@ void ConfigParser::readKey(const QString& key, const QJsonObject& obj,
              if (!val.isEmpty()) {
 
                  if (PathUtils::isPath(val)) {
-                     val = QFileInfo(confFileDir + '/' + val).absoluteFilePath();
+
+                     if (PathUtils::isAbsalutPath(val)) {
+                         val = QFileInfo(val).absoluteFilePath();
+                     } else {
+                         val = QFileInfo(confFileDir + '/' + val).absoluteFilePath();
+                     }
                  }
 
                  QuasarAppUtils::Params::setArg(key, val);
@@ -161,8 +174,15 @@ void ConfigParser::readKey(const QString& key, const QJsonObject& obj,
 bool ConfigParser::createFromDeploy(const QString& confFile) const {
     QJsonObject obj;
 
+    auto info = QFileInfo(confFile);
+
     for (auto &key :DeployCore::helpKeys()) {
-        writeKey(key, obj, QFileInfo(confFile).absolutePath());
+        writeKey(key, obj, info.absolutePath());
+    }
+
+    if (!QFile::exists(info.absolutePath()) &&
+            !QDir("/").mkpath(info.absolutePath())) {
+        return false;
     }
 
     QJsonDocument doc(obj);

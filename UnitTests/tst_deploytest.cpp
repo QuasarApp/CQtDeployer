@@ -581,10 +581,25 @@ void deploytest::testRelativeLink() {
         {"/media/etc/usr", "/media/etc", "./../"},
         {"/media/etc", "/media/etc/usr", "./usr/"},
 
+        {"C:/", "C:/", "./"},
+        {"C:\\", "C:/", "./"},
+        {"C:/", "C:\\", "./"},
+
+        {"C:/media", "C:/etc", "./../etc/"},
+        {"C:/media//\\", "C:/etc///", "./../etc/"},
+        {"C:/media/etc/usr", "C:/media/etc", "./../"},
+        {"C:/media\\etc", "C:/media/etc/usr", "./usr/"},
+        {"C:/media/etc", "D:/media/etc/usr", "D:/media/etc/usr"},
+
     };
 
     for (auto &i: cases) {
         QVERIFY(PathUtils::getRelativeLink(i[0], i[1]) == i[2]);
+    }
+
+    for (int i = 1; i < cases.size() - 1; i++) {
+        QVERIFY(PathUtils::isAbsalutPath(cases[i][0]));
+        QVERIFY(!PathUtils::isAbsalutPath(cases[i][2]));
     }
 }
 
@@ -811,6 +826,7 @@ void deploytest::testConfFile() {
     TestUtils utils;
 
     QFile::remove(TestBinDir + "/TestConf.json");
+    QFile::remove(TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json");
 
 #ifdef Q_OS_UNIX
     auto comapareTree = utils.createTree(
@@ -844,11 +860,11 @@ void deploytest::testConfFile() {
 
 #ifdef Q_OS_UNIX
     runTestParams({"-bin", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
-                   "clear" ,
+                   "clear",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #else
     runTestParams({"-bin", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
-                   "clear" ,
+                   "clear" , "-libDir", "L:/never/absalut/path",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #endif
 
@@ -863,23 +879,29 @@ void deploytest::testConfFile() {
     QVERIFY(!doc.isNull());
 
 #ifdef Q_OS_UNIX
-    QVERIFY(!doc.isNull());
 
     QVERIFY(data.contains("\"bin\": ["));
     QVERIFY(data.contains("./TestOnlyC"));
     QVERIFY(data.contains("./QtWidgetsProject"));
     QVERIFY(data.contains("./TestQMLWidgets"));
+//    QVERIFY(data.contains("\"libDir\": \"/never/absalut/path/\""));
 
     QVERIFY(data.contains("\"clear\": true"));
 
+    data.insert(data.size() - 2, QString(",\"libDir\": \"/never/absalut/path/\"").toLatin1());
+
+    QVERIFY(confFile.open(QIODevice::WriteOnly | QIODevice::Truncate));
+    confFile.write(data);
+    confFile.close();
+
     runTestParams({"-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #else
-    QVERIFY(!doc.isNull());
 
     QVERIFY(data.contains("\"bin\": ["));
     QVERIFY(data.contains("./TestOnlyC.exe"));
     QVERIFY(data.contains("./QtWidgetsProject.exe"));
     QVERIFY(data.contains("./TestQMLWidgets.exe"));
+    QVERIFY(data.contains("\"libDir\": \"L:/never/absalut/path\""));
 
     QVERIFY(data.contains("\"clear\": true"));
 
@@ -889,8 +911,60 @@ void deploytest::testConfFile() {
 
     QVERIFY(QuasarAppUtils::Params::isEndable("clear"));
     QVERIFY(QuasarAppUtils::Params::isEndable("bin"));
-
+    QVERIFY(QuasarAppUtils::Params::isEndable("libDir"));
+#ifdef Q_OS_UNIX
+    QVERIFY(QuasarAppUtils::Params::getStrArg("libDir") == "/never/absalut/path/");
+#else
+    QVERIFY(QuasarAppUtils::Params::getStrArg("libDir") == "L:/never/absalut/path");
+#endif
     QFile::remove(TestBinDir + "/TestConf.json");
+
+
+#ifdef Q_OS_UNIX
+    runTestParams({"-bin", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
+                   "clear" ,
+                   "-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"}, &comapareTree);
+#else
+    runTestParams({"-bin", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
+                   "clear" ,
+                   "-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"}, &comapareTree);
+#endif
+
+    confFile.setFileName(TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json");
+    QVERIFY(confFile.open(QIODevice::ReadOnly));
+
+    data = confFile.readAll();
+    confFile.close();
+
+    doc = doc.fromJson(data);
+    QVERIFY(!doc.isNull());
+
+#ifdef Q_OS_UNIX
+
+    QVERIFY(data.contains("\"bin\": ["));
+    QVERIFY(data.contains("./../../../../../build/TestOnlyC"));
+    QVERIFY(data.contains("./../../../../../build/QtWidgetsProject"));
+    QVERIFY(data.contains("./../../../../../build/TestQMLWidgets"));
+
+    QVERIFY(data.contains("\"clear\": true"));
+
+#else
+
+    QVERIFY(data.contains("\"bin\": ["));
+    QVERIFY(data.contains("./../../../../../build/TestOnlyC.exe"));
+    QVERIFY(data.contains("./../../../../../build/QtWidgetsProject.exe"));
+    QVERIFY(data.contains("./../../../../../build/TestQMLWidgets.exe"));
+
+    QVERIFY(data.contains("\"clear\": true"));
+
+#endif
+    runTestParams({"-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"}, &comapareTree);
+
+    QVERIFY(QuasarAppUtils::Params::isEndable("clear"));
+    QVERIFY(QuasarAppUtils::Params::isEndable("bin"));
+
+    QFile::remove(TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json");
+
 }
 
 void deploytest::testQt() {
@@ -1013,6 +1087,17 @@ void deploytest::testIgnore() {
                     "./" + DISTRO_DIR + "/lib/libQt5VirtualKeyboard.so",
                 });
 
+    auto removeTreePlugins = utils.createTree({
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/libqtvirtualkeyboard_hangul.so",
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/libqtvirtualkeyboard_openwnn.so",
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/libqtvirtualkeyboard_pinyin.so",
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/libqtvirtualkeyboard_tcime.so",
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/libqtvirtualkeyboard_thai.so",
+                  "./" + DISTRO_DIR + "/plugins/platforminputcontexts/libqtvirtualkeyboardplugin.so",
+                  "./" + DISTRO_DIR + "/lib/libQt5VirtualKeyboard.so",
+
+                });
+
 #else
     comapareTree = utils.createTree(
     {
@@ -1022,6 +1107,17 @@ void deploytest::testIgnore() {
 
     auto removeTree = utils.createTree({
                     "./" + DISTRO_DIR + "/Qt5VirtualKeyboard.dll",
+                });
+
+    auto removeTreePlugins = utils.createTree({
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_hangul.dll",
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_openwnn.dll",
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_pinyin.dll",
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_tcime.dll",
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_thai.dll",
+                  "./" + DISTRO_DIR + "/plugins/platforminputcontexts/qtvirtualkeyboardplugin.dll",
+                  "./" + DISTRO_DIR + "/Qt5VirtualKeyboard.dll",
+
                 });
 
 #endif
@@ -1037,6 +1133,12 @@ void deploytest::testIgnore() {
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                   "-ignore", "VirtualKeyboard"}, &comapareTree);
+
+    comapareTree = Modules::qtLibs() - removeTreePlugins;
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                  "-ignore", "VirtualKeyboard,virtualkeyboard"}, &comapareTree);
 
 }
 
