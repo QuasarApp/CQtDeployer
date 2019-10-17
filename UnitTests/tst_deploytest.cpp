@@ -889,8 +889,10 @@ void deploytest::testConfFile() {
 
     QVERIFY(data.contains("\"clear\": true"));
 
-    QVERIFY(confFile.open(QIODevice::ReadOnly | QIODevice::Append));
-    confFile.write(QString("\"libDir\": \"/never/absalut/path/\"").toLatin1());
+    data.insert(data.size() - 2, QString(",\"libDir\": \"/never/absalut/path/\"").toLatin1());
+
+    QVERIFY(confFile.open(QIODevice::WriteOnly | QIODevice::Truncate));
+    confFile.write(data);
     confFile.close();
 
     runTestParams({"-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);

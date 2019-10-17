@@ -18,7 +18,7 @@
 bool ConfigParser::parseParams() {
 
     auto path = QuasarAppUtils::Params::getStrArg("confFile");
-    bool createFile = !path.isEmpty();
+    bool createFile = !(path.isEmpty() || QFile::exists(path));
     if (path.isEmpty()) {
         path = QFileInfo("./").absoluteFilePath();
     }
