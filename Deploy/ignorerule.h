@@ -40,7 +40,13 @@ private:
 public:
     IgnoreRule();
     void addRule(const IgnoreData& rule);
-    bool isIgnore(const LibInfo& info) const;
+
+    /**
+     * @brief isIgnore
+     * @param info
+     * @return const ptr to ignore data
+     */
+    const IgnoreData *isIgnore(const LibInfo& info) const;
 };
 
 #endif // IGNORERULE_H

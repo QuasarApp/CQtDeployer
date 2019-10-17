@@ -35,6 +35,12 @@ QString PathUtils::toFullPath(QString path) {
 
 QString PathUtils::getRelativeLink(QString from, QString to) {
 
+    auto mainDrive = getDrive(from);
+
+    if (mainDrive != getDrive(to) && !mainDrive.isNull()) {
+        return to;
+    }
+
     bool isFile = QFileInfo(to).isFile();
     from = toFullPath(from);
     to = toFullPath(to);
@@ -63,6 +69,25 @@ bool PathUtils::isPath(const QString &path) {
     return path.contains('/') || path.contains('\\') || path == ".";
 }
 
+QChar PathUtils::getDrive(QString path) {
+
+    path = stripPath(path);
+
+    if (path.size() > 1 && path[1] == ':') {
+        return path[0];
+    }
+
+    return 0;
+}
+
+bool PathUtils::isAbsalutPath(const QString &path) {
+    if (getDrive(path).isNull()) {
+        return path.size() && (path.at(0) == "/" ||  path.at(0) == "\\");
+    }
+
+    return true;
+}
+
 QString PathUtils::getReleativePath(QString path) {
     path = toFullPath(path);
 
@@ -81,19 +106,13 @@ QString PathUtils::getReleativePath(QString path) {
 }
 
 QString PathUtils::stripPath(QString path) {
-    path.replace('\\', '/');
-
-    int index = -1;
-    do {
-        path.replace("//", "/");
-    } while ((index = path.indexOf("//")) >= 0);
-
+    path = toFullPath(path);
     if (path.left(1) == '/') {
-        path = path.right(path.size() - 1);
+        path.remove(0, 1);
     }
 
     if (path.right(1) == '/') {
-        path = path.left(path.size() - 1);
+        return path.remove(path.size() - 1, 1);
     }
 
     return path;

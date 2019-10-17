@@ -103,7 +103,7 @@ void Extracter::copyExtraPlugins() {
 }
 
 void Extracter::copyPlugins(const QStringList &list) {
-    for (auto plugin : list) {
+    for (auto plugin : list) {        
         if (!copyPlugin(plugin)) {
             qWarning() << plugin << " not copied!";
         }
@@ -292,7 +292,7 @@ bool Extracter::extractQmlAll() {
 
     if (!_fileManager->copyFolder(DeployCore::_config->qmlDir,
                                  DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getQmlOutDir(),
-                    QStringList() << ".so.debug" << "d.dll",
+                    QStringList() << ".so.debug" << "d.dll" << ".pdb",
                     &listItems)) {
         return false;
     }

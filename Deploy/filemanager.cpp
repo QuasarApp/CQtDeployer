@@ -258,6 +258,20 @@ bool FileManager::copyFolder(const QString &from, const QString &to, const QStri
                             QuasarAppUtils::VerboseLvl::Info);
                 continue;
             }
+            auto config = DeployCore::_config;
+
+            LibInfo info;
+            info.setName(item.fileName());
+            info.setPath(item.absolutePath());
+            info.setPlatform(GeneralFile);
+
+            if (config)
+                if (auto rule = config->ignoreList.isIgnore(info)) {
+                    QuasarAppUtils::Params::verboseLog(
+                                item.absoluteFilePath() + " ignored by rule " + rule->label,
+                                QuasarAppUtils::VerboseLvl::Info);
+                    continue;
+                }
 
             if (!copyFile(item.absoluteFilePath(), to , mask)) {
                 QuasarAppUtils::Params::verboseLog(
