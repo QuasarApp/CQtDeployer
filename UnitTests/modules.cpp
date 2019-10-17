@@ -228,8 +228,6 @@ QSet<QString> Modules::qmlLibs() {
                     "./" + DISTRO_DIR + "/Qt5VirtualKeyboard.dll",
                     "./" + DISTRO_DIR + "/Qt5WebSockets.dll",
                     "./" + DISTRO_DIR + "/Qt5Widgets.dll",
-                    "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
-                    "./" + DISTRO_DIR + "/TestOnlyC.exe",
                     "./" + DISTRO_DIR + "/TestQMLWidgets.exe",
                     "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
                     "./" + DISTRO_DIR + "/libstdc++-6.dll",

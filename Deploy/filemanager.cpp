@@ -263,6 +263,7 @@ bool FileManager::copyFolder(const QString &from, const QString &to, const QStri
             LibInfo info;
             info.setName(item.fileName());
             info.setPath(item.absolutePath());
+            info.setPlatform(GeneralFile);
 
             if (config)
                 if (auto rule = config->ignoreList.isIgnore(info)) {

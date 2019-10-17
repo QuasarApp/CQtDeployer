@@ -864,7 +864,7 @@ void deploytest::testConfFile() {
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #else
     runTestParams({"-bin", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
-                   "clear" , "-libDir", "L:/never/absalut/path"
+                   "clear" , "-libDir", "L:/never/absalut/path",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #endif
 
@@ -879,7 +879,6 @@ void deploytest::testConfFile() {
     QVERIFY(!doc.isNull());
 
 #ifdef Q_OS_UNIX
-    QVERIFY(!doc.isNull());
 
     QVERIFY(data.contains("\"bin\": ["));
     QVERIFY(data.contains("./TestOnlyC"));
@@ -897,13 +896,12 @@ void deploytest::testConfFile() {
 
     runTestParams({"-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #else
-    QVERIFY(!doc.isNull());
 
     QVERIFY(data.contains("\"bin\": ["));
     QVERIFY(data.contains("./TestOnlyC.exe"));
     QVERIFY(data.contains("./QtWidgetsProject.exe"));
     QVERIFY(data.contains("./TestQMLWidgets.exe"));
-    QVERIFY(data.contains("\"libDir\": \"L:/never/absalut/path/\""));
+    QVERIFY(data.contains("\"libDir\": \"L:/never/absalut/path\""));
 
     QVERIFY(data.contains("\"clear\": true"));
 
@@ -917,7 +915,7 @@ void deploytest::testConfFile() {
 #ifdef Q_OS_UNIX
     QVERIFY(QuasarAppUtils::Params::getStrArg("libDir") == "/never/absalut/path/");
 #else
-    QVERIFY(QuasarAppUtils::Params::getStrArg("libDir") == "L:/never/absalut/path/");
+    QVERIFY(QuasarAppUtils::Params::getStrArg("libDir") == "L:/never/absalut/path");
 #endif
     QFile::remove(TestBinDir + "/TestConf.json");
 
@@ -1110,8 +1108,16 @@ void deploytest::testIgnore() {
     auto removeTree = utils.createTree({
                     "./" + DISTRO_DIR + "/Qt5VirtualKeyboard.dll",
                 });
+
     auto removeTreePlugins = utils.createTree({
-                    "./" + DISTRO_DIR + "/Qt5VirtualKeyboard.dll",
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_hangul.dll",
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_openwnn.dll",
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_pinyin.dll",
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_tcime.dll",
+                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_thai.dll",
+                  "./" + DISTRO_DIR + "/plugins/platforminputcontexts/qtvirtualkeyboardplugin.dll",
+                  "./" + DISTRO_DIR + "/Qt5VirtualKeyboard.dll",
+
                 });
 
 #endif
