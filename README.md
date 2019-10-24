@@ -94,6 +94,9 @@ If you want to support the project,you can donate into our bitcoin wallet.
 
 ### Bitcoin address - 1NJNbDKmezcUcHRfzpBeq2fHeG21oEKX8Q
 
+## Thanks
+ * many thanks [Trail of Bits](https://github.com/trailofbits) for their library [pe-parser](https://github.com/trailofbits/pe-parse). Everything works perfectly.
+
 ***************************
 ***************************
 ***************************
@@ -180,3 +183,6 @@ Qt CQtDeployer - это приложением для извлечения вс�
 Если вы хотите помочь проекту, то вы можете пожертвовать небольшую сумму на наш биткойн-кошелек.
 
 ### Биткойн-адрес - 1NJNbDKmezcUcHRfzpBeq2fHeG21oEKX8Q
+
+## Благодарность
+ * Большое спасибо  [Trail of Bits](https://github.com/trailofbits) за их библиотеку [pe-parser](https://github.com/trailofbits/pe-parse). Все работает отлично.
