@@ -1,4 +1,23 @@
+## General rules for using options
+```
+cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
+```
 
+* All options must begin with a '-' sign.
+
+* After specifying the desired option, you must specify the value.
+
+* Some options support enumerations (arrays of values). When initializing such options, specify the list of values through ',' without prabels. If you use any programming language and call the cqtdeployer process, then the array of values must be passed as 1 parameter.
+
+* To include a flag, simply include the flag name in the list of options.
+
+## Description of values in the table
+
+* **-binDir [params]** - option without array support.
+
+* **-bin [params, list]** - option with support for arrays. The delimiter used is ','.
+
+* **clear** - flag
 
 
 ## Options:
@@ -44,7 +63,29 @@
 
 #### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.12.4/gcc_64/bin/qmake clear
 
-#### Параметры:
+
+## Общие правила использования параметров
+```
+cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
+```
+
+* Все параметры должны начинается с знака '-'.
+
+* После указания нужного параметра нужно в обязательном порядке указать значение
+
+* Некоторые параметры поддерживают перечисления (массивы значений). При инициализации таких параметров укажите список значений через ',' без прабелов. Если вы используете какой либо язык программирования и вызываете процесс cqtdeployer то массив значений должен передаваться как 1 параметр.
+
+* Для включения какого либо флага достаточно просто включить в список опций имя флага.
+
+## Обозначения в таблице 
+
+ * **-binDir [params]** - параметр без поддержки массивов.
+
+ * **-bin [params,list]** - параметр c поддержкой массивов. В качестве разделителя используется ','.
+
+* **clear** - флаг 
+
+## Параметры:
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |   help / h                  | Показывает справку                                          |
