@@ -13,8 +13,8 @@ Key differences of this program:
 * Crossdeploy: this application's support windows and linux distrebutives, This means that you can use it not only to deploy a project for your platform, but also to deploy a project on Linux for Windows and vice versa. 
 
 ## Supported Platforms:
-* <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"  height="50">
-* <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg"  height="50">
+* <img src="https://user-images.githubusercontent.com/12465465/67766480-929b5000-fa5f-11e9-8ae7-377d9ddb7c65.png"  height="100">
+* <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg"  height="100">
 
 ### How to use
 
@@ -112,8 +112,8 @@ Qt CQtDeployer - это приложением для извлечения вс�
 * Crossdeploy: приложение поддерживает Windows и дистрибутивы Linux, это означает, что вы можете использовать его не только для развертывания проекта для вашей платформы, но и для развертывания проекта в Linux для Windows и наоборот.
 
 ## Поддерживаемые платформы:
-* <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"  height="50">
-* <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg"  height="50">
+* <img src="https://user-images.githubusercontent.com/12465465/67766480-929b5000-fa5f-11e9-8ae7-377d9ddb7c65.png"  height="100">
+* <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg"  height="100">
 
 
 ### Как использовать
