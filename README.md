@@ -86,7 +86,7 @@ Qt CQtDeployer - это приложением для извлечения вс�
 ### Как использовать
 #### пример : cqtdeployer <-bin    [params]> [options]
 
-Смотрите список всех опций [здесь] (./ doc / Options.md)
+Смотрите список всех опций [здесь](./doc/Options.md)
 
 ## Build для Linux 
   - установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
