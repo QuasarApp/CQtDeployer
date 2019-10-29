@@ -12,6 +12,9 @@ Key differences of this program:
 * Flexibility: this application's got flags that help you to configure the deployment for your or your project's needs
 * Crossdeploy: this application's support windows and linux distrebutives, This means that you can use it not only to deploy a project for your platform, but also to deploy a project on Linux for Windows and vice versa. 
 
+## Supported Platforms:
+* <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"  height="50">
+* <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg"  height="50">
 
 ### How to use
 
@@ -107,6 +110,11 @@ Qt CQtDeployer - это приложением для извлечения вс�
 * Производительность - эта программа развертывает приложение в несколько раз быстрее (до 10 секунд)
 * Гибкость - это приложение имеет флаги, которые помогут вам настроить деплоинг под ваши нужды и нужды вашего проекта
 * Crossdeploy: приложение поддерживает Windows и дистрибутивы Linux, это означает, что вы можете использовать его не только для развертывания проекта для вашей платформы, но и для развертывания проекта в Linux для Windows и наоборот.
+
+## Поддерживаемые платформы:
+* <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"  height="50">
+* <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg"  height="50">
+
 
 ### Как использовать
 #### пример : cqtdeployer <-bin    [params]> [options]
