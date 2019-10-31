@@ -510,8 +510,44 @@ void ConfigParser::initIgnoreEnvList() {
 
 }
 
-void ConfigParser::setQmake(const QString &value) {
+bool ConfigParser::setQmake(const QString &value) {
+
     _config.qmake = QDir::fromNativeSeparators(value);
+    auto qmakeInfo = QFileInfo(_config.qmake);
+
+    if (!(qmakeInfo.fileName().compare("qmake", Qt::CaseInsensitive) ||
+        qmakeInfo.fileName().compare("qmake.exe", Qt::CaseInsensitive))) {
+        return false;
+    }
+
+    QProcess proc;
+    proc.setProgram(qmakeInfo.absoluteFilePath());
+    proc.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+    proc.setArguments({"--query"});
+
+    proc.start();
+    if (!proc.waitForFinished(1000)) {
+        QuasarAppUtils::Params::verboseLog("run qmake fail!");
+
+        return false;
+    }
+
+    QString qmakeData = proc.readAll();
+    auto list = qmakeData.split('\n');
+
+    for (auto &value : list) {
+        if (value.contains("QT_INSTALL_LIBS")) {
+
+        } else if (value.contains("QT_INSTALL_LIBS")) {
+        } else if (value.contains("QT_INSTALL_LIBEXECS")) {
+        } else if (value.contains("QT_INSTALL_BINS")) {
+        } else if (value.contains("QT_INSTALL_PLUGINS")) {
+
+        } else if (value.contains("QT_INSTALL_QML")) {
+        } else if (value.contains("QT_INSTALL_TRANSLATIONS")) {
+
+        }
+    }
 
     QFileInfo info(_config.qmake);
     QDir dir = info.absoluteDir();
