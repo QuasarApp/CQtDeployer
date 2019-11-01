@@ -276,7 +276,7 @@ bool ConfigParser::parseQtDeployMode() {
     }
 
     basePath = info.absolutePath();
-    if (!setQmake(basePath)) {
+    if (!setQmake(qmake)) {
         QDir dir(basePath);
 
         if (!dir.cdUp()) {
@@ -534,7 +534,7 @@ bool ConfigParser::setQmake(const QString &value) {
     QProcess proc;
     proc.setProgram(qmakeInfo.absoluteFilePath());
     proc.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    proc.setArguments({"--query"});
+    proc.setArguments({"-query"});
 
     proc.start();
     if (!proc.waitForFinished(1000)) {
