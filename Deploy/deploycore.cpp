@@ -291,17 +291,10 @@ bool DeployCore::isLib(const QFileInfo &file) {
             || file.completeSuffix().contains("dll", Qt::CaseInsensitive);
 }
 
-MSVCVersion DeployCore::getMSVC(const QString &_qmake) {
-    QFileInfo qmake(_qmake);
-
+MSVCVersion DeployCore::getMSVC(const QString &_qtBin) {
     int res = MSVCVersion::MSVC_Unknown;
 
-    if (!qmake.isFile()) {
-        QuasarAppUtils::Params::verboseLog("qmake is wrong!");
-        return static_cast<MSVCVersion>(res);
-    }
-
-    QDir dir = qmake.absoluteDir();
+    QDir dir = QFileInfo(_qtBin).absoluteFilePath();
 
     if (!dir.cdUp()) {
         QuasarAppUtils::Params::verboseLog("is not standart qt repo");
@@ -347,12 +340,10 @@ MSVCVersion DeployCore::getMSVC(const QString &_qmake) {
     return static_cast<MSVCVersion>(res);
 }
 
-QString DeployCore::getVCredist(const QString &_qmake) {
-    auto msvc = getMSVC(_qmake);
+QString DeployCore::getVCredist(const QString &_qtbinDir) {
+    auto msvc = getMSVC(_qtbinDir);
 
-    QFileInfo qmake(_qmake);
-
-    QDir dir = qmake.absoluteDir();
+    QDir dir = _qtbinDir;
 
     if (!(dir.cdUp() && dir.cdUp() && dir.cdUp() && dir.cd("vcredist"))) {
         QuasarAppUtils::Params::verboseLog("redist not findet!");
@@ -365,8 +356,10 @@ QString DeployCore::getVCredist(const QString &_qmake) {
     auto version = getMSVCVersion(msvc);
 
     for (auto &&info: infoList) {
-        auto file = QFileInfo(info).fileName();
-        if (file.contains(name) && file.contains(version)) {
+        auto file = info.fileName();
+        if (file.contains(name, Qt::CaseInsensitive) &&
+                file.contains(version, Qt::CaseInsensitive)) {
+
             return info.absoluteFilePath();
         }
     }
@@ -400,7 +393,7 @@ QString DeployCore::getMSVCVersion(MSVCVersion msvc) {
 
 bool DeployCore::isQtLib(const QString &lib) {
     QFileInfo info(lib);
-    return !_config->qtDir.isEmpty() && info.absoluteFilePath().contains(_config->qtDir);
+    return !_config->qtDir.isQt(info.absoluteFilePath());
 
 }
 

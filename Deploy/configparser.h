@@ -23,16 +23,30 @@
 
 class  FileManager;
 
+struct DEPLOYSHARED_EXPORT QtDir {
+    QString libs;
+    QString bins;
+    QString libexecs;
+    QString plugins;
+    QString qmls;
+    QString translations;
+    QString resources;
+
+    Platform qtPlatform;
+
+    bool isQt(const QString &path) const;
+};
+
 struct DEPLOYSHARED_EXPORT DeployConfig {
-    QString qmake = "";
+//    QString qmake = "";
     QString targetDir = "";
-    QString qmlDir = "";
+//    QString qmlSourcesDir = "";
     int depchLimit = 0;
     bool deployQml = false;
     IgnoreRule ignoreList;
     QStringList extraPlugins;
     QString appDir;
-    QString qtDir;
+    QtDir qtDir;
     QStringList extraPaths;
     /**
      * @brief targets
@@ -71,8 +85,8 @@ private:
     void initIgnoreList();
     void initIgnoreEnvList();
 
-    void setQmake(const QString &value);
-    void setQtDir(const QString &value);
+    bool setQmake(const QString &value);
+    bool setQtDir(const QString &value);
 
     void setExtraPath(const QStringList &value);
     void setExtraPlugins(const QStringList &value);

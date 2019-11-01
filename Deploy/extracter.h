@@ -38,7 +38,6 @@ class DEPLOYSHARED_EXPORT Extracter {
     QFileInfoList findFilesInsideDir(const QString &name, const QString &dirpath);
     bool extractQmlAll();
     bool extractQmlFromSource(const QString &sourceDir);
-    QString filterQmlPath(const QString &path);
     void extractLib(const QString & file);
 
     bool deployMSVC();

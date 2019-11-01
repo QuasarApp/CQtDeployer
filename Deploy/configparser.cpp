@@ -276,7 +276,25 @@ bool ConfigParser::parseQtDeployMode() {
     }
 
     basePath = info.absolutePath();
-    setQmake(qmake);
+    if (!setQmake(basePath)) {
+        QDir dir(basePath);
+
+        if (!dir.cdUp()) {
+            QuasarAppUtils::Params::verboseLog("fail ini qmake",
+                                               QuasarAppUtils::Error);
+            return false;
+        }
+
+        QuasarAppUtils::Params::verboseLog("exec qmake fail!, try init qtDir from path:" + dir.absolutePath(),
+                                           QuasarAppUtils::Warning);
+
+        if (!setQtDir(dir.absolutePath())){
+            QuasarAppUtils::Params::verboseLog("fail ini qmake",
+                                               QuasarAppUtils::Error);
+            return false;
+        }
+
+    }
 
     auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir");
     QDir dir(basePath);
@@ -289,12 +307,6 @@ bool ConfigParser::parseQtDeployMode() {
         QuasarAppUtils::Params::verboseLog("qml dir not exits!",
                                            QuasarAppUtils::VerboseLvl::Warning);
     }
-
-    if (!dir.cdUp()) {
-        return false;
-    }
-
-    setQtDir(dir.absolutePath());
 
     return true;
 }
@@ -440,7 +452,7 @@ void ConfigParser::initIgnoreList()
         envUnix.addEnv(recursiveInvairement("/lib", 3), "", "");
         envUnix.addEnv(recursiveInvairement("/usr/lib", 3), "", "");
         ruleUnix.prority = SystemLib;
-        ruleUnix.platform = Unix32 | Unix64;
+        ruleUnix.platform = Unix;
         ruleUnix.enfirement = envUnix;
 
 
@@ -470,7 +482,7 @@ void ConfigParser::initIgnoreList()
 
 //    envWin.addEnv(recursiveInvairement("C:/Windows", 3), "", "");
 //    ruleWin.prority = ExtraLib;
-//    ruleWin.platform = Win32 | Win64;
+//    ruleWin.platform = Win;
 //    ruleWin.enfirement = envWin;
 
 //    auto addRuleWin = [&ruleWin](const QString & lib) {
@@ -512,8 +524,7 @@ void ConfigParser::initIgnoreEnvList() {
 
 bool ConfigParser::setQmake(const QString &value) {
 
-    _config.qmake = QDir::fromNativeSeparators(value);
-    auto qmakeInfo = QFileInfo(_config.qmake);
+    auto qmakeInfo = QFileInfo(QDir::fromNativeSeparators(value));
 
     if (!(qmakeInfo.fileName().compare("qmake", Qt::CaseInsensitive) ||
         qmakeInfo.fileName().compare("qmake.exe", Qt::CaseInsensitive))) {
@@ -537,45 +548,104 @@ bool ConfigParser::setQmake(const QString &value) {
 
     for (auto &value : list) {
         if (value.contains("QT_INSTALL_LIBS")) {
-
-        } else if (value.contains("QT_INSTALL_LIBS")) {
+            auto path = value.split(':').value(1);
+            _config.qtDir.libs = path;
         } else if (value.contains("QT_INSTALL_LIBEXECS")) {
+            auto path = value.split(':').value(1);
+            _config.qtDir.libexecs = path;
         } else if (value.contains("QT_INSTALL_BINS")) {
+            auto path = value.split(':').value(1);
+            _config.qtDir.bins = path;
         } else if (value.contains("QT_INSTALL_PLUGINS")) {
-
+            auto path = value.split(':').value(1);
+            _config.qtDir.plugins = path;
         } else if (value.contains("QT_INSTALL_QML")) {
+            auto path = value.split(':').value(1);
+            _config.qtDir.qmls = path;
         } else if (value.contains("QT_INSTALL_TRANSLATIONS")) {
+            auto path = value.split(':').value(1);
+            _config.qtDir.translations = path;
+        } else if (value.contains("QT_INSTALL_DATA")) {
+            auto path = value.split(':').value(1);
+            _config.qtDir.resources = path + "/resources";
+        } else if (value.contains("QMAKE_XSPEC")) {
+            auto val = value.split(':').value(1);
 
+            if (val.contains("win32")) {
+                _config.qtDir.qtPlatform = Platform::Win;
+            } else {
+                _config.qtDir.qtPlatform = Platform::Unix;
+            }
         }
     }
+    _config.envirement.addEnv(_config.qtDir.libs, _config.appDir, _config.targetDir);
+    _config.envirement.addEnv(_config.qtDir.bins, _config.appDir, _config.targetDir);
 
-    QFileInfo info(_config.qmake);
-    QDir dir = info.absoluteDir();
-
-    if (!dir.cdUp() || !dir.cd("qml")) {
-        QuasarAppUtils::Params::verboseLog("get qml fail!");
-        return;
-    }
-
-    _config.qmlDir = dir.absolutePath();
-    QuasarAppUtils::Params::verboseLog("qmlDir = " + _config.qmlDir);
-
-    dir = (info.absoluteDir());
-    if (!dir.cdUp() || !dir.cd("translations")) {
-        QuasarAppUtils::Params::verboseLog("get translations fail!");
-        return;
-    }
-
-    _config.translationDir = dir.absolutePath();
-    QuasarAppUtils::Params::verboseLog("translations = " + _config.translationDir);
+    return true;
 }
 
-void ConfigParser::setQtDir(const QString &value) {
-    _config.qtDir = QDir::fromNativeSeparators(value);
-    _config.envirement.addEnv(_config.qtDir, _config.appDir, _config.targetDir);
-    _config.envirement.addEnv(_config.qtDir + "/lib", _config.appDir, _config.targetDir);
-    _config.envirement.addEnv(_config.qtDir + "/bin", _config.appDir, _config.targetDir);
+bool ConfigParser::setQtDir(const QString &value) {
 
+    QFileInfo info(value);
+
+    if (!QFile::exists(info.absoluteFilePath() + ("/bin"))) {
+        QuasarAppUtils::Params::verboseLog("get qt bin fail!");
+        return false;
+    }
+    _config.qtDir.bins = info.absoluteFilePath() + ("/bin");
+
+    if (!QFile::exists(info.absoluteFilePath() + ("/lib"))) {
+        QuasarAppUtils::Params::verboseLog("get qt lib fail!");
+        return false;
+    }
+    _config.qtDir.libs = info.absoluteFilePath() + ("/lib");
+
+    if (!QFile::exists(info.absoluteFilePath() + ("/qml"))) {
+        QuasarAppUtils::Params::verboseLog("get qt qml fail!");
+    } else {
+        _config.qtDir.qmls = info.absoluteFilePath() + ("/qml");
+    }
+
+    if (!QFile::exists(info.absoluteFilePath() + ("/plugins"))) {
+        QuasarAppUtils::Params::verboseLog("get qt plugins fail!");
+    } else {
+        _config.qtDir.plugins = info.absoluteFilePath() + ("/plugins");
+    }
+
+#ifdef Q_OS_UNIX
+    if (!QFile::exists(info.absoluteFilePath() + ("/libexec"))) {
+        QuasarAppUtils::Params::verboseLog("get qt libexec fail!");
+    } else {
+        _config.qtDir.libexecs = info.absoluteFilePath() + ("/libexec");
+    }
+#endif
+#ifdef Q_OS_WIN
+    _config.qtDir.libexecs = info.absoluteFilePath() + ("/bin");
+#endif
+
+    if (!QFile::exists(info.absoluteFilePath() + ("/translations"))) {
+        QuasarAppUtils::Params::verboseLog("get qt translations fail!");
+    } else {
+        _config.qtDir.translations = info.absoluteFilePath() + ("/translations");
+    }
+
+    if (!QFile::exists(info.absoluteFilePath() + ("/resources"))) {
+        QuasarAppUtils::Params::verboseLog("get qt resources fail!");
+    } else {
+        _config.qtDir.resources = info.absoluteFilePath() + ("/resources");
+    }
+
+#ifdef Q_OS_UNIX
+    _config.qtDir.qtPlatform = Platform::Unix;
+#endif
+#ifdef Q_OS_WIN
+    _config.qtDir.qtPlatform = Platform::Win;
+#endif
+
+    _config.envirement.addEnv(_config.qtDir.libs, _config.appDir, _config.targetDir);
+    _config.envirement.addEnv(_config.qtDir.bins, _config.appDir, _config.targetDir);
+
+    return true;
 }
 
 void ConfigParser::setExtraPath(const QStringList &value) {
@@ -738,4 +808,16 @@ ConfigParser::ConfigParser(FileManager *filemanager):
 
 void DeployConfig::reset() {
     *this = DeployConfig{};
+}
+
+bool QtDir::isQt(const QString& path) const {
+
+    return
+    path.contains(libs) ||
+    path.contains(bins) ||
+    path.contains(libexecs) ||
+    path.contains(plugins) ||
+    path.contains(qmls) ||
+    path.contains(translations) ||
+    path.contains(resources);
 }

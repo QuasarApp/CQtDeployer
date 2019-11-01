@@ -428,28 +428,18 @@ void deploytest::testExtractLib() {
 
 void deploytest::testMSVC() {
     QString testPath = "./Qt/5.11.2/msvc2017_64/bin/";
-    QString testqmakepath = testPath +"qmake";
 
     QDir d;
     QDir oldDir("./Qt");
     oldDir.removeRecursively();
     QVERIFY(d.mkpath(testPath));
 
-    QFile file(testqmakepath);
 
-    QVERIFY(file.open(QIODevice::ReadWrite | QIODevice::Truncate));
-
-    QVERIFY(file.write("test"));
-
-    file.close();
-
-
-    auto msvc = DeployCore::getMSVC(testqmakepath);
+    auto msvc = DeployCore::getMSVC(testPath);
 
     QVERIFY(msvc & MSVCVersion::MSVC_17);
     QVERIFY(msvc & MSVCVersion::MSVC_x64);
 
-    QVERIFY(file.remove());
     QDir dir("./Qt");
     dir.removeRecursively();
 
