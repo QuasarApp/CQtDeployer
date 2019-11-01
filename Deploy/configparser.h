@@ -38,9 +38,7 @@ struct DEPLOYSHARED_EXPORT QtDir {
 };
 
 struct DEPLOYSHARED_EXPORT DeployConfig {
-//    QString qmake = "";
     QString targetDir = "";
-//    QString qmlSourcesDir = "";
     int depchLimit = 0;
     bool deployQml = false;
     IgnoreRule ignoreList;
@@ -56,7 +54,6 @@ struct DEPLOYSHARED_EXPORT DeployConfig {
     QSet<QString> targets;
     Envirement envirement;
     DistroStruct distroStruct;
-    QString translationDir;
 
     /**
      * @brief reset config file to default

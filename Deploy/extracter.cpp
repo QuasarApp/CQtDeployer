@@ -201,7 +201,7 @@ void Extracter::deploy() {
 
 bool Extracter::copyTranslations(QStringList list) {
 
-    QDir dir(DeployCore::_config->translationDir);
+    QDir dir(DeployCore::_config->qtDir.translations);
     if (!dir.exists() || list.isEmpty()) {
         return false;
     }
