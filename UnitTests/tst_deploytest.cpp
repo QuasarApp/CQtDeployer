@@ -760,19 +760,25 @@ void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings) {
     if (comapre.size() != 0) {
 
         bool bug = false;
+        QJsonObject comapreResult;
 
         for (auto i = comapre.begin(); i != comapre.end(); ++i) {
 
             if (i.value() == 1) {
+                comapreResult[ i.key()] = "Added unnecessary file";
                 qCritical() << "added unnecessary file : " + i.key();
                 bug = true;
             } else if (qtFilesTree.contains(QFileInfo(i.key()).fileName())) {
+                comapreResult[ i.key()] = "Missing";
                 qCritical() << "Missing file : " + i.key();
                 bug = true;
             } else if (noWarnings)  {
+                comapreResult[ i.key()] = " not exits in qt Dir";
+
                 qCritical() << "File : " + i.key() + " not exits in qt Dir";
                 bug = true;
             } else {
+                comapreResult[ i.key()] = " not exits in qt Dir";
                 qWarning() << "File : " + i.key() + " not exits in qt Dir";
             }
         }
@@ -792,6 +798,12 @@ void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings) {
         lasttree.open(QIODevice::WriteOnly| QIODevice::Truncate);
 
         lasttree.write(doc.toJson());
+        lasttree.close();
+
+        lasttree.setFileName("./CompareTree.json");
+        lasttree.open(QIODevice::WriteOnly| QIODevice::Truncate);
+
+        lasttree.write(QJsonDocument(comapreResult).toJson());
         lasttree.close();
 
         QVERIFY2(false, "runTestParams fail");
@@ -1139,7 +1151,11 @@ void deploytest::testIgnore() {
         QString qmake = TestQtDir + "bin/qmake.exe";
 
         comapareTree += utils.createTree(
-        {              });
+        {
+            "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
+            "./" + DISTRO_DIR + "/libstdc++-6.dll",
+            "./" + DISTRO_DIR + "/libwinpthread-1.dll"
+        });
 
 #endif
     }

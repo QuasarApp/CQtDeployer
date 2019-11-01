@@ -522,6 +522,16 @@ void ConfigParser::initIgnoreEnvList() {
 
 }
 
+QString ConfigParser::getPathFrmoQmakeLine(const QString &in) const {
+    auto list = in.split(':');
+    if (list.size() > 1) {
+        list.removeAt(0);
+        return QFileInfo(list.join(':')).absoluteFilePath().remove('\r');
+    }
+
+    return "";
+}
+
 bool ConfigParser::setQmake(const QString &value) {
 
     auto qmakeInfo = QFileInfo(QDir::fromNativeSeparators(value));
@@ -548,26 +558,19 @@ bool ConfigParser::setQmake(const QString &value) {
 
     for (auto &value : list) {
         if (value.contains("QT_INSTALL_LIBS")) {
-            auto path = QFileInfo(value.split(':').value(1)).absoluteFilePath();
-            _config.qtDir.libs = path;
+            _config.qtDir.libs = getPathFrmoQmakeLine(value);
         } else if (value.contains("QT_INSTALL_LIBEXECS")) {
-            auto path = QFileInfo(value.split(':').value(1)).absoluteFilePath();
-            _config.qtDir.libexecs = path;
+            _config.qtDir.libexecs = getPathFrmoQmakeLine(value);
         } else if (value.contains("QT_INSTALL_BINS")) {
-            auto path = QFileInfo(value.split(':').value(1)).absoluteFilePath();
-            _config.qtDir.bins = path;
+            _config.qtDir.bins = getPathFrmoQmakeLine(value);
         } else if (value.contains("QT_INSTALL_PLUGINS")) {
-            auto path = QFileInfo(value.split(':').value(1)).absoluteFilePath();
-            _config.qtDir.plugins = path;
+            _config.qtDir.plugins = getPathFrmoQmakeLine(value);
         } else if (value.contains("QT_INSTALL_QML")) {
-            auto path = QFileInfo(value.split(':').value(1)).absoluteFilePath();
-            _config.qtDir.qmls = path;
+            _config.qtDir.qmls = getPathFrmoQmakeLine(value);
         } else if (value.contains("QT_INSTALL_TRANSLATIONS")) {
-            auto path = QFileInfo(value.split(':').value(1)).absoluteFilePath();
-            _config.qtDir.translations = path;
+            _config.qtDir.translations = getPathFrmoQmakeLine(value);
         } else if (value.contains("QT_INSTALL_DATA")) {
-            auto path = QFileInfo(value.split(':').value(1)).absoluteFilePath();
-            _config.qtDir.resources = path + "/resources";
+            _config.qtDir.resources = getPathFrmoQmakeLine(value) + "/resources";
         } else if (value.contains("QMAKE_XSPEC")) {
             auto val = value.split(':').value(1);
 

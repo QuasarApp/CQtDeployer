@@ -82,6 +82,7 @@ private:
     void initIgnoreList();
     void initIgnoreEnvList();
 
+    QString getPathFrmoQmakeLine(const QString& in) const;
     bool setQmake(const QString &value);
     bool setQtDir(const QString &value);
 
