@@ -548,25 +548,25 @@ bool ConfigParser::setQmake(const QString &value) {
 
     for (auto &value : list) {
         if (value.contains("QT_INSTALL_LIBS")) {
-            auto path = value.split(':').value(1);
+            auto path = QFileInfo(value.split(':').value(1)).absoluteFilePath();
             _config.qtDir.libs = path;
         } else if (value.contains("QT_INSTALL_LIBEXECS")) {
-            auto path = value.split(':').value(1);
+            auto path = QFileInfo(value.split(':').value(1)).absoluteFilePath();
             _config.qtDir.libexecs = path;
         } else if (value.contains("QT_INSTALL_BINS")) {
-            auto path = value.split(':').value(1);
+            auto path = QFileInfo(value.split(':').value(1)).absoluteFilePath();
             _config.qtDir.bins = path;
         } else if (value.contains("QT_INSTALL_PLUGINS")) {
-            auto path = value.split(':').value(1);
+            auto path = QFileInfo(value.split(':').value(1)).absoluteFilePath();
             _config.qtDir.plugins = path;
         } else if (value.contains("QT_INSTALL_QML")) {
-            auto path = value.split(':').value(1);
+            auto path = QFileInfo(value.split(':').value(1)).absoluteFilePath();
             _config.qtDir.qmls = path;
         } else if (value.contains("QT_INSTALL_TRANSLATIONS")) {
-            auto path = value.split(':').value(1);
+            auto path = QFileInfo(value.split(':').value(1)).absoluteFilePath();
             _config.qtDir.translations = path;
         } else if (value.contains("QT_INSTALL_DATA")) {
-            auto path = value.split(':').value(1);
+            auto path = QFileInfo(value.split(':').value(1)).absoluteFilePath();
             _config.qtDir.resources = path + "/resources";
         } else if (value.contains("QMAKE_XSPEC")) {
             auto val = value.split(':').value(1);
@@ -813,11 +813,11 @@ void DeployConfig::reset() {
 bool QtDir::isQt(const QString& path) const {
 
     return
-    path.contains(libs) ||
-    path.contains(bins) ||
-    path.contains(libexecs) ||
-    path.contains(plugins) ||
-    path.contains(qmls) ||
-    path.contains(translations) ||
-    path.contains(resources);
+    (!libs.isEmpty() && path.contains(libs)) ||
+    (!bins.isEmpty() && path.contains(bins)) ||
+    (!libexecs.isEmpty() && path.contains(libexecs)) ||
+    (!plugins.isEmpty() && path.contains(plugins)) ||
+    (!qmls.isEmpty() && path.contains(qmls)) ||
+    (!translations.isEmpty() && path.contains(translations)) ||
+    (!resources.isEmpty() && path.contains(resources));
 }

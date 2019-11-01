@@ -69,6 +69,7 @@ private slots:
     void testExtractLib();
     void testDistroStruct();
     void testRelativeLink();
+    void testCheckQt();
 
     void testQmlExtrct();
     void testSetTargetDir();
@@ -591,6 +592,91 @@ void deploytest::testRelativeLink() {
         QVERIFY(PathUtils::isAbsalutPath(cases[i][0]));
         QVERIFY(!PathUtils::isAbsalutPath(cases[i][2]));
     }
+}
+
+void deploytest::testCheckQt() {
+
+    Deploy *deployer = new Deploy();
+    QuasarAppUtils::Params::parseParams({"-binDir", TestBinDir, "clear"});
+    QVERIFY(deployer->prepare());
+
+
+    auto cases = QList<QPair<QString, bool>>{
+        {TestQtDir + "/", false},
+        {TestQtDir + "", false},
+        {TestQtDir + "/bin/file1", false},
+        {TestQtDir + "/lib/file12", false},
+        {TestQtDir + "/resurces/file13", false},
+        {TestQtDir + "/libexec/f", false},
+        {TestQtDir + "/mkspecs", false},
+        {TestQtDir + "/qml", false},
+        {TestQtDir + "/plugins", false},
+        {TestQtDir + "/file", false},
+
+        {TestQtDir + "\\", false},
+        {TestQtDir + "", false},
+        {TestQtDir + "\\bin\\file1", false},
+        {TestQtDir + "\\lib\\file12", false},
+        {TestQtDir + "\\resurces\\file13", false},
+        {TestQtDir + "\\libexec\\f", false},
+        {TestQtDir + "\\mkspecs", false},
+        {TestQtDir + "\\qml", false},
+        {TestQtDir + "\\plugins", false},
+        {TestQtDir + "\\file", false},
+
+    };
+
+    for (auto &i: cases) {
+        QVERIFY(DeployCore::isQtLib(i.first) == i.second);
+    }
+    delete deployer;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestQMLWidgets";
+    QString qmake = TestQtDir + "bin/qmake";
+
+#else
+    QString bin = TestBinDir + "TestQMLWidgets.exe";
+    QString qmake = TestQtDir + "bin/qmake.exe";
+#endif
+
+    deployer = new Deploy();
+    QuasarAppUtils::Params::parseParams({"-bin", bin, "clear" ,
+                                         "-qmake", qmake,
+                                         "-qmlDir", TestBinDir + "/../TestQMLWidgets"});
+    QVERIFY(deployer->prepare());
+
+
+    cases = QList<QPair<QString, bool>>{
+        {TestQtDir + "/", false},
+        {TestQtDir + "", false},
+        {TestQtDir + "/bin/file1", true},
+        {TestQtDir + "/lib/file12", true},
+        {TestQtDir + "/resources/file13", true},
+        {TestQtDir + "/libexec/f", true},
+        {TestQtDir + "/mkspecs", false},
+        {TestQtDir + "/qml", true},
+        {TestQtDir + "/plugins", true},
+        {TestQtDir + "/file", false},
+
+        {TestQtDir + "\\", false},
+        {TestQtDir + "", false},
+        {TestQtDir + "\\bin\\file1", true},
+        {TestQtDir + "\\lib\\file12", true},
+        {TestQtDir + "\\resources\\file13", true},
+        {TestQtDir + "\\libexec\\f", true},
+        {TestQtDir + "\\mkspecs", false},
+        {TestQtDir + "\\qml", true},
+        {TestQtDir + "\\plugins", true},
+        {TestQtDir + "\\file", false},
+
+    };
+
+    for (auto &i: cases) {
+        QVERIFY(DeployCore::isQtLib(i.first) == i.second);
+    }
+
+    delete deployer;
 }
 
 void deploytest::testSetTargetDir() {

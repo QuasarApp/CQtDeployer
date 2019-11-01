@@ -8,6 +8,7 @@
 #include "extracter.h"
 #include "deploycore.h"
 #include "quasarapp.h"
+#include "pathutils.h"
 
 #include <QDebug>
 #include <QDir>
@@ -392,8 +393,8 @@ QString DeployCore::getMSVCVersion(MSVCVersion msvc) {
 }
 
 bool DeployCore::isQtLib(const QString &lib) {
-    QFileInfo info(lib);
-    return _config->qtDir.isQt(info.absoluteFilePath());
+    QFileInfo info((lib));
+    return _config->qtDir.isQt(PathUtils::toFullPath(info.absoluteFilePath()));
 
 }
 
