@@ -69,6 +69,7 @@ private slots:
     void testExtractLib();
     void testDistroStruct();
     void testRelativeLink();
+    void testCheckQt();
 
     void testQmlExtrct();
     void testSetTargetDir();
@@ -428,28 +429,18 @@ void deploytest::testExtractLib() {
 
 void deploytest::testMSVC() {
     QString testPath = "./Qt/5.11.2/msvc2017_64/bin/";
-    QString testqmakepath = testPath +"qmake";
 
     QDir d;
     QDir oldDir("./Qt");
     oldDir.removeRecursively();
     QVERIFY(d.mkpath(testPath));
 
-    QFile file(testqmakepath);
 
-    QVERIFY(file.open(QIODevice::ReadWrite | QIODevice::Truncate));
-
-    QVERIFY(file.write("test"));
-
-    file.close();
-
-
-    auto msvc = DeployCore::getMSVC(testqmakepath);
+    auto msvc = DeployCore::getMSVC(testPath);
 
     QVERIFY(msvc & MSVCVersion::MSVC_17);
     QVERIFY(msvc & MSVCVersion::MSVC_x64);
 
-    QVERIFY(file.remove());
     QDir dir("./Qt");
     dir.removeRecursively();
 
@@ -603,6 +594,91 @@ void deploytest::testRelativeLink() {
     }
 }
 
+void deploytest::testCheckQt() {
+
+    Deploy *deployer = new Deploy();
+    QuasarAppUtils::Params::parseParams({"-binDir", TestBinDir, "clear"});
+    QVERIFY(deployer->prepare());
+
+
+    auto cases = QList<QPair<QString, bool>>{
+        {TestQtDir + "/", false},
+        {TestQtDir + "", false},
+        {TestQtDir + "/bin/file1", false},
+        {TestQtDir + "/lib/file12", false},
+        {TestQtDir + "/resurces/file13", false},
+        {TestQtDir + "/libexec/f", false},
+        {TestQtDir + "/mkspecs", false},
+        {TestQtDir + "/qml", false},
+        {TestQtDir + "/plugins", false},
+        {TestQtDir + "/file", false},
+
+        {TestQtDir + "\\", false},
+        {TestQtDir + "", false},
+        {TestQtDir + "\\bin\\file1", false},
+        {TestQtDir + "\\lib\\file12", false},
+        {TestQtDir + "\\resurces\\file13", false},
+        {TestQtDir + "\\libexec\\f", false},
+        {TestQtDir + "\\mkspecs", false},
+        {TestQtDir + "\\qml", false},
+        {TestQtDir + "\\plugins", false},
+        {TestQtDir + "\\file", false},
+
+    };
+
+    for (auto &i: cases) {
+        QVERIFY(DeployCore::isQtLib(i.first) == i.second);
+    }
+    delete deployer;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestQMLWidgets";
+    QString qmake = TestQtDir + "bin/qmake";
+
+#else
+    QString bin = TestBinDir + "TestQMLWidgets.exe";
+    QString qmake = TestQtDir + "bin/qmake.exe";
+#endif
+
+    deployer = new Deploy();
+    QuasarAppUtils::Params::parseParams({"-bin", bin, "clear" ,
+                                         "-qmake", qmake,
+                                         "-qmlDir", TestBinDir + "/../TestQMLWidgets"});
+    QVERIFY(deployer->prepare());
+
+
+    cases = QList<QPair<QString, bool>>{
+        {TestQtDir + "/", false},
+        {TestQtDir + "", false},
+        {TestQtDir + "/bin/file1", true},
+        {TestQtDir + "/lib/file12", true},
+        {TestQtDir + "/resources/file13", true},
+        {TestQtDir + "/libexec/f", true},
+        {TestQtDir + "/mkspecs", false},
+        {TestQtDir + "/qml", true},
+        {TestQtDir + "/plugins", true},
+        {TestQtDir + "/file", false},
+
+        {TestQtDir + "\\", false},
+        {TestQtDir + "", false},
+        {TestQtDir + "\\bin\\file1", true},
+        {TestQtDir + "\\lib\\file12", true},
+        {TestQtDir + "\\resources\\file13", true},
+        {TestQtDir + "\\libexec\\f", true},
+        {TestQtDir + "\\mkspecs", false},
+        {TestQtDir + "\\qml", true},
+        {TestQtDir + "\\plugins", true},
+        {TestQtDir + "\\file", false},
+
+    };
+
+    for (auto &i: cases) {
+        QVERIFY(DeployCore::isQtLib(i.first) == i.second);
+    }
+
+    delete deployer;
+}
+
 void deploytest::testSetTargetDir() {
 
     FileManager file;
@@ -684,19 +760,25 @@ void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings) {
     if (comapre.size() != 0) {
 
         bool bug = false;
+        QJsonObject comapreResult;
 
         for (auto i = comapre.begin(); i != comapre.end(); ++i) {
 
             if (i.value() == 1) {
+                comapreResult[ i.key()] = "Added unnecessary file";
                 qCritical() << "added unnecessary file : " + i.key();
                 bug = true;
             } else if (qtFilesTree.contains(QFileInfo(i.key()).fileName())) {
+                comapreResult[ i.key()] = "Missing";
                 qCritical() << "Missing file : " + i.key();
                 bug = true;
             } else if (noWarnings)  {
+                comapreResult[ i.key()] = " not exits in qt Dir";
+
                 qCritical() << "File : " + i.key() + " not exits in qt Dir";
                 bug = true;
             } else {
+                comapreResult[ i.key()] = " not exits in qt Dir";
                 qWarning() << "File : " + i.key() + " not exits in qt Dir";
             }
         }
@@ -716,6 +798,12 @@ void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings) {
         lasttree.open(QIODevice::WriteOnly| QIODevice::Truncate);
 
         lasttree.write(doc.toJson());
+        lasttree.close();
+
+        lasttree.setFileName("./CompareTree.json");
+        lasttree.open(QIODevice::WriteOnly| QIODevice::Truncate);
+
+        lasttree.write(QJsonDocument(comapreResult).toJson());
         lasttree.close();
 
         QVERIFY2(false, "runTestParams fail");
@@ -1063,7 +1151,11 @@ void deploytest::testIgnore() {
         QString qmake = TestQtDir + "bin/qmake.exe";
 
         comapareTree += utils.createTree(
-        {              });
+        {
+            "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
+            "./" + DISTRO_DIR + "/libstdc++-6.dll",
+            "./" + DISTRO_DIR + "/libwinpthread-1.dll"
+        });
 
 #endif
     }

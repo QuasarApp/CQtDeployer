@@ -35,8 +35,10 @@ enum Platform {
     UnknownPlatform = 0x0,
     Win32           = 0x1,
     Win64           = 0x2,
+    Win             = Win32 | Win64,
     Unix32          = 0x4,
     Unix64          = 0x8,
+    Unix            = Unix32 | Unix64,
     GeneralFile     = 0xf
 };
 
@@ -128,8 +130,8 @@ public:
     static QtModuleEntry qtModuleEntries[];
     static const DeployConfig * _config;
 
-    static MSVCVersion getMSVC(const QString & _qmake);
-    static QString getVCredist(const QString & _qmake);
+    static MSVCVersion getMSVC(const QString & _qtBin);
+    static QString getVCredist(const QString & _qtBin);
 
     static bool isQtLib(const QString &lib);
     static bool isExtraLib(const QString &lib);
