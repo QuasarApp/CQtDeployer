@@ -34,6 +34,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   -ignoreEnv [list,params]  | The list of the environment to ignore.                          |
 |                             | For example -ignoreEnv /bad/dir,/my/bad/Dir                     |
 |   -libDir [list,params]     | Sets additional paths for extra libs of an app.                 |
+|   -extraLibs [list,params]  | Sets the mask of the library name for forced copying. Example: "-extraLib mySql" - forces to copy all libraries whose names contain mySql to the project folder. This option is case sensitive. |
 |                             | For example -libDir ~/myLib,~/newLibs                           |
 |   -extraPlugin [list,params]| Sets an additional path to extraPlugin of an app                |
 |   -recursiveDepth [params]  | Sets the Depth of recursive search of libs (default 0)          |
@@ -100,6 +101,7 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |   -ignoreEnv [list,params]  | Список путей для игнорирования.                          |
 |                             | Пример -ignoreEnv /bad/dir,/my/bad/Dir                                |
 |  -libDir [list,params]      | Устанавливает дополнительные пути к библиотекам               |
+|  -extraLibs [list,params]   | Устанавливает маску имени библиотеки, для принудительного копирования, Пример  "-extraLib mySql" - заставит скопировать в папку с проектом все библиотеки чии имена содержат mySql. Данная опция чуствительна к регистру.  |
 |                             | Пример -libDir ~/myLib,~/newLibs                          |
 |  -qmlOut [params]           | Установит путь к папке с qml                                  |
 |  -libOut [params]           | Установит путь к папке с зависимостями                            |

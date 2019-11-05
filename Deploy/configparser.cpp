@@ -260,7 +260,7 @@ bool ConfigParser::parseQtDeployMode() {
     }
 
     auto listLibDir = QuasarAppUtils::Params::getStrArg("libDir").split(",");
-    auto listNamesMasks = QuasarAppUtils::Params::getStrArg("extraLib").split(",");
+    auto listNamesMasks = QuasarAppUtils::Params::getStrArg("extraLibs").split(",");
 
     auto listExtraPlugin =
             QuasarAppUtils::Params::getStrArg("extraPlugin").split(",");
