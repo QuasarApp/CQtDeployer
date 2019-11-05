@@ -76,7 +76,11 @@ bool Extracter::copyPlugin(const QString &plugin) {
     }
 
     for (auto item : listItems) {
-        extract(item, "Qt");
+        if (QuasarAppUtils::Params::isEndable("extractPlugins")) {
+            extract(item);
+        } else {
+            extract(item, "Qt");
+        }
     }
 
     return true;
@@ -99,7 +103,11 @@ void Extracter::copyExtraPlugins() {
             _fileManager->copyFile(info.absoluteFilePath(),
                                   DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getPluginsOutDir());
 
-            extract(info.absoluteFilePath(), "Qt");
+            if (QuasarAppUtils::Params::isEndable("extractPlugins")) {
+                extract(info.absoluteFilePath());
+            } else {
+                extract(info.absoluteFilePath(), "Qt");
+            }
         }
     }
 }
@@ -294,7 +302,11 @@ bool Extracter::extractQmlAll() {
     }
 
     for (auto item : listItems) {
-        extract(item, "Qt");
+        if (QuasarAppUtils::Params::isEndable("extractPlugins")) {
+            extract(item);
+        } else {
+            extract(item, "Qt");
+        }
     }
 
     return true;
@@ -335,7 +347,11 @@ bool Extracter::extractQmlFromSource(const QString& sourceDir) {
     }
 
     for (auto item : listItems) {
-        extract(item, "Qt");
+        if (QuasarAppUtils::Params::isEndable("extractPlugins")) {
+            extract(item);
+        } else {
+            extract(item, "Qt");
+        }
     }
 
     return true;
