@@ -75,12 +75,8 @@ bool Extracter::copyPlugin(const QString &plugin) {
         return false;
     }
 
-    if (QuasarAppUtils::Params::isEndable("dPlugin")) {
-        return true;
-    }
-
     for (auto item : listItems) {
-        extract(item);
+        extract(item, "Qt");
     }
 
     return true;
@@ -103,11 +99,7 @@ void Extracter::copyExtraPlugins() {
             _fileManager->copyFile(info.absoluteFilePath(),
                                   DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getPluginsOutDir());
 
-            if (QuasarAppUtils::Params::isEndable("dPlugin")) {
-                continue;
-            }
-
-            extract(info.absoluteFilePath());
+            extract(info.absoluteFilePath(), "Qt");
         }
     }
 }
@@ -260,12 +252,17 @@ QFileInfoList Extracter::findFilesInsideDir(const QString &name,
     return files;
 }
 
-void Extracter::extractLib(const QString &file) {
+void Extracter::extractLib(const QString &file, const QString& mask) {
     qInfo() << "extract lib :" << file;
 
     auto data = scaner.scan(file);
 
     for (auto &line : data) {
+
+        if (mask.size() && !line.getName().contains(mask)) {
+            continue;
+        }
+
         if (DeployCore::_config->ignoreList.isIgnore(line)) {
             continue;
         }
@@ -297,7 +294,7 @@ bool Extracter::extractQmlAll() {
     }
 
     for (auto item : listItems) {
-        extract(item);
+        extract(item, "Qt");
     }
 
     return true;
@@ -337,12 +334,8 @@ bool Extracter::extractQmlFromSource(const QString& sourceDir) {
         return false;
     }
 
-    if (QuasarAppUtils::Params::isEndable("dQml")) {
-        return true;
-    }
-
     for (auto item : listItems) {
-        extract(item);
+        extract(item, "Qt");
     }
 
     return true;
@@ -362,7 +355,7 @@ bool Extracter::extractQml() {
     }
 }
 
-void Extracter::extract(const QString &file) {
+void Extracter::extract(const QString &file, const QString &mask) {
     QFileInfo info(file);
 
     auto sufix = info.completeSuffix();
@@ -371,7 +364,7 @@ void Extracter::extract(const QString &file) {
             sufix.compare("exe", Qt::CaseSensitive) == 0 ||
             sufix.isEmpty() || sufix.contains("so", Qt::CaseSensitive)) {
 
-        extractLib(file);
+        extractLib(file, mask);
     } else {
         QuasarAppUtils::Params::verboseLog("file with sufix " + sufix + " not supported!");
     }
