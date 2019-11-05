@@ -245,6 +245,7 @@ deploytest::~deploytest(){}
 
 void deploytest::initTestCase() {
     QDir qt;
+
     qt.mkpath("./test/Qt/5.12/");
     qt.mkpath("./test/extraPath/");
     qt.mkpath("./test/extra/");
@@ -819,7 +820,10 @@ void deploytest::testHelp() {
     auto help = DeployCore::help();
 
     for (auto &key: DeployCore::helpKeys()) {
-        QVERIFY(help.contains(key));
+
+        if (!help.contains(key)) {
+            QVERIFY(false);
+        }
     }
 
 }
@@ -1282,6 +1286,15 @@ void deploytest::testLibDir() {
         "./" + DISTRO_DIR + "/lib/libm.so",
     });
 
+    auto comapareTreeExtraLib = utils.createTree(
+    {
+        "./" + DISTRO_DIR + "/TestOnlyC.sh",
+        "./" + DISTRO_DIR + "/bin/qt.conf",
+        "./" + DISTRO_DIR + "/bin/TestOnlyC",
+        "./" + DISTRO_DIR + "/lib/libstdc++.so",
+        "./" + DISTRO_DIR + "/lib/libgcc_s.so"
+    });
+
 #else
     comapareTree = utils.createTree(
     {
@@ -1293,12 +1306,24 @@ void deploytest::testLibDir() {
 
     });
 
+    auto comapareTreeExtraLib = utils.createTree(
+    {
+        "./" + DISTRO_DIR + "/qt.conf",
+        "./" + DISTRO_DIR + "/TestOnlyC.exe",
+        "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
+        "./" + DISTRO_DIR + "/libstdc++-6.dll",
+
+    });
+
 #endif
 
 
     runTestParams({"-bin", bin, "clear" ,
                    "-libDir", extraPath,
                    "-recursiveDepth", "5"}, &comapareTree, true);
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-extraLibs", "stdc,gcc"}, &comapareTreeExtraLib, true);
 
 
 }
