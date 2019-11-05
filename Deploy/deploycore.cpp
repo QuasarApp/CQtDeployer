@@ -231,6 +231,7 @@ QStringList DeployCore::helpKeys() {
         "force-clear",
         "allQmlDependes",
         "libDir",
+        "extraLibs",
         "extraPlugin",
         "recursiveDepth",
         "targetDir",

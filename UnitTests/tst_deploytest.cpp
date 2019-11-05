@@ -820,7 +820,10 @@ void deploytest::testHelp() {
     auto help = DeployCore::help();
 
     for (auto &key: DeployCore::helpKeys()) {
-        QVERIFY(help.contains(key));
+
+        if (!help.contains(key)) {
+            QVERIFY(false);
+        }
     }
 
 }
@@ -1320,7 +1323,7 @@ void deploytest::testLibDir() {
                    "-recursiveDepth", "5"}, &comapareTree, true);
 
     runTestParams({"-bin", bin, "clear" ,
-                   "-extraLib", "stdc,gcc"}, &comapareTreeExtraLib, true);
+                   "-extraLibs", "stdc,gcc"}, &comapareTreeExtraLib, true);
 
 
 }
