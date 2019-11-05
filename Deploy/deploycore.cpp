@@ -400,5 +400,5 @@ bool DeployCore::isQtLib(const QString &lib) {
 
 bool DeployCore::isExtraLib(const QString &lib) {
     QFileInfo info(lib);
-    return _config->extraPaths.contains(info.absolutePath());
+    return _config->extraPaths.contains(info.absoluteFilePath());
 }

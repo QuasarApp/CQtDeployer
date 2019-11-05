@@ -37,6 +37,15 @@ struct DEPLOYSHARED_EXPORT QtDir {
     bool isQt(const QString &path) const;
 };
 
+struct DEPLOYSHARED_EXPORT Extra {
+    QSet<QString> extraPaths;
+    QSet<QString> extraPathsMasks;
+    QSet<QString> extraNamesMasks;
+
+    bool contains(const QString &path) const;
+
+};
+
 struct DEPLOYSHARED_EXPORT DeployConfig {
     QString targetDir = "";
     int depchLimit = 0;
@@ -45,7 +54,8 @@ struct DEPLOYSHARED_EXPORT DeployConfig {
     QStringList extraPlugins;
     QString appDir;
     QtDir qtDir;
-    QStringList extraPaths;
+    Extra extraPaths;
+//    QStringList extraPaths;
     /**
      * @brief targets
      * key - path
@@ -87,6 +97,8 @@ private:
     bool setQtDir(const QString &value);
 
     void setExtraPath(const QStringList &value);
+    void setExtraNames(const QStringList &value);
+
     void setExtraPlugins(const QStringList &value);
 
     QString recursiveInvairement(QDir &dir, int depch = 0, int depchLimit = -1);
@@ -95,6 +107,7 @@ private:
     void initEnvirement();
 
     QStringList getDirsRecursive(const QString &path, int maxDepch = -1, int depch = 0);
+    QSet<QString> getSetDirsRecursive(const QString &path, int maxDepch = -1, int depch = 0);
 
     QString getRelativeLink(const QString& from, const QString& to);
     void writeKey(const QString &key, QJsonObject &, const QString &confFileDir) const;

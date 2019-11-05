@@ -260,9 +260,12 @@ bool ConfigParser::parseQtDeployMode() {
     }
 
     auto listLibDir = QuasarAppUtils::Params::getStrArg("libDir").split(",");
+    auto listNamesMasks = QuasarAppUtils::Params::getStrArg("extraLib").split(",");
+
     auto listExtraPlugin =
             QuasarAppUtils::Params::getStrArg("extraPlugin").split(",");
     setExtraPath(listLibDir);
+    setExtraNames(listNamesMasks);
     setExtraPlugins(listExtraPlugin);
 
     auto qmake = QuasarAppUtils::Params::getStrArg("qmake");
@@ -658,18 +661,43 @@ void ConfigParser::setExtraPath(const QStringList &value) {
         QFileInfo info(i);
         if (info.isDir()) {
             if (_config.targets.contains(info.absoluteFilePath())) {
-                QuasarAppUtils::Params::verboseLog("skip the extra lib path becouse it is target!");
+                QuasarAppUtils::Params::verboseLog("skip the extra lib path becouse it is target!",
+                                                   QuasarAppUtils::Info);
                 continue;
             }
 
             dir.setPath(info.absoluteFilePath());
-            auto extraDirs = getDirsRecursive(QDir::fromNativeSeparators(info.absoluteFilePath()), _config.depchLimit);
-            _config.extraPaths.append(extraDirs);
+            auto extraDirs = getSetDirsRecursive(QDir::fromNativeSeparators(info.absoluteFilePath()), _config.depchLimit);
+            _config.extraPaths.extraPaths.unite(extraDirs);
 
             _config.envirement.addEnv(recursiveInvairement(dir), _config.appDir, _config.targetDir);
+        } else if (i.size() > 1) {
+
+            _config.extraPaths.extraPathsMasks.insert(i);
+
+            QuasarAppUtils::Params::verboseLog(i + " added like a path mask",
+                                               QuasarAppUtils::Info);
         } else {
-            QuasarAppUtils::Params::verboseLog(i + " does not exist! and skiped");
+            QuasarAppUtils::Params::verboseLog(i + " not added in path mask becouse"
+                                                   " the path mask must be large 2 characters",
+                                               QuasarAppUtils::Warning);
         }
+    }
+}
+
+void ConfigParser::setExtraNames(const QStringList &value) {
+    for (auto i : value) {
+        if (i.size() > 1) {
+            _config.extraPaths.extraPathsMasks.insert(i);
+
+            QuasarAppUtils::Params::verboseLog(i + " added like a file name mask",
+                                               QuasarAppUtils::Info);
+        } else {
+            QuasarAppUtils::Params::verboseLog(i + " not added in file mask becouse"
+                                                   " the file mask must be large 2 characters",
+                                               QuasarAppUtils::Warning);
+        }
+
     }
 }
 
@@ -726,15 +754,13 @@ void ConfigParser::initEnvirement() {
     _config.envirement.addEnv(env.value("PATH"), _config.appDir, _config.targetDir);
 
 
-    if (QuasarAppUtils::Params::isEndable("deploySystem")) {
-        QStringList dirs;
+    QStringList dirs;
 
-        dirs.append(getDirsRecursive("/lib", 10));
-        dirs.append(getDirsRecursive("/usr/lib", 10));
+    dirs.append(getDirsRecursive("/lib", 5));
+    dirs.append(getDirsRecursive("/usr/lib", 5));
 
-        for (auto &&i : dirs) {
-            _config.envirement.addEnv(i, _config.appDir, _config.targetDir);
-        }
+    for (auto &&i : dirs) {
+        _config.envirement.addEnv(i, _config.appDir, _config.targetDir);
     }
 
     if (_config.envirement.size() < 2) {
@@ -743,9 +769,13 @@ void ConfigParser::initEnvirement() {
 }
 
 QStringList ConfigParser::getDirsRecursive(const QString &path, int maxDepch, int depch) {
+    return getSetDirsRecursive(path, maxDepch, depch).toList();
+}
+
+QSet<QString> ConfigParser::getSetDirsRecursive(const QString &path, int maxDepch, int depch) {
     QDir dir(path);
 
-    QStringList res = {path};
+    QSet<QString> res = {path};
 
     if (maxDepch >= 0 && maxDepch <= depch) {
         return res;
@@ -754,8 +784,8 @@ QStringList ConfigParser::getDirsRecursive(const QString &path, int maxDepch, in
     auto list = dir.entryInfoList(QDir::Dirs| QDir::NoDotAndDotDot);
 
     for (auto &&subDir: list) {
-        res.push_back(subDir.absoluteFilePath());
-        res.append(getDirsRecursive(subDir.absoluteFilePath(), maxDepch, depch + 1));
+        res.insert(subDir.absoluteFilePath());
+        res.unite(getSetDirsRecursive(subDir.absoluteFilePath(), maxDepch, depch + 1));
     }
 
     return res;
@@ -823,4 +853,25 @@ bool QtDir::isQt(const QString& path) const {
     (!qmls.isEmpty() && path.contains(qmls)) ||
     (!translations.isEmpty() && path.contains(translations)) ||
     (!resources.isEmpty() && path.contains(resources));
+}
+
+bool Extra::contains(const QString &path) const {
+    QFileInfo info(path);
+    if (extraPaths.contains(info.absolutePath())) {
+        return true;
+    }
+
+    for (auto i: extraPathsMasks) {
+        if (info.absoluteFilePath().contains(i)) {
+            return true;
+        }
+    }
+
+    for (auto i: extraNamesMasks) {
+        if (info.fileName().contains(i)) {
+            return true;
+        }
+    }
+
+    return false;
 }
