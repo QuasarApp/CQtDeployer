@@ -75,6 +75,10 @@ bool Extracter::copyPlugin(const QString &plugin) {
         return false;
     }
 
+    if (QuasarAppUtils::Params::isEndable("dPlugin")) {
+        return true;
+    }
+
     for (auto item : listItems) {
         extract(item);
     }
@@ -98,6 +102,11 @@ void Extracter::copyExtraPlugins() {
         } else if (info.exists()) {
             _fileManager->copyFile(info.absoluteFilePath(),
                                   DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getPluginsOutDir());
+
+            if (QuasarAppUtils::Params::isEndable("dPlugin")) {
+                continue;
+            }
+
             extract(info.absoluteFilePath());
         }
     }
@@ -326,6 +335,10 @@ bool Extracter::extractQmlFromSource(const QString& sourceDir) {
                                  DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getQmlOutDir(),
                     filter , &listItems, &plugins)) {
         return false;
+    }
+
+    if (QuasarAppUtils::Params::isEndable("dQml")) {
+        return true;
     }
 
     for (auto item : listItems) {
