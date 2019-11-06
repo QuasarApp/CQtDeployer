@@ -57,7 +57,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   noStrip                   | Skips strip step                                                |
 |   noTranslations            | Skips the translations files.                                   |
 |                             | It doesn't work without qmake and inside a snap package         |
-|   extractPlugins            | It will force you to extract dependencies from plugins, this option since version 1.4 is disabled by default, as it can add low-level graphics libraries to the distribution kit that will not be compatible with hardware on users' hosts. |
+|   extractPlugins            | This flag will cause cqtdeployer to retrieve dependencies from plugins. Starting with version 1.4, this option has been disabled by default, as it can add low-level graphics libraries to the distribution, which will not be compatible with equipment on users' hosts. |
 |   noOverwrite               | Prevents replacing existing files.                              |
 |   v / version               | Shows compiled version                                          |
 
