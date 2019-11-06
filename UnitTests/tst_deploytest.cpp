@@ -551,8 +551,11 @@ void deploytest::testExtractPlugins() {
     QVERIFY(comapre.size());
 
     for (auto i = comapre.begin(); i != comapre.end(); ++i) {
-        if (i.value() != 1)
+        if (i.value() != 1 && qtFilesTree.contains(QFileInfo(i.key()).fileName())) {
+            qCritical() << "missing library found " << i.key();
             QVERIFY(false);
+        }
+
     }
 }
 
