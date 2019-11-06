@@ -119,6 +119,9 @@ private slots:
     void testEmptyParamsString();
 
     void testWebEngine();
+
+    // extractPlugins flags
+    void testExtractPlugins();
 };
 
 bool deploytest::runProcess(const QString &DistroPath,
@@ -509,6 +512,35 @@ void deploytest::testWebEngine() {
                    "-qmlDir", TestBinDir + "/../quicknanobrowser"}, &comapareTree);
 
 #endif
+}
+
+void deploytest::testExtractPlugins() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestQMLWidgets";
+    QString qmake = TestQtDir + "bin/qmake";
+
+#else
+    QString bin = TestBinDir + "TestQMLWidgets.exe";
+    QString qmake = TestQtDir + "bin/qmake.exe";
+
+#endif
+    auto comapareTree = Modules::qmlLibs();
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                  "extractPlugins"}, &comapareTree);
+
+
+    comapareTree = Modules::qmlLibsExtractPlugins();
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                  "extractPlugins", "deploySystem"}, &comapareTree);
+
 }
 
 void deploytest::testQmlExtrct() {
