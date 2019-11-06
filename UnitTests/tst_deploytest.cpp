@@ -119,6 +119,9 @@ private slots:
     void testEmptyParamsString();
 
     void testWebEngine();
+
+    // extractPlugins flags
+    void testExtractPlugins();
 };
 
 bool deploytest::runProcess(const QString &DistroPath,
@@ -198,8 +201,8 @@ deploytest::deploytest() {
 
     auto tempTree = utils.getTree(TestQtDir);
 
-    tempTree += utils.getTree("/lib", 4);
-    tempTree += utils.getTree("/usr/lib", 4);
+    tempTree += utils.getTree("/lib", 5);
+    tempTree += utils.getTree("/usr/lib", 5);
 
     for (const QString &i: tempTree) {
         qtFilesTree.insert(QFileInfo(i).fileName());
@@ -509,6 +512,52 @@ void deploytest::testWebEngine() {
                    "-qmlDir", TestBinDir + "/../quicknanobrowser"}, &comapareTree);
 
 #endif
+}
+
+void deploytest::testExtractPlugins() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestQMLWidgets";
+    QString qmake = TestQtDir + "bin/qmake";
+
+#else
+    QString bin = TestBinDir + "TestQMLWidgets.exe";
+    QString qmake = TestQtDir + "bin/qmake.exe";
+
+#endif
+    auto comapareTree = Modules::qmlLibs();
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                  "extractPlugins"}, &comapareTree);
+
+
+    QuasarAppUtils::Params::parseParams({"-bin", bin, "clear" ,
+                                         "-qmake", qmake,
+                                         "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                                        "extractPlugins", "deploySystem"});
+
+    Deploy deploy;
+    QVERIFY(deploy.run() == 0);
+
+    QVERIFY(DeployCore::_config);
+    QVERIFY(!DeployCore::_config->targetDir.isEmpty());
+
+    auto resultTree = utils.getTree(DeployCore::_config->targetDir);
+    auto comapre = utils.compareTree(resultTree, comapareTree);
+
+#ifdef   Q_OS_LINUX
+    QVERIFY(comapre.size());
+#endif
+    for (auto i = comapre.begin(); i != comapre.end(); ++i) {
+        if (i.value() != 1 && qtFilesTree.contains(QFileInfo(i.key()).fileName())) {
+            qCritical() << "missing library found " << i.key();
+            QVERIFY(false);
+        }
+
+    }
 }
 
 void deploytest::testQmlExtrct() {
