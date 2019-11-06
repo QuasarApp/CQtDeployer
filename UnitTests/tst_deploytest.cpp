@@ -548,8 +548,9 @@ void deploytest::testExtractPlugins() {
     auto resultTree = utils.getTree(DeployCore::_config->targetDir);
     auto comapre = utils.compareTree(resultTree, comapareTree);
 
+#ifdef   Q_OS_LINUX
     QVERIFY(comapre.size());
-
+#endif
     for (auto i = comapre.begin(); i != comapre.end(); ++i) {
         if (i.value() != 1 && qtFilesTree.contains(QFileInfo(i.key()).fileName())) {
             qCritical() << "missing library found " << i.key();
