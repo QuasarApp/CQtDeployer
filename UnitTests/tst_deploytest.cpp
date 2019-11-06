@@ -201,8 +201,8 @@ deploytest::deploytest() {
 
     auto tempTree = utils.getTree(TestQtDir);
 
-    tempTree += utils.getTree("/lib", 4);
-    tempTree += utils.getTree("/usr/lib", 4);
+    tempTree += utils.getTree("/lib", 5);
+    tempTree += utils.getTree("/usr/lib", 5);
 
     for (const QString &i: tempTree) {
         qtFilesTree.insert(QFileInfo(i).fileName());
@@ -534,13 +534,26 @@ void deploytest::testExtractPlugins() {
                   "extractPlugins"}, &comapareTree);
 
 
-    comapareTree = Modules::qmlLibsExtractPlugins();
+    QuasarAppUtils::Params::parseParams({"-bin", bin, "clear" ,
+                                         "-qmake", qmake,
+                                         "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                                        "extractPlugins", "deploySystem"});
 
-    runTestParams({"-bin", bin, "clear" ,
-                   "-qmake", qmake,
-                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
-                  "extractPlugins", "deploySystem"}, &comapareTree);
+    Deploy deploy;
+    QVERIFY(deploy.run() == 0);
 
+    QVERIFY(DeployCore::_config);
+    QVERIFY(!DeployCore::_config->targetDir.isEmpty());
+
+    auto resultTree = utils.getTree(DeployCore::_config->targetDir);
+    auto comapre = utils.compareTree(resultTree, comapareTree);
+
+    QVERIFY(comapre.size());
+
+    for (auto i = comapre.begin(); i != comapre.end(); ++i) {
+        if (i.value() != 1)
+            QVERIFY(false);
+    }
 }
 
 void deploytest::testQmlExtrct() {
