@@ -53,6 +53,7 @@ You can download the latest version of the application [here](https://github.com
 - [QAmigo](https://github.com/QAmigo/QAmigo)
 - [QtSecret](https://github.com/QuasarApp/Qt-Secret)
 - [Hanoi-Towers](https://github.com/QuasarApp/Hanoi-Towers)
+- [distbuilder](https://github.com/BuvinJT/distbuilder)
 
 ## Donate
 If you want to support the project,you can donate into our bitcoin wallet.
@@ -114,6 +115,7 @@ Qt CQtDeployer - это приложение преднознаена для и�
 - [QAmigo](https://github.com/QAmigo/QAmigo)
 - [QtSecret](https://github.com/QuasarApp/Qt-Secret)
 - [Hanoi-Towers](https://github.com/QuasarApp/Hanoi-Towers)
+- [distbuilder](https://github.com/BuvinJT/distbuilder)
 
 ## Пожертвовать
 Если вы хотите помочь проекту, то вы можете пожертвовать небольшую сумму на наш биткойн-кошелек.
