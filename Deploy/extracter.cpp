@@ -123,7 +123,7 @@ void Extracter::copyPlugins(const QStringList &list) {
 
 void Extracter::extractAllTargets() {
     for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
-        extract(*i);
+        extract(i.key());
     }
 }
 
@@ -180,7 +180,7 @@ void Extracter::deploy() {
 
     clear();
     _cqt->smartMoveTargets();
-    scaner.setEnvironment(DeployCore::_config->envirement.deployEnvironment());
+    _scaner->setEnvironment(DeployCore::_config->envirement.deployEnvironment());
     extractAllTargets();
 
     if (DeployCore::_config->deployQml && !extractQml()) {
@@ -264,7 +264,7 @@ QFileInfoList Extracter::findFilesInsideDir(const QString &name,
 void Extracter::extractLib(const QString &file, const QString& mask) {
     qInfo() << "extract lib :" << file;
 
-    auto data = scaner.scan(file);
+    auto data = _scaner->scan(file);
 
     for (auto &line : data) {
 
@@ -388,9 +388,12 @@ void Extracter::extract(const QString &file, const QString &mask) {
 
 }
 
-Extracter::Extracter(FileManager *fileManager, ConfigParser *cqt):
+Extracter::Extracter(FileManager *fileManager, ConfigParser *cqt,
+                     DependenciesScanner *scaner):
+    _scaner(scaner),
     _fileManager(fileManager),
-    _cqt(cqt) {
+    _cqt(cqt)
+    {
 
     _qtModules = DeployCore::QtModule::NONE;
 

@@ -301,7 +301,8 @@ void deploytest::cleanupTestCase() {
 void deploytest::testDeployTarget() {
 
     FileManager file;
-    ConfigParser *deploy = new ConfigParser(&file);
+    DependenciesScanner scan;
+    ConfigParser *deploy = new ConfigParser(&file, &scan);
 
     QStringList targets;
     targets << "./test/bins/execTarget.exe";
@@ -309,31 +310,31 @@ void deploytest::testDeployTarget() {
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file);
+    deploy = new ConfigParser(&file, &scan);
     targets << "./test/bins/execTarget";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file);
+    deploy = new ConfigParser(&file, &scan);
     targets << "./test/bins/execTarget.exe" << "./test/bins/execTarget";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file);
+    deploy = new ConfigParser(&file, &scan);
     targets << "./test/bns/execTarget.exe";
     QVERIFY(!deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file);
+    deploy = new ConfigParser(&file, &scan);
     targets << "./test/bins/";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file);
+    deploy = new ConfigParser(&file, &scan);
     targets << "./test/bins/" << "./test/warning/";
     QVERIFY(deploy->setTargets(targets));
 
@@ -732,7 +733,8 @@ void deploytest::testCheckQt() {
 void deploytest::testSetTargetDir() {
 
     FileManager file;
-    ConfigParser  dep(&file);
+    DependenciesScanner scan;
+    ConfigParser  dep(&file, &scan);
 
     dep.setTargetDir();
 

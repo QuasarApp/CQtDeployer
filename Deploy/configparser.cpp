@@ -10,6 +10,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QProcess>
+#include "dependenciesscanner.h"
 #include "deploycore.h"
 #include "filemanager.h"
 #include "pathutils.h"
@@ -341,7 +342,7 @@ void ConfigParser::setTargetDir(const QString &target) {
     } else {
         if (_config.targets.size())
             _config.targetDir = QFileInfo(
-                        *_config.targets.begin()).absolutePath() + "/" + DISTRO_DIR;
+                        _config.targets.begin().key()).absolutePath() + "/" + DISTRO_DIR;
 
         _config.targetDir = QFileInfo("./" + DISTRO_DIR).absoluteFilePath();
         qInfo () << "flag targetDir not  used." << "use default target dir :" << _config.targetDir;
@@ -362,7 +363,8 @@ bool ConfigParser::setTargets(const QStringList &value) {
 
             auto sufix = targetInfo.completeSuffix();
 
-            _config.targets.insert(QDir::fromNativeSeparators(i));
+            _config.targets.unite(prepareTarget(QDir::fromNativeSeparators(i)));
+
             isfillList = true;
         }
         else if (targetInfo.isDir()) {
@@ -426,13 +428,24 @@ bool ConfigParser::setBinDir(const QString &dir, bool recursive) {
               name.contains(".so", Qt::CaseInsensitive) || name.contains(".exe", Qt::CaseInsensitive)) {
 
             result = true;
-            _config.targets.insert(QDir::fromNativeSeparators(file.absoluteFilePath()));
+
+            _config.targets.unite(prepareTarget(QDir::fromNativeSeparators(file.absoluteFilePath())));
 
         }
 
        }
 
     return result;
+}
+
+QHash<QString, LibInfo> ConfigParser::prepareTarget(const QString &target) {
+    LibInfo libinfo;
+    auto key = target;
+    if (_scaner->fillLibInfo(libinfo, key)) {
+        return {{libinfo.fullPath(), libinfo}};
+    } else {
+        return {{key, {}}};
+    }
 }
 
 void ConfigParser::initIgnoreList()
@@ -793,11 +806,11 @@ QSet<QString> ConfigParser::getSetDirsRecursive(const QString &path, int maxDepc
 
 bool ConfigParser::smartMoveTargets() {
 
-    QSet<QString> temp;
+    decltype (_config.targets) temp;
     bool result = true;
     for (auto i = _config.targets.cbegin(); i != _config.targets.cend(); ++i) {
 
-        QFileInfo target(*i);
+        QFileInfo target(i.key());
 
         QString targetPath = _config.targetDir;
 
@@ -811,8 +824,7 @@ bool ConfigParser::smartMoveTargets() {
             result = false;
         }
 
-
-        temp.insert(targetPath + "/" + target.fileName());
+        temp.unite(prepareTarget(targetPath + "/" + target.fileName()));
 
     }
 
@@ -821,10 +833,12 @@ bool ConfigParser::smartMoveTargets() {
     return result;
 }
 
-ConfigParser::ConfigParser(FileManager *filemanager):
-    _fileManager(filemanager) {
+ConfigParser::ConfigParser(FileManager *filemanager, DependenciesScanner* scaner):
+    _fileManager(filemanager),
+    _scaner(scaner) {
 
     assert(_fileManager);
+    assert(_scaner);
 
 #ifdef Q_OS_LINUX
     _config.appDir = QuasarAppUtils::Params::getStrArg("appPath");
