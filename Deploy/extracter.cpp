@@ -169,7 +169,8 @@ void Extracter::copyTr()
 {
     if (!QuasarAppUtils::Params::isEndable("noTranslations")) {
         if (!copyTranslations(DeployCore::extractTranslation(neadedLibs))) {
-            qWarning() << " copy TR ERROR";
+            QuasarAppUtils::Params::verboseLog("Failed to copy standard Qt translations",
+                                               QuasarAppUtils::Warning);
         }
     }
 }
