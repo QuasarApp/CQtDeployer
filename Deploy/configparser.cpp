@@ -269,39 +269,11 @@ bool ConfigParser::parseQtDeployMode() {
     setExtraNames(listNamesMasks);
     setExtraPlugins(listExtraPlugin);
 
-    auto qmake = QuasarAppUtils::Params::getStrArg("qmake");
-    QString basePath = "";
-
-    QFileInfo info(qmake);
-
-    if (!info.isFile() || (info.baseName() != "qmake")) {
-        qInfo() << "deploy only C libs because qmake is not found";
-        return true;
-    }
-
-    basePath = info.absolutePath();
-    if (!setQmake(qmake)) {
-        QDir dir(basePath);
-
-        if (!dir.cdUp()) {
-            QuasarAppUtils::Params::verboseLog("fail ini qmake",
-                                               QuasarAppUtils::Error);
-            return false;
-        }
-
-        QuasarAppUtils::Params::verboseLog("exec qmake fail!, try init qtDir from path:" + dir.absolutePath(),
-                                           QuasarAppUtils::Warning);
-
-        if (!setQtDir(dir.absolutePath())){
-            QuasarAppUtils::Params::verboseLog("fail ini qmake",
-                                               QuasarAppUtils::Error);
-            return false;
-        }
-
+    if (!initQmake()) {
+        return false;
     }
 
     auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir");
-    QDir dir(basePath);
 
     if (QFileInfo::exists(qmlDir) ||
             QuasarAppUtils::Params::isEndable("allQmlDependes")) {
@@ -331,6 +303,18 @@ bool ConfigParser::parseQtClearMode() {
     setTargetDir("./" + DISTRO_DIR);
 
     return true;
+}
+
+QSet<QString> ConfigParser::getQtPathesFromTargets() {
+    QSet<QString> res;
+
+    for (auto &i: _config.targets) {
+        if (i.isValid() && !i.getQtPath().isEmpty()) {
+            res.insert(i.getQtPath());
+        }
+    }
+
+    return res;
 }
 
 void ConfigParser::setTargetDir(const QString &target) {
@@ -546,6 +530,65 @@ QString ConfigParser::getPathFrmoQmakeLine(const QString &in) const {
     }
 
     return "";
+}
+
+bool ConfigParser::initQmakePrivate(const QString &qmake) {
+    QFileInfo info(qmake);
+
+    QString basePath = info.absolutePath();
+    if (!setQmake(qmake)) {
+        QDir dir(basePath);
+
+        if (!dir.cdUp()) {
+            QuasarAppUtils::Params::verboseLog("fail init qmake",
+                                               QuasarAppUtils::Error);
+            return false;
+        }
+
+        QuasarAppUtils::Params::verboseLog("exec qmake fail!, try init qtDir from path:" + dir.absolutePath(),
+                                           QuasarAppUtils::Warning);
+
+        if (!setQtDir(dir.absolutePath())){
+            QuasarAppUtils::Params::verboseLog("fail ini qmake",
+                                               QuasarAppUtils::Error);
+            return false;
+        }
+
+    }
+
+    return true;
+}
+
+bool ConfigParser::initQmake() {
+
+    auto qmake = QuasarAppUtils::Params::getStrArg("qmake");
+
+    QFileInfo info(qmake);
+
+    if (!info.isFile() || (info.baseName() != "qmake")) {
+
+        auto qtList = getQtPathesFromTargets();
+
+        if (qtList.isEmpty()) {
+            qInfo() << "deploy only C libs because qmake is not found";
+            return true;
+
+        } else if (qtList.size() > 1) {
+            QuasarAppUtils::Params::verboseLog("Your deployment targets were compiled by different qmake,"
+                                               "qt auto-capture is not possible. Use the -qmake flag to solve this problem.",
+                                               QuasarAppUtils::Error);
+            return false;
+        }
+
+        auto qt = *qtList.begin();
+
+        if (qt.right(3).compare("lib", Qt::CaseInsensitive)) {
+            return initQmakePrivate(QFileInfo(qt + "/../bin/qmake").absoluteFilePath());
+        }
+
+        return initQmakePrivate(QFileInfo(qt + "/qmake").absoluteFilePath());
+    }
+    return initQmakePrivate(qmake);
 }
 
 bool ConfigParser::setQmake(const QString &value) {

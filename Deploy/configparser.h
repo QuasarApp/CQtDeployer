@@ -85,6 +85,8 @@ private:
     bool parseQtInfoMode();
     bool parseQtClearMode();
 
+    QSet<QString> getQtPathesFromTargets();
+
     void setTargetDir(const QString &target = "");
     bool setTargets(const QStringList &value);
     bool setTargetsRecursive(const QString &dir);
@@ -94,6 +96,8 @@ private:
     void initIgnoreEnvList();
 
     QString getPathFrmoQmakeLine(const QString& in) const;
+    bool initQmakePrivate(const QString& qmake);
+    bool initQmake();
     bool setQmake(const QString &value);
     bool setQtDir(const QString &value);
 

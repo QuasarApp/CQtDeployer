@@ -648,7 +648,7 @@ void deploytest::testRelativeLink() {
 void deploytest::testCheckQt() {
 
     Deploy *deployer = new Deploy();
-    QuasarAppUtils::Params::parseParams({"-binDir", TestBinDir, "clear"});
+    QuasarAppUtils::Params::parseParams({"-binDir", TestBinDir, "clear", "noAutoCheckQmake"});
     QVERIFY(deployer->prepare());
 
 
@@ -962,7 +962,8 @@ void deploytest::testBinDir() {
 #endif
 
 
-    runTestParams({"-binDir", TestBinDir, "clear"}, &comapareTree);
+    runTestParams({"-binDir", TestBinDir, "clear",
+                  "noAutoCheckQmake"}, &comapareTree);
 }
 
 void deploytest::testConfFile() {
@@ -994,7 +995,7 @@ void deploytest::testConfFile() {
      "./" + DISTRO_DIR + "/quicknanobrowser.sh"});
 #endif
 
-    runTestParams({"-bin", TestBinDir, "clear" ,
+    runTestParams({"-bin", TestBinDir, "clear" , "noAutoCheckQmake",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 
 
@@ -1131,8 +1132,12 @@ void deploytest::testQt() {
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets"}, &comapareTree);
 
+
 #ifdef Q_OS_UNIX
     bin = TestBinDir + "QtWidgetsProject";
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets"}, &comapareTree);
 
 #else
     bin = TestBinDir + "QtWidgetsProject.exe";
