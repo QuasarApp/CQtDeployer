@@ -8,6 +8,7 @@
 #include "elf.h"
 #include <cmath>
 #include <QFileInfo>
+#include <quasarapp.h>
 
 ELF::ELF()
 {
@@ -63,18 +64,20 @@ bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
         return false;
     }
 
-    auto dynStr = getDynamicString(reader);
+    if (!QuasarAppUtils::Params::isEndable("noAutoCheckQmake")) {
+        auto dynStr = getDynamicString(reader);
 
-    for (auto i = dynStr.rbegin(); i != dynStr.rend(); ++i) {
+        for (auto i = dynStr.rbegin(); i != dynStr.rend(); ++i) {
 
-        if (i->contains("end_")) {
-            break;
+            if (i->contains("end_")) {
+                break;
+            }
+
+            if (QFileInfo(*i).isDir()) {
+                info.setQtPath(*i);
+            }
+
         }
-
-        if (QFileInfo(*i).isDir()) {
-            info.setQtPath(*i);
-        }
-
     }
 
     info.setName(QFileInfo(lib).fileName());

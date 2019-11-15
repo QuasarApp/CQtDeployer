@@ -4358,3 +4358,41 @@ QSet<QString> Modules::qtWebEngine() {
                 });
     return Tree;
 }
+QSet<QString> Modules::testEmptyParamsTree(const QString &distDir) {
+    TestUtils utils;
+
+    return utils.createTree({
+                "./" + distDir + "/UnitTests.sh",
+                "./" + distDir + "/bin/UnitTests",
+                "./" + distDir + "/bin/qt.conf",
+                "./" + distDir + "/lib/libQt5Core.so",
+                "./" + distDir + "/lib/libQt5Test.so",
+                "./" + distDir + "/lib/libicudata.so",
+                "./" + distDir + "/lib/libicui18n.so",
+                "./" + distDir + "/lib/libicuuc.so",
+                "./" + distDir + "/translations/qtbase_ar.qm",
+                "./" + distDir + "/translations/qtbase_bg.qm",
+                "./" + distDir + "/translations/qtbase_ca.qm",
+                "./" + distDir + "/translations/qtbase_cs.qm",
+                "./" + distDir + "/translations/qtbase_da.qm",
+                "./" + distDir + "/translations/qtbase_de.qm",
+                "./" + distDir + "/translations/qtbase_en.qm",
+                "./" + distDir + "/translations/qtbase_es.qm",
+                "./" + distDir + "/translations/qtbase_fi.qm",
+                "./" + distDir + "/translations/qtbase_fr.qm",
+                "./" + distDir + "/translations/qtbase_gd.qm",
+                "./" + distDir + "/translations/qtbase_he.qm",
+                "./" + distDir + "/translations/qtbase_hu.qm",
+                "./" + distDir + "/translations/qtbase_it.qm",
+                "./" + distDir + "/translations/qtbase_ja.qm",
+                "./" + distDir + "/translations/qtbase_ko.qm",
+                "./" + distDir + "/translations/qtbase_lv.qm",
+                "./" + distDir + "/translations/qtbase_pl.qm",
+                "./" + distDir + "/translations/qtbase_ru.qm",
+                "./" + distDir + "/translations/qtbase_sk.qm",
+                "./" + distDir + "/translations/qtbase_uk.qm",
+                "./" + distDir + "/translations/qtbase_zh_TW.qm"
+            });
+}
+
+

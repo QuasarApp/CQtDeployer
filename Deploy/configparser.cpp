@@ -10,6 +10,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QProcess>
+#include "dependenciesscanner.h"
 #include "deploycore.h"
 #include "filemanager.h"
 #include "pathutils.h"
@@ -268,39 +269,11 @@ bool ConfigParser::parseQtDeployMode() {
     setExtraNames(listNamesMasks);
     setExtraPlugins(listExtraPlugin);
 
-    auto qmake = QuasarAppUtils::Params::getStrArg("qmake");
-    QString basePath = "";
-
-    QFileInfo info(qmake);
-
-    if (!info.isFile() || (info.baseName() != "qmake")) {
-        qInfo() << "deploy only C libs because qmake is not found";
-        return true;
-    }
-
-    basePath = info.absolutePath();
-    if (!setQmake(qmake)) {
-        QDir dir(basePath);
-
-        if (!dir.cdUp()) {
-            QuasarAppUtils::Params::verboseLog("fail ini qmake",
-                                               QuasarAppUtils::Error);
-            return false;
-        }
-
-        QuasarAppUtils::Params::verboseLog("exec qmake fail!, try init qtDir from path:" + dir.absolutePath(),
-                                           QuasarAppUtils::Warning);
-
-        if (!setQtDir(dir.absolutePath())){
-            QuasarAppUtils::Params::verboseLog("fail ini qmake",
-                                               QuasarAppUtils::Error);
-            return false;
-        }
-
+    if (!initQmake()) {
+        return false;
     }
 
     auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir");
-    QDir dir(basePath);
 
     if (QFileInfo::exists(qmlDir) ||
             QuasarAppUtils::Params::isEndable("allQmlDependes")) {
@@ -332,6 +305,18 @@ bool ConfigParser::parseQtClearMode() {
     return true;
 }
 
+QSet<QString> ConfigParser::getQtPathesFromTargets() {
+    QSet<QString> res;
+
+    for (auto &i: _config.targets) {
+        if (i.isValid() && !i.getQtPath().isEmpty()) {
+            res.insert(i.getQtPath());
+        }
+    }
+
+    return res;
+}
+
 void ConfigParser::setTargetDir(const QString &target) {
 
     if (QuasarAppUtils::Params::isEndable("targetDir")) {
@@ -341,7 +326,7 @@ void ConfigParser::setTargetDir(const QString &target) {
     } else {
         if (_config.targets.size())
             _config.targetDir = QFileInfo(
-                        *_config.targets.begin()).absolutePath() + "/" + DISTRO_DIR;
+                        _config.targets.begin().key()).absolutePath() + "/" + DISTRO_DIR;
 
         _config.targetDir = QFileInfo("./" + DISTRO_DIR).absoluteFilePath();
         qInfo () << "flag targetDir not  used." << "use default target dir :" << _config.targetDir;
@@ -362,7 +347,8 @@ bool ConfigParser::setTargets(const QStringList &value) {
 
             auto sufix = targetInfo.completeSuffix();
 
-            _config.targets.insert(QDir::fromNativeSeparators(i));
+            _config.targets.unite(prepareTarget(QDir::fromNativeSeparators(i)));
+
             isfillList = true;
         }
         else if (targetInfo.isDir()) {
@@ -426,13 +412,24 @@ bool ConfigParser::setBinDir(const QString &dir, bool recursive) {
               name.contains(".so", Qt::CaseInsensitive) || name.contains(".exe", Qt::CaseInsensitive)) {
 
             result = true;
-            _config.targets.insert(QDir::fromNativeSeparators(file.absoluteFilePath()));
+
+            _config.targets.unite(prepareTarget(QDir::fromNativeSeparators(file.absoluteFilePath())));
 
         }
 
        }
 
     return result;
+}
+
+QHash<QString, LibInfo> ConfigParser::prepareTarget(const QString &target) {
+    LibInfo libinfo;
+    auto key = target;
+    if (_scaner->fillLibInfo(libinfo, key)) {
+        return {{libinfo.fullPath(), libinfo}};
+    } else {
+        return {{key, {}}};
+    }
 }
 
 void ConfigParser::initIgnoreList()
@@ -533,6 +530,65 @@ QString ConfigParser::getPathFrmoQmakeLine(const QString &in) const {
     }
 
     return "";
+}
+
+bool ConfigParser::initQmakePrivate(const QString &qmake) {
+    QFileInfo info(qmake);
+
+    QString basePath = info.absolutePath();
+    if (!setQmake(qmake)) {
+        QDir dir(basePath);
+
+        if (!dir.cdUp()) {
+            QuasarAppUtils::Params::verboseLog("fail init qmake",
+                                               QuasarAppUtils::Error);
+            return false;
+        }
+
+        QuasarAppUtils::Params::verboseLog("exec qmake fail!, try init qtDir from path:" + dir.absolutePath(),
+                                           QuasarAppUtils::Warning);
+
+        if (!setQtDir(dir.absolutePath())){
+            QuasarAppUtils::Params::verboseLog("fail ini qmake",
+                                               QuasarAppUtils::Error);
+            return false;
+        }
+
+    }
+
+    return true;
+}
+
+bool ConfigParser::initQmake() {
+
+    auto qmake = QuasarAppUtils::Params::getStrArg("qmake");
+
+    QFileInfo info(qmake);
+
+    if (!info.isFile() || (info.baseName() != "qmake")) {
+
+        auto qtList = getQtPathesFromTargets();
+
+        if (qtList.isEmpty()) {
+            qInfo() << "deploy only C libs because qmake is not found";
+            return true;
+
+        } else if (qtList.size() > 1) {
+            QuasarAppUtils::Params::verboseLog("Your deployment targets were compiled by different qmake,"
+                                               "qt auto-capture is not possible. Use the -qmake flag to solve this problem.",
+                                               QuasarAppUtils::Error);
+            return false;
+        }
+
+        auto qt = *qtList.begin();
+
+        if (qt.right(3).compare("lib", Qt::CaseInsensitive)) {
+            return initQmakePrivate(QFileInfo(qt + "/../bin/qmake").absoluteFilePath());
+        }
+
+        return initQmakePrivate(QFileInfo(qt + "/qmake").absoluteFilePath());
+    }
+    return initQmakePrivate(qmake);
 }
 
 bool ConfigParser::setQmake(const QString &value) {
@@ -793,11 +849,11 @@ QSet<QString> ConfigParser::getSetDirsRecursive(const QString &path, int maxDepc
 
 bool ConfigParser::smartMoveTargets() {
 
-    QSet<QString> temp;
+    decltype (_config.targets) temp;
     bool result = true;
     for (auto i = _config.targets.cbegin(); i != _config.targets.cend(); ++i) {
 
-        QFileInfo target(*i);
+        QFileInfo target(i.key());
 
         QString targetPath = _config.targetDir;
 
@@ -811,8 +867,7 @@ bool ConfigParser::smartMoveTargets() {
             result = false;
         }
 
-
-        temp.insert(targetPath + "/" + target.fileName());
+        temp.unite(prepareTarget(targetPath + "/" + target.fileName()));
 
     }
 
@@ -821,10 +876,12 @@ bool ConfigParser::smartMoveTargets() {
     return result;
 }
 
-ConfigParser::ConfigParser(FileManager *filemanager):
-    _fileManager(filemanager) {
+ConfigParser::ConfigParser(FileManager *filemanager, DependenciesScanner* scaner):
+    _fileManager(filemanager),
+    _scaner(scaner) {
 
     assert(_fileManager);
+    assert(_scaner);
 
 #ifdef Q_OS_LINUX
     _config.appDir = QuasarAppUtils::Params::getStrArg("appPath");

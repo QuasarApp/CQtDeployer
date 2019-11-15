@@ -22,6 +22,7 @@
 #define DISTRO_DIR QString("DistributionKit")
 
 class  FileManager;
+class  DependenciesScanner;
 
 struct DEPLOYSHARED_EXPORT QtDir {
     QString libs;
@@ -61,7 +62,7 @@ struct DEPLOYSHARED_EXPORT DeployConfig {
      * key - path
      * value - create wrapper
      */
-    QSet<QString> targets;
+    QHash<QString, LibInfo> targets;
     Envirement envirement;
     DistroStruct distroStruct;
 
@@ -77,22 +78,26 @@ private:
 
     DeployConfig _config;
     FileManager *_fileManager;
+    DependenciesScanner *_scaner;
     bool createFromDeploy(const QString& file) const;
     bool loadFromFile(const QString& file);
     bool parseQtDeployMode();
     bool parseQtInfoMode();
     bool parseQtClearMode();
 
+    QSet<QString> getQtPathesFromTargets();
+
     void setTargetDir(const QString &target = "");
     bool setTargets(const QStringList &value);
     bool setTargetsRecursive(const QString &dir);
     bool setBinDir(const QString &dir, bool recursive = false);
 
-
     void initIgnoreList();
     void initIgnoreEnvList();
 
     QString getPathFrmoQmakeLine(const QString& in) const;
+    bool initQmakePrivate(const QString& qmake);
+    bool initQmake();
     bool setQmake(const QString &value);
     bool setQtDir(const QString &value);
 
@@ -112,8 +117,9 @@ private:
     QString getRelativeLink(const QString& from, const QString& to);
     void writeKey(const QString &key, QJsonObject &, const QString &confFileDir) const;
     void readKey(const QString &key, const QJsonObject &obj, const QString &confFileDir) const;
+    QHash<QString, LibInfo> prepareTarget(const QString &target);
 public:
-    ConfigParser(FileManager *filemanager);
+    ConfigParser(FileManager *filemanager, DependenciesScanner *scaner);
     bool parseParams();
     bool smartMoveTargets();
 

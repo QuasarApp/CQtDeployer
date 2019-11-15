@@ -25,7 +25,7 @@ class DEPLOYSHARED_EXPORT Extracter {
     QStringList neadedLibs;
     QStringList systemLibs;
 
-    DependenciesScanner scaner;
+    DependenciesScanner *_scaner;
     FileManager *_fileManager;
     ConfigParser *_cqt;
     MetaFileManager *_metaFileManager;
@@ -60,7 +60,7 @@ class DEPLOYSHARED_EXPORT Extracter {
     void copyTr();
     void copyExtraPlugins();
 public:
-    explicit Extracter(FileManager *fileManager, ConfigParser * cqt);
+    explicit Extracter(FileManager *fileManager, ConfigParser * cqt, DependenciesScanner *_scaner);
     void deploy();
     void clear();
 

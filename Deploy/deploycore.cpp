@@ -201,6 +201,7 @@ QString DeployCore::help() {
     { "                            : which will not be compatible with equipment on users' hosts."},
     { "   noTranslations           : Skips the translations files." },
     { "                            | It doesn't work without qmake and inside a snap package" },
+    { "   -noAutoCheckQmake        : Disables automatic search of paths to qmake in executable files." },
     { "   -qmlOut [params]         : Sets path to qml out directory" },
     { "   -libOut [params]         : Sets path to libraries out directory" },
     { "   -trOut [params]          : Sets path to translations out directory" },
@@ -248,7 +249,8 @@ QStringList DeployCore::helpKeys() {
         "pluginOut",
         "binOut",
         "version",
-        "verbose"
+        "verbose",
+        "noAutoCheckQmake"
     };
 }
 

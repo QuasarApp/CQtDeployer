@@ -301,7 +301,8 @@ void deploytest::cleanupTestCase() {
 void deploytest::testDeployTarget() {
 
     FileManager file;
-    ConfigParser *deploy = new ConfigParser(&file);
+    DependenciesScanner scan;
+    ConfigParser *deploy = new ConfigParser(&file, &scan);
 
     QStringList targets;
     targets << "./test/bins/execTarget.exe";
@@ -309,31 +310,31 @@ void deploytest::testDeployTarget() {
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file);
+    deploy = new ConfigParser(&file, &scan);
     targets << "./test/bins/execTarget";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file);
+    deploy = new ConfigParser(&file, &scan);
     targets << "./test/bins/execTarget.exe" << "./test/bins/execTarget";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file);
+    deploy = new ConfigParser(&file, &scan);
     targets << "./test/bns/execTarget.exe";
     QVERIFY(!deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file);
+    deploy = new ConfigParser(&file, &scan);
     targets << "./test/bins/";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file);
+    deploy = new ConfigParser(&file, &scan);
     targets << "./test/bins/" << "./test/warning/";
     QVERIFY(deploy->setTargets(targets));
 
@@ -458,33 +459,24 @@ void deploytest::testEmptyParamsString() {
 
     QDir("./" + DISTRO_DIR).removeRecursively();
 
-    auto comapareTree = utils.createTree({
-                                             "./" + DISTRO_DIR + "/UnitTests.sh",
-                                             "./" + DISTRO_DIR + "/bin/qt.conf",
-                                             "./" + DISTRO_DIR + "/bin/UnitTests",
-                                         });
+    auto comapareTree = Modules::testEmptyParamsTree();
 
     runTestParams({}, &comapareTree);
 
 
-    comapareTree = utils.createTree({});
+    auto emptyTree = utils.createTree({});
 
-    runTestParams({"clear"}, &comapareTree);
+    runTestParams({"clear"}, &emptyTree);
 
-    comapareTree = utils.createTree({
-                                        "./" + DISTRO_DIR + "/UnitTests.sh",
-                                        "./" + DISTRO_DIR + "/bin/qt.conf",
-                                        "./" + DISTRO_DIR + "/bin/UnitTests",
-                                    });
+    comapareTree = Modules::testEmptyParamsTree("testDeployDir");
 
-
-    runTestParams({"-bin", "./UnitTests"
-                  "-targetDor", "./testDeployDir"}, &comapareTree);
+    runTestParams({"-bin", "./UnitTests",
+                  "-targetDir", "./testDeployDir"}, &comapareTree);
 
 
     comapareTree = utils.createTree({});
 
-    runTestParams({"clear", "-targetDor", "./testDeployDir"}, &comapareTree);
+    runTestParams({"clear", "-targetDir", "./testDeployDir"}, &comapareTree);
 
 #endif
 }
@@ -647,7 +639,7 @@ void deploytest::testRelativeLink() {
 void deploytest::testCheckQt() {
 
     Deploy *deployer = new Deploy();
-    QuasarAppUtils::Params::parseParams({"-binDir", TestBinDir, "clear"});
+    QuasarAppUtils::Params::parseParams({"-binDir", TestBinDir, "clear", "noAutoCheckQmake"});
     QVERIFY(deployer->prepare());
 
 
@@ -732,7 +724,8 @@ void deploytest::testCheckQt() {
 void deploytest::testSetTargetDir() {
 
     FileManager file;
-    ConfigParser  dep(&file);
+    DependenciesScanner scan;
+    ConfigParser  dep(&file, &scan);
 
     dep.setTargetDir();
 
@@ -960,7 +953,8 @@ void deploytest::testBinDir() {
 #endif
 
 
-    runTestParams({"-binDir", TestBinDir, "clear"}, &comapareTree);
+    runTestParams({"-binDir", TestBinDir, "clear",
+                  "noAutoCheckQmake"}, &comapareTree);
 }
 
 void deploytest::testConfFile() {
@@ -992,7 +986,7 @@ void deploytest::testConfFile() {
      "./" + DISTRO_DIR + "/quicknanobrowser.sh"});
 #endif
 
-    runTestParams({"-bin", TestBinDir, "clear" ,
+    runTestParams({"-bin", TestBinDir, "clear" , "noAutoCheckQmake",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 
 
@@ -1001,7 +995,7 @@ void deploytest::testConfFile() {
 
 #ifdef Q_OS_UNIX
     runTestParams({"-bin", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
-                   "clear",
+                   "clear", "noAutoCheckQmake",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #else
     runTestParams({"-bin", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
@@ -1063,7 +1057,7 @@ void deploytest::testConfFile() {
 
 #ifdef Q_OS_UNIX
     runTestParams({"-bin", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
-                   "clear" ,
+                   "clear" , "noAutoCheckQmake",
                    "-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"}, &comapareTree);
 #else
     runTestParams({"-bin", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
@@ -1129,9 +1123,13 @@ void deploytest::testQt() {
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets"}, &comapareTree);
 
-#ifdef Q_OS_UNIX
-    bin = TestBinDir + "QtWidgetsProject";
 
+#ifdef Q_OS_UNIX
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets"}, &comapareTree);
+
+    bin = TestBinDir + "QtWidgetsProject";
 #else
     bin = TestBinDir + "QtWidgetsProject.exe";
 
