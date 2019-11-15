@@ -459,33 +459,24 @@ void deploytest::testEmptyParamsString() {
 
     QDir("./" + DISTRO_DIR).removeRecursively();
 
-    auto comapareTree = utils.createTree({
-                                             "./" + DISTRO_DIR + "/UnitTests.sh",
-                                             "./" + DISTRO_DIR + "/bin/qt.conf",
-                                             "./" + DISTRO_DIR + "/bin/UnitTests",
-                                         });
+    auto comapareTree = Modules::testEmptyParamsTree();
 
     runTestParams({}, &comapareTree);
 
 
-    comapareTree = utils.createTree({});
+    auto emptyTree = utils.createTree({});
 
-    runTestParams({"clear"}, &comapareTree);
+    runTestParams({"clear"}, &emptyTree);
 
-    comapareTree = utils.createTree({
-                                        "./" + DISTRO_DIR + "/UnitTests.sh",
-                                        "./" + DISTRO_DIR + "/bin/qt.conf",
-                                        "./" + DISTRO_DIR + "/bin/UnitTests",
-                                    });
+    comapareTree = Modules::testEmptyParamsTree("testDeployDir");
 
-
-    runTestParams({"-bin", "./UnitTests"
-                  "-targetDor", "./testDeployDir"}, &comapareTree);
+    runTestParams({"-bin", "./UnitTests",
+                  "-targetDir", "./testDeployDir"}, &comapareTree);
 
 
     comapareTree = utils.createTree({});
 
-    runTestParams({"clear", "-targetDor", "./testDeployDir"}, &comapareTree);
+    runTestParams({"clear", "-targetDir", "./testDeployDir"}, &comapareTree);
 
 #endif
 }
@@ -1004,7 +995,7 @@ void deploytest::testConfFile() {
 
 #ifdef Q_OS_UNIX
     runTestParams({"-bin", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
-                   "clear",
+                   "clear", "noAutoCheckQmake",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #else
     runTestParams({"-bin", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
@@ -1066,7 +1057,7 @@ void deploytest::testConfFile() {
 
 #ifdef Q_OS_UNIX
     runTestParams({"-bin", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
-                   "clear" ,
+                   "clear" , "noAutoCheckQmake",
                    "-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"}, &comapareTree);
 #else
     runTestParams({"-bin", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
@@ -1134,11 +1125,11 @@ void deploytest::testQt() {
 
 
 #ifdef Q_OS_UNIX
-    bin = TestBinDir + "QtWidgetsProject";
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets"}, &comapareTree);
 
+    bin = TestBinDir + "QtWidgetsProject";
 #else
     bin = TestBinDir + "QtWidgetsProject.exe";
 
