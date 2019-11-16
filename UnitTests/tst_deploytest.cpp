@@ -993,6 +993,10 @@ void deploytest::testConfFile() {
     QVERIFY(QFile::exists(TestBinDir + "/TestConf.json"));
     QFile::remove(TestBinDir + "/TestConf.json");
 
+    comapareTree -= utils.createTree(
+    {"./" + DISTRO_DIR + "/bin/quicknanobrowser",
+     "./" + DISTRO_DIR + "/quicknanobrowser.sh"});
+
 #ifdef Q_OS_UNIX
     runTestParams({"-bin", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
                    "clear", "noAutoCheckQmake",
@@ -1082,6 +1086,7 @@ void deploytest::testConfFile() {
     QVERIFY(data.contains("./../../../../../build/TestQMLWidgets"));
 
     QVERIFY(data.contains("\"clear\": true"));
+    QString qmake = TestQtDir + "bin/qmake";
 
 #else
 
@@ -1091,9 +1096,21 @@ void deploytest::testConfFile() {
     QVERIFY(data.contains("./../../../../../build/TestQMLWidgets.exe"));
 
     QVERIFY(data.contains("\"clear\": true"));
+    QString qmake = TestQtDir + "bin/qmake.exe";
 
 #endif
     runTestParams({"-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"}, &comapareTree);
+
+    QVERIFY(QuasarAppUtils::Params::isEndable("clear"));
+    QVERIFY(QuasarAppUtils::Params::isEndable("bin"));
+
+    comapareTree += Modules::qtLibs();
+    comapareTree += Modules::qmlLibs();
+
+    runTestParams({"-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json",
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                   }, &comapareTree);
 
     QVERIFY(QuasarAppUtils::Params::isEndable("clear"));
     QVERIFY(QuasarAppUtils::Params::isEndable("bin"));
