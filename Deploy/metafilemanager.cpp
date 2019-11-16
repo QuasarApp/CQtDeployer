@@ -113,7 +113,12 @@ bool MetaFileManager::createRunScript(const QString &target) {
         return createRunScriptWindows(target);
     }
 
-    return createRunScriptLinux(target);
+    if (sufix.isEmpty()) {
+        return createRunScriptLinux(target);
+    }
+
+    return true;
+
 }
 
 bool MetaFileManager::createQConf() {
