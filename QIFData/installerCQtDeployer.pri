@@ -19,8 +19,6 @@ BASE_DEPLOY_FLAGS_CQT = $$BASE_DEPLOY_FLAGS -targetDir $$DATA_DIR $$OUT_LIB $$OU
 
 deploy_dep.commands += $$DEPLOYER -bin $$DEPLOY_TARGET $$BASE_DEPLOY_FLAGS_CQT
 
-mkpath( $$PWD/../Distro)
-
 win32:CONFIG_FILE = $$PWD/config/configWin.xml
 unix:CONFIG_FILE = $$PWD/config/configLinux.xml
 
@@ -42,7 +40,7 @@ create_repo.commands = $$REPOGEN \
                         $$ONLINE_REPO_DIR
 
 chmodSnap.commands = chmod 777 -R $$DATA_DIR
-unix:release.depends += chmodSnap
+unix:deploy.depends += chmodSnap
 
 
 message( ONLINE_REPO_DIR $$ONLINE_REPO_DIR)
@@ -62,10 +60,13 @@ message( ONLINE_REPO_DIR $$ONLINE_REPO_DIR)
 releaseSnap.commands = rm *.snap -rdf && chmod 777 -R $$PWD/../prime && snapcraft && snapcraft push *.snap # bad patern
 buildSnap.commands = snapcraft
 clearSnap.commands = rm parts prime stage *.snap -rdf
+deploySnap.commands = cp *.snap $$PWD/../Distro/
 
-unix:release.depends += clearSnap
-unix:release.depends += buildSnap
-unix:release.depends += releaseSnap
+unix:deploy.depends += clearSnap
+unix:deploy.depends += buildSnap
+unix:deploy.depends += deploySnap
+
+unix:deploy.release += releaseSnap
 
 OTHER_FILES += \
     $$META_DIR/* \
