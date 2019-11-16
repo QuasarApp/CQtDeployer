@@ -57,14 +57,14 @@ message( ONLINE_REPO_DIR $$ONLINE_REPO_DIR)
                            $$PWD/../Distro/$$OUT_FILE
 }
 
-releaseSnap.commands = rm *.snap -rdf && chmod 777 -R $$PWD/../prime && snapcraft && snapcraft push *.snap # bad patern
 buildSnap.commands = snapcraft
 clearSnap.commands = rm parts prime stage *.snap -rdf
-deploySnap.commands = cp *.snap $$PWD/../Distro/
+deploySnap.commands = rm *.snap -rdf && chmod 777 -R $$PWD/../prime && snapcraft && cp *.snap $$PWD/../Distro/
+releaseSnap.commands = snapcraft push *.snap # bad patern
 
 unix:deploy.depends += clearSnap
 unix:deploy.depends += buildSnap
-unix:deploy.depends += deploySnap
+unix:deploy.depends +=  deploySnap
 
 unix:deploy.release += releaseSnap
 
@@ -80,6 +80,7 @@ QMAKE_EXTRA_TARGETS += \
     create_repo \
     release \
     clearSnap \
+    deploySnap \
     releaseSnap \
     buildSnap \
     chmodSnap
