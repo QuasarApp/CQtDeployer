@@ -29,7 +29,7 @@ parts:
     # See 'snapcraft plugins'
 
     plugin: dump
-    source: installer/packages/cqtdeployer_1_4/data/1.4
+    source: QIFData/packages/cqtdeployer_1_4/data/1.4
 
     after: [cqtdeployer-wrapper]
   cqtdeployer-wrapper:
