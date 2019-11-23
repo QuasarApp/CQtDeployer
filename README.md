@@ -1,5 +1,6 @@
 # CQtDeployer [![cqtdeployer](https://snapcraft.io//cqtdeployer/badge.svg)](https://snapcraft.io/cqtdeployer)
 [![cqtdeployer](https://snapcraft.io//cqtdeployer/trending.svg?name=0)](https://snapcraft.io/cqtdeployer)
+# ![Logo](https://i.ibb.co/phDBvfr/qt.png)
 
 ****************************
 
