@@ -212,7 +212,6 @@ QString DeployCore::help() {
     { "                            : Examples:" },
     { "                            : cqtdeployer qif - for use default templates of qt installer framework." },
     { "                            : cqtdeployer -qif path/to/folder/with/qifTemplate - for use custom templates of qt installer framework." },
-    { "                            : cqtdeployer -qif path/to/folder/with/qifTemplate - for use custom templates of qt installer framework." },
 
     { "   v / version              : Shows compiled version" },
     { "   verbose [1-3]            : Shows debug log" },
@@ -257,6 +256,7 @@ QStringList DeployCore::helpKeys() {
         "binOut",
         "version",
         "verbose",
+        "qif",
         "noAutoCheckQmake"
     };
 }

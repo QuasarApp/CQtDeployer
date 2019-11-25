@@ -45,6 +45,11 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -trOut [params]            | Sets path to translations out directory                         |
 |  -pluginOut [params]        | Sets path to plugins out directory                              |
 |  -binOut [params]           | Sets path to binary out directory                               |
+|  -qif [params]              | Create the QIF installer for deployement programm"              |
+|                             | if skip the [params] then installer weel be created by default'"                           |
+|                             | Examples:" },
+|                             | cqtdeployer qif - for use default templates of qt installer framework."  |
+|                             | cqtdeployer -qif path/to/folder/with/qifTemplate - for use custom templates of qt installer framework." |
 |   deploySystem              | Deploys all libraries                                           |
 |   clear                     | Deletes deployable files of the previous session.               |
 |   force-clear               | Deletes the destination directory before deployment.            |
@@ -111,6 +116,11 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -trOut [params]            | Установит путь к папке с файламми переводов                         |
 |  -pluginOut [params]        | Установит путь к папке с плагинами                               |
 |  -binOut [params]           | Установит путь к папке с исполняемыми файлами                               |
+|  -qif [params]              | Создать установщик QIF для развертываемой программы"|
+|                             | если оставить параметр пустым то будет создан инсталлер По умолчанию|
+|                             | Примеры:" },
+|                             | cqtdeployer qif - для использования стандартных шаблонов фреймворка qt. "|
+|                             | cqtdeployer -qif path/to/folder/with/qifTemplate - для использования пользовательских шаблонов среды установки qt. "|
 |  -extraPlugin [list,params] | Устанавливает дополнительный путь для extraPlugin приложения |
 |  -recursiveDepth [params]   | Устанавливает глубину поиска библиотек (по умолчанию 0)       |
 |  -targetDir [params]        | Устанавливает целевой каталог (по умолчанию это путь к первому развертываемому файлу)|
