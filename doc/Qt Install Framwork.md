@@ -33,12 +33,14 @@ Where:
 
 **Qt Install Template** - is forder with configuration and packages information of installer.
 The configuration info should be in the config folder. for information about configuration see [qt documentation](https://doc.qt.io/qtinstallerframework/ifw-globalconfig.html)
-In the packages folder, each package should be in a separate folder and contain meta-information.
-If you have only 1 package, then CQtDeployer will deploy all deployed targets in one package.
-If there are several, then the package names must match the names of the deployed targets.
-In this case, CQtDeployer will deploy each target in a separate package.
-Targets whose names do not match the package names will be deployed in the first package.
-Packages are sorted by name.
+Each package in package's folder should exist in a separate subfolder and contain meta-information
+If there is only 1 package CQtDeployer deploys all the targets in one package.
+If there are several targets, the packages should be named like the deployed targets.
+In this situation, CQtDeployer deploys every target in a separate package.
+If the target's names don't identical with the the package names the targets will be deployed in the first package.
+Packages will be sorted by name.
+
+
 
 For more information about packages see [qt documentantion](https://doc.qt.io/qtinstallerframework/ifw-component-description.html)
 

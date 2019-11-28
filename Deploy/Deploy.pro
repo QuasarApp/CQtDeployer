@@ -61,6 +61,7 @@ SOURCES += \
     ../qtTools/src/shared/winutils/elfreader.cpp \
     elf.cpp \
     pluginsparser.cpp \
+    qif.cpp \
     qml.cpp \
     libinfo.cpp
 
@@ -82,6 +83,7 @@ HEADERS += \
     ../qtTools/src/shared/winutils/elfreader.h \
     elf.h \
     pluginsparser.h \
+    qif.h \
     qml.h \
     libinfo.h
 
