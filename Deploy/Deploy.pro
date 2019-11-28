@@ -52,6 +52,7 @@ SOURCES += \
     envirement.cpp \
     extracter.cpp \
     filemanager.cpp \
+    idistribution.cpp \
     ignorerule.cpp \
     metafilemanager.cpp \
     pathutils.cpp \
@@ -74,6 +75,7 @@ HEADERS += \
     envirement.h \
     extracter.h \
     filemanager.h \
+    idistribution.h \
     ignorerule.h \
     metafilemanager.h \
     pathutils.h \

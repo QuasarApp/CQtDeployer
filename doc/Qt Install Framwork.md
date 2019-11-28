@@ -41,7 +41,6 @@ If the target's names don't identical with the the package names the targets wil
 Packages will be sorted by name.
 
 
-
 For more information about packages see [qt documentantion](https://doc.qt.io/qtinstallerframework/ifw-component-description.html)
 
 
