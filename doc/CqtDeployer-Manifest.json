@@ -1,0 +1,40 @@
+{
+    "$schema": "http://qt.io/schema/extension-schema-v1#",
+    "title": "CQtDeployer",
+    "extensionType": [
+        "tool"
+    ],
+    "version": "1.3.2",
+    "vendor": {
+        "name": "QuasarApp group",
+        "url": "https://github.com/QuasarApp"
+    },
+    "contact": " QuasarApp@yandex.by",
+    "copyright": [ "QuasarApp" ],
+    "author": "QuasarApp team",
+    "icon": "https://github.com/QuasarApp/CQtDeployer/blob/master/res/icon%20(snapAlpha).png",
+    "licenses": [
+      { "licenseType": "lGPLv3",
+        "licenseUrl": "https://github.com/QuasarApp/CQtDeployer/blob/master/LICENSE" }
+    ],
+    "created": "2018-08-19",
+    "lastUpdate": "2019-11-15",
+    "platforms": [
+        "Linux (libc 2.27 or later)", "Windows 7 or later"
+    ],
+    "qtVersions": [
+        "5.12", "5.13", "5.14"
+    ],
+    "tags": [
+        "Deploy", "Deployment" ],
+    "price": {
+        "listprice": 0
+    },
+    "support": "https://github.com/QuasarApp/CQtDeployer/issues",
+    "bugUrl": "https://github.com/QuasarApp/CQtDeployer/issues",
+    "sourceRepoUrl": "https://github.com/QuasarApp/CQtDeployer",
+    "dependencies": [
+        "Core"
+    ]
+}
+
