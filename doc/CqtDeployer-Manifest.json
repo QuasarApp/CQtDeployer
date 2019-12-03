@@ -9,32 +9,32 @@
         "name": "QuasarApp group",
         "url": "https://github.com/QuasarApp"
     },
-    "contact": "Qt sales",
+    "contact": " QuasarApp@yandex.by",
     "copyright": [ "QuasarApp" ],
     "author": "QuasarApp team",
-    "icon": "https://upload.wikimedia.org/wikipedia/en/a/ae/TheQtCompany_Logo.png",
+    "icon": "https://github.com/QuasarApp/CQtDeployer/blob/master/res/icon%20(snapAlpha).png",
     "licenses": [
-      { "licenseType": "GPLv3",
-        "licenseUrl": "https://www.gnu.org/licenses/gpl-3.0.html" }
+      { "licenseType": "lGPLv3",
+        "licenseUrl": "https://github.com/QuasarApp/CQtDeployer/blob/master/LICENSE" }
     ],
-    "created": "2018-12-03",
-    "lastUpdate": "2019-10-08",
+    "created": "2018-08-19",
+    "lastUpdate": "2019-11-15",
     "platforms": [
-        "macOS 10.14", "CentOS"
+        "Linux (libc 2.27 or later)", "Windows 7 or later"
     ],
     "qtVersions": [
-        "5.12.5", "5.13.0", "5.13.1"
+        "5.12", "5.13", "5.14"
     ],
     "tags": [
-        "Calendar" ],
+        "Deploy", "Deployment" ],
     "price": {
         "listprice": 0
     },
-    "support": "support@qt.io",
-    "bugUrl": "https://bugreports.qt.io",
-    "sourceRepoUrl": "https://code.qt.io",
+    "support": "https://github.com/QuasarApp/CQtDeployer/issues",
+    "bugUrl": "https://github.com/QuasarApp/CQtDeployer/issues",
+    "sourceRepoUrl": "https://github.com/QuasarApp/CQtDeployer",
     "dependencies": [
-        "Quick"
+        "Core"
     ]
 }
 
