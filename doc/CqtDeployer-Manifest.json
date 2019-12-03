@@ -2,7 +2,7 @@
     "$schema": "http://qt.io/schema/extension-schema-v1#",
     "title": "CQtDeployer",
     "extensionType": [
-        "utility"
+        "tool"
     ],
     "version": "1.3.2",
     "vendor": {
