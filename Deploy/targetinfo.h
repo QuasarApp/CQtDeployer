@@ -5,19 +5,21 @@
 //# of this license document, but changing it is not allowed.
 //#
 
-#ifndef IGETLIBINFO_H
-#define IGETLIBINFO_H
+#ifndef TARGETINFO_H
+#define TARGETINFO_H
 
-#include "deploycore.h"
 #include "libinfo.h"
 
-class IGetLibInfo
+class DEPLOYSHARED_EXPORT TargetInfo: public LibInfo
 {
 public:
-    IGetLibInfo() = default;
-    virtual bool getLibInfo(const QString& lib, LibInfo& info) const = 0;
-    virtual ~IGetLibInfo() = default;
+    TargetInfo();
 
+    QString getSufix() const;
+    void setSufix(const QString &value);
+
+private:
+    QString sufix = "";
 };
 
-#endif // IGETLIBINFO_H
+#endif // TARGETINFO_H

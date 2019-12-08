@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2019 QuasarApp.
+//# Copyright (C) 2018-2020 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -422,8 +422,8 @@ bool ConfigParser::setBinDir(const QString &dir, bool recursive) {
     return result;
 }
 
-QHash<QString, LibInfo> ConfigParser::prepareTarget(const QString &target) {
-    LibInfo libinfo;
+QHash<QString, TargetInfo> ConfigParser::prepareTarget(const QString &target) {
+    TargetInfo libinfo;
     auto key = target;
     if (_scaner->fillLibInfo(libinfo, key)) {
         return {{libinfo.fullPath(), libinfo}};
@@ -932,3 +932,9 @@ bool Extra::contains(const QString &path) const {
 
     return false;
 }
+
+
+
+need to add sufix for all targets.
+and deploy all target separete.
+add new separato for parametrs.

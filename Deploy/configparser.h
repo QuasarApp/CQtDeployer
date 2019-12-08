@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2019 QuasarApp.
+//# Copyright (C) 2018-2020 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -10,6 +10,7 @@
 #include "distrostruct.h"
 #include "envirement.h"
 #include "ignorerule.h"
+#include "targetinfo.h"
 
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -62,7 +63,7 @@ struct DEPLOYSHARED_EXPORT DeployConfig {
      * key - path
      * value - create wrapper
      */
-    QHash<QString, LibInfo> targets;
+    QHash<QString, TargetInfo> targets;
     Envirement envirement;
     DistroStruct distroStruct;
 
@@ -117,7 +118,7 @@ private:
     QString getRelativeLink(const QString& from, const QString& to);
     void writeKey(const QString &key, QJsonObject &, const QString &confFileDir) const;
     void readKey(const QString &key, const QJsonObject &obj, const QString &confFileDir) const;
-    QHash<QString, LibInfo> prepareTarget(const QString &target);
+    QHash<QString, TargetInfo> prepareTarget(const QString &target);
 public:
     ConfigParser(FileManager *filemanager, DependenciesScanner *scaner);
     bool parseParams();

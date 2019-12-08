@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018-2019 QuasarApp.
+# Copyright (C) 2018-2020 QuasarApp.
 # Distributed under the lgplv3 software license, see the accompanying
 # Everyone is permitted to copy and distribute verbatim copies
 # of this license document, but changing it is not allowed.
@@ -45,7 +45,7 @@ include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
 
 
 SOURCES += \
-    dependenciesmap.cpp \
+    dependencymap.cpp \
     distrostruct.cpp \
     configparser.cpp \
     deploy.cpp \
@@ -65,10 +65,11 @@ SOURCES += \
     pluginsparser.cpp \
     qif.cpp \
     qml.cpp \
-    libinfo.cpp
+    libinfo.cpp \
+    targetinfo.cpp
 
 HEADERS += \
-    dependenciesmap.h \
+    dependencymap.h \
     distrostruct.h \
     configparser.h \
     deploy.h \
@@ -89,6 +90,7 @@ HEADERS += \
     pluginsparser.h \
     qif.h \
     qml.h \
-    libinfo.h
+    libinfo.h \
+    targetinfo.h
 
 STATECHARTS +=

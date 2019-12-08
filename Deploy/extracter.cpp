@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -123,6 +123,7 @@ void Extracter::copyPlugins(const QStringList &list) {
 
 void Extracter::extractAllTargets() {
     for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
+        _targetDependencyes[i.key()] = {};
         extract(i.key());
     }
 }
@@ -261,7 +262,12 @@ QFileInfoList Extracter::findFilesInsideDir(const QString &name,
     return files;
 }
 
-void Extracter::extractLib(const QString &file, const QString& mask) {
+void Extracter::extractLib(const QString &file,
+                           DependencyMap* depMap,
+                           const QString& mask) {
+
+    assert(depMap);
+
     qInfo() << "extract lib :" << file;
 
     auto data = _scaner->scan(file);
@@ -276,12 +282,14 @@ void Extracter::extractLib(const QString &file, const QString& mask) {
             continue;
         }
 
-        if (line.getPriority() != LibPriority::SystemLib && !neadedLibs.contains(line.fullPath())) {
-            neadedLibs << line.fullPath();
+        if (line.getPriority() != LibPriority::SystemLib && !depMap->containsNeadedLib(line.fullPath())) {
+            depMap->addNeadedLib(line.fullPath());
+
         } else if (QuasarAppUtils::Params::isEndable("deploySystem") &&
                     line.getPriority() == LibPriority::SystemLib &&
-                    !systemLibs.contains(line.fullPath())) {
-            systemLibs << line.fullPath();
+                    !depMap->containsSysLib(line.fullPath())) {
+
+            depMap->addSystemLib(line.fullPath());
         }
     }
 }
@@ -372,7 +380,12 @@ bool Extracter::extractQml() {
     }
 }
 
-void Extracter::extract(const QString &file, const QString &mask) {
+void Extracter::extract(const QString &file,
+                        DependencyMap *depMap,
+                        const QString &mask) {
+
+    assert(depMap);
+
     QFileInfo info(file);
 
     auto sufix = info.completeSuffix();
@@ -381,7 +394,7 @@ void Extracter::extract(const QString &file, const QString &mask) {
             sufix.compare("exe", Qt::CaseSensitive) == 0 ||
             sufix.isEmpty() || sufix.contains("so", Qt::CaseSensitive)) {
 
-        extractLib(file, mask);
+        extractLib(file, depMap, mask);
     } else {
         QuasarAppUtils::Params::verboseLog("file with sufix " + sufix + " not supported!");
     }
