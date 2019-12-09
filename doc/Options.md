@@ -4,19 +4,16 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 ```
 
 * All options must begin with a '-' sign.
-
 * After specifying the desired option, you must specify the value.
-
 * Some options support enumerations (arrays of values). When initializing such options, specify the list of values through ',' without prabels. If you use any programming language and call the cqtdeployer process, then the array of values must be passed as 1 parameter.
-
+* Some options support redistributions with the ability to select the target for which the flag will be applied. Target and values are separated using the ';' sign. Example -libOut target1;value1,target2;value2,defaultValue.
 * To include a flag, simply include the flag name in the list of options.
 
 ## Description of values in the table
 
 * **-binDir [params]** - option without array support.
-
 * **-bin [params, list]** - option with support for arrays. The delimiter used is ','.
-
+* **-libOut [target1;path,path]** - parameter with support for selecting the target for which the flag value is set. As a separator, use ';'. Please note that the rule described above is used to enumerate parameter values. The last parameter does not have a target value, this means that this value will be set for all non-configured targets by default.
 * **clear** - flag
 
 
@@ -40,11 +37,12 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   -recursiveDepth [params]  | Sets the Depth of recursive search of libs (default 0)          |
 |   -targetDir [params]       | Sets target directory(by default it is the path to the first deployable file)|
 |   -verbose [0-3]            | Shows debug log                                                 |
-|  -qmlOut [params]           | Sets path to qml out directory                                  |
-|  -libOut [params]           | Sets path to libraries out directory                            |
-|  -trOut [params]            | Sets path to translations out directory                         |
-|  -pluginOut [params]        | Sets path to plugins out directory                              |
-|  -binOut [params]           | Sets path to binary out directory                               |
+|  -qmlOut [target1;path,path]| Sets path to qml out directory                                  |
+|  -libOut [target1;path,path]| Sets path to libraries out directory                            |
+|  -trOut [target1;path,path] | Sets path to translations out directory                         |
+|  -pluginOut [target1;path,path]| Sets path to plugins out directory                           |
+|  -binOut [target1;path,path]| Sets path to binary out directory                               |
+|                             |                                                                |
 |  -qif [params]              | Create the QIF installer for deployement programm"              |
 |                             | if skip the [params] then installer weel be created by default'"                           |
 |                             | Examples:" },
@@ -78,20 +76,17 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 ```
 
 * Все параметры должны начинается с знака '-'.
-
 * После указания нужного параметра нужно в обязательном порядке указать значение
-
 * Некоторые параметры поддерживают перечисления (массивы значений). При инициализации таких параметров укажите список значений через ',' без прабелов. Если вы используете какой либо язык программирования и вызываете процесс cqtdeployer то массив значений должен передаваться как 1 параметр.
-
+* Некоторые параметры поддерживают пересисления с возможностью выбрать цель для которой будет применен флаг. Цель и значения разделяются при помощи знака ';'. Пример -libOut target1;value1,target2;value2,defaultValue.
 * Для включения какого либо флага достаточно просто включить в список опций имя флага.
 
 ## Обозначения в таблице 
 
  * **-binDir [params]** - параметр без поддержки массивов.
-
  * **-bin [params,list]** - параметр c поддержкой массивов. В качестве разделителя используется ','.
-
-* **clear** - флаг 
+ * **-libOut [target1;path,path]** - параметр c поддержкой выбора цели для которого бутет установленно значение флага. В качестве разделителя используется ';'. Обратитте внимание что для перечисления значений параметра используется правило описанное выше. Последний параметр не имеет значение таргета, это значит что это значение будет установленно для всех не настроенных таргетов по умолчанию.
+ * **clear** - флаг
 
 ## Параметры:
 | Option                      | Descriptiion                                              |

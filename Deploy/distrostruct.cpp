@@ -64,22 +64,6 @@ QString DistroStruct::getRootDir(const QString &basePath) const {
 
 void DistroStruct::init() {
 
-#ifdef Q_OS_LINUX
-
-    setBinOutDir(QuasarAppUtils::Params::getStrArg("binOut", "/bin"));
-    setLibOutDir(QuasarAppUtils::Params::getStrArg("libOut", "/lib"));
-
-#else
-    setBinOutDir(QuasarAppUtils::Params::getStrArg("binOut", "/"));
-    setLibOutDir(QuasarAppUtils::Params::getStrArg("libOut", "/"));
-#endif
-
-
-    setQmlOutDir(QuasarAppUtils::Params::getStrArg("qmlOut", "/qml"));
-    setTrOutDir(QuasarAppUtils::Params::getStrArg("trOut", "/translations"));
-    setPluginsOutDir(QuasarAppUtils::Params::getStrArg("pluginOut", "/plugins"));
-    setResOutDir("/resources");
-
 }
 
 QString DistroStruct::toFullPath(QString path) const {

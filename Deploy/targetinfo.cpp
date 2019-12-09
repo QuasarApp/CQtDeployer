@@ -11,12 +11,18 @@ TargetInfo::TargetInfo() {
 
 }
 
-QString TargetInfo::getSufix() const
-{
+QString TargetInfo::getSufix() const {
     return sufix;
 }
 
-void TargetInfo::setSufix(const QString &value)
-{
+void TargetInfo::setSufix(const QString &value) {
     sufix = value;
+}
+
+DistroStruct& TargetInfo::getCustomStruct() {
+    return _customStruct;
+}
+
+void TargetInfo::setCustomStruct(const DistroStruct &customStruct) {
+    _customStruct = customStruct;
 }

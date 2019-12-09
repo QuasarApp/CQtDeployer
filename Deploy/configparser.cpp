@@ -226,6 +226,57 @@ bool ConfigParser::loadFromFile(const QString& confFile) {
     return false;
 }
 
+#define initDistroPatern(inputParamsList, seterFunc) \
+    for (auto& str: inputParamsList) { \
+        auto targetVal = str.split(';'); \
+        if (targetVal.size() == 2 && !targetVal.first().isEmpty() \
+                && !targetVal.last().isEmpty()) { \
+\
+            auto acceptTargets = _config.getTargetsListByFilter(targetVal.first()); \
+\
+            for (auto& i : acceptTargets) { \
+                i->getCustomStruct().seterFunc(targetVal.last()); \
+            } \
+\
+        } else { \
+            for (auto& val: targetVal) { \
+                if (!val.isEmpty()) { \
+                    mainDistro.setBinOutDir(val); \
+                } \
+            } \
+        } \
+    }
+
+bool ConfigParser::initDustroStruct() {
+
+    auto &mainDistro = _config.distroStruct;
+
+#ifdef Q_OS_LINUX
+
+    auto binOut = QuasarAppUtils::Params::getStrArg("binOut", "/bin").split(',');
+    auto libOut = QuasarAppUtils::Params::getStrArg("libOut", "/lib").split(',');
+
+#else
+    auto binOut = QuasarAppUtils::Params::getStrArg("binOut", "/").split(',');
+    auto libOut = QuasarAppUtils::Params::getStrArg("libOut", "/").split(',');
+#endif
+
+    auto qmlOut = QuasarAppUtils::Params::getStrArg("qmlOut", "/qml").split(',');
+    auto trOut = QuasarAppUtils::Params::getStrArg("trOut", "/translations").split(',');
+    auto pluginOut = QuasarAppUtils::Params::getStrArg("pluginOut", "/plugins").split(',');
+    auto recOut = QuasarAppUtils::Params::getStrArg("recOut", "/resources").split(',');
+
+
+    initDistroPatern(binOut, setBinOutDir)
+    initDistroPatern(libOut, setLibOutDir)
+    initDistroPatern(qmlOut, setQmlOutDir)
+    initDistroPatern(trOut, setTrOutDir)
+    initDistroPatern(pluginOut, setPluginsOutDir)
+    initDistroPatern(recOut, setResOutDir)
+
+    return true;
+}
+
 bool ConfigParser::parseQtDeployMode() {
 
     if (QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
@@ -246,8 +297,7 @@ bool ConfigParser::parseQtDeployMode() {
     initIgnoreEnvList();
     initEnvirement();
     initIgnoreList();
-
-    _config.distroStruct.init();
+    initDustroStruct();
 
     _config.depchLimit = 0;
 
@@ -900,6 +950,19 @@ void DeployConfig::reset() {
     *this = DeployConfig{};
 }
 
+QHash<QString, TargetInfo*>
+DeployConfig::getTargetsListByFilter(const QString &filter) {
+    QHash<QString, TargetInfo*> result;
+
+    for( auto it = targets.begin(); it != targets.end(); ++it) {
+        if (it.key().contains(filter, Qt::CaseInsensitive)) {
+            result.insert(it.key(), &(*it));
+        }
+    }
+
+    return result;
+}
+
 bool QtDir::isQt(const QString& path) const {
 
     return
@@ -933,8 +996,3 @@ bool Extra::contains(const QString &path) const {
     return false;
 }
 
-
-
-need to add sufix for all targets.
-and deploy all target separete.
-add new separato for parametrs.

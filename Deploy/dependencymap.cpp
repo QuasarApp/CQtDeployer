@@ -77,6 +77,3 @@ bool DependencyMap::containsNeadedLib(const QString &lib) const {
     return _neadedLibs.contains(lib);
 }
 
-bool DependencyMap::contains() const {
-
-}

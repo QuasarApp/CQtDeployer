@@ -71,6 +71,7 @@ struct DEPLOYSHARED_EXPORT DeployConfig {
      * @brief reset config file to default
      */
     void reset();
+    QHash<QString, TargetInfo *> getTargetsListByFilter(const QString& filter);
 };
 
 class DEPLOYSHARED_EXPORT ConfigParser
@@ -82,6 +83,7 @@ private:
     DependenciesScanner *_scaner;
     bool createFromDeploy(const QString& file) const;
     bool loadFromFile(const QString& file);
+    bool initDustroStruct();
     bool parseQtDeployMode();
     bool parseQtInfoMode();
     bool parseQtClearMode();

@@ -29,6 +29,10 @@ private:
     QString stripPath(QString path) const;
     QString getRelativePath(QString path) const;
 
+
+public:
+    DistroStruct();
+
     void setBinOutDir(const QString &value);
     void setLibOutDir(const QString &value);
     void setQmlOutDir(const QString &value);
@@ -36,9 +40,6 @@ private:
     void setResOutDir(const QString &value);
     void setPluginsOutDir(const QString &value);
 
-
-public:
-    DistroStruct();
     QString getLibOutDir(const QString& basePath = "/") const;
     QString getBinOutDir(const QString& basePath = "/") const;
     QString getQmlOutDir(const QString& basePath = "/") const;

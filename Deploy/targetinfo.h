@@ -8,6 +8,7 @@
 #ifndef TARGETINFO_H
 #define TARGETINFO_H
 
+#include "distrostruct.h"
 #include "libinfo.h"
 
 class DEPLOYSHARED_EXPORT TargetInfo: public LibInfo
@@ -18,8 +19,12 @@ public:
     QString getSufix() const;
     void setSufix(const QString &value);
 
+    DistroStruct& getCustomStruct();
+    void setCustomStruct(const DistroStruct &customStruct);
+
 private:
     QString sufix = "";
+    DistroStruct _customStruct;
 };
 
 #endif // TARGETINFO_H
