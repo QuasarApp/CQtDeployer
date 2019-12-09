@@ -13,7 +13,9 @@
 
 Deploy::Deploy() {
     _fileManager = new FileManager();
-    _paramsParser = new ConfigParser(_fileManager);
+    _scaner = new DependenciesScanner();
+    _paramsParser = new ConfigParser(_fileManager, _scaner);
+
 }
 
 int Deploy::run() {
@@ -38,6 +40,10 @@ Deploy::~Deploy() {
     if (_fileManager) {
         delete _fileManager;
     }
+
+    if (_scaner) {
+        delete _scaner;
+    }
 }
 
 bool Deploy::prepare() {
@@ -45,7 +51,7 @@ bool Deploy::prepare() {
         return false;
     }
 
-    _extracter = new Extracter(_fileManager, _paramsParser);
+    _extracter = new Extracter(_fileManager, _paramsParser, _scaner);
 
     return true;
 }

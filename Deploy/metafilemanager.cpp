@@ -13,6 +13,7 @@
 #include <configparser.h>
 #include "filemanager.h"
 
+#include <assert.h>
 
 bool MetaFileManager::createRunScriptWindows(const QString &target) {
 
@@ -113,7 +114,12 @@ bool MetaFileManager::createRunScript(const QString &target) {
         return createRunScriptWindows(target);
     }
 
-    return createRunScriptLinux(target);
+    if (sufix.isEmpty()) {
+        return createRunScriptLinux(target);
+    }
+
+    return true;
+
 }
 
 bool MetaFileManager::createQConf() {
@@ -155,7 +161,7 @@ void MetaFileManager::createRunMetaFiles() {
 
     for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
 
-        if (!createRunScript(*i)) {
+        if (!createRunScript(i.key())) {
             qCritical() << "run script not created!";
         }
     }

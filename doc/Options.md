@@ -35,6 +35,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |                             | For example -ignoreEnv /bad/dir,/my/bad/Dir                     |
 |   -libDir [list,params]     | Sets additional paths for extra libs of an app.                 |
 |                             | For example -libDir ~/myLib,~/newLibs                           |
+|   -extraLibs [list,params]  | Sets the mask of the library name for forced copying. Example: "-extraLib mySql" - forces to copy all libraries whose names contain mySql to the project folder. This option is case sensitive. |
 |   -extraPlugin [list,params]| Sets an additional path to extraPlugin of an app                |
 |   -recursiveDepth [params]  | Sets the Depth of recursive search of libs (default 0)          |
 |   -targetDir [params]       | Sets target directory(by default it is the path to the first deployable file)|
@@ -56,7 +57,9 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   noStrip                   | Skips strip step                                                |
 |   noTranslations            | Skips the translations files.                                   |
 |                             | It doesn't work without qmake and inside a snap package         |
+|   extractPlugins            | This flag will cause cqtdeployer to retrieve dependencies from plugins. Starting with version 1.4, this option has been disabled by default, as it can add low-level graphics libraries to the distribution, which will not be compatible with equipment on users' hosts. |
 |   noOverwrite               | Prevents replacing existing files.                              |
+|   noAutoCheckQmake          | Disables automatic search of paths to qmake in executable files.|
 |   v / version               | Shows compiled version                                          |
 
 
@@ -101,6 +104,8 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |                             | Пример -ignoreEnv /bad/dir,/my/bad/Dir                                |
 |  -libDir [list,params]      | Устанавливает дополнительные пути к библиотекам               |
 |                             | Пример -libDir ~/myLib,~/newLibs                          |
+
+|  -extraLibs [list,params]   | Устанавливает маску имени библиотеки, для принудительного копирования, Пример  "-extraLib mySql" - заставит скопировать в папку с проектом все библиотеки чии имена содержат mySql. Данная опция чуствительна к регистру.  |
 |  -qmlOut [params]           | Установит путь к папке с qml                                  |
 |  -libOut [params]           | Установит путь к папке с зависимостями                            |
 |  -trOut [params]            | Установит путь к папке с файламми переводов                         |
@@ -118,9 +123,11 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |                             | (не рекомендуется, так как занимает много памяти)         |
 |  deploySystem-with-libc     | Копирует все зависимости в том числе и libc     |
 |  noStrip                    | Пропускает шаг strip                                      |
+|  extractPlugins             | Заставит извлекать зависимости из плагинов, данная опция начиная с версии 1.4 отключена по умолчанию, так как может добавить в дистрибутив низкоуровневые графические библиотеки, которые будут не совместимы с железом на хостах пользователей.  |
 |  noTranslations             | Пропускает файлы переводов                                |
 |                             | не работает без qmake и в snap                            |
 |   noOverwrite               | Запрещает замену уже существующих файлов.                |
+|   noAutoCheckQmake          | Отключает автоматический поиск путей к qmake в исполняемых файлах.|
 |  v / version                | Показывает версию приложения                                          |
 
 

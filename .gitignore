@@ -61,7 +61,7 @@ sharedQtWin64/
 distro/
 Distro/
 deployTests/
-installer/packages/cqtdeployer/data/
+QIFData/packages/cqtdeployer*/data/
 
 staticQt/
 staticQtWin32/

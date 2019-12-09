@@ -9,7 +9,7 @@
 #define MODULES_H
 
 #include "testutils.h"
-
+#include <configparser.h>
 #include <QSet>
 
 
@@ -22,10 +22,13 @@ public:
 
     static QSet<QString> qtLibs();
     static QSet<QString> qmlLibs();
+    static QSet<QString> qmlLibsExtractPlugins();
+
     static QSet<QString> outTestLibs();
 
     static QSet<QString> qtWithoutTr();
     static QSet<QString> qtWebEngine();
+    static QSet<QString> testEmptyParamsTree(const QString &distDir = DISTRO_DIR);
 
 };
 

@@ -187,12 +187,21 @@ QString DeployCore::help() {
     { "                            | (not recommended, as it takes great amount of computer memory)" },
     { "   -libDir [list,params]    : Sets additional paths for extra libs of an app." },
     { "                            | For example -libDir /myLib,/newLibs " },
+    { "   -extraLibs [list,params] | Sets the mask of the library name for forced copying."},
+    { "                            : For example: '-extraLib mySql' - forces to copy all libraries"},
+    { "                            : whose names contain mySql to the project folder. This option is case sensitive."},
+    { "                            : This option is case sensitive."},
     { "   -extraPlugin[list,params]: Sets an additional path to extraPlugin of an app" },
     { "   -recursiveDepth [params] : Sets the Depth of recursive search of libs (default 0)" },
     { "   -targetDir [params]      : Sets target directory(by default it is the path to the first deployable file)" },
     { "   noStrip                  : Skips strip step" },
+    { "   extractPlugins           | This flag will cause cqtdeployer to retrieve dependencies from plugins." },
+    { "                            : Starting with version 1.4, this option has been disabled by default,"},
+    { "                            : as it can add low-level graphics libraries to the distribution," },
+    { "                            : which will not be compatible with equipment on users' hosts."},
     { "   noTranslations           : Skips the translations files." },
     { "                            | It doesn't work without qmake and inside a snap package" },
+    { "   -noAutoCheckQmake        : Disables automatic search of paths to qmake in executable files." },
     { "   -qmlOut [params]         : Sets path to qml out directory" },
     { "   -libOut [params]         : Sets path to libraries out directory" },
     { "   -trOut [params]          : Sets path to translations out directory" },
@@ -227,10 +236,12 @@ QStringList DeployCore::helpKeys() {
         "force-clear",
         "allQmlDependes",
         "libDir",
+        "extraLibs",
         "extraPlugin",
         "recursiveDepth",
         "targetDir",
         "noStrip",
+        "extractPlugins",
         "noTranslations",
         "qmlOut",
         "libOut",
@@ -238,7 +249,8 @@ QStringList DeployCore::helpKeys() {
         "pluginOut",
         "binOut",
         "version",
-        "verbose"
+        "verbose",
+        "noAutoCheckQmake"
     };
 }
 
@@ -400,5 +412,5 @@ bool DeployCore::isQtLib(const QString &lib) {
 
 bool DeployCore::isExtraLib(const QString &lib) {
     QFileInfo info(lib);
-    return _config->extraPaths.contains(info.absolutePath());
+    return _config->extraPaths.contains(info.absoluteFilePath());
 }
