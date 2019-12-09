@@ -15,6 +15,8 @@
 #include "pathutils.h"
 #include "quasarapp.h"
 
+#include <assert.h>
+
 bool ConfigParser::parseParams() {
 
     auto path = QuasarAppUtils::Params::getStrArg("confFile");
