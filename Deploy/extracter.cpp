@@ -22,6 +22,7 @@
 #include <quasarapp.h>
 #include <stdio.h>
 
+#include <assert.h>
 
 #include <fstream>
 
