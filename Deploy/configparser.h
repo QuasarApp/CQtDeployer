@@ -49,23 +49,56 @@ struct DEPLOYSHARED_EXPORT Extra {
 };
 
 struct DEPLOYSHARED_EXPORT DeployConfig {
+    /**
+     * @brief targetDir -  targe directory (this folder conteins all files of distrebution kit)
+     */
     QString targetDir = "";
+
+    /**
+     * @brief depchLimit - recursive search limit
+     */
     int depchLimit = 0;
+
+    /**
+     * @brief deployQml - enable or disable deploing of qml files.
+     */
     bool deployQml = false;
+
+    /**
+     * @brief ignoreList - list with ignore files
+     */
     IgnoreRule ignoreList;
+
+    /**
+     * @brief extraPlugins - list with pathes of extra plugins or plugins names
+     */
     QStringList extraPlugins;
+
+    /**
+     * @brief appDir - it is cqtdeployer library location for ignre cqtdeployr libraries
+     */
     QString appDir;
+
+    /**
+     * @brief qtDir - conteins all qt pathes
+     */
     QtDir qtDir;
+
+    /**
+     * @brief extraPaths - it is list with filters for extra pathes, files or libraries
+     */
     Extra extraPaths;
-//    QStringList extraPaths;
     /**
      * @brief targets
      * key - path
      * value - create wrapper
      */
     QHash<QString, TargetInfo> targets;
+
+    /**
+     * @brief envirement - envirement for find libraries
+     */
     Envirement envirement;
-    DistroStruct distroStruct;
 
     /**
      * @brief reset config file to default
@@ -81,6 +114,9 @@ private:
     DeployConfig _config;
     FileManager *_fileManager;
     DependenciesScanner *_scaner;
+
+    QHash<QString, QString> _Targetprefixes;
+
     bool createFromDeploy(const QString& file) const;
     bool loadFromFile(const QString& file);
     bool initDustroStruct();

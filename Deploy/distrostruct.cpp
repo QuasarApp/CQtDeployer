@@ -62,7 +62,14 @@ QString DistroStruct::getRootDir(const QString &basePath) const {
     return getRelativePath(basePath);
 }
 
-void DistroStruct::init() {
+bool DistroStruct::isEmpty()
+{
+    return (libOutDir.isEmpty() &&
+            qmlOutDir.isEmpty() &&
+            binOutDir.isEmpty() &&
+            trOutDir.isEmpty() &&
+            resOutDir.isEmpty() &&
+            pluginsOutDir.isEmpty());
 
 }
 

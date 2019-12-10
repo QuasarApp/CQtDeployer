@@ -226,7 +226,7 @@ bool ConfigParser::loadFromFile(const QString& confFile) {
     return false;
 }
 
-#define initDistroPatern(inputParamsList, seterFunc) \
+#define initDistroPatern(mainContainer, inputParamsList, seterMainFunc, seterFunc) \
     for (auto& str: inputParamsList) { \
         auto targetVal = str.split(';'); \
         if (targetVal.size() == 2 && !targetVal.first().isEmpty() \
@@ -235,13 +235,13 @@ bool ConfigParser::loadFromFile(const QString& confFile) {
             auto acceptTargets = _config.getTargetsListByFilter(targetVal.first()); \
 \
             for (auto& i : acceptTargets) { \
-                i->getCustomStruct().seterFunc(targetVal.last()); \
+                i->seterFunc(targetVal.last()); \
             } \
 \
         } else { \
             for (auto& val: targetVal) { \
                 if (!val.isEmpty()) { \
-                    mainDistro.setBinOutDir(val); \
+                    mainContainer.seterMainFunc(val); \
                 } \
             } \
         } \
@@ -249,7 +249,8 @@ bool ConfigParser::loadFromFile(const QString& confFile) {
 
 bool ConfigParser::initDustroStruct() {
 
-    auto &mainDistro = _config.distroStruct;
+    auto mainDistro = DistroStruct();
+    TargetInfo mainPrefix;
 
 #ifdef Q_OS_LINUX
 
@@ -266,13 +267,28 @@ bool ConfigParser::initDustroStruct() {
     auto pluginOut = QuasarAppUtils::Params::getStrArg("pluginOut", "/plugins").split(',');
     auto recOut = QuasarAppUtils::Params::getStrArg("recOut", "/resources").split(',');
 
+    auto prefixes = QuasarAppUtils::Params::getStrArg("recOut", "/resources").split(',');
 
-    initDistroPatern(binOut, setBinOutDir)
-    initDistroPatern(libOut, setLibOutDir)
-    initDistroPatern(qmlOut, setQmlOutDir)
-    initDistroPatern(trOut, setTrOutDir)
-    initDistroPatern(pluginOut, setPluginsOutDir)
-    initDistroPatern(recOut, setResOutDir)
+// init distro stucts for all targets
+    initDistroPatern(mainDistro, binOut, setBinOutDir, getCustomStruct().setBinOutDir)
+    initDistroPatern(mainDistro, libOut, setLibOutDir, getCustomStruct().setLibOutDir)
+    initDistroPatern(mainDistro, qmlOut, setQmlOutDir, getCustomStruct().setQmlOutDir)
+    initDistroPatern(mainDistro, trOut, setTrOutDir, getCustomStruct().setTrOutDir)
+    initDistroPatern(mainDistro, pluginOut, setPluginsOutDir, getCustomStruct().setPluginsOutDir)
+    initDistroPatern(mainDistro, recOut, setResOutDir, getCustomStruct().setResOutDir)
+
+// init preficsex for all targets
+    initDistroPatern(mainPrefix, prefixes, setSufix , setSufix)
+
+// init general values
+    for (auto& target: _config.targets) {
+        if (target.getSufix().isEmpty())
+            target.setSufix(mainPrefix.getSufix());
+
+        if (target.getCustomStruct().isEmpty()) {
+            target.setCustomStruct(mainDistro);
+        }
+    }
 
     return true;
 }

@@ -48,7 +48,7 @@ public:
     QString getPluginsOutDir(const QString& basePath = "/") const;
     QString getRootDir(const QString& basePath = "/") const;
 
-    void init();
+    bool isEmpty();
 
     friend class deploytest;
 };
