@@ -21,7 +21,7 @@ private:
 
 
     bool createRunScript(const QString &target);
-    bool createQConf();
+    bool createQConf(const QString &target);
 
     FileManager* _fileManager = nullptr;
 

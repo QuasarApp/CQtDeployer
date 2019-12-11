@@ -46,6 +46,7 @@ include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
 
 SOURCES += \
     dependencymap.cpp \
+    deployconfig.cpp \
     distrostruct.cpp \
     configparser.cpp \
     deploy.cpp \
@@ -70,6 +71,7 @@ SOURCES += \
 
 HEADERS += \
     dependencymap.h \
+    deployconfig.h \
     distrostruct.h \
     configparser.h \
     deploy.h \

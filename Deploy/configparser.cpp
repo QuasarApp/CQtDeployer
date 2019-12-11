@@ -270,12 +270,12 @@ bool ConfigParser::initDustroStruct() {
     auto prefixes = QuasarAppUtils::Params::getStrArg("recOut", "/resources").split(',');
 
 // init distro stucts for all targets
-    initDistroPatern(mainDistro, binOut, setBinOutDir, getCustomStruct().setBinOutDir)
-    initDistroPatern(mainDistro, libOut, setLibOutDir, getCustomStruct().setLibOutDir)
-    initDistroPatern(mainDistro, qmlOut, setQmlOutDir, getCustomStruct().setQmlOutDir)
-    initDistroPatern(mainDistro, trOut, setTrOutDir, getCustomStruct().setTrOutDir)
-    initDistroPatern(mainDistro, pluginOut, setPluginsOutDir, getCustomStruct().setPluginsOutDir)
-    initDistroPatern(mainDistro, recOut, setResOutDir, getCustomStruct().setResOutDir)
+    initDistroPatern(mainDistro, binOut, setBinOutDir, customStruct().setBinOutDir)
+    initDistroPatern(mainDistro, libOut, setLibOutDir, customStruct().setLibOutDir)
+    initDistroPatern(mainDistro, qmlOut, setQmlOutDir, customStruct().setQmlOutDir)
+    initDistroPatern(mainDistro, trOut, setTrOutDir, customStruct().setTrOutDir)
+    initDistroPatern(mainDistro, pluginOut, setPluginsOutDir, customStruct().setPluginsOutDir)
+    initDistroPatern(mainDistro, recOut, setResOutDir, customStruct().setResOutDir)
 
 // init preficsex for all targets
     initDistroPatern(mainPrefix, prefixes, setSufix , setSufix)
@@ -285,7 +285,7 @@ bool ConfigParser::initDustroStruct() {
         if (target.getSufix().isEmpty())
             target.setSufix(mainPrefix.getSufix());
 
-        if (target.getCustomStruct().isEmpty()) {
+        if (target.customStruct().isEmpty()) {
             target.setCustomStruct(mainDistro);
         }
     }
@@ -924,9 +924,9 @@ bool ConfigParser::smartMoveTargets() {
         QString targetPath = _config.targetDir;
 
         if (DeployCore::isLib(target)) {
-            targetPath += _config.distroStruct.getLibOutDir();
+            targetPath += i->getCustomStruct().getLibOutDir();
         } else {
-            targetPath += _config.distroStruct.getBinOutDir();
+            targetPath += i->getCustomStruct().getBinOutDir();
         }
 
         if (!_fileManager->smartCopyFile(target.absoluteFilePath(), targetPath)) {
@@ -960,55 +960,5 @@ ConfigParser::ConfigParser(FileManager *filemanager, DependenciesScanner* scaner
 #endif
 
     QuasarAppUtils::Params::verboseLog("appDir = " + _config.appDir);
-}
-
-void DeployConfig::reset() {
-    *this = DeployConfig{};
-}
-
-QHash<QString, TargetInfo*>
-DeployConfig::getTargetsListByFilter(const QString &filter) {
-    QHash<QString, TargetInfo*> result;
-
-    for( auto it = targets.begin(); it != targets.end(); ++it) {
-        if (it.key().contains(filter, Qt::CaseInsensitive)) {
-            result.insert(it.key(), &(*it));
-        }
-    }
-
-    return result;
-}
-
-bool QtDir::isQt(const QString& path) const {
-
-    return
-    (!libs.isEmpty() && path.contains(libs)) ||
-    (!bins.isEmpty() && path.contains(bins)) ||
-    (!libexecs.isEmpty() && path.contains(libexecs)) ||
-    (!plugins.isEmpty() && path.contains(plugins)) ||
-    (!qmls.isEmpty() && path.contains(qmls)) ||
-    (!translations.isEmpty() && path.contains(translations)) ||
-    (!resources.isEmpty() && path.contains(resources));
-}
-
-bool Extra::contains(const QString &path) const {
-    QFileInfo info(path);
-    if (extraPaths.contains(info.absolutePath())) {
-        return true;
-    }
-
-    for (auto i: extraPathsMasks) {
-        if (info.absoluteFilePath().contains(i)) {
-            return true;
-        }
-    }
-
-    for (auto i: extraNamesMasks) {
-        if (info.fileName().contains(i)) {
-            return true;
-        }
-    }
-
-    return false;
 }
 

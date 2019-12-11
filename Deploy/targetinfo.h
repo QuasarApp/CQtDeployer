@@ -19,7 +19,9 @@ public:
     QString getSufix() const;
     void setSufix(const QString &value);
 
-    DistroStruct& getCustomStruct();
+    DistroStruct& customStruct();
+    const DistroStruct& getCustomStruct() const;
+
     void setCustomStruct(const DistroStruct &customStruct);
 
 private:
