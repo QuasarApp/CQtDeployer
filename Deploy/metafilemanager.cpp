@@ -37,7 +37,7 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
     content = content.arg(QFileInfo(target).fileName()).arg("%*");
     content = QDir::toNativeSeparators(content);
 
-    QString fname = DeployCore::_config->targetDir + QDir::separator() + QFileInfo(target).baseName()+ ".bat";
+    QString fname = DeployCore::_config->getTargetDir(target) + QDir::separator() + QFileInfo(target).baseName()+ ".bat";
 
     QFile F(fname);
     if (!F.open(QIODevice::WriteOnly)) {
@@ -92,7 +92,7 @@ bool MetaFileManager::createRunScriptLinux(const QString &target) {
         content = content.arg("");
     }
 
-    QString fname = DeployCore::_config->targetDir + QDir::separator() + QFileInfo(target).baseName()+ ".sh";
+    QString fname = DeployCore::_config->getTargetDir(target) + QDir::separator() + QFileInfo(target).baseName()+ ".sh";
 
     QFile F(fname);
     if (!F.open(QIODevice::WriteOnly)) {
@@ -156,7 +156,7 @@ bool MetaFileManager::createQConf(const QString &target) {
     content.replace("//", "/");
     content = QDir::fromNativeSeparators(content);
 
-    QString fname = DeployCore::_config->targetDir + distro.getBinOutDir() + "qt.conf";
+    QString fname = DeployCore::_config->getTargetDir(target) + distro.getBinOutDir() + "qt.conf";
 
     QFile F(fname);
     if (!F.open(QIODevice::WriteOnly)) {

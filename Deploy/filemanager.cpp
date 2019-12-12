@@ -208,7 +208,7 @@ bool FileManager::removeFile(const QString &file) {
 bool FileManager::smartCopyFile(const QString &file, const QString &target, QStringList *mask) {
     auto config = DeployCore::_config;
 
-    if (file.contains(config->targetDir)) {
+    if (file.contains(config->getTargetDir())) {
         if (!moveFile(file, target, mask)) {
             QuasarAppUtils::Params::verboseLog(" file not moved! try copy");
 

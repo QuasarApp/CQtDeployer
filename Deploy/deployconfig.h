@@ -28,12 +28,9 @@ struct DEPLOYSHARED_EXPORT Extra {
 
 };
 
-struct DEPLOYSHARED_EXPORT DeployConfig {
-    /**
-     * @brief targetDir -  targe directory (this folder conteins all files of distrebution kit)
-     */
-    QString targetDir = "";
+class DEPLOYSHARED_EXPORT DeployConfig {
 
+public:
     /**
      * @brief depchLimit - recursive search limit
      */
@@ -89,9 +86,18 @@ struct DEPLOYSHARED_EXPORT DeployConfig {
     /**
      * @brief targetPath
      * @param target
-     * @return pathe to folder with target
+     * @return path to deployement root dir of target.
+     * If target value well be empty then return main root of all targets.
      */
-    QString targetPath(const QString& target);
+    QString getTargetDir(const QString& target = "") const;
+
+private:
+
+    /**
+     * @brief targetDir -  targe directory (this folder conteins all files of distrebution kit)
+     */
+    QString targetDir = "";
+
 };
 
 

@@ -58,7 +58,7 @@ bool Deploy::prepare() {
 
 int Deploy::deploy() {
 
-    _fileManager->loadDeployemendFiles(_paramsParser->config()->targetDir);
+    _fileManager->loadDeployemendFiles(_paramsParser->config()->getTargetDir());
 
     switch (DeployCore::getMode() ) {
     case RunMode::Deploy:
@@ -70,7 +70,7 @@ int Deploy::deploy() {
     default:
         break;
     }
-    _fileManager->saveDeploymendFiles(_paramsParser->config()->targetDir);
+    _fileManager->saveDeploymendFiles(_paramsParser->config()->getTargetDir());
 
     return 0;
 }

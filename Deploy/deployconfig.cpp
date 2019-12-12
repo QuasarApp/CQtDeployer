@@ -17,7 +17,7 @@ DeployConfig::getTargetsListByFilter(const QString &filter) {
     return result;
 }
 
-QString DeployConfig::targetPath(const QString &target) {
+QString DeployConfig::getTargetDir(const QString &target) const {
     if (targets.contains(target))
         return targetDir + targets.value(target).getSufix();
     return targetDir;
