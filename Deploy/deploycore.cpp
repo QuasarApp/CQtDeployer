@@ -426,3 +426,12 @@ bool DeployCore::isExtraLib(const QString &lib) {
     QFileInfo info(lib);
     return _config->extraPaths.contains(info.absoluteFilePath());
 }
+
+QChar DeployCore::getSeparator(int lvl) {
+    switch (lvl) {
+    case 0:  return ',';
+    case 1:  return ';';
+    default:
+        return '\0';
+    }
+}

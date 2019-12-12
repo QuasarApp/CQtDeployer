@@ -78,43 +78,78 @@ const DeployConfig *ConfigParser::config() const {
     return &_config;
 }
 
-void ConfigParser::writeKey(const QString& key, QJsonObject& obj, const QString& confFileDir) const {
+QJsonValue ConfigParser::writeKeyArray(int separatorLvl, const QString &parameter,
+                                 const QString &confFileDir) const {
+
+    auto list = parameter.split(DeployCore::getSeparator(separatorLvl));
+
+    if (list.size() > 1) {
+        QJsonArray array;
+
+        for (auto &i: list) {
+            array.push_back(writeKeyArray(separatorLvl + 1, i, confFileDir));
+        }
+
+        return array;
+    }
+
+    if (list.size() && list.first().isEmpty()) {
+        return QJsonValue(true);
+    }
+
+    auto val = list.first();
+
+    if (PathUtils::isPath(val)) {
+        val = PathUtils::getRelativeLink(
+                    QFileInfo(confFileDir).absoluteFilePath(),
+                    QFileInfo(val).absoluteFilePath());
+
+    }
+
+    return val;
+
+}
+
+void ConfigParser::writeKey(const QString& key, QJsonObject& obj,
+                            const QString& confFileDir) const {
     if (QuasarAppUtils::Params::isEndable(key)) {
-        auto list = QuasarAppUtils::Params::getStrArg(key).split(',');
+        obj[key] = writeKeyArray(0, QuasarAppUtils::Params::getStrArg(key), confFileDir);
+    }
+}
 
-        if (list.size() > 1) {
-            QJsonArray array;
+QString ConfigParser::readKeyArray(int separatorLvl, const QJsonArray &array,
+                                       const QString& confFileDir) const {
 
-            for (auto &i: list) {
-                QJsonValue val;
-                val = i;
+    QStringList list;
 
-                if (PathUtils::isPath(i)) {
-                    val = PathUtils::getRelativeLink(
-                                QFileInfo(confFileDir).absoluteFilePath(),
-                                QFileInfo(i).absoluteFilePath());
-                }
-                array.push_back(val);
-            }
+    for (QJsonValue i : array) {
 
-            obj[key] = array;
+        if (i.isArray()) {
+            list.push_back(readKeyArray(separatorLvl + 1, i.toArray(), confFileDir));
         } else {
-            if (list.size() && list.first().isEmpty()) {
-                obj[key] = QJsonValue(true);
-            } else {
-                auto val = list.first();
+            QString val = i.toString();
+
+            if (!val.isEmpty()) {
 
                 if (PathUtils::isPath(val)) {
-                    val = PathUtils::getRelativeLink(
-                                QFileInfo(confFileDir).absoluteFilePath(),
-                                QFileInfo(val).absoluteFilePath());
+                    QString path;
 
+                    if (PathUtils::isAbsalutPath(val)) {
+                        path = QFileInfo(val).absoluteFilePath();
+                    } else {
+                        path = QFileInfo(confFileDir + '/' + val).absoluteFilePath();
+                    }
+
+                    list.push_back(path);
+
+                } else {
+                    list.push_back(val);
                 }
-
-                obj[key] = val;
             }
         }
     }
+
+    return list.join(DeployCore::getSeparator(separatorLvl));
 }
 
 void ConfigParser::readKey(const QString& key, const QJsonObject& obj,
@@ -124,30 +159,7 @@ void ConfigParser::readKey(const QString& key, const QJsonObject& obj,
 
          if (obj[key].isArray()) {
              auto array = obj[key].toArray();
-             QStringList list;
-
-             for (QJsonValue i : array) {
-                 QString val = i.toString();
-
-                 if (!val.isEmpty()) {
-                     if (PathUtils::isPath(val)) {
-                         QString path;
-
-                         if (PathUtils::isAbsalutPath(val)) {
-                             path = QFileInfo(val).absoluteFilePath();
-                         } else {
-                             path = QFileInfo(confFileDir + '/' + val).absoluteFilePath();
-                         }
-
-                         list.push_back(path);
-
-                     } else {
-                         list.push_back(val);
-                     }
-                 }
-             }
-
-             QuasarAppUtils::Params::setArg(key, list.join(','));
+             QuasarAppUtils::Params::setArg(key, readKeyArray(0, array, confFileDir));
 
          } else if (!obj[key].isUndefined()) {
              QString val = obj[key].toString();
@@ -254,20 +266,29 @@ bool ConfigParser::initDustroStruct() {
 
 #ifdef Q_OS_LINUX
 
-    auto binOut = QuasarAppUtils::Params::getStrArg("binOut", "/bin").split(',');
-    auto libOut = QuasarAppUtils::Params::getStrArg("libOut", "/lib").split(',');
+    auto binOut = QuasarAppUtils::Params::getStrArg("binOut", "/bin").
+            split(DeployCore::getSeparator(0));
+    auto libOut = QuasarAppUtils::Params::getStrArg("libOut", "/lib").
+            split(DeployCore::getSeparator(0));
 
 #else
-    auto binOut = QuasarAppUtils::Params::getStrArg("binOut", "/").split(',');
-    auto libOut = QuasarAppUtils::Params::getStrArg("libOut", "/").split(',');
+    auto binOut = QuasarAppUtils::Params::getStrArg("binOut", "/").
+            split(DeployCore::getSeparator(0));
+    auto libOut = QuasarAppUtils::Params::getStrArg("libOut", "/").
+            split(DeployCore::getSeparator(0));
 #endif
 
-    auto qmlOut = QuasarAppUtils::Params::getStrArg("qmlOut", "/qml").split(',');
-    auto trOut = QuasarAppUtils::Params::getStrArg("trOut", "/translations").split(',');
-    auto pluginOut = QuasarAppUtils::Params::getStrArg("pluginOut", "/plugins").split(',');
-    auto recOut = QuasarAppUtils::Params::getStrArg("recOut", "/resources").split(',');
+    auto qmlOut = QuasarAppUtils::Params::getStrArg("qmlOut", "/qml").
+            split(DeployCore::getSeparator(0));
+    auto trOut = QuasarAppUtils::Params::getStrArg("trOut", "/translations").
+            split(DeployCore::getSeparator(0));
+    auto pluginOut = QuasarAppUtils::Params::getStrArg("pluginOut", "/plugins").
+            split(DeployCore::getSeparator(0));
+    auto recOut = QuasarAppUtils::Params::getStrArg("recOut", "/resources").
+            split(DeployCore::getSeparator(0));
 
-    auto prefixes = QuasarAppUtils::Params::getStrArg("recOut", "/resources").split(',');
+    auto prefixes = QuasarAppUtils::Params::getStrArg("recOut", "/resources").
+            split(DeployCore::getSeparator(0));
 
 // init distro stucts for all targets
     initDistroPatern(mainDistro, binOut, setBinOutDir, customStruct().setBinOutDir)
@@ -299,7 +320,8 @@ bool ConfigParser::parseQtDeployMode() {
         QuasarAppUtils::Params::setEnable("deploySystem", true );
     }
 
-    auto bin = QuasarAppUtils::Params::getStrArg("bin").split(',');
+    auto bin = QuasarAppUtils::Params::getStrArg("bin").
+            split(DeployCore::getSeparator(0));
 
     if (!setTargets(bin)) {
 
@@ -326,11 +348,14 @@ bool ConfigParser::parseQtDeployMode() {
         }
     }
 
-    auto listLibDir = QuasarAppUtils::Params::getStrArg("libDir").split(",");
-    auto listNamesMasks = QuasarAppUtils::Params::getStrArg("extraLibs").split(",");
+    auto listLibDir = QuasarAppUtils::Params::getStrArg("libDir").
+            split(DeployCore::getSeparator(0));
+    auto listNamesMasks = QuasarAppUtils::Params::getStrArg("extraLibs").
+            split(DeployCore::getSeparator(0));
 
-    auto listExtraPlugin =
-            QuasarAppUtils::Params::getStrArg("extraPlugin").split(",");
+    auto listExtraPlugin = QuasarAppUtils::Params::getStrArg("extraPlugin").
+            split(DeployCore::getSeparator(0));
+
     setExtraPath(listLibDir);
     setExtraNames(listNamesMasks);
     setExtraPlugins(listExtraPlugin);
@@ -501,7 +526,8 @@ QHash<QString, TargetInfo> ConfigParser::prepareTarget(const QString &target) {
 void ConfigParser::initIgnoreList()
 {
     if (QuasarAppUtils::Params::isEndable("ignore")) {
-        auto list = QuasarAppUtils::Params::getStrArg("ignore").split(',');
+        auto list = QuasarAppUtils::Params::getStrArg("ignore").
+                split(DeployCore::getSeparator(0));
 
         for (auto &i : list) {
             _config.ignoreList.addRule(IgnoreData(i));
@@ -570,7 +596,8 @@ void ConfigParser::initIgnoreEnvList() {
     ignoreEnvList.push_back(":/Windows");
 
     if (QuasarAppUtils::Params::isEndable("ignoreEnv")) {
-        auto ignoreList = QuasarAppUtils::Params::getStrArg("ignoreEnv").split(',');
+        auto ignoreList = QuasarAppUtils::Params::getStrArg("ignoreEnv").
+                split(DeployCore::getSeparator(0));
 
 
         for (auto &i : ignoreList) {

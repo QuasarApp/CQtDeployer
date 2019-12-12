@@ -135,6 +135,8 @@ public:
 
     static bool isQtLib(const QString &lib);
     static bool isExtraLib(const QString &lib);
+    static QChar getSeparator(int lvl);
+
     static LibPriority getLibPriority(const QString &lib);
     static DeployCore::QtModule getQtModule(const QString& path);
     static void addQtModule(DeployCore::QtModule& module, const QString& path);
