@@ -12,6 +12,6 @@ void DistroModule::setTargets(const QSet<QString> &targets) {
     _targets = targets;
 }
 
-void DistroModule::addTarger(const QString &target) {
+void DistroModule::addTarget(const QString &target) {
     _targets.insert(target);
 }

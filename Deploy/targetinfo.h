@@ -21,7 +21,6 @@ public:
 
 private:
     QString sufix = "";
-    DistroStruct _customStruct;
 };
 
 #endif // TARGETINFO_H
