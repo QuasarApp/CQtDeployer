@@ -2,6 +2,7 @@
 #define DEPLOYCONFIG_H
 #include "deploy_global.h"
 
+#include "distromodule.h"
 #include "ignorerule.h"
 #include "targetinfo.h"
 
@@ -71,6 +72,14 @@ public:
      * value - create wrapper
      */
     QHash<QString, TargetInfo> targets;
+
+    /**
+     * @brief prefixes
+     * key - prefix
+     * value struvture of prefix
+     * default prefix is empty value
+     */
+    QHash<QString, DistroModule> prefixes;
 
     /**
      * @brief envirement - envirement for find libraries

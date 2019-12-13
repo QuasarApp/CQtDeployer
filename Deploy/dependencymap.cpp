@@ -77,3 +77,13 @@ bool DependencyMap::containsNeadedLib(const QString &lib) const {
     return _neadedLibs.contains(lib);
 }
 
+QSet<QString> DependencyMap::targets() const
+{
+    return _targets;
+}
+
+void DependencyMap::setTargets(const QSet<QString> &targets)
+{
+    _targets = targets;
+}
+

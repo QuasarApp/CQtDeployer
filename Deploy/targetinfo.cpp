@@ -19,15 +19,4 @@ void TargetInfo::setSufix(const QString &value) {
     sufix = value;
 }
 
-DistroStruct &TargetInfo::customStruct() {
-    return _customStruct;
-}
-
-const DistroStruct& TargetInfo::getCustomStruct() const {
-    return _customStruct;
-}
-
-void TargetInfo::setCustomStruct(const DistroStruct &customStruct) {
-    _customStruct = customStruct;
-}
 

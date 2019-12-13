@@ -40,11 +40,15 @@ public:
     bool containsModule(DeployCore::QtModule module) const;
     bool containsNeadedLib(const QString& lib) const;
 
+    QSet<QString> targets() const;
+    void setTargets(const QSet<QString> &targets);
+
 private:
     DeployCore::QtModule _qtModules = DeployCore::NONE;
 
     QSet<QString> _neadedLibs;
     QSet<QString> _systemLibs;
+    QSet<QString> _targets;
 };
 
 #endif // DEPENDENCIESMAP_H
