@@ -21,10 +21,6 @@ class MetaFileManager;
 
 class DEPLOYSHARED_EXPORT Extracter {
   private:
-//    DeployCore::QtModule _qtModules = DeployCore::NONE;
-
-//    QStringList neadedLibs;
-//    QStringList systemLibs;
 
     QHash<QString, DependencyMap> _targetDependencyes;
 
@@ -55,7 +51,10 @@ class DEPLOYSHARED_EXPORT Extracter {
     bool copyPlugin(const QString &plugin);
     void copyPlugins(const QStringList &list);
 
-
+    /**
+     * @brief compress - this function join all target dependecies in to one struct
+     */
+    void compress();
     void extractAllTargets();
     void initQtModules();
     void extractPlugins();

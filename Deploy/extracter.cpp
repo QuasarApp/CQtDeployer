@@ -121,6 +121,18 @@ void Extracter::copyPlugins(const QStringList &list) {
     copyExtraPlugins();
 }
 
+void Extracter::compress() {
+    auto targets = DeployCore::_config->targets;
+
+    QSet<QString> sufixes;
+    for (auto &i : targets) {
+        if (!sufixes.contains(i.getSufix())) {
+            sufixes.insert(i.getSufix());
+        }
+    }
+
+}
+
 void Extracter::extractAllTargets() {
     for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
         _targetDependencyes[i.key()] = {};
