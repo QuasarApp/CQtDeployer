@@ -45,7 +45,7 @@ class DEPLOYSHARED_EXPORT Extracter {
     void extractLib(const QString & file, DependencyMap *depMap, const QString& mask = "");
 
     bool deployMSVC();
-    bool extractWebEngine(const QString &prefix);
+    bool extractWebEngine(const QString &prefis);
 
 
     bool copyPlugin(const QString &plugin);
