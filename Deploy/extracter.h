@@ -22,7 +22,7 @@ class MetaFileManager;
 class DEPLOYSHARED_EXPORT Extracter {
   private:
 
-    QHash<QString, DependencyMap> _targetDependencyes;
+    QHash<QString, DependencyMap> _prefixDependencyes;
 
     DependenciesScanner *_scaner;
     FileManager *_fileManager;
@@ -45,7 +45,7 @@ class DEPLOYSHARED_EXPORT Extracter {
     void extractLib(const QString & file, DependencyMap *depMap, const QString& mask = "");
 
     bool deployMSVC();
-    bool extractWebEngine();
+    bool extractWebEngine(const QString &prefix);
 
 
     bool copyPlugin(const QString &plugin);

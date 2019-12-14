@@ -21,7 +21,7 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
     if (!cnf->targets.contains(target)) {
         return false;
     }
-    auto distro = cnf->targets[target].getCustomStruct();
+    auto distro = cnf->getDistro(target);
 
     if (distro.getBinOutDir() ==
            distro.getLibOutDir() ) {
@@ -63,7 +63,7 @@ bool MetaFileManager::createRunScriptLinux(const QString &target) {
     if (!cnf->targets.contains(target)) {
         return false;
     }
-    auto distro = cnf->targets[target].getCustomStruct();
+    auto distro = cnf->getDistro(target);
 
     QString content =
             "#!/bin/sh\n"
@@ -141,7 +141,7 @@ bool MetaFileManager::createQConf(const QString &target) {
     if (!cnf->targets.contains(target)) {
         return false;
     }
-    auto distro = cnf->targets[target].getCustomStruct();
+    auto distro = cnf->getDistro(target);
 
     QString content =
             "[Paths]\n"

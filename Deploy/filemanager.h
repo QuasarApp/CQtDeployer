@@ -27,7 +27,6 @@ private:
 public:
     FileManager();
 
-    void copyLibs(const QStringList &files);
     bool copyFile(const QString &file, const QString &target,
                   QStringList *mask = nullptr);
 

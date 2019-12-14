@@ -23,6 +23,14 @@ QString DeployConfig::getTargetDir(const QString &target) const {
     return targetDir;
 }
 
+void DeployConfig::setTargetDir(const QString &target) {
+    targetDir = target;
+}
+
+DistroStruct DeployConfig::getDistro(const QString &target) const {
+    return prefixes.value(targets.value(target).getSufix());
+}
+
 bool QtDir::isQt(const QString& path) const {
 
     return

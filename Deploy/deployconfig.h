@@ -99,6 +99,14 @@ public:
      * If target value well be empty then return main root of all targets.
      */
     QString getTargetDir(const QString& target = "") const;
+    void setTargetDir(const QString& target);
+
+    /**
+     * @brief getDistro
+     * @param target
+     * @return
+     */
+    DistroStruct getDistro(const QString& target) const;
 
 private:
 

@@ -33,11 +33,12 @@ bool Extracter::deployMSVC() {
         return false;
     }
 
-    return _fileManager->copyFile(msvcInstaller, DeployCore::_config->targetDir);
+    return _fileManager->copyFile(msvcInstaller, DeployCore::_config->getTargetDir());
 }
 
-bool Extracter::extractWebEngine() {
-    auto test = static_cast<quint64>(_qtModules) & static_cast<quint64>(DeployCore::QtModule::QtWebEngineModule);
+bool Extracter::extractWebEngine(const QString& prefix) {
+    auto qtModules = _prefixDependencyes.value(prefix).qtModules();
+    auto test = static_cast<quint64>(qtModules) & static_cast<quint64>(DeployCore::QtModule::QtWebEngineModule);
     if (test) {
         auto webEngeneBin = DeployCore::_config->qtDir.libexecs;
         if (DeployCore::_config->qtDir.qtPlatform & Platform::Unix) {
@@ -46,8 +47,8 @@ bool Extracter::extractWebEngine() {
             webEngeneBin += "/QtWebEngineProcess.exe";
         }
 
-        auto destWebEngine = DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getBinOutDir();
-        auto resOut = DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getResOutDir();
+        auto destWebEngine = DeployCore::_config->getTargetDir() + prefix + DeployCore::_config->prefixes[prefix].getBinOutDir();
+        auto resOut = DeployCore::_config->getTargetDir() + prefix + DeployCore::_config->prefixes[prefix].getResOutDir();
         auto res = DeployCore::_config->qtDir.resources;
 
         if (!_fileManager->copyFile(webEngeneBin, destWebEngine)) {

@@ -381,16 +381,16 @@ QSet<QString> ConfigParser::getQtPathesFromTargets() {
 void ConfigParser::setTargetDir(const QString &target) {
 
     if (QuasarAppUtils::Params::isEndable("targetDir")) {
-        _config.targetDir = QFileInfo(QuasarAppUtils::Params::getStrArg("targetDir")).absoluteFilePath();
+        _config.setTargetDir(QFileInfo(QuasarAppUtils::Params::getStrArg("targetDir")).absoluteFilePath());
     } else if (target.size()) {
-        _config.targetDir = QFileInfo(target).absoluteFilePath();
+        _config.setTargetDir(QFileInfo(target).absoluteFilePath());
     } else {
         if (_config.targets.size())
-            _config.targetDir = QFileInfo(
-                        _config.targets.begin().key()).absolutePath() + "/" + DISTRO_DIR;
+            _config.setTargetDir(QFileInfo(
+                        _config.targets.begin().key()).absolutePath() + "/" + DISTRO_DIR);
 
-        _config.targetDir = QFileInfo("./" + DISTRO_DIR).absoluteFilePath();
-        qInfo () << "flag targetDir not  used." << "use default target dir :" << _config.targetDir;
+        _config.setTargetDir(QFileInfo("./" + DISTRO_DIR).absoluteFilePath());
+        qInfo () << "flag targetDir not  used." << "use default target dir :" << _config.getTargetDir();
     }
 }
 
@@ -703,8 +703,8 @@ bool ConfigParser::setQmake(const QString &value) {
             }
         }
     }
-    _config.envirement.addEnv(_config.qtDir.libs, _config.appDir, _config.targetDir);
-    _config.envirement.addEnv(_config.qtDir.bins, _config.appDir, _config.targetDir);
+    _config.envirement.addEnv(_config.qtDir.libs, _config.appDir, _config.getTargetDir());
+    _config.envirement.addEnv(_config.qtDir.bins, _config.appDir, _config.getTargetDir());
 
     return true;
 }
@@ -767,8 +767,8 @@ bool ConfigParser::setQtDir(const QString &value) {
     _config.qtDir.qtPlatform = Platform::Win;
 #endif
 
-    _config.envirement.addEnv(_config.qtDir.libs, _config.appDir, _config.targetDir);
-    _config.envirement.addEnv(_config.qtDir.bins, _config.appDir, _config.targetDir);
+    _config.envirement.addEnv(_config.qtDir.libs, _config.appDir, _config.getTargetDir());
+    _config.envirement.addEnv(_config.qtDir.bins, _config.appDir, _config.getTargetDir());
 
     return true;
 }
@@ -789,7 +789,7 @@ void ConfigParser::setExtraPath(const QStringList &value) {
             auto extraDirs = getSetDirsRecursive(QDir::fromNativeSeparators(info.absoluteFilePath()), _config.depchLimit);
             _config.extraPaths.extraPaths.unite(extraDirs);
 
-            _config.envirement.addEnv(recursiveInvairement(dir), _config.appDir, _config.targetDir);
+            _config.envirement.addEnv(recursiveInvairement(dir), _config.appDir, _config.getTargetDir());
         } else if (i.size() > 1) {
 
             _config.extraPaths.extraPathsMasks.insert(i);
@@ -869,8 +869,8 @@ QString ConfigParser::recursiveInvairement(const QString &dir, int depch) {
 
 void ConfigParser::initEnvirement() {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    _config.envirement.addEnv(env.value("LD_LIBRARY_PATH"), _config.appDir, _config.targetDir);
-    _config.envirement.addEnv(env.value("PATH"), _config.appDir, _config.targetDir);
+    _config.envirement.addEnv(env.value("LD_LIBRARY_PATH"), _config.appDir, _config.getTargetDir());
+    _config.envirement.addEnv(env.value("PATH"), _config.appDir, _config.getTargetDir());
 
 
     QStringList dirs;
@@ -879,7 +879,7 @@ void ConfigParser::initEnvirement() {
     dirs.append(getDirsRecursive("/usr/lib", 5));
 
     for (auto &&i : dirs) {
-        _config.envirement.addEnv(i, _config.appDir, _config.targetDir);
+        _config.envirement.addEnv(i, _config.appDir, _config.getTargetDir());
     }
 
     if (_config.envirement.size() < 2) {
@@ -918,12 +918,12 @@ bool ConfigParser::smartMoveTargets() {
 
         QFileInfo target(i.key());
 
-        QString targetPath = _config.targetDir;
+        QString targetPath = _config.getTargetDir();
 
         if (DeployCore::isLib(target)) {
-            targetPath += i->getCustomStruct().getLibOutDir();
+            targetPath += _config.getDistro(i.key()).getLibOutDir();
         } else {
-            targetPath += i->getCustomStruct().getBinOutDir();
+            targetPath += _config.getDistro(i.key()).getBinOutDir();
         }
 
         if (!_fileManager->smartCopyFile(target.absoluteFilePath(), targetPath)) {

@@ -333,17 +333,17 @@ void FileManager::clear(const QString& targetDir, bool force) {
     _deployedFiles.clear();
 }
 
-void FileManager::copyLibs(const QStringList &files) {
-    auto config = DeployCore::_config;
+//void FileManager::copyLibs(const QStringList &files) {
+//    auto config = DeployCore::_config;
 
-    for (auto file : files) {
-        QFileInfo target(file);
+//    for (auto file : files) {
+//        QFileInfo target(file);
 
-        if (!smartCopyFile(file, DeployCore::_config->targetDir + config->distroStruct.getLibOutDir())) {
-            QuasarAppUtils::Params::verboseLog(file + " not copied");
-        }
-    }
-}
+//        if (!smartCopyFile(file, DeployCore::_config->targetDir + config->distroStruct.getLibOutDir())) {
+//            QuasarAppUtils::Params::verboseLog(file + " not copied");
+//        }
+//    }
+//}
 
 bool FileManager::copyFile(const QString &file, const QString &target,
                       QStringList *masks) {
