@@ -146,7 +146,7 @@ public:
     static QString help();
     static QStringList helpKeys();
 
-    static QStringList extractTranslation(const QStringList& libs);
+    static QStringList extractTranslation(const QSet<QString> &libs);
     static QString getAppVersion();
     static QString getQtVersion();
     static void printVersion();

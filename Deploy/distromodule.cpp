@@ -15,3 +15,15 @@ void DistroModule::setTargets(const QSet<QString> &targets) {
 void DistroModule::addTarget(const QString &target) {
     _targets.insert(target);
 }
+
+QSet<QString> DistroModule::qmlInput() const {
+    return _qmlInput;
+}
+
+void DistroModule::setQmlInput(const QSet<QString> &qmlInput) {
+    _qmlInput = qmlInput;
+}
+
+void DistroModule::addQmlInput(const QString &target) {
+    _qmlInput.insert(target);
+}

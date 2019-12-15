@@ -284,6 +284,31 @@ bool ConfigParser::initDustroStruct() {
     return true;
 }
 
+bool ConfigParser::initQmlInput() {
+
+    auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir").
+            split(DeployCore::getSeparator(0));
+
+    if (QuasarAppUtils::Params::isEndable("allQmlDependes")) {
+        _config.deployQml = true;
+    }
+
+    for (auto& str: qmlDir) {
+
+        if (QFileInfo::exists(str)) {
+            _config.deployQml = true;
+
+            auto targetVal = str.split(DeployCore::getSeparator(1));
+            _config.prefixes[targetVal.value(1, "")].addQmlInput(targetVal.value(0, ""));
+        } else {
+            QuasarAppUtils::Params::verboseLog("qml dir not exits!",
+                                               QuasarAppUtils::VerboseLvl::Warning);
+        }
+    }
+
+    return true;
+}
+
 bool ConfigParser::parseQtDeployMode() {
 
     if (QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
@@ -334,16 +359,7 @@ bool ConfigParser::parseQtDeployMode() {
         return false;
     }
 
-    auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir");
-
-    if (QFileInfo::exists(qmlDir) ||
-            QuasarAppUtils::Params::isEndable("allQmlDependes")) {
-        _config.deployQml = true;
-
-    } else {
-        QuasarAppUtils::Params::verboseLog("qml dir not exits!",
-                                           QuasarAppUtils::VerboseLvl::Warning);
-    }
+    initQmlInput();
 
     return true;
 }

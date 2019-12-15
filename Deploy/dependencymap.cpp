@@ -6,6 +6,7 @@
 //#
 
 #include "dependencymap.h"
+#include "deploycore.h"
 #include "quasarapp.h"
 
 DependencyMap::DependencyMap() {
@@ -51,6 +52,7 @@ void DependencyMap::addSystemLib(const QString &lib) {
 
 void DependencyMap::addNeadedLib(const QString &lib) {
     _neadedLibs.insert(lib);
+    DeployCore::addQtModule(_qtModules, lib);
 }
 
 void DependencyMap::removeModule(DeployCore::QtModule module) {

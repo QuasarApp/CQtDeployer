@@ -108,6 +108,13 @@ public:
      */
     DistroStruct getDistro(const QString& target) const;
 
+    /**
+     * @brief getDistroFromPrefix
+     * @param prefix
+     * @return distro struct from prefix
+     */
+    DistroStruct getDistroFromPrefix(const QString& prefix) const;
+
 private:
 
     /**

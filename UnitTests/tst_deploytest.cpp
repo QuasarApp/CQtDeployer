@@ -538,9 +538,9 @@ void deploytest::testExtractPlugins() {
     QVERIFY(deploy.run() == 0);
 
     QVERIFY(DeployCore::_config);
-    QVERIFY(!DeployCore::_config->targetDir.isEmpty());
+    QVERIFY(!DeployCore::_config->getTargetDir().isEmpty());
 
-    auto resultTree = utils.getTree(DeployCore::_config->targetDir);
+    auto resultTree = utils.getTree(DeployCore::_config->getTargetDir());
     auto comapre = utils.compareTree(resultTree, comapareTree);
 
 #ifdef   Q_OS_LINUX
@@ -771,18 +771,18 @@ void deploytest::testSetTargetDir() {
 
     dep.setTargetDir();
 
-    QVERIFY(dep.config()->targetDir == QFileInfo("./" + DISTRO_DIR + "").absoluteFilePath());
+    QVERIFY(dep.config()->getTargetDir() == QFileInfo("./" + DISTRO_DIR + "").absoluteFilePath());
     dep.setTargetDir("./ff");
-    QVERIFY(dep.config()->targetDir == QFileInfo("./ff").absoluteFilePath());
+    QVERIFY(dep.config()->getTargetDir() == QFileInfo("./ff").absoluteFilePath());
 
     QStringList argv = {"-targetDir", "./" + DISTRO_DIR + "2"};
 
     QuasarAppUtils::Params::parseParams(argv);
 
     dep.setTargetDir();
-    QVERIFY(dep.config()->targetDir == QFileInfo("./" + DISTRO_DIR + "2").absoluteFilePath());
+    QVERIFY(dep.config()->getTargetDir() == QFileInfo("./" + DISTRO_DIR + "2").absoluteFilePath());
     dep.setTargetDir("./ff");
-    QVERIFY(dep.config()->targetDir == QFileInfo("./" + DISTRO_DIR + "2").absoluteFilePath());
+    QVERIFY(dep.config()->getTargetDir() == QFileInfo("./" + DISTRO_DIR + "2").absoluteFilePath());
 
 }
 
@@ -836,9 +836,9 @@ void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings) {
     TestUtils utils;
 
     QVERIFY(DeployCore::_config);
-    QVERIFY(!DeployCore::_config->targetDir.isEmpty());
+    QVERIFY(!DeployCore::_config->getTargetDir().isEmpty());
 
-    auto resultTree = utils.getTree(DeployCore::_config->targetDir);
+    auto resultTree = utils.getTree(DeployCore::_config->getTargetDir());
 
     auto comapre = utils.compareTree(resultTree, tree);
 

@@ -56,6 +56,8 @@ private:
     QString getPathFrmoQmakeLine(const QString& in) const;
     bool initQmakePrivate(const QString& qmake);
     bool initQmake();
+    bool initQmlInput();
+
     bool setQmake(const QString &value);
     bool setQtDir(const QString &value);
 

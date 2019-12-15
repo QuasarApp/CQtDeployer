@@ -172,7 +172,7 @@ QString DeployCore::help() {
     { "   -binDir [params]         : A folder which includes deployable files (recursive search)." },
     { "                            | WARNING: this flag supports 'so', 'dll' and 'exe' files only." },
     { "                            | Use '-bin' flag if you want to deploy linux binary files" },
-    { "   -qmlDir [params]         : Qml data dir. For example -qmlDir ~/my/project/qml" },
+    { "   -qmlDir [prefix;path,path]: Qml data dir. For example -qmlDir ~/my/project/qml" },
     { "   deploySystem             : Deploys all libs" },
     { "   deploySystem-with-libc             : Skip Deploys system core libs libs" },
     { "   -qmake  [params]         : Qmake path." },
@@ -203,12 +203,12 @@ QString DeployCore::help() {
     { "   noTranslations           : Skips the translations files." },
     { "                            | It doesn't work without qmake and inside a snap package" },
     { "   -noAutoCheckQmake        : Disables automatic search of paths to qmake in executable files." },
-    { "   -qmlOut [prefix;path,path] : Sets path to qml out directory" },
-    { "   -libOut [prefix;path,path] : Sets path to libraries out directory" },
-    { "   -trOut [prefix;path,path]  : Sets path to translations out directory" },
-    { " -pluginOut [prefix;path,path]: Sets path to plugins out directory" },
-    { "   -binOut [prefix;path,path] : Sets path to binary out directory" },
-    { "   -recOut [prefix;path,path] : Sets path to recurses out directory" },
+    { "   -qmlOut [path;prefix;target,path] : Sets path to qml out directory" },
+    { "   -libOut [path;prefix;target,path] : Sets path to libraries out directory" },
+    { "   -trOut [path;prefix;target,path]  : Sets path to translations out directory" },
+    { " -pluginOut [path;prefix;target,path]: Sets path to plugins out directory" },
+    { "   -binOut [path;prefix;target,path] : Sets path to binary out directory" },
+    { "   -recOut [path;prefix;target,path] : Sets path to recurses out directory" },
 
     { "   -qif [params]            : Create the QIF installer for deployement programm" },
     { "                            : By default params value is 'Default'" },
@@ -266,7 +266,7 @@ QStringList DeployCore::helpKeys() {
     };
 }
 
-QStringList DeployCore::extractTranslation(const QStringList &libs) {
+QStringList DeployCore::extractTranslation(const QSet<QString> &libs) {
     QSet<QString> res;
     const size_t qtModulesCount = sizeof(qtModuleEntries) / sizeof(QtModuleEntry);
 

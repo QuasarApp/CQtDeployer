@@ -31,6 +31,14 @@ DistroStruct DeployConfig::getDistro(const QString &target) const {
     return prefixes.value(targets.value(target).getSufix());
 }
 
+DistroStruct DeployConfig::getDistroFromPrefix(const QString &prefix) const {
+    if (prefixes.contains(prefix)) {
+        return prefixes[prefix];
+    }
+
+    return prefixes.value("");
+}
+
 bool QtDir::isQt(const QString& path) const {
 
     return
