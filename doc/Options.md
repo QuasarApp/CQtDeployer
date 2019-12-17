@@ -94,17 +94,19 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |   help / h                  | Показывает справку                                          |
 |   -bin    [list, params]    | Развертываемый файл или папка. пример -bin ~/my/project/bin/,~/my/project/bin.exe|
 |   -binDir [params]          | Папка с развертываемыми файлами (с рекурсивным поиском). |
-|   -confFile [params]        | Путь к файлу json со всеми конфигурациями развертывания. С помощью этого файла можно добавить нужные опции, тем самым упрастить вызов комманды в консоле. Однако пораметры в кансоле имеют больший приоритет чем в файле. Для получения дополнительной информации об этом флаге см. [Вики](https://github.com/QuasarApp/CQtDeployer/wiki/DeployConfigFileRu) |
+|   -confFile [params]        | Путь к файлу json со всеми конфигурациями развертывания. |
+|                             | С помощью этого файла можно добавить нужные опции, тем самым упрастить вызов комманды в консоле.|
+|                             | Однако пораметры в кансоле имеют больший приоритет чем в файле.|
+|                             | Для получения дополнительной информации об этом флаге см. [Вики](https://github.com/QuasarApp/CQtDeployer/wiki/DeployConfigFileRu) |
 |   -qmlDir [params]          | Папка qml. пример -qmlDir ~/my/project/qml                |
 |   -qmake  [params]          | Путь к qmake. пример                                      |
 |                             | -qmake ~/Qt/5.14.0/gcc_64/bin/qmake                       |
 |   -ignore [list,params]     | Список библиотек для игнорирования                        |
 |                             | Пример -ignore libicudata.so.56,libicudata2.so.56         |
-|   -ignoreEnv [list,params]  | Список путей для игнорирования.                          |
-|                             | Пример -ignoreEnv /bad/dir,/my/bad/Dir                                |
+|   -ignoreEnv [list,params]  | Список путей для игнорирования.                           |
+|                             | Пример -ignoreEnv /bad/dir,/my/bad/Dir                    |
 |  -libDir [list,params]      | Устанавливает дополнительные пути к библиотекам               |
 |                             | Пример -libDir ~/myLib,~/newLibs                          |
-
 |  -extraLibs [list,params]   | Устанавливает маску имени библиотеки, для принудительного копирования, Пример  "-extraLib mySql" - заставит скопировать в папку с проектом все библиотеки чии имена содержат mySql. Данная опция чуствительна к регистру.  |
 |  -qmlOut [params]           | Установит путь к папке с qml                                  |
 |  -libOut [params]           | Установит путь к папке с зависимостями                            |
