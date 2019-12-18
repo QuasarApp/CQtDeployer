@@ -482,21 +482,21 @@ void ConfigParser::initIgnoreList()
         _config.ignoreList.addRule(addRuleUnix("libnss"));
     }
 
-//    envWin.addEnv(recursiveInvairement("C:/Windows", 3), "", "");
-//    ruleWin.prority = ExtraLib;
-//    ruleWin.platform = Win;
-//    ruleWin.enfirement = envWin;
+    envWin.addEnv(recursiveInvairement("C:/Windows", 3), "", "");
+    ruleWin.prority = ExtraLib;
+    ruleWin.platform = Win;
+    ruleWin.enfirement = envWin;
 
-//    auto addRuleWin = [&ruleWin](const QString & lib) {
-//        ruleWin.label = lib;
-//        return ruleWin;
-//    };
+    auto addRuleWin = [&ruleWin](const QString & lib) {
+        ruleWin.label = lib;
+        return ruleWin;
+    };
 
-//    _config.ignoreList.addRule(addRuleWin("kernelBase"));
-//    _config.ignoreList.addRule(addRuleWin("gdi32"));
-//    _config.ignoreList.addRule(addRuleWin("kernel32"));
-//    _config.ignoreList.addRule(addRuleWin("msvcrt"));
-//    _config.ignoreList.addRule(addRuleWin("user32"));
+    _config.ignoreList.addRule(addRuleWin("kernelBase"));
+    _config.ignoreList.addRule(addRuleWin("gdi32"));
+    _config.ignoreList.addRule(addRuleWin("kernel32"));
+    _config.ignoreList.addRule(addRuleWin("msvcrt"));
+    _config.ignoreList.addRule(addRuleWin("user32"));
 }
 
 void ConfigParser::initIgnoreEnvList() {
@@ -806,16 +806,44 @@ QString ConfigParser::recursiveInvairement(const QString &dir, int depch) {
     return recursiveInvairement(_dir, 0, depch);
 }
 
+QString ConfigParser::findWindowsPath(const QString& path) const {
+    auto list = path.split(';');
+
+    for (auto &i: list ) {
+        QString win_magic = "Windows";
+        int index = i.indexOf(win_magic);
+        if (index > 0 && i.size() == index + win_magic.size()) {
+            return QDir::fromNativeSeparators(i);
+        }
+    }
+
+    return "C:/Windows/";
+}
+
 void ConfigParser::initEnvirement() {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+
+    auto path = env.value("PATH");
+
     _config.envirement.addEnv(env.value("LD_LIBRARY_PATH"), _config.appDir, _config.targetDir);
-    _config.envirement.addEnv(env.value("PATH"), _config.appDir, _config.targetDir);
+    _config.envirement.addEnv(path, _config.appDir, _config.targetDir);
 
 
     QStringList dirs;
 
+
+#ifdef Q_OS_LINUX
+
     dirs.append(getDirsRecursive("/lib", 5));
     dirs.append(getDirsRecursive("/usr/lib", 5));
+#elif
+    auto winPath = findWindowsPath(path);
+    dirs.append(getDirsRecursive(winPath + "/System32", 2));
+    dirs.append(getDirsRecursive(winPath + "/SysWOW64", 2));
+
+#endif
+
+
 
     for (auto &&i : dirs) {
         _config.envirement.addEnv(i, _config.appDir, _config.targetDir);

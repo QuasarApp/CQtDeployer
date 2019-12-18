@@ -118,6 +118,7 @@ private:
     void writeKey(const QString &key, QJsonObject &, const QString &confFileDir) const;
     void readKey(const QString &key, const QJsonObject &obj, const QString &confFileDir) const;
     QHash<QString, LibInfo> prepareTarget(const QString &target);
+    QString findWindowsPath(const QString &path) const;
 public:
     ConfigParser(FileManager *filemanager, DependenciesScanner *scaner);
     bool parseParams();
