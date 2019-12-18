@@ -1267,7 +1267,13 @@ void deploytest::testIgnore() {
 
     auto removeTree = utils.createTree({
                     "./" + DISTRO_DIR + "/Qt5VirtualKeyboard.dll",
-                });
+                    "./" + DISTRO_DIR + "/plugins/platforminputcontexts/qtvirtualkeyboardplugin.dll",
+                    "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_hangul.dll",
+                    "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_openwnn.dll",
+                    "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_pinyin.dll",
+                    "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_tcime.dll",
+                    "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_thai.dll"
+    });
 
     auto removeTreePlugins = utils.createTree({
                   "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_hangul.dll",
@@ -1531,6 +1537,45 @@ void deploytest::testSystemLib() {
 
     QVERIFY(runScript.contains("export LD_PRELOAD="));
 
+#else
+    QString qmake = TestQtDir + "bin/qmake.exe";
+    bin = TestBinDir + "QtWidgetsProject.exe";
+
+    comapareTree += Modules::qtLibs();
+
+    comapareTree -= utils.createTree(
+    {
+        "./" + DISTRO_DIR + "/TestOnlyC.exe",
+    });
+
+    comapareTree += utils.createTree(
+    {
+        "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
+        "./" + DISTRO_DIR + "/libstdc++-6.dll",
+        "./" + DISTRO_DIR + "/libwinpthread-1.dll",
+        "./" + DISTRO_DIR + "/advapi32.dll",
+        "./" + DISTRO_DIR + "/bcryptprimitives.dll",
+        "./" + DISTRO_DIR + "/combase.dll",
+        "./" + DISTRO_DIR + "/dwmapi.dll",
+        "./" + DISTRO_DIR + "/mpr.dll",
+        "./" + DISTRO_DIR + "/netapi32.dll",
+        "./" + DISTRO_DIR + "/ole32.dll",
+        "./" + DISTRO_DIR + "/profapi.dll",
+        "./" + DISTRO_DIR + "/rpcrt4.dll",
+        "./" + DISTRO_DIR + "/sechost.dll",
+        "./" + DISTRO_DIR + "/shell32.dll",
+        "./" + DISTRO_DIR + "/userenv.dll",
+        "./" + DISTRO_DIR + "/uxtheme.dll",
+        "./" + DISTRO_DIR + "/version.dll",
+        "./" + DISTRO_DIR + "/winmm.dll",
+        "./" + DISTRO_DIR + "/winmmbase.dll",
+        "./" + DISTRO_DIR + "/ws2_32.dll"
+    });
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "deploySystem"
+                  }, &comapareTree, true);
 
 #endif
 }

@@ -482,8 +482,11 @@ void ConfigParser::initIgnoreList()
         _config.ignoreList.addRule(addRuleUnix("libnss"));
     }
 
-    envWin.addEnv(recursiveInvairement("C:/Windows", 3), "", "");
-    ruleWin.prority = ExtraLib;
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    auto path = env.value("PATH");
+
+    envWin.addEnv(recursiveInvairement(findWindowsPath(path), 3), "", "");
+    ruleWin.prority = SystemLib;
     ruleWin.platform = Win;
     ruleWin.enfirement = envWin;
 
@@ -501,9 +504,6 @@ void ConfigParser::initIgnoreList()
 
 void ConfigParser::initIgnoreEnvList() {
     QStringList ignoreEnvList;
-
-    // remove windows from envirement,
-    ignoreEnvList.push_back(":/Windows");
 
     if (QuasarAppUtils::Params::isEndable("ignoreEnv")) {
         auto ignoreList = QuasarAppUtils::Params::getStrArg("ignoreEnv").split(',');
@@ -808,16 +808,16 @@ QString ConfigParser::recursiveInvairement(const QString &dir, int depch) {
 
 QString ConfigParser::findWindowsPath(const QString& path) const {
     auto list = path.split(';');
+    QString win_magic = "windows";
 
-    for (auto &i: list ) {
-        QString win_magic = "Windows";
-        int index = i.indexOf(win_magic);
+    for (auto i: list ) {
+        int index = i.indexOf(win_magic, 0, Qt::CaseInsensitive);
         if (index > 0 && i.size() == index + win_magic.size()) {
             return QDir::fromNativeSeparators(i);
         }
     }
 
-    return "C:/Windows/";
+    return "C:/" + win_magic;
 }
 
 void ConfigParser::initEnvirement() {
@@ -836,7 +836,7 @@ void ConfigParser::initEnvirement() {
 
     dirs.append(getDirsRecursive("/lib", 5));
     dirs.append(getDirsRecursive("/usr/lib", 5));
-#elif
+#else
     auto winPath = findWindowsPath(path);
     dirs.append(getDirsRecursive(winPath + "/System32", 2));
     dirs.append(getDirsRecursive(winPath + "/SysWOW64", 2));
