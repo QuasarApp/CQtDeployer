@@ -484,8 +484,11 @@ void ConfigParser::initIgnoreList()
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     auto path = env.value("PATH");
+    auto winPath = findWindowsPath(path);
 
-    envWin.addEnv(recursiveInvairement(findWindowsPath(path), 3), "", "");
+    envWin.addEnv(recursiveInvairement(winPath + "/System32", 2), "", "");
+    envWin.addEnv(recursiveInvairement(winPath + "/SysWOW64", 2), "", "");
+
     ruleWin.prority = SystemLib;
     ruleWin.platform = Win;
     ruleWin.enfirement = envWin;
@@ -495,11 +498,22 @@ void ConfigParser::initIgnoreList()
         return ruleWin;
     };
 
-    _config.ignoreList.addRule(addRuleWin("kernelBase"));
-    _config.ignoreList.addRule(addRuleWin("gdi32"));
-    _config.ignoreList.addRule(addRuleWin("kernel32"));
-    _config.ignoreList.addRule(addRuleWin("msvcrt"));
-    _config.ignoreList.addRule(addRuleWin("user32"));
+    // win and core libs :  see https://en.wikipedia.org/wiki/Microsoft_Windows_library_files
+    _config.ignoreList.addRule(addRuleWin("Hal.DLL"));
+    _config.ignoreList.addRule(addRuleWin("NTDLL.DLL"));
+    _config.ignoreList.addRule(addRuleWin("KERNEL32.DLL"));
+    _config.ignoreList.addRule(addRuleWin("GDI32.DLL"));
+    _config.ignoreList.addRule(addRuleWin("USER32.DLL"));
+    _config.ignoreList.addRule(addRuleWin("COMCTL32.DLL"));
+    _config.ignoreList.addRule(addRuleWin("COMDLG32.DLL"));
+    _config.ignoreList.addRule(addRuleWin("WS2_32.DLL"));
+    _config.ignoreList.addRule(addRuleWin("ADVAPI32.DLL"));
+    _config.ignoreList.addRule(addRuleWin("NETAPI32.DLL"));
+    _config.ignoreList.addRule(addRuleWin("OLE32.DLL"));
+    _config.ignoreList.addRule(addRuleWin("SHSCRAP.DLL"));
+    _config.ignoreList.addRule(addRuleWin("WINMM.DLL"));
+    _config.ignoreList.addRule(addRuleWin("IMM32.DLL"));
+
 }
 
 void ConfigParser::initIgnoreEnvList() {

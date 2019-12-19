@@ -273,10 +273,6 @@ void Extracter::extractLib(const QString &file, const QString& mask) {
             continue;
         }
 
-        if (DeployCore::_config->ignoreList.isIgnore(line)) {
-            continue;
-        }
-
         if (line.getPriority() != LibPriority::SystemLib && !neadedLibs.contains(line.fullPath())) {
             neadedLibs << line.fullPath();
         } else if (QuasarAppUtils::Params::isEndable("deploySystem") &&
