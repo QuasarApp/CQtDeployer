@@ -6,6 +6,7 @@
  */
 
 #include "libinfo.h"
+#include "pathutils.h"
 
 bool operator ==(const LibInfo &left, const LibInfo &right) {
     return left.fullPath() == right.fullPath();

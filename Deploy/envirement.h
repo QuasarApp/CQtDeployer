@@ -20,6 +20,7 @@ private:
     QSet<QString> _ignoreEnvList;
     QSet<QString> _deployEnvironment;
 
+    QSet<QString> upper(const QSet<QString> &set) const;
 public:
     Envirement();
     QStringList deployEnvironment() const;

@@ -52,7 +52,7 @@ bool PE::getDep(peparse::parsed_pe_internal * internal, LibInfo &res) const {
         }
     }
 
-    return res.getDependncies().size();
+    return res.getDependncies().size() || !imports.size();
 }
 
 PE::PE(): IGetLibInfo () {
@@ -77,6 +77,7 @@ bool PE::getLibInfo(const QString &lib, LibInfo &info) const {
     info.setPath(QFileInfo(lib).absolutePath());
 
     if (!getDep(parsedPeLib->internal, info)) {
+        peparse::DestructParsedPE(parsedPeLib);
         return false;
     }
 
