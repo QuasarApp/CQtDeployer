@@ -28,7 +28,7 @@
 
 bool Extracter::deployMSVC() {
     qInfo () << "try deploy msvc";
-    auto msvcInstaller = DeployCore::getVCredist(DeployCore::_config->qtDir.bins);
+    auto msvcInstaller = DeployCore::getVCredist(DeployCore::_config->qtDir.getBins());
 
     if (msvcInstaller.isEmpty()) {
         return false;
@@ -40,8 +40,8 @@ bool Extracter::deployMSVC() {
 bool Extracter::extractWebEngine() {
     auto test = static_cast<quint64>(_qtModules) & static_cast<quint64>(DeployCore::QtModule::QtWebEngineModule);
     if (test) {
-        auto webEngeneBin = DeployCore::_config->qtDir.libexecs;
-        if (DeployCore::_config->qtDir.qtPlatform & Platform::Unix) {
+        auto webEngeneBin = DeployCore::_config->qtDir.getLibexecs();
+        if (DeployCore::_config->qtDir.getQtPlatform() & Platform::Unix) {
             webEngeneBin += "/QtWebEngineProcess";
         } else {
             webEngeneBin += "/QtWebEngineProcess.exe";
@@ -49,7 +49,7 @@ bool Extracter::extractWebEngine() {
 
         auto destWebEngine = DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getBinOutDir();
         auto resOut = DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getResOutDir();
-        auto res = DeployCore::_config->qtDir.resources;
+        auto res = DeployCore::_config->qtDir.getResources();
 
         if (!_fileManager->copyFile(webEngeneBin, destWebEngine)) {
             return false;
@@ -93,7 +93,7 @@ void Extracter::copyExtraPlugins() {
     for (auto extraPlugin : DeployCore::_config->extraPlugins) {
 
         if (!PathUtils::isPath(extraPlugin)) {
-            extraPlugin = DeployCore::_config->qtDir.plugins + "/" + extraPlugin;
+            extraPlugin = DeployCore::_config->qtDir.getPlugins() + "/" + extraPlugin;
         }
 
         info.setFile(extraPlugin);
@@ -149,7 +149,7 @@ void Extracter::extractPlugins()
     PluginsParser pluginsParser;
 
     QStringList plugins;
-    pluginsParser.scan(DeployCore::_config->qtDir.plugins, plugins, _qtModules);
+    pluginsParser.scan(DeployCore::_config->qtDir.getPlugins(), plugins, _qtModules);
     copyPlugins(plugins);
 }
 
@@ -212,7 +212,7 @@ void Extracter::deploy() {
 
 bool Extracter::copyTranslations(QStringList list) {
 
-    QDir dir(DeployCore::_config->qtDir.translations);
+    QDir dir(DeployCore::_config->qtDir.getTranslations());
     if (!dir.exists() || list.isEmpty()) {
         return false;
     }
@@ -232,7 +232,7 @@ bool Extracter::copyTranslations(QStringList list) {
 
     if (webEngine) {
         auto trOut = DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getTrOutDir();
-        auto tr = DeployCore::_config->qtDir.translations + "/qtwebengine_locales";
+        auto tr = DeployCore::_config->qtDir.getTranslations() + "/qtwebengine_locales";
         _fileManager->copyFolder(tr, trOut + "/qtwebengine_locales");
     }
 
@@ -269,7 +269,7 @@ void Extracter::extractLib(const QString &file, const QString& mask) {
 
     for (auto &line : data) {
 
-        if (mask.size() && !line.getName().contains(mask)) {
+        if (mask.size() && !line.getName().contains(mask, ONLY_WIN_CASE_INSENSIATIVE)) {
             continue;
         }
 
@@ -285,14 +285,14 @@ void Extracter::extractLib(const QString &file, const QString& mask) {
 
 bool Extracter::extractQmlAll() {
 
-    if (!QFileInfo::exists(DeployCore::_config->qtDir.qmls)) {
+    if (!QFileInfo::exists(DeployCore::_config->qtDir.getQmls())) {
         qWarning() << "qml dir wrong!";
         return false;
     }
 
     QStringList listItems;
 
-    if (!_fileManager->copyFolder(DeployCore::_config->qtDir.qmls,
+    if (!_fileManager->copyFolder(DeployCore::_config->qtDir.getQmls(),
                                  DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getQmlOutDir(),
                     QStringList() << ".so.debug" << "d.dll" << ".pdb",
                     &listItems)) {
@@ -321,7 +321,7 @@ bool Extracter::extractQmlFromSource(const QString& sourceDir) {
 
     QuasarAppUtils::Params::verboseLog("extractQmlFromSource " + info.absoluteFilePath());
 
-    if (!QFileInfo::exists(DeployCore::_config->qtDir.qmls)) {
+    if (!QFileInfo::exists(DeployCore::_config->qtDir.getQmls())) {
         qWarning() << "qml dir wrong!";
         return false;
     }
@@ -331,14 +331,14 @@ bool Extracter::extractQmlFromSource(const QString& sourceDir) {
     QStringList filter;
     filter << ".so.debug" << "d.dll" << ".pdb";
 
-    QML ownQmlScaner(DeployCore::_config->qtDir.qmls);
+    QML ownQmlScaner(DeployCore::_config->qtDir.getQmls());
 
     if (!ownQmlScaner.scan(plugins, info.absoluteFilePath())) {
         QuasarAppUtils::Params::verboseLog("qml scaner run failed!");
         return false;
     }
 
-    if (!_fileManager->copyFolder(DeployCore::_config->qtDir.qmls,
+    if (!_fileManager->copyFolder(DeployCore::_config->qtDir.getQmls(),
                                  DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getQmlOutDir(),
                     filter , &listItems, &plugins)) {
         return false;

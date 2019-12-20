@@ -6,10 +6,19 @@
 //#
 
 #include "envirement.h"
+#include "pathutils.h"
 #include "quasarapp.h"
 
 #include <QDir>
 #include <QFileInfo>
+
+QSet<QString> Envirement::upper(const QSet<QString>& set) const {
+    QSet<QString> res;
+    for (auto &i : set) {
+        res.insert(PathUtils::fixPath(i));
+    }
+    return res;
+}
 
 QStringList Envirement::deployEnvironment() const
 {
@@ -23,7 +32,7 @@ QStringList Envirement::ignoreEnvList() const
 
 void Envirement::setIgnoreEnvList(const QStringList &ignoreEnvList)
 {
-    _ignoreEnvList = ignoreEnvList.toSet();
+    _ignoreEnvList = upper(ignoreEnvList.toSet());
 }
 
 void Envirement::addEnv(const QString &dir, const QString &appDir, const QString& targetDir) {
@@ -45,42 +54,11 @@ void Envirement::addEnv(const QString &dir, const QString &appDir, const QString
     auto path = QFileInfo(dir).absoluteFilePath();
 
     for (QString i :_ignoreEnvList) {
-
-#ifdef Q_OS_WIN
-        if (path.contains(i, Qt::CaseInsensitive)) {
+        if (path.contains(i, ONLY_WIN_CASE_INSENSIATIVE)) {
             return;
         }
-#else
-        if (path.contains(i)) {
-            return;
-        }
-#endif
     }
 
-
-#ifdef Q_OS_WIN
-    if (!appDir.isEmpty() && path.contains(appDir, Qt::CaseInsensitive)) {
-        QuasarAppUtils::Params::verboseLog("is cqtdeployer dir!: " + path + " app dir : " + appDir);
-        return;
-    }
-
-    if (!QFileInfo(path).isDir()) {
-        QuasarAppUtils::Params::verboseLog("is not dir!! :" + path);
-        return;
-    }
-
-    if (_deployEnvironment.contains(path)) {
-        QuasarAppUtils::Params::verboseLog ("Environment alredy added: " + path);
-        return;
-    }
-
-    if (!targetDir.isEmpty() && path.contains(targetDir, Qt::CaseInsensitive)) {
-        QuasarAppUtils::Params::verboseLog ("Skip paths becouse it is target : " + path);
-        return;
-    }
-    _deployEnvironment.insert(QDir::fromNativeSeparators(path).toUpper());
-
-#else
     if (!appDir.isEmpty() && path.contains(appDir)) {
         QuasarAppUtils::Params::verboseLog("is cqtdeployer dir!: " + path + " app dir : " + appDir);
         return;
@@ -101,28 +79,19 @@ void Envirement::addEnv(const QString &dir, const QString &appDir, const QString
         return;
     }
 
-    _deployEnvironment.insert(QDir::fromNativeSeparators(path));
-#endif
+    _deployEnvironment.insert(PathUtils::fixPath(QDir::fromNativeSeparators(path)));
 
 }
 
 bool Envirement::inThisEnvirement(const QString &file) const {
     QFileInfo info (file);
 
-#ifdef Q_OS_WIN
-
     if (info.isFile()) {
-        return _deployEnvironment.contains(info.absolutePath().toUpper());
+        return _deployEnvironment.contains(PathUtils::fixPath(info.absolutePath()));
     }
 
-    return _deployEnvironment.contains(file.toUpper());
-#else
-    if (info.isFile()) {
-        return _deployEnvironment.contains(info.absolutePath());
-    }
+    return _deployEnvironment.contains(PathUtils::fixPath(file));
 
-    return _deployEnvironment.contains(file);
-#endif
 }
 
 int Envirement::size() const {
