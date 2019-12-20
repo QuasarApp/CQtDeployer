@@ -1207,12 +1207,6 @@ void deploytest::testIgnore() {
 #ifdef Q_OS_UNIX
         QString bin = TestBinDir + "QtWidgetsProject";
         QString qmake = TestQtDir + "bin/qmake";
-        comapareTree += utils.createTree(
-        {
-                        "./" + DISTRO_DIR + "/lib/libicudata.so",
-                        "./" + DISTRO_DIR + "/lib/libicui18n.so",
-                        "./" + DISTRO_DIR + "/lib/libicuuc.so"
-                    });
 
 #else
         QString bin = TestBinDir + "QtWidgetsProject.exe";
