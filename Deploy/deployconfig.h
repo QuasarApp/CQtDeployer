@@ -3,31 +3,10 @@
 #include "deploy_global.h"
 
 #include "distromodule.h"
+#include "extra.h"
 #include "ignorerule.h"
+#include "qtdir.h"
 #include "targetinfo.h"
-
-struct DEPLOYSHARED_EXPORT QtDir {
-    QString libs;
-    QString bins;
-    QString libexecs;
-    QString plugins;
-    QString qmls;
-    QString translations;
-    QString resources;
-
-    Platform qtPlatform;
-
-    bool isQt(const QString &path) const;
-};
-
-struct DEPLOYSHARED_EXPORT Extra {
-    QSet<QString> extraPaths;
-    QSet<QString> extraPathsMasks;
-    QSet<QString> extraNamesMasks;
-
-    bool contains(const QString &path) const;
-
-};
 
 class DEPLOYSHARED_EXPORT DeployConfig {
 

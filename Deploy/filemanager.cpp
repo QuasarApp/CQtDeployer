@@ -12,6 +12,7 @@
 #include "deploycore.h"
 #include <QProcess>
 #include <fstream>
+#include "pathutils.h"
 
 FileManager::FileManager() {
 }
@@ -75,7 +76,7 @@ void FileManager::saveDeploymendFiles(const QString& targetDir) {
 bool FileManager::strip(const QString &dir) const {
 
 #ifdef Q_OS_WIN
-    Q_UNUSED(dir);
+    Q_UNUSED(dir)
     return true;
 #else
     QFileInfo info(dir);
@@ -126,7 +127,7 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
     bool copy = !masks;
     if (masks) {
         for (auto mask : *masks) {
-            if (info.absoluteFilePath().contains(mask)) {
+            if (info.absoluteFilePath().contains(mask, ONLY_WIN_CASE_INSENSIATIVE)) {
                 copy = true;
                 break;
             }
@@ -208,7 +209,7 @@ bool FileManager::removeFile(const QString &file) {
 bool FileManager::smartCopyFile(const QString &file, const QString &target, QStringList *mask) {
     auto config = DeployCore::_config;
 
-    if (file.contains(config->getTargetDir())) {
+    if (file.contains(config->getTargetDir(), ONLY_WIN_CASE_INSENSIATIVE)) {
         if (!moveFile(file, target, mask)) {
             QuasarAppUtils::Params::verboseLog(" file not moved! try copy");
 
@@ -246,7 +247,7 @@ bool FileManager::copyFolder(const QString &from, const QString &to, const QStri
 
             QString skipFilter = "";
             for (auto && i: filter) {
-                if (item.fileName().contains(i)) {
+                if (item.fileName().contains(i, ONLY_WIN_CASE_INSENSIATIVE)) {
                     skipFilter = i;
                     break;
                 }

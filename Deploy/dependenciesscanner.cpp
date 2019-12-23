@@ -8,6 +8,7 @@
 #include "dependenciesscanner.h"
 #include "deploycore.h"
 #include "quasarapp.h"
+#include "configparser.h"
 #include <QList>
 #include <QDir>
 #include <QDebug>
@@ -58,7 +59,10 @@ QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
 
         info.setPriority(priority);
 
-        res.insertMulti(info.getPriority(), info);
+        if (!DeployCore::_config->ignoreList.isIgnore(info)) {
+            res.insertMulti(info.getPriority(), info);
+        }
+
     }
 
     return res;
@@ -147,7 +151,6 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
                                       QDir::Files| QDir::NoDotAndDotDot);
 
         for (auto i : list) {
-
             _EnvLibs.insertMulti(i.fileName().toUpper(), i.absoluteFilePath());
         }
 

@@ -38,36 +38,3 @@ DistroStruct DeployConfig::getDistroFromPrefix(const QString &prefix) const {
 
     return prefixes.value("");
 }
-
-bool QtDir::isQt(const QString& path) const {
-
-    return
-    (!libs.isEmpty() && path.contains(libs)) ||
-    (!bins.isEmpty() && path.contains(bins)) ||
-    (!libexecs.isEmpty() && path.contains(libexecs)) ||
-    (!plugins.isEmpty() && path.contains(plugins)) ||
-    (!qmls.isEmpty() && path.contains(qmls)) ||
-    (!translations.isEmpty() && path.contains(translations)) ||
-    (!resources.isEmpty() && path.contains(resources));
-}
-
-bool Extra::contains(const QString &path) const {
-    QFileInfo info(path);
-    if (extraPaths.contains(info.absolutePath())) {
-        return true;
-    }
-
-    for (auto i: extraPathsMasks) {
-        if (info.absoluteFilePath().contains(i)) {
-            return true;
-        }
-    }
-
-    for (auto i: extraNamesMasks) {
-        if (info.fileName().contains(i)) {
-            return true;
-        }
-    }
-
-    return false;
-}

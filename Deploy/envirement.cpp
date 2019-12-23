@@ -6,10 +6,19 @@
 //#
 
 #include "envirement.h"
+#include "pathutils.h"
 #include "quasarapp.h"
 
 #include <QDir>
 #include <QFileInfo>
+
+QSet<QString> Envirement::upper(const QSet<QString>& set) const {
+    QSet<QString> res;
+    for (auto &i : set) {
+        res.insert(PathUtils::fixPath(i));
+    }
+    return res;
+}
 
 QStringList Envirement::deployEnvironment() const
 {
@@ -23,7 +32,7 @@ QStringList Envirement::ignoreEnvList() const
 
 void Envirement::setIgnoreEnvList(const QStringList &ignoreEnvList)
 {
-    _ignoreEnvList = ignoreEnvList.toSet();
+    _ignoreEnvList = upper(ignoreEnvList.toSet());
 }
 
 void Envirement::addEnv(const QString &dir, const QString &appDir, const QString& targetDir) {
@@ -45,16 +54,9 @@ void Envirement::addEnv(const QString &dir, const QString &appDir, const QString
     auto path = QFileInfo(dir).absoluteFilePath();
 
     for (QString i :_ignoreEnvList) {
-
-#ifdef Q_OS_WIN
-        if (path.contains(i, Qt::CaseInsensitive)) {
+        if (path.contains(i, ONLY_WIN_CASE_INSENSIATIVE)) {
             return;
         }
-#else
-        if (path.contains(i)) {
-            return;
-        }
-#endif
     }
 
     if (!appDir.isEmpty() && path.contains(appDir)) {
@@ -77,16 +79,19 @@ void Envirement::addEnv(const QString &dir, const QString &appDir, const QString
         return;
     }
 
-    _deployEnvironment.insert(QDir::fromNativeSeparators(path));
+    _deployEnvironment.insert(PathUtils::fixPath(QDir::fromNativeSeparators(path)));
+
 }
 
 bool Envirement::inThisEnvirement(const QString &file) const {
     QFileInfo info (file);
+
     if (info.isFile()) {
-        return _deployEnvironment.contains(info.absolutePath());
+        return _deployEnvironment.contains(PathUtils::fixPath(info.absolutePath()));
     }
 
-    return _deployEnvironment.contains(file);
+    return _deployEnvironment.contains(PathUtils::fixPath(file));
+
 }
 
 int Envirement::size() const {

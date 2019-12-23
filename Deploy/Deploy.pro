@@ -53,6 +53,7 @@ SOURCES += \
     deploy.cpp \
     deploycore.cpp \
     envirement.cpp \
+    extra.cpp \
     extracter.cpp \
     filemanager.cpp \
     idistribution.cpp \
@@ -68,6 +69,7 @@ SOURCES += \
     qif.cpp \
     qml.cpp \
     libinfo.cpp \
+    qtdir.cpp \
     targetinfo.cpp
 
 HEADERS += \
@@ -80,6 +82,7 @@ HEADERS += \
     deploy_global.h \
     deploycore.h \
     envirement.h \
+    extra.h \
     extracter.h \
     filemanager.h \
     idistribution.h \
@@ -95,6 +98,7 @@ HEADERS += \
     qif.h \
     qml.h \
     libinfo.h \
+    qtdir.h \
     targetinfo.h
 
 STATECHARTS +=

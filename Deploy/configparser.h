@@ -81,6 +81,7 @@ private:
 
     QString readKeyArray(int separatorLvl, const QJsonArray &array, const QString &confFileDir) const;
     QJsonValue writeKeyArray(int separatorLvl, const QString &parameter, const QString &confFileDir) const;
+    QString findWindowsPath(const QString &path) const;
 public:
     ConfigParser(FileManager *filemanager, DependenciesScanner *scaner);
     bool parseParams();
