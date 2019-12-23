@@ -13,6 +13,8 @@
 #include <QVector>
 #include "igetlibinfo.h"
 
+#define APU_MS_WIN "api-ms-win"
+
 namespace peparse {
 struct parsed_pe_internal;
 }
@@ -21,6 +23,8 @@ class PE : public IGetLibInfo {
 private:
 
     bool getDep(peparse::parsed_pe_internal *, LibInfo &res) const;
+
+    QSet<QString> _apimswin;
 
 public:
 
@@ -31,6 +35,12 @@ public:
         _ROM = 0x107,
     };
     PE();
+
+    /**
+     * @brief setWinApiPlugins
+     * @param keys set values of api-ms-win libs
+     */
+    void setWinApiPlugins(const QSet<QString>& keys);
 
     bool getLibInfo(const QString& lib, LibInfo& info) const override;
 

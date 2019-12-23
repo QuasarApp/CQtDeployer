@@ -65,11 +65,19 @@ bool PE::getDep(peparse::parsed_pe_internal * internal, LibInfo &res) const {
         }
     }
 
+    if (res.getName().contains(APU_MS_WIN, Qt::CaseInsensitive)) {
+        res.addDependncies(_apimswin);
+    }
+
     return res.getDependncies().size() || !imports.size();
 }
 
 PE::PE(): IGetLibInfo () {
 
+}
+
+void PE::setWinApiPlugins(const QSet<QString> &keys) {
+    _apimswin = keys;
 }
 
 bool PE::getLibInfo(const QString &lib, LibInfo &info) const {

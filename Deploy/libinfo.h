@@ -46,6 +46,7 @@ public:
     QSet<QString> getDependncies() const;
     void setDependncies(const QSet<QString> &value);
     void addDependncies(const QString &value);
+    void addDependncies(const QSet<QString> &value);
     void removeDependncies(const QString &value);
 
     LibPriority getPriority() const;

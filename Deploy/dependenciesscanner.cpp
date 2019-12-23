@@ -139,6 +139,8 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res) {
 
 void DependenciesScanner::setEnvironment(const QStringList &env) {
     QDir dir;
+
+    QSet<QString> winAPI;
     for (auto i : env) {
 
         dir.setPath(i);
@@ -151,10 +153,16 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
                                       QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
 
         for (auto i : list) {
+            if (i.fileName().contains(APU_MS_WIN , Qt::CaseInsensitive)) {
+                winAPI.insert(i.fileName().toUpper());
+            }
+
             _EnvLibs.insertMulti(i.fileName().toUpper(), i.absoluteFilePath());
         }
 
     }
+
+    _peScaner.setWinApiPlugins(winAPI);
 
 }
 
