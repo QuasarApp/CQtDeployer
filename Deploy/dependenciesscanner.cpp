@@ -146,7 +146,7 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
             continue;
         }
 
-        auto list = dir.entryInfoList(QStringList() << "*.dll" << ".DLL"
+        auto list = dir.entryInfoList(QStringList() << "*.dll" << "*.DLL"
                                       << "*.SO*" << "*.so*",
                                       QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
 
