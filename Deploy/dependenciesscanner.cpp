@@ -148,7 +148,7 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
 
         auto list = dir.entryInfoList(QStringList() << "*.dll" << ".DLL"
                                       << "*.SO*" << "*.so*",
-                                      QDir::Files| QDir::NoDotAndDotDot);
+                                      QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
 
         for (auto i : list) {
             _EnvLibs.insertMulti(i.fileName().toUpper(), i.absoluteFilePath());
