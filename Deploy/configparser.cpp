@@ -501,19 +501,19 @@ void ConfigParser::initIgnoreList()
     // win and core libs :  see https://en.wikipedia.org/wiki/Microsoft_Windows_library_files
     _config.ignoreList.addRule(addRuleWin("Hal.DLL"));
     _config.ignoreList.addRule(addRuleWin("NTDLL.DLL"));
-    _config.ignoreList.addRule(addRuleWin("KERNEL32.DLL"));
-    _config.ignoreList.addRule(addRuleWin("GDI32.DLL"));
-    _config.ignoreList.addRule(addRuleWin("USER32.DLL"));
-    _config.ignoreList.addRule(addRuleWin("COMCTL32.DLL"));
-    _config.ignoreList.addRule(addRuleWin("COMDLG32.DLL"));
-    _config.ignoreList.addRule(addRuleWin("WS2_32.DLL"));
-    _config.ignoreList.addRule(addRuleWin("ADVAPI32.DLL"));
-    _config.ignoreList.addRule(addRuleWin("NETAPI32.DLL"));
-    _config.ignoreList.addRule(addRuleWin("OLE32.DLL"));
-    _config.ignoreList.addRule(addRuleWin("SHSCRAP.DLL"));
-    _config.ignoreList.addRule(addRuleWin("WINMM.DLL"));
-    _config.ignoreList.addRule(addRuleWin("IMM32.DLL"));
-    _config.ignoreList.addRule(addRuleWin("KernelBase.DLL"));
+//    _config.ignoreList.addRule(addRuleWin("KERNEL32.DLL"));
+//    _config.ignoreList.addRule(addRuleWin("GDI32.DLL"));
+//    _config.ignoreList.addRule(addRuleWin("USER32.DLL"));
+//    _config.ignoreList.addRule(addRuleWin("COMCTL32.DLL"));
+//    _config.ignoreList.addRule(addRuleWin("COMDLG32.DLL"));
+//    _config.ignoreList.addRule(addRuleWin("WS2_32.DLL"));
+//    _config.ignoreList.addRule(addRuleWin("ADVAPI32.DLL"));
+//    _config.ignoreList.addRule(addRuleWin("NETAPI32.DLL"));
+//    _config.ignoreList.addRule(addRuleWin("OLE32.DLL"));
+//    _config.ignoreList.addRule(addRuleWin("SHSCRAP.DLL"));
+//    _config.ignoreList.addRule(addRuleWin("WINMM.DLL"));
+//    _config.ignoreList.addRule(addRuleWin("IMM32.DLL"));
+//    _config.ignoreList.addRule(addRuleWin("KernelBase.DLL"));
 
 }
 
