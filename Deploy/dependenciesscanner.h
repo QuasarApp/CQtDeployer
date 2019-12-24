@@ -34,9 +34,7 @@ private:
     PE _peScaner;
     ELF _elfScaner;
 
-#ifdef Q_OS_WIN
     QMultiHash<WinAPI, QString> _winAPI;
-#endif
 
     PrivateScaner getScaner(const QString& lib) const;
 
