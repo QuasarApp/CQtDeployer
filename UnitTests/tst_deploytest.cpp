@@ -1629,11 +1629,6 @@ void deploytest::testSystemLib() {
                    "deploySystem"
                   }, &comapareTree, true);
 
-    runTestParams({"-bin", bin, "clear" ,
-                   "-qmake", qmake,
-                   "deploySystem-with-winapi"
-                  }, &comapareTree, true, true);
-
 
 #endif
 }

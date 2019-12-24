@@ -142,7 +142,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res) {
 
 void DependenciesScanner::addToWinAPI(const QString &lib, QHash<WinAPI, QSet<QString>>& res) {
 #ifdef Q_OS_WIN
-    if (QuasarAppUtils::Params::isEndable("deploySystem-with-winapi")) {
+    if (QuasarAppUtils::Params::isEndable("deploySystem")) {
         WinAPI api = _peScaner.getAPIModule(lib);
         if (api != WinAPI::NoWinAPI) {
             res[api] += lib;
