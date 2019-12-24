@@ -20,6 +20,7 @@ private:
     QSet<QString> dependncies;
     QString qtPath;
     LibPriority priority = NotFile;
+    WinAPI _winApi = WinAPI::NoWinAPI;
 
 public:
 
@@ -46,12 +47,15 @@ public:
     QSet<QString> getDependncies() const;
     void setDependncies(const QSet<QString> &value);
     void addDependncies(const QString &value);
+    void addDependncies(const QSet<QString> &value);
     void removeDependncies(const QString &value);
 
     LibPriority getPriority() const;
     void setPriority(const LibPriority &value);
     QString getQtPath() const;
     void setQtPath(const QString &value);
+    WinAPI getWinApi() const;
+    void setWinApi(WinAPI winApi);
 };
 
 uint qHash(const LibInfo& info);

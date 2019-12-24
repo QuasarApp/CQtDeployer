@@ -230,7 +230,8 @@ bool ConfigParser::loadFromFile(const QString& confFile) {
 
 bool ConfigParser::parseQtDeployMode() {
 
-    if (QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
+    if (QuasarAppUtils::Params::isEndable("deploySystem-with-libc") ||
+        QuasarAppUtils::Params::isEndable("deploySystem-with-winapi")) {
         QuasarAppUtils::Params::setEnable("deploySystem", true );
     }
 
