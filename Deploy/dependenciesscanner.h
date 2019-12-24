@@ -34,15 +34,13 @@ private:
     PE _peScaner;
     ELF _elfScaner;
 
-    QMultiHash<WinAPI, QString> _winAPI;
-
     PrivateScaner getScaner(const QString& lib) const;
 
     QMultiMap<LibPriority, LibInfo> getLibsFromEnvirement(const QString& libName) const;
 
     void recursiveDep(LibInfo& lib, QSet<LibInfo> &res);
 
-    void addToWinAPI(const QString& lib);
+    void addToWinAPI(const QString& lib, QHash<WinAPI, QSet<QString> > &res);
 
 public:
     explicit DependenciesScanner();
