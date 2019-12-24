@@ -66,7 +66,19 @@ bool PE::getDep(peparse::parsed_pe_internal * internal, LibInfo &res) const {
         }
     }
 
+    if (res.getWinApi() != WinAPI::NoWinAPI) {
+        res.addDependncies(_winAPI.value(res.getWinApi()));
+    }
+
     return res.getDependncies().size() || !imports.size();
+}
+
+QHash<WinAPI, QSet<QString> > PE::getWinAPI() const {
+    return _winAPI;
+}
+
+void PE::setWinAPI(const QHash<WinAPI, QSet<QString> > &winAPI) {
+    _winAPI = winAPI;
 }
 
 WinAPI PE::getAPIModule(const QString &libName) const {
@@ -122,6 +134,7 @@ bool PE::getLibInfo(const QString &lib, LibInfo &info) const {
 
     info.setName(QFileInfo(lib).fileName());
     info.setPath(QFileInfo(lib).absolutePath());
+    info.setWinApi(getAPIModule(info.getName()));
 
     if (!getDep(parsedPeLib->internal, info)) {
         peparse::DestructParsedPE(parsedPeLib);
@@ -130,7 +143,6 @@ bool PE::getLibInfo(const QString &lib, LibInfo &info) const {
 
     peparse::DestructParsedPE(parsedPeLib);
 
-    info.setWinApi(getAPIModule(info.getName()));
 
     return info.isValid();
 }

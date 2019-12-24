@@ -140,22 +140,24 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res) {
     }
 }
 
-void DependenciesScanner::addToWinAPI(const QString &lib) {
+void DependenciesScanner::addToWinAPI(const QString &lib, QHash<WinAPI, QSet<QString>>& res) {
 #ifdef Q_OS_WIN
     if (QuasarAppUtils::Params::isEndable("deploySystem-with-winapi")) {
         WinAPI api = _peScaner.getAPIModule(lib);
         if (api != WinAPI::NoWinAPI) {
-            _winAPI.insert(api, lib);
+            res[api] += lib;
         }
     }
 #else
     Q_UNUSED(lib)
+    Q_UNUSED(res)
+
 #endif
 }
 
 void DependenciesScanner::setEnvironment(const QStringList &env) {
     QDir dir;
-
+    QHash<WinAPI, QSet<QString>> winAPI;
     for (auto i : env) {
 
         dir.setPath(i);
@@ -168,13 +170,14 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
                                       QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
 
         for (auto i : list) {
-            addToWinAPI(i.absoluteFilePath());
+            addToWinAPI(i.fileName().toUpper(), winAPI);
             _EnvLibs.insertMulti(i.fileName().toUpper(), i.absoluteFilePath());
         }
 
     }
 
 
+    _peScaner.setWinAPI(winAPI);
 }
 
 QSet<LibInfo> DependenciesScanner::scan(const QString &path) {
@@ -187,18 +190,6 @@ QSet<LibInfo> DependenciesScanner::scan(const QString &path) {
     }
 
     recursiveDep(info, result);
-
-    for (auto i = _winAPI.begin(); i != _winAPI.end(); ++i) {
-        if ((info.getWinApi() & i.key()) != WinAPI::NoWinAPI) {
-
-            for (auto apiLib :_winAPI.values(i.key())) {
-                LibInfo info;
-                if (fillLibInfo(info, apiLib)) {
-                    result.insert(info);
-                }
-            }
-        }
-    }
 
     return result;
 }

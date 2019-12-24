@@ -29,6 +29,7 @@ class PE : public IGetLibInfo {
 private:
 
     bool getDep(peparse::parsed_pe_internal *, LibInfo &res) const;
+    QHash<WinAPI, QSet<QString>> _winAPI;
 
 public:
 
@@ -45,6 +46,8 @@ public:
 
     ~PE() override;
 
+    QHash<WinAPI, QSet<QString>> getWinAPI() const;
+    void setWinAPI(const  QHash<WinAPI, QSet<QString>> &winAPI);
 };
 
 #endif // PE_H
