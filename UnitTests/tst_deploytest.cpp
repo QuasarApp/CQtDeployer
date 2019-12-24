@@ -44,9 +44,9 @@ private:
     QStringList getFilesFromDir(const QString& dir);
 
 
-    void runTestParams(const QStringList &list, QSet<QString> *tree = nullptr, bool noWarnings = false);
+    void runTestParams(const QStringList &list, QSet<QString> *tree = nullptr, bool noWarnings = false, bool onlySize = false);
 
-    void checkResults(const QSet<QString> &tree, bool noWarnings);
+    void checkResults(const QSet<QString> &tree, bool noWarnings, bool onlySize = false);
 public:
     deploytest();
     /**
@@ -744,7 +744,7 @@ void deploytest::testSetTargetDir() {
 
 }
 
-void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree, bool noWarnings) {
+void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree, bool noWarnings, bool onlySize) {
 
     QuasarAppUtils::Params::parseParams(list);
 
@@ -752,7 +752,7 @@ void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree, boo
     QVERIFY(deploy.run() == 0);
 
     if (tree) {
-        checkResults(*tree, noWarnings);
+        checkResults(*tree, noWarnings, onlySize);
     }
 
 #ifdef WITH_SNAP
@@ -790,7 +790,7 @@ void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree, boo
 #endif
 }
 
-void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings) {
+void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings , bool onlySize) {
     TestUtils utils;
 
     QVERIFY(DeployCore::_config);
@@ -799,6 +799,11 @@ void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings) {
     auto resultTree = utils.getTree(DeployCore::_config->targetDir);
 
     auto comapre = utils.compareTree(resultTree, tree);
+
+    if (onlySize) {
+        QVERIFY(resultTree.size() > tree.size());
+        return;
+    }
 
     if (comapre.size() != 0) {
 
@@ -1623,6 +1628,12 @@ void deploytest::testSystemLib() {
                    "-qmake", qmake,
                    "deploySystem"
                   }, &comapareTree, true);
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "deploySystem-with-winapi"
+                  }, &comapareTree, true, true);
+
 
 #endif
 }

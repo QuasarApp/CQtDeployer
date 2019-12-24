@@ -94,6 +94,14 @@ void LibInfo::setQtPath(const QString &value)
     qtPath = value;
 }
 
+WinAPI LibInfo::getWinApi() const {
+    return _winApi;
+}
+
+void LibInfo::setWinApi(WinAPI winApi) {
+    _winApi = winApi;
+}
+
 QString LibInfo::fullPath() const {
     return path + "/" + name;
 }

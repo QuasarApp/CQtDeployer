@@ -12,6 +12,7 @@
 #include <QSet>
 #include <QVector>
 #include <parser-library/parse.h>
+#include <quasarapp.h>
 
 #include <bits/stl_set.h>
 
@@ -65,19 +66,44 @@ bool PE::getDep(peparse::parsed_pe_internal * internal, LibInfo &res) const {
         }
     }
 
-    if (res.getName().contains(APU_MS_WIN, Qt::CaseInsensitive)) {
-        res.addDependncies(_apimswin);
+    return res.getDependncies().size() || !imports.size();
+}
+
+WinAPI PE::getAPIModule(const QString &libName) const {
+    if (libName.contains(API_MS_WIN, Qt::CaseInsensitive)) {
+        if (libName.contains(API_MS_WIN_CORE, Qt::CaseInsensitive)) {
+            return WinAPI::Core;
+        }
+
+        if (libName.contains(API_MS_WIN_EVENTING, Qt::CaseInsensitive)) {
+            return WinAPI::Eventing;
+        }
+
+        if (libName.contains(API_MS_WIN_DEVICES, Qt::CaseInsensitive)) {
+            return WinAPI::Devices;
+        }
+
+        if (libName.contains(API_MS_WIN_CRT, Qt::CaseInsensitive)) {
+            return WinAPI::Crt;
+        }
+
+        if (libName.contains(API_MS_WIN_SECURITY, Qt::CaseInsensitive)) {
+            return WinAPI::Security;
+        }
+
+        if (libName.contains(API_MS_WIN_BASE, Qt::CaseInsensitive)) {
+            return WinAPI::Base;
+        }
+
+        return WinAPI::Other;
+
     }
 
-    return res.getDependncies().size() || !imports.size();
+    return WinAPI::NoWinAPI;
 }
 
 PE::PE(): IGetLibInfo () {
 
-}
-
-void PE::setWinApiPlugins(const QSet<QString> &keys) {
-    _apimswin = keys;
 }
 
 bool PE::getLibInfo(const QString &lib, LibInfo &info) const {
@@ -103,6 +129,8 @@ bool PE::getLibInfo(const QString &lib, LibInfo &info) const {
     }
 
     peparse::DestructParsedPE(parsedPeLib);
+
+    info.setWinApi(getAPIModule(info.getName()));
 
     return info.isValid();
 }

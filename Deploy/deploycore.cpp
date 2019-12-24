@@ -162,7 +162,7 @@ QString DeployCore::help() {
     { "" },
     { "Options:" },
     { "   help / h                 : Shows help." },
-    { "   noOverwrite             : Prevents replacing existing files." },
+    { "   noOverwrite              : Prevents replacing existing files." },
     { "   -bin    [list, params]   : Deployable file or folder." },
     { "                            | For example -bin /my/project/bin/,/my/project/bin.exe" },
     { "   -confFile [params]       | The path to the json file with all deployment configurations."},
@@ -173,8 +173,9 @@ QString DeployCore::help() {
     { "                            | WARNING: this flag supports 'so', 'dll' and 'exe' files only." },
     { "                            | Use '-bin' flag if you want to deploy linux binary files" },
     { "   -qmlDir [params]         : Qml data dir. For example -qmlDir ~/my/project/qml" },
-    { "   deploySystem             : Deploys all libs" },
-    { "   deploySystem-with-libc             : Skip Deploys system core libs libs" },
+    { "   deploySystem             : Deploys all libs (Skip Deploys system core libs)" },
+    { "   deploySystem-with-libc   : Deploys all libs with Libc (Linux only, not snap)" },
+    { "   deploySystem-with-winapi : Deploys all libs with win-api (Windows only)" },
     { "   -qmake  [params]         : Qmake path." },
     { "                            | For example -qmake ~/Qt/5.14.0/gcc_64/bin/qmake" },
     { "   -ignore [list,params]    : The list of libs to ignore." },
@@ -229,6 +230,7 @@ QStringList DeployCore::helpKeys() {
         "qmlDir",
         "deploySystem",
         "deploySystem-with-libc",
+        "deploySystem-with-winapi",
         "qmake",
         "ignore",
         "ignoreEnv",
@@ -413,4 +415,8 @@ bool DeployCore::isQtLib(const QString &lib) {
 bool DeployCore::isExtraLib(const QString &lib) {
     QFileInfo info(lib);
     return _config->extraPaths.contains(info.absoluteFilePath());
+}
+
+uint qHash(WinAPI i) {
+    return static_cast<uint>(i);
 }
