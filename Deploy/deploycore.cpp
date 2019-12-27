@@ -207,7 +207,7 @@ QString DeployCore::help() {
     { "   -trOut [params]          : Sets path to translations out directory" },
     { "   -pluginOut [params]      : Sets path to plugins out directory" },
     { "   -binOut [params]         : Sets path to binary out directory" },
-    { "   -customSh [list,params]  : Sets new the sh run script."},
+    { "   -customScript [scriptCode]: Insert extra code inTo All run script."},
     { "   v / version              : Shows compiled version" },
     { "   verbose [1-3]            : Shows debug log" },
 
@@ -251,7 +251,8 @@ QStringList DeployCore::helpKeys() {
         "binOut",
         "version",
         "verbose",
-        "noAutoCheckQmake"
+        "noAutoCheckQmake",
+        "customScript"
     };
 }
 
