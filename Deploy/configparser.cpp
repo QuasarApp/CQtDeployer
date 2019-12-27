@@ -244,11 +244,9 @@ bool ConfigParser::loadFromFile(const QString& confFile) {
     for (auto& str: inputParamsList) { \
         auto targetVal = str.split(DeployCore::getSeparator(1)); \
         mainContainer[targetVal.value(1, "")].seterFunc(targetVal.value(0, "")); \
-        mainContainer[targetVal.value(1, "")].addTarget(targetVal.value(2, "")); \
-\
     }
 
-bool ConfigParser::initDustroStruct() {
+bool ConfigParser::initDistroStruct() {
 
     auto &mainDistro = _config.prefixes;
 
@@ -332,7 +330,7 @@ bool ConfigParser::parseQtDeployMode() {
     initIgnoreEnvList();
     initEnvirement();
     initIgnoreList();
-    initDustroStruct();
+    initDistroStruct();
 
     _config.depchLimit = 0;
 
@@ -403,9 +401,6 @@ void ConfigParser::setTargetDir(const QString &target) {
     } else if (target.size()) {
         _config.setTargetDir(QFileInfo(target).absoluteFilePath());
     } else {
-        if (_config.targets.size())
-            _config.setTargetDir(QFileInfo(
-                        _config.targets.begin().key()).absolutePath() + "/" + DISTRO_DIR);
 
         _config.setTargetDir(QFileInfo("./" + DISTRO_DIR).absoluteFilePath());
         qInfo () << "flag targetDir not  used." << "use default target dir :" << _config.getTargetDir();
@@ -992,6 +987,8 @@ bool ConfigParser::smartMoveTargets() {
         }
 
         temp.unite(prepareTarget(targetPath + "/" + target.fileName()));
+
+        _config.prefixes[i.value().getSufix()].addTarget(i.key());
 
     }
 
