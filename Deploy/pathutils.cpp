@@ -88,6 +88,14 @@ bool PathUtils::isAbsalutPath(const QString &path) {
     return true;
 }
 
+QString PathUtils::fixPath(const QString &path) {
+#ifdef Q_OS_WIN
+    return path.toUpper();
+#else
+    return path;
+#endif
+}
+
 QString PathUtils::getReleativePath(QString path) {
     path = toFullPath(path);
 

@@ -28,20 +28,38 @@ Key differences of this program:
 
 See list of all options [here](./doc/Options.md)
 
-## Build for Linux 
-  - install qt and qt QtInstallFrameWork from [qtInstaller](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
-  - qmake -r
-  - make -j$(nproc)
-  - make deploy # this command requires the installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases) 
-  - ./Distro/CQtDeployerInstaller.run
 
-## Build for Windows
-  - install qt and qt QtInstallFrameWork from [qtInstaller](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
-  - qmake -r
-  - make -j$(nproc)
-  - make deploy # this command requires the installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases) 
-  - ./Distro/CQtDeployerInstaller.exe
-  
+#### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.12.4/gcc_64/bin/qmake clear
+
+
+## Build for Linux
+- install qt and qt QtInstallFrameWork from [qt installer](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f9bb77-7bb77-4bb77-4)
+- git clone https://github.com/QuasarApp/CQtDeployer.git
+- cd CQtDeployer
+- git submodule update --init --recursive
+- qmake -r
+     - Here you must definitely call the qmake that was loaded from the 1st item.
+     - Example: ~/Qt/5.14.0/gcc_64/bin/qmake -r
+- make -j$(nproc)
+- make deploy
+     - #this command requires installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
+- ./Distro/CQtDeployerInstaller.run
+
+## Build for Windows (CMD)
+- install qt and qt QtInstallFrameWork from [qt installer](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f9bb77-7bb77-4bb77-4)
+- git clone https://github.com/QuasarApp/CQtDeployer.git
+- cd CQtDeployer
+- git submodule update --init --recursive
+- SET PATH=C:/Qt/Tools/mingw730_64/bin;%PATH%
+     - It is important to set up the qt environment.
+- qmake.exe -r
+     - Here you must definitely call the qmake that was loaded from the 1st item.
+     - Example: C:/Qt/5.14.0/mingw73_64/bin/qmake.exe -r
+- migw32-make.exe -j$(nproc)
+- migw32-make.exe deploy
+     - #this command requires installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
+- ./Distro/CQtDeployerInstaller.exe
+
 ## Install 
 You can download the latest version of the application [here](https://github.com/QuasarApp/CQtDeployer/releases).
 
@@ -88,20 +106,35 @@ Qt CQtDeployer - это приложением для извлечения вс�
 
 Смотрите список всех опций [здесь](./doc/Options.md)
 
-## Build для Linux 
-  - установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
-  - qmake -r
-  - make -j$(nproc)
-  - make deploy # эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases) 
-  - ./Distro/CQtDeployerInstaller.run
-  
-## Build для Windows
-  - установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
-  - qmake -r
-  - make -j$(nproc)
-  - make deploy # эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases) 
-  - ./Distro/CQtDeployerInstaller.exe
-  
+
+## Build для Linux
+- установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
+- git clone https://github.com/QuasarApp/CQtDeployer.git
+- cd CQtDeployer
+- git submodule update --init --recursive
+- qmake -r
+     - Здесь нужно обязательно вызвать тот qmake, который был загружен из 1го пункта.
+     - Пример: ~/Qt/5.14.0/gcc_64/bin/qmake -r
+- make -j$(nproc)
+- make deploy
+     - эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
+- ./Distro/CQtDeployerInstaller.run
+
+## Build для Windows (CMD)
+- установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
+- git clone https://github.com/QuasarApp/CQtDeployer.git
+- cd CQtDeployer
+- git submodule update --init --recursive
+- SET PATH=C:/Qt/Tools/mingw730_64/bin;%PATH%
+    - Здесь важно настроить окружение qt.
+- qmake.exe -r
+    - Здесь нужно обязательно вызвать тот qmake, который был загружен из 1го пункта.
+    - Пример: C:/Qt/5.14.0/mingw73_64/bin/qmake.exe -r
+- migw32-make.exe -j$(nproc)
+- migw32-make.exe deploy
+    - эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
+- ./Distro/CQtDeployerInstaller.exe
+
 ### Snap
 [![Загрузите из Snap Store](https://snapcraft.io/static/images/badges/ru/snap-store-black.svg)](https://snapcraft.io/cqtdeployer)
 

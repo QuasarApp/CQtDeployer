@@ -13,6 +13,7 @@
 #include <configparser.h>
 #include "filemanager.h"
 
+#include <assert.h>
 
 bool MetaFileManager::createRunScriptWindows(const QString &target) {
 

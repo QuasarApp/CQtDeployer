@@ -64,9 +64,13 @@ releaseSnap.commands = snapcraft push *.snap # bad patern
 
 unix:deploy.depends += clearSnap
 unix:deploy.depends += buildSnap
-unix:deploy.depends +=  deploySnap
 
-unix:deploy.release += releaseSnap
+!isEmpty( ONLINE ) {
+
+    message(Snap)
+    unix:deploy.depends += deploySnap
+    unix:release.depends += releaseSnap
+}
 
 OTHER_FILES += \
     $$META_DIR/* \

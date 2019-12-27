@@ -9,7 +9,9 @@
 #define CQT_H
 #include "distrostruct.h"
 #include "envirement.h"
+#include "extra.h"
 #include "ignorerule.h"
+#include "qtdir.h"
 
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -23,29 +25,6 @@
 
 class  FileManager;
 class  DependenciesScanner;
-
-struct DEPLOYSHARED_EXPORT QtDir {
-    QString libs;
-    QString bins;
-    QString libexecs;
-    QString plugins;
-    QString qmls;
-    QString translations;
-    QString resources;
-
-    Platform qtPlatform;
-
-    bool isQt(const QString &path) const;
-};
-
-struct DEPLOYSHARED_EXPORT Extra {
-    QSet<QString> extraPaths;
-    QSet<QString> extraPathsMasks;
-    QSet<QString> extraNamesMasks;
-
-    bool contains(const QString &path) const;
-
-};
 
 struct DEPLOYSHARED_EXPORT DeployConfig {
     QString targetDir = "";
@@ -118,6 +97,7 @@ private:
     void writeKey(const QString &key, QJsonObject &, const QString &confFileDir) const;
     void readKey(const QString &key, const QJsonObject &obj, const QString &confFileDir) const;
     QHash<QString, LibInfo> prepareTarget(const QString &target);
+    QString findWindowsPath(const QString &path) const;
 public:
     ConfigParser(FileManager *filemanager, DependenciesScanner *scaner);
     bool parseParams();
