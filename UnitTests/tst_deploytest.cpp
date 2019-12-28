@@ -1165,7 +1165,33 @@ void deploytest::testConfFile() {
 }
 
 void deploytest::testPrefixes() {
-    QVERIFY(false);
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QFile f("./" + DISTRO_DIR + "/bin/TestOnlyC");
+    auto comapareTree = utils.createTree(
+    {"./" + DISTRO_DIR + "/bin/TestOnlyC",
+     "./" + DISTRO_DIR + "/bin/qt.conf",
+     "./" + DISTRO_DIR + "/TestOnlyC.sh"});
+    QString bin = TestBinDir + "TestOnlyC";
+
+#else
+    QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
+    auto comapareTree = utils.createTree(
+    {"./" + DISTRO_DIR + "/TestOnlyC.exe",
+     "./" + DISTRO_DIR + "/qt.conf"});
+    QString bin = TestBinDir + "TestOnlyC.exe";
+
+#endif
+
+    runTestParams({"-bin", bin, "force-clear",
+                  "-targetPrefix", "/prefix/"}, &comapareTree);
+
+    runTestParams({"-bin", bin, "force-clear",
+                  "-targetPrefix", "Test;/prefix/"}, &comapareTree);
+
+    runTestParams({"-bin", bin, "force-clear",
+                  "-targetPrefix", bin + ";/prefix/"}, &comapareTree);
 }
 
 void deploytest::testQt() {

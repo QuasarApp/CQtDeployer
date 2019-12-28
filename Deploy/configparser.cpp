@@ -18,18 +18,24 @@
 
 #include <assert.h>
 
+/**
+ * this function init prefixes of project
+ * inputParamsList - list of parameters
+ *                   patern : value;prefix
+ * mainContainer - container for insert data, usually it is prefixes map.
+ * seterFunc - this is method of item of mainConteiner for set value from inputParamsList
+ * important : prefix in inputParamsList must be second.
+ */
+template<typename Setter>
+void parsePrefixesPrivate(decltype (DeployConfig::prefixes)& mainContainer,
+                          const QStringList &inputParamsList,
+                          Setter setter) {
 
-// this function init prefixes of project
-// inputParamsList - list of parameters
-//                   patern : value;prefix
-// mainContainer - container for insert data, usually it is prefixes map.
-// seterFunc - this is method of item of mainConteiner for set value from inputParamsList
-// important : prefix in inputParamsList must be second.
-#define initDistroPatern(inputParamsList, mainContainer, seterFunc) \
-    for (auto& str: inputParamsList) { \
-        auto targetVal = str.split(DeployCore::getSeparator(1)); \
-        mainContainer[targetVal.value(1, "")].seterFunc(targetVal.value(0, "")); \
+    for (auto& str: inputParamsList) {
+        auto targetVal = str.split(DeployCore::getSeparator(1));
+        (mainContainer[targetVal.value(1, "")].*setter)(targetVal.value(0, ""));
     }
+}
 
 bool ConfigParser::parseParams() {
 
@@ -281,12 +287,12 @@ bool ConfigParser::initDistroStruct() {
             split(DeployCore::getSeparator(0));
 
 // init distro stucts for all targets
-    initDistroPatern(binOut, mainDistro, setBinOutDir);
-    initDistroPatern(libOut, mainDistro, setLibOutDir);
-    initDistroPatern(qmlOut, mainDistro, setQmlOutDir);
-    initDistroPatern(trOut, mainDistro, setTrOutDir);
-    initDistroPatern(pluginOut, mainDistro, setPluginsOutDir);
-    initDistroPatern(recOut, mainDistro, setResOutDir);
+    parsePrefixesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir);
+    parsePrefixesPrivate(mainDistro, libOut, &DistroModule::setLibOutDir);
+    parsePrefixesPrivate(mainDistro, qmlOut, &DistroModule::setQmlOutDir);
+    parsePrefixesPrivate(mainDistro, trOut, &DistroModule::setTrOutDir);
+    parsePrefixesPrivate(mainDistro, pluginOut, &DistroModule::setPluginsOutDir);
+    parsePrefixesPrivate(mainDistro, recOut, &DistroModule::setResOutDir);
 
     return true;
 }
@@ -296,7 +302,7 @@ bool ConfigParser::initPrefixes() {
     auto tar_prefixes_array = QuasarAppUtils::Params::getStrArg("targetPrefix", "").
             split(DeployCore::getSeparator(0));
 
-    initDistroPatern(tar_prefixes_array, _config.prefixes, addTarget);
+    parsePrefixesPrivate(_config.prefixes, tar_prefixes_array, &DistroModule::addTarget);
 
     return true;
 }

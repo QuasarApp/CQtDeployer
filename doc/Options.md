@@ -36,14 +36,14 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   -extraPlugin [list,params]| Sets an additional path to extraPlugin of an app                |
 |   -recursiveDepth [params]  | Sets the Depth of recursive search of libs (default 0)          |
 |   -targetDir [params]       | Sets target directory(by default it is the path to the first deployable file)|
-|   -targetPrefix [tar1;path,path]| Sets prefix for target( by default it is empty value)       |
+|   -targetPrefix [prefix;tar1,prefix]| Sets prefix for target( by default it is empty value)       |
 |   -verbose [0-3]            | Shows debug log                                                 |
-|  -qmlOut [target1;path,path]| Sets path to qml out directory                                  |
-|  -libOut [target1;path,path]| Sets path to libraries out directory                            |
-|  -trOut [target1;path,path] | Sets path to translations out directory                         |
-|  -pluginOut [target1;path,path]| Sets path to plugins out directory                           |
-|  -binOut [target1;path,path]| Sets path to binary out directory                               |
-|  -recOut [target1;path,path]| Sets path to recurses out directory                             |
+|  -qmlOut [prefix;path,path]| Sets path to qml out directory                                  |
+|  -libOut [prefix;path,path]| Sets path to libraries out directory                            |
+|  -trOut [prefix;path,path] | Sets path to translations out directory                         |
+|  -pluginOut [prefix;path,path]| Sets path to plugins out directory                           |
+|  -binOut [prefix;path,path]| Sets path to binary out directory                               |
+|  -recOut [prefix;path,path]| Sets path to recurses out directory                             |
 |  -qif [params]              | Create the QIF installer for deployement programm"              |
 |                             | if skip the [params] then installer weel be created by default'"                           |
 |                             | Examples:" },
@@ -107,12 +107,12 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |                             | Пример -libDir ~/myLib,~/newLibs                          |
 
 |  -extraLibs [list,params]   | Устанавливает маску имени библиотеки, для принудительного копирования, Пример  "-extraLib mySql" - заставит скопировать в папку с проектом все библиотеки чии имена содержат mySql. Данная опция чуствительна к регистру.  |
-|  -qmlOut [target1;path,path]| Установит путь к папке с qml                                  |
-|  -libOut [target1;path,path]| Установит путь к папке с зависимостями                            |
-|  -trOut [target1;path,path] | Установит путь к папке с файламми переводов                         |
-|  -pluginOut [target1;path,path]| Установит путь к папке с плагинами                               |
-|  -binOut [target1;path,path]| Установит путь к папке с исполняемыми файлами                               |
-|  -recOut [target1;path,path]| Установит путь к папке с ресурсами                             |
+|  -qmlOut [prefix;path,path]| Установит путь к папке с qml                                  |
+|  -libOut [prefix;path,path]| Установит путь к папке с зависимостями                            |
+|  -trOut [prefix;path,path] | Установит путь к папке с файламми переводов                         |
+|  -pluginOut [prefix;path,path]| Установит путь к папке с плагинами                               |
+|  -binOut [prefix;path,path]| Установит путь к папке с исполняемыми файлами                               |
+|  -recOut [prefix;path,path]| Установит путь к папке с ресурсами                             |
 |  -qif [params]              | Создать установщик QIF для развертываемой программы"|
 |                             | если оставить параметр пустым то будет создан инсталлер По умолчанию|
 |                             | Примеры:" },
@@ -121,7 +121,7 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -extraPlugin [list,params] | Устанавливает дополнительный путь для extraPlugin приложения |
 |  -recursiveDepth [params]   | Устанавливает глубину поиска библиотек (по умолчанию 0)       |
 |  -targetDir [params]        | Устанавливает целевой каталог (по умолчанию это путь к первому развертываемому файлу)|
-|  -targetPrefix [tar1;path,path]| Устанавливает префикс для выбранной цели (по умолчанию это значение пустое)|
+|  -targetPrefix [prefix;tar1,prefix]| Устанавливает префикс для выбранной цели (по умолчанию это значение пустое)|
 |  -verbose [0-3]             | Показывает дебаг лога                                          |
 |   deploySystem              | Копирует все библиотеки кроме libc                        |
 |   clear                     | Удаляет все старые файлы (с прошлого запуска)              |
