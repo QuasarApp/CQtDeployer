@@ -91,6 +91,9 @@ private slots:
     // tested flags confFile
     void testConfFile();
 
+    // tested flags targetPrefix
+    void testPrefixes();
+
     // tested flags qmlDir qmake
     void testQt();
 
@@ -1159,6 +1162,10 @@ void deploytest::testConfFile() {
 
     QFile::remove(TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json");
 
+}
+
+void deploytest::testPrefixes() {
+    QVERIFY(false);
 }
 
 void deploytest::testQt() {

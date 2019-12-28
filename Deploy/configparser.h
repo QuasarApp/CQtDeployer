@@ -39,6 +39,7 @@ private:
     bool createFromDeploy(const QString& file) const;
     bool loadFromFile(const QString& file);
     bool initDistroStruct();
+    bool initPrefixes();
     bool parseQtDeployMode();
     bool parseQtInfoMode();
     bool parseQtClearMode();
