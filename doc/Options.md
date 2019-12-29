@@ -36,7 +36,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   -extraPlugin [list,params]| Sets an additional path to extraPlugin of an app                |
 |   -recursiveDepth [params]  | Sets the Depth of recursive search of libs (default 0)          |
 |   -targetDir [params]       | Sets target directory(by default it is the path to the first deployable file)|
-|   -targetPrefix [prefix;tar1,prefix]| Sets prefix for target( by default it is empty value)       |
+|   -targetPrefix [prefix;tar1,prefix;tar2]| Sets prefix for target( by default it is empty value)       |
 |   -verbose [0-3]            | Shows debug log                                                 |
 |  -qmlOut [prefix;path,path]| Sets path to qml out directory                                  |
 |  -libOut [prefix;path,path]| Sets path to libraries out directory                            |
@@ -121,7 +121,7 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -extraPlugin [list,params] | Устанавливает дополнительный путь для extraPlugin приложения |
 |  -recursiveDepth [params]   | Устанавливает глубину поиска библиотек (по умолчанию 0)       |
 |  -targetDir [params]        | Устанавливает целевой каталог (по умолчанию это путь к первому развертываемому файлу)|
-|  -targetPrefix [prefix;tar1,prefix]| Устанавливает префикс для выбранной цели (по умолчанию это значение пустое)|
+|  -targetPrefix [prefix;tar1,prefix;tar2]| Устанавливает префикс для выбранной цели (по умолчанию это значение пустое)|
 |  -verbose [0-3]             | Показывает дебаг лога                                          |
 |   deploySystem              | Копирует все библиотеки кроме libc                        |
 |   clear                     | Удаляет все старые файлы (с прошлого запуска)              |

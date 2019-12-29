@@ -1005,6 +1005,8 @@ void deploytest::testBinDir() {
 void deploytest::testConfFile() {
     TestUtils utils;
 
+    QVERIFY2(false, "you need to test deploy file with ewn flag prefixesTarget");
+
     QFile::remove(TestBinDir + "/TestConf.json");
     QFile::remove(TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json");
 
@@ -1173,25 +1175,44 @@ void deploytest::testPrefixes() {
     {"./" + DISTRO_DIR + "/bin/TestOnlyC",
      "./" + DISTRO_DIR + "/bin/qt.conf",
      "./" + DISTRO_DIR + "/TestOnlyC.sh"});
-    QString bin = TestBinDir + "TestOnlyC";
+    QString target1 = TestBinDir + "TestOnlyC";
 
 #else
     QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
     auto comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "/TestOnlyC.exe",
      "./" + DISTRO_DIR + "/qt.conf"});
-    QString bin = TestBinDir + "TestOnlyC.exe";
+    QString target1 = TestBinDir + "TestOnlyC.exe";
 
 #endif
+    QString bin = target1;
 
     runTestParams({"-bin", bin, "force-clear",
-                  "-targetPrefix", "/prefix/"}, &comapareTree);
+                  "-targetPrefix", "/prefix/;Test"}, &comapareTree);
 
     runTestParams({"-bin", bin, "force-clear",
-                  "-targetPrefix", "Test;/prefix/"}, &comapareTree);
+                  "-targetPrefix", "/prefix/;" + target1}, &comapareTree);
+
+#ifdef Q_OS_UNIX
+    QString target2 = TestBinDir + "TestQMLWidgets";
+    QString target3 = TestBinDir + "QtWidgetsProject";
+
+#else
+    QString target2 = TestBinDir + "TestQMLWidgets.exe";
+    QString target3 = TestBinDir + "QtWidgetsProject.exe";
+
+#endif
+    bin += "," + target2;
+    bin += "," + target3;
 
     runTestParams({"-bin", bin, "force-clear",
-                  "-targetPrefix", bin + ";/prefix/"}, &comapareTree);
+                   "-binOut", "/lol",
+                   "-libOut", "/lolLib",
+                   "-trOut", "/lolTr",
+                   "-pluginOut", "/p",
+                   "-qmlOut", "/q",
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets"
+                   "-targetPrefix", "/prefix1/;" + target1 + "/prefix2/;" + target2}, &comapareTree);
 }
 
 void deploytest::testQt() {

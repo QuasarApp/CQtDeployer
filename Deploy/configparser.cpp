@@ -26,15 +26,29 @@
  * seterFunc - this is method of item of mainConteiner for set value from inputParamsList
  * important : prefix in inputParamsList must be second.
  */
-template<typename Setter>
-void parsePrefixesPrivate(decltype (DeployConfig::prefixes)& mainContainer,
+template<typename Container, typename Setter>
+bool parsePrefixesPrivate(Container& mainContainer,
                           const QStringList &inputParamsList,
                           Setter setter) {
 
     for (auto& str: inputParamsList) {
-        auto targetVal = str.split(DeployCore::getSeparator(1));
-        (mainContainer[targetVal.value(1, "")].*setter)(targetVal.value(0, ""));
+        auto pair = str.split(DeployCore::getSeparator(1));
+        auto first = pair.value(0, "");
+        auto second = pair.value(1, "");
+        if (pair.size() == 1)
+            (mainContainer[""].*setter)(first);
+        else {
+            if (!mainContainer.contains(first)) {
+                return false;
+            }
+
+            (mainContainer[first].*setter)(second);
+
+        }
+
     }
+
+    return true;
 }
 
 bool ConfigParser::parseParams() {
@@ -261,6 +275,10 @@ bool ConfigParser::loadFromFile(const QString& confFile) {
 
 bool ConfigParser::initDistroStruct() {
 
+    if (!initPrefixes()) {
+        return false;
+    }
+
     auto &mainDistro = _config.prefixes;
 
 #ifdef Q_OS_LINUX
@@ -286,23 +304,82 @@ bool ConfigParser::initDistroStruct() {
     auto recOut = QuasarAppUtils::Params::getStrArg("recOut", "/resources").
             split(DeployCore::getSeparator(0));
 
+    auto erroLog = [](const QString &flag){
+            QuasarAppUtils::Params::verboseLog(QString("Set %0 fail, becouse you try set %0 for not inited prefix."
+                                               " Use 'targetPrefix' flag for init the prefixes").arg(flag),
+                                               QuasarAppUtils::Error);
+        };
+
 // init distro stucts for all targets
-    parsePrefixesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir);
-    parsePrefixesPrivate(mainDistro, libOut, &DistroModule::setLibOutDir);
-    parsePrefixesPrivate(mainDistro, qmlOut, &DistroModule::setQmlOutDir);
-    parsePrefixesPrivate(mainDistro, trOut, &DistroModule::setTrOutDir);
-    parsePrefixesPrivate(mainDistro, pluginOut, &DistroModule::setPluginsOutDir);
-    parsePrefixesPrivate(mainDistro, recOut, &DistroModule::setResOutDir);
+    if (!parsePrefixesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir)) {
+        erroLog("binOut");
+        return false;
+    }
+
+    if (!parsePrefixesPrivate(mainDistro, libOut, &DistroModule::setLibOutDir)) {
+        erroLog("libOut");
+        return false;
+    }
+
+    if (!parsePrefixesPrivate(mainDistro, qmlOut, &DistroModule::setQmlOutDir)) {
+        erroLog("qmlOut");
+        return false;
+    }
+
+    if (!parsePrefixesPrivate(mainDistro, trOut, &DistroModule::setTrOutDir)) {
+        erroLog("trOut");
+        return false;
+    }
+
+    if (!parsePrefixesPrivate(mainDistro, pluginOut, &DistroModule::setPluginsOutDir)) {
+        erroLog("pluginOut");
+        return false;
+    }
+
+    if (!parsePrefixesPrivate(mainDistro, recOut, &DistroModule::setResOutDir)) {
+        erroLog("recOut");
+        return false;
+    }
 
     return true;
 }
 
 bool ConfigParser::initPrefixes() {
 
-    auto tar_prefixes_array = QuasarAppUtils::Params::getStrArg("targetPrefix", "").
-            split(DeployCore::getSeparator(0));
+    if (QuasarAppUtils::Params::isEndable("targetPrefix")) {
+        auto tar_prefixes_array = QuasarAppUtils::Params::getStrArg("targetPrefix", "").
+                split(DeployCore::getSeparator(0));
 
-    parsePrefixesPrivate(_config.prefixes, tar_prefixes_array, &DistroModule::addTarget);
+
+        for (auto& str: tar_prefixes_array) {
+            auto pair = str.split(DeployCore::getSeparator(1));
+            auto prefix = pair.value(0, "");
+
+            auto list = _config.getTargetsListByFilter(pair.value(1, ""));
+
+            for (auto &target : list) {
+                target->setSufix(prefix);
+            }
+
+            _config.prefixes.insert(prefix, {});
+
+            if (pair.size() != 2) {
+
+                QuasarAppUtils::Params::verboseLog(
+                            "Wrong the targetPrefix value. The targetPrefix value must be "
+                            "contains the prefix path like first item and target mask like second item."
+                            " Prefix and Target must be separated ';' char. "
+                            " For example:  -targetPrefix prefix/path/1;target1,prefix/path/2;tar",
+                            QuasarAppUtils::Error);
+
+                return false;
+
+            }
+
+            _config.targets[pair.value(0, "")].setSufix(pair.value(1, ""));
+
+        }
+    }
 
     return true;
 }
@@ -353,8 +430,10 @@ bool ConfigParser::parseQtDeployMode() {
     initIgnoreEnvList();
     initEnvirement();
     initIgnoreList();
-    initDistroStruct();
-    initPrefixes();
+    if (!initDistroStruct()) {
+        return false;
+    }
+
 
     _config.depchLimit = 0;
 
@@ -1010,9 +1089,10 @@ bool ConfigParser::smartMoveTargets() {
             result = false;
         }
 
-        temp.unite(prepareTarget(targetPath + "/" + target.fileName()));
+        auto newTargetKey = targetPath + "/" + target.fileName();
+        temp.unite(prepareTarget(newTargetKey));
 
-        _config.prefixes[i.value().getSufix()].addTarget(i.key());
+        _config.prefixes[i.value().getSufix()].addTarget(newTargetKey);
 
     }
 
