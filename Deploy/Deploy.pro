@@ -50,6 +50,7 @@ SOURCES += \
     deploy.cpp \
     deploycore.cpp \
     envirement.cpp \
+    extra.cpp \
     extracter.cpp \
     filemanager.cpp \
     ignorerule.cpp \
@@ -62,7 +63,8 @@ SOURCES += \
     elf.cpp \
     pluginsparser.cpp \
     qml.cpp \
-    libinfo.cpp
+    libinfo.cpp \
+    qtdir.cpp
 
 HEADERS += \
     distrostruct.h \
@@ -71,6 +73,7 @@ HEADERS += \
     deploy_global.h \
     deploycore.h \
     envirement.h \
+    extra.h \
     extracter.h \
     filemanager.h \
     ignorerule.h \
@@ -83,6 +86,7 @@ HEADERS += \
     elf.h \
     pluginsparser.h \
     qml.h \
-    libinfo.h
+    libinfo.h \
+    qtdir.h
 
 STATECHARTS +=

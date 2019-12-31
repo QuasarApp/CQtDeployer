@@ -5,11 +5,19 @@
 //# of this license document, but changing it is not allowed.
 //#
 
-#include <QString>
-#include "deploy_global.h"
+
 
 #ifndef PATHUTILS_H
 #define PATHUTILS_H
+
+#include <QString>
+#include "deploy_global.h"
+
+#ifdef Q_OS_WIN
+#define ONLY_WIN_CASE_INSENSIATIVE Qt::CaseInsensitive
+#else
+#define ONLY_WIN_CASE_INSENSIATIVE Qt::CaseSensitive
+#endif
 
 /**
  * @brief The PathUtils class
@@ -68,6 +76,13 @@ public:
      * @return return true if path is absolute
      */
     static bool isAbsalutPath(const QString &path);
+
+    /**
+     * @brief fixPath - this method make upper case for all symbols of path on windows os. on linux doing nothing
+     * @param path - a input path
+     * @return return a fixed path
+     */
+    static QString fixPath(const QString & path);
 
 };
 

@@ -44,9 +44,9 @@ private:
     QStringList getFilesFromDir(const QString& dir);
 
 
-    void runTestParams(const QStringList &list, QSet<QString> *tree = nullptr, bool noWarnings = false);
+    void runTestParams(const QStringList &list, QSet<QString> *tree = nullptr, bool noWarnings = false, bool onlySize = false);
 
-    void checkResults(const QSet<QString> &tree, bool noWarnings);
+    void checkResults(const QSet<QString> &tree, bool noWarnings, bool onlySize = false);
 public:
     deploytest();
     /**
@@ -80,6 +80,9 @@ private slots:
 
     // tested flags : help, version
     void testHelp();
+
+    // tested flags customScript
+    void costomScript();
 
     // tested flags clear noOvervrite
     void testOverwrite();
@@ -744,7 +747,7 @@ void deploytest::testSetTargetDir() {
 
 }
 
-void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree, bool noWarnings) {
+void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree, bool noWarnings, bool onlySize) {
 
     QuasarAppUtils::Params::parseParams(list);
 
@@ -752,7 +755,7 @@ void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree, boo
     QVERIFY(deploy.run() == 0);
 
     if (tree) {
-        checkResults(*tree, noWarnings);
+        checkResults(*tree, noWarnings, onlySize);
     }
 
 #ifdef WITH_SNAP
@@ -790,7 +793,7 @@ void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree, boo
 #endif
 }
 
-void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings) {
+void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings , bool onlySize) {
     TestUtils utils;
 
     QVERIFY(DeployCore::_config);
@@ -799,6 +802,11 @@ void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings) {
     auto resultTree = utils.getTree(DeployCore::_config->targetDir);
 
     auto comapre = utils.compareTree(resultTree, tree);
+
+    if (onlySize) {
+        QVERIFY(resultTree.size() > tree.size());
+        return;
+    }
 
     if (comapre.size() != 0) {
 
@@ -867,6 +875,58 @@ void deploytest::testHelp() {
             QVERIFY(false);
         }
     }
+
+}
+
+void deploytest::costomScript() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QFile f("./" + DISTRO_DIR + "/bin/TestOnlyC");
+    auto comapareTree = utils.createTree(
+    {"./" + DISTRO_DIR + "/bin/TestOnlyC",
+     "./" + DISTRO_DIR + "/bin/qt.conf",
+     "./" + DISTRO_DIR + "/TestOnlyC.sh"});
+    QString bin = TestBinDir + "TestOnlyC";
+    QString scriptPath = "./" + DISTRO_DIR + "/TestOnlyC.sh";
+
+#else
+    QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
+    auto comapareTree = utils.createTree(
+    {"./" + DISTRO_DIR + "/TestOnlyC.exe",
+     "./" + DISTRO_DIR + "/qt.conf"});
+    QString bin = TestBinDir + "TestOnlyC.exe";
+    QString scriptPath = "./" + DISTRO_DIR + "/TestOnlyC.bat";
+
+
+#endif
+
+    runTestParams({"-bin", bin, "force-clear", "noOverwrite", "-libOut", "lib"}, &comapareTree);
+
+    QFile script(scriptPath);
+    QVERIFY(script.open(QIODevice::ReadOnly));
+    auto scriptText = script.readAll();
+
+    QVERIFY(!scriptText.contains("Begin Custom Script"));
+
+    script.close();
+
+    runTestParams({"-bin", bin, "force-clear", "noOverwrite",
+                   "-libOut", "lib",
+                   "-customScript", "echo 'this is test script'"}, &comapareTree);
+
+    QVERIFY(script.open(QIODevice::ReadOnly));
+
+    scriptText = script.readAll();
+
+    QVERIFY(scriptText.contains("Begin Custom Script"));
+    QVERIFY(scriptText.contains("echo 'this is test script'"));
+    QVERIFY(scriptText.contains("End Custom Script"));
+
+    script.close();
+
+
+
 
 }
 
@@ -1207,12 +1267,6 @@ void deploytest::testIgnore() {
 #ifdef Q_OS_UNIX
         QString bin = TestBinDir + "QtWidgetsProject";
         QString qmake = TestQtDir + "bin/qmake";
-        comapareTree += utils.createTree(
-        {
-                        "./" + DISTRO_DIR + "/lib/libicudata.so",
-                        "./" + DISTRO_DIR + "/lib/libicui18n.so",
-                        "./" + DISTRO_DIR + "/lib/libicuuc.so"
-                    });
 
 #else
         QString bin = TestBinDir + "QtWidgetsProject.exe";
@@ -1244,10 +1298,6 @@ void deploytest::testIgnore() {
                 });
 
     auto removeTree = utils.createTree({
-                    "./" + DISTRO_DIR + "/lib/libQt5VirtualKeyboard.so",
-                });
-
-    auto removeTreePlugins = utils.createTree({
                   "./" + DISTRO_DIR + "/plugins/virtualkeyboard/libqtvirtualkeyboard_hangul.so",
                   "./" + DISTRO_DIR + "/plugins/virtualkeyboard/libqtvirtualkeyboard_openwnn.so",
                   "./" + DISTRO_DIR + "/plugins/virtualkeyboard/libqtvirtualkeyboard_pinyin.so",
@@ -1267,18 +1317,14 @@ void deploytest::testIgnore() {
 
     auto removeTree = utils.createTree({
                     "./" + DISTRO_DIR + "/Qt5VirtualKeyboard.dll",
-                });
+                    "./" + DISTRO_DIR + "/plugins/platforminputcontexts/qtvirtualkeyboardplugin.dll",
+                    "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_hangul.dll",
+                    "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_openwnn.dll",
+                    "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_pinyin.dll",
+                    "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_tcime.dll",
+                    "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_thai.dll"
+    });
 
-    auto removeTreePlugins = utils.createTree({
-                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_hangul.dll",
-                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_openwnn.dll",
-                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_pinyin.dll",
-                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_tcime.dll",
-                  "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_thai.dll",
-                  "./" + DISTRO_DIR + "/plugins/platforminputcontexts/qtvirtualkeyboardplugin.dll",
-                  "./" + DISTRO_DIR + "/Qt5VirtualKeyboard.dll",
-
-                });
 
 #endif
 
@@ -1287,18 +1333,11 @@ void deploytest::testIgnore() {
                   "-ignoreEnv", TestQtDir + "/lib," + TestQtDir + "/bin" }, &comapareTree);
 
 
-
     comapareTree = Modules::qtLibs() - removeTree;
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                   "-ignore", "VirtualKeyboard"}, &comapareTree);
-
-    comapareTree = Modules::qtLibs() - removeTreePlugins;
-
-    runTestParams({"-bin", bin, "clear" ,
-                   "-qmake", qmake,
-                  "-ignore", "VirtualKeyboard,virtualkeyboard"}, &comapareTree);
 
 }
 
@@ -1481,11 +1520,31 @@ void deploytest::testSystemLib() {
     QString bin = TestBinDir + "TestOnlyC.exe";
     auto comapareTree = utils.createTree(
     {
-        "./" + DISTRO_DIR + "/TestOnlyC.exe",
-        "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
-        "./" + DISTRO_DIR + "/libstdc++-6.dll",
-        "./" + DISTRO_DIR + "/libwinpthread-1.dll",
-        "./" + DISTRO_DIR + "/qt.conf"
+            "./" + DISTRO_DIR + "/TestOnlyC.exe",
+            "./" + DISTRO_DIR + "/api-ms-win-core-console-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-datetime-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-debug-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-errorhandling-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-fibers-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-file-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-handle-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-heap-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-localization-l1-2-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-memory-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-namedpipe-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-processenvironment-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-processthreads-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-profile-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-string-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-synch-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-synch-l1-2-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-sysinfo-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-util-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
+            "./" + DISTRO_DIR + "/libstdc++-6.dll",
+            "./" + DISTRO_DIR + "/libwinpthread-1.dll",
+            "./" + DISTRO_DIR + "/msvcrt.dll",
+            "./" + DISTRO_DIR + "/qt.conf"
     });
 
 #endif
@@ -1530,6 +1589,100 @@ void deploytest::testSystemLib() {
     file.close();
 
     QVERIFY(runScript.contains("export LD_PRELOAD="));
+
+#else
+    QString qmake = TestQtDir + "bin/qmake.exe";
+    bin = TestBinDir + "QtWidgetsProject.exe";
+
+    comapareTree += Modules::qtLibs();
+
+    comapareTree -= utils.createTree(
+    {
+        "./" + DISTRO_DIR + "/TestOnlyC.exe",
+    });
+
+    comapareTree += utils.createTree(
+    {
+        "./" + DISTRO_DIR + "/api-ms-win-core-console-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-datetime-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-debug-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-errorhandling-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-fibers-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-file-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-handle-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-heap-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-localization-l1-2-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-memory-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-namedpipe-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-processenvironment-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-processthreads-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-profile-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-string-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-synch-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-synch-l1-2-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-sysinfo-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-util-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
+        "./" + DISTRO_DIR + "/libstdc++-6.dll",
+        "./" + DISTRO_DIR + "/libwinpthread-1.dll",
+        "./" + DISTRO_DIR + "/msvcrt.dll",
+        "./" + DISTRO_DIR + "/qt.conf",
+        "./" + DISTRO_DIR + "/API-MS-Win-Core-Heap-Obsolete-L1-1-0.dll",
+        "./" + DISTRO_DIR + "/API-MS-Win-Core-Kernel32-Private-L1-1-0.dll",
+        "./" + DISTRO_DIR + "/API-MS-Win-Core-Kernel32-Private-L1-1-1.dll",
+        "./" + DISTRO_DIR + "/API-MS-Win-Eventing-ClassicProvider-L1-1-0.dll",
+        "./" + DISTRO_DIR + "/API-MS-Win-Eventing-Provider-L1-1-0.dll",
+        "./" + DISTRO_DIR + "/API-MS-Win-core-file-l2-1-0.dll",
+        "./" + DISTRO_DIR + "/API-MS-Win-core-localization-obsolete-l1-2-0.dll",
+        "./" + DISTRO_DIR + "/API-MS-Win-core-string-l2-1-0.dll",
+        "./" + DISTRO_DIR + "/API-MS-Win-core-string-obsolete-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/API-MS-Win-devices-config-L1-1-1.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-delayload-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-file-l1-2-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-file-l1-2-1.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-interlocked-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-io-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-io-l1-1-1.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-kernel32-legacy-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-kernel32-legacy-l1-1-1.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-memory-l1-1-1.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-privateprofile-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-processthreads-l1-1-1.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-realtime-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-registry-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-rtlsupport-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-shlwapi-legacy-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-shlwapi-obsolete-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-stringansi-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-sysinfo-l1-2-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-threadpool-l1-2-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-threadpool-legacy-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-timezone-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-url-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-version-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-core-wow64-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-crt-math-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-crt-private-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-crt-runtime-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-crt-string-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-crt-time-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-security-base-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-security-cryptoapi-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/dwmapi.dll",
+        "./" + DISTRO_DIR + "/mpr.dll",
+        "./" + DISTRO_DIR + "/profapi.dll",
+        "./" + DISTRO_DIR + "/rpcrt4.dll",
+        "./" + DISTRO_DIR + "/shell32.dll",
+        "./" + DISTRO_DIR + "/userenv.dll",
+        "./" + DISTRO_DIR + "/uxtheme.dll",
+        "./" + DISTRO_DIR + "/version.dll",
+        "./" + DISTRO_DIR + "/win32u.dll"
+    });
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "deploySystem"
+                  }, &comapareTree, true);
 
 
 #endif
