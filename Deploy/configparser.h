@@ -78,7 +78,9 @@ private:
     QString getRelativeLink(const QString& from, const QString& to);
     void writeKey(const QString &key, QJsonObject &, const QString &confFileDir) const;
     void readKey(const QString &key, const QJsonObject &obj, const QString &confFileDir) const;
-    QHash<QString, TargetInfo> prepareTarget(const QString &target);
+    QHash<QString, TargetInfo> createTarget(const QString &target);
+    QHash<QString, TargetInfo> moveTarget(TargetInfo target, const QString &newLocation);
+
 
     QString readKeyArray(int separatorLvl, const QJsonArray &array, const QString &confFileDir) const;
     QJsonValue writeKeyArray(int separatorLvl, const QString &parameter, const QString &confFileDir) const;

@@ -375,9 +375,6 @@ bool ConfigParser::initPrefixes() {
                 return false;
 
             }
-
-            _config.targets[pair.value(0, "")].setSufix(pair.value(1, ""));
-
         }
     }
 
@@ -524,7 +521,7 @@ bool ConfigParser::setTargets(const QStringList &value) {
 
             auto sufix = targetInfo.completeSuffix();
 
-            _config.targets.unite(prepareTarget(QDir::fromNativeSeparators(i)));
+            _config.targets.unite(createTarget(QDir::fromNativeSeparators(i)));
 
             isfillList = true;
         }
@@ -590,7 +587,7 @@ bool ConfigParser::setBinDir(const QString &dir, bool recursive) {
 
             result = true;
 
-            _config.targets.unite(prepareTarget(QDir::fromNativeSeparators(file.absoluteFilePath())));
+            _config.targets.unite(createTarget(QDir::fromNativeSeparators(file.absoluteFilePath())));
 
         }
 
@@ -599,7 +596,7 @@ bool ConfigParser::setBinDir(const QString &dir, bool recursive) {
     return result;
 }
 
-QHash<QString, TargetInfo> ConfigParser::prepareTarget(const QString &target) {
+QHash<QString, TargetInfo> ConfigParser::createTarget(const QString &target) {
     TargetInfo libinfo;
     auto key = target;
     if (_scaner->fillLibInfo(libinfo, key)) {
@@ -607,6 +604,14 @@ QHash<QString, TargetInfo> ConfigParser::prepareTarget(const QString &target) {
     } else {
         return {{key, {}}};
     }
+}
+
+QHash<QString, TargetInfo>
+ConfigParser::moveTarget(TargetInfo target, const QString& newLocation) {
+    target.setPath(QFileInfo(newLocation).absolutePath());
+
+    return {{newLocation, target}};
+
 }
 
 void ConfigParser::initIgnoreList()
@@ -1090,7 +1095,7 @@ bool ConfigParser::smartMoveTargets() {
         }
 
         auto newTargetKey = targetPath + "/" + target.fileName();
-        temp.unite(prepareTarget(newTargetKey));
+        temp.unite(moveTarget(i.value(), newTargetKey));
 
         _config.prefixes[i.value().getSufix()].addTarget(newTargetKey);
 

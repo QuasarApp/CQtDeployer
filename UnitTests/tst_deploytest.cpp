@@ -1191,7 +1191,7 @@ void deploytest::testPrefixes() {
                   "-targetPrefix", "/prefix/;Test"}, &comapareTree);
 
     runTestParams({"-bin", bin, "force-clear",
-                  "-targetPrefix", "/prefix/;" + target1}, &comapareTree);
+                  "-targetPrefix", "/prefix/" + target1}, &comapareTree);
 
 #ifdef Q_OS_UNIX
     QString target2 = TestBinDir + "TestQMLWidgets";
