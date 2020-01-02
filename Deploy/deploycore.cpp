@@ -303,6 +303,15 @@ bool DeployCore::isExecutable(const QFileInfo& file) {
     return sufix.contains("exe", Qt::CaseInsensitive) || sufix.contains("run", Qt::CaseInsensitive) || sufix.isEmpty();
 }
 
+bool DeployCore::isContainsArraySeparators(const QString &val, int lastLvl) {
+    while (lastLvl) {
+        if (val.contains(getSeparator(--lastLvl)))
+            return true;
+    }
+
+    return false;
+}
+
 int DeployCore::find(const QString &str, const QStringList &list) {
     for (int i = 0 ; i < list.size(); ++i) {
         if (list[i].contains(str))

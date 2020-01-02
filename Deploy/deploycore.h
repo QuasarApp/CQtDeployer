@@ -153,6 +153,8 @@ public:
     static int find(const QString &str, const QStringList &list);
     static bool isLib(const QFileInfo &file);
     static bool isExecutable(const QFileInfo &file);
+    static bool isContainsArraySeparators(const QString& val,
+                                          int lastLvl = 2);
 
 };
 

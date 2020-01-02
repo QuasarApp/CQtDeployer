@@ -19,7 +19,7 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
 
     auto cnf = DeployCore::_config;
 
-    if (!cnf->targets.contains(target)) {
+    if (!cnf->targets().contains(target)) {
         return false;
     }
     auto distro = cnf->getDistro(target);
@@ -61,7 +61,7 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
 bool MetaFileManager::createRunScriptLinux(const QString &target) {
     auto cnf = DeployCore::_config;
 
-    if (!cnf->targets.contains(target)) {
+    if (!cnf->targets().contains(target)) {
         return false;
     }
     auto distro = cnf->getDistro(target);
@@ -139,7 +139,7 @@ bool MetaFileManager::createRunScript(const QString &target) {
 bool MetaFileManager::createQConf(const QString &target) {
     auto cnf = DeployCore::_config;
 
-    if (!cnf->targets.contains(target)) {
+    if (!cnf->targets().contains(target)) {
         return false;
     }
     auto distro = cnf->getDistro(target);
@@ -179,7 +179,7 @@ bool MetaFileManager::createQConf(const QString &target) {
 
 void MetaFileManager::createRunMetaFiles() {
 
-    for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
+    for (auto i = DeployCore::_config->targets().cbegin(); i != DeployCore::_config->targets().cend(); ++i) {
 
         if (!createRunScript(i.key())) {
             qCritical() << "run script not created!";

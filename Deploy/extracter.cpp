@@ -47,7 +47,7 @@ bool Extracter::extractWebEngine() {
 
     auto cnf = DeployCore::_config;
 
-    for (auto i = cnf->prefixes.cbegin(); i != cnf->prefixes.cend(); ++i) {
+    for (auto i = cnf->prefixes().cbegin(); i != cnf->prefixes().cend(); ++i) {
 
         auto prefix = i.key();
         if (isWebEngine(prefix)) {
@@ -58,8 +58,8 @@ bool Extracter::extractWebEngine() {
                 webEngeneBin += "/QtWebEngineProcess.exe";
             }
 
-            auto destWebEngine = DeployCore::_config->getTargetDir() + prefix + DeployCore::_config->prefixes[prefix].getBinOutDir();
-            auto resOut = DeployCore::_config->getTargetDir() + prefix + DeployCore::_config->prefixes[prefix].getResOutDir();
+            auto destWebEngine = DeployCore::_config->getTargetDir() + prefix + DeployCore::_config->prefixes()[prefix].getBinOutDir();
+            auto resOut = DeployCore::_config->getTargetDir() + prefix + DeployCore::_config->prefixes()[prefix].getResOutDir();
             auto res = DeployCore::_config->qtDir.getResources();
 
             if (!_fileManager->copyFile(webEngeneBin, destWebEngine)) {
@@ -144,7 +144,7 @@ void Extracter::copyPlugins(const QStringList &list, const QString& prefix) {
 
 void Extracter::extractAllTargets() {
     auto cfg = DeployCore::_config;
-    for (auto i = cfg->prefixes.cbegin(); i != cfg->prefixes.cend(); ++i) {
+    for (auto i = cfg->prefixes().cbegin(); i != cfg->prefixes().cend(); ++i) {
         _prefixDependencyes[i.key()] = {};
 
         for (auto target : i.value().targets()) {
@@ -167,7 +167,7 @@ void Extracter::extractPlugins() {
     auto cnf = DeployCore::_config;
     PluginsParser pluginsParser;
 
-    for (auto i = cnf->prefixes.cbegin(); i != cnf->prefixes.cend(); ++i) {
+    for (auto i = cnf->prefixes().cbegin(); i != cnf->prefixes().cend(); ++i) {
         auto targetPath = cnf->getTargetDir() + i.key();
         auto distro = cnf->getDistroFromPrefix(i.key());
 
@@ -194,7 +194,7 @@ void Extracter::copyLibs(const QSet<QString> &files, const QString& prefix) {
 void Extracter::copyFiles() {
     auto cnf = DeployCore::_config;
 
-    for (auto i = cnf->prefixes.cbegin(); i != cnf->prefixes.cend(); ++i) {
+    for (auto i = cnf->prefixes().cbegin(); i != cnf->prefixes().cend(); ++i) {
 
         copyLibs(_prefixDependencyes[i.key()].neadedLibs(), i.key());
 
@@ -214,7 +214,7 @@ void Extracter::copyTr() {
 
         auto cnf = DeployCore::_config;
 
-        for (auto i = cnf->prefixes.cbegin(); i != cnf->prefixes.cend(); ++i) {
+        for (auto i = cnf->prefixes().cbegin(); i != cnf->prefixes().cend(); ++i) {
             if (!copyTranslations(DeployCore::extractTranslation(_prefixDependencyes[i.key()].neadedLibs()),
                                   i.key())) {
                 QuasarAppUtils::Params::verboseLog("Failed to copy standard Qt translations",
@@ -354,7 +354,7 @@ bool Extracter::extractQmlAll() {
     auto cnf = DeployCore::_config;
 
 
-    for (auto i = cnf->prefixes.cbegin(); i != cnf->prefixes.cend(); ++i) {
+    for (auto i = cnf->prefixes().cbegin(); i != cnf->prefixes().cend(); ++i) {
         auto targetPath = cnf->getTargetDir() + i.key();
         auto distro = cnf->getDistroFromPrefix(i.key());
 
@@ -381,36 +381,38 @@ bool Extracter::extractQmlAll() {
 
 bool Extracter::extractQmlFromSource(const QString& sourceDir) {
 
-    QFileInfo info(sourceDir);
     auto cnf = DeployCore::_config;
 
-    if (!info.isDir()) {
-        qCritical() << "extract qml fail! qml source dir not exits or is not dir " << sourceDir;
-        return false;
-    }
-
-    QuasarAppUtils::Params::verboseLog("extractQmlFromSource " + info.absoluteFilePath());
-
-    if (!QFileInfo::exists(cnf->qtDir.getQmls())) {
-        qWarning() << "qml dir wrong!";
-        return false;
-    }
-
-    QStringList plugins;
-    QStringList listItems;
-    QStringList filter;
-    filter << ".so.debug" << "d.dll" << ".pdb";
-
-    QML ownQmlScaner(cnf->qtDir.getQmls());
-
-    if (!ownQmlScaner.scan(plugins, info.absoluteFilePath())) {
-        QuasarAppUtils::Params::verboseLog("qml scaner run failed!");
-        return false;
-    }
-
-    for (auto i = cnf->prefixes.cbegin(); i != cnf->prefixes.cend(); ++i) {
+    for (auto i = cnf->prefixes().cbegin(); i != cnf->prefixes().cend(); ++i) {
         auto targetPath = cnf->getTargetDir() + i.key();
         auto distro = cnf->getDistroFromPrefix(i.key());
+
+        QStringList plugins;
+        QStringList listItems;
+        QStringList filter;
+        filter << ".so.debug" << "d.dll" << ".pdb";
+
+        for (auto &qmlInput: distro.qmlInput()) {
+            QFileInfo info(qmlInput);
+
+            if (!info.isDir()) {
+                qCritical() << "extract qml fail! qml source dir not exits or is not dir " << sourceDir;
+                continue;
+            }
+            QuasarAppUtils::Params::verboseLog("extractQmlFromSource " + info.absoluteFilePath());
+
+            if (!QFileInfo::exists(cnf->qtDir.getQmls())) {
+                qWarning() << "qml dir wrong!";
+                continue;
+            }
+
+            QML ownQmlScaner(cnf->qtDir.getQmls());
+
+            if (!ownQmlScaner.scan(plugins, info.absoluteFilePath())) {
+                QuasarAppUtils::Params::verboseLog("qml scaner run failed!");
+                continue;
+            }
+        }
 
         if (!_fileManager->copyFolder(cnf->qtDir.getQmls(),
                                      targetPath + distro.getQmlOutDir(),

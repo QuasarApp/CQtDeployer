@@ -86,6 +86,16 @@ QString DistroStruct::getRelativePath(QString path) const {
 }
 
 DistroStruct::DistroStruct() {
+#ifdef Q_OS_LINUX
+    setBinOutDir("/bin");
+    setLibOutDir("/lib");
+#else
+    setBinOutDir("/");
+    setLibOutDir("/");
+#endif
 
-
+    setQmlOutDir("/qml");
+    setTrOutDir("/translations");
+    setPluginsOutDir("/plugins");
+    setResOutDir("/resources");
 }

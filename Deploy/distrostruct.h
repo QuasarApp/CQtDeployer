@@ -24,7 +24,6 @@ private:
     QString trOutDir;
     QString resOutDir;
     QString pluginsOutDir;
-    QString 0refi
 
     QString toFullPath(QString path) const;
     QString stripPath(QString path) const;

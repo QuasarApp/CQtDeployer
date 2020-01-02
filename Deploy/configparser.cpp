@@ -17,7 +17,7 @@
 #include "quasarapp.h"
 
 #include <assert.h>
-
+#define NO_LINK_VALUE "str::"
 /**
  * this function init prefixes of project
  * inputParamsList - list of parameters
@@ -38,6 +38,7 @@ bool parsePrefixesPrivate(Container& mainContainer,
         if (pair.size() == 1)
             (mainContainer[""].*setter)(first);
         else {
+            first = PathUtils::toFullPath(first);
             if (!mainContainer.contains(first)) {
                 return false;
             }
@@ -113,12 +114,13 @@ const DeployConfig *ConfigParser::config() const {
     return &_config;
 }
 
+// FIX ME. if prefix contains the path separators then prefix rewrite to RelativeLink of configFile location
 QJsonValue ConfigParser::writeKeyArray(int separatorLvl, const QString &parameter,
                                  const QString &confFileDir) const {
 
     auto list = parameter.split(DeployCore::getSeparator(separatorLvl));
 
-    if (list.size() > 1) {
+    if (DeployCore::isContainsArraySeparators(parameter)) {
         QJsonArray array;
 
         for (auto &i: list) {
@@ -135,6 +137,7 @@ QJsonValue ConfigParser::writeKeyArray(int separatorLvl, const QString &paramete
     auto val = list.first();
 
     if (PathUtils::isPath(val)) {
+
         val = PathUtils::getRelativeLink(
                     QFileInfo(confFileDir).absoluteFilePath(),
                     QFileInfo(val).absoluteFilePath());
@@ -279,30 +282,30 @@ bool ConfigParser::initDistroStruct() {
         return false;
     }
 
-    auto &mainDistro = _config.prefixes;
+    auto &mainDistro = _config.prefixesEdit();
 
 #ifdef Q_OS_LINUX
 
-    auto binOut = QuasarAppUtils::Params::getStrArg("binOut", "/bin").
-            split(DeployCore::getSeparator(0));
-    auto libOut = QuasarAppUtils::Params::getStrArg("libOut", "/lib").
-            split(DeployCore::getSeparator(0));
+    auto binOut = QuasarAppUtils::Params::getStrArg("binOut").
+            split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
+    auto libOut = QuasarAppUtils::Params::getStrArg("libOut").
+            split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
 
 #else
-    auto binOut = QuasarAppUtils::Params::getStrArg("binOut", "/").
-            split(DeployCore::getSeparator(0));
-    auto libOut = QuasarAppUtils::Params::getStrArg("libOut", "/").
-            split(DeployCore::getSeparator(0));
+    auto binOut = QuasarAppUtils::Params::getStrArg("binOut").
+            split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
+    auto libOut = QuasarAppUtils::Params::getStrArg("libOut").
+            split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
 #endif
 
-    auto qmlOut = QuasarAppUtils::Params::getStrArg("qmlOut", "/qml").
-            split(DeployCore::getSeparator(0));
-    auto trOut = QuasarAppUtils::Params::getStrArg("trOut", "/translations").
-            split(DeployCore::getSeparator(0));
-    auto pluginOut = QuasarAppUtils::Params::getStrArg("pluginOut", "/plugins").
-            split(DeployCore::getSeparator(0));
-    auto recOut = QuasarAppUtils::Params::getStrArg("recOut", "/resources").
-            split(DeployCore::getSeparator(0));
+    auto qmlOut = QuasarAppUtils::Params::getStrArg("qmlOut").
+            split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
+    auto trOut = QuasarAppUtils::Params::getStrArg("trOut").
+            split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
+    auto pluginOut = QuasarAppUtils::Params::getStrArg("pluginOut").
+            split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
+    auto recOut = QuasarAppUtils::Params::getStrArg("recOut").
+            split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
 
     auto erroLog = [](const QString &flag){
             QuasarAppUtils::Params::verboseLog(QString("Set %0 fail, becouse you try set %0 for not inited prefix."
@@ -311,32 +314,32 @@ bool ConfigParser::initDistroStruct() {
         };
 
 // init distro stucts for all targets
-    if (!parsePrefixesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir)) {
+    if (binOut.size() && !parsePrefixesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir)) {
         erroLog("binOut");
         return false;
     }
 
-    if (!parsePrefixesPrivate(mainDistro, libOut, &DistroModule::setLibOutDir)) {
+    if (libOut.size() && !parsePrefixesPrivate(mainDistro, libOut, &DistroModule::setLibOutDir)) {
         erroLog("libOut");
         return false;
     }
 
-    if (!parsePrefixesPrivate(mainDistro, qmlOut, &DistroModule::setQmlOutDir)) {
+    if (qmlOut.size() && !parsePrefixesPrivate(mainDistro, qmlOut, &DistroModule::setQmlOutDir)) {
         erroLog("qmlOut");
         return false;
     }
 
-    if (!parsePrefixesPrivate(mainDistro, trOut, &DistroModule::setTrOutDir)) {
+    if (trOut.size() && !parsePrefixesPrivate(mainDistro, trOut, &DistroModule::setTrOutDir)) {
         erroLog("trOut");
         return false;
     }
 
-    if (!parsePrefixesPrivate(mainDistro, pluginOut, &DistroModule::setPluginsOutDir)) {
+    if (pluginOut.size() && !parsePrefixesPrivate(mainDistro, pluginOut, &DistroModule::setPluginsOutDir)) {
         erroLog("pluginOut");
         return false;
     }
 
-    if (!parsePrefixesPrivate(mainDistro, recOut, &DistroModule::setResOutDir)) {
+    if (recOut.size() && !parsePrefixesPrivate(mainDistro, recOut, &DistroModule::setResOutDir)) {
         erroLog("recOut");
         return false;
     }
@@ -353,7 +356,7 @@ bool ConfigParser::initPrefixes() {
 
         for (auto& str: tar_prefixes_array) {
             auto pair = str.split(DeployCore::getSeparator(1));
-            auto prefix = pair.value(0, "");
+            auto prefix = PathUtils::toFullPath(pair.value(0, ""));
 
             auto list = _config.getTargetsListByFilter(pair.value(1, ""));
 
@@ -361,7 +364,7 @@ bool ConfigParser::initPrefixes() {
                 target->setSufix(prefix);
             }
 
-            _config.prefixes.insert(prefix, {});
+            _config.prefixesEdit().insert(prefix, {});
 
             if (pair.size() != 2) {
 
@@ -384,23 +387,25 @@ bool ConfigParser::initPrefixes() {
 bool ConfigParser::initQmlInput() {
 
     auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir").
-            split(DeployCore::getSeparator(0));
+            split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
 
     if (QuasarAppUtils::Params::isEndable("allQmlDependes")) {
         _config.deployQml = true;
+        return true;
     }
 
-    for (auto& str: qmlDir) {
+    auto erroLog = [](const QString &flag){
+            QuasarAppUtils::Params::verboseLog(QString("Set %0 fail, becouse you try set %0 for not inited prefix."
+                                               " Use 'targetPrefix' flag for init the prefixes").arg(flag),
+                                               QuasarAppUtils::Error);
+        };
 
-        if (QFileInfo::exists(str)) {
-            _config.deployQml = true;
+// init distro stucts for all targets
+    _config.deployQml = qmlDir.size();
 
-            auto targetVal = str.split(DeployCore::getSeparator(1));
-            _config.prefixes[targetVal.value(1, "")].addQmlInput(targetVal.value(0, ""));
-        } else {
-            QuasarAppUtils::Params::verboseLog("qml dir not exits!",
-                                               QuasarAppUtils::VerboseLvl::Warning);
-        }
+    if (qmlDir.size() && !parsePrefixesPrivate(_config.prefixesEdit(), qmlDir, &DistroModule::addQmlInput)) {
+        erroLog("qmlDir");
+        return false;
     }
 
     return true;
@@ -485,7 +490,7 @@ bool ConfigParser::parseQtClearMode() {
 QSet<QString> ConfigParser::getQtPathesFromTargets() {
     QSet<QString> res;
 
-    for (auto &i: _config.targets) {
+    for (auto &i: _config.targets()) {
         if (i.isValid() && !i.getQtPath().isEmpty()) {
             res.insert(i.getQtPath());
         }
@@ -521,7 +526,7 @@ bool ConfigParser::setTargets(const QStringList &value) {
 
             auto sufix = targetInfo.completeSuffix();
 
-            _config.targets.unite(createTarget(QDir::fromNativeSeparators(i)));
+            _config.targetsEdit().unite(createTarget(QDir::fromNativeSeparators(i)));
 
             isfillList = true;
         }
@@ -587,7 +592,7 @@ bool ConfigParser::setBinDir(const QString &dir, bool recursive) {
 
             result = true;
 
-            _config.targets.unite(createTarget(QDir::fromNativeSeparators(file.absoluteFilePath())));
+            _config.targetsEdit().unite(createTarget(QDir::fromNativeSeparators(file.absoluteFilePath())));
 
         }
 
@@ -915,7 +920,7 @@ void ConfigParser::setExtraPath(const QStringList &value) {
     for (auto i : value) {
         QFileInfo info(i);
         if (info.isDir()) {
-            if (_config.targets.contains(info.absoluteFilePath())) {
+            if (_config.targets().contains(info.absoluteFilePath())) {
                 QuasarAppUtils::Params::verboseLog("skip the extra lib path becouse it is target!",
                                                    QuasarAppUtils::Info);
                 continue;
@@ -1076,13 +1081,13 @@ QSet<QString> ConfigParser::getSetDirsRecursive(const QString &path, int maxDepc
 
 bool ConfigParser::smartMoveTargets() {
 
-    decltype (_config.targets) temp;
+    QHash<QString, TargetInfo> temp;
     bool result = true;
-    for (auto i = _config.targets.cbegin(); i != _config.targets.cend(); ++i) {
+    for (auto i = _config.targets().cbegin(); i != _config.targets().cend(); ++i) {
 
         QFileInfo target(i.key());
 
-        QString targetPath = _config.getTargetDir();
+        QString targetPath = _config.getTargetDir() + i.value().getSufix();
 
         if (DeployCore::isLib(target)) {
             targetPath += _config.getDistro(i.key()).getLibOutDir();
@@ -1097,11 +1102,11 @@ bool ConfigParser::smartMoveTargets() {
         auto newTargetKey = targetPath + "/" + target.fileName();
         temp.unite(moveTarget(i.value(), newTargetKey));
 
-        _config.prefixes[i.value().getSufix()].addTarget(newTargetKey);
+        _config.prefixesEdit()[i.value().getSufix()].addTarget(newTargetKey);
 
     }
 
-    _config.targets = temp;
+    _config.targetsEdit() = temp;
 
     return result;
 }

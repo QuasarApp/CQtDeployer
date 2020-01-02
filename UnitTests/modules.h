@@ -23,6 +23,7 @@ public:
     static QSet<QString> qtLibs();
     static QSet<QString> qmlLibs();
     static QSet<QString> qmlLibsExtractPlugins();
+    static QSet<QString> separetedPrefixeslibs();
 
     static QSet<QString> outTestLibs();
 

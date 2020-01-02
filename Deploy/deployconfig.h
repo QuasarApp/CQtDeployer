@@ -45,20 +45,6 @@ public:
      * @brief extraPaths - it is list with filters for extra pathes, files or libraries
      */
     Extra extraPaths;
-    /**
-     * @brief targets
-     * key - path
-     * value - create wrapper
-     */
-    QHash<QString, TargetInfo> targets;
-
-    /**
-     * @brief prefixes
-     * key - prefix
-     * value struvture of prefix
-     * default prefix is empty value
-     */
-    QHash<QString, DistroModule> prefixes;
 
     /**
      * @brief envirement - envirement for find libraries
@@ -85,16 +71,37 @@ public:
      * @param target
      * @return
      */
-    DistroStruct getDistro(const QString& target) const;
+    DistroModule getDistro(const QString& target) const;
 
     /**
      * @brief getDistroFromPrefix
      * @param prefix
      * @return distro struct from prefix
      */
-    DistroStruct getDistroFromPrefix(const QString& prefix) const;
+    DistroModule getDistroFromPrefix(const QString& prefix) const;
+
+    const QHash<QString, TargetInfo>& targets() const;
+    const QHash<QString, DistroModule>& prefixes() const;
+
+    QHash<QString, TargetInfo>& targetsEdit();
+    QHash<QString, DistroModule>& prefixesEdit();
 
 private:
+
+    /**
+     * @brief targets
+     * key - path
+     * value - create wrapper
+     */
+    QHash<QString, TargetInfo> _targets;
+
+    /**
+     * @brief prefixes
+     * key - prefix
+     * value struvture of prefix
+     * default prefix is empty value
+     */
+    QHash<QString, DistroModule> _prefixes;
 
     /**
      * @brief targetDir -  targe directory (this folder conteins all files of distrebution kit)
