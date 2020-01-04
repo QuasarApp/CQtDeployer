@@ -11,8 +11,13 @@ deployTest.commands = cqtdeployer -bin $$exec clear -qmake $$QMAKE_BIN -targetDi
 
 
 test.depends = deployTest
-unix:test.commands = $$PWD/deployTests/UnitTests.sh -maxwarnings 100000
+unix:!android:test.commands = $$PWD/deployTests/UnitTests.sh -maxwarnings 100000
 win32:test.commands = $$PWD/deployTests/UnitTests.exe -maxwarnings 100000
+
+contains(QMAKE_HOST.os, Linux):{
+    win32:test.commands =
+}
+
 
 QMAKE_EXTRA_TARGETS += \
     deployTest \
