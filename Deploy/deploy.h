@@ -14,6 +14,7 @@ class ConfigParser;
 class Extracter;
 class FileManager;
 class DependenciesScanner;
+class Packing;
 
 class DEPLOYSHARED_EXPORT Deploy
 {
@@ -23,9 +24,11 @@ private:
     Extracter *_extracter = nullptr;
     FileManager *_fileManager = nullptr;
     DependenciesScanner *_scaner = nullptr;
+    Packing *_packing = nullptr;
 
     bool prepare();
-    int deploy();
+    bool deploy();
+    bool packing();
 
 public:
     Deploy();

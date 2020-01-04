@@ -9,12 +9,14 @@
 #include "deploy.h"
 #include "extracter.h"
 #include "filemanager.h"
+#include "packing.h"
 #include <quasarapp.h>
 
 Deploy::Deploy() {
     _fileManager = new FileManager();
     _scaner = new DependenciesScanner();
-    _paramsParser = new ConfigParser(_fileManager, _scaner);
+    _packing = new Packing();
+    _paramsParser = new ConfigParser(_fileManager, _scaner, _packing);
 
 }
 
@@ -24,7 +26,14 @@ int Deploy::run() {
         return 1;
     }
 
-    return deploy();
+    if (!deploy()) {
+        return 2;
+    }
+
+    if (!packing())
+        return 3;
+
+    return 0;
 }
 
 Deploy::~Deploy() {
@@ -47,6 +56,8 @@ Deploy::~Deploy() {
 }
 
 bool Deploy::prepare() {
+
+
     if ( !_paramsParser->parseParams()) {
         return false;
     }
@@ -56,7 +67,7 @@ bool Deploy::prepare() {
     return true;
 }
 
-int Deploy::deploy() {
+bool Deploy::deploy() {
 
     _fileManager->loadDeployemendFiles(_paramsParser->config()->getTargetDir());
 
@@ -72,5 +83,10 @@ int Deploy::deploy() {
     }
     _fileManager->saveDeploymendFiles(_paramsParser->config()->getTargetDir());
 
-    return 0;
+    return true;
+}
+
+bool Deploy::packing() {
+
+    return _packing->create();
 }

@@ -10,8 +10,9 @@ public:
     iDistribution();
     virtual ~iDistribution();
 
-    virtual DistroStruct getStruct() = 0;
+    virtual QString getConfig() = 0;
     virtual Envirement toolKitLocation() = 0;
+    virtual QString runCmd() = 0;
 };
 
 #endif // IDISTRIBUTION_H

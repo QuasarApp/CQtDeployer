@@ -56,9 +56,10 @@ SOURCES += \
     extra.cpp \
     extracter.cpp \
     filemanager.cpp \
-    idistribution.cpp \
+    Distributions/idistribution.cpp \
     ignorerule.cpp \
     metafilemanager.cpp \
+    packing.cpp \
     pathutils.cpp \
     pe.cpp \
     igetlibinfo.cpp \
@@ -66,7 +67,7 @@ SOURCES += \
     ../qtTools/src/shared/winutils/elfreader.cpp \
     elf.cpp \
     pluginsparser.cpp \
-    qif.cpp \
+    Distributions/qif.cpp \
     qml.cpp \
     libinfo.cpp \
     qtdir.cpp \
@@ -85,9 +86,10 @@ HEADERS += \
     extra.h \
     extracter.h \
     filemanager.h \
-    idistribution.h \
+    Distributions/idistribution.h \
     ignorerule.h \
     metafilemanager.h \
+    packing.h \
     pathutils.h \
     pe.h \
     igetlibinfo.h \
@@ -95,10 +97,13 @@ HEADERS += \
     ../qtTools/src/shared/winutils/elfreader.h \
     elf.h \
     pluginsparser.h \
-    qif.h \
+    Distributions/qif.h \
     qml.h \
     libinfo.h \
     qtdir.h \
     targetinfo.h
 
 STATECHARTS +=
+
+RESOURCES += \
+    DeployResources.qrc

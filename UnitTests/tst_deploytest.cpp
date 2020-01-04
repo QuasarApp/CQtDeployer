@@ -17,6 +17,7 @@
 #include <distrostruct.h>
 #include <pathutils.h>
 #include <dependencymap.h>
+#include <packing.h>
 
 #include <QMap>
 #include <QByteArray>
@@ -308,7 +309,9 @@ void deploytest::testDeployTarget() {
 
     FileManager file;
     DependenciesScanner scan;
-    ConfigParser *deploy = new ConfigParser(&file, &scan);
+    Packing pac;
+
+    ConfigParser *deploy = new ConfigParser(&file, &scan, &pac);
 
     QStringList targets;
     targets << "./test/bins/execTarget.exe";
@@ -316,31 +319,31 @@ void deploytest::testDeployTarget() {
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file, &scan);
+    deploy = new ConfigParser(&file, &scan, &pac);
     targets << "./test/bins/execTarget";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file, &scan);
+    deploy = new ConfigParser(&file, &scan, &pac);
     targets << "./test/bins/execTarget.exe" << "./test/bins/execTarget";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file, &scan);
+    deploy = new ConfigParser(&file, &scan, &pac);
     targets << "./test/bns/execTarget.exe";
     QVERIFY(!deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file, &scan);
+    deploy = new ConfigParser(&file, &scan, &pac);
     targets << "./test/bins/";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file, &scan);
+    deploy = new ConfigParser(&file, &scan, &pac);
     targets << "./test/bins/" << "./test/warning/";
     QVERIFY(deploy->setTargets(targets));
 
@@ -770,7 +773,8 @@ void deploytest::testSetTargetDir() {
 
     FileManager file;
     DependenciesScanner scan;
-    ConfigParser  dep(&file, &scan);
+    Packing pac;
+    ConfigParser  dep(&file, &scan, &pac);
 
     dep.setTargetDir();
 

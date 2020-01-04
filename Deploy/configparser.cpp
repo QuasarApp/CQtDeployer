@@ -413,6 +413,13 @@ bool ConfigParser::initQmlInput() {
 
 bool ConfigParser::parseQtDeployMode() {
 
+    auto distro = getDistribution();
+    if (!configureDistribution(distro)) {
+        QuasarAppUtils::Params::verboseLog("Configure distrebutive fail!",
+                                           QuasarAppUtils::Error);
+        return false;
+    }
+
     if (QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
         QuasarAppUtils::Params::setEnable("deploySystem", true );
     }
@@ -1022,6 +1029,14 @@ QString ConfigParser::findWindowsPath(const QString& path) const {
     return "C:/" + win_magic;
 }
 
+iDistribution *ConfigParser::getDistribution() {
+
+}
+
+bool ConfigParser::configureDistribution(const iDistribution *distro) {
+
+}
+
 void ConfigParser::initEnvirement() {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
@@ -1111,12 +1126,14 @@ bool ConfigParser::smartMoveTargets() {
     return result;
 }
 
-ConfigParser::ConfigParser(FileManager *filemanager, DependenciesScanner* scaner):
+ConfigParser::ConfigParser(FileManager *filemanager, DependenciesScanner* scaner, Packing *pac):
     _fileManager(filemanager),
-    _scaner(scaner) {
+    _scaner(scaner),
+    _packing(pac) {
 
     assert(_fileManager);
     assert(_scaner);
+    assert(_packing);
 
 #ifdef Q_OS_LINUX
     _config.appDir = QuasarAppUtils::Params::getStrArg("appPath");

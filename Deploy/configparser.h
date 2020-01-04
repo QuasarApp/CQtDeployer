@@ -23,8 +23,10 @@
 
 #define DISTRO_DIR QString("DistributionKit")
 
-class  FileManager;
-class  DependenciesScanner;
+class FileManager;
+class DependenciesScanner;
+class Packing;
+class iDistribution;
 
 class DEPLOYSHARED_EXPORT ConfigParser
 {
@@ -33,6 +35,7 @@ private:
     DeployConfig _config;
     FileManager *_fileManager;
     DependenciesScanner *_scaner;
+    Packing * _packing;
 
     QHash<QString, QString> _Targetprefixes;
 
@@ -85,8 +88,13 @@ private:
     QString readKeyArray(int separatorLvl, const QJsonArray &array, const QString &confFileDir) const;
     QJsonValue writeKeyArray(int separatorLvl, const QString &parameter, const QString &confFileDir) const;
     QString findWindowsPath(const QString &path) const;
+
+    iDistribution* getDistribution();
+
+    bool configureDistribution(const iDistribution* distro);
+
 public:
-    ConfigParser(FileManager *filemanager, DependenciesScanner *scaner);
+    ConfigParser(FileManager *filemanager, DependenciesScanner *scaner, Packing* pac);
     bool parseParams();
     bool smartMoveTargets();
 

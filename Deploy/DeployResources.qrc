@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/Distro">
+        <file>Distributions/configures/Qt.json</file>
+        <file>Distributions/configures/QIF.json</file>
+        <file>Distributions/configures/C and C++.json</file>
+    </qresource>
+</RCC>

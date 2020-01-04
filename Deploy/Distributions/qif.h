@@ -11,10 +11,11 @@ class QIF: public iDistribution
 {
 public:
     QIF();
-    DistroStruct getStruct();
     Envirement toolKitLocation();
-private:
+    QString getConfig();
+    QString runCmd();
 
+private:
 
     QString findBinaryCreator();
 
