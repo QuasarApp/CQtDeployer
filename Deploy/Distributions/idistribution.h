@@ -10,9 +10,21 @@ public:
     iDistribution();
     virtual ~iDistribution();
 
-    virtual QString getConfig() = 0;
-    virtual Envirement toolKitLocation() = 0;
-    virtual QString runCmd() = 0;
+    virtual QString getConfig() const = 0;
+    virtual void deployDefaultTemplate() const = 0;
+    virtual Envirement toolKitLocation() const = 0;
+    virtual QString runCmd() const = 0;
+    virtual QStringList runArg() const = 0;
+
+    QString getClassName() const;
+
+protected:
+    QString getLocation() const;
+    void setLocation(const QString &location);
+
+private:
+    QString _location = "packageTemplate";
+
 };
 
 #endif // IDISTRIBUTION_H

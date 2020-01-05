@@ -13,10 +13,14 @@
 #include "dependenciesscanner.h"
 #include "deploycore.h"
 #include "filemanager.h"
+#include "packing.h"
 #include "pathutils.h"
 #include "quasarapp.h"
 
 #include <assert.h>
+
+#include <Distributions/defaultdistro.h>
+#include <Distributions/qif.h>
 #define NO_LINK_VALUE "str::"
 /**
  * this function init prefixes of project
@@ -53,6 +57,13 @@ bool parsePrefixesPrivate(Container& mainContainer,
 }
 
 bool ConfigParser::parseParams() {
+
+    auto distro = getDistribution();
+    if (!configureDistribution(distro)) {
+        QuasarAppUtils::Params::verboseLog("Configure distrebutive fail!",
+                                           QuasarAppUtils::Error);
+        return false;
+    }
 
     auto path = QuasarAppUtils::Params::getStrArg("confFile");
     bool createFile = !(path.isEmpty() || QFile::exists(path));
@@ -412,13 +423,6 @@ bool ConfigParser::initQmlInput() {
 }
 
 bool ConfigParser::parseQtDeployMode() {
-
-    auto distro = getDistribution();
-    if (!configureDistribution(distro)) {
-        QuasarAppUtils::Params::verboseLog("Configure distrebutive fail!",
-                                           QuasarAppUtils::Error);
-        return false;
-    }
 
     if (QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
         QuasarAppUtils::Params::setEnable("deploySystem", true );
@@ -1030,11 +1034,23 @@ QString ConfigParser::findWindowsPath(const QString& path) const {
 }
 
 iDistribution *ConfigParser::getDistribution() {
+    if (QuasarAppUtils::Params::isEndable("qif")) {
+        return new QIF();
+    }
 
+    return new DefaultDistro();
 }
 
-bool ConfigParser::configureDistribution(const iDistribution *distro) {
+bool ConfigParser::configureDistribution(iDistribution *distro) {
+    if (!loadFromFile(distro->getConfig())) {
+        return false;
+    }
 
+    distro->deployDefaultTemplate();
+
+    _packing->setDistribution(distro);
+
+    return true;
 }
 
 void ConfigParser::initEnvirement() {

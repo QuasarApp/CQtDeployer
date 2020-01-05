@@ -12,8 +12,6 @@
 #include <QStringList>
 #include "deploy_global.h"
 
-
-
 class DEPLOYSHARED_EXPORT Envirement
 {
 private:

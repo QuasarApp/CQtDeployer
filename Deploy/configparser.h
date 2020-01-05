@@ -91,7 +91,7 @@ private:
 
     iDistribution* getDistribution();
 
-    bool configureDistribution(const iDistribution* distro);
+    bool configureDistribution(iDistribution *distro);
 
 public:
     ConfigParser(FileManager *filemanager, DependenciesScanner *scaner, Packing* pac);
