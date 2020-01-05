@@ -11,7 +11,7 @@ public:
     // iDistribution interface
 public:
     QString getConfig() const;
-    void deployDefaultTemplate() const;
+    void deployTemplate() const;
     Envirement toolKitLocation() const;
     QString runCmd() const;
     QStringList runArg() const;

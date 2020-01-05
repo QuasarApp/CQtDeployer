@@ -24,7 +24,7 @@ public:
     bool create();
 private:
     iDistribution *_pakage = nullptr;
-    QProcess *_proc;
+    QProcess *_proc = nullptr;
 
 private slots:
     void handleOutputUpdate();

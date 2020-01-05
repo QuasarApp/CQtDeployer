@@ -11,7 +11,7 @@ QString DefaultDistro::getConfig() const{
     return ":/Distro/Distributions/configures/C and C++.json";
 }
 
-void DefaultDistro::deployDefaultTemplate() const {}
+void DefaultDistro::deployTemplate() const {}
 
 Envirement DefaultDistro::toolKitLocation() const {
     return {};

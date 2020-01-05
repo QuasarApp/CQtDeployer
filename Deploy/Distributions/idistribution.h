@@ -11,7 +11,7 @@ public:
     virtual ~iDistribution();
 
     virtual QString getConfig() const = 0;
-    virtual void deployDefaultTemplate() const = 0;
+    virtual void deployTemplate() const = 0;
     virtual Envirement toolKitLocation() const = 0;
     virtual QString runCmd() const = 0;
     virtual QStringList runArg() const = 0;

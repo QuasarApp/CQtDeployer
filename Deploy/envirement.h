@@ -12,6 +12,8 @@
 #include <QStringList>
 #include "deploy_global.h"
 
+class QDir;
+
 class DEPLOYSHARED_EXPORT Envirement
 {
 private:
@@ -25,12 +27,17 @@ public:
     QStringList ignoreEnvList() const;
     void setIgnoreEnvList(const QStringList &ignoreEnvList);
 
+    void addEnvRec(const QString &dir, int depch, const QString &appDir = "", const QString &targetDir = "");
+
     void addEnv(const QString &dir, const QString &appDir = "", const QString &targetDir = "");
     // return true if file exits in this envirement
     bool inThisEnvirement(const QString &file) const;
 
     int size() const;
     QString concatEnv() const;
+
+    static QString recursiveInvairement(QDir &dir, int depch, int depchLimit = -1);
+    static QString recursiveInvairement(const QString &dir, int depch = -1);
 };
 
 #endif // ENVIREMENT_H

@@ -20,19 +20,20 @@ QSet<QString> Envirement::upper(const QSet<QString>& set) const {
     return res;
 }
 
-QStringList Envirement::deployEnvironment() const
-{
+QStringList Envirement::deployEnvironment() const {
     return _deployEnvironment.toList();
 }
 
-QStringList Envirement::ignoreEnvList() const
-{
+QStringList Envirement::ignoreEnvList() const {
     return _ignoreEnvList.toList();
 }
 
-void Envirement::setIgnoreEnvList(const QStringList &ignoreEnvList)
-{
+void Envirement::setIgnoreEnvList(const QStringList &ignoreEnvList) {
     _ignoreEnvList = upper(ignoreEnvList.toSet());
+}
+
+void Envirement::addEnvRec(const QString &dir, int depch, const QString &appDir, const QString &targetDir) {
+    addEnv(Envirement::recursiveInvairement(dir, depch), appDir, targetDir);
 }
 
 void Envirement::addEnv(const QString &dir, const QString &appDir, const QString& targetDir) {
@@ -114,6 +115,42 @@ QString Envirement::concatEnv() const {
     }
 
     return result;
+}
+
+QString Envirement::recursiveInvairement(QDir &dir, int depch, int depchLimit) {
+
+    char separator = ':';
+
+#ifdef Q_OS_WIN
+    separator = ';';
+#endif
+
+    if (!dir.exists() || (depchLimit >= 0 && depch >= depchLimit)) {
+        return dir.absolutePath();
+    }
+
+    QFileInfoList list = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+    QString res = "";
+
+    for (QFileInfo &i : list) {
+        if (!dir.cd(i.fileName())) {
+            continue;
+        }
+        QString temp = Envirement::recursiveInvairement(dir, depch + 1, depchLimit);
+        res += (res.size())? separator + temp: temp;
+
+        dir.cdUp();
+    }
+
+    res += (res.size())? separator + dir.absolutePath(): dir.absolutePath();
+
+    return res;
+}
+
+QString Envirement::recursiveInvairement(const QString &dir, int depch) {
+    QDir _dir(dir);
+
+    return recursiveInvairement(_dir, 0, depch);
 }
 
 Envirement::Envirement()

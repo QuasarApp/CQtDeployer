@@ -14,11 +14,9 @@ public:
     Envirement toolKitLocation() const;
     QString getConfig() const;
     QString runCmd() const;
-    void deployDefaultTemplate() const;
+    void deployTemplate() const;
     QStringList runArg() const;
 
-private:
-    QString findBinaryCreator();
 };
 
 #endif // QIF_H

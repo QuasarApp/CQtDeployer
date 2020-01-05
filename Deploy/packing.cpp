@@ -10,7 +10,7 @@ Packing::Packing() {
     connect(_proc, &QProcess::readyReadStandardError,
             this, &Packing::handleOutputUpdate, Qt::QueuedConnection);
 
-    connect(_proc, &QProcess::readAllStandardOutput,
+    connect(_proc, &QProcess::readyReadStandardOutput,
             this, &Packing::handleOutputUpdate, Qt::QueuedConnection);
 
     moveToThread( new QThread(this));
@@ -55,8 +55,8 @@ bool Packing::create() {
 }
 
 void Packing::handleOutputUpdate() {
-    auto stdout = _proc->readAllStandardOutput();
-    auto errout = _proc->readAllStandardError();
+    QString stdout = _proc->readAllStandardOutput();
+    QString errout = _proc->readAllStandardError();
 
     if (stdout.size())
         qInfo() << stdout;

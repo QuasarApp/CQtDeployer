@@ -70,9 +70,6 @@ private:
 
     void setExtraPlugins(const QStringList &value);
 
-    QString recursiveInvairement(QDir &dir, int depch = 0, int depchLimit = -1);
-    QString recursiveInvairement(const QString &dir, int depch);
-
     void initEnvirement();
 
     QStringList getDirsRecursive(const QString &path, int maxDepch = -1, int depch = 0);

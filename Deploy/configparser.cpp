@@ -648,8 +648,8 @@ void ConfigParser::initIgnoreList()
 
     if (!QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
 
-        envUnix.addEnv(recursiveInvairement("/lib", 3), "", "");
-        envUnix.addEnv(recursiveInvairement("/usr/lib", 3), "", "");
+        envUnix.addEnv(Envirement::recursiveInvairement("/lib", 3), "", "");
+        envUnix.addEnv(Envirement::recursiveInvairement("/usr/lib", 3), "", "");
         ruleUnix.prority = SystemLib;
         ruleUnix.platform = Unix;
         ruleUnix.enfirement = envUnix;
@@ -683,8 +683,8 @@ void ConfigParser::initIgnoreList()
     auto path = env.value("PATH");
     auto winPath = findWindowsPath(path);
 
-    envWin.addEnv(recursiveInvairement(winPath + "/System32", 2), "", "");
-    envWin.addEnv(recursiveInvairement(winPath + "/SysWOW64", 2), "", "");
+    envWin.addEnv(Envirement::recursiveInvairement(winPath + "/System32", 2), "", "");
+    envWin.addEnv(Envirement::recursiveInvairement(winPath + "/SysWOW64", 2), "", "");
 
     ruleWin.prority = SystemLib;
     ruleWin.platform = Win;
@@ -941,7 +941,9 @@ void ConfigParser::setExtraPath(const QStringList &value) {
             auto extraDirs = getSetDirsRecursive(QDir::fromNativeSeparators(info.absoluteFilePath()), _config.depchLimit);
             _config.extraPaths.addExtraPaths(extraDirs);
 
-            _config.envirement.addEnv(recursiveInvairement(dir), _config.appDir, _config.getTargetDir());
+            _config.envirement.addEnv(Envirement::recursiveInvairement(dir, 0, _config.depchLimit),
+                                      _config.appDir,
+                                      _config.getTargetDir());
         } else if (i.size() > 1) {
 
             _config.extraPaths.addExtraPathsMasks({i});
@@ -979,46 +981,6 @@ void ConfigParser::setExtraPlugins(const QStringList &value) {
     }
 }
 
-QString ConfigParser::recursiveInvairement(QDir &dir, int depch, int depchLimit ) {
-
-    char separator = ':';
-
-#ifdef Q_OS_WIN
-    separator = ';';
-#endif
-
-    if (depchLimit < 0) {
-        depchLimit = _config.depchLimit;
-    }
-
-    if (!dir.exists() || depch >= depchLimit) {
-        return dir.absolutePath();
-    }
-
-    QFileInfoList list = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-    QString res = "";
-
-    for (QFileInfo &i : list) {
-        if (!dir.cd(i.fileName())) {
-            continue;
-        }
-        QString temp = recursiveInvairement(dir, depch + 1);
-        res += (res.size())? separator + temp: temp;
-
-        dir.cdUp();
-    }
-
-    res += (res.size())? separator + dir.absolutePath(): dir.absolutePath();
-
-    return res;
-}
-
-QString ConfigParser::recursiveInvairement(const QString &dir, int depch) {
-    QDir _dir(dir);
-
-    return recursiveInvairement(_dir, 0, depch);
-}
-
 QString ConfigParser::findWindowsPath(const QString& path) const {
     auto list = path.split(';');
     QString win_magic = "windows";
@@ -1046,7 +1008,7 @@ bool ConfigParser::configureDistribution(iDistribution *distro) {
         return false;
     }
 
-    distro->deployDefaultTemplate();
+    distro->deployTemplate();
 
     _packing->setDistribution(distro);
 
