@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>%0</DisplayName>
+    <Description>%0</Description>
+    <Version>%2</Version>
+    <Default>true</Default>
+    <ForcedInstallation>false</ForcedInstallation>
+    <Script>installscript.js</Script>
+    <ReleaseDate>%3</ReleaseDate>
+    <SortingPriority>201</SortingPriority>
+</Package>

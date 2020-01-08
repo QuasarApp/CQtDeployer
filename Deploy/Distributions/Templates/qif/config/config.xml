@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <WizardDefaultWidth>640px</WizardDefaultWidth>
+    <WizardDefaultHeight>400px</WizardDefaultHeight>
+    <Name>%0</Name>
+    <Version>%2</Version>
+    <Title>%0</Title>
+    <Publisher>%1</Publisher>
+    <StartMenuDir>%0</StartMenuDir>
+    <TargetDir>@HomeDir@/%0</TargetDir>
+    <InstallActionColumnVisible>true</InstallActionColumnVisible>
+    <RemoveTargetDir>true</RemoveTargetDir>
+    <ControlScript>controlScript.js</ControlScript>
+    <MaintenanceToolName>%0Tool</MaintenanceToolName>
+</Installer>
