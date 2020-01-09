@@ -1668,7 +1668,6 @@ void deploytest::testSystemLib() {
         "./" + DISTRO_DIR + "/api-ms-win-crt-time-l1-1-0.dll",
         "./" + DISTRO_DIR + "/api-ms-win-security-base-l1-1-0.dll",
         "./" + DISTRO_DIR + "/api-ms-win-security-cryptoapi-l1-1-0.dll",
-        "./" + DISTRO_DIR + "/dwmapi.dll",
         "./" + DISTRO_DIR + "/mpr.dll",
         "./" + DISTRO_DIR + "/profapi.dll",
         "./" + DISTRO_DIR + "/rpcrt4.dll",

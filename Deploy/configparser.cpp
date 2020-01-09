@@ -514,6 +514,8 @@ void ConfigParser::initIgnoreList()
     _config.ignoreList.addRule(addRuleWin("WINMM.DLL"));
     _config.ignoreList.addRule(addRuleWin("IMM32.DLL"));
     _config.ignoreList.addRule(addRuleWin("KernelBase.DLL"));
+    _config.ignoreList.addRule(addRuleWin("dwmapi.DLL"));
+
 
 }
 
