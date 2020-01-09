@@ -1177,6 +1177,23 @@ void deploytest::testConfFile() {
 
     QFile::remove(TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json");
 
+    comapareTree = Modules::qmlLibs() + Modules::qtLibs();
+
+#ifdef WITH_ALL_TESTS
+    comapareTree += Modules::qtWebEngine();
+#endif
+
+    comapareTree = Modules::ignoreFilter(comapareTree, "/plugins/p");
+
+    runTestParams({"-bin", TestBinDir, "clear",
+                   "-ignore", "/plugins/p",
+                   "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
+
+
+    runTestParams({"-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
+    QFile::remove(TestBinDir + "/TestConf.json");
+
+
 }
 
 void deploytest::testQt() {
