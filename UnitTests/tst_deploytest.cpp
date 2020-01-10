@@ -1177,15 +1177,25 @@ void deploytest::testConfFile() {
 
     QFile::remove(TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json");
 
-    comapareTree = Modules::qmlLibs() + Modules::qtLibs();
-
-#ifdef WITH_ALL_TESTS
-    comapareTree += Modules::qtWebEngine();
-#endif
+    comapareTree = Modules::qtLibs();
 
     comapareTree = Modules::ignoreFilter(comapareTree, "/plugins/p");
+#ifdef Q_OS_UNIX
+    comapareTree -= utils.createTree(
+    {
+        "./" + DISTRO_DIR + "/lib/libQt5EglFSDeviceIntegration.so",
+        "./" + DISTRO_DIR + "/lib/libQt5WebSockets.so"
+    });
+#else
+    comapareTree -= utils.createTree(
+    {
+         "./" + DISTRO_DIR + "/lib/libQt5EglFSDeviceIntegration.so",
+         "./" + DISTRO_DIR + "/lib/libQt5WebSockets.so"
+    });
+#endif
 
-    runTestParams({"-bin", TestBinDir, "clear",
+    runTestParams({"-bin", TestBinDir + "QtWidgetsProject,",
+                   "clear",
                    "-ignore", "/plugins/p",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 
