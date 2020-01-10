@@ -21,11 +21,10 @@
 bool ConfigParser::parseParams() {
 
     auto path = QuasarAppUtils::Params::getStrArg("confFile");
-    bool createFile = !(path.isEmpty() || QFile::exists(path));
-    if (path.isEmpty()) {
-        path = QFileInfo("./").absoluteFilePath();
+    bool createFile = !QFile::exists(path);
+    if (QFile::exists(path)) {
+        loadFromFile(path);
     }
-    loadFromFile(path);
 
     switch (DeployCore::getMode()) {
     case RunMode::Info: {
@@ -132,17 +131,8 @@ void ConfigParser::readKey(const QString& key, const QJsonObject& obj,
                  QString val = i.toString();
 
                  if (!val.isEmpty()) {
-                     if (PathUtils::isPath(val)) {
-                         QString path;
-
-                         if (PathUtils::isAbsalutPath(val)) {
-                             path = QFileInfo(val).absoluteFilePath();
-                         } else {
-                             path = QFileInfo(confFileDir + '/' + val).absoluteFilePath();
-                         }
-
-                         list.push_back(path);
-
+                     if (PathUtils::isReleativePath(val)) {
+                         list.push_back(QFileInfo(confFileDir + '/' + val).absoluteFilePath());
                      } else {
                          list.push_back(val);
                      }
@@ -155,16 +145,12 @@ void ConfigParser::readKey(const QString& key, const QJsonObject& obj,
              QString val = obj[key].toString();
              if (!val.isEmpty()) {
 
-                 if (PathUtils::isPath(val)) {
-
-                     if (PathUtils::isAbsalutPath(val)) {
-                         val = QFileInfo(val).absoluteFilePath();
-                     } else {
-                         val = QFileInfo(confFileDir + '/' + val).absoluteFilePath();
-                     }
+                 if (PathUtils::isReleativePath(val)) {
+                     QuasarAppUtils::Params::setArg(key, QFileInfo(confFileDir + '/' + val).absoluteFilePath());
+                 } else {
+                     QuasarAppUtils::Params::setArg(key, val);
                  }
 
-                 QuasarAppUtils::Params::setArg(key, val);
              } else {
                  auto value = obj[key].toBool(true);
                  QuasarAppUtils::Params::setEnable(key, value);

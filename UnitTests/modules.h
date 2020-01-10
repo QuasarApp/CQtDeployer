@@ -20,6 +20,7 @@ private:
 public:
     Modules();
 
+    static QSet<QString> ignoreFilter(const QSet<QString>& input, const QString& filter);
     static QSet<QString> qtLibs();
     static QSet<QString> qmlLibs();
     static QSet<QString> qmlLibsExtractPlugins();
