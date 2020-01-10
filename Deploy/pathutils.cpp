@@ -7,6 +7,7 @@
 
 #include "pathutils.h"
 
+#include <QDir>
 #include <QFileInfo>
 
 PathUtils::PathUtils()
@@ -66,7 +67,20 @@ QString PathUtils::getRelativeLink(QString from, QString to) {
 
 // TODO ignore labels may be mistaken for a path, which will lead to improper eating
 bool PathUtils::isPath(const QString &path) {
-    return path.contains('/') || path.contains('\\') || path == ".";
+    QFileInfo info(path);
+    return info.exists();
+//    return path.contains('/') || path.contains('\\') || path == ".";
+}
+
+bool PathUtils::isReleativePath(const QString &path) {
+    QString temp = QDir::fromNativeSeparators(path);
+    if (temp.size() == 1) {
+        return path[0] == '.';
+    } else if (temp.size() > 1) {
+        return path[0] == '.' && path[1] == '/';
+    }
+
+    return false;
 }
 
 QChar PathUtils::getDrive(QString path) {

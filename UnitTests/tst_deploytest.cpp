@@ -1177,6 +1177,8 @@ void deploytest::testConfFile() {
 
     QFile::remove(TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json");
 
+
+    // Test generar string in confFile
     comapareTree = Modules::qtLibs();
 
     comapareTree = Modules::ignoreFilter(comapareTree, "/plugins/p");
