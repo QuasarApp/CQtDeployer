@@ -5,7 +5,7 @@
     <Version>%2</Version>
     <Default>true</Default>
     <ForcedInstallation>false</ForcedInstallation>
-    <Script>installscript.js</Script>
+    <Script>installscript.qs</Script>
     <ReleaseDate>%3</ReleaseDate>
     <SortingPriority>201</SortingPriority>
 </Package>

@@ -10,6 +10,6 @@
     <TargetDir>@HomeDir@/%0</TargetDir>
     <InstallActionColumnVisible>true</InstallActionColumnVisible>
     <RemoveTargetDir>true</RemoveTargetDir>
-    <ControlScript>controlScript.js</ControlScript>
+    <ControlScript>controlScript.qs</ControlScript>
     <MaintenanceToolName>%0Tool</MaintenanceToolName>
 </Installer>

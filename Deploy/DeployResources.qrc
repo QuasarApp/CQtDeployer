@@ -6,8 +6,8 @@
     </qresource>
     <qresource prefix="/Templates/QIF">
         <file>Distributions/Templates/qif/packages/default/meta/package.xml</file>
-        <file>Distributions/Templates/qif/packages/default/meta/installscript.js</file>
-        <file>Distributions/Templates/qif/config/controlScript.js</file>
+        <file>Distributions/Templates/qif/packages/default/meta/installscript.qs</file>
+        <file>Distributions/Templates/qif/config/controlScript.qs</file>
         <file>Distributions/Templates/qif/config/config.xml</file>
     </qresource>
 </RCC>
