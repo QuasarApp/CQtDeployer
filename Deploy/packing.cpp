@@ -56,13 +56,13 @@ bool Packing::create() {
 }
 
 void Packing::handleOutputUpdate() {
-    QByteArray stdout = _proc->readAllStandardOutput();
-    QByteArray errout = _proc->readAllStandardError();
+    QByteArray stdoutLog = _proc->readAllStandardOutput();
+    QByteArray erroutLog = _proc->readAllStandardError();
 
-    if (stdout.size())
-        qInfo() << stdout;
+    if (stdoutLog.size())
+        qInfo() << stdoutLog;
 
-    if (errout.size())
-        qInfo() << errout;
+    if (erroutLog.size())
+        qInfo() << erroutLog;
 }
 
