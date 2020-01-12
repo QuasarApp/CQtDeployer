@@ -35,7 +35,7 @@ QSet<QString> TestUtils::getTree(const QString &path, int limit, int depch) {
 
     QDir dir(info.absoluteFilePath());
     auto list = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
-    for (auto &i: list) {
+    for (const auto &i: list) {
         result.unite(getTree(i.absoluteFilePath(), limit, depch + 1));
     }
 
@@ -57,7 +57,7 @@ QString TestUtils::getFilePath(const QString& i) {
 
 QSet<QString> TestUtils::createTree(const QStringList &tree) {
     QSet<QString> res;
-    for (auto &i : tree) {
+    for (const auto &i : tree) {
         res.insert(getFilePath(i));
     }
 

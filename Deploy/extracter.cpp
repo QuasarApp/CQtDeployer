@@ -20,9 +20,9 @@
 #include <QProcess>
 #include <QRegularExpression>
 #include <quasarapp.h>
-#include <stdio.h>
+#include <cstdio>
 
-#include <assert.h>
+#include <cassert>
 
 #include <fstream>
 
@@ -49,7 +49,7 @@ bool Extracter::extractWebEngine() {
 
     for (auto i = cnf->prefixes().cbegin(); i != cnf->prefixes().cend(); ++i) {
 
-        auto prefix = i.key();
+        const auto &prefix = i.key();
         if (isWebEngine(prefix)) {
             auto webEngeneBin = DeployCore::_config->qtDir.getLibexecs();
             if (DeployCore::_config->qtDir.getQtPlatform() & Platform::Unix) {
@@ -92,7 +92,7 @@ bool Extracter::copyPlugin(const QString &plugin, const QString& prefix) {
         return false;
     }
 
-    for (auto item : listItems) {
+    for (const auto &item : listItems) {
         if (QuasarAppUtils::Params::isEndable("extractPlugins")) {
             extract(item, &_prefixDependencyes[prefix]);
         } else {
@@ -134,7 +134,7 @@ void Extracter::copyExtraPlugins(const QString& prefix) {
 }
 
 void Extracter::copyPlugins(const QStringList &list, const QString& prefix) {
-    for (auto plugin : list) {        
+    for (const auto &plugin : list) {
         if (!copyPlugin(plugin, prefix)) {
             qWarning() << plugin << " not copied!";
         }
@@ -147,7 +147,7 @@ void Extracter::extractAllTargets() {
     for (auto i = cfg->prefixes().cbegin(); i != cfg->prefixes().cend(); ++i) {
         _prefixDependencyes[i.key()] = {};
 
-        for (auto target : i.value().targets()) {
+        for (const auto &target : i.value().targets()) {
             extract(target, &_prefixDependencyes[i.key()]);
         }
     }
@@ -168,7 +168,6 @@ void Extracter::extractPlugins() {
     PluginsParser pluginsParser;
 
     for (auto i = cnf->prefixes().cbegin(); i != cnf->prefixes().cend(); ++i) {
-        auto targetPath = cnf->getTargetDir() + i.key();
         auto distro = cnf->getDistroFromPrefix(i.key());
 
         QStringList plugins;
@@ -182,9 +181,7 @@ void Extracter::copyLibs(const QSet<QString> &files, const QString& prefix) {
     auto targetPath = cnf->getTargetDir() + prefix;
     auto distro = cnf->getDistroFromPrefix(prefix);
 
-    for (auto file : files) {
-        QFileInfo target(file);
-
+    for (const auto &file : files) {
         if (!_fileManager->smartCopyFile(file, targetPath + distro.getLibOutDir())) {
             QuasarAppUtils::Params::verboseLog(file + " not copied");
         }
@@ -257,7 +254,7 @@ void Extracter::deploy() {
 
 }
 
-bool Extracter::copyTranslations(QStringList list, const QString& prefix) {
+bool Extracter::copyTranslations(const QStringList &list, const QString& prefix) {
 
     auto cnf = DeployCore::_config;
 
@@ -267,7 +264,7 @@ bool Extracter::copyTranslations(QStringList list, const QString& prefix) {
     }
 
     QStringList filters;
-    for (auto &&i: list) {
+    for (const auto &i: list) {
         filters.push_back("*" + i + "*");
     }
 
@@ -276,7 +273,7 @@ bool Extracter::copyTranslations(QStringList list, const QString& prefix) {
     auto targetPath = cnf->getTargetDir() + prefix;
     auto distro = cnf->getDistroFromPrefix(prefix);
 
-    for (auto &&i: listItems) {
+    for (const auto &i: listItems) {
         _fileManager->copyFile(i.absoluteFilePath(), targetPath + distro.getTrOutDir());
     }
 
@@ -299,7 +296,7 @@ QFileInfoList Extracter::findFilesInsideDir(const QString &name,
 
     auto list = dir.entryInfoList( QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
 
-    for (auto && item :list) {
+    for (const auto & item :list) {
         if (item.isFile()) {
             if (item.fileName().contains(name)) {
                 files += item;
@@ -322,7 +319,7 @@ void Extracter::extractLib(const QString &file,
 
     auto data = _scaner->scan(file);
 
-    for (auto &line : data) {
+    for (const auto &line : data) {
 
         if (mask.size() && !line.getName().contains(mask, ONLY_WIN_CASE_INSENSIATIVE)) {
             continue;
@@ -366,7 +363,7 @@ bool Extracter::extractQmlAll() {
             return false;
         }
 
-        for (auto item : listItems) {
+        for (const auto &item : listItems) {
             if (QuasarAppUtils::Params::isEndable("extractPlugins")) {
                 extract(item, &_prefixDependencyes[i.key()]);
             } else {
@@ -392,7 +389,7 @@ bool Extracter::extractQmlFromSource(const QString& sourceDir) {
         QStringList filter;
         filter << ".so.debug" << "d.dll" << ".pdb";
 
-        for (auto &qmlInput: distro.qmlInput()) {
+        for (const auto &qmlInput: distro.qmlInput()) {
             QFileInfo info(qmlInput);
 
             if (!info.isDir()) {
@@ -420,7 +417,7 @@ bool Extracter::extractQmlFromSource(const QString& sourceDir) {
             return false;
         }
 
-        for (auto item : listItems) {
+        for (const auto &item : listItems) {
             if (QuasarAppUtils::Params::isEndable("extractPlugins")) {
                 extract(item, &_prefixDependencyes[i.key()]);
             } else {
@@ -442,9 +439,8 @@ bool Extracter::extractQml() {
     } else if (QuasarAppUtils::Params::isEndable("allQmlDependes")) {
         return extractQmlAll();
 
-    } else {
-        return false;
     }
+    return false;
 }
 
 void Extracter::extract(const QString &file,

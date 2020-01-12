@@ -41,7 +41,7 @@ QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
     auto values = _EnvLibs.values(libName.toUpper());
     QMultiMap<LibPriority, LibInfo> res;
 
-    for (auto & lib : values) {
+    for (const auto & lib : values) {
         LibInfo info;
 
         auto priority = (DeployCore::getLibPriority(lib));

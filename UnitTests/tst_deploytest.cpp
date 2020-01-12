@@ -191,7 +191,7 @@ QStringList deploytest::getFilesFromDir(const QString &path) {
 
     auto list = dir.entryInfoList(QDir::Dirs| QDir::Files| QDir::NoDotAndDotDot);
 
-    for (auto &&subDir: list) {
+    for (const auto &subDir: list) {
 
         if (subDir.isFile()) {
             res.push_back(subDir.fileName());
@@ -425,14 +425,14 @@ void deploytest::testExtractLib() {
 
     LibInfo info;
 
-    for (auto &&lib : libs) {
+    for (const auto &lib : libs) {
         QVERIFY(scaner.fillLibInfo(info, lib));
         QVERIFY(info.getName() == QFileInfo(lib).fileName());
         QVERIFY(info.getPath() == QFileInfo(lib).absolutePath());
         QVERIFY(info.fullPath() == QFileInfo(lib).absoluteFilePath());
         QVERIFY(info.getPlatform() == platforms.value(lib));
 
-        for (auto &dep : deb.value(lib)) {
+        for (const auto &dep : deb.value(lib)) {
             bool test = info.getDependncies().contains(dep.toUpper());
             QVERIFY(test);
         }
@@ -610,12 +610,12 @@ void deploytest::testQmlExtrct() {
     QML scaner("./");
 
 
-    for (auto &&file : qmlFiles) {
+    for (const auto &file : qmlFiles) {
 
 
         auto fileImports = scaner.extractImportsFromFile(file);
 
-        for (auto &fil : imports.value(file)) {
+        for (const auto &fil : imports.value(file)) {
             QVERIFY(fileImports.contains(fil, Qt::CaseInsensitive));
         }
 
@@ -649,7 +649,7 @@ void deploytest::testDistroStruct() {
         {"\\\\res\\\\\\type\\\\\\\\\\","/../../"},
     };
 
-    for (auto &i: cases) {
+    for (const auto &i: cases) {
         QVERIFY(distro.getRelativePath(i.first) == i.second);
     }
 }
@@ -674,7 +674,7 @@ void deploytest::testRelativeLink() {
 
     };
 
-    for (auto &i: cases) {
+    for (const auto &i: cases) {
         QVERIFY(PathUtils::getRelativeLink(i[0], i[1]) == i[2]);
     }
 
@@ -716,7 +716,7 @@ void deploytest::testCheckQt() {
 
     };
 
-    for (auto &i: cases) {
+    for (const auto &i: cases) {
         QVERIFY(DeployCore::isQtLib(i.first) == i.second);
     }
     delete deployer;
@@ -762,7 +762,7 @@ void deploytest::testCheckQt() {
 
     };
 
-    for (auto &i: cases) {
+    for (const auto &i: cases) {
         QVERIFY(DeployCore::isQtLib(i.first) == i.second);
     }
 
@@ -910,7 +910,7 @@ void deploytest::testHelp() {
     runTestParams({"v"});
     auto help = DeployCore::help();
 
-    for (auto &key: DeployCore::helpKeys()) {
+    for (const auto &key: DeployCore::helpKeys()) {
 
         if (!help.contains(key)) {
             QVERIFY(false);

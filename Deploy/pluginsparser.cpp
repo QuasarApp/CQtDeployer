@@ -73,7 +73,7 @@ bool PluginsParser::scan(const QString& pluginPath,
 
     QuasarAppUtils::Params::verboseLog("Modules Number :" + QString::number(qtModules), QuasarAppUtils::Info);
 
-    for (auto &&plugin: plugins) {
+    for (const auto &plugin: plugins) {
         auto module = qtModuleForPlugin(plugin.fileName());
         if (qtModules & module) {
 

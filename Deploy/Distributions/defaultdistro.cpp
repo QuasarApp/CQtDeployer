@@ -3,9 +3,7 @@
 #include <deployconfig.h>
 #include <deploycore.h>
 
-DefaultDistro::DefaultDistro() {
-
-}
+DefaultDistro::DefaultDistro() = default;
 
 QString DefaultDistro::getConfig() const{
     return ":/Distro/Distributions/configures/C and C++.json";

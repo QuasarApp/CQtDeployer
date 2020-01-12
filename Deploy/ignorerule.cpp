@@ -37,7 +37,7 @@ bool IgnoreRule::check(const LibInfo &info, const QString& ignoreLabel) const {
 
 const IgnoreData* IgnoreRule::isIgnore(const LibInfo &info) const {
 
-    for (auto &ignore : _data) {
+    for (const auto &ignore : _data) {
 
         bool checkPlatform = ((ignore.platform & info.getPlatform()) == info.getPlatform()) || ignore.platform == UnknownPlatform;
         bool checkPriority = (ignore.prority <= info.getPriority()) || ignore.prority == NotFile;

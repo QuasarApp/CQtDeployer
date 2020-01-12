@@ -17,11 +17,10 @@
 #include "pathutils.h"
 #include "quasarapp.h"
 
-#include <assert.h>
+#include <cassert>
 
 #include <Distributions/defaultdistro.h>
 #include <Distributions/qif.h>
-#define NO_LINK_VALUE "str::"
 /**
  * this function init prefixes of project
  * inputParamsList - list of parameters
@@ -35,7 +34,7 @@ bool parsePrefixesPrivate(Container& mainContainer,
                           const QStringList &inputParamsList,
                           Setter setter) {
 
-    for (auto& str: inputParamsList) {
+    for (const auto& str: inputParamsList) {
         auto pair = str.split(DeployCore::getSeparator(1));
         auto first = pair.value(0, "");
         auto second = pair.value(1, "");
@@ -134,7 +133,7 @@ QJsonValue ConfigParser::writeKeyArray(int separatorLvl, const QString &paramete
     if (DeployCore::isContainsArraySeparators(parameter)) {
         QJsonArray array;
 
-        for (auto &i: list) {
+        for (const auto &i: list) {
             array.push_back(writeKeyArray(separatorLvl + 1, i, confFileDir));
         }
 
@@ -171,7 +170,7 @@ QString ConfigParser::readKeyArray(int separatorLvl, const QJsonArray &array,
 
     QStringList list;
 
-    for (QJsonValue i : array) {
+    for (const QJsonValue &i : array) {
 
         if (i.isArray()) {
             list.push_back(readKeyArray(separatorLvl + 1, i.toArray(), confFileDir));
@@ -238,7 +237,7 @@ bool ConfigParser::createFromDeploy(const QString& confFile) const {
 
     auto info = QFileInfo(confFile);
 
-    for (auto &key :DeployCore::helpKeys()) {
+    for (const auto &key :DeployCore::helpKeys()) {
         writeKey(key, obj, info.absolutePath());
     }
 
@@ -275,7 +274,7 @@ bool ConfigParser::loadFromFile(const QString& confFile) {
 
         auto obj = doc.object();
 
-        for (auto &key: obj.keys()) {
+        for (const auto &key: obj.keys()) {
             readKey(key, obj, confFilePath);
         }
 
@@ -371,7 +370,7 @@ bool ConfigParser::initPrefixes() {
 
             auto list = _config.getTargetsListByFilter(pair.value(1, ""));
 
-            for (auto &target : list) {
+            for (const auto &target : list) {
                 target->setSufix(prefix);
             }
 
@@ -501,7 +500,7 @@ bool ConfigParser::parseQtClearMode() {
 QSet<QString> ConfigParser::getQtPathesFromTargets() {
     QSet<QString> res;
 
-    for (auto &i: _config.targets()) {
+    for (const auto &i: _config.targets()) {
         if (i.isValid() && !i.getQtPath().isEmpty()) {
             res.insert(i.getQtPath());
         }
@@ -527,15 +526,13 @@ bool ConfigParser::setTargets(const QStringList &value) {
 
     bool isfillList = false;
 
-    for (auto &i : value) {
+    for (const auto &i : value) {
         QFileInfo targetInfo(i);
 
         if (i.isEmpty())
             continue;
 
         if (targetInfo.isFile()) {
-
-            auto sufix = targetInfo.completeSuffix();
 
             _config.targetsEdit().unite(createTarget(QDir::fromNativeSeparators(i)));
 
@@ -588,7 +585,7 @@ bool ConfigParser::setBinDir(const QString &dir, bool recursive) {
     }
 
     bool result = false;
-    for (auto &file : list) {
+    for (const auto &file : list) {
 
         if (file.isDir()) {
             result |= setBinDir(file.absoluteFilePath(), recursive);
@@ -617,9 +614,8 @@ QHash<QString, TargetInfo> ConfigParser::createTarget(const QString &target) {
     auto key = target;
     if (_scaner->fillLibInfo(libinfo, key)) {
         return {{libinfo.fullPath(), libinfo}};
-    } else {
-        return {{key, {}}};
     }
+    return {{key, {}}};
 }
 
 QHash<QString, TargetInfo>
@@ -636,7 +632,7 @@ void ConfigParser::initIgnoreList()
         auto list = QuasarAppUtils::Params::getStrArg("ignore").
                 split(DeployCore::getSeparator(0));
 
-        for (auto &i : list) {
+        for (const auto &i : list) {
             _config.ignoreList.addRule(IgnoreData(i));
         }
 
@@ -722,7 +718,7 @@ void ConfigParser::initIgnoreEnvList() {
                 split(DeployCore::getSeparator(0));
 
 
-        for (auto &i : ignoreList) {
+        for (const auto &i : ignoreList) {
             auto path = QFileInfo(i).absoluteFilePath();
 
             if (path.right(1) == "/" || path.right(1) == "\\") {
@@ -788,7 +784,9 @@ bool ConfigParser::initQmake() {
             qInfo() << "deploy only C libs because qmake is not found";
             return true;
 
-        } else if (qtList.size() > 1) {
+        }
+
+        if (qtList.size() > 1) {
             QuasarAppUtils::Params::verboseLog("Your deployment targets were compiled by different qmake,"
                                                "qt auto-capture is not possible. Use the -qmake flag to solve this problem.",
                                                QuasarAppUtils::Error);
@@ -830,7 +828,7 @@ bool ConfigParser::setQmake(const QString &value) {
     QString qmakeData = proc.readAll();
     auto list = qmakeData.split('\n');
 
-    for (auto &value : list) {
+    for (const auto &value : list) {
         if (value.contains("QT_INSTALL_LIBS")) {
             _config.qtDir.setLibs(getPathFrmoQmakeLine(value));
         } else if (value.contains("QT_INSTALL_LIBEXECS")) {
@@ -928,7 +926,7 @@ bool ConfigParser::setQtDir(const QString &value) {
 void ConfigParser::setExtraPath(const QStringList &value) {
     QDir dir;
 
-    for (auto i : value) {
+    for (const auto &i : value) {
         QFileInfo info(i);
         if (info.isDir()) {
             if (_config.targets().contains(info.absoluteFilePath())) {
@@ -959,7 +957,7 @@ void ConfigParser::setExtraPath(const QStringList &value) {
 }
 
 void ConfigParser::setExtraNames(const QStringList &value) {
-    for (auto i : value) {
+    for (const auto &i : value) {
         if (i.size() > 1) {
             _config.extraPaths.addtExtraNamesMasks({i});
 
@@ -975,7 +973,7 @@ void ConfigParser::setExtraNames(const QStringList &value) {
 }
 
 void ConfigParser::setExtraPlugins(const QStringList &value) {
-    for (auto i : value) {
+    for (const auto &i : value) {
         if (!i.isEmpty())
             _config.extraPlugins.append(i);
     }
@@ -985,7 +983,7 @@ QString ConfigParser::findWindowsPath(const QString& path) const {
     auto list = path.split(';');
     QString win_magic = "windows";
 
-    for (auto i: list ) {
+    for (const auto &i: list ) {
         int index = i.indexOf(win_magic, 0, Qt::CaseInsensitive);
         if (index > 0 && i.size() == index + win_magic.size()) {
             return QDir::fromNativeSeparators(i);
@@ -1040,7 +1038,7 @@ void ConfigParser::initEnvirement() {
 
 
 
-    for (auto &&i : dirs) {
+    for (const auto &i : dirs) {
         _config.envirement.addEnv(i, _config.appDir, _config.getTargetDir());
     }
 
@@ -1064,7 +1062,7 @@ QSet<QString> ConfigParser::getSetDirsRecursive(const QString &path, int maxDepc
 
     auto list = dir.entryInfoList(QDir::Dirs| QDir::NoDotAndDotDot);
 
-    for (auto &&subDir: list) {
+    for (const auto &subDir: list) {
         res.insert(subDir.absoluteFilePath());
         res.unite(getSetDirsRecursive(subDir.absoluteFilePath(), maxDepch, depch + 1));
     }

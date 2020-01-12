@@ -1,7 +1,7 @@
 #include "qif.h"
 #include "quasarapp.h"
 
-QIF::QIF(){}
+QIF::QIF()= default;
 
 Envirement QIF::toolKitLocation() const {
 // SNAP

@@ -57,7 +57,7 @@ QmlCreator::QmlCreator(const QString &path) {
 
 QmlCreator::~QmlCreator() {
 
-    for(auto &&lib : copyedQml) {
+    for(auto &lib : copyedQml) {
         QFile::remove(lib);
     }
 

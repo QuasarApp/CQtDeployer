@@ -91,7 +91,7 @@ bool FileManager::strip(const QString &dir) const {
         auto list = d.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
 
         bool res = false;
-        for (auto &&i : list) {
+        for (const auto &i : list) {
             res = strip(i.absoluteFilePath()) || res;
         }
 
@@ -239,14 +239,14 @@ bool FileManager::copyFolder(const QString &from, const QString &to, const QStri
 
     auto list = fromDir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries);
 
-    for (auto &&item : list) {
+    for (const auto &item : list) {
         if (QFileInfo(item).isDir()) {
 
             copyFolder(item.absoluteFilePath(), to + "/" + item.fileName(), filter, listOfCopiedItems, mask);
         } else {
 
             QString skipFilter = "";
-            for (auto && i: filter) {
+            for (const auto &i: filter) {
                 if (item.fileName().contains(i, ONLY_WIN_CASE_INSENSIATIVE)) {
                     skipFilter = i;
                     break;

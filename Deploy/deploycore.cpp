@@ -270,7 +270,7 @@ QStringList DeployCore::extractTranslation(const QSet<QString> &libs) {
     QSet<QString> res;
     const size_t qtModulesCount = sizeof(qtModuleEntries) / sizeof(QtModuleEntry);
 
-    for (auto &&lib: libs) {
+    for (const auto &lib: libs) {
         for (size_t i = 0; i < qtModulesCount; ++i) {
             if (lib.contains(qtModuleEntries[i].libraryName) &&
                     qtModuleEntries[i].translation) {
@@ -389,7 +389,7 @@ QString DeployCore::getVCredist(const QString &_qtbinDir) {
     auto name = getMSVCName(msvc);
     auto version = getMSVCVersion(msvc);
 
-    for (auto &&info: infoList) {
+    for (const auto &info: infoList) {
         auto file = info.fileName();
         if (file.contains(name, Qt::CaseInsensitive) &&
                 file.contains(version, Qt::CaseInsensitive)) {

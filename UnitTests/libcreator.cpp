@@ -189,7 +189,7 @@ const QMap<QString, QStringList>& LibCreator::getLibsDep() const {
 
 LibCreator::~LibCreator() {
 
-    for(auto &&lib : copyedLibs) {
+    for(auto &lib : copyedLibs) {
         QFile::remove(lib);
     }
 

@@ -30,7 +30,7 @@ class DEPLOYSHARED_EXPORT Extracter {
     MetaFileManager *_metaFileManager;
 
     void extract(const QString &file, DependencyMap* depMap, const QString& mask = "");
-    bool copyTranslations(QStringList list, const QString &prefix);
+    bool copyTranslations(const QStringList &list, const QString &prefix);
 
     bool extractQml();
 
