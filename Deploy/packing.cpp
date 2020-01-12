@@ -2,6 +2,7 @@
 #include "packing.h"
 #include "quasarapp.h"
 #include <QDebug>
+#include <QProcess>
 #include <QThread>
 
 Packing::Packing() {
