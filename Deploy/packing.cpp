@@ -56,8 +56,8 @@ bool Packing::create() {
 }
 
 void Packing::handleOutputUpdate() {
-    QString stdout = _proc->readAllStandardOutput();
-    QString errout = _proc->readAllStandardError();
+    QByteArray stdout = _proc->readAllStandardOutput();
+    QByteArray errout = _proc->readAllStandardError();
 
     if (stdout.size())
         qInfo() << stdout;
