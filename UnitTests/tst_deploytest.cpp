@@ -46,7 +46,7 @@ private:
     QStringList getFilesFromDir(const QString& dir);
 
 
-    void runTestParams(QStringList list, QSet<QString> *tree = nullptr, bool noWarnings = false);
+    void runTestParams(const QStringList &list, QSet<QString> *tree = nullptr, bool noWarnings = false);
 
     void checkResults(const QSet<QString> &tree, bool noWarnings);
 public:
@@ -793,10 +793,7 @@ void deploytest::testSetTargetDir() {
 
 }
 
-void deploytest::runTestParams(QStringList list, QSet<QString>* tree, bool noWarnings) {
-
-    list += "-verbose";
-    list += "3";
+void deploytest::runTestParams(const QStringList& list, QSet<QString>* tree, bool noWarnings) {
 
     QuasarAppUtils::Params::parseParams(list);
 

@@ -122,7 +122,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res) {
             LibInfo scanedLib = _scanedLibs.value(dep->fullPath());
 
             if (!scanedLib.isValid()) {
-                auto listDep =  res;
+                QSet<LibInfo> listDep =  {};
 
                 recursiveDep(*dep, listDep);
 
