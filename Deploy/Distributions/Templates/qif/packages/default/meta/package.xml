@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>%0</DisplayName>
-    <Description>%0</Description>
-    <Version>%2</Version>
+    <DisplayName>$NAME</DisplayName>
+    <Description>$DESCRIPTION</Description>
+    <Version>$VERSION</Version>
     <Default>true</Default>
     <ForcedInstallation>false</ForcedInstallation>
     <Script>installscript.qs</Script>
-    <ReleaseDate>%3</ReleaseDate>
+    <ReleaseDate>$RELEASEDATA</ReleaseDate>
     <SortingPriority>201</SortingPriority>
 </Package>

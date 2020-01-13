@@ -3,6 +3,7 @@
 
 #include "distrostruct.h"
 #include "envirement.h"
+#include "templateinfo.h"
 
 class DEPLOYSHARED_EXPORT iDistribution
 {
@@ -21,6 +22,9 @@ public:
 protected:
     QString getLocation() const;
     void setLocation(const QString &location);
+    bool unpack(const QString& resource,
+                const QString& target,
+                const TemplateInfo& info) const;
 
 private:
     QString _location = "packageTemplate";

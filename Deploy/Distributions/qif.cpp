@@ -1,5 +1,7 @@
 #include "qif.h"
 #include "quasarapp.h"
+#include "deploycore.h"
+#include "deployconfig.h"
 
 QIF::QIF()= default;
 
@@ -26,8 +28,16 @@ QString QIF::runCmd() const {
 
 void QIF::deployTemplate() const {
     auto customTemplate = QuasarAppUtils::Params::getStrArg("qif", "");
+    const DeployConfig *cfg = DeployCore::_config;
 
-    if (customTemplate.size()) {
+    if (customTemplate.isEmpty()) {
+        // default template
+
+        for (auto it = cfg->prefixes().cbegin(); it != cfg->prefixes().cend(); ++it) {
+            auto location = cfg->getTargetDir() + "/" + it.key();
+
+        }
+
 
     } else {
 
