@@ -14,7 +14,9 @@
 #include <QDebug>
 #include "pathutils.h"
 
-DependenciesScanner::DependenciesScanner() {}
+DependenciesScanner::DependenciesScanner() {
+
+}
 
 void DependenciesScanner::clearScaned() {
     _scanedLibs.clear();
@@ -158,6 +160,11 @@ void DependenciesScanner::addToWinAPI(const QString &lib, QHash<WinAPI, QSet<QSt
 void DependenciesScanner::setEnvironment(const QStringList &env) {
     QDir dir;
     QHash<WinAPI, QSet<QString>> winAPI;
+
+#ifdef Q_OS_WIN
+    winAPI[WinAPI::Crt] += "UCRTBASE.DLL";
+#endif
+
     for (auto i : env) {
 
         dir.setPath(i);
