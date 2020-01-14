@@ -14,7 +14,7 @@ public:
     Envirement toolKitLocation() const;
     QString getConfig() const;
     QString runCmd() const;
-    void deployTemplate() const;
+    bool deployTemplate() const;
     QStringList runArg() const;
 
 };

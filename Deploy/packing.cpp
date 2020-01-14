@@ -35,6 +35,9 @@ bool Packing::create() {
     if (!_pakage)
         return false;
 
+    if (!_pakage->deployTemplate())
+        return false;
+
     if (!_pakage->runCmd().size())
         return true;
 

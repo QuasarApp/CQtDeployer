@@ -174,7 +174,7 @@ QString DeployCore::help() {
     { "                            | Use '-bin' flag if you want to deploy linux binary files" },
     { "   -qmlDir [prefix;path,path]: Qml data dir. For example -qmlDir ~/my/project/qml" },
     { "   deploySystem             : Deploys all libs" },
-    { "   deploySystem-with-libc             : Skip Deploys system core libs libs" },
+    { "   deploySystem-with-libc   : Skip Deploys system core libs libs" },
     { "   -qmake  [params]         : Qmake path." },
     { "                            | For example -qmake ~/Qt/5.14.0/gcc_64/bin/qmake" },
     { "   -ignore [list,params]    : The list of libs to ignore." },
@@ -203,12 +203,18 @@ QString DeployCore::help() {
     { "   noTranslations           : Skips the translations files." },
     { "                            | It doesn't work without qmake and inside a snap package" },
     { "   -noAutoCheckQmake        : Disables automatic search of paths to qmake in executable files." },
-    { "   -qmlOut [path;prefix;target,path] : Sets path to qml out directory" },
-    { "   -libOut [path;prefix;target,path] : Sets path to libraries out directory" },
-    { "   -trOut [path;prefix;target,path]  : Sets path to translations out directory" },
-    { " -pluginOut [path;prefix;target,path]: Sets path to plugins out directory" },
-    { "   -binOut [path;prefix;target,path] : Sets path to binary out directory" },
-    { "   -recOut [path;prefix;target,path] : Sets path to recurses out directory" },
+    { "   -qmlOut [prefix;val,val] : Sets path to qml out directory" },
+    { "   -libOut [prefix;val,val] : Sets path to libraries out directory" },
+    { "   -trOut [prefix;val,val]  : Sets path to translations out directory" },
+    { " -pluginOut [prefix;val,val]: Sets path to plugins out directory" },
+    { "   -binOut [prefix;val,val] : Sets path to binary out directory" },
+    { "   -recOut [prefix;val,val] : Sets path to recurses out directory" },
+
+    { "   -name [prefix;val,val]   : Sets name for prefix. If this if you do not specify a prefix, the value will be assigned to the default prefix ("")" },
+    { "   -description [prefix;val,val] : Sets description for prefix" },
+    { "   -deployVersion [prefix;val,val] : Sets version for prefix" },
+    { "   -releaseDate [prefix;val,val] : Sets release date for prefix" },
+    { "   -icon [prefix;val,val]   : Sets path to icon for prefix" },
 
     { "   -qif [params]            : Create the QIF installer for deployement programm" },
     { "                            : By default params value is 'Default'" },
@@ -262,7 +268,12 @@ QStringList DeployCore::helpKeys() {
         "version",
         "verbose",
         "qif",
-        "noAutoCheckQmake"
+        "noAutoCheckQmake",
+        "name",
+        "description",
+        "deployVersion",
+        "releaseDate",
+        "icon"
     };
 }
 

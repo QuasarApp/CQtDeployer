@@ -3,6 +3,8 @@
 #include "deploycore.h"
 #include "deployconfig.h"
 
+#include <QDateTime>
+
 QIF::QIF()= default;
 
 Envirement QIF::toolKitLocation() const {
@@ -26,7 +28,7 @@ QString QIF::runCmd() const {
     return "binarycreator";
 }
 
-void QIF::deployTemplate() const {
+bool QIF::deployTemplate() const {
     auto customTemplate = QuasarAppUtils::Params::getStrArg("qif", "");
     const DeployConfig *cfg = DeployCore::_config;
 
@@ -34,14 +36,42 @@ void QIF::deployTemplate() const {
         // default template
 
         for (auto it = cfg->prefixes().cbegin(); it != cfg->prefixes().cend(); ++it) {
-            auto location = cfg->getTargetDir() + "/" + it.key();
+            auto location = cfg->getTargetDir() + "/" + getLocation() + "/" + it.key();
+            auto package = it.value();
+
+            TemplateInfo info;
+            info.Name = it.key();
+            if (!package.name().isEmpty())
+                info.Name = package.name();
+
+            info.Description = "This package contains the " + info.Name;
+            if (!package.description().isEmpty())
+                info.Description = package.description();
+
+            info.Version = "1.0";
+            if (!package.version().isEmpty())
+                info.Version = package.version();
+
+            info.ReleaseData = QDate::currentDate().toString();
+            if (!package.releaseData().isEmpty())
+                info.ReleaseData = package.releaseData();
+
+            info.Icon = "";
+            if (!package.icon().isEmpty())
+                info.Icon = package.icon();
+
+            if (!unpackDir(":/Templates/QIF/Distributions/Templates/qif", location, info)) {
+                return false;
+            }
 
         }
 
-
-    } else {
-
+        return true;
     }
+
+    // custom template
+
+    return true;
 }
 
 QStringList QIF::runArg() const {

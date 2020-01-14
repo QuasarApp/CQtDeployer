@@ -38,12 +38,17 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   -targetDir [params]       | Sets target directory(by default it is the path to the first deployable file)|
 |   -targetPrefix [prefix;tar1,prefix;tar2]| Sets prefix for target( by default it is empty value)       |
 |   -verbose [0-3]            | Shows debug log                                                 |
-|  -qmlOut [prefix;path,path]| Sets path to qml out directory                                  |
-|  -libOut [prefix;path,path]| Sets path to libraries out directory                            |
-|  -trOut [prefix;path,path] | Sets path to translations out directory                         |
-|  -pluginOut [prefix;path,path]| Sets path to plugins out directory                           |
-|  -binOut [prefix;path,path]| Sets path to binary out directory                               |
-|  -recOut [prefix;path,path]| Sets path to recurses out directory                             |
+|  -qmlOut [prefix;path,path] | Sets path to qml out directory                                  |
+|  -libOut [prefix;path,path] | Sets path to libraries out directory                            |
+|  -trOut [prefix;path,path]  | Sets path to translations out directory                         |
+|  -pluginOut [prefix;path,path]| Sets path to plugins out directory                            |
+|  -binOut [prefix;path,path] | Sets path to binary out directory                               |
+|  -recOut [prefix;path,path] | Sets path to recurses out directory                             |
+|  -name [prefix;val,val]     | Sets name for prefix. If this if you do not specify a prefix, the value will be assigned to the default prefix ("")|
+|  -description [prefix;val,val] | Sets description for prefix                                  |
+|  -deployVersion [prefix;val,val] | Sets version for prefix                                    |
+|  -releaseDate [prefix;val,val] | Sets release date for prefix                                 |
+|  -icon [prefix;val,val]     | Sets path to icon for prefix                                    |
 |  -qif [params]              | Create the QIF installer for deployement programm"              |
 |                             | if skip the [params] then installer weel be created by default'"                           |
 |                             | Examples:" },
@@ -113,6 +118,11 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -pluginOut [prefix;path,path]| Установит путь к папке с плагинами                               |
 |  -binOut [prefix;path,path]| Установит путь к папке с исполняемыми файлами                               |
 |  -recOut [prefix;path,path]| Установит путь к папке с ресурсами                             |
+|  -name [prefix;val,val]     | Установит имя префиксу. Если указать значение без префикса, то значение будет установленно префиксу по умолчанию. |
+|  -description [prefix;val,val] | Установит описание префиксу                                  |
+|  -deployVersion [prefix;val,val] | Установит версию префиксу                                    |
+|  -releaseDate [prefix;val,val] | Установит дату выпуска префиксу                                 |
+|  -icon [prefix;val,val]     | Установит путь к иконке или логотипу префиксу                                   |
 |  -qif [params]              | Создать установщик QIF для развертываемой программы"|
 |                             | если оставить параметр пустым то будет создан инсталлер По умолчанию|
 |                             | Примеры:" },

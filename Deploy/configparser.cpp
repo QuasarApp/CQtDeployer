@@ -317,6 +317,17 @@ bool ConfigParser::initDistroStruct() {
     auto recOut = QuasarAppUtils::Params::getStrArg("recOut").
             split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
 
+    auto name = QuasarAppUtils::Params::getStrArg("name").
+            split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
+    auto description = QuasarAppUtils::Params::getStrArg("description").
+            split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
+    auto deployVersion = QuasarAppUtils::Params::getStrArg("deployVersion").
+            split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
+    auto releaseDate = QuasarAppUtils::Params::getStrArg("releaseDate").
+            split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
+    auto icon = QuasarAppUtils::Params::getStrArg("icon").
+            split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
+
     auto erroLog = [](const QString &flag){
             QuasarAppUtils::Params::verboseLog(QString("Set %0 fail, becouse you try set %0 for not inited prefix."
                                                " Use 'targetPrefix' flag for init the prefixes").arg(flag),
@@ -351,6 +362,31 @@ bool ConfigParser::initDistroStruct() {
 
     if (recOut.size() && !parsePrefixesPrivate(mainDistro, recOut, &DistroModule::setResOutDir)) {
         erroLog("recOut");
+        return false;
+    }
+
+    if (name.size() && !parsePrefixesPrivate(mainDistro, name, &DistroModule::setName)) {
+        erroLog("name");
+        return false;
+    }
+
+    if (description.size() && !parsePrefixesPrivate(mainDistro, description, &DistroModule::setDescription)) {
+        erroLog("description");
+        return false;
+    }
+
+    if (deployVersion.size() && !parsePrefixesPrivate(mainDistro, deployVersion, &DistroModule::setVersion)) {
+        erroLog("deployVersion");
+        return false;
+    }
+
+    if (releaseDate.size() && !parsePrefixesPrivate(mainDistro, releaseDate, &DistroModule::setReleaseData)) {
+        erroLog("releaseDate");
+        return false;
+    }
+
+    if (icon.size() && !parsePrefixesPrivate(mainDistro, icon, &DistroModule::setIcon)) {
+        erroLog("icon");
         return false;
     }
 
@@ -1005,8 +1041,6 @@ bool ConfigParser::configureDistribution(iDistribution *distro) {
     if (!loadFromFile(distro->getConfig())) {
         return false;
     }
-
-    distro->deployTemplate();
 
     _packing->setDistribution(distro);
 

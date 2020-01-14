@@ -18,7 +18,27 @@ public:
     void addQmlInput(const QString& target);
 
 
+    QString name() const;
+    void setName(const QString &name);
+
+    QString description() const;
+    void setDescription(const QString &description);
+
+    QString version() const;
+    void setVersion(const QString &version);
+
+    QString releaseData() const;
+    void setReleaseData(const QString &releaseData);
+
+    QString icon() const;
+    void setIcon(const QString &icon);
+
 private:
+    QString _name;
+    QString _description;
+    QString _version;
+    QString _releaseData;
+    QString _icon;
 
     QSet<QString> _targets;
     QSet<QString> _qmlInput;

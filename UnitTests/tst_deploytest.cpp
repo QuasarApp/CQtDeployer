@@ -128,6 +128,9 @@ private slots:
     // extractPlugins flags
     void testExtractPlugins();
 
+    // qif flags
+    void testQIF();
+
     void testDependencyMap();
 };
 
@@ -559,6 +562,26 @@ void deploytest::testExtractPlugins() {
         }
 
     }
+}
+
+void deploytest::testQIF() {
+    TestUtils utils;
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestQMLWidgets";
+    QString qmake = TestQtDir + "bin/qmake";
+
+#else
+    QString bin = TestBinDir + "TestQMLWidgets.exe";
+    QString qmake = TestQtDir + "bin/qmake.exe";
+
+#endif
+    auto comapareTree = Modules::qmlLibs();
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                  "qif"}, &comapareTree);
+
 }
 
 void deploytest::testDependencyMap() {

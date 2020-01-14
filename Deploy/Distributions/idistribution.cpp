@@ -2,6 +2,7 @@
 #include <typeinfo>
 #include <QFile>
 #include <QTextStream>
+#include <QDir>
 
 iDistribution::iDistribution() = default;
 iDistribution::~iDistribution() = default;
@@ -18,10 +19,10 @@ void iDistribution::setLocation(const QString &location) {
     _location = location;
 }
 
-bool iDistribution::unpack(const QString &resource,
-                           const QString &target,
-                           const TemplateInfo &info) const {
-    QFile file(resource);
+bool iDistribution::unpackFile(const QFileInfo &resource,
+                               const QString &target,
+                               const TemplateInfo &info) const {
+    QFile file(resource.absoluteFilePath());
     if (!file.open(QIODevice::ReadOnly)) {
         return false;
     }
@@ -29,7 +30,10 @@ bool iDistribution::unpack(const QString &resource,
     QString inputData = file.readAll();
     file.close();
 
-    file.setFileName(target);
+    if (!QDir().mkpath(target))
+        return false;
+
+    file.setFileName(target + "/" +  resource.fileName());
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
         return false;
@@ -49,6 +53,33 @@ bool iDistribution::unpack(const QString &resource,
     stream << inputData;
 
     file.close();
+
+    return true;
+}
+
+bool iDistribution::unpackDir(const QString &resource,
+                              const QString &target,
+                              const TemplateInfo &info) const {
+
+
+    QDir res(resource);
+    auto list = res.entryInfoList();
+
+    for (const auto & item :list) {
+
+        if (item.isFile()) {
+            if (!unpackFile(item, target, info)) {
+                return false;
+            }
+        } else {
+            if (!unpackDir(item.absoluteFilePath(),
+                           target + "/" + item.fileName(),
+                           info)) {
+
+                return false;
+            }
+        }
+    }
 
     return true;
 }
