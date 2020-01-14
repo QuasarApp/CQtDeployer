@@ -1781,6 +1781,8 @@ void deploytest::testSystemLib() {
         "./" + DISTRO_DIR + "/userenv.dll",
         "./" + DISTRO_DIR + "/uxtheme.dll",
         "./" + DISTRO_DIR + "/version.dll",
+        "./" + DISTRO_DIR + "/ucrtbase.dll",
+
     });
 
     runTestParams({"-bin", bin, "clear" ,
