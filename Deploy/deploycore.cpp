@@ -274,7 +274,8 @@ QStringList DeployCore::helpKeys() {
         "description",
         "deployVersion",
         "releaseDate",
-        "icon"
+        "icon",
+        "publisher"
     };
 }
 
