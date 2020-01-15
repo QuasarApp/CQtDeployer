@@ -6,7 +6,7 @@
 class DEPLOYSHARED_EXPORT DefaultDistro : public iDistribution
 {
 public:
-    DefaultDistro();
+    DefaultDistro(FileManager *);
 
     // iDistribution interface
 public:

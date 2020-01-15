@@ -6,11 +6,12 @@
 #include "templateinfo.h"
 
 #include <QFileInfo>
+class FileManager;
 
 class DEPLOYSHARED_EXPORT iDistribution
 {
 public:
-    iDistribution();
+    iDistribution(FileManager * fileManager);
     virtual ~iDistribution();
 
     virtual QString getConfig() const = 0;
@@ -33,8 +34,11 @@ protected:
                    const QString& target,
                    const TemplateInfo& info) const;
 
+    bool moveData(const QString& from, const QString& to) const;
+
 private:
-    QString _location = "packageTemplate";
+    QString _location = "packing";
+    FileManager * _fileManager = nullptr;
 
 };
 

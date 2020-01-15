@@ -3,9 +3,15 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDir>
+#include <cassert>
+#include <filemanager.h>
 
-iDistribution::iDistribution() = default;
 iDistribution::~iDistribution() = default;
+
+iDistribution::iDistribution(FileManager *fileManager) {
+    _fileManager = fileManager;
+    assert(_fileManager);
+}
 
 QString iDistribution::getClassName() const {
     return typeid(*this).name();
@@ -55,7 +61,7 @@ bool iDistribution::unpackFile(const QFileInfo &resource,
 
     file.close();
 
-    return true;
+    return _fileManager->addToDeployed(target + "/" +  resource.fileName());
 }
 
 bool iDistribution::unpackDir(const QString &resource,
@@ -83,4 +89,9 @@ bool iDistribution::unpackDir(const QString &resource,
     }
 
     return true;
+}
+
+bool iDistribution::moveData(const QString &from,
+                             const QString &to) const {
+    return _fileManager->moveFolder(from, to);
 }

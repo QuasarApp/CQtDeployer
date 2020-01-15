@@ -10,7 +10,7 @@
 class DEPLOYSHARED_EXPORT QIF: public iDistribution
 {
 public:
-    QIF();
+    QIF(FileManager *fileManager);
     Envirement toolKitLocation() const;
     QString getConfig() const;
     QString runCmd() const;

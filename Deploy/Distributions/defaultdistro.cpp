@@ -3,7 +3,11 @@
 #include <deployconfig.h>
 #include <deploycore.h>
 
-DefaultDistro::DefaultDistro() = default;
+DefaultDistro::DefaultDistro(FileManager *fileManager)
+    :iDistribution(fileManager){
+
+};
+
 
 QString DefaultDistro::getConfig() const{
     return ":/Distro/Distributions/configures/C and C++.json";

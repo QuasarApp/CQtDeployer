@@ -4,12 +4,35 @@
 #include "deployconfig.h"
 
 #include <QDateTime>
+#include <QProcess>
 
-QIF::QIF()= default;
+QIF::QIF(FileManager *fileManager)
+    :iDistribution(fileManager){
+
+};
 
 Envirement QIF::toolKitLocation() const {
-// SNAP
     Envirement result;
+    result.addEnv(QProcessEnvironment::systemEnvironment().value("PATH"));
+
+// BASE
+    const DeployConfig *cfg = DeployCore::_config;
+    auto basePATH = cfg->qtDir.getBins() + "/../../../Tools/QtInstallerFramework/";
+    QDir QifDir(basePATH);
+    auto list = QifDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+    QMap<double, QString> sortedItems;
+    for (const auto& i : list) {
+        sortedItems.insert(i.toDouble(), i);
+    }
+
+    if (sortedItems.size()) {
+        basePATH += ("/" + sortedItems.last() + "/bin");
+        result.addEnv(basePATH);
+    }
+
+
+// SNAP
 
     QString AppPath = QuasarAppUtils::Params::getStrArg("appPath", "");
     result.addEnv(AppPath);
@@ -37,14 +60,15 @@ bool QIF::deployTemplate() const {
 
         TemplateInfo generalInfo;
 
+        int number = 0;
         for (auto it = cfg->prefixes().cbegin(); it != cfg->prefixes().cend(); ++it) {
-            auto location = cfg->getTargetDir() + "/" + getLocation() + "/packages/" + it.key();
             auto package = it.value();
 
             TemplateInfo info;
-            info.Name = it.key();
-            if (!package.name().isEmpty())
+            info.Name = (it.key().isEmpty())? "Application" + QString::number(number) : it.key();
+            if (!package.name().isEmpty()) {
                 info.Name = package.name();
+            }
 
             info.Description = "This package contains the " + info.Name;
             if (!package.description().isEmpty())
@@ -62,11 +86,17 @@ bool QIF::deployTemplate() const {
             if (!package.icon().isEmpty())
                 info.Icon = package.icon();
 
-            info.Publisher = "";
+            info.Publisher = "Company";
             if (!package.publisher().isEmpty())
                 info.Publisher = package.publisher();
 
+            auto location = cfg->getTargetDir() + "/" + getLocation() + "/packages/" + info.Name;
+
             if (!unpackDir(":/Templates/QIF/Distributions/Templates/qif/packages/default", location, info)) {
+                return false;
+            }
+
+            if (!moveData(cfg->getTargetDir() + "/" + info.Name, location + "/data/")) {
                 return false;
             }
 

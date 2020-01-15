@@ -51,6 +51,8 @@ public:
                     QStringList *listOfCopiedItems = nullptr,
                     QStringList *mask = nullptr);
 
+    bool moveFolder(const QString &from, const QString &to);
+
     void clear(const QString& targetDir, bool force);
 
 

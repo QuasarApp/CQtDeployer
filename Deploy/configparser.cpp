@@ -29,6 +29,9 @@
  * seterFunc - this is method of item of mainConteiner for set value from inputParamsList
  * important : prefix in inputParamsList must be second.
  */
+
+static QString defaultPrefix = "";
+
 template<typename Container, typename Setter>
 bool parsePrefixesPrivate(Container& mainContainer,
                           const QStringList &inputParamsList,
@@ -39,7 +42,7 @@ bool parsePrefixesPrivate(Container& mainContainer,
         auto first = pair.value(0, "");
         auto second = pair.value(1, "");
         if (pair.size() == 1)
-            (mainContainer[""].*setter)(first);
+            (mainContainer[defaultPrefix].*setter)(first);
         else {
             first = PathUtils::toFullPath(first);
             if (!mainContainer.contains(first)) {
@@ -420,18 +423,20 @@ bool ConfigParser::initPrefixes() {
             _config.prefixesEdit().insert(prefix, {});
 
             if (pair.size() != 2) {
-
-                QuasarAppUtils::Params::verboseLog(
-                            "Wrong the targetPrefix value. The targetPrefix value must be "
-                            "contains the prefix path like first item and target mask like second item."
-                            " Prefix and Target must be separated ';' char. "
-                            " For example:  -targetPrefix prefix/path/1;target1,prefix/path/2;tar",
-                            QuasarAppUtils::Error);
-
-                return false;
+                defaultPrefix = prefix;
+//                QuasarAppUtils::Params::verboseLog(
+//                            "Wrong the targetPrefix value. The targetPrefix value must be "
+//                            "contains the prefix path like first item and target mask like second item."
+//                            " Prefix and Target must be separated ';' char. "
+//                            " For example:  -targetPrefix prefix/path/1;target1,prefix/path/2;target2",
+//                            QuasarAppUtils::Error);
 
             }
         }
+
+        QuasarAppUtils::Params::verboseLog(
+                    "Set Default Prefix to " + defaultPrefix,
+                     QuasarAppUtils::Info);
     }
 
     return true;
@@ -1038,10 +1043,10 @@ QString ConfigParser::findWindowsPath(const QString& path) const {
 
 iDistribution *ConfigParser::getDistribution() {
     if (QuasarAppUtils::Params::isEndable("qif")) {
-        return new QIF();
+        return new QIF(_fileManager);
     }
 
-    return new DefaultDistro();
+    return new DefaultDistro(_fileManager);
 }
 
 bool ConfigParser::configureDistribution(iDistribution *distro) {
