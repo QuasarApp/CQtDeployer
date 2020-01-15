@@ -49,6 +49,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -deployVersion [prefix;val,val] | Sets version for prefix                                    |
 |  -releaseDate [prefix;val,val] | Sets release date for prefix                                 |
 |  -icon [prefix;val,val]     | Sets path to icon for prefix                                    |
+|  -publisher [prefix;val,val]| Sets publisher for prefix                                       |
 |  -qif [params]              | Create the QIF installer for deployement programm"              |
 |                             | if skip the [params] then installer weel be created by default'"                           |
 |                             | Examples:" },
@@ -114,15 +115,16 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -extraLibs [list,params]   | Устанавливает маску имени библиотеки, для принудительного копирования, Пример  "-extraLib mySql" - заставит скопировать в папку с проектом все библиотеки чии имена содержат mySql. Данная опция чуствительна к регистру.  |
 |  -qmlOut [prefix;path,path]| Установит путь к папке с qml                                  |
 |  -libOut [prefix;path,path]| Установит путь к папке с зависимостями                            |
-|  -trOut [prefix;path,path] | Установит путь к папке с файламми переводов                         |
-|  -pluginOut [prefix;path,path]| Установит путь к папке с плагинами                               |
-|  -binOut [prefix;path,path]| Установит путь к папке с исполняемыми файлами                               |
-|  -recOut [prefix;path,path]| Установит путь к папке с ресурсами                             |
+|  -trOut [prefix;path,path] | Установит путь к папке с файламми переводов                 |
+|  -pluginOut [prefix;path,path]| Установит путь к папке с плагинами                       |
+|  -binOut [prefix;path,path]| Установит путь к папке с исполняемыми файлами               |
+|  -recOut [prefix;path,path]| Установит путь к папке с ресурсами                          |
 |  -name [prefix;val,val]     | Установит имя префиксу. Если указать значение без префикса, то значение будет установленно префиксу по умолчанию. |
-|  -description [prefix;val,val] | Установит описание префиксу                                  |
-|  -deployVersion [prefix;val,val] | Установит версию префиксу                                    |
-|  -releaseDate [prefix;val,val] | Установит дату выпуска префиксу                                 |
-|  -icon [prefix;val,val]     | Установит путь к иконке или логотипу префиксу                                   |
+|  -description [prefix;val,val] | Установит описание префиксу                             |
+|  -deployVersion [prefix;val,val] | Установит версию префиксу                             |
+|  -releaseDate [prefix;val,val] | Установит дату выпуска префиксу                         |
+|  -icon [prefix;val,val]     | Установит путь к иконке или логотипу префиксу              |
+|  -publisher [prefix;val,val]| Установит Издательство (автора) префиксу                                  |
 |  -qif [params]              | Создать установщик QIF для развертываемой программы"|
 |                             | если оставить параметр пустым то будет создан инсталлер По умолчанию|
 |                             | Примеры:" },

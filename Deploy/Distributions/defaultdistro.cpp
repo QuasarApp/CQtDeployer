@@ -24,3 +24,7 @@ QString DefaultDistro::runCmd() const {
 QStringList DefaultDistro::runArg() const {
     return {};
 }
+
+bool DefaultDistro::removeTemplate() const {
+    return true;
+}

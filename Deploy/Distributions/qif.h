@@ -16,7 +16,7 @@ public:
     QString runCmd() const;
     bool deployTemplate() const;
     QStringList runArg() const;
-
+    bool removeTemplate() const;
 };
 
 #endif // QIF_H

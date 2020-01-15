@@ -2,14 +2,14 @@
 <Installer>
     <WizardDefaultWidth>640px</WizardDefaultWidth>
     <WizardDefaultHeight>400px</WizardDefaultHeight>
-    <Name>%0</Name>
-    <Version>%2</Version>
-    <Title>%0</Title>
-    <Publisher>%1</Publisher>
-    <StartMenuDir>%0</StartMenuDir>
-    <TargetDir>@HomeDir@/%0</TargetDir>
+    <Name>$NAME</Name>
+    <Version>$VERSION</Version>
+    <Title>$NAME</Title>
+    <Publisher>$PUBLISHER</Publisher>
+    <StartMenuDir>$NAME</StartMenuDir>
+    <TargetDir>@HomeDir@/$NAME</TargetDir>
     <InstallActionColumnVisible>true</InstallActionColumnVisible>
     <RemoveTargetDir>true</RemoveTargetDir>
     <ControlScript>controlScript.qs</ControlScript>
-    <MaintenanceToolName>%0Tool</MaintenanceToolName>
+    <MaintenanceToolName>$NAMETool</MaintenanceToolName>
 </Installer>

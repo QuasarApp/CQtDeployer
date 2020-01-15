@@ -327,6 +327,8 @@ bool ConfigParser::initDistroStruct() {
             split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
     auto icon = QuasarAppUtils::Params::getStrArg("icon").
             split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
+    auto publisher = QuasarAppUtils::Params::getStrArg("publisher").
+            split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
 
     auto erroLog = [](const QString &flag){
             QuasarAppUtils::Params::verboseLog(QString("Set %0 fail, becouse you try set %0 for not inited prefix."
@@ -387,6 +389,11 @@ bool ConfigParser::initDistroStruct() {
 
     if (icon.size() && !parsePrefixesPrivate(mainDistro, icon, &DistroModule::setIcon)) {
         erroLog("icon");
+        return false;
+    }
+
+    if (publisher.size() && !parsePrefixesPrivate(mainDistro, publisher, &DistroModule::setPublisher)) {
+        erroLog("Publisher");
         return false;
     }
 

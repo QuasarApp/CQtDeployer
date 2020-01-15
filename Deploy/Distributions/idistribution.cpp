@@ -44,6 +44,7 @@ bool iDistribution::unpackFile(const QFileInfo &resource,
     inputData.replace("$VERSION", info.Version);
     inputData.replace("$RELEASEDATA", info.ReleaseData);
     inputData.replace("$ICON", info.Icon);
+    inputData.replace("$PUBLISHER", info.Publisher);
 
     for (auto it = info.Custom.cbegin(); it != info.Custom.cend(); ++it) {
         inputData.replace(it.key(), it.value());

@@ -15,6 +15,7 @@ public:
 
     virtual QString getConfig() const = 0;
     virtual bool deployTemplate() const = 0;
+    virtual bool removeTemplate() const = 0;
     virtual Envirement toolKitLocation() const = 0;
     virtual QString runCmd() const = 0;
     virtual QStringList runArg() const = 0;

@@ -215,6 +215,7 @@ QString DeployCore::help() {
     { "   -deployVersion [prefix;val,val] : Sets version for prefix" },
     { "   -releaseDate [prefix;val,val] : Sets release date for prefix" },
     { "   -icon [prefix;val,val]   : Sets path to icon for prefix" },
+    { "   -publisher [prefix;val,val]: Sets Publisher for prefix" },
 
     { "   -qif [params]            : Create the QIF installer for deployement programm" },
     { "                            : By default params value is 'Default'" },

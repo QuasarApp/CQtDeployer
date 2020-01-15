@@ -12,6 +12,8 @@ struct DEPLOYSHARED_EXPORT TemplateInfo
     QString Version;
     QString ReleaseData;
     QString Icon;
+    QString Publisher;
+
     QHash<QString, QString> Custom;
 };
 

@@ -55,6 +55,10 @@ bool Packing::create() {
         return false;
     }
 
+    if (!_pakage->removeTemplate()) {
+        return false;
+    }
+
     return true;
 }
 

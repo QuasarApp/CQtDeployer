@@ -35,8 +35,10 @@ bool QIF::deployTemplate() const {
     if (customTemplate.isEmpty()) {
         // default template
 
+        TemplateInfo generalInfo;
+
         for (auto it = cfg->prefixes().cbegin(); it != cfg->prefixes().cend(); ++it) {
-            auto location = cfg->getTargetDir() + "/" + getLocation() + "/" + it.key();
+            auto location = cfg->getTargetDir() + "/" + getLocation() + "/packages/" + it.key();
             auto package = it.value();
 
             TemplateInfo info;
@@ -60,11 +62,25 @@ bool QIF::deployTemplate() const {
             if (!package.icon().isEmpty())
                 info.Icon = package.icon();
 
-            if (!unpackDir(":/Templates/QIF/Distributions/Templates/qif", location, info)) {
+            info.Publisher = "";
+            if (!package.publisher().isEmpty())
+                info.Publisher = package.publisher();
+
+            if (!unpackDir(":/Templates/QIF/Distributions/Templates/qif/packages/default", location, info)) {
                 return false;
             }
 
+            generalInfo = info;
+
         }
+
+        auto configLocation = cfg->getTargetDir() + "/" + getLocation() + "/config/";
+
+        if (!unpackDir(":/Templates/QIF/Distributions/Templates/qif/config/",
+                       configLocation, generalInfo)) {
+            return false;
+        }
+
 
         return true;
     }
@@ -76,5 +92,16 @@ bool QIF::deployTemplate() const {
 
 QStringList QIF::runArg() const {
     return {};
+}
+
+bool QIF::removeTemplate() const {
+    auto customTemplate = QuasarAppUtils::Params::getStrArg("qif", "");
+    const DeployConfig *cfg = DeployCore::_config;
+
+    if (customTemplate.isEmpty()) {
+        return QDir(cfg->getTargetDir() + "/" + getLocation()).removeRecursively();
+    }
+
+    return true;
 }
 

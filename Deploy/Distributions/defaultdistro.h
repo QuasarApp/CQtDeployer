@@ -15,7 +15,7 @@ public:
     Envirement toolKitLocation() const;
     QString runCmd() const;
     QStringList runArg() const;
-
+    bool removeTemplate() const;
 };
 
 #endif // DEFAULTDISTRO_H

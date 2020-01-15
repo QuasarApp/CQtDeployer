@@ -33,12 +33,16 @@ public:
     QString icon() const;
     void setIcon(const QString &icon);
 
+    QString publisher() const;
+    void setPublisher(const QString &publisher);
+
 private:
     QString _name;
     QString _description;
     QString _version;
     QString _releaseData;
     QString _icon;
+    QString _publisher;
 
     QSet<QString> _targets;
     QSet<QString> _qmlInput;

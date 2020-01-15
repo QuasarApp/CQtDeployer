@@ -77,3 +77,13 @@ void DistroModule::setIcon(const QString &icon)
 {
     _icon = icon;
 }
+
+QString DistroModule::publisher() const
+{
+    return _publisher;
+}
+
+void DistroModule::setPublisher(const QString &publisher)
+{
+    _publisher = publisher;
+}
