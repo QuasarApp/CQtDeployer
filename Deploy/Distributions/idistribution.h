@@ -4,6 +4,7 @@
 #include "distrostruct.h"
 #include "envirement.h"
 #include "templateinfo.h"
+#include <QProcess>
 
 #include <QFileInfo>
 class FileManager;
@@ -17,8 +18,10 @@ public:
     virtual QString getConfig() const = 0;
     virtual bool deployTemplate() const = 0;
     virtual bool removeTemplate() const = 0;
-    virtual Envirement toolKitLocation() const = 0;
-    virtual QString runCmd() const = 0;
+    virtual Envirement toolKitEnv() const = 0;
+    virtual QProcessEnvironment processEnvirement() const = 0;
+
+    virtual QString runCmd() = 0;
     virtual QStringList runArg() const = 0;
 
     QString getClassName() const;
@@ -35,6 +38,7 @@ protected:
                    const TemplateInfo& info) const;
 
     bool moveData(const QString& from, const QString& to) const;
+    QString findProcess(const QString& env, const QString& proc) const;
 
 private:
     QString _location = "packing";

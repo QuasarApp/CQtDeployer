@@ -42,9 +42,7 @@ bool Packing::create() {
         return true;
 
     _proc->setProgram(_pakage->runCmd());
-    auto env = QProcessEnvironment::systemEnvironment();
-    env.insert("PATH", _pakage->toolKitLocation().concatEnv());
-    _proc->setProcessEnvironment(env);
+    _proc->setProcessEnvironment(_proc->processEnvironment());
     _proc->setArguments(_pakage->runArg());
 
     _proc->start();

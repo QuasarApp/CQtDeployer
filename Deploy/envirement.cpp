@@ -5,6 +5,7 @@
 //# of this license document, but changing it is not allowed.
 //#
 
+#include "deploycore.h"
 #include "envirement.h"
 #include "pathutils.h"
 #include "quasarapp.h"
@@ -107,11 +108,7 @@ QString Envirement::concatEnv() const {
 
     QString result = *_deployEnvironment.begin();
     for (auto i: _deployEnvironment) {
-#ifdef  Q_OS_UNIX
-        result += (":" + i);
-#else
-        result += (";" + i);
-#endif
+        result += (DeployCore::getEnvSeparator() + i);
     }
 
     return result;
@@ -119,11 +116,7 @@ QString Envirement::concatEnv() const {
 
 QString Envirement::recursiveInvairement(QDir &dir, int depch, int depchLimit) {
 
-    char separator = ':';
-
-#ifdef Q_OS_WIN
-    separator = ';';
-#endif
+    char separator = DeployCore::getEnvSeparator();
 
     if (!dir.exists() || (depchLimit >= 0 && depch >= depchLimit)) {
         return dir.absolutePath();

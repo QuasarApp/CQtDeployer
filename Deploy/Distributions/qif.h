@@ -11,12 +11,15 @@ class DEPLOYSHARED_EXPORT QIF: public iDistribution
 {
 public:
     QIF(FileManager *fileManager);
-    Envirement toolKitLocation() const;
+    Envirement toolKitEnv() const;
     QString getConfig() const;
-    QString runCmd() const;
+    QString runCmd();
     bool deployTemplate() const;
     QStringList runArg() const;
     bool removeTemplate() const;
+    QProcessEnvironment processEnvirement() const;
+private:
+    QString binarycreator;
 };
 
 #endif // QIF_H

@@ -5,6 +5,8 @@
 #include <QDir>
 #include <cassert>
 #include <filemanager.h>
+#include "deploycore.h"
+#include "pathutils.h"
 
 iDistribution::~iDistribution() = default;
 
@@ -94,4 +96,20 @@ bool iDistribution::unpackDir(const QString &resource,
 bool iDistribution::moveData(const QString &from,
                              const QString &to) const {
     return _fileManager->moveFolder(from, to);
+}
+
+QString iDistribution::findProcess(const QString &env, const QString& proc) const {
+    auto list = env.split(DeployCore::getEnvSeparator());
+
+    for (const auto& path : list) {
+        auto files = QDir(path).entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
+
+        for (const auto& bin : files) {
+            if (bin.fileName().compare(proc, ONLY_WIN_CASE_INSENSIATIVE) == 0) {
+                return bin.absoluteFilePath();
+            }
+        }
+    }
+
+    return "";
 }

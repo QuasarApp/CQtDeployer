@@ -17,11 +17,11 @@ bool DefaultDistro::deployTemplate() const {
     return true;
 }
 
-Envirement DefaultDistro::toolKitLocation() const {
+Envirement DefaultDistro::toolKitEnv() const {
     return {};
 }
 
-QString DefaultDistro::runCmd() const {
+QString DefaultDistro::runCmd() {
     return "";
 }
 
@@ -31,4 +31,8 @@ QStringList DefaultDistro::runArg() const {
 
 bool DefaultDistro::removeTemplate() const {
     return true;
+}
+
+QProcessEnvironment DefaultDistro::processEnvirement() const {
+    return QProcessEnvironment::systemEnvironment();
 }

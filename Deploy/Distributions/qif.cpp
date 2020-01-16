@@ -11,7 +11,7 @@ QIF::QIF(FileManager *fileManager)
 
 };
 
-Envirement QIF::toolKitLocation() const {
+Envirement QIF::toolKitEnv() const {
     Envirement result;
     result.addEnv(QProcessEnvironment::systemEnvironment().value("PATH"));
 
@@ -47,8 +47,13 @@ QString QIF::getConfig() const {
     return ":/Distro/Distributions/configures/QIF.json";
 }
 
-QString QIF::runCmd() const {
-    return "binarycreator";
+QString QIF::runCmd() {
+    QString base = "binarycreator";
+
+    if (binarycreator.isEmpty())
+        binarycreator = findProcess(toolKitEnv().concatEnv(), base);
+
+    return binarycreator;
 }
 
 bool QIF::deployTemplate() const {
@@ -133,5 +138,9 @@ bool QIF::removeTemplate() const {
     }
 
     return true;
+}
+
+QProcessEnvironment QIF::processEnvirement() const {
+    return QProcessEnvironment::systemEnvironment();
 }
 

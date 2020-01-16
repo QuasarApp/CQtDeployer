@@ -12,10 +12,11 @@ public:
 public:
     QString getConfig() const;
     bool deployTemplate() const;
-    Envirement toolKitLocation() const;
-    QString runCmd() const;
+    Envirement toolKitEnv() const;
+    QString runCmd();
     QStringList runArg() const;
     bool removeTemplate() const;
+    QProcessEnvironment processEnvirement() const;
 };
 
 #endif // DEFAULTDISTRO_H

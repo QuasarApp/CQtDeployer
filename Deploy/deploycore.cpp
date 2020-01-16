@@ -457,3 +457,11 @@ QChar DeployCore::getSeparator(int lvl) {
         return '\0';
     }
 }
+
+char DeployCore::getEnvSeparator() {
+#ifdef  Q_OS_UNIX
+    return ':';
+#else
+    return ';';
+#endif
+}
