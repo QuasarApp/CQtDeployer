@@ -16,7 +16,7 @@ public:
     virtual ~iDistribution();
 
     virtual QString getConfig() const = 0;
-    virtual bool deployTemplate() const = 0;
+    virtual bool deployTemplate() = 0;
     virtual bool removeTemplate() const = 0;
     virtual Envirement toolKitEnv() const = 0;
     virtual QProcessEnvironment processEnvirement() const = 0;
@@ -38,6 +38,8 @@ protected:
                    const TemplateInfo& info) const;
 
     bool moveData(const QString& from, const QString& to) const;
+    bool copyFile(const QString& from, const QString& to) const;
+
     QString findProcess(const QString& env, const QString& proc) const;
 
 private:

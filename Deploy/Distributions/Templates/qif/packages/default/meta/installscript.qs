@@ -1,8 +1,14 @@
 function Component(){}
 
 const extractFileName = (path) => {
-    const fullName = path.substring(path.lastIndexOf('/'));
-    return fullName.substring(0, fullName.lastIndexOf('.'));
+    const fullName = path.substring(path.lastIndexOf('/') + 1);
+
+    const index = fullName.lastIndexOf('.');
+    if (index >= 0) {
+        return fullName.substring(0, index)
+    }
+
+    return fullName;
 }
 
 const generateShortCutCmd = (cmd) => {
@@ -24,9 +30,9 @@ const generateShortCutCmd = (cmd) => {
                                "Version=@Version@\n
                                 Type=Application\n
                                 Terminal=false\n
-                                Exec=@TargetDir@/" + cmd + "\n
+                                Exec=@TargetDir@/" + cmd + ".sh\n
                                 Name=" + name + "\n
-                                Icon=@TargetDir@/icons/icon.png\n // will be changed in cqtdeployer
+                                Icon=@TargetDir@/$LOCAL_ICON\n
                                 Name[en_US]=" + name);
 
         console.log("create icons!!! on LINUX done");
@@ -39,7 +45,7 @@ Component.prototype.createOperations = () => {
 
     const cmdArray = ["array", "of", "cmds"]; // will be changed in cqtdeployer
 
-    cmdArray.foreach( function (item){
+    cmdArray.forEach( function (item){
         generateShortCutCmd(item);
     });
 

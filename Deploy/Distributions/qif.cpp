@@ -5,6 +5,7 @@
 
 #include <QDateTime>
 #include <QProcess>
+#include <pathutils.h>
 
 QIF::QIF(FileManager *fileManager)
     :iDistribution(fileManager){
@@ -56,24 +57,24 @@ QString QIF::runCmd() {
     return binarycreator;
 }
 
-bool QIF::deployTemplate() const {
+bool QIF::deployTemplate() {
     auto customTemplate = QuasarAppUtils::Params::getStrArg("qif", "");
     const DeployConfig *cfg = DeployCore::_config;
 
     if (customTemplate.isEmpty()) {
         // default template
 
-        TemplateInfo generalInfo;
-
         int number = 0;
         for (auto it = cfg->prefixes().cbegin(); it != cfg->prefixes().cend(); ++it) {
             auto package = it.value();
 
             TemplateInfo info;
-            info.Name = (it.key().isEmpty())? "Application" + QString::number(number) : it.key();
+            info.Name = (it.key().isEmpty())? "Application" + QString::number(number) : PathUtils::stripPath(it.key());
             if (!package.name().isEmpty()) {
                 info.Name = package.name();
             }
+
+            auto location = cfg->getTargetDir() + "/" + getLocation() + "/packages/" + info.Name;
 
             info.Description = "This package contains the " + info.Name;
             if (!package.description().isEmpty())
@@ -83,19 +84,34 @@ bool QIF::deployTemplate() const {
             if (!package.version().isEmpty())
                 info.Version = package.version();
 
-            info.ReleaseData = QDate::currentDate().toString();
+            info.ReleaseData = QDate::currentDate().toString("yyyy-MM-dd");
             if (!package.releaseData().isEmpty())
                 info.ReleaseData = package.releaseData();
 
             info.Icon = "";
-            if (!package.icon().isEmpty())
+            if (!package.icon().isEmpty()) {
                 info.Icon = package.icon();
+                if (!copyFile(info.Icon, location + "/icons/")) {
+                    return false;
+                }
+            }
 
             info.Publisher = "Company";
             if (!package.publisher().isEmpty())
                 info.Publisher = package.publisher();
 
-            auto location = cfg->getTargetDir() + "/" + getLocation() + "/packages/" + info.Name;
+            QString cmdArray = "[";
+            for (const auto &target :it.value().targets()) {
+                auto info =  QFileInfo(target);
+                if (info.suffix().compare("exe", ONLY_WIN_CASE_INSENSIATIVE) || info.suffix().isEmpty()) {
+                    cmdArray += "\"" + info.fileName() + "\"";
+                }
+            }
+            cmdArray += "]";
+
+            info.Custom = {{"[\"array\", \"of\", \"cmds\"]", cmdArray},
+                           {"$LOCAL_ICON", info.Name + "/icons/" + QFileInfo(info.Icon).fileName()}};
+
 
             if (!unpackDir(":/Templates/QIF/Distributions/Templates/qif/packages/default", location, info)) {
                 return false;
@@ -126,7 +142,19 @@ bool QIF::deployTemplate() const {
 }
 
 QStringList QIF::runArg() const {
-    return {};
+
+    auto location = DeployCore::_config->getTargetDir() + "/" + getLocation();
+#ifdef Q_OS_LINUX
+    QString sufix = ".run";
+#else
+    QString sufix = ".exe";
+#endif
+
+    return {
+        "-c", location + "/config/config.xml",
+        "-p", location + "/packages/",
+        DeployCore::_config->getTargetDir() + "/" + generalInfo.Name + sufix
+    };
 }
 
 bool QIF::removeTemplate() const {

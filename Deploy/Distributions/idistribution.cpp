@@ -98,6 +98,10 @@ bool iDistribution::moveData(const QString &from,
     return _fileManager->moveFolder(from, to);
 }
 
+bool iDistribution::copyFile(const QString &from, const QString &to) const {
+    return _fileManager->copyFile(from, to);
+}
+
 QString iDistribution::findProcess(const QString &env, const QString& proc) const {
     auto list = env.split(DeployCore::getEnvSeparator());
 

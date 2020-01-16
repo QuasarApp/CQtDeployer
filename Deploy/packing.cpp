@@ -1,4 +1,5 @@
 #include "Distributions/idistribution.h"
+#include "deployconfig.h"
 #include "packing.h"
 #include "quasarapp.h"
 #include <QDebug>
@@ -41,9 +42,12 @@ bool Packing::create() {
     if (!_pakage->runCmd().size())
         return true;
 
+    const DeployConfig *cfg = DeployCore::_config;
+
     _proc->setProgram(_pakage->runCmd());
     _proc->setProcessEnvironment(_proc->processEnvironment());
     _proc->setArguments(_pakage->runArg());
+    _proc->setWorkingDirectory(cfg->getTargetDir());
 
     _proc->start();
 
@@ -54,6 +58,14 @@ bool Packing::create() {
     if (!_proc->waitForFinished(60000 * 10)) {
         return false;
     }
+
+    auto exit = QString("exit code = %0").arg(_proc->exitCode());
+    QString stdoutLog = _proc->readAllStandardOutput();
+    QString erroutLog = _proc->readAllStandardError();
+    auto message = QString("message = %0").arg(stdoutLog + " " + erroutLog);
+
+    QuasarAppUtils::Params::verboseLog(message,
+                                     QuasarAppUtils::Info);
 
     if (!_pakage->removeTemplate()) {
         return false;

@@ -13,7 +13,7 @@ QString DefaultDistro::getConfig() const{
     return ":/Distro/Distributions/configures/C and C++.json";
 }
 
-bool DefaultDistro::deployTemplate() const {
+bool DefaultDistro::deployTemplate() {
     return true;
 }
 

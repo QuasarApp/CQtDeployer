@@ -569,18 +569,23 @@ void deploytest::testQIF() {
 #ifdef Q_OS_UNIX
     QString bin = TestBinDir + "TestQMLWidgets";
     QString qmake = TestQtDir + "bin/qmake";
+    auto comapareTree = utils.createTree({
+                                             "./" + DISTRO_DIR + "/Application.run",
+                                         });
 
 #else
     QString bin = TestBinDir + "TestQMLWidgets.exe";
     QString qmake = TestQtDir + "bin/qmake.exe";
+    auto comapareTree = utils.createTree({
+                                             "./" + DISTRO_DIR + "/Application.exe",
+                                         });
 
 #endif
-    auto comapareTree = Modules::qmlLibs();
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
-                  "qif"}, &comapareTree);
+                   "qif", "verbose"}, &comapareTree);
 
 }
 

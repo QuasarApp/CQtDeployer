@@ -14,12 +14,14 @@ public:
     Envirement toolKitEnv() const;
     QString getConfig() const;
     QString runCmd();
-    bool deployTemplate() const;
+    bool deployTemplate();
     QStringList runArg() const;
     bool removeTemplate() const;
     QProcessEnvironment processEnvirement() const;
 private:
     QString binarycreator;
+    TemplateInfo generalInfo;
+
 };
 
 #endif // QIF_H
