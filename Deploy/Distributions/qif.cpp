@@ -64,17 +64,20 @@ bool QIF::deployTemplate() {
     if (customTemplate.isEmpty()) {
         // default template
 
-        int number = 0;
         for (auto it = cfg->prefixes().cbegin(); it != cfg->prefixes().cend(); ++it) {
             auto package = it.value();
 
             TemplateInfo info;
-            info.Name = (it.key().isEmpty())? "Application" + QString::number(number) : PathUtils::stripPath(it.key());
+            info.Name = (it.key().isEmpty())? "Application": PathUtils::stripPath(it.key());
             if (!package.name().isEmpty()) {
                 info.Name = package.name();
             }
 
             auto location = cfg->getTargetDir() + "/" + getLocation() + "/packages/" + info.Name;
+            auto locationData = location + "/data";
+            if (!it.key().isEmpty()) {
+                locationData += "/" + info.Name;
+            }
 
             info.Description = "This package contains the " + info.Name;
             if (!package.description().isEmpty())
@@ -91,7 +94,7 @@ bool QIF::deployTemplate() {
             info.Icon = "";
             if (!package.icon().isEmpty()) {
                 info.Icon = package.icon();
-                if (!copyFile(info.Icon, location + "/icons/")) {
+                if (!copyFile(info.Icon, locationData + "/icons/")) {
                     return false;
                 }
             }
@@ -117,7 +120,7 @@ bool QIF::deployTemplate() {
                 return false;
             }
 
-            if (!moveData(cfg->getTargetDir() + "/" + info.Name, location + "/data/")) {
+            if (!moveData(cfg->getTargetDir() + "/" + info.Name, locationData)) {
                 return false;
             }
 

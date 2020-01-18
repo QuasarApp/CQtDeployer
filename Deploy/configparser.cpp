@@ -410,27 +410,24 @@ bool ConfigParser::initPrefixes() {
                 split(DeployCore::getSeparator(0));
 
 
+        QSet<QString> configuredTargets;
         for (auto& str: tar_prefixes_array) {
             auto pair = str.split(DeployCore::getSeparator(1));
             auto prefix = PathUtils::toFullPath(pair.value(0, ""));
 
             auto list = _config.getTargetsListByFilter(pair.value(1, ""));
 
-            for (const auto &target : list) {
-                target->setSufix(prefix);
+            for (auto it = list.begin(); it != list.end(); ++it) {
+                if (!configuredTargets.contains(it.key())) {
+                    configuredTargets.insert(it.key());
+                    it.value()->setSufix(prefix);
+                }
             }
 
             _config.prefixesEdit().insert(prefix, {});
 
             if (pair.size() != 2) {
                 defaultPrefix = prefix;
-//                QuasarAppUtils::Params::verboseLog(
-//                            "Wrong the targetPrefix value. The targetPrefix value must be "
-//                            "contains the prefix path like first item and target mask like second item."
-//                            " Prefix and Target must be separated ';' char. "
-//                            " For example:  -targetPrefix prefix/path/1;target1,prefix/path/2;target2",
-//                            QuasarAppUtils::Error);
-
             }
         }
 
