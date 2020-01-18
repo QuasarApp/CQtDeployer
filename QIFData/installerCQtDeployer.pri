@@ -62,12 +62,13 @@ clearSnap.commands = rm parts prime stage *.snap -rdf
 deploySnap.commands = rm *.snap -rdf && chmod 777 -R $$PWD/../prime && snapcraft && cp *.snap $$PWD/../Distro/
 releaseSnap.commands = snapcraft push *.snap # bad patern
 
-unix:deploy.depends += clearSnap
-unix:deploy.depends += buildSnap
+
 
 !isEmpty( ONLINE ) {
 
     message(Snap)
+    unix:deploy.depends += clearSnap
+    unix:deploy.depends += buildSnap
     unix:deploy.depends += deploySnap
     unix:release.depends += releaseSnap
 }
