@@ -64,6 +64,13 @@ public:
     static bool isPath(const QString &path);
 
     /**
+     * @brief isPath
+     * @param path
+     * @return return true if imput value is Releative path
+     */
+    static bool isReleativePath(const QString &path);
+
+    /**
      * @brief getDrive
      * @param path
      * @return char of drive in windows systems

@@ -5,6 +5,8 @@
  * of this license document, but changing it is not allowed.
  */
 
+
+
 #include "filemanager.h"
 #include <QDir>
 #include <quasarapp.h>
@@ -13,6 +15,10 @@
 #include <QProcess>
 #include <fstream>
 #include "pathutils.h"
+
+#ifdef Q_OS_WIN
+#include "windows.h"
+#endif
 
 FileManager::FileManager() {
 }
@@ -64,7 +70,20 @@ bool FileManager::addToDeployed(const QString& path) {
                 QuasarAppUtils::Params::verboseLog("permishens set fail", QuasarAppUtils::Warning);
             }
         }
+
+#ifdef Q_OS_WIN
+
+        if (info.isFile()) {
+            auto stdString = QDir::toNativeSeparators(info.absoluteFilePath()).toStdString();
+
+            DWORD attribute = GetFileAttributesA(stdString.c_str());
+            if (!SetFileAttributesA(stdString.c_str(), attribute & static_cast<DWORD>(~FILE_ATTRIBUTE_HIDDEN))) {
+                QuasarAppUtils::Params::verboseLog("attribute set fail", QuasarAppUtils::Warning);
+            }
+        }
+#endif
     }
+
     return true;
 }
 

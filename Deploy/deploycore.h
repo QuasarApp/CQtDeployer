@@ -50,6 +50,19 @@ enum LibPriority : int {
     NotFile = 0xF,
 };
 
+enum class WinAPI : quint8 {
+    NoWinAPI    = 0x00,
+    Other       = 0x01,
+    Core        = 0x02,
+    Devices     = 0x04,
+    Eventing    = 0x08,
+    Crt         = 0x10,
+    Security    = 0x20,
+    Base        = 0x40
+};
+
+uint qHash (WinAPI i);
+
 enum class RunMode: int {
     Info,
     Deploy,

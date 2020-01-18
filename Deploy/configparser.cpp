@@ -68,11 +68,10 @@ bool ConfigParser::parseParams() {
     }
 
     auto path = QuasarAppUtils::Params::getStrArg("confFile");
-    bool createFile = !(path.isEmpty() || QFile::exists(path));
-    if (path.isEmpty()) {
-        path = QFileInfo("./").absoluteFilePath();
+    bool createFile = !QFile::exists(path);
+    if (QFile::exists(path)) {
+        loadFromFile(path);
     }
-    loadFromFile(path);
 
     switch (DeployCore::getMode()) {
     case RunMode::Info: {
@@ -215,17 +214,11 @@ void ConfigParser::readKey(const QString& key, const QJsonObject& obj,
          } else if (!obj[key].isUndefined()) {
              QString val = obj[key].toString();
              if (!val.isEmpty()) {
-
-                 if (PathUtils::isPath(val)) {
-
-                     if (PathUtils::isAbsalutPath(val)) {
-                         val = QFileInfo(val).absoluteFilePath();
-                     } else {
-                         val = QFileInfo(confFileDir + '/' + val).absoluteFilePath();
-                     }
+                 if (PathUtils::isReleativePath(val)) {
+                     QuasarAppUtils::Params::setArg(key, QFileInfo(confFileDir + '/' + val).absoluteFilePath());
+                 } else {
+                     QuasarAppUtils::Params::setArg(key, val);
                  }
-
-                 QuasarAppUtils::Params::setArg(key, val);
              } else {
                  auto value = obj[key].toBool(true);
                  QuasarAppUtils::Params::setEnable(key, value);
@@ -752,6 +745,8 @@ void ConfigParser::initIgnoreList()
     _config.ignoreList.addRule(addRuleWin("WINMM.DLL"));
     _config.ignoreList.addRule(addRuleWin("IMM32.DLL"));
     _config.ignoreList.addRule(addRuleWin("KernelBase.DLL"));
+    _config.ignoreList.addRule(addRuleWin("dwmapi.DLL"));
+
 
 }
 

@@ -60,6 +60,10 @@ void LibInfo::addDependncies(const QString &value) {
     dependncies.insert(value);
 }
 
+void LibInfo::addDependncies(const QSet<QString> &value) {
+    dependncies += value;
+}
+
 void LibInfo::removeDependncies(const QString &value) {
     dependncies.remove(value);
 }
@@ -88,6 +92,14 @@ QString LibInfo::getQtPath() const
 void LibInfo::setQtPath(const QString &value)
 {
     qtPath = value;
+}
+
+WinAPI LibInfo::getWinApi() const {
+    return _winApi;
+}
+
+void LibInfo::setWinApi(WinAPI winApi) {
+    _winApi = winApi;
 }
 
 QString LibInfo::fullPath() const {

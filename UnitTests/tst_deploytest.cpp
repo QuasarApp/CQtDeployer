@@ -46,9 +46,9 @@ private:
     QStringList getFilesFromDir(const QString& dir);
 
 
-    void runTestParams(const QStringList &list, QSet<QString> *tree = nullptr, bool noWarnings = false);
+    void runTestParams(const QStringList &list, QSet<QString> *tree = nullptr, bool noWarnings = false, bool onlySize = false);
 
-    void checkResults(const QSet<QString> &tree, bool noWarnings);
+    void checkResults(const QSet<QString> &tree, bool noWarnings, bool onlySize = false);
 public:
     deploytest();
     /**
@@ -82,6 +82,9 @@ private slots:
 
     // tested flags : help, version
     void testHelp();
+
+    // tested flags customScript
+    void costomScript();
 
     // tested flags clear noOvervrite
     void testOverwrite();
@@ -852,7 +855,7 @@ void deploytest::testSetTargetDir() {
 
 }
 
-void deploytest::runTestParams(const QStringList& list, QSet<QString>* tree, bool noWarnings) {
+void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree, bool noWarnings, bool onlySize) {
 
     QuasarAppUtils::Params::parseParams(list);
 
@@ -860,7 +863,7 @@ void deploytest::runTestParams(const QStringList& list, QSet<QString>* tree, boo
     QVERIFY(deploy.run() == 0);
 
     if (tree) {
-        checkResults(*tree, noWarnings);
+        checkResults(*tree, noWarnings, onlySize);
     }
 
 #ifdef WITH_SNAP
@@ -898,7 +901,7 @@ void deploytest::runTestParams(const QStringList& list, QSet<QString>* tree, boo
 #endif
 }
 
-void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings) {
+void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings , bool onlySize) {
     TestUtils utils;
 
     QVERIFY(DeployCore::_config);
@@ -907,6 +910,11 @@ void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings) {
     auto resultTree = utils.getTree(DeployCore::_config->getTargetDir());
 
     auto comapre = utils.compareTree(resultTree, tree);
+
+    if (onlySize) {
+        QVERIFY(resultTree.size() > tree.size());
+        return;
+    }
 
     if (comapre.size() != 0) {
 
@@ -975,6 +983,59 @@ void deploytest::testHelp() {
             QVERIFY(false);
         }
     }
+
+}
+
+void deploytest::costomScript() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QFile f("./" + DISTRO_DIR + "/bin/TestOnlyC");
+    auto comapareTree = utils.createTree(
+    {"./" + DISTRO_DIR + "/bin/TestOnlyC",
+     "./" + DISTRO_DIR + "/bin/qt.conf",
+     "./" + DISTRO_DIR + "/TestOnlyC.sh"});
+    QString bin = TestBinDir + "TestOnlyC";
+    QString scriptPath = "./" + DISTRO_DIR + "/TestOnlyC.sh";
+
+#else
+    QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
+    auto comapareTree = utils.createTree(
+    {"./" + DISTRO_DIR + "/TestOnlyC.exe",
+     "./" + DISTRO_DIR + "/TestOnlyC.bat",
+     "./" + DISTRO_DIR + "/qt.conf"});
+    QString bin = TestBinDir + "TestOnlyC.exe";
+    QString scriptPath = "./" + DISTRO_DIR + "/TestOnlyC.bat";
+
+
+#endif
+
+    runTestParams({"-bin", bin, "force-clear", "noOverwrite", "-libOut", "lib"}, &comapareTree);
+
+    QFile script(scriptPath);
+    QVERIFY(script.open(QIODevice::ReadOnly));
+    auto scriptText = script.readAll();
+
+    QVERIFY(!scriptText.contains("Begin Custom Script"));
+
+    script.close();
+
+    runTestParams({"-bin", bin, "force-clear", "noOverwrite",
+                   "-libOut", "lib",
+                   "-customScript", "echo 'this is test script'"}, &comapareTree);
+
+    QVERIFY(script.open(QIODevice::ReadOnly));
+
+    scriptText = script.readAll();
+
+    QVERIFY(scriptText.contains("Begin Custom Script"));
+    QVERIFY(scriptText.contains("echo 'this is test script'"));
+    QVERIFY(scriptText.contains("End Custom Script"));
+
+    script.close();
+
+
+
 
 }
 
@@ -1225,6 +1286,35 @@ void deploytest::testConfFile() {
     QVERIFY(QuasarAppUtils::Params::isEndable("bin"));
 
     QFile::remove(TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json");
+
+    // Test generar string in confFile
+    comapareTree = Modules::qtLibs();
+
+    comapareTree = Modules::ignoreFilter(comapareTree, "/plugins/p");
+#ifdef Q_OS_UNIX
+    comapareTree -= utils.createTree(
+    {
+        "./" + DISTRO_DIR + "/lib/libQt5EglFSDeviceIntegration.so",
+        "./" + DISTRO_DIR + "/lib/libQt5WebSockets.so"
+    });
+    auto bin =  TestBinDir + "QtWidgetsProject";
+#else
+    comapareTree -= utils.createTree(
+    {
+         "./" + DISTRO_DIR + "/Qt5WebSockets.dll"
+    });
+    auto bin =  TestBinDir + "QtWidgetsProject.exe";
+#endif
+
+    runTestParams({"-bin", bin,
+                   "-qmake", qmake,
+                   "clear",
+                   "-ignore", "/plugins/p",
+                   "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
+
+
+    runTestParams({"-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
+    QFile::remove(TestBinDir + "/TestConf.json");
 
 #ifdef Q_OS_UNIX
     QFile f("./" + DISTRO_DIR + "/bin/TestOnlyC");
@@ -1694,6 +1784,61 @@ void deploytest::testSystemLib() {
             "./" + DISTRO_DIR + "/api-ms-win-core-synch-l1-2-0.dll",
             "./" + DISTRO_DIR + "/api-ms-win-core-sysinfo-l1-1-0.dll",
             "./" + DISTRO_DIR + "/api-ms-win-core-util-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/API-MS-Win-Core-Heap-Obsolete-L1-1-0.dll",
+            "./" + DISTRO_DIR + "/API-MS-Win-Core-Kernel32-Private-L1-1-0.dll",
+            "./" + DISTRO_DIR + "/API-MS-Win-Core-Kernel32-Private-L1-1-1.dll",
+            "./" + DISTRO_DIR + "/API-MS-Win-core-file-l2-1-0.dll",
+            "./" + DISTRO_DIR + "/API-MS-Win-core-file-l2-1-1.dll",
+            "./" + DISTRO_DIR + "/API-MS-Win-core-localization-obsolete-l1-2-0.dll",
+            "./" + DISTRO_DIR + "/API-MS-Win-core-string-l2-1-0.dll",
+            "./" + DISTRO_DIR + "/API-MS-Win-core-string-obsolete-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/API-MS-Win-core-xstate-l2-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-com-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-comm-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-datetime-l1-1-1.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-debug-l1-1-1.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-delayload-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-errorhandling-l1-1-1.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-fibers-l1-1-1.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-file-l1-2-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-file-l1-2-1.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-interlocked-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-io-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-io-l1-1-1.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-kernel32-legacy-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-kernel32-legacy-l1-1-1.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-libraryloader-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-libraryloader-l1-1-1.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-localization-l1-2-1.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-memory-l1-1-1.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-memory-l1-1-2.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-privateprofile-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-privateprofile-l1-1-1.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-processenvironment-l1-2-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-processthreads-l1-1-1.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-processthreads-l1-1-2.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-processtopology-obsolete-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-realtime-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-registry-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-registry-l2-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-rtlsupport-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-shlwapi-legacy-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-shlwapi-obsolete-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-shutdown-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-stringansi-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-stringloader-l1-1-1.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-sysinfo-l1-2-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-sysinfo-l1-2-1.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-threadpool-l1-2-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-threadpool-legacy-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-threadpool-private-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-timezone-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-url-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-version-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-wow64-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-core-xstate-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-service-core-l1-1-0.dll",
+            "./" + DISTRO_DIR + "/api-ms-win-service-core-l1-1-1.dll",
             "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
             "./" + DISTRO_DIR + "/libstdc++-6.dll",
             "./" + DISTRO_DIR + "/libwinpthread-1.dll",
@@ -1822,7 +1967,25 @@ void deploytest::testSystemLib() {
         "./" + DISTRO_DIR + "/api-ms-win-crt-time-l1-1-0.dll",
         "./" + DISTRO_DIR + "/api-ms-win-security-base-l1-1-0.dll",
         "./" + DISTRO_DIR + "/api-ms-win-security-cryptoapi-l1-1-0.dll",
-        "./" + DISTRO_DIR + "/dwmapi.dll",
+        "./" + DISTRO_DIR + "/API-MS-Win-Eventing-Controller-L1-1-0.dll",
+        "./" + DISTRO_DIR + "/API-MS-Win-Eventing-Legacy-L1-1-0.dll",
+        "./" + DISTRO_DIR + "/API-MS-Win-Security-Lsalookup-L2-1-0.dll",
+        "./" + DISTRO_DIR + "/API-MS-Win-Security-Lsalookup-L2-1-1.dll",
+        "./" + DISTRO_DIR + "/API-MS-Win-devices-config-L1-1-0.dll",
+        "./" + DISTRO_DIR + "/API-MS-Win-security-lsapolicy-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/API-MS-Win-security-provider-L1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-crt-conio-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-crt-convert-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-crt-environment-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-crt-filesystem-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-crt-heap-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-crt-locale-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-crt-multibyte-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-crt-process-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-crt-stdio-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-crt-utility-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-eventing-consumer-l1-1-0.dll",
+        "./" + DISTRO_DIR + "/api-ms-win-security-sddl-l1-1-0.dll",
         "./" + DISTRO_DIR + "/mpr.dll",
         "./" + DISTRO_DIR + "/profapi.dll",
         "./" + DISTRO_DIR + "/rpcrt4.dll",
@@ -1830,13 +1993,15 @@ void deploytest::testSystemLib() {
         "./" + DISTRO_DIR + "/userenv.dll",
         "./" + DISTRO_DIR + "/uxtheme.dll",
         "./" + DISTRO_DIR + "/version.dll",
-        "./" + DISTRO_DIR + "/win32u.dll"
+        "./" + DISTRO_DIR + "/ucrtbase.dll",
+
     });
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                    "deploySystem"
                   }, &comapareTree, true);
+
 
 #endif
 }

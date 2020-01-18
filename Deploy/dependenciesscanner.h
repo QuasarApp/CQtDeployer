@@ -40,6 +40,8 @@ private:
 
     void recursiveDep(LibInfo& lib, QSet<LibInfo> &res);
 
+    void addToWinAPI(const QString& lib, QHash<WinAPI, QSet<QString> > &res);
+
 public:
     explicit DependenciesScanner();
 

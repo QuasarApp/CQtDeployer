@@ -55,10 +55,10 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |                             | Examples:" },
 |                             | cqtdeployer qif - for use default templates of qt installer framework."  |
 |                             | cqtdeployer -qif path/to/folder/with/qifTemplate - for use custom templates of qt installer framework." |
+|  -customScript [scriptCode] | Insert extra code inTo All run script.                          |
 |   deploySystem              | Deploys all libraries                                           |
 |   clear                     | Deletes deployable files of the previous session.               |
 |   force-clear               | Deletes the destination directory before deployment.            |
-|                             | For example -runScript myApp.sh                                 |
 |   allQmlDependes            | Extracts all the qml libraries.                                 |
 |                             | (not recommended, as it takes great amount of computer memory)  |
 |   version / v               | Shows compiled version                                          |
@@ -130,6 +130,7 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |                             | Примеры:" },
 |                             | cqtdeployer qif - для использования стандартных шаблонов фреймворка qt. "|
 |                             | cqtdeployer -qif path/to/folder/with/qifTemplate - для использования пользовательских шаблонов среды установки qt. "|
+|  -customScript [scriptCode] | Установит дополнительный код в скрипты запуска.                                  |
 |  -extraPlugin [list,params] | Устанавливает дополнительный путь для extraPlugin приложения |
 |  -recursiveDepth [params]   | Устанавливает глубину поиска библиотек (по умолчанию 0)       |
 |  -targetDir [params]        | Устанавливает целевой каталог (по умолчанию это путь к первому развертываемому файлу)|
@@ -138,7 +139,6 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |   deploySystem              | Копирует все библиотеки кроме libc                        |
 |   clear                     | Удаляет все старые файлы (с прошлого запуска)              |
 |   force-clear               | Удаляет целевую директорию перед развертыванием              |
-|                             | пример -runScript myApp.sh                                |
 |  allQmlDependes             | Извлекает все библиотеки qml.          |
 |                             | (не рекомендуется, так как занимает много памяти)         |
 |  deploySystem-with-libc     | Копирует все зависимости в том числе и libc     |

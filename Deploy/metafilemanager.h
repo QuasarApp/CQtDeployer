@@ -18,7 +18,7 @@ class MetaFileManager
 private:
     bool createRunScriptWindows(const QString &target);
     bool createRunScriptLinux(const QString &target);
-
+    QString generateCustoScriptBlok(bool bat) const;
 
     bool createRunScript(const QString &target);
     bool createQConf(const QString &target);

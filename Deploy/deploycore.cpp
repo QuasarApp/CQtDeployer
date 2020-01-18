@@ -222,7 +222,7 @@ QString DeployCore::help() {
     { "                            : Examples:" },
     { "                            : cqtdeployer qif - for use default templates of qt installer framework." },
     { "                            : cqtdeployer -qif path/to/folder/with/qifTemplate - for use custom templates of qt installer framework." },
-
+    { "   -customScript [scriptCode]: Insert extra code inTo All run script."},
     { "   v / version              : Shows compiled version" },
     { "   verbose [1-3]            : Shows debug log" },
 
@@ -275,7 +275,8 @@ QStringList DeployCore::helpKeys() {
         "deployVersion",
         "releaseDate",
         "icon",
-        "publisher"
+        "publisher",
+        "customScript"
     };
 }
 
@@ -464,4 +465,8 @@ char DeployCore::getEnvSeparator() {
 #else
     return ';';
 #endif
+}
+
+uint qHash(WinAPI i) {
+    return static_cast<uint>(i);
 }

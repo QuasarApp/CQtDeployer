@@ -13,6 +13,17 @@ Modules::Modules()
 
 }
 
+QSet<QString> Modules::ignoreFilter(const QSet<QString> &input, const QString &filter) {
+    QSet<QString> res;
+    for (auto& val : input) {
+        if (!val.contains(filter)) {
+            res.insert(val);
+        }
+    }
+
+    return res;
+}
+
 QSet<QString> Modules::qtLibs() {
     TestUtils utils;
 #ifdef Q_OS_WIN
