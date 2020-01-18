@@ -315,10 +315,15 @@ bool FileManager::copyFolder(const QString &from, const QString &to, const QStri
     return true;
 }
 
-bool FileManager::moveFolder(const QString &from, const QString &to) {
+bool FileManager::moveFolder(const QString &from, const QString &to, const QString& ignore) {
     QFileInfo info(from);
 
     if (info.isFile()) {
+
+        if (ignore.size() && info.absoluteFilePath().contains(ignore)) {
+            return true;
+        }
+
         if (!moveFile(info.absoluteFilePath(), to)) {
             return false;
         }
@@ -333,7 +338,7 @@ bool FileManager::moveFolder(const QString &from, const QString &to) {
             targetDir += "/" + i.fileName();
         }
 
-        if (!moveFolder(i.absoluteFilePath(), targetDir)) {
+        if (!moveFolder(i.absoluteFilePath(), targetDir, ignore)) {
             return false;
         }
     }

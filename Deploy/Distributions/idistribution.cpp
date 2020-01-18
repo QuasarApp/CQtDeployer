@@ -7,6 +7,8 @@
 #include <filemanager.h>
 #include "deploycore.h"
 #include "pathutils.h"
+#include <QMap>
+#include <distromodule.h>
 
 iDistribution::~iDistribution() = default;
 
@@ -94,8 +96,9 @@ bool iDistribution::unpackDir(const QString &resource,
 }
 
 bool iDistribution::moveData(const QString &from,
-                             const QString &to) const {
-    return _fileManager->moveFolder(from, to);
+                             const QString &to,
+                             const QString& ignore) const {
+    return _fileManager->moveFolder(from, to, ignore);
 }
 
 bool iDistribution::copyFile(const QString &from, const QString &to) const {
@@ -116,4 +119,14 @@ QString iDistribution::findProcess(const QString &env, const QString& proc) cons
     }
 
     return "";
+}
+
+QMap<int ,QPair<QString, const DistroModule*>>
+iDistribution::sortPrefixes(const QHash<QString, DistroModule> &input) {
+    QMap<int ,QPair<QString, const DistroModule *>> result;
+    for (auto it = input.cbegin(); it != input.cend(); ++it ) {
+        result.insert(0xFFFF - it.key().size(), {it.key(), &it.value()});
+    }
+
+    return result;
 }

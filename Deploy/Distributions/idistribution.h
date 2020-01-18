@@ -8,6 +8,7 @@
 
 #include <QFileInfo>
 class FileManager;
+class DistroModule;
 
 class DEPLOYSHARED_EXPORT iDistribution
 {
@@ -37,13 +38,14 @@ protected:
                    const QString& target,
                    const TemplateInfo& info) const;
 
-    bool moveData(const QString& from, const QString& to) const;
+    bool moveData(const QString& from, const QString& to, const QString &ignore) const;
     bool copyFile(const QString& from, const QString& to) const;
 
     QString findProcess(const QString& env, const QString& proc) const;
 
+    QMap<int, QPair<QString, const DistroModule *> > sortPrefixes(const QHash<QString, DistroModule> &input);
 private:
-    QString _location = "packing";
+    QString _location = "Temp Template";
     FileManager * _fileManager = nullptr;
 
 };

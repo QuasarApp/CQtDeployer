@@ -64,47 +64,47 @@ bool QIF::deployTemplate() {
     if (customTemplate.isEmpty()) {
         // default template
 
-        for (auto it = cfg->prefixes().cbegin(); it != cfg->prefixes().cend(); ++it) {
-            auto package = it.value();
+        auto sortedMap = sortPrefixes(cfg->prefixes());
+
+        for (auto &it : sortedMap) {
+            auto package = it.second;
 
             TemplateInfo info;
-            info.Name = (it.key().isEmpty())? "Application": PathUtils::stripPath(it.key());
-            if (!package.name().isEmpty()) {
-                info.Name = package.name();
+            if (!package->name().isEmpty()) {
+                info.Name = package->name();
             }
 
-            auto location = cfg->getTargetDir() + "/" + getLocation() + "/packages/" + info.Name;
+            auto location = cfg->getTargetDir() + "/" + getLocation() + "/packages/" +
+                    ((it.first.isEmpty())? "Application": PathUtils::stripPath(it.first));
+
             auto locationData = location + "/data";
-            if (!it.key().isEmpty()) {
-                locationData += "/" + info.Name;
-            }
 
             info.Description = "This package contains the " + info.Name;
-            if (!package.description().isEmpty())
-                info.Description = package.description();
+            if (!package->description().isEmpty())
+                info.Description = package->description();
 
             info.Version = "1.0";
-            if (!package.version().isEmpty())
-                info.Version = package.version();
+            if (!package->version().isEmpty())
+                info.Version = package->version();
 
             info.ReleaseData = QDate::currentDate().toString("yyyy-MM-dd");
-            if (!package.releaseData().isEmpty())
-                info.ReleaseData = package.releaseData();
+            if (!package->releaseData().isEmpty())
+                info.ReleaseData = package->releaseData();
 
             info.Icon = "";
-            if (!package.icon().isEmpty()) {
-                info.Icon = package.icon();
+            if (!package->icon().isEmpty()) {
+                info.Icon = package->icon();
                 if (!copyFile(info.Icon, locationData + "/icons/")) {
                     return false;
                 }
             }
 
             info.Publisher = "Company";
-            if (!package.publisher().isEmpty())
-                info.Publisher = package.publisher();
+            if (!package->publisher().isEmpty())
+                info.Publisher = package->publisher();
 
             QString cmdArray = "[";
-            for (const auto &target :it.value().targets()) {
+            for (const auto &target :it.second->targets()) {
                 auto info =  QFileInfo(target);
                 if (info.suffix().compare("exe", ONLY_WIN_CASE_INSENSIATIVE) || info.suffix().isEmpty()) {
                     cmdArray += "\"" + info.fileName() + "\"";
@@ -120,7 +120,7 @@ bool QIF::deployTemplate() {
                 return false;
             }
 
-            if (!moveData(cfg->getTargetDir() + "/" + info.Name, locationData)) {
+            if (!moveData(cfg->getTargetDir() + "/" + info.Name, locationData, getLocation())) {
                 return false;
             }
 
