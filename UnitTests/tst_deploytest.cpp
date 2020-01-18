@@ -595,31 +595,31 @@ void deploytest::testQIF() {
                    "qif", "verbose"}, &comapareTree);
 
 
-#ifdef Q_OS_UNIX
-    QString target2 = TestBinDir + "TestQMLWidgets";
-    QString target3 = TestBinDir + "QtWidgetsProject";
+//#ifdef Q_OS_UNIX
+//    QString target2 = TestBinDir + "TestQMLWidgets";
+//    QString target3 = TestBinDir + "QtWidgetsProject";
 
-#else
-    QString target2 = TestBinDir + "TestQMLWidgets.exe";
-    QString target3 = TestBinDir + "QtWidgetsProject.exe";
+//#else
+//    QString target2 = TestBinDir + "TestQMLWidgets.exe";
+//    QString target3 = TestBinDir + "QtWidgetsProject.exe";
 
-#endif
-    bin = target1;
-    bin += "," + target2;
-    bin += "," + target3;
+//#endif
+//    bin = target1;
+//    bin += "," + target2;
+//    bin += "," + target3;
 
-    auto prefixString = "/prefix1/;" + QFileInfo(target1).absoluteFilePath() + ",/prefix2/;" + QFileInfo(target2).absoluteFilePath();
+//    auto prefixString = "/prefix1/;" + QFileInfo(target1).absoluteFilePath() + ",/prefix2/;" + QFileInfo(target2).absoluteFilePath();
 
-    comapareTree = Modules::separetedPrefixeslibs();
+//    comapareTree = Modules::separetedPrefixeslibs();
 
-    runTestParams({"-bin", bin, "force-clear",
-                   "-binOut", "/lol",
-                   "-libOut", "/lolLib",
-                   "-trOut", "/lolTr",
-                   "-pluginOut", "/p",
-                   "-qmlOut", "/q",
-                   "-qmlDir", "prefix2;" + TestBinDir + "/../TestQMLWidgets",
-                   "-targetPrefix", prefixString, "qif"}, &comapareTree);
+//    runTestParams({"-bin", bin, "force-clear",
+//                   "-binOut", "/lol",
+//                   "-libOut", "/lolLib",
+//                   "-trOut", "/lolTr",
+//                   "-pluginOut", "/p",
+//                   "-qmlOut", "/q",
+//                   "-qmlDir", "prefix2;" + TestBinDir + "/../TestQMLWidgets",
+//                   "-targetPrefix", prefixString, "qif"}, &comapareTree);
 
 }
 
@@ -1334,7 +1334,7 @@ void deploytest::testConfFile() {
     QString target1 = TestBinDir + "TestOnlyC.exe";
 
 #endif
-    QString bin = target1;
+    bin = target1;
 
     runTestParams({"-bin", bin, "force-clear",
                   "-targetPrefix", "prefix;Test",
