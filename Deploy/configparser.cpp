@@ -388,6 +388,8 @@ bool ConfigParser::initDistroStruct() {
 
 bool ConfigParser::initPrefixes() {
 
+    defaultPrefix = "";
+
     if (QuasarAppUtils::Params::isEndable("targetPrefix")) {
         auto tar_prefixes_array = QuasarAppUtils::Params::getStrArg("targetPrefix", "").
                 split(DeployCore::getSeparator(0));

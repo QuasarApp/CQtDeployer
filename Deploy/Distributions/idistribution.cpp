@@ -125,7 +125,7 @@ QMap<int ,QPair<QString, const DistroModule*>>
 iDistribution::sortPrefixes(const QHash<QString, DistroModule> &input) {
     QMap<int ,QPair<QString, const DistroModule *>> result;
     for (auto it = input.cbegin(); it != input.cend(); ++it ) {
-        result.insert(0xFFFF - it.key().size(), {it.key(), &it.value()});
+        result.insertMulti(0xFFFF - it.key().size(), {it.key(), &it.value()});
     }
 
     return result;

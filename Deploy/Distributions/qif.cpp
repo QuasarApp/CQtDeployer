@@ -70,14 +70,16 @@ bool QIF::deployTemplate() {
             auto package = it.second;
 
             TemplateInfo info;
+            info.Name = PathUtils::stripPath(it.first);
+
             if (!package->name().isEmpty()) {
                 info.Name = package->name();
             }
 
             auto location = cfg->getTargetDir() + "/" + getLocation() + "/packages/" +
-                    ((it.first.isEmpty())? "Application": PathUtils::stripPath(it.first));
+                    ((it.first.isEmpty())? "Application": info.Name);
 
-            auto locationData = location + "/data";
+            auto locationData = location + "/data/" + info.Name;
 
             info.Description = "This package contains the " + info.Name;
             if (!package->description().isEmpty())
@@ -105,9 +107,9 @@ bool QIF::deployTemplate() {
 
             QString cmdArray = "[";
             for (const auto &target :it.second->targets()) {
-                auto info =  QFileInfo(target);
-                if (info.suffix().compare("exe", ONLY_WIN_CASE_INSENSIATIVE) || info.suffix().isEmpty()) {
-                    cmdArray += "\"" + info.fileName() + "\"";
+                auto fileinfo =  QFileInfo(target);
+                if (fileinfo.suffix().compare("exe", ONLY_WIN_CASE_INSENSIATIVE) || fileinfo.suffix().isEmpty()) {
+                    cmdArray += "\"" + info.Name + fileinfo.fileName() + "\"";
                 }
             }
             cmdArray += "]";
@@ -116,11 +118,15 @@ bool QIF::deployTemplate() {
                            {"$LOCAL_ICON", info.Name + "/icons/" + QFileInfo(info.Icon).fileName()}};
 
 
+            if (info.Name.isEmpty()) {
+                info.Name = "Application";
+            }
+
             if (!unpackDir(":/Templates/QIF/Distributions/Templates/qif/packages/default", location, info)) {
                 return false;
             }
 
-            if (!moveData(cfg->getTargetDir() + "/" + info.Name, locationData, getLocation())) {
+            if (!moveData(cfg->getTargetDir() + "/" + it.first, locationData, getLocation())) {
                 return false;
             }
 
