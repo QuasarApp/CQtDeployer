@@ -180,18 +180,8 @@ QString ConfigParser::readKeyArray(int separatorLvl, const QJsonArray &array,
             QString val = i.toString();
 
             if (!val.isEmpty()) {
-
-                if (PathUtils::isPath(val)) {
-                    QString path;
-
-                    if (PathUtils::isAbsalutPath(val)) {
-                        path = QFileInfo(val).absoluteFilePath();
-                    } else {
-                        path = QFileInfo(confFileDir + '/' + val).absoluteFilePath();
-                    }
-
-                    list.push_back(path);
-
+                if (PathUtils::isReleativePath(val)) {
+                    list.push_back(QFileInfo(confFileDir + '/' + val).absoluteFilePath());
                 } else {
                     list.push_back(val);
                 }
