@@ -61,6 +61,10 @@ bool QIF::deployTemplate() {
     auto customTemplate = QuasarAppUtils::Params::getStrArg("qif", "");
     const DeployConfig *cfg = DeployCore::_config;
 
+    QStringList sufixes = {
+        "js", "qs", "xml"
+    };
+
     if (customTemplate.isEmpty()) {
         // default template
 
@@ -93,10 +97,16 @@ bool QIF::deployTemplate() {
             if (!package->releaseData().isEmpty())
                 info.ReleaseData = package->releaseData();
 
-            info.Icon = "";
-            if (!package->icon().isEmpty()) {
-                info.Icon = package->icon();
-                if (!copyFile(info.Icon, locationData + "/icons/")) {
+            info.Icon = "icons/Icon.png";
+            if (package->icon().isEmpty()) {
+                if (!copyFile(":/Templates/QIF/Distributions/Templates/qif/Icon.png",
+                              locationData + "/icons/")) {
+                    return false;
+                }
+            } else {
+                QFileInfo iconInfo(package->icon());
+                info.Icon = info.Name + "/icons/" + iconInfo.fileName();
+                if (!copyFile(package->icon(), locationData + "/icons/")) {
                     return false;
                 }
             }
@@ -109,7 +119,7 @@ bool QIF::deployTemplate() {
             for (const auto &target :it.second->targets()) {
                 auto fileinfo =  QFileInfo(target);
                 if (fileinfo.suffix().compare("exe", ONLY_WIN_CASE_INSENSIATIVE) || fileinfo.suffix().isEmpty()) {
-                    cmdArray += "\"" + info.Name + fileinfo.fileName() + "\"";
+                    cmdArray += "\"" + info.Name + "/" + fileinfo.fileName() + "\"";
                 }
             }
             cmdArray += "]";
@@ -122,7 +132,8 @@ bool QIF::deployTemplate() {
                 info.Name = "Application";
             }
 
-            if (!unpackDir(":/Templates/QIF/Distributions/Templates/qif/packages/default", location, info)) {
+            if (!unpackDir(":/Templates/QIF/Distributions/Templates/qif/packages/default",
+                           location, info, sufixes)) {
                 return false;
             }
 
@@ -137,7 +148,7 @@ bool QIF::deployTemplate() {
         auto configLocation = cfg->getTargetDir() + "/" + getLocation() + "/config/";
 
         if (!unpackDir(":/Templates/QIF/Distributions/Templates/qif/config/",
-                       configLocation, generalInfo)) {
+                       configLocation, generalInfo, sufixes)) {
             return false;
         }
 

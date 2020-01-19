@@ -31,37 +31,42 @@ void iDistribution::setLocation(const QString &location) {
 
 bool iDistribution::unpackFile(const QFileInfo &resource,
                                const QString &target,
-                               const TemplateInfo &info) const {
+                               const TemplateInfo &info,
+                               const QStringList& sufixes) const {
     QFile file(resource.absoluteFilePath());
     if (!file.open(QIODevice::ReadOnly)) {
         return false;
     }
 
-    QString inputData = file.readAll();
+    QByteArray inputData = file.readAll();
     file.close();
-
     if (!QDir().mkpath(target))
         return false;
 
     file.setFileName(target + "/" +  resource.fileName());
-
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
         return false;
     }
 
-    inputData.replace("$NAME", info.Name);
-    inputData.replace("$DESCRIPTION", info.Description);
-    inputData.replace("$VERSION", info.Version);
-    inputData.replace("$RELEASEDATA", info.ReleaseData);
-    inputData.replace("$ICON", info.Icon);
-    inputData.replace("$PUBLISHER", info.Publisher);
+    if (sufixes.contains(resource.suffix(), Qt::CaseInsensitive)) {
+        QString inputText(inputData);
 
-    for (auto it = info.Custom.cbegin(); it != info.Custom.cend(); ++it) {
-        inputData.replace(it.key(), it.value());
+        inputText.replace("$NAME", info.Name);
+        inputText.replace("$DESCRIPTION", info.Description);
+        inputText.replace("$VERSION", info.Version);
+        inputText.replace("$RELEASEDATA", info.ReleaseData);
+        inputText.replace("$ICON", info.Icon);
+        inputText.replace("$PUBLISHER", info.Publisher);
+
+        for (auto it = info.Custom.cbegin(); it != info.Custom.cend(); ++it) {
+            inputText.replace(it.key(), it.value());
+        }
+
+        QTextStream stream(&file);
+        stream << inputText;
+    } else {
+        file.write(inputData);
     }
-
-    QTextStream stream(&file);
-    stream << inputData;
 
     file.close();
 
@@ -70,7 +75,8 @@ bool iDistribution::unpackFile(const QFileInfo &resource,
 
 bool iDistribution::unpackDir(const QString &resource,
                               const QString &target,
-                              const TemplateInfo &info) const {
+                              const TemplateInfo &info,
+                              const QStringList &sufixes) const {
 
 
     QDir res(resource);
@@ -79,13 +85,13 @@ bool iDistribution::unpackDir(const QString &resource,
     for (const auto & item :list) {
 
         if (item.isFile()) {
-            if (!unpackFile(item, target, info)) {
+            if (!unpackFile(item, target, info, sufixes)) {
                 return false;
             }
         } else {
             if (!unpackDir(item.absoluteFilePath(),
                            target + "/" + item.fileName(),
-                           info)) {
+                           info, sufixes)) {
 
                 return false;
             }

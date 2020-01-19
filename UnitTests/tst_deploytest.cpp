@@ -609,9 +609,6 @@ void deploytest::testQIF() {
     bin += "," + target3;
 
     auto prefixString = "/prefix1/;" + QFileInfo(target1).absoluteFilePath() + ",/prefix2/;" + QFileInfo(target2).absoluteFilePath();
-
-    comapareTree = Modules::separetedPrefixeslibs();
-
     runTestParams({"-bin", bin, "force-clear",
                    "-binOut", "/lol",
                    "-libOut", "/lolLib",

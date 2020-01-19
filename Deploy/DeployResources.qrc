@@ -9,5 +9,6 @@
         <file>Distributions/Templates/qif/packages/default/meta/installscript.qs</file>
         <file>Distributions/Templates/qif/config/controlScript.qs</file>
         <file>Distributions/Templates/qif/config/config.xml</file>
+        <file>Distributions/Templates/qif/Icon.png</file>
     </qresource>
 </RCC>

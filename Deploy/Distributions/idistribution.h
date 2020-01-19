@@ -32,19 +32,22 @@ protected:
     void setLocation(const QString &location);
     bool unpackFile(const QFileInfo& resource,
                     const QString& target,
-                    const TemplateInfo& info) const;
+                    const TemplateInfo& info,
+                    const QStringList &sufixes) const;
 
     bool unpackDir(const QString& resource,
                    const QString& target,
-                   const TemplateInfo& info) const;
+                   const TemplateInfo& info,
+                   const QStringList &sufixes) const;
 
     bool moveData(const QString& from, const QString& to, const QString &ignore) const;
     bool copyFile(const QString& from, const QString& to) const;
 
     QString findProcess(const QString& env, const QString& proc) const;
 
-    QMap<int, QPair<QString, const DistroModule *> > sortPrefixes(const QHash<QString, DistroModule> &input);
+    QMap<int, QPair<QString, const DistroModule *>> sortPrefixes(const QHash<QString, DistroModule> &input);
 private:
+
     QString _location = "Temp Template";
     FileManager * _fileManager = nullptr;
 
