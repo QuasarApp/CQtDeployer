@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/Distro">
+        <file>Distributions/configures/Qt.json</file>
+        <file>Distributions/configures/QIF.json</file>
+        <file>Distributions/configures/C and C++.json</file>
+    </qresource>
+    <qresource prefix="/Templates/QIF">
+        <file>Distributions/Templates/qif/packages/default/meta/package.xml</file>
+        <file>Distributions/Templates/qif/packages/default/meta/installscript.qs</file>
+        <file>Distributions/Templates/qif/config/controlScript.qs</file>
+        <file>Distributions/Templates/qif/config/config.xml</file>
+        <file>Distributions/Templates/qif/Icon.png</file>
+    </qresource>
+</RCC>

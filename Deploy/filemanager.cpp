@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -110,7 +110,7 @@ bool FileManager::strip(const QString &dir) const {
         auto list = d.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
 
         bool res = false;
-        for (auto &&i : list) {
+        for (const auto &i : list) {
             res = strip(i.absoluteFilePath()) || res;
         }
 
@@ -187,10 +187,11 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
                                            " Qt error: " + sourceFile.errorString(),
                                            QuasarAppUtils::Warning);
 
+        bool tarExits = QFileInfo(target + QDir::separator() + name).exists();
 
+        if ((!tarExits) ||
+            (tarExits && !QuasarAppUtils::Params::isEndable("noOverwrite"))) {
 
-        if (!(QuasarAppUtils::Params::isEndable("noOverwrite") &&
-                QFileInfo(target + QDir::separator() + name).exists())) {
             std::ifstream  src(file.toStdString(),
                                std::ios::binary);
 
@@ -206,6 +207,11 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
                 return false;
 
             }
+
+            if (isMove) {
+                std::remove(file.toStdString().c_str());
+            }
+
         } else {
 
             if (QFileInfo(target + QDir::separator() + name).exists()) {
@@ -228,7 +234,7 @@ bool FileManager::removeFile(const QString &file) {
 bool FileManager::smartCopyFile(const QString &file, const QString &target, QStringList *mask) {
     auto config = DeployCore::_config;
 
-    if (file.contains(config->targetDir, ONLY_WIN_CASE_INSENSIATIVE)) {
+    if (file.contains(config->getTargetDir(), ONLY_WIN_CASE_INSENSIATIVE)) {
         if (!moveFile(file, target, mask)) {
             QuasarAppUtils::Params::verboseLog(" file not moved! try copy");
 
@@ -258,14 +264,14 @@ bool FileManager::copyFolder(const QString &from, const QString &to, const QStri
 
     auto list = fromDir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries);
 
-    for (auto &&item : list) {
+    for (const auto &item : list) {
         if (QFileInfo(item).isDir()) {
 
             copyFolder(item.absoluteFilePath(), to + "/" + item.fileName(), filter, listOfCopiedItems, mask);
         } else {
 
             QString skipFilter = "";
-            for (auto && i: filter) {
+            for (const auto &i: filter) {
                 if (item.fileName().contains(i, ONLY_WIN_CASE_INSENSIATIVE)) {
                     skipFilter = i;
                     break;
@@ -303,6 +309,37 @@ bool FileManager::copyFolder(const QString &from, const QString &to, const QStri
             if (listOfCopiedItems) {
                 *listOfCopiedItems << to + "/" + item.fileName();
             }
+        }
+    }
+
+    return true;
+}
+
+bool FileManager::moveFolder(const QString &from, const QString &to, const QString& ignore) {
+    QFileInfo info(from);
+
+    if (info.isFile()) {
+
+        if (ignore.size() && info.absoluteFilePath().contains(ignore)) {
+            return true;
+        }
+
+        if (!moveFile(info.absoluteFilePath(), to)) {
+            return false;
+        }
+        return true;
+    }
+
+    QDir dir(from);
+    auto list = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    for (const auto &i :list) {
+        auto targetDir = to;
+        if (i.isDir()) {
+            targetDir += "/" + i.fileName();
+        }
+
+        if (!moveFolder(i.absoluteFilePath(), targetDir, ignore)) {
+            return false;
         }
     }
 
@@ -351,18 +388,6 @@ void FileManager::clear(const QString& targetDir, bool force) {
     }
 
     _deployedFiles.clear();
-}
-
-void FileManager::copyLibs(const QStringList &files) {
-    auto config = DeployCore::_config;
-
-    for (auto file : files) {
-        QFileInfo target(file);
-
-        if (!smartCopyFile(file, DeployCore::_config->targetDir + config->distroStruct.getLibOutDir())) {
-            QuasarAppUtils::Params::verboseLog(file + " not copied");
-        }
-    }
 }
 
 bool FileManager::copyFile(const QString &file, const QString &target,

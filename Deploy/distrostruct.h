@@ -1,6 +1,6 @@
 
 //#
-//# Copyright (C) 2018-2019 QuasarApp.
+//# Copyright (C) 2018-2020 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -29,6 +29,10 @@ private:
     QString stripPath(QString path) const;
     QString getRelativePath(QString path) const;
 
+
+public:
+    DistroStruct();
+
     void setBinOutDir(const QString &value);
     void setLibOutDir(const QString &value);
     void setQmlOutDir(const QString &value);
@@ -36,9 +40,6 @@ private:
     void setResOutDir(const QString &value);
     void setPluginsOutDir(const QString &value);
 
-
-public:
-    DistroStruct();
     QString getLibOutDir(const QString& basePath = "/") const;
     QString getBinOutDir(const QString& basePath = "/") const;
     QString getQmlOutDir(const QString& basePath = "/") const;
@@ -47,7 +48,7 @@ public:
     QString getPluginsOutDir(const QString& basePath = "/") const;
     QString getRootDir(const QString& basePath = "/") const;
 
-    void init();
+    bool isEmpty();
 
     friend class deploytest;
 };

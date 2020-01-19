@@ -1,10 +1,11 @@
 //#
-//# Copyright (C) 2018-2019 QuasarApp.
+//# Copyright (C) 2018-2020 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
 //#
 
+#include "deploycore.h"
 #include "envirement.h"
 #include "pathutils.h"
 #include "quasarapp.h"
@@ -14,25 +15,26 @@
 
 QSet<QString> Envirement::upper(const QSet<QString>& set) const {
     QSet<QString> res;
-    for (auto &i : set) {
+    for (const auto &i : set) {
         res.insert(PathUtils::fixPath(i));
     }
     return res;
 }
 
-QStringList Envirement::deployEnvironment() const
-{
+QStringList Envirement::deployEnvironment() const {
     return _deployEnvironment.toList();
 }
 
-QStringList Envirement::ignoreEnvList() const
-{
+QStringList Envirement::ignoreEnvList() const {
     return _ignoreEnvList.toList();
 }
 
-void Envirement::setIgnoreEnvList(const QStringList &ignoreEnvList)
-{
+void Envirement::setIgnoreEnvList(const QStringList &ignoreEnvList) {
     _ignoreEnvList = upper(ignoreEnvList.toSet());
+}
+
+void Envirement::addEnvRec(const QString &dir, int depch, const QString &appDir, const QString &targetDir) {
+    addEnv(Envirement::recursiveInvairement(dir, depch), appDir, targetDir);
 }
 
 void Envirement::addEnv(const QString &dir, const QString &appDir, const QString& targetDir) {
@@ -106,14 +108,42 @@ QString Envirement::concatEnv() const {
 
     QString result = *_deployEnvironment.begin();
     for (auto i: _deployEnvironment) {
-#ifdef  Q_OS_UNIX
-        result += (":" + i);
-#else
-        result += (";" + i);
-#endif
+        result += (DeployCore::getEnvSeparator() + i);
     }
 
     return result;
+}
+
+QString Envirement::recursiveInvairement(QDir &dir, int depch, int depchLimit) {
+
+    char separator = DeployCore::getEnvSeparator();
+
+    if (!dir.exists() || (depchLimit >= 0 && depch >= depchLimit)) {
+        return dir.absolutePath();
+    }
+
+    QFileInfoList list = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+    QString res = "";
+
+    for (QFileInfo &i : list) {
+        if (!dir.cd(i.fileName())) {
+            continue;
+        }
+        QString temp = Envirement::recursiveInvairement(dir, depch + 1, depchLimit);
+        res += (res.size())? separator + temp: temp;
+
+        dir.cdUp();
+    }
+
+    res += (res.size())? separator + dir.absolutePath(): dir.absolutePath();
+
+    return res;
+}
+
+QString Envirement::recursiveInvairement(const QString &dir, int depch) {
+    QDir _dir(dir);
+
+    return recursiveInvairement(_dir, 0, depch);
 }
 
 Envirement::Envirement()

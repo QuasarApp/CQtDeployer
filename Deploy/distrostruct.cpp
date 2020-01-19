@@ -1,6 +1,6 @@
 
 //#
-//# Copyright (C) 2018-2019 QuasarApp.
+//# Copyright (C) 2018-2020 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -62,23 +62,14 @@ QString DistroStruct::getRootDir(const QString &basePath) const {
     return getRelativePath(basePath);
 }
 
-void DistroStruct::init() {
-
-#ifdef Q_OS_LINUX
-
-    setBinOutDir(QuasarAppUtils::Params::getStrArg("binOut", "/bin"));
-    setLibOutDir(QuasarAppUtils::Params::getStrArg("libOut", "/lib"));
-
-#else
-    setBinOutDir(QuasarAppUtils::Params::getStrArg("binOut", "/"));
-    setLibOutDir(QuasarAppUtils::Params::getStrArg("libOut", "/"));
-#endif
-
-
-    setQmlOutDir(QuasarAppUtils::Params::getStrArg("qmlOut", "/qml"));
-    setTrOutDir(QuasarAppUtils::Params::getStrArg("trOut", "/translations"));
-    setPluginsOutDir(QuasarAppUtils::Params::getStrArg("pluginOut", "/plugins"));
-    setResOutDir("/resources");
+bool DistroStruct::isEmpty()
+{
+    return (libOutDir.isEmpty() &&
+            qmlOutDir.isEmpty() &&
+            binOutDir.isEmpty() &&
+            trOutDir.isEmpty() &&
+            resOutDir.isEmpty() &&
+            pluginsOutDir.isEmpty());
 
 }
 
@@ -95,6 +86,16 @@ QString DistroStruct::getRelativePath(QString path) const {
 }
 
 DistroStruct::DistroStruct() {
+#ifdef Q_OS_LINUX
+    setBinOutDir("/bin");
+    setLibOutDir("/lib");
+#else
+    setBinOutDir("/");
+    setLibOutDir("/");
+#endif
 
-
+    setQmlOutDir("/qml");
+    setTrOutDir("/translations");
+    setPluginsOutDir("/plugins");
+    setResOutDir("/resources");
 }

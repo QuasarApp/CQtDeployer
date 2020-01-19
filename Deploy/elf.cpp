@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2019 QuasarApp.
+//# Copyright (C) 2018-2020 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -18,7 +18,7 @@ ELF::ELF()
 QByteArrayList ELF::getDynamicString(ElfReader& reader) const {
     auto headers = reader.readHeaders();
 
-    for (auto &sectionHeader : headers.sectionHeaders) {
+    for (const auto &sectionHeader : headers.sectionHeaders) {
         if (sectionHeader.name == ".dynstr") {
             auto arr = reader.readSection(sectionHeader.name).split(0);
             return arr;
@@ -84,7 +84,7 @@ bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
     info.setPath(QFileInfo(lib).absolutePath());
 
     auto dep = reader.dependencies();
-    for (auto &i : dep) {
+    for (const auto &i : dep) {
         info.addDependncies(i.toUpper());
     }
 

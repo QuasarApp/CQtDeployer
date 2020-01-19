@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -44,7 +44,7 @@ QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
     auto values = _EnvLibs.values(libName.toUpper());
     QMultiMap<LibPriority, LibInfo> res;
 
-    for (auto & lib : values) {
+    for (const auto & lib : values) {
         LibInfo info;
 
         auto priority = (DeployCore::getLibPriority(lib));
@@ -125,7 +125,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res) {
             LibInfo scanedLib = _scanedLibs.value(dep->fullPath());
 
             if (!scanedLib.isValid()) {
-                auto listDep =  res;
+                QSet<LibInfo> listDep =  {};
 
                 recursiveDep(*dep, listDep);
 

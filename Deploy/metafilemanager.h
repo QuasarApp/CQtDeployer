@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2019 QuasarApp.
+//# Copyright (C) 2018-2020 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -21,7 +21,7 @@ private:
     QString generateCustoScriptBlok(bool bat) const;
 
     bool createRunScript(const QString &target);
-    bool createQConf();
+    bool createQConf(const QString &target);
 
     FileManager* _fileManager = nullptr;
 

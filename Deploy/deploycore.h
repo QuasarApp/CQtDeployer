@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -148,6 +148,9 @@ public:
 
     static bool isQtLib(const QString &lib);
     static bool isExtraLib(const QString &lib);
+    static QChar getSeparator(int lvl);
+    static char getEnvSeparator();
+
     static LibPriority getLibPriority(const QString &lib);
     static DeployCore::QtModule getQtModule(const QString& path);
     static void addQtModule(DeployCore::QtModule& module, const QString& path);
@@ -157,13 +160,15 @@ public:
     static QString help();
     static QStringList helpKeys();
 
-    static QStringList extractTranslation(const QStringList& libs);
+    static QStringList extractTranslation(const QSet<QString> &libs);
     static QString getAppVersion();
     static QString getQtVersion();
     static void printVersion();
     static int find(const QString &str, const QStringList &list);
     static bool isLib(const QFileInfo &file);
     static bool isExecutable(const QFileInfo &file);
+    static bool isContainsArraySeparators(const QString& val,
+                                          int lastLvl = 2);
 
 };
 

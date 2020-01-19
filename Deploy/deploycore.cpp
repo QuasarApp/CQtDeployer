@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -172,9 +172,9 @@ QString DeployCore::help() {
     { "   -binDir [params]         : A folder which includes deployable files (recursive search)." },
     { "                            | WARNING: this flag supports 'so', 'dll' and 'exe' files only." },
     { "                            | Use '-bin' flag if you want to deploy linux binary files" },
-    { "   -qmlDir [params]         : Qml data dir. For example -qmlDir ~/my/project/qml" },
-    { "   deploySystem             : Deploys all libs (Skip Deploys system core libs)" },
-    { "   deploySystem-with-libc   : Deploys all libs with Libc (Linux only, not snap)" },
+    { "   -qmlDir [prefix;path,path]: Qml data dir. For example -qmlDir ~/my/project/qml" },
+    { "   deploySystem             : Deploys all libs" },
+    { "   deploySystem-with-libc   : Skip Deploys system core libs libs" },
     { "   -qmake  [params]         : Qmake path." },
     { "                            | For example -qmake ~/Qt/5.14.0/gcc_64/bin/qmake" },
     { "   -ignore [list,params]    : The list of libs to ignore." },
@@ -194,6 +194,7 @@ QString DeployCore::help() {
     { "   -extraPlugin[list,params]: Sets an additional path to extraPlugin of an app" },
     { "   -recursiveDepth [params] : Sets the Depth of recursive search of libs (default 0)" },
     { "   -targetDir [params]      : Sets target directory(by default it is the path to the first deployable file)" },
+    { "   -targetPrefix [tar1;path,path]: Sets prefix for target( by default it is empty value)" },
     { "   noStrip                  : Skips strip step" },
     { "   extractPlugins           | This flag will cause cqtdeployer to retrieve dependencies from plugins." },
     { "                            : Starting with version 1.4, this option has been disabled by default,"},
@@ -202,11 +203,25 @@ QString DeployCore::help() {
     { "   noTranslations           : Skips the translations files." },
     { "                            | It doesn't work without qmake and inside a snap package" },
     { "   -noAutoCheckQmake        : Disables automatic search of paths to qmake in executable files." },
-    { "   -qmlOut [params]         : Sets path to qml out directory" },
-    { "   -libOut [params]         : Sets path to libraries out directory" },
-    { "   -trOut [params]          : Sets path to translations out directory" },
-    { "   -pluginOut [params]      : Sets path to plugins out directory" },
-    { "   -binOut [params]         : Sets path to binary out directory" },
+    { "   -qmlOut [prefix;val,val] : Sets path to qml out directory" },
+    { "   -libOut [prefix;val,val] : Sets path to libraries out directory" },
+    { "   -trOut [prefix;val,val]  : Sets path to translations out directory" },
+    { " -pluginOut [prefix;val,val]: Sets path to plugins out directory" },
+    { "   -binOut [prefix;val,val] : Sets path to binary out directory" },
+    { "   -recOut [prefix;val,val] : Sets path to recurses out directory" },
+
+    { "   -name [prefix;val,val]   : Sets name for prefix. If this if you do not specify a prefix, the value will be assigned to the default prefix ("")" },
+    { "   -description [prefix;val,val] : Sets description for prefix" },
+    { "   -deployVersion [prefix;val,val] : Sets version for prefix" },
+    { "   -releaseDate [prefix;val,val] : Sets release date for prefix" },
+    { "   -icon [prefix;val,val]   : Sets path to icon for prefix" },
+    { "   -publisher [prefix;val,val]: Sets Publisher for prefix" },
+
+    { "   -qif [params]            : Create the QIF installer for deployement programm" },
+    { "                            : By default params value is 'Default'" },
+    { "                            : Examples:" },
+    { "                            : cqtdeployer qif - for use default templates of qt installer framework." },
+    { "                            : cqtdeployer -qif path/to/folder/with/qifTemplate - for use custom templates of qt installer framework." },
     { "   -customScript [scriptCode]: Insert extra code inTo All run script."},
     { "   v / version              : Shows compiled version" },
     { "   verbose [1-3]            : Shows debug log" },
@@ -241,6 +256,7 @@ QStringList DeployCore::helpKeys() {
         "extraPlugin",
         "recursiveDepth",
         "targetDir",
+        "targetPrefix",
         "noStrip",
         "extractPlugins",
         "noTranslations",
@@ -249,18 +265,26 @@ QStringList DeployCore::helpKeys() {
         "trOut",
         "pluginOut",
         "binOut",
+        "recOut",
         "version",
         "verbose",
+        "qif",
         "noAutoCheckQmake",
+        "name",
+        "description",
+        "deployVersion",
+        "releaseDate",
+        "icon",
+        "publisher",
         "customScript"
     };
 }
 
-QStringList DeployCore::extractTranslation(const QStringList &libs) {
+QStringList DeployCore::extractTranslation(const QSet<QString> &libs) {
     QSet<QString> res;
     const size_t qtModulesCount = sizeof(qtModuleEntries) / sizeof(QtModuleEntry);
 
-    for (auto &&lib: libs) {
+    for (const auto &lib: libs) {
         for (size_t i = 0; i < qtModulesCount; ++i) {
             if (lib.contains(qtModuleEntries[i].libraryName) &&
                     qtModuleEntries[i].translation) {
@@ -291,6 +315,15 @@ void DeployCore::printVersion() {
 bool DeployCore::isExecutable(const QFileInfo& file) {
     auto sufix = file.completeSuffix();
     return sufix.contains("exe", Qt::CaseInsensitive) || sufix.contains("run", Qt::CaseInsensitive) || sufix.isEmpty();
+}
+
+bool DeployCore::isContainsArraySeparators(const QString &val, int lastLvl) {
+    while (lastLvl) {
+        if (val.contains(getSeparator(--lastLvl)))
+            return true;
+    }
+
+    return false;
 }
 
 int DeployCore::find(const QString &str, const QStringList &list) {
@@ -370,7 +403,7 @@ QString DeployCore::getVCredist(const QString &_qtbinDir) {
     auto name = getMSVCName(msvc);
     auto version = getMSVCVersion(msvc);
 
-    for (auto &&info: infoList) {
+    for (const auto &info: infoList) {
         auto file = info.fileName();
         if (file.contains(name, Qt::CaseInsensitive) &&
                 file.contains(version, Qt::CaseInsensitive)) {
@@ -415,6 +448,23 @@ bool DeployCore::isQtLib(const QString &lib) {
 bool DeployCore::isExtraLib(const QString &lib) {
     QFileInfo info(lib);
     return _config->extraPaths.contains(info.absoluteFilePath());
+}
+
+QChar DeployCore::getSeparator(int lvl) {
+    switch (lvl) {
+    case 0:  return ',';
+    case 1:  return ';';
+    default:
+        return '\0';
+    }
+}
+
+char DeployCore::getEnvSeparator() {
+#ifdef  Q_OS_UNIX
+    return ':';
+#else
+    return ';';
+#endif
 }
 
 uint qHash(WinAPI i) {
