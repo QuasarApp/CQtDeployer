@@ -21,19 +21,18 @@ Deploy::Deploy() {
 }
 
 int Deploy::run() {
-
     if (!prepare()) {
-        return 1;
+        return PrepareError;
     }
 
     if (!deploy()) {
-        return 2;
+        return DeployError;
     }
 
     if (!packing())
-        return 3;
+        return PackingError;
 
-    return 0;
+    return Good;
 }
 
 Deploy::~Deploy() {
@@ -52,6 +51,10 @@ Deploy::~Deploy() {
 
     if (_scaner) {
         delete _scaner;
+    }
+
+    if (_packing) {
+        delete _packing;
     }
 }
 

@@ -46,7 +46,9 @@ private:
     QStringList getFilesFromDir(const QString& dir);
 
 
-    void runTestParams(const QStringList &list, QSet<QString> *tree = nullptr, bool noWarnings = false, bool onlySize = false);
+    void runTestParams(const QStringList &list, QSet<QString> *tree = nullptr,
+                       bool noWarnings = false,
+                       bool onlySize = false);
 
     void checkResults(const QSet<QString> &tree, bool noWarnings, bool onlySize = false);
 public:
@@ -547,7 +549,7 @@ void deploytest::testExtractPlugins() {
                                         "extractPlugins", "deploySystem"});
 
     Deploy deploy;
-    QVERIFY(deploy.run() == 0);
+    QVERIFY(deploy.run() == Good);
 
     QVERIFY(DeployCore::_config);
     QVERIFY(!DeployCore::_config->getTargetDir().isEmpty());
@@ -852,12 +854,13 @@ void deploytest::testSetTargetDir() {
 
 }
 
-void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree, bool noWarnings, bool onlySize) {
+void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree,
+                               bool noWarnings, bool onlySize) {
 
     QuasarAppUtils::Params::parseParams(list);
 
     Deploy deploy;
-    QVERIFY(deploy.run() == 0);
+    QVERIFY(deploy.run() == Good);
 
     if (tree) {
         checkResults(*tree, noWarnings, onlySize);

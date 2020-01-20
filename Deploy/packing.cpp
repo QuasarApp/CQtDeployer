@@ -9,13 +9,12 @@
 Packing::Packing() {
     _proc = new QProcess(this);
 
-    connect(_proc, &QProcess::readyReadStandardError,
-            this, &Packing::handleOutputUpdate, Qt::QueuedConnection);
+    connect(_proc, SIGNAL(readyReadStandardError()),
+            this, SLOT(handleOutputUpdate()));
 
-    connect(_proc, &QProcess::readyReadStandardOutput,
-            this, &Packing::handleOutputUpdate, Qt::QueuedConnection);
+    connect(_proc, SIGNAL(readyReadStandardOutput()),
+            this, SLOT(handleOutputUpdate()));
 
-    moveToThread( new QThread(this));
 }
 
 Packing::~Packing() {
@@ -62,14 +61,13 @@ bool Packing::create() {
     QuasarAppUtils::Params::verboseLog(message,
                                      QuasarAppUtils::Info);
 
-    if (!_pakage->removeTemplate()) {
-        return false;
-    }
+    _pakage->removeTemplate();
 
     return true;
 }
 
 void Packing::handleOutputUpdate() {
+
     QByteArray stdoutLog = _proc->readAllStandardOutput();
     QByteArray erroutLog = _proc->readAllStandardError();
 
@@ -79,4 +77,5 @@ void Packing::handleOutputUpdate() {
     if (erroutLog.size())
         qInfo() << erroutLog;
 }
+
 

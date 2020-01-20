@@ -13,6 +13,7 @@
 #include <QFileInfo>
 #include <QList>
 #include <deploy.h>
+#include <QTimer>
 
 
 int main(int argc, char *argv[]) {
@@ -29,13 +30,7 @@ int main(int argc, char *argv[]) {
     }
     QuasarAppUtils::Params::setEnable("noWriteInFileLog", true);
 
-    QCoreApplication app(argc, argv);
 
     Deploy deploy;
-    if (deploy.run()) {
-        app.exit(1);
-    }
-
-    return app.exec();
-
+    return deploy.run();
 }

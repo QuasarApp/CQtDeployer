@@ -10,11 +10,21 @@
 
 #include "deploy_global.h"
 
+
 class ConfigParser;
 class Extracter;
 class FileManager;
 class DependenciesScanner;
 class Packing;
+
+enum exitCodes {
+    Good =          0x0,
+    PrepareError =  0x1,
+    DeployError =   0x2,
+    PackingError =  0x3,
+
+
+};
 
 class DEPLOYSHARED_EXPORT Deploy
 {
@@ -30,11 +40,11 @@ private:
     bool deploy();
     bool packing();
 
+
 public:
     Deploy();
     int run();
     ~Deploy();
-
 
     friend class deploytest;
 };

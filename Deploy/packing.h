@@ -28,6 +28,7 @@ private:
 
 private slots:
     void handleOutputUpdate();
+
 };
 
 #endif // PACKING_H
