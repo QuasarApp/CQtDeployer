@@ -24,7 +24,7 @@ Deploy::Deploy() {
 int Deploy::run(bool async) {
     if (async) {
         emit sigStart();
-        return 0;
+        return Good;
     }
 
     return runPrivate();
@@ -90,21 +90,29 @@ bool Deploy::packing(bool async) {
 
 int Deploy::runPrivate(bool async) {
     if (!prepare()) {
-        return 1;
+        return PrepareError;
     }
 
     if (!deploy()) {
-        return 2;
+        return DeployError;
+    }
+
+    if (async) {
+        if (!packing(async))
+            return PackingError;
+
+        return ASyncGood;
     }
 
     if (!packing(async))
-        return 3;
+        return PackingError;
 
-    return 0;
+    return Good;
 }
 
 void Deploy::handleStart() {
     if (int exit = runPrivate(true)) {
-        emit sigFinish(exit);
+        if (exit != ASyncGood)
+            emit sigFinish(exit);
     }
 }

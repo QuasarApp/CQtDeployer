@@ -547,7 +547,7 @@ void deploytest::testExtractPlugins() {
                                         "extractPlugins", "deploySystem"});
 
     Deploy deploy;
-    QVERIFY(deploy.run() == 0);
+    QVERIFY(deploy.run() == Good);
 
     QVERIFY(DeployCore::_config);
     QVERIFY(!DeployCore::_config->getTargetDir().isEmpty());
@@ -857,7 +857,7 @@ void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree, boo
     QuasarAppUtils::Params::parseParams(list);
 
     Deploy deploy;
-    QVERIFY(deploy.run() == 0);
+    QVERIFY(deploy.run() == Good);
 
     if (tree) {
         checkResults(*tree, noWarnings, onlySize);

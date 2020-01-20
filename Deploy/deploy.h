@@ -12,11 +12,25 @@
 
 #include <QObject>
 
+
+
 class ConfigParser;
 class Extracter;
 class FileManager;
 class DependenciesScanner;
 class Packing;
+
+enum exitCodes {
+    Good =          0x0,
+    PrepareError =  0x1,
+    DeployError =   0x2,
+    PackingError =  0x3,
+
+    ASync = 0x10,
+
+    ASyncGood = Good | ASync,
+
+};
 
 class DEPLOYSHARED_EXPORT Deploy : public QObject
 {
