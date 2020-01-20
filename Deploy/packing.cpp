@@ -15,6 +15,9 @@ Packing::Packing() {
     connect(_proc, &QProcess::readyReadStandardOutput,
             this, &Packing::handleOutputUpdate, Qt::QueuedConnection);
 
+    connect(_proc, qOverload<int, QProcess::ExitStatus>(&QProcess::finished),
+            this, &Packing::handleFinished, Qt::QueuedConnection);
+
     moveToThread( new QThread(this));
 }
 
@@ -26,7 +29,7 @@ void Packing::setDistribution(iDistribution *pakage) {
     _pakage = pakage;
 }
 
-bool Packing::create() {
+bool Packing::create(bool async) {
 
     if (!_pakage)
         return false;
@@ -50,7 +53,7 @@ bool Packing::create() {
         return false;
     }
 
-    if (!_proc->waitForFinished(-1)) {
+    if (async && !_proc->waitForFinished(-1)) {
         return false;
     }
 
@@ -78,5 +81,9 @@ void Packing::handleOutputUpdate() {
 
     if (erroutLog.size())
         qInfo() << erroutLog;
+}
+
+void Packing::handleFinished(int exitCode, QProcess::ExitStatus ) {
+    emit sigFinished(exitCode);
 }
 

@@ -10,14 +10,17 @@
 
 #include "deploy_global.h"
 
+#include <QObject>
+
 class ConfigParser;
 class Extracter;
 class FileManager;
 class DependenciesScanner;
 class Packing;
 
-class DEPLOYSHARED_EXPORT Deploy
+class DEPLOYSHARED_EXPORT Deploy : public QObject
 {
+    Q_OBJECT
 private:
 
     ConfigParser * _paramsParser = nullptr;
@@ -28,11 +31,19 @@ private:
 
     bool prepare();
     bool deploy();
-    bool packing();
+    bool packing(bool async);
+    int runPrivate(bool async = false);
+
+private slots:
+    void handleStart();
+
+signals:
+    void sigFinish(int code);
+    void sigStart();
 
 public:
     Deploy();
-    int run();
+    int run(bool async = false);
     ~Deploy();
 
 

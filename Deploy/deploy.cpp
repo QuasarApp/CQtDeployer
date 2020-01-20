@@ -18,22 +18,16 @@ Deploy::Deploy() {
     _packing = new Packing();
     _paramsParser = new ConfigParser(_fileManager, _scaner, _packing);
 
+    connect(this, &Deploy::sigStart, this, &Deploy::handleStart, Qt::QueuedConnection);
 }
 
-int Deploy::run() {
-
-    if (!prepare()) {
-        return 1;
+int Deploy::run(bool async) {
+    if (async) {
+        emit sigStart();
+        return 0;
     }
 
-    if (!deploy()) {
-        return 2;
-    }
-
-    if (!packing())
-        return 3;
-
-    return 0;
+    return runPrivate();
 }
 
 Deploy::~Deploy() {
@@ -86,7 +80,31 @@ bool Deploy::deploy() {
     return true;
 }
 
-bool Deploy::packing() {
+bool Deploy::packing(bool async) {
+    if (async) {
+        connect(_packing, &Packing::sigFinished, this, &Deploy::sigFinish, Qt::QueuedConnection);
+    }
 
-    return _packing->create();
+    return _packing->create(async);
+}
+
+int Deploy::runPrivate(bool async) {
+    if (!prepare()) {
+        return 1;
+    }
+
+    if (!deploy()) {
+        return 2;
+    }
+
+    if (!packing(async))
+        return 3;
+
+    return 0;
+}
+
+void Deploy::handleStart() {
+    if (int exit = runPrivate(true)) {
+        emit sigFinish(exit);
+    }
 }

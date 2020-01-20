@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
 
     Deploy deploy;
-    if (deploy.run()) {
+    if (deploy.run(true)) {
         app.exit(1);
     }
 

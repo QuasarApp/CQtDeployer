@@ -21,13 +21,17 @@ public:
     Packing();
     ~Packing();
     void setDistribution(iDistribution *pakage);
-    bool create();
+    bool create(bool async);
 private:
     iDistribution *_pakage = nullptr;
     QProcess *_proc = nullptr;
 
 private slots:
     void handleOutputUpdate();
+    void handleFinished(int exitCode, QProcess::ExitStatus);
+
+signals:
+    void sigFinished(int code);
 };
 
 #endif // PACKING_H
