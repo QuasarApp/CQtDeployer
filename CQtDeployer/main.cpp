@@ -15,7 +15,7 @@
 #include <deploy.h>
 
 
-int main(int argc, const char *argv[]) {
+int main(int argc, char *argv[]) {
 
     QCoreApplication::setOrganizationName("QuasarApp");
     QCoreApplication::setOrganizationDomain("https://github.com/QuasarApp");
@@ -29,8 +29,13 @@ int main(int argc, const char *argv[]) {
     }
     QuasarAppUtils::Params::setEnable("noWriteInFileLog", true);
 
+    QCoreApplication app(argc, argv);
 
     Deploy deploy;
-    return deploy.run();
+    if (deploy.run()) {
+        app.exit(1);
+    }
+
+    return app.exec();
 
 }
