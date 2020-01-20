@@ -55,7 +55,7 @@ bool Packing::create() {
         return false;
     }
 
-    if (!_proc->waitForFinished(60000 * 10)) {
+    if (!_proc->waitForFinished(-1)) {
         return false;
     }
 
