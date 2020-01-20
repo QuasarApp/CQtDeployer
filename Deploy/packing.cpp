@@ -7,7 +7,7 @@
 #include <QThread>
 
 Packing::Packing() {
-    _proc = new QProcess();
+    _proc = new QProcess(this);
 
     connect(_proc, &QProcess::readyReadStandardError,
             this, &Packing::handleOutputUpdate, Qt::QueuedConnection);
@@ -19,12 +19,7 @@ Packing::Packing() {
 }
 
 Packing::~Packing() {
-    if (_pakage)
-        delete _pakage;
-
     _proc->kill();
-
-    delete _proc;
 }
 
 void Packing::setDistribution(iDistribution *pakage) {
