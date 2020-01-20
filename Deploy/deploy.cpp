@@ -111,8 +111,10 @@ int Deploy::runPrivate(bool async) {
 }
 
 void Deploy::handleStart() {
-    if (int exit = runPrivate(true)) {
-        if (exit != ASyncGood)
-            emit sigFinish(exit);
+    int exit = runPrivate(true);
+    if (exit == ASyncGood) {
+        return;
     }
+
+    emit sigFinish(exit);
 }

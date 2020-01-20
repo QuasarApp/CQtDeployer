@@ -46,7 +46,10 @@ private:
     QStringList getFilesFromDir(const QString& dir);
 
 
-    void runTestParams(const QStringList &list, QSet<QString> *tree = nullptr, bool noWarnings = false, bool onlySize = false);
+    void runTestParams(const QStringList &list, QSet<QString> *tree = nullptr,
+                       bool noWarnings = false,
+                       bool onlySize = false,
+                       bool async = false);
 
     void checkResults(const QSet<QString> &tree, bool noWarnings, bool onlySize = false);
 public:
@@ -133,6 +136,7 @@ private slots:
 
     // qif flags
     void testQIF();
+
 
     void testDependencyMap();
 };
@@ -609,14 +613,44 @@ void deploytest::testQIF() {
     bin += "," + target3;
 
     auto prefixString = "/prefix1/;" + QFileInfo(target1).absoluteFilePath() + ",/prefix2/;" + QFileInfo(target2).absoluteFilePath();
-    runTestParams({"-bin", bin, "force-clear",
-                   "-binOut", "/lol",
-                   "-libOut", "/lolLib",
-                   "-trOut", "/lolTr",
-                   "-pluginOut", "/p",
-                   "-qmlOut", "/q",
-                   "-qmlDir", "prefix2;" + TestBinDir + "/../TestQMLWidgets",
-                   "-targetPrefix", prefixString, "qif"}, &comapareTree);
+
+    // async test
+    int argc =0;
+    char * argv[] = {nullptr};
+
+    QCoreApplication app(argc, argv);
+    Deploy deploy;
+    QTimer::singleShot(1, [&deploy, &prefixString, &bin](){
+
+        QuasarAppUtils::Params::parseParams({"-bin", bin, "force-clear",
+                                             "-binOut", "/lol",
+                                             "-libOut", "/lolLib",
+                                             "-trOut", "/lolTr",
+                                             "-pluginOut", "/p",
+                                             "-qmlOut", "/q",
+                                             "-qmlDir", "prefix2;" + TestBinDir + "/../TestQMLWidgets",
+                                             "-targetPrefix", prefixString, "qif"});
+
+        QVERIFY(deploy.run(true) == Good);
+
+
+    });
+
+
+    QObject::connect(&deploy, &Deploy::sigFinish, [&app](int code){
+        app.exit(code);
+    });
+
+    QTimer::singleShot(10 * 60 * 1000, [&app](){
+        app.exit(ASyncPackingError);
+
+    });
+
+    QVERIFY(app.exec() == Good);
+
+    checkResults(comapareTree, false, false);
+
+
 
 }
 
@@ -852,12 +886,13 @@ void deploytest::testSetTargetDir() {
 
 }
 
-void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree, bool noWarnings, bool onlySize) {
+void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree,
+                               bool noWarnings, bool onlySize, bool async) {
 
     QuasarAppUtils::Params::parseParams(list);
 
     Deploy deploy;
-    QVERIFY(deploy.run() == Good);
+    QVERIFY(deploy.run(async) == Good);
 
     if (tree) {
         checkResults(*tree, noWarnings, onlySize);

@@ -9,16 +9,16 @@
 Packing::Packing() {
     _proc = new QProcess(this);
 
-    connect(_proc, &QProcess::readyReadStandardError,
-            this, &Packing::handleOutputUpdate, Qt::QueuedConnection);
+    connect(_proc, SIGNAL(readyReadStandardError()),
+            this, SLOT(handleOutputUpdate()));
 
-    connect(_proc, &QProcess::readyReadStandardOutput,
-            this, &Packing::handleOutputUpdate, Qt::QueuedConnection);
+    connect(_proc, SIGNAL(readyReadStandardOutput()),
+            this, SLOT(handleOutputUpdate()));
 
     connect(_proc, qOverload<int, QProcess::ExitStatus>(&QProcess::finished),
             this, &Packing::handleFinished, Qt::QueuedConnection);
 
-    moveToThread( new QThread(this));
+//    moveToThread( new QThread(this));
 }
 
 Packing::~Packing() {
@@ -53,7 +53,7 @@ bool Packing::create(bool async) {
         return false;
     }
 
-    if (async && !_proc->waitForFinished(-1)) {
+    if (!async && !_proc->waitForFinished(-1)) {
         return false;
     }
 
@@ -65,14 +65,15 @@ bool Packing::create(bool async) {
     QuasarAppUtils::Params::verboseLog(message,
                                      QuasarAppUtils::Info);
 
-    if (!_pakage->removeTemplate()) {
-        return false;
+    if (!async) {
+        handleFinished(_proc->exitCode(), {});
     }
 
     return true;
 }
 
 void Packing::handleOutputUpdate() {
+
     QByteArray stdoutLog = _proc->readAllStandardOutput();
     QByteArray erroutLog = _proc->readAllStandardError();
 
@@ -84,6 +85,8 @@ void Packing::handleOutputUpdate() {
 }
 
 void Packing::handleFinished(int exitCode, QProcess::ExitStatus ) {
+
+    _pakage->removeTemplate();
     emit sigFinished(exitCode);
 }
 

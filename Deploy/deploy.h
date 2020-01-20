@@ -29,6 +29,7 @@ enum exitCodes {
     ASync = 0x10,
 
     ASyncGood = Good | ASync,
+    ASyncPackingError = PackingError | ASync,
 
 };
 

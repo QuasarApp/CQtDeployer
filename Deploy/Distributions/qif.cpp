@@ -173,6 +173,7 @@ QStringList QIF::runArg() const {
     return {
         "-c", location + "/config/config.xml",
         "-p", location + "/packages/",
+        "-v",
         DeployCore::_config->getTargetDir() + "/" + generalInfo.Name + sufix
     };
 }
