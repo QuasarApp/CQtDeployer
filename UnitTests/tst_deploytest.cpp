@@ -137,6 +137,8 @@ private slots:
     // qif flags
     void testQIF();
 
+    void testAsync();
+
 
     void testDependencyMap();
 };
@@ -613,6 +615,56 @@ void deploytest::testQIF() {
     bin += "," + target3;
 
     auto prefixString = "/prefix1/;" + QFileInfo(target1).absoluteFilePath() + ",/prefix2/;" + QFileInfo(target2).absoluteFilePath();
+    runTestParams({"-bin", bin, "force-clear",
+                   "-binOut", "/lol",
+                   "-libOut", "/lolLib",
+                   "-trOut", "/lolTr",
+                   "-pluginOut", "/p",
+                   "-qmlOut", "/q",
+                   "-qmlDir", "prefix2;" + TestBinDir + "/../TestQMLWidgets",
+                   "-targetPrefix", prefixString, "qif"}, &comapareTree);
+
+}
+
+void deploytest::testAsync()
+{
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestQMLWidgets";
+    QString target1 = TestBinDir + "TestOnlyC";
+
+    QString qmake = TestQtDir + "bin/qmake";
+    auto comapareTree = utils.createTree({
+                                             "./" + DISTRO_DIR + "/Application.run",
+                                         });
+
+#else
+    QString bin = TestBinDir + "TestQMLWidgets.exe";
+    QString target1 = TestBinDir + "TestOnlyC.exe";
+
+    QString qmake = TestQtDir + "bin/qmake.exe";
+    auto comapareTree = utils.createTree({
+                                             "./" + DISTRO_DIR + "/Application.exe",
+                                         });
+
+#endif
+
+#ifdef Q_OS_UNIX
+    QString target2 = TestBinDir + "TestQMLWidgets";
+    QString target3 = TestBinDir + "QtWidgetsProject";
+
+#else
+    QString target2 = TestBinDir + "TestQMLWidgets.exe";
+    QString target3 = TestBinDir + "QtWidgetsProject.exe";
+
+#endif
+    bin = target1;
+    bin += "," + target2;
+    bin += "," + target3;
+
+    auto prefixString = "/prefix1/;" + QFileInfo(target1).absoluteFilePath() + ",/prefix2/;" + QFileInfo(target2).absoluteFilePath();
+
 
     // async test
     int argc =0;
@@ -649,9 +701,6 @@ void deploytest::testQIF() {
     QVERIFY(app.exec() == Good);
 
     checkResults(comapareTree, false, false);
-
-
-
 }
 
 void deploytest::testDependencyMap() {

@@ -47,6 +47,10 @@ Deploy::~Deploy() {
     if (_scaner) {
         delete _scaner;
     }
+
+    if (_packing) {
+        delete _packing;
+    }
 }
 
 bool Deploy::prepare() {
