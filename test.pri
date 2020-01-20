@@ -18,6 +18,7 @@ contains(QMAKE_HOST.os, Linux):{
     win32:test.commands =
 }
 
+
 QMAKE_EXTRA_TARGETS += \
     deployTest \
     test

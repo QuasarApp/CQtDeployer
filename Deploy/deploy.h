@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -14,6 +14,7 @@ class ConfigParser;
 class Extracter;
 class FileManager;
 class DependenciesScanner;
+class Packing;
 
 class DEPLOYSHARED_EXPORT Deploy
 {
@@ -23,9 +24,11 @@ private:
     Extracter *_extracter = nullptr;
     FileManager *_fileManager = nullptr;
     DependenciesScanner *_scaner = nullptr;
+    Packing *_packing = nullptr;
 
     bool prepare();
-    int deploy();
+    bool deploy();
+    bool packing();
 
 public:
     Deploy();

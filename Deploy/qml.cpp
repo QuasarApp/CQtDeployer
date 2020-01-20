@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -54,7 +54,7 @@ bool QML::extractImportsFromDir(const QString &path, bool recursive) {
     auto files = dir.entryInfoList(QStringList() << "*.qml" << "*.QML", QDir::Files);
     auto dirs = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs);
 
-    for (auto &&info: files) {
+    for (const auto &info: files) {
         auto imports = extractImportsFromFile(info.absoluteFilePath());
         for (auto import : imports) {
             if (!_imports.contains(import)) {
@@ -65,7 +65,7 @@ bool QML::extractImportsFromDir(const QString &path, bool recursive) {
     }
 
     if (recursive) {
-        for (auto &&info: dirs) {
+        for (const auto &info: dirs) {
             extractImportsFromDir(info.absoluteFilePath(), recursive);
         }
     }
@@ -131,7 +131,7 @@ bool QML::scanQmlTree(const QString &qmlTree) {
 
     auto list = dir.entryInfoList( QDir::Dirs | QDir::NoDotAndDotDot);
 
-    for (auto &&info : list) {
+    for (const auto &info : list) {
         if (info.fileName().contains(".2")) {
             secondVersions.insert(info.fileName().left(info.fileName().size() - 2));
         }
@@ -161,7 +161,7 @@ bool QML::scan(QStringList &res, const QString& _qmlProjectDir) {
         return false;
     }
 
-    for (auto &&import : _imports) {
+    for (const auto &import : _imports) {
         res.push_back(getPathFromImport(import));
     }
 

@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2019 QuasarApp.
+//# Copyright (C) 2018-2020 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -7,11 +7,11 @@
 
 #ifndef CQT_H
 #define CQT_H
+#include "deployconfig.h"
 #include "distrostruct.h"
 #include "envirement.h"
-#include "extra.h"
 #include "ignorerule.h"
-#include "qtdir.h"
+#include "targetinfo.h"
 
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -23,33 +23,10 @@
 
 #define DISTRO_DIR QString("DistributionKit")
 
-class  FileManager;
-class  DependenciesScanner;
-
-struct DEPLOYSHARED_EXPORT DeployConfig {
-    QString targetDir = "";
-    int depchLimit = 0;
-    bool deployQml = false;
-    IgnoreRule ignoreList;
-    QStringList extraPlugins;
-    QString appDir;
-    QtDir qtDir;
-    Extra extraPaths;
-//    QStringList extraPaths;
-    /**
-     * @brief targets
-     * key - path
-     * value - create wrapper
-     */
-    QHash<QString, LibInfo> targets;
-    Envirement envirement;
-    DistroStruct distroStruct;
-
-    /**
-     * @brief reset config file to default
-     */
-    void reset();
-};
+class FileManager;
+class DependenciesScanner;
+class Packing;
+class iDistribution;
 
 class DEPLOYSHARED_EXPORT ConfigParser
 {
@@ -58,8 +35,14 @@ private:
     DeployConfig _config;
     FileManager *_fileManager;
     DependenciesScanner *_scaner;
+    Packing * _packing;
+
+    QHash<QString, QString> _Targetprefixes;
+
     bool createFromDeploy(const QString& file) const;
     bool loadFromFile(const QString& file);
+    bool initDistroStruct();
+    bool initPrefixes();
     bool parseQtDeployMode();
     bool parseQtInfoMode();
     bool parseQtClearMode();
@@ -77,6 +60,8 @@ private:
     QString getPathFrmoQmakeLine(const QString& in) const;
     bool initQmakePrivate(const QString& qmake);
     bool initQmake();
+    bool initQmlInput();
+
     bool setQmake(const QString &value);
     bool setQtDir(const QString &value);
 
@@ -84,9 +69,6 @@ private:
     void setExtraNames(const QStringList &value);
 
     void setExtraPlugins(const QStringList &value);
-
-    QString recursiveInvairement(QDir &dir, int depch = 0, int depchLimit = -1);
-    QString recursiveInvairement(const QString &dir, int depch);
 
     void initEnvirement();
 
@@ -96,10 +78,20 @@ private:
     QString getRelativeLink(const QString& from, const QString& to);
     void writeKey(const QString &key, QJsonObject &, const QString &confFileDir) const;
     void readKey(const QString &key, const QJsonObject &obj, const QString &confFileDir) const;
-    QHash<QString, LibInfo> prepareTarget(const QString &target);
+    QHash<QString, TargetInfo> createTarget(const QString &target);
+    QHash<QString, TargetInfo> moveTarget(TargetInfo target, const QString &newLocation);
+
+
+    QString readKeyArray(int separatorLvl, const QJsonArray &array, const QString &confFileDir) const;
+    QJsonValue writeKeyArray(int separatorLvl, const QString &parameter, const QString &confFileDir) const;
     QString findWindowsPath(const QString &path) const;
+
+    iDistribution* getDistribution();
+
+    bool configureDistribution(iDistribution *distro);
+
 public:
-    ConfigParser(FileManager *filemanager, DependenciesScanner *scaner);
+    ConfigParser(FileManager *filemanager, DependenciesScanner *scaner, Packing* pac);
     bool parseParams();
     bool smartMoveTargets();
 

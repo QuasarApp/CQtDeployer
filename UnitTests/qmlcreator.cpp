@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -57,7 +57,7 @@ QmlCreator::QmlCreator(const QString &path) {
 
 QmlCreator::~QmlCreator() {
 
-    for(auto &&lib : copyedQml) {
+    for(auto &lib : copyedQml) {
         QFile::remove(lib);
     }
 

@@ -31,7 +31,7 @@ void Extra::addtExtraNamesMasks(const QSet<QString> &value) {
 
 QSet<QString> Extra::upper(const QSet<QString>& set) const {
     QSet<QString> res;
-    for (auto &i : set) {
+    for (const auto &i : set) {
         res.insert(PathUtils::fixPath(i));
     }
     return res;
