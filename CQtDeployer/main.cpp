@@ -30,21 +30,7 @@ int main(int argc, char *argv[]) {
     }
     QuasarAppUtils::Params::setEnable("noWriteInFileLog", true);
 
-    QCoreApplication app(argc, argv);
 
     Deploy deploy;
-    if (deploy.run(true)) {
-        app.exit(1);
-    }
-
-    QObject::connect(&deploy, &Deploy::sigFinish, [&app](int code){
-        app.exit(code);
-    });
-
-    QTimer::singleShot(10 * 60 * 1000, [&app](){
-        app.exit(ASyncPackingError);
-    });
-
-    return app.exec();
-
+    return deploy.run();
 }

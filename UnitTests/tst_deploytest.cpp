@@ -48,8 +48,7 @@ private:
 
     void runTestParams(const QStringList &list, QSet<QString> *tree = nullptr,
                        bool noWarnings = false,
-                       bool onlySize = false,
-                       bool async = false);
+                       bool onlySize = false);
 
     void checkResults(const QSet<QString> &tree, bool noWarnings, bool onlySize = false);
 public:
@@ -136,9 +135,6 @@ private slots:
 
     // qif flags
     void testQIF();
-
-    void testAsync();
-
 
     void testDependencyMap();
 };
@@ -626,83 +622,6 @@ void deploytest::testQIF() {
 
 }
 
-void deploytest::testAsync()
-{
-    TestUtils utils;
-
-#ifdef Q_OS_UNIX
-    QString bin = TestBinDir + "TestQMLWidgets";
-    QString target1 = TestBinDir + "TestOnlyC";
-
-    QString qmake = TestQtDir + "bin/qmake";
-    auto comapareTree = utils.createTree({
-                                             "./" + DISTRO_DIR + "/Application.run",
-                                         });
-
-#else
-    QString bin = TestBinDir + "TestQMLWidgets.exe";
-    QString target1 = TestBinDir + "TestOnlyC.exe";
-
-    QString qmake = TestQtDir + "bin/qmake.exe";
-    auto comapareTree = utils.createTree({
-                                             "./" + DISTRO_DIR + "/Application.exe",
-                                         });
-
-#endif
-
-#ifdef Q_OS_UNIX
-    QString target2 = TestBinDir + "TestQMLWidgets";
-    QString target3 = TestBinDir + "QtWidgetsProject";
-
-#else
-    QString target2 = TestBinDir + "TestQMLWidgets.exe";
-    QString target3 = TestBinDir + "QtWidgetsProject.exe";
-
-#endif
-    bin = target1;
-    bin += "," + target2;
-    bin += "," + target3;
-
-    auto prefixString = "/prefix1/;" + QFileInfo(target1).absoluteFilePath() + ",/prefix2/;" + QFileInfo(target2).absoluteFilePath();
-
-
-    // async test
-    int argc =0;
-    char * argv[] = {nullptr};
-
-    QCoreApplication app(argc, argv);
-    Deploy deploy;
-    QTimer::singleShot(1, [&deploy, &prefixString, &bin](){
-
-        QuasarAppUtils::Params::parseParams({"-bin", bin, "force-clear",
-                                             "-binOut", "/lol",
-                                             "-libOut", "/lolLib",
-                                             "-trOut", "/lolTr",
-                                             "-pluginOut", "/p",
-                                             "-qmlOut", "/q",
-                                             "-qmlDir", "prefix2;" + TestBinDir + "/../TestQMLWidgets",
-                                             "-targetPrefix", prefixString, "qif"});
-
-        QVERIFY(deploy.run(true) == Good);
-
-
-    });
-
-
-    QObject::connect(&deploy, &Deploy::sigFinish, [&app](int code){
-        app.exit(code);
-    });
-
-    QTimer::singleShot(10 * 60 * 1000, [&app](){
-        app.exit(ASyncPackingError);
-
-    });
-
-    QVERIFY(app.exec() == Good);
-
-    checkResults(comapareTree, false, false);
-}
-
 void deploytest::testDependencyMap() {
     DependencyMap dep1, dep2, dep3;
 
@@ -936,12 +855,12 @@ void deploytest::testSetTargetDir() {
 }
 
 void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree,
-                               bool noWarnings, bool onlySize, bool async) {
+                               bool noWarnings, bool onlySize) {
 
     QuasarAppUtils::Params::parseParams(list);
 
     Deploy deploy;
-    QVERIFY(deploy.run(async) == Good);
+    QVERIFY(deploy.run() == Good);
 
     if (tree) {
         checkResults(*tree, noWarnings, onlySize);

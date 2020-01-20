@@ -15,10 +15,6 @@ Packing::Packing() {
     connect(_proc, SIGNAL(readyReadStandardOutput()),
             this, SLOT(handleOutputUpdate()));
 
-    connect(_proc, qOverload<int, QProcess::ExitStatus>(&QProcess::finished),
-            this, &Packing::handleFinished, Qt::QueuedConnection);
-
-//    moveToThread( new QThread(this));
 }
 
 Packing::~Packing() {
@@ -29,7 +25,7 @@ void Packing::setDistribution(iDistribution *pakage) {
     _pakage = pakage;
 }
 
-bool Packing::create(bool async) {
+bool Packing::create() {
 
     if (!_pakage)
         return false;
@@ -53,7 +49,7 @@ bool Packing::create(bool async) {
         return false;
     }
 
-    if (!async && !_proc->waitForFinished(-1)) {
+    if (!_proc->waitForFinished(-1)) {
         return false;
     }
 
@@ -65,9 +61,7 @@ bool Packing::create(bool async) {
     QuasarAppUtils::Params::verboseLog(message,
                                      QuasarAppUtils::Info);
 
-    if (!async) {
-        handleFinished(_proc->exitCode(), {});
-    }
+    _pakage->removeTemplate();
 
     return true;
 }
@@ -84,9 +78,4 @@ void Packing::handleOutputUpdate() {
         qInfo() << erroutLog;
 }
 
-void Packing::handleFinished(int exitCode, QProcess::ExitStatus ) {
-
-    _pakage->removeTemplate();
-    emit sigFinished(exitCode);
-}
 
