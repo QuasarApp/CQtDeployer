@@ -27,7 +27,7 @@ Key differences of this program:
 
 #### Example: cqtdeployer <-bin    [params]> [options]
 
-See list of all options [here](./doc/Options.md)
+See list of all options [here](https://github.com/QuasarApp/CQtDeployer/wiki/Options)
 
 
 #### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.12.4/gcc_64/bin/qmake clear
@@ -105,9 +105,8 @@ If you want to support the project,you can donate into our bitcoin wallet.
 
 ### Как использовать
 #### пример : cqtdeployer <-bin    [params]> [options]
-
-Смотрите список всех опций [здесь](./doc/Options.md)
-
+Смотрите список всех опций [здесь](https://github.com/QuasarApp/CQtDeployer/wiki/%D0%9F%D0%B0%D1%80%D0%B0%D0%BC%D0%B5%D1%82%D1%80%D1%8B
+)
 
 ## Build для Linux
 - установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
