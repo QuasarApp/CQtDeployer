@@ -73,6 +73,7 @@ You can download the latest version of the application [here](https://github.com
 - [QtSecret](https://github.com/QuasarApp/Qt-Secret)
 - [Hanoi-Towers](https://github.com/QuasarApp/Hanoi-Towers)
 - [distbuilder](https://github.com/BuvinJT/distbuilder)
+- [Manager_v2](https://github.com/dimkatsi91/Manager_v2)
 
 ## Donate
 If you want to support the project,you can donate into our bitcoin wallet.
@@ -149,6 +150,7 @@ If you want to support the project,you can donate into our bitcoin wallet.
 - [QtSecret](https://github.com/QuasarApp/Qt-Secret)
 - [Hanoi-Towers](https://github.com/QuasarApp/Hanoi-Towers)
 - [distbuilder](https://github.com/BuvinJT/distbuilder)
+- [Manager_v2](https://github.com/dimkatsi91/Manager_v2)
 
 ## Пожертвовать
 Если вы хотите помочь проекту, то вы можете пожертвовать небольшую сумму на наш биткойн-кошелек.
