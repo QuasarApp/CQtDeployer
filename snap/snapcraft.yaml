@@ -32,6 +32,11 @@ parts:
     source: QIFData/packages/cqtdeployer_1_4/data/1.4
 
     after: [cqtdeployer-wrapper]
+
+  qif:
+    plugin: dump
+    source: QIFData/packages/QIF/data/
+
   cqtdeployer-wrapper:
     plugin: dump
     source: QuasarAppLib/Etalons/snap/wrapper

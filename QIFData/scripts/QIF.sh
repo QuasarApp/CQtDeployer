@@ -9,6 +9,11 @@ if [ -z "$PLATFORM" ]; then
     PLATFORM=linux
 fi
 
+if [ -d "$PATHQIF/QIF" ]; then
+    echo if target already executed
+    exit 0
+fi
+
 echo PLATFORM=$PLATFORM
 echo VERSION=$VERSION
 
