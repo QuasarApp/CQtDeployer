@@ -77,6 +77,16 @@ OTHER_FILES += \
     $$META_DIR/* \
     $$PWD/config/*.*
 
+include(QIF.pri)
+
+!isEmpty( ONLINE ) {
+
+    message(Snap)
+    unix:deploy.depends += clearSnap
+    unix:deploy.depends += buildSnap
+    unix:deploy.depends += deploySnap
+    unix:release.depends += releaseSnap
+}
 
 QMAKE_EXTRA_TARGETS += \
     deploy_dep \
