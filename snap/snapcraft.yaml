@@ -37,6 +37,10 @@ parts:
     plugin: dump
     source: QIFData/packages/QIF/data/
 
+    override-stage: |
+      snapcraftctl stage
+      chmod 777 -R "$SNAPCRAFT_STAGE/QIF"
+
   cqtdeployer-wrapper:
     plugin: dump
     source: QuasarAppLib/Etalons/snap/wrapper
