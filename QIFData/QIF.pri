@@ -7,13 +7,14 @@ OTHER_FILES += \
 win32:PLATFORM = windows
 unix: PLATFORM = linux
 
-release_qif.commands= chmod +x $$PWD/scripts/QIF.sh; $$PWD/scripts/QIF.sh $$PLATFORM 3.2.0 $$PWD/packages/QIF/data
+qif.commands= chmod +x $$PWD/scripts/QIF.sh; $$PWD/scripts/QIF.sh $$PLATFORM 3.2.0 $$PWD/packages/QIF/data
 
 !isEmpty( ONLINE ) {
 
     unix:message(prepare release QIF)
-    unix:release.depends += release_qif
+    unix:deploy.depends += qif
+    unix:buildSnap.depends += qif
 }
 
 QMAKE_EXTRA_TARGETS += \
-    release_qif
+    qif
