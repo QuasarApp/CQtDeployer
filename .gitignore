@@ -62,7 +62,7 @@ distro/
 Distro/
 deployTests/
 QIFData/packages/cqtdeployer*/data/
-
+QIFData/packages/QIF/data/
 staticQt/
 staticQtWin32/
 staticQtWin64/

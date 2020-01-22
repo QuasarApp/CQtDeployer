@@ -14,17 +14,17 @@
         <translation type="obsolete">Этот пакет содержит CQtDeployer</translation>
     </message>
     <message>
-        <location filename="installscript.js" line="41"/>
+        <location filename="installscript.js" line="42"/>
         <source>install in system</source>
         <translation>Установка в систему</translation>
     </message>
     <message>
-        <location filename="installscript.js" line="41"/>
+        <location filename="installscript.js" line="42"/>
         <source>Installer</source>
         <translation>Установщик</translation>
     </message>
     <message>
-        <location filename="installscript.js" line="42"/>
+        <location filename="installscript.js" line="43"/>
         <source>The &quot;~/local/bin&quot; folder was not initialized, you may need to reboot to work correctly!</source>
         <translation type="unfinished"></translation>
     </message>
