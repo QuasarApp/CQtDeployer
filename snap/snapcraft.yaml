@@ -35,10 +35,6 @@ parts:
       - libfreetype6
       - libpng16-16
 
-    override-stage: |
-      snapcraftctl stage
-      chmod 777 -R "$SNAPCRAFT_STAGE/bin/"
-
     after: [cqtdeployer-wrapper]
 
   qif:
