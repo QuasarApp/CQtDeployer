@@ -25,10 +25,6 @@ apps:
       - libfreetype6
       - libpng16-16
 
-    override-stage: |
-      snapcraftctl stage
-      chmod 777 -R "$SNAPCRAFT_STAGE/bin/"
-
     plugs: [home, removable-media, process-control]
 
 parts:
@@ -37,6 +33,10 @@ parts:
 
     plugin: dump
     source: QIFData/packages/cqtdeployer_1_4/data/1.4
+
+    override-stage: |
+      snapcraftctl stage
+      chmod 777 -R "$SNAPCRAFT_STAGE/bin/"
 
     after: [cqtdeployer-wrapper]
 

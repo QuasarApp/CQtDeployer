@@ -17,7 +17,6 @@ fi
 echo PLATFORM=$PLATFORM
 echo VERSION=$VERSION
 
-cd $PATHQIF
 aqt tool --outputdir $PATHQIF linux tools_ifw $VERSION " "
 mkdir -p $PATHQIF/QIF
 mv $PATHQIF/Tools/QtInstallerFramework/${VERSION:0:3}/bin/* $PATHQIF/QIF
