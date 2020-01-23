@@ -22,8 +22,8 @@ apps:
   cqtdeployer:
     command: desktop-launch $SNAP/cqtdeployer.sh
     stage-packages:
-    - libfreetype6
-    - libpng16-16
+      - libfreetype6
+      - libpng16-16
 
     override-stage: |
       snapcraftctl stage
