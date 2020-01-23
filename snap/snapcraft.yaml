@@ -21,6 +21,13 @@ base: core18
 apps:
   cqtdeployer:
     command: desktop-launch $SNAP/cqtdeployer.sh
+    stage-packages:
+    - libfreetype6
+    - libpng16-16
+
+    override-stage: |
+      snapcraftctl stage
+      chmod 777 -R "$SNAPCRAFT_STAGE/bin/"
 
     plugs: [home, removable-media, process-control]
 

@@ -12,7 +12,7 @@ qif.commands= chmod +x $$PWD/scripts/QIF.sh; $$PWD/scripts/QIF.sh $$PLATFORM 3.2
 !isEmpty( ONLINE ) {
 
     unix:message(prepare release QIF)
-    unix:deploy.depends += qif
+    unix:deployOffline.depends += qif
     unix:buildSnap.depends += qif
 }
 
