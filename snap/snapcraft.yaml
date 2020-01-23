@@ -21,9 +21,6 @@ base: core18
 apps:
   cqtdeployer:
     command: desktop-launch $SNAP/cqtdeployer.sh
-    stage-packages:
-      - libfreetype6
-      - libpng16-16
 
     plugs: [home, removable-media, process-control]
 
@@ -33,6 +30,10 @@ parts:
 
     plugin: dump
     source: QIFData/packages/cqtdeployer_1_4/data/1.4
+
+    stage-packages:
+      - libfreetype6
+      - libpng16-16
 
     override-stage: |
       snapcraftctl stage
