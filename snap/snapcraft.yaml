@@ -31,6 +31,10 @@ parts:
     plugin: dump
     source: QIFData/packages/cqtdeployer_1_4/data/1.4
 
+    stage-packages:
+      - libfreetype6
+      - libpng16-16
+
     after: [cqtdeployer-wrapper]
 
   qif:
