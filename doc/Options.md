@@ -20,6 +20,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 ## Options:
 | Option                      | Descriptiion                                                    |
 |-----------------------------|-----------------------------------------------------------------|
+|   init                      | will initialize cqtdeployer.json file (configuration file)      |
 |   -bin    [list, params]    | Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe|
 |   -binDir [params]          | A folder which includes deployable files (recursive search).    |
 |   -confFile [params]        | The path to the json file with all deployment configurations. Using this file, you can add the necessary options, thereby simplifying the command invocation in the console. However, the parameters in Kansol have a higher priority than in the file. For more info about this flag see [wiki](https://github.com/QuasarApp/CQtDeployer/wiki/DeployConfigFileEn)                              |
@@ -98,6 +99,7 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 ## Параметры:
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
+|   init                      | проинициализирует файл cqtdeployer.json (файл конфигурации)  |
 |   help / h                  | Показывает справку                                          |
 |   -bin    [list, params]    | Развертываемый файл или папка. пример -bin ~/my/project/bin/,~/my/project/bin.exe|
 |   -binDir [params]          | Папка с развертываемыми файлами (с рекурсивным поиском). |

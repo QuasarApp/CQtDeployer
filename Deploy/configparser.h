@@ -21,8 +21,6 @@
 #include <QDir>
 #include "deploy_global.h"
 
-#define DISTRO_DIR QString("DistributionKit")
-
 class FileManager;
 class DependenciesScanner;
 class Packing;
@@ -43,9 +41,11 @@ private:
     bool loadFromFile(const QString& file);
     bool initDistroStruct();
     bool initPrefixes();
-    bool parseQtDeployMode();
-    bool parseQtInfoMode();
-    bool parseQtClearMode();
+    bool parseDeployMode();
+    bool parseInfoMode();
+    bool parseInitMode();
+
+    bool parseClearMode();
 
     QSet<QString> getQtPathesFromTargets();
 

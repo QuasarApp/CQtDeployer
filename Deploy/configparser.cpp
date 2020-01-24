@@ -75,44 +75,47 @@ bool ConfigParser::parseParams() {
 
     switch (DeployCore::getMode()) {
     case RunMode::Info: {
-        qInfo() << "selected info mode" ;
+        qInfo() << "Print info ..." ;
 
-        if (!parseQtInfoMode()) {
-            qCritical() << "info mode fail!";
+        if (!parseInfoMode()) {
+            qCritical() << "show info is failed!";
             return false;
         }
-
-        DeployCore::_config = &_config;
-
         break;
     }
     case RunMode::Clear: {
-        qInfo() << "selected clear mode" ;
+        qInfo() << "clear ..." ;
 
-        if (!parseQtClearMode()) {
-            qCritical() << "clear mode fail!";
+        if (!parseClearMode()) {
+            qCritical() << "clear is failed!";
             return false;
         }
+        break;
+    }
 
-        DeployCore::_config = &_config;
+    case RunMode::Init: {
+        qInfo() << "Init ..." ;
 
+        if (!parseInitMode()) {
+            qCritical() << "init is failed!";
+            return false;
+        }
         break;
     }
 
     case RunMode::Deploy: {
-        qInfo() << "selected deploy mode" ;
+        qInfo() << "Deploy ..." ;
 
-        if (!parseQtDeployMode()) {
-            qCritical() << "deploy mode fail!";
+        if (!parseDeployMode()) {
+            qCritical() << "deploy is failed!";
             return false;
         }
-
-        DeployCore::_config = &_config;
-
         break;
     }
 
     }
+
+    DeployCore::_config = &_config;
 
     if (createFile && !createFromDeploy(path)) {
         QuasarAppUtils::Params::verboseLog("Do not create a deploy config file in " + path,
@@ -451,7 +454,7 @@ bool ConfigParser::initQmlInput() {
     return true;
 }
 
-bool ConfigParser::parseQtDeployMode() {
+bool ConfigParser::parseDeployMode() {
 
     if (QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
         QuasarAppUtils::Params::setEnable("deploySystem", true );
@@ -509,7 +512,7 @@ bool ConfigParser::parseQtDeployMode() {
     return true;
 }
 
-bool ConfigParser::parseQtInfoMode() {
+bool ConfigParser::parseInfoMode() {
     if ((QuasarAppUtils::Params::isEndable("v") ||
             QuasarAppUtils::Params::isEndable("version"))) {
         DeployCore::printVersion();
@@ -521,7 +524,24 @@ bool ConfigParser::parseQtInfoMode() {
     return true;
 }
 
-bool ConfigParser::parseQtClearMode() {
+bool ConfigParser::parseInitMode() {
+
+    QFile configFile(DEFAULT_COFIGURATION_FILE);
+    QFile source("");
+    if (configFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+
+        if (source.open(QIODevice::ReadOnly)) {
+            configFile.write(source.readAll());
+            source.close();
+        }
+
+        configFile.close();
+    }
+
+    return true;
+}
+
+bool ConfigParser::parseClearMode() {
     setTargetDir("./" + DISTRO_DIR);
 
     return true;

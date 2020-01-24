@@ -143,6 +143,10 @@ RunMode DeployCore::getMode() {
         return RunMode::Info;
     }
 
+    if (C("init")) {
+        return RunMode::Init;
+    }
+
     if (QuasarAppUtils::Params::customParamasSize() == 0 || C("bin") || C("binDir")) {
         return RunMode::Deploy;
     }
@@ -162,6 +166,7 @@ QString DeployCore::help() {
     { "" },
     { "Options:" },
     { "   help / h                 : Shows help." },
+    { "   init                     : will initialize cqtdeployer.json file (configuration file)" },
     { "   noOverwrite              : Prevents replacing existing files." },
     { "   -bin    [list, params]   : Deployable file or folder." },
     { "                            | For example -bin /my/project/bin/,/my/project/bin.exe" },
