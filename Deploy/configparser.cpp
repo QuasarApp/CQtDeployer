@@ -68,9 +68,20 @@ bool ConfigParser::parseParams() {
     }
 
     auto path = QuasarAppUtils::Params::getStrArg("confFile");
-    bool createFile = !QFile::exists(path);
+    bool createFile = !QFile::exists(path) &&
+            QuasarAppUtils::Params::isEndable("confFile");
+
+    if (path.isEmpty() &&
+            QuasarAppUtils::Params::customParamasSize() <= 0) {
+        path = DEFAULT_COFIGURATION_FILE;
+    }
+
     if (QFile::exists(path)) {
-        loadFromFile(path);
+        if (!loadFromFile(path)) {
+            QuasarAppUtils::Params::verboseLog("failed to parse " + path,
+                                               QuasarAppUtils::Error);
+            return false;
+        }
     }
 
     switch (DeployCore::getMode()) {
@@ -527,7 +538,7 @@ bool ConfigParser::parseInfoMode() {
 bool ConfigParser::parseInitMode() {
 
     QFile configFile(DEFAULT_COFIGURATION_FILE);
-    QFile source("");
+    QFile source(":/Distro/Distributions/configures/InitConfiguration.json");
     if (configFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
 
         if (source.open(QIODevice::ReadOnly)) {

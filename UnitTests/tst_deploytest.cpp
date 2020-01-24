@@ -136,6 +136,9 @@ private slots:
     // qif flags
     void testQIF();
 
+    // init flags
+    void testInit();
+
     void testDependencyMap();
 };
 
@@ -619,6 +622,16 @@ void deploytest::testQIF() {
                    "-qmlOut", "/q",
                    "-qmlDir", "prefix2;" + TestBinDir + "/../TestQMLWidgets",
                    "-targetPrefix", prefixString, "qif"}, &comapareTree);
+
+}
+
+void deploytest::testInit()
+{
+
+    TestUtils utils;
+
+    runTestParams({"init"});
+    runTestParams({});
 
 }
 
