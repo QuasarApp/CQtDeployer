@@ -633,6 +633,9 @@ void deploytest::testInit()
     runTestParams({"init"});
     runTestParams({});
 
+    runTestParams({"-init", "multiPackage"});
+    runTestParams({});
+
 }
 
 void deploytest::testDependencyMap() {

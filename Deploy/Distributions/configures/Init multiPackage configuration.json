@@ -44,7 +44,7 @@
     "pluginOut": "plug",
     "binOut": "bin",
     "recOut": "rec",
-    "verbose": 1,
+    "verbose": 3,
     "qif": false,
     "noAutoCheckQmake": false,
     "name": [
@@ -54,7 +54,7 @@
         ],
         [
             "mainApplication"
-        ],
+        ]
     ],
     "description": [
         [
@@ -63,7 +63,7 @@
         ],
         [
             "this is description for default prefix"
-        ],
+        ]
     ],
     "deployVersion": [
         [
@@ -72,7 +72,7 @@
         ],
         [
             "1.0.0"
-        ],
+        ]
     ],
     "releaseDate": [
         [
@@ -81,7 +81,7 @@
         ],
         [
             "yyyy-MM-dd"
-        ],
+        ]
     ],
     "icon": [
         [
@@ -90,7 +90,7 @@
         ],
         [
             "/path/main/icon.png"
-        ],
+        ]
     ],
     "publisher": [
         [
@@ -99,7 +99,7 @@
         ],
         [
             "main team"
-        ],
+        ]
     ],
     "customScript": "echo 'I am use custom script!!!'"
 }

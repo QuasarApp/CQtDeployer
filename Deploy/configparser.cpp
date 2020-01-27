@@ -537,8 +537,16 @@ bool ConfigParser::parseInfoMode() {
 
 bool ConfigParser::parseInitMode() {
 
+    auto initLvl = QuasarAppUtils::Params::getStrArg("init");
+    QString sourceUrl(":/Distro/Distributions/configures/Init single configuration.json");
+
+    if (initLvl == "multiPackage") {
+        sourceUrl = ":/Distro/Distributions/configures/Init multiPackage configuration.json";
+    }
+
     QFile configFile(DEFAULT_COFIGURATION_FILE);
-    QFile source(":/Distro/Distributions/configures/InitConfiguration.json");
+    QFile source(sourceUrl);
+
     if (configFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
 
         if (source.open(QIODevice::ReadOnly)) {
