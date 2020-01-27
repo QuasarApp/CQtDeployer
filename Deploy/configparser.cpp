@@ -22,18 +22,18 @@
 #include <Distributions/defaultdistro.h>
 #include <Distributions/qif.h>
 /**
- * this function init prefixes of project
+ * this function init packages of project
  * inputParamsList - list of parameters
- *                   patern : value;prefix
- * mainContainer - container for insert data, usually it is prefixes map.
+ *                   patern : value;package
+ * mainContainer - container for insert data, usually it is packages map.
  * seterFunc - this is method of item of mainConteiner for set value from inputParamsList
- * important : prefix in inputParamsList must be second.
+ * important : package in inputParamsList must be second.
  */
 
-static QString defaultPrefix = "";
+static QString defaultPackage = "";
 
 template<typename Container, typename Setter>
-bool parsePrefixesPrivate(Container& mainContainer,
+bool parsePackagesPrivate(Container& mainContainer,
                           const QStringList &inputParamsList,
                           Setter setter) {
 
@@ -42,7 +42,7 @@ bool parsePrefixesPrivate(Container& mainContainer,
         auto first = pair.value(0, "");
         auto second = pair.value(1, "");
         if (pair.size() == 1)
-            (mainContainer[defaultPrefix].*setter)(first);
+            (mainContainer[defaultPackage].*setter)(first);
         else {
             first = PathUtils::toFullPath(first);
             if (!mainContainer.contains(first)) {
@@ -140,7 +140,7 @@ const DeployConfig *ConfigParser::config() const {
     return &_config;
 }
 
-// FIX ME. if prefix contains the path separators then prefix rewrite to RelativeLink of configFile location
+// FIX ME. if package contains the path separators then package rewrite to RelativeLink of configFile location
 QJsonValue ConfigParser::writeKeyArray(int separatorLvl, const QString &parameter,
                                  const QString &confFileDir) const {
 
@@ -288,11 +288,11 @@ bool ConfigParser::loadFromFile(const QString& confFile) {
 
 bool ConfigParser::initDistroStruct() {
 
-    if (!initPrefixes()) {
+    if (!initPackages()) {
         return false;
     }
 
-    auto &mainDistro = _config.prefixesEdit();
+    auto &mainDistro = _config.packagesEdit();
 
 #ifdef Q_OS_LINUX
 
@@ -331,68 +331,68 @@ bool ConfigParser::initDistroStruct() {
             split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
 
     auto erroLog = [](const QString &flag){
-            QuasarAppUtils::Params::verboseLog(QString("Set %0 fail, becouse you try set %0 for not inited prefix."
-                                               " Use 'targetPrefix' flag for init the prefixes").arg(flag),
+            QuasarAppUtils::Params::verboseLog(QString("Set %0 fail, becouse you try set %0 for not inited package."
+                                               " Use 'targetPackage' flag for init the packages").arg(flag),
                                                QuasarAppUtils::Error);
         };
 
 // init distro stucts for all targets
-    if (binOut.size() && !parsePrefixesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir)) {
+    if (binOut.size() && !parsePackagesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir)) {
         erroLog("binOut");
         return false;
     }
 
-    if (libOut.size() && !parsePrefixesPrivate(mainDistro, libOut, &DistroModule::setLibOutDir)) {
+    if (libOut.size() && !parsePackagesPrivate(mainDistro, libOut, &DistroModule::setLibOutDir)) {
         erroLog("libOut");
         return false;
     }
 
-    if (qmlOut.size() && !parsePrefixesPrivate(mainDistro, qmlOut, &DistroModule::setQmlOutDir)) {
+    if (qmlOut.size() && !parsePackagesPrivate(mainDistro, qmlOut, &DistroModule::setQmlOutDir)) {
         erroLog("qmlOut");
         return false;
     }
 
-    if (trOut.size() && !parsePrefixesPrivate(mainDistro, trOut, &DistroModule::setTrOutDir)) {
+    if (trOut.size() && !parsePackagesPrivate(mainDistro, trOut, &DistroModule::setTrOutDir)) {
         erroLog("trOut");
         return false;
     }
 
-    if (pluginOut.size() && !parsePrefixesPrivate(mainDistro, pluginOut, &DistroModule::setPluginsOutDir)) {
+    if (pluginOut.size() && !parsePackagesPrivate(mainDistro, pluginOut, &DistroModule::setPluginsOutDir)) {
         erroLog("pluginOut");
         return false;
     }
 
-    if (recOut.size() && !parsePrefixesPrivate(mainDistro, recOut, &DistroModule::setResOutDir)) {
+    if (recOut.size() && !parsePackagesPrivate(mainDistro, recOut, &DistroModule::setResOutDir)) {
         erroLog("recOut");
         return false;
     }
 
-    if (name.size() && !parsePrefixesPrivate(mainDistro, name, &DistroModule::setName)) {
+    if (name.size() && !parsePackagesPrivate(mainDistro, name, &DistroModule::setName)) {
         erroLog("name");
         return false;
     }
 
-    if (description.size() && !parsePrefixesPrivate(mainDistro, description, &DistroModule::setDescription)) {
+    if (description.size() && !parsePackagesPrivate(mainDistro, description, &DistroModule::setDescription)) {
         erroLog("description");
         return false;
     }
 
-    if (deployVersion.size() && !parsePrefixesPrivate(mainDistro, deployVersion, &DistroModule::setVersion)) {
+    if (deployVersion.size() && !parsePackagesPrivate(mainDistro, deployVersion, &DistroModule::setVersion)) {
         erroLog("deployVersion");
         return false;
     }
 
-    if (releaseDate.size() && !parsePrefixesPrivate(mainDistro, releaseDate, &DistroModule::setReleaseData)) {
+    if (releaseDate.size() && !parsePackagesPrivate(mainDistro, releaseDate, &DistroModule::setReleaseData)) {
         erroLog("releaseDate");
         return false;
     }
 
-    if (icon.size() && !parsePrefixesPrivate(mainDistro, icon, &DistroModule::setIcon)) {
+    if (icon.size() && !parsePackagesPrivate(mainDistro, icon, &DistroModule::setIcon)) {
         erroLog("icon");
         return false;
     }
 
-    if (publisher.size() && !parsePrefixesPrivate(mainDistro, publisher, &DistroModule::setPublisher)) {
+    if (publisher.size() && !parsePackagesPrivate(mainDistro, publisher, &DistroModule::setPublisher)) {
         erroLog("Publisher");
         return false;
     }
@@ -400,38 +400,38 @@ bool ConfigParser::initDistroStruct() {
     return true;
 }
 
-bool ConfigParser::initPrefixes() {
+bool ConfigParser::initPackages() {
 
-    defaultPrefix = "";
+    defaultPackage = "";
 
-    if (QuasarAppUtils::Params::isEndable("targetPrefix")) {
-        auto tar_prefixes_array = QuasarAppUtils::Params::getStrArg("targetPrefix", "").
+    if (QuasarAppUtils::Params::isEndable("targetPackage")) {
+        auto tar_packages_array = QuasarAppUtils::Params::getStrArg("targetPackage", "").
                 split(DeployCore::getSeparator(0));
 
 
         QSet<QString> configuredTargets;
-        for (auto& str: tar_prefixes_array) {
+        for (auto& str: tar_packages_array) {
             auto pair = str.split(DeployCore::getSeparator(1));
-            auto prefix = PathUtils::toFullPath(pair.value(0, ""));
+            auto package = PathUtils::toFullPath(pair.value(0, ""));
 
             auto list = _config.getTargetsListByFilter(pair.value(1, ""));
 
             for (auto it = list.begin(); it != list.end(); ++it) {
                 if (!configuredTargets.contains(it.key())) {
                     configuredTargets.insert(it.key());
-                    it.value()->setSufix(prefix);
+                    it.value()->setSufix(package);
                 }
             }
 
-            _config.prefixesEdit().insert(prefix, {});
+            _config.packagesEdit().insert(package, {});
 
             if (pair.size() != 2) {
-                defaultPrefix = prefix;
+                defaultPackage = package;
             }
         }
 
         QuasarAppUtils::Params::verboseLog(
-                    "Set Default Prefix to " + defaultPrefix,
+                    "Set Default Package to " + defaultPackage,
                      QuasarAppUtils::Info);
     }
 
@@ -449,15 +449,15 @@ bool ConfigParser::initQmlInput() {
     }
 
     auto erroLog = [](const QString &flag){
-            QuasarAppUtils::Params::verboseLog(QString("Set %0 fail, becouse you try set %0 for not inited prefix."
-                                               " Use 'targetPrefix' flag for init the prefixes").arg(flag),
+            QuasarAppUtils::Params::verboseLog(QString("Set %0 fail, becouse you try set %0 for not inited package."
+                                               " Use 'targetPackage' flag for init the packages").arg(flag),
                                                QuasarAppUtils::Error);
         };
 
 // init distro stucts for all targets
     _config.deployQml = qmlDir.size();
 
-    if (qmlDir.size() && !parsePrefixesPrivate(_config.prefixesEdit(), qmlDir, &DistroModule::addQmlInput)) {
+    if (qmlDir.size() && !parsePackagesPrivate(_config.packagesEdit(), qmlDir, &DistroModule::addQmlInput)) {
         erroLog("qmlDir");
         return false;
     }
@@ -1162,7 +1162,7 @@ bool ConfigParser::smartMoveTargets() {
         auto newTargetKey = targetPath + "/" + target.fileName();
         temp.unite(moveTarget(i.value(), newTargetKey));
 
-        _config.prefixesEdit()[i.value().getSufix()].addTarget(newTargetKey);
+        _config.packagesEdit()[i.value().getSufix()].addTarget(newTargetKey);
 
     }
 

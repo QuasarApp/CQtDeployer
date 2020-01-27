@@ -74,17 +74,17 @@ public:
     DistroModule getDistro(const QString& target) const;
 
     /**
-     * @brief getDistroFromPrefix
-     * @param prefix
-     * @return distro struct from prefix
+     * @brief getDistroFromPackage
+     * @param package
+     * @return distro struct from package
      */
-    DistroModule getDistroFromPrefix(const QString& prefix) const;
+    DistroModule getDistroFromPackage(const QString& package) const;
 
     const QHash<QString, TargetInfo>& targets() const;
-    const QHash<QString, DistroModule>& prefixes() const;
+    const QHash<QString, DistroModule>& packages() const;
 
     QHash<QString, TargetInfo>& targetsEdit();
-    QHash<QString, DistroModule>& prefixesEdit();
+    QHash<QString, DistroModule>& packagesEdit();
 
 private:
 
@@ -96,12 +96,12 @@ private:
     QHash<QString, TargetInfo> _targets;
 
     /**
-     * @brief prefixes
-     * key - prefix
-     * value struvture of prefix
-     * default prefix is empty value
+     * @brief packages
+     * key - package
+     * value struvture of package
+     * default package is empty value
      */
-    QHash<QString, DistroModule> _prefixes;
+    QHash<QString, DistroModule> _packages;
 
     /**
      * @brief targetDir -  targe directory (this folder conteins all files of distrebution kit)

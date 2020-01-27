@@ -16,7 +16,7 @@
     "extraLibs": "myExtraLib (libssl)",
     "extraPlugin": "myExtraPulgin (platforms)",
     "targetDir": "./Distro",
-    "targetPrefix": "",
+    "targetPackage": "",
     "noStrip": false,
     "extractPlugins": false,
     "noTranslations": false,

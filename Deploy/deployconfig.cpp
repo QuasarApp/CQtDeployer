@@ -28,31 +28,31 @@ void DeployConfig::setTargetDir(const QString &target) {
 }
 
 DistroModule DeployConfig::getDistro(const QString &target) const {
-    return _prefixes.value(_targets.value(target).getSufix());
+    return _packages.value(_targets.value(target).getSufix());
 }
 
-DistroModule DeployConfig::getDistroFromPrefix(const QString &prefix) const {
-    if (_prefixes.contains(prefix)) {
-        return _prefixes[prefix];
+DistroModule DeployConfig::getDistroFromPackage(const QString &package) const {
+    if (_packages.contains(package)) {
+        return _packages[package];
     }
 
-    return _prefixes.value("");
+    return _packages.value("");
 }
 
 QHash<QString, TargetInfo> &DeployConfig::targetsEdit() {
     return _targets;
 }
 
-QHash<QString, DistroModule> &DeployConfig::prefixesEdit() {
-    return _prefixes;
+QHash<QString, DistroModule> &DeployConfig::packagesEdit() {
+    return _packages;
 }
 
 const QHash<QString, TargetInfo> &DeployConfig::targets() const {
     return _targets;
 }
 
-const QHash<QString, DistroModule> &DeployConfig::prefixes() const {
-    return _prefixes;
+const QHash<QString, DistroModule> &DeployConfig::packages() const {
+    return _packages;
 }
 
 

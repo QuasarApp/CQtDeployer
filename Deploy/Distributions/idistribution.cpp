@@ -128,7 +128,7 @@ QString iDistribution::findProcess(const QString &env, const QString& proc) cons
 }
 
 QMap<int ,QPair<QString, const DistroModule*>>
-iDistribution::sortPrefixes(const QHash<QString, DistroModule> &input) {
+iDistribution::sortPackages(const QHash<QString, DistroModule> &input) {
     QMap<int ,QPair<QString, const DistroModule *>> result;
     for (auto it = input.cbegin(); it != input.cend(); ++it ) {
         result.insertMulti(0xFFFF - it.key().size(), {it.key(), &it.value()});

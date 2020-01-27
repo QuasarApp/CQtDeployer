@@ -35,12 +35,12 @@ private:
     DependenciesScanner *_scaner;
     Packing * _packing;
 
-    QHash<QString, QString> _Targetprefixes;
+    QHash<QString, QString> _Targetpackages;
 
     bool createFromDeploy(const QString& file) const;
     bool loadFromFile(const QString& file);
     bool initDistroStruct();
-    bool initPrefixes();
+    bool initPackages();
     bool parseDeployMode();
     bool parseInfoMode();
     bool parseInitMode();

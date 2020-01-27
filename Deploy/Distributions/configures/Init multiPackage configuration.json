@@ -4,7 +4,7 @@
     "binDir": "./",
     "qmlDir": [
         [
-            "prefix2",
+            "package2",
             "./TestQMLWidgets/"
         ],
         [
@@ -25,13 +25,13 @@
     "extraLibs": "myExtraLib (libssl)",
     "extraPlugin": "myExtraPulgin (platforms)",
     "targetDir": "./Distro",
-    "targetPrefix": [
+    "targetPackage": [
         [
-            "/prefix1/",
+            "/package1/",
             "TestOnlyC"
         ],
         [
-            "/prefix2/",
+            "/package2/",
             "TestQMLWidgets"
         ]
     ],
@@ -49,8 +49,8 @@
     "noAutoCheckQmake": false,
     "name": [
         [
-            "prefix2",
-            "prefix2Application"
+            "package2",
+            "package2Application"
         ],
         [
             "mainApplication"
@@ -58,16 +58,16 @@
     ],
     "description": [
         [
-            "prefix2",
-            "this is description for prefix 'prefix2'"
+            "package2",
+            "this is description for package 'package2'"
         ],
         [
-            "this is description for default prefix"
+            "this is description for default package"
         ]
     ],
     "deployVersion": [
         [
-            "prefix2",
+            "package2",
             "1.0.0"
         ],
         [
@@ -76,7 +76,7 @@
     ],
     "releaseDate": [
         [
-            "prefix2",
+            "package2",
             "yyyy-MM-dd"
         ],
         [
@@ -85,7 +85,7 @@
     ],
     "icon": [
         [
-            "prefix2",
+            "package2",
             "/path/icon.png"
         ],
         [
@@ -94,8 +94,8 @@
     ],
     "publisher": [
         [
-            "prefix2",
-            "team of prefix2"
+            "package2",
+            "team of package2"
         ],
         [
             "main team"
