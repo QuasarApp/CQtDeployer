@@ -22,7 +22,7 @@ class MetaFileManager;
 class DEPLOYSHARED_EXPORT Extracter {
   private:
 
-    QHash<QString, DependencyMap> _prefixDependencyes;
+    QHash<QString, DependencyMap> _packageDependencyes;
 
     DependenciesScanner *_scaner;
     FileManager *_fileManager;
@@ -30,7 +30,7 @@ class DEPLOYSHARED_EXPORT Extracter {
     MetaFileManager *_metaFileManager;
 
     void extract(const QString &file, DependencyMap* depMap, const QString& mask = "");
-    bool copyTranslations(const QStringList &list, const QString &prefix);
+    bool copyTranslations(const QStringList &list, const QString &package);
 
     bool extractQml();
 
@@ -48,8 +48,8 @@ class DEPLOYSHARED_EXPORT Extracter {
     bool extractWebEngine();
 
 
-    bool copyPlugin(const QString &plugin, const QString &prefix);
-    void copyPlugins(const QStringList &list, const QString &prefix);
+    bool copyPlugin(const QString &plugin, const QString &package);
+    void copyPlugins(const QStringList &list, const QString &package);
 
     /**
      * @brief compress - this function join all target dependecies in to one struct
@@ -59,10 +59,10 @@ class DEPLOYSHARED_EXPORT Extracter {
     void extractPlugins();
     void copyFiles();
     void copyTr();
-    void copyExtraPlugins(const QString &prefix);
-    void copyLibs(const QSet<QString> &files, const QString &prefix);
+    void copyExtraPlugins(const QString &package);
+    void copyLibs(const QSet<QString> &files, const QString &package);
 
-    bool isWebEngine(const QString& prefix) const;
+    bool isWebEngine(const QString& package) const;
 public:
     explicit Extracter(FileManager *fileManager, ConfigParser * cqt, DependenciesScanner *_scaner);
     void deploy();
