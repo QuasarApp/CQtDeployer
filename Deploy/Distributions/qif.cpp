@@ -68,7 +68,7 @@ bool QIF::deployTemplate() {
     if (customTemplate.isEmpty()) {
         // default template
 
-        auto sortedMap = sortPrefixes(cfg->prefixes());
+        auto sortedMap = sortPackages(cfg->packages());
 
         for (auto &it : sortedMap) {
             auto package = it.second;
