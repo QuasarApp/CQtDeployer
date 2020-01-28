@@ -1480,6 +1480,9 @@ void deploytest::testQt() {
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake}, &comapareTree);
 
+    // test auto detection of qmake and detection qmake from PATH
+    runTestParams({"-bin", bin, "clear"}, &comapareTree);
+
     comapareTree = Modules::qtWithoutTr();
 
 

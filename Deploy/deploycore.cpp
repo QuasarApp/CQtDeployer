@@ -333,6 +333,22 @@ bool DeployCore::isContainsArraySeparators(const QString &val, int lastLvl) {
     return false;
 }
 
+QString DeployCore::findProcess(const QString &env, const QString& proc) {
+    auto list = env.split(DeployCore::getEnvSeparator());
+
+    for (const auto& path : list) {
+        auto files = QDir(path).entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
+
+        for (const auto& bin : files) {
+            if (bin.fileName().compare(proc, ONLY_WIN_CASE_INSENSIATIVE) == 0) {
+                return bin.absoluteFilePath();
+            }
+        }
+    }
+
+    return "";
+}
+
 int DeployCore::find(const QString &str, const QStringList &list) {
     for (int i = 0 ; i < list.size(); ++i) {
         if (list[i].contains(str))
