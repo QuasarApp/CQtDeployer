@@ -64,7 +64,7 @@ bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
         return false;
     }
 
-    if (!QuasarAppUtils::Params::isEndable("noAutoCheckQmake")) {
+    if (!QuasarAppUtils::Params::isEndable("noCheckRPATH")) {
         auto dynStr = getDynamicString(reader);
 
         for (auto i = dynStr.rbegin(); i != dynStr.rend(); ++i) {

@@ -863,9 +863,9 @@ bool ConfigParser::initQmake() {
 
         if (qtList.isEmpty()) {
 
-            if (isNeededQt()) {
-                auto& env = DeployCore::_config->envirement;
-                auto proc = DeployCore::findProcess(env.concatEnv(), "qmake");
+            if (!QuasarAppUtils::Params::isEndable("noCheckPATH") && isNeededQt()) {
+                auto env = QProcessEnvironment::systemEnvironment();
+                auto proc = DeployCore::findProcess(env.value("PATH"), "qmake");
                 if (proc.isEmpty())
                     return false;
 

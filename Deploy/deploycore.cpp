@@ -209,7 +209,8 @@ QString DeployCore::help() {
     { "                            : which will not be compatible with equipment on users' hosts."},
     { "   noTranslations           : Skips the translations files." },
     { "                            | It doesn't work without qmake and inside a snap package" },
-    { "   -noAutoCheckQmake        : Disables automatic search of paths to qmake in executable files." },
+    { "   noCheckRPATH             : Disables automatic search of paths to qmake in executable files." },
+    { "   noCheckPATH              : Disables automatic search of paths to qmake in system PATH." },
     { "   -qmlOut [package;val,val] : Sets path to qml out directory" },
     { "   -libOut [package;val,val] : Sets path to libraries out directory" },
     { "   -trOut [package;val,val]  : Sets path to translations out directory" },
@@ -276,7 +277,8 @@ QStringList DeployCore::helpKeys() {
         "version",
         "verbose",
         "qif",
-        "noAutoCheckQmake",
+        "noCheckRPATH",
+        "noCheckPATH",
         "name",
         "description",
         "deployVersion",
@@ -463,15 +465,13 @@ QString DeployCore::getMSVCVersion(MSVCVersion msvc) {
 }
 
 bool DeployCore::isQtLib(const QString &lib) {
-    if (_config) {
-        QFileInfo info((lib));
-        return _config->qtDir.isQt(PathUtils::toFullPath(info.absoluteFilePath()));
+    QFileInfo info((lib));
 
+    if (_config) {
+        return _config->qtDir.isQt(PathUtils::toFullPath(info.absoluteFilePath()));
     }
 
-    auto info = QFileInfo(lib);
-    return isLib(info) && info.fileName().contains("Qt", ONLY_WIN_CASE_INSENSIATIVE);
-
+    return isLib(info) && info.fileName().contains("Qt", Qt::CaseInsensitive);
 }
 
 bool DeployCore::isExtraLib(const QString &lib) {
