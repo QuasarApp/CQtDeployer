@@ -10,6 +10,9 @@
 
 #include <QtCore/qglobal.h>
 
+#define DEFAULT_COFIGURATION_FILE           QString("CQtDeployer.json")
+#define DISTRO_DIR                          QString("DistributionKit")
+
 #if defined(DEPLOY_LIBRARY)
 #  define DEPLOYSHARED_EXPORT Q_DECL_EXPORT
 #else

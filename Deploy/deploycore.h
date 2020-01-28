@@ -66,7 +66,8 @@ uint qHash (WinAPI i);
 enum class RunMode: int {
     Info,
     Deploy,
-    Clear
+    Clear,
+    Init
 };
 
 class Extracter;

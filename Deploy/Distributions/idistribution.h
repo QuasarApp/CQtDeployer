@@ -45,7 +45,7 @@ protected:
 
     QString findProcess(const QString& env, const QString& proc) const;
 
-    QMap<int, QPair<QString, const DistroModule *>> sortPrefixes(const QHash<QString, DistroModule> &input);
+    QMap<int, QPair<QString, const DistroModule *>> sortPackages(const QHash<QString, DistroModule> &input);
 private:
 
     QString _location = "Temp Template";

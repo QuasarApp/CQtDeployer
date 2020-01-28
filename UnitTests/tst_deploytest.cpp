@@ -97,8 +97,8 @@ private slots:
     // tested flags confFile
     void testConfFile();
 
-    // tested flags targetPrefix
-    void testPrefixes();
+    // tested flags targetPackage
+    void testPackages();
 
     // tested flags qmlDir qmake
     void testQt();
@@ -135,6 +135,9 @@ private slots:
 
     // qif flags
     void testQIF();
+
+    // init flags
+    void testInit();
 
     void testDependencyMap();
 };
@@ -610,15 +613,32 @@ void deploytest::testQIF() {
     bin += "," + target2;
     bin += "," + target3;
 
-    auto prefixString = "/prefix1/;" + QFileInfo(target1).absoluteFilePath() + ",/prefix2/;" + QFileInfo(target2).absoluteFilePath();
+    auto packageString = "/package1/;" + QFileInfo(target1).absoluteFilePath() + ",/package2/;" + QFileInfo(target2).absoluteFilePath();
     runTestParams({"-bin", bin, "force-clear",
                    "-binOut", "/lol",
                    "-libOut", "/lolLib",
                    "-trOut", "/lolTr",
                    "-pluginOut", "/p",
                    "-qmlOut", "/q",
-                   "-qmlDir", "prefix2;" + TestBinDir + "/../TestQMLWidgets",
-                   "-targetPrefix", prefixString, "qif"}, &comapareTree);
+                   "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
+                   "-targetPackage", packageString, "qif"}, &comapareTree);
+
+}
+
+void deploytest::testInit()
+{
+
+    TestUtils utils;
+
+    runTestParams({"init"});
+    runTestParams({});
+
+    QVERIFY(QFile(DEFAULT_COFIGURATION_FILE).remove());
+
+    runTestParams({"-init", "multiPackage"});
+    runTestParams({});
+
+    QVERIFY(QFile(DEFAULT_COFIGURATION_FILE).remove());
 
 }
 
@@ -1320,24 +1340,24 @@ void deploytest::testConfFile() {
     QFile f("./" + DISTRO_DIR + "/bin/TestOnlyC");
     comapareTree = utils.createTree(
     {
-        "./" + DISTRO_DIR + "/prefix/TestOnlyC.sh",
-        "./" + DISTRO_DIR + "/prefix/bin/TestOnlyC",
-        "./" + DISTRO_DIR + "/prefix/bin/qt.conf"
+        "./" + DISTRO_DIR + "/package/TestOnlyC.sh",
+        "./" + DISTRO_DIR + "/package/bin/TestOnlyC",
+        "./" + DISTRO_DIR + "/package/bin/qt.conf"
     });
     QString target1 = TestBinDir + "TestOnlyC";
 
 #else
     QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
     comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "/prefix/TestOnlyC.exe",
-     "./" + DISTRO_DIR + "/prefix/qt.conf"});
+    {"./" + DISTRO_DIR + "/package/TestOnlyC.exe",
+     "./" + DISTRO_DIR + "/package/qt.conf"});
     QString target1 = TestBinDir + "TestOnlyC.exe";
 
 #endif
     bin = target1;
 
     runTestParams({"-bin", bin, "force-clear",
-                  "-targetPrefix", "prefix;Test",
+                  "-targetPackage", "package;Test",
                   "-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"}, &comapareTree);
 
     runTestParams({"-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"},
@@ -1348,34 +1368,34 @@ void deploytest::testConfFile() {
 
 }
 
-void deploytest::testPrefixes() {
+void deploytest::testPackages() {
     TestUtils utils;
 
 #ifdef Q_OS_UNIX
     QFile f("./" + DISTRO_DIR + "/bin/TestOnlyC");
     auto comapareTree = utils.createTree(
     {
-        "./" + DISTRO_DIR + "/prefix/TestOnlyC.sh",
-        "./" + DISTRO_DIR + "/prefix/bin/TestOnlyC",
-        "./" + DISTRO_DIR + "/prefix/bin/qt.conf"
+        "./" + DISTRO_DIR + "/package/TestOnlyC.sh",
+        "./" + DISTRO_DIR + "/package/bin/TestOnlyC",
+        "./" + DISTRO_DIR + "/package/bin/qt.conf"
     });
     QString target1 = TestBinDir + "TestOnlyC";
 
 #else
     QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
     auto comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "/prefix/TestOnlyC.exe",
-     "./" + DISTRO_DIR + "/prefix/qt.conf"});
+    {"./" + DISTRO_DIR + "/package/TestOnlyC.exe",
+     "./" + DISTRO_DIR + "/package/qt.conf"});
     QString target1 = TestBinDir + "TestOnlyC.exe";
 
 #endif
     QString bin = target1;
 
     runTestParams({"-bin", bin, "force-clear",
-                  "-targetPrefix", "/prefix/;Test"}, &comapareTree);
+                  "-targetPackage", "/package/;Test"}, &comapareTree);
 
     runTestParams({"-bin", bin, "force-clear",
-                  "-targetPrefix", "/prefix/;" + QFileInfo(target1).absoluteFilePath()}, &comapareTree);
+                  "-targetPackage", "/package/;" + QFileInfo(target1).absoluteFilePath()}, &comapareTree);
 
 #ifdef Q_OS_UNIX
     QString target2 = TestBinDir + "TestQMLWidgets";
@@ -1389,9 +1409,9 @@ void deploytest::testPrefixes() {
     bin += "," + target2;
     bin += "," + target3;
 
-    auto prefixString = "/prefix1/;" + QFileInfo(target1).absoluteFilePath() + ",/prefix2/;" + QFileInfo(target2).absoluteFilePath();
+    auto packageString = "/package1/;" + QFileInfo(target1).absoluteFilePath() + ",/package2/;" + QFileInfo(target2).absoluteFilePath();
 
-    comapareTree = Modules::separetedPrefixeslibs();
+    comapareTree = Modules::separetedPackageslibs();
 
     runTestParams({"-bin", bin, "force-clear",
                    "-binOut", "/lol",
@@ -1399,27 +1419,27 @@ void deploytest::testPrefixes() {
                    "-trOut", "/lolTr",
                    "-pluginOut", "/p",
                    "-qmlOut", "/q",
-                   "-qmlDir", "prefix2;" + TestBinDir + "/../TestQMLWidgets",
-                   "-targetPrefix", prefixString}, &comapareTree);
+                   "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
+                   "-targetPackage", packageString}, &comapareTree);
 
     comapareTree -= utils.createTree({
-                    "./" + DISTRO_DIR + "/prefix2/bin/TestQMLWidgets",
-                    "./" + DISTRO_DIR + "/prefix2/bin/qt.conf",
+                    "./" + DISTRO_DIR + "/package2/bin/TestQMLWidgets",
+                    "./" + DISTRO_DIR + "/package2/bin/qt.conf",
                 });
 
     comapareTree += utils.createTree({
-                    "./" + DISTRO_DIR + "/prefix2/testBin/TestQMLWidgets",
-                    "./" + DISTRO_DIR + "/prefix2/testBin/qt.conf",
+                    "./" + DISTRO_DIR + "/package2/testBin/TestQMLWidgets",
+                    "./" + DISTRO_DIR + "/package2/testBin/qt.conf",
                 });
 
     runTestParams({"-bin", bin, "force-clear",
-                   "-binOut", "prefix2;/testBin,lol",
+                   "-binOut", "package2;/testBin,lol",
                    "-libOut", "/lolLib",
                    "-trOut", "/lolTr",
                    "-pluginOut", "/p",
                    "-qmlOut", "/q",
-                   "-qmlDir", "prefix2;" + TestBinDir + "/../TestQMLWidgets",
-                   "-targetPrefix", prefixString}, &comapareTree);
+                   "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
+                   "-targetPackage", packageString}, &comapareTree);
 
 }
 
@@ -2040,7 +2060,7 @@ void deploytest::testOutDirs() {
     auto runScript = file.readAll();
     file.close();
 
-    QVERIFY(runScript.contains("Prefix= ./../"));
+    QVERIFY(runScript.contains("Package= ./../"));
     QVERIFY(runScript.contains("Libraries= ./lolLib/"));
     QVERIFY(runScript.contains("Plugins= ./p/"));
     QVERIFY(runScript.contains("Imports= ./q/"));

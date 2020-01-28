@@ -3,6 +3,8 @@
         <file>Distributions/configures/Qt.json</file>
         <file>Distributions/configures/QIF.json</file>
         <file>Distributions/configures/C and C++.json</file>
+        <file>Distributions/configures/Init multiPackage configuration.json</file>
+        <file>Distributions/configures/Init single configuration.json</file>
     </qresource>
     <qresource prefix="/Templates/QIF">
         <file>Distributions/Templates/qif/packages/default/meta/package.xml</file>
