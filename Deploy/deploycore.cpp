@@ -463,8 +463,14 @@ QString DeployCore::getMSVCVersion(MSVCVersion msvc) {
 }
 
 bool DeployCore::isQtLib(const QString &lib) {
-    QFileInfo info((lib));
-    return _config->qtDir.isQt(PathUtils::toFullPath(info.absoluteFilePath()));
+    if (_config) {
+        QFileInfo info((lib));
+        return _config->qtDir.isQt(PathUtils::toFullPath(info.absoluteFilePath()));
+
+    }
+
+    auto info = QFileInfo(lib);
+    return isLib(info) && info.fileName().contains("Qt", ONLY_WIN_CASE_INSENSIATIVE);
 
 }
 
