@@ -39,6 +39,7 @@ Pe.file = $$PWD/pe/pe-parser-library/pe-parser-library.pro
 
 include('$$PWD/QIFData/installerCQtDeployer.pri')
 include($$PWD/test.pri)
+include($$PWD/doc/wiki.pri)
 
 DISTFILES += \
     snap/snapcraft.yaml \
