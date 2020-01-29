@@ -56,6 +56,8 @@ Deploy::~Deploy() {
     if (_packing) {
         delete _packing;
     }
+
+    DeployCore::_config = nullptr;
 }
 
 bool Deploy::prepare() {

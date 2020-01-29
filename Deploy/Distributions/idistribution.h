@@ -43,7 +43,6 @@ protected:
     bool moveData(const QString& from, const QString& to, const QString &ignore) const;
     bool copyFile(const QString& from, const QString& to) const;
 
-    QString findProcess(const QString& env, const QString& proc) const;
 
     QMap<int, QPair<QString, const DistroModule *>> sortPackages(const QHash<QString, DistroModule> &input);
 private:

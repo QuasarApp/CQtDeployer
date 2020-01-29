@@ -52,7 +52,7 @@ QString QIF::runCmd() {
     QString base = "binarycreator";
 
     if (binarycreator.isEmpty())
-        binarycreator = findProcess(toolKitEnv().concatEnv(), base);
+        binarycreator = DeployCore::findProcess(toolKitEnv().concatEnv(), base);
 
     return binarycreator;
 }
