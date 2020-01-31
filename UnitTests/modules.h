@@ -8,18 +8,27 @@
 #ifndef MODULES_H
 #define MODULES_H
 
-#include "modulesqt514.h"
 #include "testutils.h"
 #include <configparser.h>
 #include <QSet>
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    #include "modulesqt514.h"
+    class Modules : public ModulesQt514
 
+#elif QT_VERSION >= QT_VERSION_CHECK(5, 13, 0)
+    #include "modulesqt513.h"
+    class Modules : public ModulesQt513
 
-class Modules : public ModulesQt514
+#else
+    #include "modulesqt513.h"
+    class Modules : public ModulesQt513
+
+#endif
+
 {
 public:
     Modules();
-
 };
 
 #endif // MODULES_H

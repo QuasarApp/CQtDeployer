@@ -7,7 +7,6 @@
 
 #ifndef MODULESQT514_H
 #define MODULESQT514_H
-
 #include "modulesqt513.h"
 
 class ModulesQt514 : public ModulesQt513
