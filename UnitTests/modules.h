@@ -8,29 +8,17 @@
 #ifndef MODULES_H
 #define MODULES_H
 
+#include "modulesqt514.h"
 #include "testutils.h"
 #include <configparser.h>
 #include <QSet>
 
 
 
-class Modules
+class Modules : public ModulesQt514
 {
-private:
 public:
     Modules();
-
-    static QSet<QString> ignoreFilter(const QSet<QString>& input, const QString& filter);
-    static QSet<QString> qtLibs();
-    static QSet<QString> qmlLibs();
-    static QSet<QString> qmlLibsExtractPlugins();
-    static QSet<QString> separetedPackageslibs();
-
-    static QSet<QString> outTestLibs();
-
-    static QSet<QString> qtWithoutTr();
-    static QSet<QString> qtWebEngine();
-    static QSet<QString> testEmptyParamsTree(const QString &distDir = DISTRO_DIR);
 
 };
 
