@@ -2,6 +2,7 @@
 [![cqtdeployer](https://snapcraft.io//cqtdeployer/trending.svg?name=0)](https://snapcraft.io/cqtdeployer)
 # ![Logo](https://i.ibb.co/phDBvfr/qt.png)
 
+test
 ****************************
 
 ## What is CQtDeployer
