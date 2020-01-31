@@ -9,6 +9,7 @@ test
 The CQtDeployer is application for extract all depends library of executable and create launch script for your application.
 
 
+
 Key differences of this program:
 * Performance: this program deploys the application several times faster (up to 10 seconds)
 * Flexibility: this application's got flags that help you to configure the deployment for your or your project's needs
