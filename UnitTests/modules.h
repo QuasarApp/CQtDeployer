@@ -12,26 +12,23 @@
 #include <configparser.h>
 #include <QSet>
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    #include "modulesqt514.h"
+    class Modules : public ModulesQt514
 
+#elif QT_VERSION >= QT_VERSION_CHECK(5, 13, 0)
+    #include "modulesqt513.h"
+    class Modules : public ModulesQt513
 
-class Modules
+#else
+    #include "modulesqt513.h"
+    class Modules : public ModulesQt513
+
+#endif
+
 {
-private:
 public:
     Modules();
-
-    static QSet<QString> ignoreFilter(const QSet<QString>& input, const QString& filter);
-    static QSet<QString> qtLibs();
-    static QSet<QString> qmlLibs();
-    static QSet<QString> qmlLibsExtractPlugins();
-    static QSet<QString> separetedPackageslibs();
-
-    static QSet<QString> outTestLibs();
-
-    static QSet<QString> qtWithoutTr();
-    static QSet<QString> qtWebEngine();
-    static QSet<QString> testEmptyParamsTree(const QString &distDir = DISTRO_DIR);
-
 };
 
 #endif // MODULES_H
