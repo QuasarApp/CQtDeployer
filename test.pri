@@ -3,7 +3,7 @@ win32:exec = $$PWD/UnitTests/build/release/UnitTests.exe
 
 QT_DIR= $$[QT_HOST_BINS]
 win32:QMAKE_BIN= $$QT_DIR/qmake.exe
-win32:DEPLOYER= cmd START %cqtdeployer%
+win32:DEPLOYER= $cqtdeployer
 contains(QMAKE_HOST.os, Linux):{
     QMAKE_BIN= $$QT_DIR/qmake
     DEPLOYER= cqtdeployer
