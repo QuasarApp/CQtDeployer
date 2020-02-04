@@ -94,14 +94,14 @@ private slots:
     // tested flags binDir
     void testBinDir();
 
+    // tested flags qmlDir qmake
+    void testQt();
+
     // tested flags confFile
     void testConfFile();
 
     // tested flags targetPackage
     void testPackages();
-
-    // tested flags qmlDir qmake
-    void testQt();
 
     // tested clear force clear in clear mode
     void testClear();
