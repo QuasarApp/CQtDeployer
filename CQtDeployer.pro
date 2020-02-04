@@ -38,7 +38,6 @@ CONFIG += ordered
     Pe.file = $$PWD/pe/pe-parser-library/pe-parser-library.pro
 
     include('$$PWD/installer/installerCQtDeployer.pri')
-    include($$PWD/test.pri)
 
     DISTFILES += \
         snap/snapcraft.yaml \
@@ -46,3 +45,5 @@ CONFIG += ordered
 
 
 }
+    include($$PWD/test.pri)
+
