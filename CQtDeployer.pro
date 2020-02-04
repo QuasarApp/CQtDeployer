@@ -8,41 +8,41 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 !android {
-SUBDIRS += QuasarAppLib \
-           Pe \
-           Deploy \
-           CQtDeployer \
-           UnitTests \
-           tests/TestOnlyC \
-           tests/TestQtWidgets \
-           tests/TestQMLWidgets
+    SUBDIRS += QuasarAppLib \
+               Pe \
+               Deploy \
+               CQtDeployer \
+               UnitTests \
+               tests/TestOnlyC \
+               tests/TestQtWidgets \
+               tests/TestQMLWidgets
 
 
-contains(DEFINES, WITH_ALL_TESTS) {
-    SUBDIRS += tests/quicknanobrowser
-}
+    contains(DEFINES, WITH_ALL_TESTS) {
+        SUBDIRS += tests/quicknanobrowser
+    }
 
 
-contains(DEFINES, WITHOUT_TESTS) {
-    SUBDIRS -= UnitTests \
-           tests/TestOnlyC \
-           tests/TestQtWidgets \
-           tests/TestQMLWidgets \
-           tests/quicknanobrowser
-}
+    contains(DEFINES, WITHOUT_TESTS) {
+        SUBDIRS -= UnitTests \
+               tests/TestOnlyC \
+               tests/TestQtWidgets \
+               tests/TestQMLWidgets \
+               tests/quicknanobrowser
+    }
 
-CQtDeployer.depends=QuasarAppLib
-CQtDeployer.depends=Deploy
+    CQtDeployer.depends=QuasarAppLib
+    CQtDeployer.depends=Deploy
 
-QuasarAppLib.file = $$PWD/QuasarAppLib/QuasarApp.pro
-Pe.file = $$PWD/pe/pe-parser-library/pe-parser-library.pro
+    QuasarAppLib.file = $$PWD/QuasarAppLib/QuasarApp.pro
+    Pe.file = $$PWD/pe/pe-parser-library/pe-parser-library.pro
 
-include('$$PWD/installer/installerCQtDeployer.pri')
-include($$PWD/test.pri)
+    include('$$PWD/installer/installerCQtDeployer.pri')
+    include($$PWD/test.pri)
 
-DISTFILES += \
-    snap/snapcraft.yaml \
-    README.md \
+    DISTFILES += \
+        snap/snapcraft.yaml \
+        README.md \
 
 
 }
