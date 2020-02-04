@@ -3,11 +3,14 @@ win32:exec = $$PWD/UnitTests/build/release/UnitTests.exe
 
 QT_DIR= $$[QT_HOST_BINS]
 win32:QMAKE_BIN= $$QT_DIR/qmake.exe
+win32:DEPLOYER= %cqtdeployer%
 contains(QMAKE_HOST.os, Linux):{
     QMAKE_BIN= $$QT_DIR/qmake
+    win32:DEPLOYER= cqtdeployer
+
 }
 
-deployTest.commands = cqtdeployer -bin $$exec clear -qmake $$QMAKE_BIN -targetDir $$PWD/deployTests -libDir $$PWD -recursiveDepth 4
+deployTest.commands = $$DEPLOYER -bin $$exec clear -qmake $$QMAKE_BIN -targetDir $$PWD/deployTests -libDir $$PWD -recursiveDepth 4
 
 
 test.depends = deployTest

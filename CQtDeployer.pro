@@ -16,7 +16,7 @@ SUBDIRS += QuasarAppLib \
            tests/TestOnlyC \
            tests/TestQtWidgets \
            tests/TestQMLWidgets
-}
+
 
 contains(DEFINES, WITH_ALL_TESTS) {
     SUBDIRS += tests/quicknanobrowser
@@ -45,3 +45,4 @@ DISTFILES += \
     README.md \
 
 
+}
