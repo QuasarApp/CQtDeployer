@@ -578,6 +578,16 @@ QSet<QString> ConfigParser::getQtPathesFromTargets() {
     return res;
 }
 
+bool ConfigParser::isNeededQt() const {
+    for (const auto &i: _config.targets()) {
+        if (i.isValid() && i.isDependetOfQt()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void ConfigParser::setTargetDir(const QString &target) {
 
     if (QuasarAppUtils::Params::isEndable("targetDir")) {
@@ -852,6 +862,16 @@ bool ConfigParser::initQmake() {
         auto qtList = getQtPathesFromTargets();
 
         if (qtList.isEmpty()) {
+
+            if (!QuasarAppUtils::Params::isEndable("noCheckPATH") && isNeededQt()) {
+                auto env = QProcessEnvironment::systemEnvironment();
+                auto proc = DeployCore::findProcess(env.value("PATH"), "qmake");
+                if (proc.isEmpty())
+                    return false;
+
+                return initQmakePrivate(proc);
+            }
+
             qInfo() << "deploy only C libs because qmake is not found";
             return true;
 
@@ -881,6 +901,7 @@ bool ConfigParser::setQmake(const QString &value) {
 
     if (!(qmakeInfo.fileName().compare("qmake", Qt::CaseInsensitive) ||
         qmakeInfo.fileName().compare("qmake.exe", Qt::CaseInsensitive))) {
+
         return false;
     }
 

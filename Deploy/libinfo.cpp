@@ -102,6 +102,16 @@ void LibInfo::setWinApi(WinAPI winApi) {
     _winApi = winApi;
 }
 
+bool LibInfo::isDependetOfQt() const {
+    for (const auto& i : dependncies) {
+        if (DeployCore::isQtLib(i)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 QString LibInfo::fullPath() const {
     return path + "/" + name;
 }

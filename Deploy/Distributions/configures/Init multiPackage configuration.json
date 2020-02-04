@@ -46,7 +46,8 @@
     "recOut": "rec",
     "verbose": 3,
     "qif": false,
-    "noAutoCheckQmake": false,
+    "noCheckRPATH": false,
+    "noCheckPATH": false,
     "name": [
         [
             "package2",

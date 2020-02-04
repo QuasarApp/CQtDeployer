@@ -170,6 +170,8 @@ public:
     static bool isExecutable(const QFileInfo &file);
     static bool isContainsArraySeparators(const QString& val,
                                           int lastLvl = 2);
+    static QString findProcess(const QString& env, const QString& proc);
+
 
 };
 

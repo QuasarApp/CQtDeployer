@@ -768,7 +768,8 @@ void deploytest::testRelativeLink() {
 void deploytest::testCheckQt() {
 
     Deploy *deployer = new Deploy();
-    QuasarAppUtils::Params::parseParams({"-binDir", TestBinDir, "clear", "noAutoCheckQmake"});
+    QuasarAppUtils::Params::parseParams({"-binDir", TestBinDir, "clear",
+                                         "noCheckRPATH", "noCheckPATH"});
     QVERIFY(deployer->prepare());
 
 
@@ -1143,7 +1144,7 @@ void deploytest::testBinDir() {
 
 
     runTestParams({"-binDir", TestBinDir, "clear",
-                  "noAutoCheckQmake"}, &comapareTree);
+                  "noCheckRPATH", "noCheckPATH"}, &comapareTree);
 }
 
 void deploytest::testConfFile() {
@@ -1176,7 +1177,7 @@ void deploytest::testConfFile() {
      "./" + DISTRO_DIR + "/quicknanobrowser.sh"});
 #endif
 
-    runTestParams({"-bin", TestBinDir, "clear" , "noAutoCheckQmake",
+    runTestParams({"-bin", TestBinDir, "clear" , "noCheckRPATH", "noCheckPATH",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 
 
@@ -1189,11 +1190,11 @@ void deploytest::testConfFile() {
 
 #ifdef Q_OS_UNIX
     runTestParams({"-bin", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
-                   "clear", "noAutoCheckQmake",
+                   "clear", "noCheckRPATH", "noCheckPATH",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #else
     runTestParams({"-bin", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
-                   "clear" , "-libDir", "L:/never/absalut/path",
+                   "clear" , "-libDir", "L:/never/absalut/path", "noCheckPATH",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #endif
 
@@ -1251,11 +1252,11 @@ void deploytest::testConfFile() {
 
 #ifdef Q_OS_UNIX
     runTestParams({"-bin", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
-                   "clear" , "noAutoCheckQmake",
+                   "clear" , "noCheckRPATH", "noCheckPATH",
                    "-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"}, &comapareTree);
 #else
     runTestParams({"-bin", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
-                   "clear" ,
+                   "clear" , "noCheckPATH",
                    "-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"}, &comapareTree);
 #endif
 
@@ -1479,6 +1480,14 @@ void deploytest::testQt() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake}, &comapareTree);
+
+    // test auto detection of detection qmake from PATH
+    runTestParams({"-bin", bin, "clear", "noCheckRPATH"}, &comapareTree);
+
+#ifdef Q_OS_UNIX
+    // test auto detection of detection qmake from RPATH
+    runTestParams({"-bin", bin, "clear", "noCheckPATH"}, &comapareTree);
+#endif
 
     comapareTree = Modules::qtWithoutTr();
 
