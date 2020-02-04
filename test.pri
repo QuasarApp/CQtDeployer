@@ -6,7 +6,7 @@ win32:QMAKE_BIN= $$QT_DIR/qmake.exe
 win32:DEPLOYER= %cqtdeployer%
 contains(QMAKE_HOST.os, Linux):{
     QMAKE_BIN= $$QT_DIR/qmake
-    win32:DEPLOYER= cqtdeployer
+    DEPLOYER= cqtdeployer
 
 }
 
