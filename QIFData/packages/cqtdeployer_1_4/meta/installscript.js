@@ -31,7 +31,7 @@ function systemIntegration() {
     if (systemInfo.kernelType === "winnt") {
 
         component.addOperation('Execute', ["SETX", "cqtdeployer", "\"" + targetDir + "/" + VERSION + "/cqtdeployer.exe\""])
-
+        component.addElevatedOperation('CreateLink', [ "C:/Windows/system32/cqtdeployer", "\"" + targetDir + "/" + VERSION + "/cqtdeployer.exe\""])
 
     } else {
 
