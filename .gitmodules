@@ -10,3 +10,6 @@
 [submodule "installer"]
 	path = installer
 	url = https://github.com/QuasarApp/DesktopInstaller.git
+[submodule "QuasarAppScripts"]
+	path = QuasarAppScripts
+	url = https://github.com/QuasarApp/QuasarAppScripts.git
