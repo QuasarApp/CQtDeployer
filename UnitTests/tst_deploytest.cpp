@@ -2041,6 +2041,17 @@ void deploytest::testSystemLib() {
 
     });
 
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    comapareTree += utils.createTree(
+    {
+        "./" + DISTRO_DIR + "/d3d11.dll",
+        "./" + DISTRO_DIR + "/dxgi.dll",
+        "./" + DISTRO_DIR + "/win32u.dll",
+    });
+#endif
+
+
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                    "deploySystem"

@@ -19,6 +19,9 @@ QSet<QString> ModulesQt514::qtLibs()
     auto res = ModulesQt513::qtLibs();
 
 #ifdef Q_OS_WIN
+    res += utils.createTree({
+        {"./" + DISTRO_DIR + "/Qt5QmlModels.dll"},
+    });
 #else
     res += utils.createTree({
         {"./" + DISTRO_DIR + "/lib/libQt5QmlModels.so"},
@@ -37,6 +40,10 @@ QSet<QString> ModulesQt514::qmlLibs()
     auto res = ModulesQt513::qmlLibs();
 
 #ifdef Q_OS_WIN
+    res += utils.createTree({
+        {"./" + DISTRO_DIR + "/Qt5QmlModels.dll"},
+        {"./" + DISTRO_DIR + "/Qt5QmlWorkerScript.dll"},
+    });
 #else
     res += utils.createTree({
         {"./" + DISTRO_DIR + "/lib/libQt5QmlModels.so"},
@@ -61,6 +68,13 @@ QSet<QString> ModulesQt514::separetedPackageslibs()
     auto res = ModulesQt513::separetedPackageslibs();
 
 #ifdef Q_OS_WIN
+    res += utils.createTree(
+            {
+                "./" + DISTRO_DIR + "/lolLib/Qt5QmlModels.dll",
+                "./" + DISTRO_DIR + "/package2/Qt5QmlModels.dll",
+                "./" + DISTRO_DIR + "/package2/Qt5QmlWorkerScript.dll",
+            }
+        );
 #else
     res += utils.createTree(
             {
@@ -84,6 +98,10 @@ QSet<QString> ModulesQt514::outTestLibs()
     auto res = ModulesQt513::outTestLibs();
 
 #ifdef Q_OS_WIN
+    res += utils.createTree({
+        "./" + DISTRO_DIR + "/lolLib/Qt5QmlModels.dll",
+        "./" + DISTRO_DIR + "/lolLib/Qt5QmlWorkerScript.dll",
+    });
 #else
     res += utils.createTree({
         "./" + DISTRO_DIR + "/lolLib/libQt5QmlModels.so",
@@ -102,6 +120,9 @@ QSet<QString> ModulesQt514::qtWithoutTr()
     auto res = ModulesQt513::qtWithoutTr();
 
 #ifdef Q_OS_WIN
+    res += utils.createTree({
+        {"./" + DISTRO_DIR + "/Qt5QmlModels.dll"},
+    });
 #else
     res += utils.createTree({
         {"./" + DISTRO_DIR + "/lib/libQt5QmlModels.so"},
