@@ -48,18 +48,9 @@ struct parsed_pe_internal {
 
 bool PE::getDep(peparse::parsed_pe_internal * internal, LibInfo &res) const {
     auto imports = internal->imports;
-    auto exports = internal->exports;
-
     std::set<std::string> filter;
 
     for ( auto &i : imports) {
-        if (!filter.count(i.moduleName)) {
-            filter.insert(i.moduleName);
-            res.addDependncies(QString::fromStdString(i.moduleName));
-        }
-    }
-
-    for ( auto &i : exports) {
         if (!filter.count(i.moduleName)) {
             filter.insert(i.moduleName);
             res.addDependncies(QString::fromStdString(i.moduleName));
