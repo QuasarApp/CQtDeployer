@@ -111,22 +111,6 @@ bool iDistribution::copyFile(const QString &from, const QString &to) const {
     return _fileManager->copyFile(from, to);
 }
 
-QString iDistribution::findProcess(const QString &env, const QString& proc) const {
-    auto list = env.split(DeployCore::getEnvSeparator());
-
-    for (const auto& path : list) {
-        auto files = QDir(path).entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
-
-        for (const auto& bin : files) {
-            if (bin.fileName().compare(proc, ONLY_WIN_CASE_INSENSIATIVE) == 0) {
-                return bin.absoluteFilePath();
-            }
-        }
-    }
-
-    return "";
-}
-
 QMap<int ,QPair<QString, const DistroModule*>>
 iDistribution::sortPackages(const QHash<QString, DistroModule> &input) {
     QMap<int ,QPair<QString, const DistroModule *>> result;

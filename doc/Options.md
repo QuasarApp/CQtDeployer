@@ -72,7 +72,8 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |                             | It doesn't work without qmake and inside a snap package         |
 |   extractPlugins            | This flag will cause cqtdeployer to retrieve dependencies from plugins. Starting with version 1.4, this option has been disabled by default, as it can add low-level graphics libraries to the distribution, which will not be compatible with equipment on users' hosts. |
 |   noOverwrite               | Prevents replacing existing files.                              |
-|   noAutoCheckQmake          | Disables automatic search of paths to qmake in executable files.|
+|   noCheckRPATH              | Disables automatic search of paths to qmake in executable files.|
+|   noCheckPATH               | Disables automatic search of paths to qmake in system PATH.     |
 |   v / version               | Shows compiled version                                          |
 
 
@@ -155,7 +156,8 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  noTranslations             | Пропускает файлы переводов                                |
 |                             | не работает без qmake и в snap                            |
 |   noOverwrite               | Запрещает замену уже существующих файлов.                |
-|   noAutoCheckQmake          | Отключает автоматический поиск путей к qmake в исполняемых файлах.|
+|   noCheckRPATH              | Отключает автоматический поиск путей к qmake в исполняемых файлах.|
+|   noCheckPATH               | Отключает автоматический поиск путей к qmake в системном окружении.     |
 |  v / version                | Показывает версию приложения                                          |
 
 

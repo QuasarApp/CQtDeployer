@@ -13,6 +13,13 @@
 #define DEFAULT_COFIGURATION_FILE           QString("CQtDeployer.json")
 #define DISTRO_DIR                          QString("DistributionKit")
 
+
+#ifdef Q_OS_WIN
+#define ONLY_WIN_CASE_INSENSIATIVE Qt::CaseInsensitive
+#else
+#define ONLY_WIN_CASE_INSENSIATIVE Qt::CaseSensitive
+#endif
+
 #if defined(DEPLOY_LIBRARY)
 #  define DEPLOYSHARED_EXPORT Q_DECL_EXPORT
 #else

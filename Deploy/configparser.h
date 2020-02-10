@@ -90,6 +90,7 @@ private:
 
     bool configureDistribution(iDistribution *distro);
 
+    bool isNeededQt() const;
 public:
     ConfigParser(FileManager *filemanager, DependenciesScanner *scaner, Packing* pac);
     bool parseParams();

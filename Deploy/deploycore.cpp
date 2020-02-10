@@ -209,7 +209,8 @@ QString DeployCore::help() {
     { "                            : which will not be compatible with equipment on users' hosts."},
     { "   noTranslations           : Skips the translations files." },
     { "                            | It doesn't work without qmake and inside a snap package" },
-    { "   -noAutoCheckQmake        : Disables automatic search of paths to qmake in executable files." },
+    { "   noCheckRPATH             : Disables automatic search of paths to qmake in executable files." },
+    { "   noCheckPATH              : Disables automatic search of paths to qmake in system PATH." },
     { "   -qmlOut [package;val,val] : Sets path to qml out directory" },
     { "   -libOut [package;val,val] : Sets path to libraries out directory" },
     { "   -trOut [package;val,val]  : Sets path to translations out directory" },
@@ -276,7 +277,8 @@ QStringList DeployCore::helpKeys() {
         "version",
         "verbose",
         "qif",
-        "noAutoCheckQmake",
+        "noCheckRPATH",
+        "noCheckPATH",
         "name",
         "description",
         "deployVersion",
@@ -331,6 +333,22 @@ bool DeployCore::isContainsArraySeparators(const QString &val, int lastLvl) {
     }
 
     return false;
+}
+
+QString DeployCore::findProcess(const QString &env, const QString& proc) {
+    auto list = env.split(DeployCore::getEnvSeparator());
+
+    for (const auto& path : list) {
+        auto files = QDir(path).entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
+
+        for (const auto& bin : files) {
+            if (bin.baseName().compare(proc, ONLY_WIN_CASE_INSENSIATIVE) == 0) {
+                return bin.absoluteFilePath();
+            }
+        }
+    }
+
+    return "";
 }
 
 int DeployCore::find(const QString &str, const QStringList &list) {
@@ -448,8 +466,12 @@ QString DeployCore::getMSVCVersion(MSVCVersion msvc) {
 
 bool DeployCore::isQtLib(const QString &lib) {
     QFileInfo info((lib));
-    return _config->qtDir.isQt(PathUtils::toFullPath(info.absoluteFilePath()));
 
+    if (_config) {
+        return _config->qtDir.isQt(PathUtils::toFullPath(info.absoluteFilePath()));
+    }
+
+    return isLib(info) && info.fileName().contains("Qt", Qt::CaseInsensitive);
 }
 
 bool DeployCore::isExtraLib(const QString &lib) {

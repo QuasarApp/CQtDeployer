@@ -87,7 +87,7 @@ bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) const 
     }
 }
 
-void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res) {
+void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QString>& libStack) {
     QuasarAppUtils::Params::verboseLog("get recursive dependencies of " + lib.fullPath(),
                                        QuasarAppUtils::Info);
 
@@ -103,6 +103,14 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res) {
 
         return;
     }
+
+    if (libStack.contains(lib.fullPath())) {
+        QuasarAppUtils::Params::verboseLog("A recursive dependency was found in library " + lib.fullPath(),
+                                           QuasarAppUtils::Warning);
+        return;
+    }
+
+    libStack.insert(lib.fullPath());
 
     for (auto i : lib.dependncies) {
 
@@ -127,7 +135,10 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res) {
             if (!scanedLib.isValid()) {
                 QSet<LibInfo> listDep =  {};
 
-                recursiveDep(*dep, listDep);
+                if (!lib.name.compare(dep.value().name, ONLY_WIN_CASE_INSENSIATIVE))
+                    continue;
+
+                recursiveDep(*dep, listDep, libStack);
 
                 dep->allDep = listDep;
                 lib.setWinApi(lib.getWinApi() | dep->getWinApi());
@@ -140,6 +151,8 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res) {
             }
         }
     }
+
+    libStack.remove(lib.fullPath());
 }
 
 void DependenciesScanner::addToWinAPI(const QString &lib, QHash<WinAPI, QSet<QString>>& res) {
@@ -196,7 +209,8 @@ QSet<LibInfo> DependenciesScanner::scan(const QString &path) {
         return result;
     }
 
-    recursiveDep(info, result);
+    QSet<QString> stack;
+    recursiveDep(info, result, stack);
 
     return result;
 }

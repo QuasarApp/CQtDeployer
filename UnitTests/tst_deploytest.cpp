@@ -94,14 +94,14 @@ private slots:
     // tested flags binDir
     void testBinDir();
 
+    // tested flags qmlDir qmake
+    void testQt();
+
     // tested flags confFile
     void testConfFile();
 
     // tested flags targetPackage
     void testPackages();
-
-    // tested flags qmlDir qmake
-    void testQt();
 
     // tested clear force clear in clear mode
     void testClear();
@@ -768,7 +768,8 @@ void deploytest::testRelativeLink() {
 void deploytest::testCheckQt() {
 
     Deploy *deployer = new Deploy();
-    QuasarAppUtils::Params::parseParams({"-binDir", TestBinDir, "clear", "noAutoCheckQmake"});
+    QuasarAppUtils::Params::parseParams({"-binDir", TestBinDir, "clear",
+                                         "noCheckRPATH", "noCheckPATH"});
     QVERIFY(deployer->prepare());
 
 
@@ -880,7 +881,8 @@ void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree,
     QuasarAppUtils::Params::parseParams(list);
 
     Deploy deploy;
-    QVERIFY(deploy.run() == Good);
+    if (deploy.run() != Good)
+        QVERIFY(false);
 
     if (tree) {
         checkResults(*tree, noWarnings, onlySize);
@@ -1143,7 +1145,7 @@ void deploytest::testBinDir() {
 
 
     runTestParams({"-binDir", TestBinDir, "clear",
-                  "noAutoCheckQmake"}, &comapareTree);
+                  "noCheckRPATH", "noCheckPATH"}, &comapareTree);
 }
 
 void deploytest::testConfFile() {
@@ -1176,7 +1178,7 @@ void deploytest::testConfFile() {
      "./" + DISTRO_DIR + "/quicknanobrowser.sh"});
 #endif
 
-    runTestParams({"-bin", TestBinDir, "clear" , "noAutoCheckQmake",
+    runTestParams({"-bin", TestBinDir, "clear" , "noCheckRPATH", "noCheckPATH",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 
 
@@ -1189,11 +1191,11 @@ void deploytest::testConfFile() {
 
 #ifdef Q_OS_UNIX
     runTestParams({"-bin", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
-                   "clear", "noAutoCheckQmake",
+                   "clear", "noCheckRPATH", "noCheckPATH",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #else
     runTestParams({"-bin", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
-                   "clear" , "-libDir", "L:/never/absalut/path",
+                   "clear" , "-libDir", "L:/never/absalut/path", "noCheckPATH",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #endif
 
@@ -1251,11 +1253,11 @@ void deploytest::testConfFile() {
 
 #ifdef Q_OS_UNIX
     runTestParams({"-bin", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
-                   "clear" , "noAutoCheckQmake",
+                   "clear" , "noCheckRPATH", "noCheckPATH",
                    "-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"}, &comapareTree);
 #else
     runTestParams({"-bin", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
-                   "clear" ,
+                   "clear" , "noCheckPATH",
                    "-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"}, &comapareTree);
 #endif
 
@@ -1357,7 +1359,7 @@ void deploytest::testConfFile() {
     bin = target1;
 
     runTestParams({"-bin", bin, "force-clear",
-                  "-targetPackage", "package;Test",
+                  "-targetPackage", "package;TestOn",
                   "-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"}, &comapareTree);
 
     runTestParams({"-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"},
@@ -1392,7 +1394,7 @@ void deploytest::testPackages() {
     QString bin = target1;
 
     runTestParams({"-bin", bin, "force-clear",
-                  "-targetPackage", "/package/;Test"}, &comapareTree);
+                  "-targetPackage", "/package/;TestOn"}, &comapareTree);
 
     runTestParams({"-bin", bin, "force-clear",
                   "-targetPackage", "/package/;" + QFileInfo(target1).absoluteFilePath()}, &comapareTree);
@@ -1422,6 +1424,8 @@ void deploytest::testPackages() {
                    "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
                    "-targetPackage", packageString}, &comapareTree);
 
+#ifdef Q_OS_UNIX
+
     comapareTree -= utils.createTree({
                     "./" + DISTRO_DIR + "/package2/bin/TestQMLWidgets",
                     "./" + DISTRO_DIR + "/package2/bin/qt.conf",
@@ -1431,6 +1435,18 @@ void deploytest::testPackages() {
                     "./" + DISTRO_DIR + "/package2/testBin/TestQMLWidgets",
                     "./" + DISTRO_DIR + "/package2/testBin/qt.conf",
                 });
+#else
+    comapareTree -= utils.createTree({
+                    "./" + DISTRO_DIR + "/package2/TestQMLWidgets.exe",
+                    "./" + DISTRO_DIR + "/package2/qt.conf",
+                });
+
+    comapareTree += utils.createTree({
+                    "./" + DISTRO_DIR + "/package2/testBin/TestQMLWidgets.exe",
+                    "./" + DISTRO_DIR + "/package2/TestQMLWidgets.bat",
+                    "./" + DISTRO_DIR + "/package2/testBin/qt.conf",
+                });
+#endif
 
     runTestParams({"-bin", bin, "force-clear",
                    "-binOut", "package2;/testBin,lol",
@@ -1479,6 +1495,14 @@ void deploytest::testQt() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake}, &comapareTree);
+
+    // test auto detection of detection qmake from PATH
+    runTestParams({"-bin", bin, "clear", "noCheckRPATH"}, &comapareTree);
+
+#ifdef Q_OS_UNIX
+    // test auto detection of detection qmake from RPATH
+    runTestParams({"-bin", bin, "clear", "noCheckPATH"}, &comapareTree);
+#endif
 
     comapareTree = Modules::qtWithoutTr();
 
@@ -2016,6 +2040,17 @@ void deploytest::testSystemLib() {
         "./" + DISTRO_DIR + "/ucrtbase.dll",
 
     });
+
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    comapareTree += utils.createTree(
+    {
+        "./" + DISTRO_DIR + "/d3d11.dll",
+        "./" + DISTRO_DIR + "/dxgi.dll",
+        "./" + DISTRO_DIR + "/win32u.dll",
+    });
+#endif
+
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
