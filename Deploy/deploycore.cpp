@@ -342,7 +342,7 @@ QString DeployCore::findProcess(const QString &env, const QString& proc) {
         auto files = QDir(path).entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
 
         for (const auto& bin : files) {
-            if (bin.fileName().compare(proc, ONLY_WIN_CASE_INSENSIATIVE) == 0) {
+            if (bin.baseName().compare(proc, ONLY_WIN_CASE_INSENSIATIVE) == 0) {
                 return bin.absoluteFilePath();
             }
         }
