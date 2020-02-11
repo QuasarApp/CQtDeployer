@@ -8,7 +8,7 @@ contains(QMAKE_HOST.os, Linux):{
 }
 
 DEPLOYER=cqtdeployer
-win32:DEPLOYER=$$cqtdeployer
+win32:DEPLOYER=$cqtdeployer
 
 
 deployTest.commands = $$DEPLOYER -bin $$exec clear -qmake $$QMAKE_BIN -targetDir $$PWD/deployTests -libDir $$PWD -recursiveDepth 4
