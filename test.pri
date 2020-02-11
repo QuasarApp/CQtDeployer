@@ -1,5 +1,5 @@
-unix:exec = shell_quote($$PWD/UnitTests/build/release/UnitTests)
-win32:exec = shell_quote($$PWD/UnitTests/build/release/UnitTests.exe)
+unix:exec = $$PWD/UnitTests/build/release/UnitTests
+win32:exec = $$PWD/UnitTests/build/release/UnitTests.exe
 
 QT_DIR= $$[QT_HOST_BINS]
 win32:QMAKE_BIN= $$QT_DIR/qmake.exe
@@ -11,7 +11,7 @@ DEPLOYER=cqtdeployer
 win32:DEPLOYER=$$cqtdeployer
 
 
-deployTest.commands = shell_quote($$DEPLOYER) -bin $$exec clear -qmake shell_quote($$QMAKE_BIN) -targetDir shell_quote($$PWD/deployTests) -libDir shell_quote($$PWD) -recursiveDepth 4
+deployTest.commands = $$DEPLOYER -bin $$exec clear -qmake $$QMAKE_BIN -targetDir $$PWD/deployTests -libDir $$PWD -recursiveDepth 4
 
 
 test.depends = deployTest
