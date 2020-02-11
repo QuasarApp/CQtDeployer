@@ -38,7 +38,7 @@ private:
 
     QMultiMap<LibPriority, LibInfo> getLibsFromEnvirement(const QString& libName) const;
 
-    void recursiveDep(LibInfo& lib, QSet<LibInfo> &res);
+    void recursiveDep(LibInfo& lib, QSet<LibInfo> &res, QSet<QString> &libStack);
 
     void addToWinAPI(const QString& lib, QHash<WinAPI, QSet<QString> > &res);
 

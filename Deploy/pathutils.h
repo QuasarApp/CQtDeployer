@@ -13,12 +13,6 @@
 #include <QString>
 #include "deploy_global.h"
 
-#ifdef Q_OS_WIN
-#define ONLY_WIN_CASE_INSENSIATIVE Qt::CaseInsensitive
-#else
-#define ONLY_WIN_CASE_INSENSIATIVE Qt::CaseSensitive
-#endif
-
 /**
  * @brief The PathUtils class
  *
