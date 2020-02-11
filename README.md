@@ -57,8 +57,8 @@ See list of all options [here](https://github.com/QuasarApp/CQtDeployer/wiki/Opt
 - qmake.exe -r
      - Here you must definitely call the qmake that was loaded from the 1st item.
      - Example: C:/Qt/5.14.0/mingw73_64/bin/qmake.exe -r
-- migw32-make.exe -j$(nproc)
-- migw32-make.exe deploy
+- migw32-make -j8
+- migw32-make deploy
      - #this command requires installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
 - ./Distro/CQtDeployerInstaller.exe
 
@@ -133,8 +133,8 @@ If you want to support the project,you can donate into our bitcoin wallet.
 - qmake.exe -r
     - Здесь нужно обязательно вызвать тот qmake, который был загружен из 1го пункта.
     - Пример: C:/Qt/5.14.0/mingw73_64/bin/qmake.exe -r
-- migw32-make.exe -j$(nproc)
-- migw32-make.exe deploy
+- migw32-make -j8
+- migw32-make deploy
     - эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
 - ./Distro/CQtDeployerInstaller.exe
 
