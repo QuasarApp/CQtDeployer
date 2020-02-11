@@ -17,7 +17,7 @@ win32:OUT_BIN= -binOut .
 BASE_DEPLOY_FLAGS = clear -qmake $$QMAKE_BIN -libDir $$PWD/../ -recursiveDepth 4 -ignoreEnv $$DEPLOY_TARGET
 BASE_DEPLOY_FLAGS_CQT = $$BASE_DEPLOY_FLAGS -targetDir $$DATA_DIR $$OUT_LIB $$OUT_BIN
 
-deploy_dep.commands += cqtdeployer -bin $$DEPLOY_TARGET $$BASE_DEPLOY_FLAGS_CQT
+deploy_dep.commands += $$DEPLOYER -bin $$DEPLOY_TARGET $$BASE_DEPLOY_FLAGS_CQT
 
 win32:CONFIG_FILE = $$PWD/config/configWin.xml
 unix:CONFIG_FILE = $$PWD/config/configLinux.xml

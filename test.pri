@@ -7,7 +7,10 @@ contains(QMAKE_HOST.os, Linux):{
     QMAKE_BIN= $$QT_DIR/qmake
 }
 
-deployTest.commands = cqtdeployer -bin $$exec clear -qmake $$QMAKE_BIN -targetDir $$PWD/deployTests -libDir $$PWD -recursiveDepth 4
+DEPLOYER=cqtdeployer
+win32:DEPLOYER=$$(cqtdeployer)
+
+deployTest.commands = $$DEPLOYER -bin $$exec clear -qmake $$QMAKE_BIN -targetDir $$PWD/deployTests -libDir $$PWD -recursiveDepth 4
 
 
 test.depends = deployTest
