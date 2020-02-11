@@ -34,7 +34,7 @@ deploy.depends += deployOffline
 win32:ONLINE_REPO_DIR = $$ONLINE/CQtDeployer/Windows
 unix:ONLINE_REPO_DIR = $$ONLINE/CQtDeployer/Linux
 
-create_repo.commands = python3 $$PWD/QuasarAppScripts/cp.py $$PWD/packages/ $$PWD/../Repo
+create_repo.commands = python3 quote($$PWD/QuasarAppScripts/cp.py) $$PWD/packages/ $$PWD/../Repo
 
 chmodSnap.commands = chmod 777 -R $$DATA_DIR
 unix:deploy.depends += chmodSnap
