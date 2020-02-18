@@ -160,6 +160,9 @@ RunMode DeployCore::getMode() {
 
 QString DeployCore::help() {
 
+    QuasarAppUtils::Params::showHelp();
+
+
     QStringList help = {
     { "CQtDeployer version: " + getAppVersion()},
     { "Usage: cqtdeployer <-bin    [params]> [options]"},
