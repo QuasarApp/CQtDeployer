@@ -201,7 +201,7 @@ QString DeployCore::help() {
     { "   -extraPlugin[list,params]: Sets an additional path to extraPlugin of an app" },
     { "   -recursiveDepth [params] : Sets the Depth of recursive search of libs (default 0)" },
     { "   -targetDir [params]      : Sets target directory(by default it is the path to the first deployable file)" },
-    { "   -targetPackage [tar1;path,path]: Sets package for target( by default it is empty value)" },
+    { "   -targetPackage [package;tar1,package;tar2]: Creates a new package and adds 'tar1 and tar2' to it" },
     { "   noStrip                  : Skips strip step" },
     { "   extractPlugins           | This flag will cause cqtdeployer to retrieve dependencies from plugins." },
     { "                            : Starting with version 1.4, this option has been disabled by default,"},
