@@ -158,7 +158,7 @@ public:
 
     static void verboseLog(const QString &str);
     static RunMode getMode();
-    static QString help();
+    static void help();
     static QStringList helpKeys();
 
     static QStringList extractTranslation(const QSet<QString> &libs);

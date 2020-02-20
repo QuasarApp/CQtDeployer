@@ -41,7 +41,7 @@ QSet<QString> FileManager::getDeployedFiles() const {
 }
 
 QStringList FileManager::getDeployedFilesStringList() const {
-    return _deployedFiles.toList();
+    return _deployedFiles.values();
 }
 
 void FileManager::loadDeployemendFiles(const QString &targetDir) {
@@ -53,7 +53,7 @@ void FileManager::loadDeployemendFiles(const QString &targetDir) {
     QStringList deployedFiles = settings->getValue(targetDir, "").toStringList();
 
 //    _deployedFiles.clear();
-    _deployedFiles.unite(QSet<QString>::fromList(deployedFiles));
+    _deployedFiles.unite(QSet<QString>(deployedFiles.begin(), deployedFiles.end()));
 }
 
 

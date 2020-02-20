@@ -1138,7 +1138,7 @@ void ConfigParser::initEnvirement() {
 }
 
 QStringList ConfigParser::getDirsRecursive(const QString &path, int maxDepch, int depch) {
-    return getSetDirsRecursive(path, maxDepch, depch).toList();
+    return getSetDirsRecursive(path, maxDepch, depch).values();
 }
 
 QSet<QString> ConfigParser::getSetDirsRecursive(const QString &path, int maxDepch, int depch) {

@@ -22,15 +22,15 @@ QSet<QString> Envirement::upper(const QSet<QString>& set) const {
 }
 
 QStringList Envirement::deployEnvironment() const {
-    return _deployEnvironment.toList();
+    return _deployEnvironment.values();
 }
 
 QStringList Envirement::ignoreEnvList() const {
-    return _ignoreEnvList.toList();
+    return _ignoreEnvList.values();
 }
 
 void Envirement::setIgnoreEnvList(const QStringList &ignoreEnvList) {
-    _ignoreEnvList = upper(ignoreEnvList.toSet());
+    _ignoreEnvList = upper(QSet<QString>(ignoreEnvList.begin(), ignoreEnvList.end()));
 }
 
 void Envirement::addEnvRec(const QString &dir, int depch, const QString &appDir, const QString &targetDir) {

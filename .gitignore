@@ -9,6 +9,7 @@
 *.dll
 *.dylib
 *.snap
+*~
 
 # Qt-es
 object_script.*.Release
@@ -22,6 +23,7 @@ object_script.*.Debug
 *.qbs.user.*
 *.moc
 *.qm
+*.orig
 moc_*.cpp
 moc_*.h
 qrc_*.cpp
