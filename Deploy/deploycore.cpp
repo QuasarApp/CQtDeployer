@@ -89,7 +89,7 @@ DeployCore::QtModule DeployCore::getQtModule(const QString& path) {
     auto lIbName = QFileInfo(path).fileName();
 
     for (int i = 0; i < modulesCount; ++i) {
-        if (lIbName.contains(qtModuleEntries[i].libraryName)) {            
+        if (lIbName.contains(qtModuleEntries[i].libraryName)) {
             return static_cast<DeployCore::QtModule>(qtModuleEntries[i].module);
         }
     }
@@ -158,7 +158,7 @@ RunMode DeployCore::getMode() {
     return RunMode::Info;
 }
 
-QString DeployCore::help() {
+void DeployCore::help() {
 
 
     QuasarAppUtils::Help::Charters help = {
@@ -236,11 +236,11 @@ QString DeployCore::help() {
         }
     };
 
-   help.unite(QuasarAppUtils::Params::getparamsHelp());
+    help.unite(QuasarAppUtils::Params::getparamsHelp());
 
-   QuasarAppUtils::Params::showHelp(help);
+    QuasarAppUtils::Params::showHelp(help);
 
-    return {};
+    return;
 }
 
 QStringList DeployCore::helpKeys() {
