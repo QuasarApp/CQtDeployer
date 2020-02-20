@@ -82,9 +82,6 @@ private slots:
 
     // end old tests
 
-    // tested flags : help, version
-    void testHelp();
-
     // tested flags customScript
     void costomScript();
 
@@ -990,20 +987,6 @@ void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings , bool 
         QVERIFY2(false, "runTestParams fail");
 
 
-    }
-
-}
-
-void deploytest::testHelp() {
-    runTestParams({"h"});
-    runTestParams({"v"});
-    auto help = DeployCore::help();
-
-    for (const auto &key: DeployCore::helpKeys()) {
-
-        if (!help.contains(key)) {
-            QVERIFY(false);
-        }
     }
 
 }
