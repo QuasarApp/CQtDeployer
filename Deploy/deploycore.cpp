@@ -161,123 +161,84 @@ RunMode DeployCore::getMode() {
 QString DeployCore::help() {
 
 
-   QuasarAppUtils::Help::Charters help = {
+    QuasarAppUtils::Help::Charters help = {
         {
-           "General", {
-            {"CQtDeployer version", getAppVersion()},
-            {"Usage", "cqtdeployer <-bin [params]> [options]"},
-        }
-       },
-       {
-          "Boolean options", {
-           {"init", "will initialize cqtdeployer.json file (configuration file)."
-            " For example: 'cqtdeployer init' - for initialize single package configuration."
-            " 'cqtdeployer -init multiPackage' - for initialize multi package configuration"},
-           {"help / h", "Shows help"},
-               {"clear", "Deletes deployable files of the previous session."},
-               {"force-clear", "Deletes the destination directory before deployment."},
-               {"noStrip", "Skips strip step"},
-               {"noTranslations", "Skips the translations files. It doesn't work without qmake and inside a snap package"},
-               {"noOverwrite", "Prevents replacing existing files."},
-               {"noCheckRPATH", "Disables automatic search of paths to qmake in executable files."},
-               {"noCheckPATH", "Disables automatic search of paths to qmake in system PATH."},
-               {"v / version", "Shows compiled version"},
-               {"extractPlugins", "This flag will cause cqtdeployer to retrieve dependencies from plugins. Starting with version 1.4,"
-                " this option has been disabled by default, as it can add low-level graphics libraries to the distribution,"
-                " which will not be compatible with equipment on users' hosts."},
-               {"allQmlDependes", "Extracts all the qml libraries. (not recommended, as it takes great amount of computer memory)"},
-               {"qif", "Create the QIF installer for deployement programm"},
-               {"deploySystem", "Deploys all libraries  (do not work in snap )"},
-               {"deploySystem-with-libc", "deploy all libs libs (only linux) (do not work in snap )"},
+            "General", {
+                {"CQtDeployer version", getAppVersion()},
+                {"Usage", "cqtdeployer <-bin [params]> [options]"},
+            }
+        },
+        {
+            "Boolean options", {
+                {"init", "will initialize cqtdeployer.json file (configuration file)."
+                 " For example: 'cqtdeployer init' - for initialize single package configuration."
+                 " 'cqtdeployer -init multiPackage' - for initialize multi package configuration"},
+                {"help / h", "Shows help"},
+                {"clear", "Deletes deployable files of the previous session."},
+                {"force-clear", "Deletes the destination directory before deployment."},
+                {"noStrip", "Skips strip step"},
+                {"noTranslations", "Skips the translations files. It doesn't work without qmake and inside a snap package"},
+                {"noOverwrite", "Prevents replacing existing files."},
+                {"noCheckRPATH", "Disables automatic search of paths to qmake in executable files."},
+                {"noCheckPATH", "Disables automatic search of paths to qmake in system PATH."},
+                {"v / version", "Shows compiled version"},
+                {"extractPlugins", "This flag will cause cqtdeployer to retrieve dependencies from plugins. Starting with version 1.4,"
+                 " this option has been disabled by default, as it can add low-level graphics libraries to the distribution,"
+                 " which will not be compatible with equipment on users' hosts."},
+                {"allQmlDependes", "Extracts all the qml libraries. (not recommended, as it takes great amount of computer memory)"},
+                {"qif", "Create the QIF installer for deployement programm"},
+                {"deploySystem", "Deploys all libraries  (do not work in snap )"},
+                {"deploySystem-with-libc", "deploy all libs libs (only linux) (do not work in snap )"},
 
-       }
-      }
+            }
+        },
+        {
+            "Deploy options", {
+                {"-bin [list, params]", "Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe"},
+                {"-binDir [params]", "A folder which includes deployable files (recursive search)"},
+                {"-confFile [params]", "The path to the json file with all deployment configurations. Using this file,"
+                 " you can add the necessary options, thereby simplifying the command invocation in the console."
+                 " However, the parameters in Kansol have a higher priority than in the file."
+                 " For more info about this flag see https://github.com/QuasarApp/CQtDeployer/wiki/DeployConfigFileEn"},
+                {"-qmlDir [params]", "Qml data dir. For example -qmlDir ~/my/project/qml"},
+                {"-qmake [params]", "Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe"},
+                {"-ignore [list,params]", "The list of libs to ignore. For example -ignore libicudata.so.56,libicudata2.so.56"},
+                {"-ignoreEnv [list,params]", "The list of the environment to ignore. For example -ignoreEnv /bad/dir,/my/bad/Dir"},
+                {"-libDir [list,params]", "Sets additional paths for extra libs of an app. For example -libDir ~/myLib,~/newLibs"},
+                {"-extraLibs [list,params]", "Sets the mask of the library name for forced copying."
+                 " Example: '-extraLib mySql' - forces to copy all libraries whose names contain mySql to the project folder."
+                 " This option is case sensitive."},
+                {"-customScript [scriptCode]", "Insert extra code inTo All run script."},
+                {"-extraPlugin [list,params]", "Sets an additional path to extraPlugin of an app"},
+                {"-recursiveDepth [params]", "Sets the Depth of recursive search of libs (default 0)"},
+                {"-targetDir [params]", "Sets target directory(by default it is the path to the first deployable file)"},
+                {"-verbose [0-3]", "Shows debug log"},
+
+            }
+        },
+        {
+            "Controll of packages options", {
+                {"-targetPackage [package;tar1,package;tar2]", "Creates a new package and adds 'tar1 and tar2' to it"},
+                {"-qmlOut [package;path,path]", "Sets path to qml out directory"},
+                {"-libOut [package;path,path]", "Sets path to libraries out directory"},
+                {"-trOut [package;path,path]", "Sets path to translations out directory"},
+                {"-pluginOut [package;path,path]", "Sets path to plugins out directory"},
+                {"-binOut [package;path,path]", "Sets path to binary out directory"},
+                {"-recOut [package;path,path]", "Sets path to recurses out directory"},
+                {"-name [package;val,val]", "Sets name for package. If this if you do not specify a package, the value will be assigned to the default package ("")"},
+                {"-description [package;val,val]", "Sets description for package"},
+                {"-deployVersion [package;val,val]", "Sets version for package"},
+                {"-releaseDate [package;val,val]", "Sets release date for package"},
+                {"-icon [package;val,val]", "Sets path to icon for package"},
+                {"--publisher [package;val,val]", "Sets publisher for package"},
+
+            }
+        }
     };
 
    help.unite(QuasarAppUtils::Params::getparamsHelp());
 
    QuasarAppUtils::Params::showHelp(help);
-
-//    QStringList help = {
-//    { "CQtDeployer version: " + getAppVersion()},
-//    { "Usage: "},
-//    { "" },
-//    { "Options:" },
-//    { "   help / h                 : Shows help." },
-//    { "   init   [params]          : will initialize cqtdeployer.json file (configuration file)" },
-//    { "                            | For example: cqtdeployer init - for initialize single package configuration" },
-//    { "                            | cqtdeployer -init multiPackage - for initialize multi package configuration" },
-//    { "   noOverwrite              : Prevents replacing existing files." },
-//    { "   -bin    [list, params]   : Deployable file or folder." },
-//    { "                            | For example -bin /my/project/bin/,/my/project/bin.exe" },
-//    { "   -confFile [params]       | The path to the json file with all deployment configurations."},
-//    { "                            : Using this file, you can add the necessary options,"},
-//    { "                            : thereby simplifying the command invocation in the console."},
-//    { "                            : However, the parameters in Kansol have a higher priority than in the file."},
-//    { "   -binDir [params]         : A folder which includes deployable files (recursive search)." },
-//    { "                            | WARNING: this flag supports 'so', 'dll' and 'exe' files only." },
-//    { "                            | Use '-bin' flag if you want to deploy linux binary files" },
-//    { "   -qmlDir [package;path,path]: Qml data dir. For example -qmlDir ~/my/project/qml" },
-//    { "   deploySystem             : Deploys all libs" },
-//    { "   deploySystem-with-libc   : Skip Deploys system core libs libs" },
-//    { "   -qmake  [params]         : Qmake path." },
-//    { "                            | For example -qmake ~/Qt/5.14.0/gcc_64/bin/qmake" },
-//    { "   -ignore [list,params]    : The list of libs to ignore." },
-//    { "                            | For example -ignore libicudata.so.56,libicudata2.so.56" },
-//    { "   -ignoreEnv [list,params] : The list of the environment to ignore" },
-//    { "                            | For example -ignoreEnv /bad/dir,/my/bad/Dir" },
-//    { "   clear                    : Deletes deployable files of the previous session." },
-//    { "   force-clear              : Deletes the destination directory before deployment." },
-//    { "   allQmlDependes           : Extracts all the qml libraries." },
-//    { "                            | (not recommended, as it takes great amount of computer memory)" },
-//    { "   -libDir [list,params]    : Sets additional paths for extra libs of an app." },
-//    { "                            | For example -libDir /myLib,/newLibs " },
-//    { "   -extraLibs [list,params] | Sets the mask of the library name for forced copying."},
-//    { "                            : For example: '-extraLib mySql' - forces to copy all libraries"},
-//    { "                            : whose names contain mySql to the project folder. This option is case sensitive."},
-//    { "                            : This option is case sensitive."},
-//    { "   -extraPlugin[list,params]: Sets an additional path to extraPlugin of an app" },
-//    { "   -recursiveDepth [params] : Sets the Depth of recursive search of libs (default 0)" },
-//    { "   -targetDir [params]      : Sets target directory(by default it is the path to the first deployable file)" },
-//    { "   -targetPackage [package;tar1,package;tar2]: Creates a new package and adds 'tar1 and tar2' to it" },
-//    { "   noStrip                  : Skips strip step" },
-//    { "   extractPlugins           | This flag will cause cqtdeployer to retrieve dependencies from plugins." },
-//    { "                            : Starting with version 1.4, this option has been disabled by default,"},
-//    { "                            : as it can add low-level graphics libraries to the distribution," },
-//    { "                            : which will not be compatible with equipment on users' hosts."},
-//    { "   noTranslations           : Skips the translations files." },
-//    { "                            | It doesn't work without qmake and inside a snap package" },
-//    { "   noCheckRPATH             : Disables automatic search of paths to qmake in executable files." },
-//    { "   noCheckPATH              : Disables automatic search of paths to qmake in system PATH." },
-//    { "   -qmlOut [package;val,val] : Sets path to qml out directory" },
-//    { "   -libOut [package;val,val] : Sets path to libraries out directory" },
-//    { "   -trOut [package;val,val]  : Sets path to translations out directory" },
-//    { " -pluginOut [package;val,val]: Sets path to plugins out directory" },
-//    { "   -binOut [package;val,val] : Sets path to binary out directory" },
-//    { "   -recOut [package;val,val] : Sets path to recurses out directory" },
-
-//    { "   -name [package;val,val]   : Sets name for package. If this if you do not specify a package, the value will be assigned to the default package ("")" },
-//    { "   -description [package;val,val] : Sets description for package" },
-//    { "   -deployVersion [package;val,val] : Sets version for package" },
-//    { "   -releaseDate [package;val,val] : Sets release date for package" },
-//    { "   -icon [package;val,val]   : Sets path to icon for package" },
-//    { "   -publisher [package;val,val]: Sets Publisher for package" },
-
-//    { "   -qif [params]            : Create the QIF installer for deployement programm" },
-//    { "                            : By default params value is 'Default'" },
-//    { "                            : Examples:" },
-//    { "                            : cqtdeployer qif - for use default templates of qt installer framework." },
-//    { "                            : cqtdeployer -qif path/to/folder/with/qifTemplate - for use custom templates of qt installer framework." },
-//    { "   -customScript [scriptCode]: Insert extra code inTo All run script."},
-//    { "   v / version              : Shows compiled version" },
-//    { "   verbose [1-3]            : Shows debug log" },
-
-//    { "" },
-//    { "" },
-//    { "Example: cqtdeployer -bin myApp -qmlDir ~/Qt/5.14.0/gcc_64/qml -qmake ~/Qt/5.14.0/gcc_64/bin/qmake clear" },
-//    { "Example (only C libs): cqtdeployer -bin myApp clear" }};
-
-    QuasarAppUtils::Params::showHelp(help);
 
     return {};
 }
@@ -339,7 +300,7 @@ QStringList DeployCore::extractTranslation(const QSet<QString> &libs) {
             }
         }
     }
-    return res.toList();
+    return res.values();
 }
 
 QString DeployCore::getAppVersion() {
