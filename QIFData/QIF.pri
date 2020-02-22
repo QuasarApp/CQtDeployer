@@ -7,7 +7,10 @@ OTHER_FILES += \
 win32:PLATFORM = windows
 unix: PLATFORM = linux
 
-qif.commands= chmod +x $$PWD/scripts/QIF.sh; $$PWD/scripts/QIF.sh $$PLATFORM 3.2.0 $$PWD/packages/QIF/data
+win32:PY = python
+unix: PY = python3
+
+qif.commands= $$PY $$PWD/scripts/QIF.py $$PLATFORM 3.2.0 $$PWD/packages/QIF/data
 
 !isEmpty( ONLINE ) {
 
