@@ -27,7 +27,6 @@ subprocess.call(["aqt",
                  VERSION,
                  " "])
 
-os.makedirs(PATHQIF + "/QIF")
 os.rename(PATHQIF + "/Tools/QtInstallerFramework/" + VERSION[0:3] + "/bin/",
           PATHQIF + "/QIF")
 shutil.rmtree(PATHQIF + "/Tools")

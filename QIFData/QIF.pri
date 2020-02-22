@@ -1,7 +1,7 @@
 OTHER_FILES += \
     $$PWD/*.md \
     $$PWD/*.sh \
-    $$PWD/scripts/*.sh \
+    $$PWD/scripts/*.py \
     $$PWD/packages/QIF/meta/*.xml
 
 win32:PLATFORM = windows
