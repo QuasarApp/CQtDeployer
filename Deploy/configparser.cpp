@@ -810,6 +810,8 @@ void ConfigParser::initIgnoreEnvList() {
         }
     }
 
+    ignoreEnvList.push_back(_config.appDir);
+
     _config.envirement.setIgnoreEnvList(ignoreEnvList);
 
 }
