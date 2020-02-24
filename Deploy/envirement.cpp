@@ -6,6 +6,7 @@
 //#
 
 #include "envirement.h"
+#include "pathutils.h"
 #include "quasarapp.h"
 
 #include <QDir>
@@ -45,7 +46,7 @@ void Envirement::addEnv(const QString &dir, const QString &appDir, const QString
     auto path = QFileInfo(dir).absoluteFilePath();
 
     for (QString i :_ignoreEnvList) {
-
+        i = PathUtils::stripPath(i);
 #ifdef Q_OS_WIN
         if (path.contains(i, Qt::CaseInsensitive)) {
             return;
