@@ -376,7 +376,7 @@ bool Extracter::extractQmlAll() {
     return true;
 }
 
-bool Extracter::extractQmlFromSource(const QString& sourceDir) {
+bool Extracter::extractQmlFromSource() {
 
     auto cnf = DeployCore::_config;
 
@@ -393,7 +393,7 @@ bool Extracter::extractQmlFromSource(const QString& sourceDir) {
             QFileInfo info(qmlInput);
 
             if (!info.isDir()) {
-                qCritical() << "extract qml fail! qml source dir not exits or is not dir " << sourceDir;
+                qCritical() << "extract qml fail! qml source dir not exits or is not dir " << qmlInput;
                 continue;
             }
             QuasarAppUtils::Params::verboseLog("extractQmlFromSource " + info.absoluteFilePath());
@@ -406,7 +406,8 @@ bool Extracter::extractQmlFromSource(const QString& sourceDir) {
             QML ownQmlScaner(cnf->qtDir.getQmls());
 
             if (!ownQmlScaner.scan(plugins, info.absoluteFilePath())) {
-                QuasarAppUtils::Params::verboseLog("qml scaner run failed!");
+                QuasarAppUtils::Params::verboseLog("qml scaner run failed!",
+                                                   QuasarAppUtils::Error);
                 continue;
             }
         }
@@ -433,8 +434,7 @@ bool Extracter::extractQmlFromSource(const QString& sourceDir) {
 bool Extracter::extractQml() {
 
     if (QuasarAppUtils::Params::isEndable("qmlDir")) {
-        return extractQmlFromSource(
-                    QuasarAppUtils::Params::getStrArg("qmlDir"));
+        return extractQmlFromSource();
 
     } else if (QuasarAppUtils::Params::isEndable("allQmlDependes")) {
         return extractQmlAll();
