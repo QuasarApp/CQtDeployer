@@ -329,11 +329,11 @@ void Extracter::extractLib(const QString &file,
             continue;
         }
 
-        if (line.getPriority() != LibPriority::SystemLib && !depMap->containsNeadedLib(line.fullPath())) {
+        if (line.getPriority() < LibPriority::SystemLib && !depMap->containsNeadedLib(line.fullPath())) {
             depMap->addNeadedLib(line.fullPath());
 
         } else if (QuasarAppUtils::Params::isEndable("deploySystem") &&
-                    line.getPriority() == LibPriority::SystemLib &&
+                    line.getPriority() >= LibPriority::SystemLib &&
                     !depMap->containsSysLib(line.fullPath())) {
 
             depMap->addSystemLib(line.fullPath());

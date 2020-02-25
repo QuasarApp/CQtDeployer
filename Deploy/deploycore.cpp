@@ -128,6 +128,10 @@ LibPriority DeployCore::getLibPriority(const QString &lib) {
         return ExtraLib;
     }
 
+    if (isAlienLib(lib)) {
+        return AlienLib;
+    }
+
     return SystemLib;
 }
 
@@ -476,6 +480,11 @@ bool DeployCore::isQtLib(const QString &lib) {
 bool DeployCore::isExtraLib(const QString &lib) {
     QFileInfo info(lib);
     return _config->extraPaths.contains(info.absoluteFilePath());
+}
+
+bool DeployCore::isAlienLib(const QString &lib) {
+    return lib.contains("/opt/", ONLY_WIN_CASE_INSENSIATIVE) ||
+           lib.contains("/PROGRAM FILES", ONLY_WIN_CASE_INSENSIATIVE);
 }
 
 QChar DeployCore::getSeparator(int lvl) {

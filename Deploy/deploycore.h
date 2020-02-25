@@ -46,7 +46,8 @@ enum LibPriority : int {
     QtLib = 0x0,
     ExtraLib,
     SystemLib,
-    ExtraFile,
+    AlienLib,
+//    ExtraFile,
     NotFile = 0xF,
 };
 
@@ -150,6 +151,8 @@ public:
     static bool isQtLib(const QString &lib);
     static bool isExtraLib(const QString &lib);
     static QChar getSeparator(int lvl);
+    static bool isAlienLib(const QString &lib);
+
     static char getEnvSeparator();
 
     static LibPriority getLibPriority(const QString &lib);
