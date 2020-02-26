@@ -1714,7 +1714,7 @@ void deploytest::testLibDir() {
 #ifdef Q_OS_UNIX
     extraPath = "/lib/";
 #else
-    QString extraPath = TestQtDir + "/";
+    extraPath = TestQtDir + "/";
 #endif
 
     runTestParams({"-bin", bin, "clear" ,
