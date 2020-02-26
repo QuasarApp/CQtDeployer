@@ -723,8 +723,8 @@ void ConfigParser::initIgnoreList()
 
     if (!QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
 
-        envUnix.addEnv(Envirement::recursiveInvairement("/lib", 3), "", "");
-        envUnix.addEnv(Envirement::recursiveInvairement("/usr/lib", 3), "", "");
+        envUnix.addEnv(Envirement::recursiveInvairement("/lib", 3));
+        envUnix.addEnv(Envirement::recursiveInvairement("/usr/lib", 3));
         ruleUnix.prority = SystemLib;
         ruleUnix.platform = Unix;
         ruleUnix.enfirement = envUnix;
@@ -758,8 +758,8 @@ void ConfigParser::initIgnoreList()
     auto path = env.value("PATH");
     auto winPath = findWindowsPath(path);
 
-    envWin.addEnv(Envirement::recursiveInvairement(winPath + "/System32", 2), "", "");
-    envWin.addEnv(Envirement::recursiveInvairement(winPath + "/SysWOW64", 2), "", "");
+    envWin.addEnv(Envirement::recursiveInvairement(winPath + "/System32", 2));
+    envWin.addEnv(Envirement::recursiveInvairement(winPath + "/SysWOW64", 2));
 
     ruleWin.prority = SystemLib;
     ruleWin.platform = Win;
@@ -811,6 +811,8 @@ void ConfigParser::initIgnoreEnvList() {
     }
 
     ignoreEnvList.push_back(_config.appDir);
+    ignoreEnvList.push_back(_config.getTargetDir());
+
 
     _config.envirement.setIgnoreEnvList(ignoreEnvList);
 
@@ -947,8 +949,8 @@ bool ConfigParser::setQmake(const QString &value) {
             }
         }
     }
-    _config.envirement.addEnv(_config.qtDir.getLibs(), _config.appDir, _config.getTargetDir());
-    _config.envirement.addEnv(_config.qtDir.getBins(), _config.appDir, _config.getTargetDir());
+    _config.envirement.addEnv(_config.qtDir.getLibs());
+    _config.envirement.addEnv(_config.qtDir.getBins());
 
     return true;
 }
@@ -1011,8 +1013,8 @@ bool ConfigParser::setQtDir(const QString &value) {
     _config.qtDir.setQtPlatform(Platform::Win);
 #endif
 
-    _config.envirement.addEnv(_config.qtDir.getLibs(), _config.appDir, _config.getTargetDir());
-    _config.envirement.addEnv(_config.qtDir.getBins(), _config.appDir, _config.getTargetDir());
+    _config.envirement.addEnv(_config.qtDir.getLibs());
+    _config.envirement.addEnv(_config.qtDir.getBins());
 
     return true;
 }
@@ -1033,9 +1035,7 @@ void ConfigParser::setExtraPath(const QStringList &value) {
             auto extraDirs = getSetDirsRecursive(QDir::fromNativeSeparators(info.absoluteFilePath()), _config.depchLimit);
             _config.extraPaths.addExtraPaths(extraDirs);
 
-            _config.envirement.addEnv(Envirement::recursiveInvairement(dir, 0, _config.depchLimit),
-                                      _config.appDir,
-                                      _config.getTargetDir());
+            _config.envirement.addEnv(Envirement::recursiveInvairement(dir, 0, _config.depchLimit));
         } else if (i.size() > 1) {
 
             _config.extraPaths.addExtraPathsMasks({i});
@@ -1110,13 +1110,10 @@ void ConfigParser::initEnvirement() {
 
     auto path = env.value("PATH");
 
-    _config.envirement.addEnv(env.value("LD_LIBRARY_PATH"), _config.appDir, _config.getTargetDir());
-    _config.envirement.addEnv(path, _config.appDir, _config.getTargetDir());
-
+    _config.envirement.addEnv(env.value("LD_LIBRARY_PATH"));
+    _config.envirement.addEnv(path);
 
     QStringList dirs;
-
-
 #ifdef Q_OS_LINUX
 
     dirs.append(getDirsRecursive("/lib", 5));
@@ -1128,11 +1125,7 @@ void ConfigParser::initEnvirement() {
 
 #endif
 
-
-
-    for (const auto &i : dirs) {
-        _config.envirement.addEnv(i, _config.appDir, _config.getTargetDir());
-    }
+    _config.envirement.addEnv(dirs);
 
     if (_config.envirement.size() < 2) {
         qWarning() << "system environment is empty";
@@ -1146,7 +1139,7 @@ QStringList ConfigParser::getDirsRecursive(const QString &path, int maxDepch, in
 QSet<QString> ConfigParser::getSetDirsRecursive(const QString &path, int maxDepch, int depch) {
     QDir dir(path);
 
-    QSet<QString> res = {path};
+    QSet<QString> res = {dir.path()};
 
     if (maxDepch >= 0 && maxDepch <= depch) {
         return res;

@@ -21,133 +21,122 @@ QSet<QString> Envirement::upper(const QSet<QString>& set) const {
     return res;
 }
 
-QStringList Envirement::deployEnvironment() const {
-    return _deployEnvironment.values();
+QStringList Envirement::environmentList() const {
+    return _dataEnvironment.values();
 }
 
 QStringList Envirement::ignoreEnvList() const {
-    return _ignoreEnvList.values();
+    return _ignoreEnvList->environmentList();
 }
 
 void Envirement::setIgnoreEnvList(const QStringList &ignoreEnvList) {
-    _ignoreEnvList = upper(QSet<QString>(ignoreEnvList.begin(), ignoreEnvList.end()));
+
+    if (!_ignoreEnvList)
+        _ignoreEnvList = new Envirement();
+
+    _ignoreEnvList->addEnv(ignoreEnvList);
 }
 
-void Envirement::addEnvRec(const QString &dir, int depch, const QString &appDir, const QString &targetDir) {
-    addEnv(Envirement::recursiveInvairement(dir, depch), appDir, targetDir);
+void Envirement::addEnvRec(const QString &dir, int depch) {
+    addEnv(Envirement::recursiveInvairement(dir, depch));
 }
 
-void Envirement::addEnv(const QString &dir, const QString &appDir, const QString& targetDir) {
+void Envirement::addEnv(const QString &dir) {
 
-    char separator = ':';
-
-#ifdef Q_OS_WIN
-    separator = ';';
-#endif
-
+    char separator = DeployCore::getEnvSeparator();
     if (dir.contains(separator)) {
-        auto list = dir.split(separator);
-        for (auto i : list) {
-            addEnv(i, appDir, targetDir);
+        addEnv(dir.split(separator));
+    }
+}
+
+void Envirement::addEnv(const QStringList &listDirs) {
+
+    for (const auto& i : listDirs) {
+        auto path = PathUtils::fixPath(QFileInfo(i).absoluteFilePath());
+
+        if (_ignoreEnvList && _ignoreEnvList->inThisEnvirement(i)) {
+            continue;
         }
-        return;
-    }
 
-    auto path = QFileInfo(dir).absoluteFilePath();
-
-    for (QString i :_ignoreEnvList) {
-        i = PathUtils::stripPath(i);
-        if (path.contains(i, ONLY_WIN_CASE_INSENSIATIVE)) {
-            return;
+        if (!QFileInfo(path).isDir()) {
+            QuasarAppUtils::Params::verboseLog("is not dir!! :" + path);
+            continue;
         }
+
+        if (_dataEnvironment.contains(path)) {
+            QuasarAppUtils::Params::verboseLog ("Environment alredy added: " + path);
+            continue;
+        }
+
+        _dataEnvironment.insert(path);
     }
-
-    if (!appDir.isEmpty() && path.contains(appDir)) {
-        QuasarAppUtils::Params::verboseLog("is cqtdeployer dir!: " + path + " app dir : " + appDir);
-        return;
-    }
-
-    if (!QFileInfo(path).isDir()) {
-        QuasarAppUtils::Params::verboseLog("is not dir!! :" + path);
-        return;
-    }
-
-    if (_deployEnvironment.contains(path)) {
-        QuasarAppUtils::Params::verboseLog ("Environment alredy added: " + path);
-        return;
-    }
-
-    if (!targetDir.isEmpty() && path.contains(targetDir)) {
-        QuasarAppUtils::Params::verboseLog ("Skip paths becouse it is target : " + path);
-        return;
-    }
-
-    _deployEnvironment.insert(PathUtils::fixPath(QDir::fromNativeSeparators(path)));
-
 }
 
 bool Envirement::inThisEnvirement(const QString &file) const {
     QFileInfo info (file);
 
     if (info.isFile()) {
-        return _deployEnvironment.contains(PathUtils::fixPath(info.absolutePath()));
+        return _dataEnvironment.contains(PathUtils::fixPath(info.absolutePath()));
     }
 
-    return _deployEnvironment.contains(PathUtils::fixPath(file));
+    return _dataEnvironment.contains(PathUtils::fixPath(file));
 
 }
 
 int Envirement::size() const {
-    return _deployEnvironment.size();
+    return _dataEnvironment.size();
 }
 
 QString Envirement::concatEnv() const {
 
-    if (_deployEnvironment.isEmpty()) {
+    if (_dataEnvironment.isEmpty()) {
         return "";
     }
 
-    QString result = *_deployEnvironment.begin();
-    for (auto i: _deployEnvironment) {
+    QString result = *_dataEnvironment.begin();
+    for (auto i: _dataEnvironment) {
         result += (DeployCore::getEnvSeparator() + i);
     }
 
     return result;
 }
 
-QString Envirement::recursiveInvairement(QDir &dir, int depch, int depchLimit) {
-
-    char separator = DeployCore::getEnvSeparator();
+QStringList Envirement::recursiveInvairement(QDir &dir, int depch, int depchLimit) {
 
     if (!dir.exists() || (depchLimit >= 0 && depch >= depchLimit)) {
-        return dir.absolutePath();
+        return {dir.absolutePath()};
     }
 
     QFileInfoList list = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-    QString res = "";
+    QStringList res = {};
 
     for (QFileInfo &i : list) {
         if (!dir.cd(i.fileName())) {
             continue;
         }
-        QString temp = Envirement::recursiveInvairement(dir, depch + 1, depchLimit);
-        res += (res.size())? separator + temp: temp;
+        res += Envirement::recursiveInvairement(dir, depch + 1, depchLimit);
 
         dir.cdUp();
     }
 
-    res += (res.size())? separator + dir.absolutePath(): dir.absolutePath();
+    res += dir.absolutePath();
 
     return res;
 }
 
-QString Envirement::recursiveInvairement(const QString &dir, int depch) {
+QStringList Envirement::recursiveInvairement(const QString &dir, int depch) {
     QDir _dir(dir);
 
     return recursiveInvairement(_dir, 0, depch);
 }
 
-Envirement::Envirement()
-{
+Envirement::Envirement() {
 
+}
+
+Envirement::~Envirement() {
+    if (_ignoreEnvList) {
+        delete _ignoreEnvList;
+        _ignoreEnvList = nullptr;
+    }
 }

@@ -17,27 +17,30 @@ class QDir;
 class DEPLOYSHARED_EXPORT Envirement
 {
 private:
-    QSet<QString> _ignoreEnvList;
-    QSet<QString> _deployEnvironment;
+    Envirement *_ignoreEnvList = nullptr;
+    QSet<QString> _dataEnvironment;
 
     QSet<QString> upper(const QSet<QString> &set) const;
 public:
     Envirement();
-    QStringList deployEnvironment() const;
+    ~Envirement();
+    QStringList environmentList() const;
     QStringList ignoreEnvList() const;
     void setIgnoreEnvList(const QStringList &ignoreEnvList);
 
-    void addEnvRec(const QString &dir, int depch, const QString &appDir = "", const QString &targetDir = "");
+    void addEnvRec(const QString &dir, int depch);
 
-    void addEnv(const QString &dir, const QString &appDir = "", const QString &targetDir = "");
+    void addEnv(const QString &dir);
+    void addEnv(const QStringList &listDirs);
+
     // return true if file exits in this envirement
     bool inThisEnvirement(const QString &file) const;
 
     int size() const;
     QString concatEnv() const;
 
-    static QString recursiveInvairement(QDir &dir, int depch, int depchLimit = -1);
-    static QString recursiveInvairement(const QString &dir, int depch = -1);
+    static QStringList recursiveInvairement(QDir &dir, int depch, int depchLimit = -1);
+    static QStringList recursiveInvairement(const QString &dir, int depch = -1);
 };
 
 #endif // ENVIREMENT_H

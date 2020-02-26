@@ -227,7 +227,7 @@ void Extracter::deploy() {
 
     clear();
     _cqt->smartMoveTargets();
-    _scaner->setEnvironment(DeployCore::_config->envirement.deployEnvironment());
+    _scaner->setEnvironment(DeployCore::_config->envirement.environmentList());
     extractAllTargets();
 
     if (DeployCore::_config->deployQml && !extractQml()) {

@@ -264,6 +264,8 @@ deploytest::~deploytest(){}
 void deploytest::initTestCase() {
     QDir qt;
 
+    QDir("./" + DISTRO_DIR).removeRecursively();
+
     qt.mkpath("./test/Qt/5.12/");
     qt.mkpath("./test/extraPath/");
     qt.mkpath("./test/extra/");
@@ -710,25 +712,26 @@ void deploytest::testDistroStruct() {
         {"/res/","/../"},
         {"/res/type","/../../"},
         {"/res/type/","/../../"},
-        {"res/type","/../../"},
-        {"res/type/","/../../"},
-        {"res//type/","/../../"},
-        {"res////type/","/../../"},
+        {"res/type","../../"},
+        {"res/type/","../../"},
+        {"res//type/","../../"},
+        {"res////type/","../../"},
         {"//res///type/////","/../../"},
         {"\\", "/"},
         {"\\res","/../"},
         {"\\res\\","/../"},
         {"\\res\\type","/../../"},
         {"\\res\\type\\","/../../"},
-        {"res\\type","/../../"},
-        {"res\\type\\","/../../"},
-        {"res\\\\type\\","/../../"},
-        {"res\\\\\\\\type\\","/../../"},
+        {"res\\type","../../"},
+        {"res\\type\\","../../"},
+        {"res\\\\type\\","../../"},
+        {"res\\\\\\\\type\\","../../"},
         {"\\\\res\\\\\\type\\\\\\\\\\","/../../"},
     };
 
     for (const auto &i: cases) {
-        QVERIFY(distro.getRelativePath(i.first) == i.second);
+        if (distro.getRelativePath(i.first) != i.second)
+            QVERIFY(false);
     }
 }
 
@@ -753,12 +756,16 @@ void deploytest::testRelativeLink() {
     };
 
     for (const auto &i: cases) {
-        QVERIFY(PathUtils::getRelativeLink(i[0], i[1]) == i[2]);
+        if (PathUtils::getRelativeLink(i[0], i[1]) != i[2])
+            QVERIFY(false);
     }
 
     for (int i = 1; i < cases.size() - 1; i++) {
-        QVERIFY(PathUtils::isAbsalutPath(cases[i][0]));
-        QVERIFY(!PathUtils::isAbsalutPath(cases[i][2]));
+        if (!PathUtils::isAbsalutPath(cases[i][0]))
+            QVERIFY(false);
+        if (PathUtils::isAbsalutPath(cases[i][2]))
+            QVERIFY(false);
+
     }
 }
 
@@ -1694,12 +1701,30 @@ void deploytest::testLibDir() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "-libDir", extraPath,
-                   "-recursiveDepth", "5"}, &comapareTree, true);
+                   "-recursiveDepth", "5",
+                   "noCheckRPATH, noCheckPATH"}, &comapareTree, true);
 
     runTestParams({"-bin", bin, "clear" ,
-                   "-extraLibs", "stdc,gcc"}, &comapareTreeExtraLib, true);
+                   "-extraLibs", "stdc,gcc",
+                   "noCheckRPATH, noCheckPATH"}, &comapareTreeExtraLib, true);
 
+//task #258
+//https://github.com/QuasarApp/CQtDeployer/issues/258
 
+#ifdef Q_OS_UNIX
+    extraPath = "/lib/";
+#else
+    QString extraPath = TestQtDir + "/";
+#endif
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-libDir", extraPath,
+                   "-recursiveDepth", "5",
+                   "noCheckRPATH, noCheckPATH"}, &comapareTree, true);
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-extraLibs", "stdc,gcc",
+                   "noCheckRPATH, noCheckPATH"}, &comapareTreeExtraLib, true);
 }
 
 void deploytest::testExtraPlugins() {
