@@ -19,8 +19,8 @@ DeployConfig::getTargetsListByFilter(const QString &filter) {
 
 QString DeployConfig::getTargetDir(const QString &target) const {
     if (_targets.contains(target))
-        return targetDir + _targets.value(target).getSufix();
-    return targetDir;
+        return targetDir + "/" + _targets.value(target).getPackage();
+    return targetDir + "/";
 }
 
 void DeployConfig::setTargetDir(const QString &target) {
@@ -28,7 +28,7 @@ void DeployConfig::setTargetDir(const QString &target) {
 }
 
 DistroModule DeployConfig::getDistro(const QString &target) const {
-    return _packages.value(_targets.value(target).getSufix());
+    return _packages.value(_targets.value(target).getPackage());
 }
 
 DistroModule DeployConfig::getDistroFromPackage(const QString &package) const {

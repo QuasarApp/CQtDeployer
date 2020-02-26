@@ -1401,7 +1401,7 @@ void deploytest::testPackages() {
     bin += "," + target2;
     bin += "," + target3;
 
-    auto packageString = "/package1/;" + QFileInfo(target1).absoluteFilePath() + ",/package2/;" + QFileInfo(target2).absoluteFilePath();
+    auto packageString = "package1;" + QFileInfo(target1).absoluteFilePath() + ",package2/ZzZ;" + QFileInfo(target2).absoluteFilePath();
 
     comapareTree = Modules::separetedPackageslibs();
 

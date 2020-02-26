@@ -11,12 +11,12 @@ TargetInfo::TargetInfo() {
 
 }
 
-QString TargetInfo::getSufix() const {
-    return sufix;
+QString TargetInfo::getPackage() const {
+    return package;
 }
 
-void TargetInfo::setSufix(const QString &value) {
-    sufix = value;
+void TargetInfo::setPackage(const QString &value) {
+    package = value;
 }
 
 

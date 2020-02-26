@@ -331,7 +331,7 @@ bool ConfigParser::initDistroStruct() {
             split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
 
     auto erroLog = [](const QString &flag){
-            QuasarAppUtils::Params::verboseLog(QString("Set %0 fail, becouse you try set %0 for not inited package."
+            QuasarAppUtils::Params::verboseLog(QString("Set %0 fail, because you try set %0 for not inited package."
                                                " Use 'targetPackage' flag for init the packages").arg(flag),
                                                QuasarAppUtils::Error);
         };
@@ -419,7 +419,7 @@ bool ConfigParser::initPackages() {
             for (auto it = list.begin(); it != list.end(); ++it) {
                 if (!configuredTargets.contains(it.key())) {
                     configuredTargets.insert(it.key());
-                    it.value()->setSufix(package);
+                    it.value()->setPackage(package);
                 }
             }
 
@@ -449,7 +449,7 @@ bool ConfigParser::initQmlInput() {
     }
 
     auto erroLog = [](const QString &flag){
-            QuasarAppUtils::Params::verboseLog(QString("Set %0 fail, becouse you try set %0 for not inited package."
+            QuasarAppUtils::Params::verboseLog(QString("Set %0 fail, because you try set %0 for not inited package."
                                                " Use 'targetPackage' flag for init the packages").arg(flag),
                                                QuasarAppUtils::Error);
         };
@@ -1026,7 +1026,7 @@ void ConfigParser::setExtraPath(const QStringList &value) {
         QFileInfo info(i);
         if (info.isDir()) {
             if (_config.targets().contains(info.absoluteFilePath())) {
-                QuasarAppUtils::Params::verboseLog("skip the extra lib path becouse it is target!",
+                QuasarAppUtils::Params::verboseLog("skip the extra lib path because it is target!",
                                                    QuasarAppUtils::Info);
                 continue;
             }
@@ -1043,7 +1043,7 @@ void ConfigParser::setExtraPath(const QStringList &value) {
             QuasarAppUtils::Params::verboseLog(i + " added like a path mask",
                                                QuasarAppUtils::Info);
         } else {
-            QuasarAppUtils::Params::verboseLog(i + " not added in path mask becouse"
+            QuasarAppUtils::Params::verboseLog(i + " not added in path mask because"
                                                    " the path mask must be large 2 characters",
                                                QuasarAppUtils::Warning);
         }
@@ -1058,7 +1058,7 @@ void ConfigParser::setExtraNames(const QStringList &value) {
             QuasarAppUtils::Params::verboseLog(i + " added like a file name mask",
                                                QuasarAppUtils::Info);
         } else {
-            QuasarAppUtils::Params::verboseLog(i + " not added in file mask becouse"
+            QuasarAppUtils::Params::verboseLog(i + " not added in file mask because"
                                                    " the file mask must be large 2 characters",
                                                QuasarAppUtils::Warning);
         }
@@ -1163,7 +1163,7 @@ bool ConfigParser::smartMoveTargets() {
 
         QFileInfo target(i.key());
 
-        QString targetPath = _config.getTargetDir() + i.value().getSufix();
+        QString targetPath = _config.getTargetDir() + "/" + i.value().getPackage();
 
         if (DeployCore::isLib(target)) {
             targetPath += _config.getDistro(i.key()).getLibOutDir();
@@ -1178,7 +1178,7 @@ bool ConfigParser::smartMoveTargets() {
         auto newTargetKey = targetPath + "/" + target.fileName();
         temp.unite(moveTarget(i.value(), newTargetKey));
 
-        _config.packagesEdit()[i.value().getSufix()].addTarget(newTargetKey);
+        _config.packagesEdit()[i.value().getPackage()].addTarget(newTargetKey);
 
     }
 
