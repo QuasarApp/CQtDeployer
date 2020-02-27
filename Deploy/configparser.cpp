@@ -44,7 +44,7 @@ bool parsePackagesPrivate(Container& mainContainer,
         if (pair.size() == 1)
             (mainContainer[defaultPackage].*setter)(first);
         else {
-            first = PathUtils::toFullPath(first);
+            first = PathUtils::fullStripPath(first);
             if (!mainContainer.contains(first)) {
                 return false;
             }
@@ -412,7 +412,7 @@ bool ConfigParser::initPackages() {
         QSet<QString> configuredTargets;
         for (auto& str: tar_packages_array) {
             auto pair = str.split(DeployCore::getSeparator(1));
-            auto package = PathUtils::toFullPath(pair.value(0, ""));
+            auto package = PathUtils::fullStripPath(pair.value(0, ""));
 
             auto list = _config.getTargetsListByFilter(pair.value(1, ""));
 

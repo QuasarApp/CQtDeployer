@@ -46,6 +46,8 @@ void Envirement::addEnv(const QString &dir) {
     char separator = DeployCore::getEnvSeparator();
     if (dir.contains(separator)) {
         addEnv(dir.split(separator));
+    } else {
+        addEnv(QStringList{dir});
     }
 }
 

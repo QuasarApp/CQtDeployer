@@ -132,3 +132,13 @@ QString PathUtils::stripPath(QString path) {
 
     return path;
 }
+
+QString PathUtils::fullStripPath(QString path) {
+    path = stripPath(path);
+
+    if (path.left(1) == '/') {
+        return path.remove(0, 1);
+    }
+
+    return path;
+}

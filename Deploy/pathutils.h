@@ -36,11 +36,18 @@ public:
     static QString getReleativePath(QString path);
 
     /**
-     * @brief stripPath remove all dublicate separators and remove separators and end
+     * @brief stripPath remove all dublicate separators and remove separators on end
      * @param path
      * @return return strip patth
      */
     static QString stripPath(QString path);
+
+    /**
+     * @brief stripPath remove all dublicate separators and remove separators begin and end
+     * @param path
+     * @return return strip patth
+     */
+    static QString fullStripPath(QString path);
 
     /**
      * @brief getRelativeLink return releative path
