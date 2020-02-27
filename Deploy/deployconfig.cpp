@@ -20,7 +20,7 @@ DeployConfig::getTargetsListByFilter(const QString &filter) {
 QString DeployConfig::getTargetDir(const QString &target) const {
     if (_targets.contains(target))
         return targetDir + "/" + _targets.value(target).getPackage();
-    return targetDir + "/";
+    return targetDir;
 }
 
 void DeployConfig::setTargetDir(const QString &target) {

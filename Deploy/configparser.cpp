@@ -518,7 +518,9 @@ bool ConfigParser::parseDeployMode() {
         return false;
     }
 
-    initQmlInput();
+    if (!initQmlInput()) {
+        return false;
+    }
 
     return true;
 }

@@ -71,7 +71,6 @@ private slots:
     void testDeployTarget();
     void testStrip();
     void testExtractLib();
-    void testDistroStruct();
     void testRelativeLink();
     void testCheckQt();
 
@@ -84,6 +83,7 @@ private slots:
 
     // tested flags customScript
     void costomScript();
+    void testDistroStruct();
 
     // tested flags clear noOvervrite
     void testOverwrite();
@@ -733,6 +733,20 @@ void deploytest::testDistroStruct() {
         if (distro.getRelativePath(i.first) != i.second)
             QVERIFY(false);
     }
+
+    distro = DistroStruct();
+
+    distro.setTrOutDir("/tr/");
+    QVERIFY(distro.getTrOutDir() == "/tr/");
+
+
+    distro.setTrOutDir("/tr");
+    QVERIFY(distro.getTrOutDir() == "/tr/");
+
+    distro.setTrOutDir("tr");
+    QVERIFY(distro.getTrOutDir() == "/tr/");
+
+
 }
 
 void deploytest::testRelativeLink() {
@@ -1410,43 +1424,25 @@ void deploytest::testPackages() {
                    "-libOut", "/lolLib",
                    "-trOut", "/lolTr",
                    "-pluginOut", "/p",
-                   "-qmlOut", "/q",
-                   "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
+                   "-qmlOut", "package2/ZzZ;/q/and/q,/q",
+                   "-qmlDir", "package2/ZzZ;" + TestBinDir + "/../TestQMLWidgets",
                    "-targetPackage", packageString}, &comapareTree);
+
 
 #ifdef Q_OS_UNIX
 
-    comapareTree -= utils.createTree({
-                    "./" + DISTRO_DIR + "/package2/bin/TestQMLWidgets",
-                    "./" + DISTRO_DIR + "/package2/bin/qt.conf",
-                });
+    // test a wrapers source
+    QFile wraper("./" + DISTRO_DIR + "/package2/ZzZ/TestQMLWidgets.sh");
 
-    comapareTree += utils.createTree({
-                    "./" + DISTRO_DIR + "/package2/testBin/TestQMLWidgets",
-                    "./" + DISTRO_DIR + "/package2/testBin/qt.conf",
-                });
-#else
-    comapareTree -= utils.createTree({
-                    "./" + DISTRO_DIR + "/package2/TestQMLWidgets.exe",
-                    "./" + DISTRO_DIR + "/package2/qt.conf",
-                });
+    QVERIFY(wraper.open(QIODevice::ReadOnly));
+    auto data = wraper.readAll();
+    wraper.close();
 
-    comapareTree += utils.createTree({
-                    "./" + DISTRO_DIR + "/package2/testBin/TestQMLWidgets.exe",
-                    "./" + DISTRO_DIR + "/package2/TestQMLWidgets.bat",
-                    "./" + DISTRO_DIR + "/package2/testBin/qt.conf",
-                });
+    wraper.setFileName(":/testResurces/testRes/TestQMLWidgets.sh");
+    QVERIFY(wraper.open(QIODevice::ReadOnly));
+    QVERIFY(wraper.readAll() == data);
+    wraper.close();
 #endif
-
-    runTestParams({"-bin", bin, "force-clear",
-                   "-binOut", "package2;/testBin,lol",
-                   "-libOut", "/lolLib",
-                   "-trOut", "/lolTr",
-                   "-pluginOut", "/p",
-                   "-qmlOut", "/q",
-                   "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
-                   "-targetPackage", packageString}, &comapareTree);
-
 }
 
 void deploytest::testQt() {
