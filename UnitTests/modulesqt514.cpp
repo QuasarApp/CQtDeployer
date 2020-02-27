@@ -149,7 +149,8 @@ QSet<QString> ModulesQt514::qtWebEngine()
         "./" + DISTRO_DIR + "/qml/QtQml/WorkerScript.2/libworkerscriptplugin.so",
         "./" + DISTRO_DIR + "/qml/QtQml/WorkerScript.2/plugins.qmltypes",
         "./" + DISTRO_DIR + "/qml/QtQml/WorkerScript.2/qmldir",
-        "./" + DISTRO_DIR + "/qml/QtQml/libqmlplugin.so"
+        "./" + DISTRO_DIR + "/qml/QtQml/libqmlplugin.so",
+        "./" + DISTRO_DIR + "/translations/qtwebengine_ca.qm"
     });
 #endif
     return res;
