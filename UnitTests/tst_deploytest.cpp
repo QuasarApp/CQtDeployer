@@ -37,7 +37,7 @@ class deploytest : public QObject
     Q_OBJECT
 
 private:
-    QSet<QString> qtFilesTree;
+    QHash<QString, QSet<QString>> filesTree;
 
 
     bool runProcess(const QString& DistroPath,
@@ -45,12 +45,18 @@ private:
                     const QString &qt = "");
     QStringList getFilesFromDir(const QString& dir);
 
+    QSet<QString> getFilesTree(const QStringList& keys = {});
 
-    void runTestParams(const QStringList &list, QSet<QString> *tree = nullptr,
+    void runTestParams(const QStringList &list,
+                       QSet<QString> *tree = nullptr,
+                       const QStringList &checkableKeys = {},
                        bool noWarnings = false,
                        bool onlySize = false);
 
-    void checkResults(const QSet<QString> &tree, bool noWarnings, bool onlySize = false);
+    void checkResults(const QSet<QString> &tree,
+                      const QStringList &checkagbleKeys,
+                      bool noWarnings,
+                      bool onlySize = false);
 public:
     deploytest();
     /**
@@ -211,16 +217,39 @@ QStringList deploytest::getFilesFromDir(const QString &path) {
     return res;
 }
 
+QSet<QString> deploytest::getFilesTree(const QStringList &keys) {
+    QSet<QString> result;
+
+    if (keys.isEmpty()) {
+        for (auto it = filesTree.begin(); it != filesTree.end(); ++it) {
+            result += filesTree[it.key()];
+        }
+        return result;
+    }
+
+    for (const auto& i: keys) {
+        result += filesTree[i];
+    }
+
+    return result;
+}
+
 deploytest::deploytest() {
     TestUtils utils;
 
     auto tempTree = utils.getTree(TestQtDir);
-
-    tempTree += utils.getTree("/lib", 5);
-    tempTree += utils.getTree("/usr/lib", 5);
-
     for (const QString &i: tempTree) {
-        qtFilesTree.insert(QFileInfo(i).fileName());
+        filesTree["Qt"].insert(QFileInfo(i).fileName());
+    }
+
+    tempTree = utils.getTree("/lib", 5);
+    for (const QString &i: tempTree) {
+        filesTree["/lib"].insert(QFileInfo(i).fileName());
+    }
+
+    tempTree = utils.getTree("/usr/lib", 5);
+    for (const QString &i: tempTree) {
+        filesTree["/usr/lib"].insert(QFileInfo(i).fileName());
     }
 
 }
@@ -550,7 +579,7 @@ void deploytest::testExtractPlugins() {
     QVERIFY(comapre.size());
 #endif
     for (auto i = comapre.begin(); i != comapre.end(); ++i) {
-        if (i.value() != 1 && qtFilesTree.contains(QFileInfo(i.key()).fileName())) {
+        if (i.value() != 1 && getFilesTree().contains(QFileInfo(i.key()).fileName())) {
             qCritical() << "missing library found " << i.key();
             QVERIFY(false);
         }
@@ -880,7 +909,9 @@ void deploytest::testSetTargetDir() {
 
 }
 
-void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree,
+void deploytest::runTestParams(const QStringList &list,
+                               QSet<QString>* tree,
+                               const QStringList &checkableKeys,
                                bool noWarnings, bool onlySize) {
 
     QuasarAppUtils::Params::parseParams(list);
@@ -890,7 +921,7 @@ void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree,
         QVERIFY(false);
 
     if (tree) {
-        checkResults(*tree, noWarnings, onlySize);
+        checkResults(*tree, checkableKeys, noWarnings, onlySize);
     }
 
 #ifdef WITH_SNAP
@@ -928,7 +959,10 @@ void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree,
 #endif
 }
 
-void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings , bool onlySize) {
+void deploytest::checkResults(const QSet<QString> &tree,
+                              const QStringList& checkagbleKeys,
+                              bool noWarnings,
+                              bool onlySize) {
     TestUtils utils;
 
     QVERIFY(DeployCore::_config);
@@ -954,7 +988,7 @@ void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings , bool 
                 comapreResult[ i.key()] = "Added unnecessary file";
                 qCritical() << "added unnecessary file : " + i.key();
                 bug = true;
-            } else if (qtFilesTree.contains(QFileInfo(i.key()).fileName())) {
+            } else if (getFilesTree(checkagbleKeys).contains(QFileInfo(i.key()).fileName())) {
                 comapreResult[ i.key()] = "Missing";
                 qCritical() << "Missing file : " + i.key();
                 bug = true;
@@ -1685,29 +1719,32 @@ void deploytest::testLibDir() {
     runTestParams({"-bin", bin, "clear" ,
                    "-libDir", extraPath,
                    "-recursiveDepth", "5",
-                   "noCheckRPATH, noCheckPATH"}, &comapareTree, true);
+                   "noCheckRPATH, noCheckPATH"}, &comapareTree, {}, true);
 
     runTestParams({"-bin", bin, "clear" ,
                    "-extraLibs", "stdc,gcc",
-                   "noCheckRPATH, noCheckPATH"}, &comapareTreeExtraLib, true);
+                   "noCheckRPATH, noCheckPATH"}, &comapareTreeExtraLib, {}, true);
 
 //task #258
 //https://github.com/QuasarApp/CQtDeployer/issues/258
 
 #ifdef Q_OS_UNIX
-    extraPath = "/lib/";
+    auto checkKeys = "/usr/lib";
+    extraPath = "/usr/lib/";
+    comapareTree = comapareTreeExtraLib;
 #else
+    auto checkKeys = "Qt";
     extraPath = TestQtDir + "/";
 #endif
 
     runTestParams({"-bin", bin, "clear" ,
                    "-libDir", extraPath,
                    "-recursiveDepth", "5",
-                   "noCheckRPATH, noCheckPATH"}, &comapareTree, true);
+                   "noCheckRPATH, noCheckPATH"}, &comapareTree, {checkKeys});
 
     runTestParams({"-bin", bin, "clear" ,
                    "-extraLibs", "stdc,gcc",
-                   "noCheckRPATH, noCheckPATH"}, &comapareTreeExtraLib, true);
+                   "noCheckRPATH, noCheckPATH"}, &comapareTreeExtraLib, {checkKeys});
 }
 
 void deploytest::testExtraPlugins() {
@@ -1885,7 +1922,7 @@ void deploytest::testSystemLib() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "deploySystem"
-                  }, &comapareTree, true);
+                  }, &comapareTree);
 
 #ifdef Q_OS_UNIX
 
@@ -1913,7 +1950,7 @@ void deploytest::testSystemLib() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "deploySystem-with-libc"
-                  }, &comapareTree, true);
+                  }, &comapareTree);
 
     file.setFileName("./" + DISTRO_DIR + "/TestOnlyC.sh");
 

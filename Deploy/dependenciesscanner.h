@@ -27,7 +27,6 @@ class DEPLOYSHARED_EXPORT DependenciesScanner {
 
 private:
 
-    QStringList _env;
     QMultiHash<QString, QString> _EnvLibs;
     QHash<QString, LibInfo> _scanedLibs;
 
