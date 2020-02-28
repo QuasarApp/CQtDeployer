@@ -1686,11 +1686,11 @@ void deploytest::testLibDir() {
 
     auto comapareTreeExtraLib = utils.createTree(
     {
-        "./" + DISTRO_DIR + "/TestOnlyC.sh",
-        "./" + DISTRO_DIR + "/bin/qt.conf",
-        "./" + DISTRO_DIR + "/bin/TestOnlyC",
-        "./" + DISTRO_DIR + "/lib/libstdc++.so",
-        "./" + DISTRO_DIR + "/lib/libgcc_s.so"
+        "./" + DISTRO_DIR + "2/TestOnlyC.sh",
+        "./" + DISTRO_DIR + "2/bin/qt.conf",
+        "./" + DISTRO_DIR + "2/bin/TestOnlyC",
+        "./" + DISTRO_DIR + "2/lib/libstdc++.so",
+        "./" + DISTRO_DIR + "2/lib/libgcc_s.so"
     });
 
 #else
@@ -1706,10 +1706,10 @@ void deploytest::testLibDir() {
 
     auto comapareTreeExtraLib = utils.createTree(
     {
-        "./" + DISTRO_DIR + "/qt.conf",
-        "./" + DISTRO_DIR + "/TestOnlyC.exe",
-        "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
-        "./" + DISTRO_DIR + "/libstdc++-6.dll",
+        "./" + DISTRO_DIR + "2/qt.conf",
+        "./" + DISTRO_DIR + "2/TestOnlyC.exe",
+        "./" + DISTRO_DIR + "2/libgcc_s_seh-1.dll",
+        "./" + DISTRO_DIR + "2/libstdc++-6.dll",
 
     });
 
@@ -1722,29 +1722,43 @@ void deploytest::testLibDir() {
                    "noCheckRPATH, noCheckPATH"}, &comapareTree, {}, true);
 
     runTestParams({"-bin", bin, "clear" ,
+                   "-targetDir", "./" + DISTRO_DIR + "2",
                    "-extraLibs", "stdc,gcc",
                    "noCheckRPATH, noCheckPATH"}, &comapareTreeExtraLib, {}, true);
 
 //task #258
 //https://github.com/QuasarApp/CQtDeployer/issues/258
 
+
 #ifdef Q_OS_UNIX
-    auto checkKeys = "/usr/lib";
-    extraPath = "/usr/lib/";
-    comapareTree = comapareTreeExtraLib;
+    comapareTreeExtraLib = utils.createTree(
+    {
+        "./" + DISTRO_DIR + "/TestOnlyC.sh",
+        "./" + DISTRO_DIR + "/bin/qt.conf",
+        "./" + DISTRO_DIR + "/bin/TestOnlyC",
+        "./" + DISTRO_DIR + "/lib/libstdc++.so",
+        "./" + DISTRO_DIR + "/lib/libgcc_s.so"
+    });
+
 #else
-    auto checkKeys = "Qt";
-    extraPath = TestQtDir + "/";
+
+    comapareTreeExtraLib = utils.createTree(
+    {
+        "./" + DISTRO_DIR + "/qt.conf",
+        "./" + DISTRO_DIR + "/TestOnlyC.exe",
+        "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
+        "./" + DISTRO_DIR + "/libstdc++-6.dll",
+
+    });
+
 #endif
-
     runTestParams({"-bin", bin, "clear" ,
-                   "-libDir", extraPath,
-                   "-recursiveDepth", "5",
-                   "noCheckRPATH, noCheckPATH"}, &comapareTree, {checkKeys});
+                   "-libDir", "./" + DISTRO_DIR + "2/",
+                   "-recursiveDepth", "2",
+                   "noCheckRPATH, noCheckPATH"}, &comapareTreeExtraLib, {}, true);
 
-    runTestParams({"-bin", bin, "clear" ,
-                   "-extraLibs", "stdc,gcc",
-                   "noCheckRPATH, noCheckPATH"}, &comapareTreeExtraLib, {checkKeys});
+    QDir("./" + DISTRO_DIR + "2/").removeRecursively();
+
 }
 
 void deploytest::testExtraPlugins() {
