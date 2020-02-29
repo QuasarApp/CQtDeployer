@@ -614,7 +614,7 @@ void deploytest::testQIF() {
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
-                   "qif", "verbose"}, &comapareTree);
+                   "qif", "verbose"}, &comapareTree, {}, true);
 
 
 #ifdef Q_OS_UNIX
@@ -638,7 +638,7 @@ void deploytest::testQIF() {
                    "-pluginOut", "/p",
                    "-qmlOut", "/q",
                    "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
-                   "-targetPackage", packageString, "qif"}, &comapareTree);
+                   "-targetPackage", packageString, "qif"}, &comapareTree, {}, true);
 
 }
 
