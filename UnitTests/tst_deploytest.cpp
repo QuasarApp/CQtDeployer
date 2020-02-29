@@ -37,7 +37,7 @@ class deploytest : public QObject
     Q_OBJECT
 
 private:
-    QSet<QString> qtFilesTree;
+    QHash<QString, QSet<QString>> filesTree;
 
 
     bool runProcess(const QString& DistroPath,
@@ -45,12 +45,18 @@ private:
                     const QString &qt = "");
     QStringList getFilesFromDir(const QString& dir);
 
+    QSet<QString> getFilesTree(const QStringList& keys = {});
 
-    void runTestParams(const QStringList &list, QSet<QString> *tree = nullptr,
+    void runTestParams(const QStringList &list,
+                       QSet<QString> *tree = nullptr,
+                       const QStringList &checkableKeys = {},
                        bool noWarnings = false,
                        bool onlySize = false);
 
-    void checkResults(const QSet<QString> &tree, bool noWarnings, bool onlySize = false);
+    void checkResults(const QSet<QString> &tree,
+                      const QStringList &checkagbleKeys,
+                      bool noWarnings,
+                      bool onlySize = false);
 public:
     deploytest();
     /**
@@ -71,7 +77,6 @@ private slots:
     void testDeployTarget();
     void testStrip();
     void testExtractLib();
-    void testDistroStruct();
     void testRelativeLink();
     void testCheckQt();
 
@@ -84,6 +89,7 @@ private slots:
 
     // tested flags customScript
     void costomScript();
+    void testDistroStruct();
 
     // tested flags clear noOvervrite
     void testOverwrite();
@@ -211,16 +217,39 @@ QStringList deploytest::getFilesFromDir(const QString &path) {
     return res;
 }
 
+QSet<QString> deploytest::getFilesTree(const QStringList &keys) {
+    QSet<QString> result;
+
+    if (keys.isEmpty()) {
+        for (auto it = filesTree.begin(); it != filesTree.end(); ++it) {
+            result += filesTree[it.key()];
+        }
+        return result;
+    }
+
+    for (const auto& i: keys) {
+        result += filesTree[i];
+    }
+
+    return result;
+}
+
 deploytest::deploytest() {
     TestUtils utils;
 
     auto tempTree = utils.getTree(TestQtDir);
-
-    tempTree += utils.getTree("/lib", 5);
-    tempTree += utils.getTree("/usr/lib", 5);
-
     for (const QString &i: tempTree) {
-        qtFilesTree.insert(QFileInfo(i).fileName());
+        filesTree["Qt"].insert(QFileInfo(i).fileName());
+    }
+
+    tempTree = utils.getTree("/lib", 5);
+    for (const QString &i: tempTree) {
+        filesTree["/lib"].insert(QFileInfo(i).fileName());
+    }
+
+    tempTree = utils.getTree("/usr/lib", 5);
+    for (const QString &i: tempTree) {
+        filesTree["/usr/lib"].insert(QFileInfo(i).fileName());
     }
 
 }
@@ -263,6 +292,8 @@ deploytest::~deploytest(){}
 
 void deploytest::initTestCase() {
     QDir qt;
+
+    QDir("./" + DISTRO_DIR).removeRecursively();
 
     qt.mkpath("./test/Qt/5.12/");
     qt.mkpath("./test/extraPath/");
@@ -470,9 +501,8 @@ void deploytest::testMSVC() {
 }
 
 void deploytest::testEmptyParamsString() {
+#ifdef QT_DEBUG
     TestUtils utils;
-
-#ifdef WITH_ALL_TESTS
 
     QDir("./" + DISTRO_DIR).removeRecursively();
 
@@ -494,27 +524,17 @@ void deploytest::testEmptyParamsString() {
     comapareTree = utils.createTree({});
 
     runTestParams({"clear", "-targetDir", "./testDeployDir"}, &comapareTree);
-
 #endif
 }
 
 void deploytest::testWebEngine() {
-#ifdef WITH_ALL_TESTS
+#ifdef Q_OS_UNIX
     TestUtils utils;
 
-
-#ifdef Q_OS_UNIX
     QString bin = TestBinDir + "quicknanobrowser";
     QString qmake = TestQtDir + "bin/qmake";
 
-#else
-    QString bin = TestBinDir + "quicknanobrowser.exe";
-    QString qmake = TestQtDir + "bin/qmake.exe";
-
-#endif
-
     auto comapareTree = Modules::qtWebEngine();
-
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
@@ -561,7 +581,7 @@ void deploytest::testExtractPlugins() {
     QVERIFY(comapre.size());
 #endif
     for (auto i = comapre.begin(); i != comapre.end(); ++i) {
-        if (i.value() != 1 && qtFilesTree.contains(QFileInfo(i.key()).fileName())) {
+        if (i.value() != 1 && getFilesTree().contains(QFileInfo(i.key()).fileName())) {
             qCritical() << "missing library found " << i.key();
             QVERIFY(false);
         }
@@ -594,7 +614,7 @@ void deploytest::testQIF() {
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
-                   "qif", "verbose"}, &comapareTree);
+                   "qif", "verbose"}, &comapareTree, {}, true);
 
 
 #ifdef Q_OS_UNIX
@@ -618,7 +638,7 @@ void deploytest::testQIF() {
                    "-pluginOut", "/p",
                    "-qmlOut", "/q",
                    "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
-                   "-targetPackage", packageString, "qif"}, &comapareTree);
+                   "-targetPackage", packageString, "qif"}, &comapareTree, {}, true);
 
 }
 
@@ -710,26 +730,41 @@ void deploytest::testDistroStruct() {
         {"/res/","/../"},
         {"/res/type","/../../"},
         {"/res/type/","/../../"},
-        {"res/type","/../../"},
-        {"res/type/","/../../"},
-        {"res//type/","/../../"},
-        {"res////type/","/../../"},
+        {"res/type","../../"},
+        {"res/type/","../../"},
+        {"res//type/","../../"},
+        {"res////type/","../../"},
         {"//res///type/////","/../../"},
         {"\\", "/"},
         {"\\res","/../"},
         {"\\res\\","/../"},
         {"\\res\\type","/../../"},
         {"\\res\\type\\","/../../"},
-        {"res\\type","/../../"},
-        {"res\\type\\","/../../"},
-        {"res\\\\type\\","/../../"},
-        {"res\\\\\\\\type\\","/../../"},
+        {"res\\type","../../"},
+        {"res\\type\\","../../"},
+        {"res\\\\type\\","../../"},
+        {"res\\\\\\\\type\\","../../"},
         {"\\\\res\\\\\\type\\\\\\\\\\","/../../"},
     };
 
     for (const auto &i: cases) {
-        QVERIFY(distro.getRelativePath(i.first) == i.second);
+        if (distro.getRelativePath(i.first) != i.second)
+            QVERIFY(false);
     }
+
+    distro = DistroStruct();
+
+    distro.setTrOutDir("/tr/");
+    QVERIFY(distro.getTrOutDir() == "/tr/");
+
+
+    distro.setTrOutDir("/tr");
+    QVERIFY(distro.getTrOutDir() == "/tr/");
+
+    distro.setTrOutDir("tr");
+    QVERIFY(distro.getTrOutDir() == "/tr/");
+
+
 }
 
 void deploytest::testRelativeLink() {
@@ -753,12 +788,16 @@ void deploytest::testRelativeLink() {
     };
 
     for (const auto &i: cases) {
-        QVERIFY(PathUtils::getRelativeLink(i[0], i[1]) == i[2]);
+        if (PathUtils::getRelativeLink(i[0], i[1]) != i[2])
+            QVERIFY(false);
     }
 
     for (int i = 1; i < cases.size() - 1; i++) {
-        QVERIFY(PathUtils::isAbsalutPath(cases[i][0]));
-        QVERIFY(!PathUtils::isAbsalutPath(cases[i][2]));
+        if (!PathUtils::isAbsalutPath(cases[i][0]))
+            QVERIFY(false);
+        if (PathUtils::isAbsalutPath(cases[i][2]))
+            QVERIFY(false);
+
     }
 }
 
@@ -872,7 +911,9 @@ void deploytest::testSetTargetDir() {
 
 }
 
-void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree,
+void deploytest::runTestParams(const QStringList &list,
+                               QSet<QString>* tree,
+                               const QStringList &checkableKeys,
                                bool noWarnings, bool onlySize) {
 
     QuasarAppUtils::Params::parseParams(list);
@@ -882,7 +923,7 @@ void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree,
         QVERIFY(false);
 
     if (tree) {
-        checkResults(*tree, noWarnings, onlySize);
+        checkResults(*tree, checkableKeys, noWarnings, onlySize);
     }
 
 #ifdef WITH_SNAP
@@ -920,7 +961,10 @@ void deploytest::runTestParams(const QStringList &list, QSet<QString>* tree,
 #endif
 }
 
-void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings , bool onlySize) {
+void deploytest::checkResults(const QSet<QString> &tree,
+                              const QStringList& checkagbleKeys,
+                              bool noWarnings,
+                              bool onlySize) {
     TestUtils utils;
 
     QVERIFY(DeployCore::_config);
@@ -946,7 +990,7 @@ void deploytest::checkResults(const QSet<QString> &tree, bool noWarnings , bool 
                 comapreResult[ i.key()] = "Added unnecessary file";
                 qCritical() << "added unnecessary file : " + i.key();
                 bug = true;
-            } else if (qtFilesTree.contains(QFileInfo(i.key()).fileName())) {
+            } else if (getFilesTree(checkagbleKeys).contains(QFileInfo(i.key()).fileName())) {
                 comapreResult[ i.key()] = "Missing";
                 qCritical() << "Missing file : " + i.key();
                 bug = true;
@@ -1120,7 +1164,7 @@ void deploytest::testBinDir() {
      "./" + DISTRO_DIR + "/qt.conf"});
 #endif
 
-#ifdef WITH_ALL_TESTS
+#ifdef Q_OS_UNIX
     comapareTree += utils.createTree(
     {"./" + DISTRO_DIR + "/bin/quicknanobrowser",
      "./" + DISTRO_DIR + "/quicknanobrowser.sh"});
@@ -1155,7 +1199,7 @@ void deploytest::testConfFile() {
      "./" + DISTRO_DIR + "/TestQMLWidgets.exe"});
 #endif
 
-#ifdef WITH_ALL_TESTS
+#ifdef Q_OS_UNIX
     comapareTree += utils.createTree(
     {"./" + DISTRO_DIR + "/bin/quicknanobrowser",
      "./" + DISTRO_DIR + "/quicknanobrowser.sh"});
@@ -1394,7 +1438,7 @@ void deploytest::testPackages() {
     bin += "," + target2;
     bin += "," + target3;
 
-    auto packageString = "/package1/;" + QFileInfo(target1).absoluteFilePath() + ",/package2/;" + QFileInfo(target2).absoluteFilePath();
+    auto packageString = "package1;" + QFileInfo(target1).absoluteFilePath() + ",package2/ZzZ;" + QFileInfo(target2).absoluteFilePath();
 
     comapareTree = Modules::separetedPackageslibs();
 
@@ -1403,43 +1447,25 @@ void deploytest::testPackages() {
                    "-libOut", "/lolLib",
                    "-trOut", "/lolTr",
                    "-pluginOut", "/p",
-                   "-qmlOut", "/q",
-                   "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
+                   "-qmlOut", "package2/ZzZ;/q/and/q,/q",
+                   "-qmlDir", "package2/ZzZ;" + TestBinDir + "/../TestQMLWidgets",
                    "-targetPackage", packageString}, &comapareTree);
+
 
 #ifdef Q_OS_UNIX
 
-    comapareTree -= utils.createTree({
-                    "./" + DISTRO_DIR + "/package2/bin/TestQMLWidgets",
-                    "./" + DISTRO_DIR + "/package2/bin/qt.conf",
-                });
+    // test a wrapers source
+    QFile wraper("./" + DISTRO_DIR + "/package2/ZzZ/TestQMLWidgets.sh");
 
-    comapareTree += utils.createTree({
-                    "./" + DISTRO_DIR + "/package2/testBin/TestQMLWidgets",
-                    "./" + DISTRO_DIR + "/package2/testBin/qt.conf",
-                });
-#else
-    comapareTree -= utils.createTree({
-                    "./" + DISTRO_DIR + "/package2/TestQMLWidgets.exe",
-                    "./" + DISTRO_DIR + "/package2/qt.conf",
-                });
+    QVERIFY(wraper.open(QIODevice::ReadOnly));
+    auto data = wraper.readAll();
+    wraper.close();
 
-    comapareTree += utils.createTree({
-                    "./" + DISTRO_DIR + "/package2/testBin/TestQMLWidgets.exe",
-                    "./" + DISTRO_DIR + "/package2/TestQMLWidgets.bat",
-                    "./" + DISTRO_DIR + "/package2/testBin/qt.conf",
-                });
+    wraper.setFileName(":/testResurces/testRes/TestQMLWidgets.sh");
+    QVERIFY(wraper.open(QIODevice::ReadOnly));
+    QVERIFY(wraper.readAll() == data);
+    wraper.close();
 #endif
-
-    runTestParams({"-bin", bin, "force-clear",
-                   "-binOut", "package2;/testBin,lol",
-                   "-libOut", "/lolLib",
-                   "-trOut", "/lolTr",
-                   "-pluginOut", "/p",
-                   "-qmlOut", "/q",
-                   "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
-                   "-targetPackage", packageString}, &comapareTree);
-
 }
 
 void deploytest::testQt() {
@@ -1662,11 +1688,11 @@ void deploytest::testLibDir() {
 
     auto comapareTreeExtraLib = utils.createTree(
     {
-        "./" + DISTRO_DIR + "/TestOnlyC.sh",
-        "./" + DISTRO_DIR + "/bin/qt.conf",
-        "./" + DISTRO_DIR + "/bin/TestOnlyC",
-        "./" + DISTRO_DIR + "/lib/libstdc++.so",
-        "./" + DISTRO_DIR + "/lib/libgcc_s.so"
+        "./" + DISTRO_DIR + "2/TestOnlyC.sh",
+        "./" + DISTRO_DIR + "2/bin/qt.conf",
+        "./" + DISTRO_DIR + "2/bin/TestOnlyC",
+        "./" + DISTRO_DIR + "2/lib/libstdc++.so",
+        "./" + DISTRO_DIR + "2/lib/libgcc_s.so"
     });
 
 #else
@@ -1682,10 +1708,10 @@ void deploytest::testLibDir() {
 
     auto comapareTreeExtraLib = utils.createTree(
     {
-        "./" + DISTRO_DIR + "/qt.conf",
-        "./" + DISTRO_DIR + "/TestOnlyC.exe",
-        "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
-        "./" + DISTRO_DIR + "/libstdc++-6.dll",
+        "./" + DISTRO_DIR + "2/qt.conf",
+        "./" + DISTRO_DIR + "2/TestOnlyC.exe",
+        "./" + DISTRO_DIR + "2/libgcc_s_seh-1.dll",
+        "./" + DISTRO_DIR + "2/libstdc++-6.dll",
 
     });
 
@@ -1694,11 +1720,46 @@ void deploytest::testLibDir() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "-libDir", extraPath,
-                   "-recursiveDepth", "5"}, &comapareTree, true);
+                   "-recursiveDepth", "5",
+                   "noCheckRPATH, noCheckPATH"}, &comapareTree, {}, true);
 
     runTestParams({"-bin", bin, "clear" ,
-                   "-extraLibs", "stdc,gcc"}, &comapareTreeExtraLib, true);
+                   "-targetDir", "./" + DISTRO_DIR + "2",
+                   "-extraLibs", "stdc,gcc",
+                   "noCheckRPATH, noCheckPATH"}, &comapareTreeExtraLib, {}, true);
 
+//task #258
+//https://github.com/QuasarApp/CQtDeployer/issues/258
+
+
+#ifdef Q_OS_UNIX
+    comapareTreeExtraLib = utils.createTree(
+    {
+        "./" + DISTRO_DIR + "/TestOnlyC.sh",
+        "./" + DISTRO_DIR + "/bin/qt.conf",
+        "./" + DISTRO_DIR + "/bin/TestOnlyC",
+        "./" + DISTRO_DIR + "/lib/libstdc++.so",
+        "./" + DISTRO_DIR + "/lib/libgcc_s.so"
+    });
+
+#else
+
+    comapareTreeExtraLib = utils.createTree(
+    {
+        "./" + DISTRO_DIR + "/qt.conf",
+        "./" + DISTRO_DIR + "/TestOnlyC.exe",
+        "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
+        "./" + DISTRO_DIR + "/libstdc++-6.dll",
+
+    });
+
+#endif
+    runTestParams({"-bin", bin, "clear" ,
+                   "-libDir", "./" + DISTRO_DIR + "2/",
+                   "-recursiveDepth", "2",
+                   "noCheckRPATH, noCheckPATH"}, &comapareTreeExtraLib, {}, true);
+
+    QDir("./" + DISTRO_DIR + "2/").removeRecursively();
 
 }
 
@@ -1877,7 +1938,7 @@ void deploytest::testSystemLib() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "deploySystem"
-                  }, &comapareTree, true);
+                  }, &comapareTree);
 
 #ifdef Q_OS_UNIX
 
@@ -1905,7 +1966,7 @@ void deploytest::testSystemLib() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "deploySystem-with-libc"
-                  }, &comapareTree, true);
+                  }, &comapareTree);
 
     file.setFileName("./" + DISTRO_DIR + "/TestOnlyC.sh");
 
@@ -2038,7 +2099,7 @@ void deploytest::testSystemLib() {
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                    "deploySystem"
-                  }, &comapareTree, true);
+                  }, &comapareTree, {}, true);
 
 
 #endif
@@ -2108,8 +2169,8 @@ void deploytest::testOutDirs() {
     file.close();
 
     QVERIFY(runScript.contains("SET BASE_DIR=%~dp0"));
-    QVERIFY(runScript.contains("SET PATH=%BASE_DIR%\\\\lolLib\\;%PATH%"));
-    QVERIFY(runScript.contains("start \"\" \"%BASE_DIR%\\\\lol\\TestQMLWidgets.exe\" %*"));
+    QVERIFY(runScript.contains("SET PATH=%BASE_DIR%\\lolLib\\;%PATH%"));
+    QVERIFY(runScript.contains("start \"\" \"%BASE_DIR%\\lol\\TestQMLWidgets.exe\" %*"));
 
 
 #endif

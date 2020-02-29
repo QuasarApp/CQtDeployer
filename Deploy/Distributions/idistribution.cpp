@@ -113,7 +113,7 @@ bool iDistribution::copyFile(const QString &from, const QString &to) const {
 
 QMap<int ,QPair<QString, const DistroModule*>>
 iDistribution::sortPackages(const QHash<QString, DistroModule> &input) {
-    QMap<int ,QPair<QString, const DistroModule *>> result;
+    QMap<int, QPair<QString, const DistroModule *>> result;
     for (auto it = input.cbegin(); it != input.cend(); ++it ) {
         result.insertMulti(0xFFFF - it.key().size(), {it.key(), &it.value()});
     }

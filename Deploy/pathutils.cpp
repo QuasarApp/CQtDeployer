@@ -23,10 +23,6 @@ QString PathUtils::toFullPath(QString path) {
         path.replace("//", "/");
     } while ((index = path.indexOf("//")) >= 0);
 
-    if (path.left(1) != '/') {
-        path.insert(0, '/');
-    }
-
     if (path.right(1) != '/') {
         path.insert(path.size(), '/');
     }
@@ -104,16 +100,16 @@ bool PathUtils::isAbsalutPath(const QString &path) {
 
 QString PathUtils::fixPath(const QString &path) {
 #ifdef Q_OS_WIN
-    return path.toUpper();
+    return stripPath(path.toUpper());
 #else
-    return path;
+    return stripPath(path);
 #endif
 }
 
 QString PathUtils::getReleativePath(QString path) {
     path = toFullPath(path);
 
-    int left = path.indexOf('/', 0) + 1;
+    int left = path.at(0) == '/';
     int righy = path.indexOf('/', left);
 
     while (righy > 0) {
@@ -129,12 +125,19 @@ QString PathUtils::getReleativePath(QString path) {
 
 QString PathUtils::stripPath(QString path) {
     path = toFullPath(path);
-    if (path.left(1) == '/') {
-        path.remove(0, 1);
-    }
 
     if (path.right(1) == '/') {
         return path.remove(path.size() - 1, 1);
+    }
+
+    return path;
+}
+
+QString PathUtils::fullStripPath(QString path) {
+    path = stripPath(path);
+
+    if (path.left(1) == '/') {
+        return path.remove(0, 1);
     }
 
     return path;

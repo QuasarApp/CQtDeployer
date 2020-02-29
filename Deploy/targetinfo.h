@@ -16,11 +16,11 @@ class DEPLOYSHARED_EXPORT TargetInfo: public LibInfo
 public:
     TargetInfo();
 
-    QString getSufix() const;
-    void setSufix(const QString &value);
+    QString getPackage() const;
+    void setPackage(const QString &value);
 
 private:
-    QString sufix = "";
+    QString package = "";
 };
 
 #endif // TARGETINFO_H
