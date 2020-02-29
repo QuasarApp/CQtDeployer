@@ -71,8 +71,8 @@ QSet<QString> ModulesQt514::separetedPackageslibs()
     res += utils.createTree(
             {
                 "./" + DISTRO_DIR + "/lolLib/Qt5QmlModels.dll",
-                "./" + DISTRO_DIR + "/package2/Qt5QmlModels.dll",
-                "./" + DISTRO_DIR + "/package2/Qt5QmlWorkerScript.dll",
+                "./" + DISTRO_DIR + "/package2/ZzZ/Qt5QmlModels.dll",
+                "./" + DISTRO_DIR + "/package2/ZzZ/Qt5QmlWorkerScript.dll",
             }
         );
 #else
@@ -81,10 +81,10 @@ QSet<QString> ModulesQt514::separetedPackageslibs()
                 "./" + DISTRO_DIR + "/lolLib/libQt5QmlModels.so",
                 "./" + DISTRO_DIR + "/p/wayland-graphics-integration-client/libvulkan-server.so",
                 "./" + DISTRO_DIR + "/p/wayland-graphics-integration-server/libvulkan-server.so",
-                "./" + DISTRO_DIR + "/package2/lib/libQt5QmlModels.so",
-                "./" + DISTRO_DIR + "/package2/lib/libQt5QmlWorkerScript.so",
-                "./" + DISTRO_DIR + "/package2/plugins/wayland-graphics-integration-client/libvulkan-server.so",
-                "./" + DISTRO_DIR + "/package2/plugins/wayland-graphics-integration-server/libvulkan-server.so",
+                "./" + DISTRO_DIR + "/package2/ZzZ/lib/libQt5QmlModels.so",
+                "./" + DISTRO_DIR + "/package2/ZzZ/lib/libQt5QmlWorkerScript.so",
+                "./" + DISTRO_DIR + "/package2/ZzZ/plugins/wayland-graphics-integration-client/libvulkan-server.so",
+                "./" + DISTRO_DIR + "/package2/ZzZ/plugins/wayland-graphics-integration-server/libvulkan-server.so",
             }
         );
 #endif
@@ -149,7 +149,8 @@ QSet<QString> ModulesQt514::qtWebEngine()
         "./" + DISTRO_DIR + "/qml/QtQml/WorkerScript.2/libworkerscriptplugin.so",
         "./" + DISTRO_DIR + "/qml/QtQml/WorkerScript.2/plugins.qmltypes",
         "./" + DISTRO_DIR + "/qml/QtQml/WorkerScript.2/qmldir",
-        "./" + DISTRO_DIR + "/qml/QtQml/libqmlplugin.so"
+        "./" + DISTRO_DIR + "/qml/QtQml/libqmlplugin.so",
+        "./" + DISTRO_DIR + "/translations/qtwebengine_ca.qm"
     });
 #endif
     return res;

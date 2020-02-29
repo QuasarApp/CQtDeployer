@@ -58,8 +58,8 @@ bool Extracter::extractWebEngine() {
                 webEngeneBin += "/QtWebEngineProcess.exe";
             }
 
-            auto destWebEngine = DeployCore::_config->getTargetDir() + package + DeployCore::_config->packages()[package].getBinOutDir();
-            auto resOut = DeployCore::_config->getTargetDir() + package + DeployCore::_config->packages()[package].getResOutDir();
+            auto destWebEngine = DeployCore::_config->getTargetDir() + "/" + package + DeployCore::_config->packages()[package].getBinOutDir();
+            auto resOut = DeployCore::_config->getTargetDir() + "/" + package + DeployCore::_config->packages()[package].getResOutDir();
             auto res = DeployCore::_config->qtDir.getResources();
 
             if (!_fileManager->copyFile(webEngeneBin, destWebEngine)) {
@@ -80,7 +80,7 @@ bool Extracter::copyPlugin(const QString &plugin, const QString& package) {
     QStringList listItems;
 
     auto cnf = DeployCore::_config;
-    auto targetPath = cnf->getTargetDir() + package;
+    auto targetPath = cnf->getTargetDir() + "/" + package;
     auto distro = cnf->getDistroFromPackage(package);
 
 
@@ -107,7 +107,7 @@ void Extracter::copyExtraPlugins(const QString& package) {
     QFileInfo info;
 
     auto cnf = DeployCore::_config;
-    auto targetPath = cnf->getTargetDir() + package;
+    auto targetPath = cnf->getTargetDir() + "/" + package;
     auto distro = cnf->getDistroFromPackage(package);
 
     for (auto extraPlugin : DeployCore::_config->extraPlugins) {
@@ -178,7 +178,7 @@ void Extracter::extractPlugins() {
 
 void Extracter::copyLibs(const QSet<QString> &files, const QString& package) {
     auto cnf = DeployCore::_config;
-    auto targetPath = cnf->getTargetDir() + package;
+    auto targetPath = cnf->getTargetDir() + "/" + package;
     auto distro = cnf->getDistroFromPackage(package);
 
     for (const auto &file : files) {
@@ -227,7 +227,7 @@ void Extracter::deploy() {
 
     clear();
     _cqt->smartMoveTargets();
-    _scaner->setEnvironment(DeployCore::_config->envirement.deployEnvironment());
+    _scaner->setEnvironment(DeployCore::_config->envirement.environmentList());
     extractAllTargets();
 
     if (DeployCore::_config->deployQml && !extractQml()) {
@@ -270,7 +270,7 @@ bool Extracter::copyTranslations(const QStringList &list, const QString& package
 
     auto listItems = dir.entryInfoList(filters, QDir::Files | QDir::NoDotAndDotDot);
 
-    auto targetPath = cnf->getTargetDir() + package;
+    auto targetPath = cnf->getTargetDir() + "/" + package;
     auto distro = cnf->getDistroFromPackage(package);
 
     for (const auto &i: listItems) {
@@ -352,7 +352,7 @@ bool Extracter::extractQmlAll() {
 
 
     for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
-        auto targetPath = cnf->getTargetDir() + i.key();
+        auto targetPath = cnf->getTargetDir() + "/" + i.key();
         auto distro = cnf->getDistroFromPackage(i.key());
 
         QStringList listItems;
@@ -381,7 +381,7 @@ bool Extracter::extractQmlFromSource() {
     auto cnf = DeployCore::_config;
 
     for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
-        auto targetPath = cnf->getTargetDir() + i.key();
+        auto targetPath = cnf->getTargetDir() + "/" + i.key();
         auto distro = cnf->getDistroFromPackage(i.key());
 
         QStringList plugins;

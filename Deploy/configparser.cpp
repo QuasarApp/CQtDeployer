@@ -44,7 +44,7 @@ bool parsePackagesPrivate(Container& mainContainer,
         if (pair.size() == 1)
             (mainContainer[defaultPackage].*setter)(first);
         else {
-            first = PathUtils::toFullPath(first);
+            first = PathUtils::fullStripPath(first);
             if (!mainContainer.contains(first)) {
                 return false;
             }
@@ -331,7 +331,7 @@ bool ConfigParser::initDistroStruct() {
             split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
 
     auto erroLog = [](const QString &flag){
-            QuasarAppUtils::Params::verboseLog(QString("Set %0 fail, becouse you try set %0 for not inited package."
+            QuasarAppUtils::Params::verboseLog(QString("Set %0 fail, because you try set %0 for not inited package."
                                                " Use 'targetPackage' flag for init the packages").arg(flag),
                                                QuasarAppUtils::Error);
         };
@@ -412,14 +412,14 @@ bool ConfigParser::initPackages() {
         QSet<QString> configuredTargets;
         for (auto& str: tar_packages_array) {
             auto pair = str.split(DeployCore::getSeparator(1));
-            auto package = PathUtils::toFullPath(pair.value(0, ""));
+            auto package = PathUtils::fullStripPath(pair.value(0, ""));
 
             auto list = _config.getTargetsListByFilter(pair.value(1, ""));
 
             for (auto it = list.begin(); it != list.end(); ++it) {
                 if (!configuredTargets.contains(it.key())) {
                     configuredTargets.insert(it.key());
-                    it.value()->setSufix(package);
+                    it.value()->setPackage(package);
                 }
             }
 
@@ -449,7 +449,7 @@ bool ConfigParser::initQmlInput() {
     }
 
     auto erroLog = [](const QString &flag){
-            QuasarAppUtils::Params::verboseLog(QString("Set %0 fail, becouse you try set %0 for not inited package."
+            QuasarAppUtils::Params::verboseLog(QString("Set %0 fail, because you try set %0 for not inited package."
                                                " Use 'targetPackage' flag for init the packages").arg(flag),
                                                QuasarAppUtils::Error);
         };
@@ -518,7 +518,9 @@ bool ConfigParser::parseDeployMode() {
         return false;
     }
 
-    initQmlInput();
+    if (!initQmlInput()) {
+        return false;
+    }
 
     return true;
 }
@@ -723,8 +725,8 @@ void ConfigParser::initIgnoreList()
 
     if (!QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
 
-        envUnix.addEnv(Envirement::recursiveInvairement("/lib", 3), "", "");
-        envUnix.addEnv(Envirement::recursiveInvairement("/usr/lib", 3), "", "");
+        envUnix.addEnv(Envirement::recursiveInvairement("/lib", 3));
+        envUnix.addEnv(Envirement::recursiveInvairement("/usr/lib", 3));
         ruleUnix.prority = SystemLib;
         ruleUnix.platform = Unix;
         ruleUnix.enfirement = envUnix;
@@ -758,8 +760,8 @@ void ConfigParser::initIgnoreList()
     auto path = env.value("PATH");
     auto winPath = findWindowsPath(path);
 
-    envWin.addEnv(Envirement::recursiveInvairement(winPath + "/System32", 2), "", "");
-    envWin.addEnv(Envirement::recursiveInvairement(winPath + "/SysWOW64", 2), "", "");
+    envWin.addEnv(Envirement::recursiveInvairement(winPath + "/System32", 2));
+    envWin.addEnv(Envirement::recursiveInvairement(winPath + "/SysWOW64", 2));
 
     ruleWin.prority = SystemLib;
     ruleWin.platform = Win;
@@ -811,6 +813,8 @@ void ConfigParser::initIgnoreEnvList() {
     }
 
     ignoreEnvList.push_back(_config.appDir);
+    ignoreEnvList.push_back(_config.getTargetDir());
+
 
     _config.envirement.setIgnoreEnvList(ignoreEnvList);
 
@@ -947,8 +951,8 @@ bool ConfigParser::setQmake(const QString &value) {
             }
         }
     }
-    _config.envirement.addEnv(_config.qtDir.getLibs(), _config.appDir, _config.getTargetDir());
-    _config.envirement.addEnv(_config.qtDir.getBins(), _config.appDir, _config.getTargetDir());
+    _config.envirement.addEnv(_config.qtDir.getLibs());
+    _config.envirement.addEnv(_config.qtDir.getBins());
 
     return true;
 }
@@ -1011,8 +1015,8 @@ bool ConfigParser::setQtDir(const QString &value) {
     _config.qtDir.setQtPlatform(Platform::Win);
 #endif
 
-    _config.envirement.addEnv(_config.qtDir.getLibs(), _config.appDir, _config.getTargetDir());
-    _config.envirement.addEnv(_config.qtDir.getBins(), _config.appDir, _config.getTargetDir());
+    _config.envirement.addEnv(_config.qtDir.getLibs());
+    _config.envirement.addEnv(_config.qtDir.getBins());
 
     return true;
 }
@@ -1024,7 +1028,7 @@ void ConfigParser::setExtraPath(const QStringList &value) {
         QFileInfo info(i);
         if (info.isDir()) {
             if (_config.targets().contains(info.absoluteFilePath())) {
-                QuasarAppUtils::Params::verboseLog("skip the extra lib path becouse it is target!",
+                QuasarAppUtils::Params::verboseLog("skip the extra lib path because it is target!",
                                                    QuasarAppUtils::Info);
                 continue;
             }
@@ -1033,9 +1037,7 @@ void ConfigParser::setExtraPath(const QStringList &value) {
             auto extraDirs = getSetDirsRecursive(QDir::fromNativeSeparators(info.absoluteFilePath()), _config.depchLimit);
             _config.extraPaths.addExtraPaths(extraDirs);
 
-            _config.envirement.addEnv(Envirement::recursiveInvairement(dir, 0, _config.depchLimit),
-                                      _config.appDir,
-                                      _config.getTargetDir());
+            _config.envirement.addEnv(Envirement::recursiveInvairement(dir, 0, _config.depchLimit));
         } else if (i.size() > 1) {
 
             _config.extraPaths.addExtraPathsMasks({i});
@@ -1043,7 +1045,7 @@ void ConfigParser::setExtraPath(const QStringList &value) {
             QuasarAppUtils::Params::verboseLog(i + " added like a path mask",
                                                QuasarAppUtils::Info);
         } else {
-            QuasarAppUtils::Params::verboseLog(i + " not added in path mask becouse"
+            QuasarAppUtils::Params::verboseLog(i + " not added in path mask because"
                                                    " the path mask must be large 2 characters",
                                                QuasarAppUtils::Warning);
         }
@@ -1058,7 +1060,7 @@ void ConfigParser::setExtraNames(const QStringList &value) {
             QuasarAppUtils::Params::verboseLog(i + " added like a file name mask",
                                                QuasarAppUtils::Info);
         } else {
-            QuasarAppUtils::Params::verboseLog(i + " not added in file mask becouse"
+            QuasarAppUtils::Params::verboseLog(i + " not added in file mask because"
                                                    " the file mask must be large 2 characters",
                                                QuasarAppUtils::Warning);
         }
@@ -1110,13 +1112,10 @@ void ConfigParser::initEnvirement() {
 
     auto path = env.value("PATH");
 
-    _config.envirement.addEnv(env.value("LD_LIBRARY_PATH"), _config.appDir, _config.getTargetDir());
-    _config.envirement.addEnv(path, _config.appDir, _config.getTargetDir());
-
+    _config.envirement.addEnv(env.value("LD_LIBRARY_PATH"));
+    _config.envirement.addEnv(path);
 
     QStringList dirs;
-
-
 #ifdef Q_OS_LINUX
 
     dirs.append(getDirsRecursive("/lib", 5));
@@ -1128,11 +1127,7 @@ void ConfigParser::initEnvirement() {
 
 #endif
 
-
-
-    for (const auto &i : dirs) {
-        _config.envirement.addEnv(i, _config.appDir, _config.getTargetDir());
-    }
+    _config.envirement.addEnv(dirs);
 
     if (_config.envirement.size() < 2) {
         qWarning() << "system environment is empty";
@@ -1146,7 +1141,7 @@ QStringList ConfigParser::getDirsRecursive(const QString &path, int maxDepch, in
 QSet<QString> ConfigParser::getSetDirsRecursive(const QString &path, int maxDepch, int depch) {
     QDir dir(path);
 
-    QSet<QString> res = {path};
+    QSet<QString> res = {dir.path()};
 
     if (maxDepch >= 0 && maxDepch <= depch) {
         return res;
@@ -1170,7 +1165,7 @@ bool ConfigParser::smartMoveTargets() {
 
         QFileInfo target(i.key());
 
-        QString targetPath = _config.getTargetDir() + i.value().getSufix();
+        QString targetPath = _config.getTargetDir() + "/" + i.value().getPackage();
 
         if (DeployCore::isLib(target)) {
             targetPath += _config.getDistro(i.key()).getLibOutDir();
@@ -1185,7 +1180,7 @@ bool ConfigParser::smartMoveTargets() {
         auto newTargetKey = targetPath + "/" + target.fileName();
         temp.unite(moveTarget(i.value(), newTargetKey));
 
-        _config.packagesEdit()[i.value().getSufix()].addTarget(newTargetKey);
+        _config.packagesEdit()[i.value().getPackage()].addTarget(newTargetKey);
 
     }
 

@@ -11,51 +11,51 @@
 #include <quasarapp.h>
 
 QString DistroStruct::getLibOutDir(const QString &basePath) const {
-    return getRelativePath(basePath) + libOutDir;
+    return toFullPath(getRelativePath(basePath) + libOutDir);
 }
 
 void DistroStruct::setLibOutDir(const QString &value) {
-    libOutDir = toFullPath(value);
+    libOutDir = value;
 }
 
 QString DistroStruct::getBinOutDir(const QString &basePath) const {
-    return getRelativePath(basePath) + binOutDir;
+    return toFullPath(getRelativePath(basePath) + binOutDir);
 }
 
 void DistroStruct::setBinOutDir(const QString &value) {
-    binOutDir = toFullPath(value);
+    binOutDir = value;
 }
 
 QString DistroStruct::getQmlOutDir(const QString &basePath) const {
-    return getRelativePath(basePath) + qmlOutDir;
+    return toFullPath(getRelativePath(basePath) + qmlOutDir);
 }
 
 void DistroStruct::setQmlOutDir(const QString &value) {
-    qmlOutDir = toFullPath(value);
+    qmlOutDir = value;
 }
 
 QString DistroStruct::getTrOutDir(const QString &basePath) const {
-    return getRelativePath(basePath) + trOutDir;
+    return toFullPath(getRelativePath(basePath) + trOutDir);
 }
 
 void DistroStruct::setTrOutDir(const QString &value) {
-    trOutDir = toFullPath(value);
+    trOutDir = value;
 }
 
 QString DistroStruct::getResOutDir(const QString &basePath) const {
-    return getRelativePath(basePath) + resOutDir;
+    return toFullPath(getRelativePath(basePath) + resOutDir);
 }
 
 void DistroStruct::setResOutDir(const QString &value) {
-    resOutDir = toFullPath(value);
+    resOutDir = value;
 }
 
 QString DistroStruct::getPluginsOutDir(const QString &basePath) const {
-    return getRelativePath(basePath) + pluginsOutDir;
+    return toFullPath(getRelativePath(basePath) + pluginsOutDir);
 }
 
 void DistroStruct::setPluginsOutDir(const QString &value) {
-    pluginsOutDir = toFullPath(value);
+    pluginsOutDir = value;
 }
 
 QString DistroStruct::getRootDir(const QString &basePath) const {

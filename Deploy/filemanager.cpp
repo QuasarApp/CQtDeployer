@@ -375,14 +375,14 @@ void FileManager::clear(const QString& targetDir, bool force) {
 
         if (index.value().isFile()) {
             if (removeFile(index.value())) {
-                qInfo() << "Remove " << index.value().absoluteFilePath() << " becouse it is deployed file";
+                qInfo() << "Remove " << index.value().absoluteFilePath() << " because it is deployed file";
             }
 
         } else {
             QDir qdir(index.value().absoluteFilePath());
             if (!qdir.entryList(QDir::NoDotAndDotDot | QDir::AllEntries).count()) {
                 qdir.removeRecursively();
-                qInfo() << "Remove " << index.value().absoluteFilePath() << " becouse it is empty";
+                qInfo() << "Remove " << index.value().absoluteFilePath() << " because it is empty";
             }
         }
     }

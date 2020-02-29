@@ -471,7 +471,7 @@ bool DeployCore::isQtLib(const QString &lib) {
     QFileInfo info((lib));
 
     if (_config) {
-        return _config->qtDir.isQt(PathUtils::toFullPath(info.absoluteFilePath()));
+        return _config->qtDir.isQt(info.absoluteFilePath());
     }
 
     return isLib(info) && info.fileName().contains("Qt", Qt::CaseInsensitive);

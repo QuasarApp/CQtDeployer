@@ -17,11 +17,7 @@ CONFIG += ordered
                tests/TestQtWidgets \
                tests/TestQMLWidgets
 
-
-    contains(DEFINES, WITH_ALL_TESTS) {
-        SUBDIRS += tests/quicknanobrowser
-    }
-
+    unix:SUBDIRS += tests/quicknanobrowser
 
     contains(DEFINES, WITHOUT_TESTS) {
         SUBDIRS -= UnitTests \

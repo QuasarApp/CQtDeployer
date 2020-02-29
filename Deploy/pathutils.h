@@ -22,7 +22,7 @@ class DEPLOYSHARED_EXPORT PathUtils
 public:
     PathUtils();
     /**
-     * @brief toFullPath remove all dublicate separators and insert separators into begin and end
+     * @brief toFullPath remove all dublicate separators and insert separators into end
      * @param path
      * @return return full path
      */
@@ -36,11 +36,18 @@ public:
     static QString getReleativePath(QString path);
 
     /**
-     * @brief stripPath remove all dublicate separators and remove separators from begin and end
+     * @brief stripPath remove all dublicate separators and remove separators on end
      * @param path
      * @return return strip patth
      */
     static QString stripPath(QString path);
+
+    /**
+     * @brief stripPath remove all dublicate separators and remove separators begin and end
+     * @param path
+     * @return return strip patth
+     */
+    static QString fullStripPath(QString path);
 
     /**
      * @brief getRelativeLink return releative path
