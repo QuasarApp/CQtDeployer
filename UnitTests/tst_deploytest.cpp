@@ -501,6 +501,7 @@ void deploytest::testMSVC() {
 }
 
 void deploytest::testEmptyParamsString() {
+#ifdef QT_DEBUG
     TestUtils utils;
 
     QDir("./" + DISTRO_DIR).removeRecursively();
@@ -523,6 +524,7 @@ void deploytest::testEmptyParamsString() {
     comapareTree = utils.createTree({});
 
     runTestParams({"clear", "-targetDir", "./testDeployDir"}, &comapareTree);
+#endif
 }
 
 void deploytest::testWebEngine() {
@@ -2167,8 +2169,8 @@ void deploytest::testOutDirs() {
     file.close();
 
     QVERIFY(runScript.contains("SET BASE_DIR=%~dp0"));
-    QVERIFY(runScript.contains("SET PATH=%BASE_DIR%\\\\lolLib\\;%PATH%"));
-    QVERIFY(runScript.contains("start \"\" \"%BASE_DIR%\\\\lol\\TestQMLWidgets.exe\" %*"));
+    QVERIFY(runScript.contains("SET PATH=%BASE_DIR%\\lolLib\\;%PATH%"));
+    QVERIFY(runScript.contains("start \"\" \"%BASE_DIR%\\lol\\TestQMLWidgets.exe\" %*"));
 
 
 #endif
