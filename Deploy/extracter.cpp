@@ -93,11 +93,7 @@ bool Extracter::copyPlugin(const QString &plugin, const QString& package) {
     }
 
     for (const auto &item : listItems) {
-        if (QuasarAppUtils::Params::isEndable("extractPlugins")) {
-            extract(item, &_packageDependencyes[package]);
-        } else {
-            extract(item, &_packageDependencyes[package], "Qt");
-        }
+        extractPluginLib(item, package);
     }
 
     return true;
@@ -124,11 +120,7 @@ void Extracter::copyExtraPlugins(const QString& package) {
             _fileManager->copyFile(info.absoluteFilePath(),
                                   targetPath + distro.getPluginsOutDir());
 
-            if (QuasarAppUtils::Params::isEndable("extractPlugins")) {
-                extract(info.absoluteFilePath(), &_packageDependencyes[package]);
-            } else {
-                extract(info.absoluteFilePath(), &_packageDependencyes[package], "Qt");
-            }
+            extractPluginLib(info.absoluteFilePath(), package);
         }
     }
 }
@@ -341,6 +333,14 @@ void Extracter::extractLib(const QString &file,
     }
 }
 
+void Extracter::extractPluginLib(const QString& item, const QString& package) {
+    if (QuasarAppUtils::Params::isEndable("extractPlugins")) {
+        extract(item, &_packageDependencyes[package]);
+    } else {
+        extract(item, &_packageDependencyes[package], "Qt");
+    }
+}
+
 bool Extracter::extractQmlAll() {
 
     if (!QFileInfo::exists(DeployCore::_config->qtDir.getQmls())) {
@@ -364,11 +364,7 @@ bool Extracter::extractQmlAll() {
         }
 
         for (const auto &item : listItems) {
-            if (QuasarAppUtils::Params::isEndable("extractPlugins")) {
-                extract(item, &_packageDependencyes[i.key()]);
-            } else {
-                extract(item, &_packageDependencyes[i.key()], "Qt");
-            }
+            extractPluginLib(item, i.key());
         }
 
     }
@@ -419,11 +415,7 @@ bool Extracter::extractQmlFromSource() {
         }
 
         for (const auto &item : listItems) {
-            if (QuasarAppUtils::Params::isEndable("extractPlugins")) {
-                extract(item, &_packageDependencyes[i.key()]);
-            } else {
-                extract(item, &_packageDependencyes[i.key()], "Qt");
-            }
+            extractPluginLib(item, i.key());
         }
 
     }
