@@ -63,6 +63,8 @@ class DEPLOYSHARED_EXPORT Extracter {
     void copyLibs(const QSet<QString> &files, const QString &package);
 
     bool isWebEngine(const QString& package) const;
+    void extractPluginLib(const QString &item, const QString &package);
+
 public:
     explicit Extracter(FileManager *fileManager, ConfigParser * cqt, DependenciesScanner *_scaner);
     void deploy();
