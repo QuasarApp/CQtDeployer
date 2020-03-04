@@ -235,10 +235,18 @@ void DeployCore::help() {
                 {"-releaseDate [package;val,val]", "Sets release date for package"},
                 {"-icon [package;val,val]", "Sets path to icon for package"},
                 {"-publisher [package;val,val]", "Sets publisher for package"},
-                {"-qifStyle [path/to/style.css]", "Sets path to the style ccs file or sets default style. available styles:  quasar "},
-                {"-qifBanner [package;val,val]", "Sets path to the banner png file."},
-                {"-qifLogo [package;val,val]", "Sets path to the logo png file."},
+                {"-qifStyle [path/to/style.css]", "Sets the path to the CSS style file or sets the default style. Available styles: quasar "},
+                {"-qifBanner [path/to/banner.png]", "Sets path to the banner png file."},
+                {"-qifLogo [path/to/logo.png]", "Sets path to the logo png file."},
 
+            }
+        },
+
+        {
+            "Part 4 QtInstallFramework options", {
+                {"-qifStyle [path/to/style.css]", "Sets the path to the CSS style file or sets the default style. Available styles: quasar "},
+                {"-qifBanner [path/to/banner.png]", "Sets path to the banner png file."},
+                {"-qifLogo [path/to/logo.png]", "Sets path to the logo png file."},
             }
         }
     };
