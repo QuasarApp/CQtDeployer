@@ -12,5 +12,13 @@
         <file>Distributions/Templates/qif/config/controlScript.qs</file>
         <file>Distributions/Templates/qif/config/config.xml</file>
         <file>Distributions/Templates/qif/Icon.png</file>
+        <file>Distributions/Templates/qif/config custom designe/config.xml</file>
+        <file>Distributions/Templates/qif/config custom designe/controlScript.qs</file>
+        <file>Distributions/Templates/qif/config custom designe/banner.png</file>
+        <file>Distributions/Templates/qif/config custom designe/logo.png</file>
+        <file>Distributions/Templates/qif/config custom designe/style.css</file>
+    </qresource>
+    <qresource prefix="/Styles">
+        <file>Distributions/Templates/qif/Styles/quasar.css</file>
     </qresource>
 </RCC>

@@ -18,7 +18,7 @@ class DEPLOYSHARED_EXPORT FileManager
 {
 private:
     bool fileActionPrivate(const QString &file, const QString &target,
-                           QStringList *mask, bool isMove);
+                           QStringList *mask, bool isMove, bool targetIsFile);
 
     bool initDir(const QString &path);
     QSet<QString> _deployedFiles;
@@ -28,7 +28,7 @@ public:
     FileManager();
 
     bool copyFile(const QString &file, const QString &target,
-                  QStringList *mask = nullptr);
+                  QStringList *mask = nullptr, bool targetIsFile = false);
 
     bool removeFile(const QString &file);
     bool removeFile(const QFileInfo &file);
@@ -38,13 +38,14 @@ public:
      * @param file
      * @param target
      * @param mask
+     * @param ifFileTarget
      * @return if file in target dir try move file else copy
      */
     bool smartCopyFile(const QString &file, const QString &target,
-                       QStringList *mask = nullptr);
+                       QStringList *mask = nullptr, bool ifFileTarget = false);
 
     bool moveFile(const QString &file, const QString &target,
-                  QStringList *mask = nullptr);
+                  QStringList *mask = nullptr, bool targetIsFile = false);
 
     bool copyFolder(const QString &from, const QString &to,
                     const QStringList &filter = QStringList(),

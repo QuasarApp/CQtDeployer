@@ -21,6 +21,7 @@ public:
 private:
     QString binarycreator;
     TemplateInfo generalInfo;
+    QString getStyle(const QString &input) const;
 
 };
 

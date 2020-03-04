@@ -167,13 +167,13 @@ void DeployCore::help() {
 
     QuasarAppUtils::Help::Charters help = {
         {
-            "General", {
+            "Part 0 General", {
                 {"CQtDeployer version", getAppVersion()},
                 {"Usage", "cqtdeployer <-bin [params]> [options]"},
             }
         },
         {
-            "Boolean options", {
+            "Part 1 Boolean options", {
                 {"init", "will initialize cqtdeployer.json file (configuration file)."
                  " For example: 'cqtdeployer init' - for initialize single package configuration."
                  " 'cqtdeployer -init multiPackage' - for initialize multi package configuration"},
@@ -197,7 +197,7 @@ void DeployCore::help() {
             }
         },
         {
-            "Deploy options", {
+            "Part 2 Deploy options", {
                 {"-bin [list, params]", "Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe"},
                 {"-binDir [params]", "A folder which includes deployable files (recursive search)"},
                 {"-confFile [params]", "The path to the json file with all deployment configurations. Using this file,"
@@ -221,7 +221,7 @@ void DeployCore::help() {
             }
         },
         {
-            "Controll of packages options", {
+            "Part 3 Controll of packages options", {
                 {"-targetPackage [package;tar1,package;tar2]", "Creates a new package and adds 'tar1 and tar2' to it"},
                 {"-qmlOut [package;path,path]", "Sets path to qml out directory"},
                 {"-libOut [package;path,path]", "Sets path to libraries out directory"},
@@ -234,7 +234,10 @@ void DeployCore::help() {
                 {"-deployVersion [package;val,val]", "Sets version for package"},
                 {"-releaseDate [package;val,val]", "Sets release date for package"},
                 {"-icon [package;val,val]", "Sets path to icon for package"},
-                {"--publisher [package;val,val]", "Sets publisher for package"},
+                {"-publisher [package;val,val]", "Sets publisher for package"},
+                {"-qifStyle [path/to/style.css]", "Sets path to the style ccs file or sets default style. available styles:  quasar "},
+                {"-qifBanner [package;val,val]", "Sets path to the banner png file."},
+                {"-qifLogo [package;val,val]", "Sets path to the logo png file."},
 
             }
         }
