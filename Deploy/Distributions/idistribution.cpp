@@ -107,8 +107,11 @@ bool iDistribution::moveData(const QString &from,
     return _fileManager->moveFolder(from, to, ignore);
 }
 
-bool iDistribution::copyFile(const QString &from, const QString &to) const {
-    return _fileManager->copyFile(from, to);
+bool iDistribution::copyFile(const QString &from, const QString &to, bool isFileTarget) const {
+    if (isFileTarget) {
+        _fileManager->removeFile(to);
+    }
+    return _fileManager->copyFile(from, to, nullptr, isFileTarget);
 }
 
 QMap<int ,QPair<QString, const DistroModule*>>
