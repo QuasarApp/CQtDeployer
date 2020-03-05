@@ -103,13 +103,13 @@ bool QIF::deployTemplate() {
             info.Icon = "icons/Icon.png";
             if (package->icon().isEmpty()) {
                 if (!copyFile(":/Templates/QIF/Distributions/Templates/qif/Icon.png",
-                              locationData + "/icons/")) {
+                              locationData + "/icons/", false)) {
                     return false;
                 }
             } else {
                 QFileInfo iconInfo(package->icon());
                 info.Icon = info.Name + "/icons/" + iconInfo.fileName();
-                if (!copyFile(package->icon(), locationData + "/icons/")) {
+                if (!copyFile(package->icon(), locationData + "/icons/", false)) {
                     return false;
                 }
             }
@@ -150,11 +150,31 @@ bool QIF::deployTemplate() {
 
         auto configLocation = cfg->getTargetDir() + "/" + getLocation() + "/config/";
 
-        if (!unpackDir(":/Templates/QIF/Distributions/Templates/qif/config/",
+        auto qifStyle = getStyle(QuasarAppUtils::Params::getStrArg("qifStyle", ""));
+        auto qifBanner = QuasarAppUtils::Params::getStrArg("qifBanner", "");
+        auto qifLogo = QuasarAppUtils::Params::getStrArg("qifLogo", "");
+
+        auto configTemplate = ":/Templates/QIF/Distributions/Templates/qif/config/";
+        if (qifStyle.size() || qifBanner.size() || qifLogo.size()) {
+            configTemplate = ":/Templates/QIF/Distributions/Templates/qif/config custom designe/";
+        }
+
+        if (!unpackDir(configTemplate,
                        configLocation, generalInfo, sufixes)) {
             return false;
         }
 
+        if (qifStyle.size() && !copyFile(qifStyle, configLocation + "/style.css", true)) {
+            return false;
+        }
+
+        if (qifBanner.size() && !copyFile(qifBanner, configLocation + "/banner.png", true)) {
+            return false;
+        }
+
+        if (qifLogo.size() && !copyFile(qifLogo, configLocation + "/logo.png", true)) {
+            return false;
+        }
 
         return true;
     }
@@ -194,5 +214,26 @@ bool QIF::removeTemplate() const {
 
 QProcessEnvironment QIF::processEnvirement() const {
     return QProcessEnvironment::systemEnvironment();
+}
+
+QString QIF::getStyle(const QString& input) const {
+    QDir resurces(":/Styles/Distributions/Templates/qif/Styles");
+    auto list = resurces.entryInfoList(QDir::Files);
+    for (const auto& style : list) {
+        if (input == style.baseName()) {
+            return style.absoluteFilePath();
+        }
+    }
+
+    QFileInfo f(input);
+
+    if (f.isFile()) {
+        return f.absoluteFilePath();
+    }
+
+    QuasarAppUtils::Params::verboseLog(input +  " not exits",
+                                       QuasarAppUtils::Error);
+
+    return "";
 }
 

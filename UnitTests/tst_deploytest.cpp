@@ -617,6 +617,16 @@ void deploytest::testQIF() {
                    "qif", "verbose"}, &comapareTree, {}, true);
 
 
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                   "qif",
+                   "-qifStyle", "quasar",
+                   "-qifBanner", TestBinDir + "/../../res/cqtdeployer banner.png",
+                   "-qifLogo", TestBinDir + "/../../res/icon.png",
+                   "verbose"}, &comapareTree, {}, true);
+
+
 #ifdef Q_OS_UNIX
     QString target2 = TestBinDir + "TestQMLWidgets";
     QString target3 = TestBinDir + "QtWidgetsProject";
