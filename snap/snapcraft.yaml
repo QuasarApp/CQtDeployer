@@ -53,7 +53,3 @@ parts:
   cqtdeployer-wrapper:
     plugin: dump
     source: QuasarAppLib/Etalons/snap/wrapper
-
-    override-stage: |
-      snapcraftctl stage
-      chmod 777 -R "$SNAPCRAFT_STAGE"
