@@ -73,10 +73,10 @@ bool ConfigParser::parseParams() {
 
     if (path.isEmpty() &&
             QuasarAppUtils::Params::customParamasSize() <= 0) {
-        path = DEFAULT_COFIGURATION_FILE;
+        path = "./" + DEFAULT_COFIGURATION_FILE;
     }
 
-    if (QFile::exists("./" + path)) {
+    if (QFile::exists(path)) {
         if (!loadFromFile(path)) {
             QuasarAppUtils::Params::verboseLog("failed to parse " + path,
                                                QuasarAppUtils::Error);
