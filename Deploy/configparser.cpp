@@ -540,10 +540,12 @@ bool ConfigParser::parseInfoMode() {
 bool ConfigParser::parseInitMode() {
 
     auto initLvl = QuasarAppUtils::Params::getStrArg("init");
-    QString sourceUrl(":/Distro/Distributions/configures/Init single configuration.json");
+    QString sourceUrl(":/Distro/Distributions/configures/Init.json");
 
-    if (initLvl == "multiPackage") {
+    if (initLvl == "multi") {
         sourceUrl = ":/Distro/Distributions/configures/Init multiPackage configuration.json";
+    } else if (initLvl == "single") {
+        sourceUrl = ":/Distro/Distributions/configures/Init single configuration.json";
     }
 
     QFile configFile(DEFAULT_COFIGURATION_FILE);

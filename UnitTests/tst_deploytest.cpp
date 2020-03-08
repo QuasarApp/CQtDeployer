@@ -668,7 +668,12 @@ void deploytest::testInit()
 
     QVERIFY(QFile(DEFAULT_COFIGURATION_FILE).remove());
 
-    runTestParams({"-init", "multiPackage"});
+    runTestParams({"-init", "multi"});
+    runTestParams({});
+
+    QVERIFY(QFile(DEFAULT_COFIGURATION_FILE).remove());
+
+    runTestParams({"-init", "single"});
     runTestParams({});
 
     QVERIFY(QFile(DEFAULT_COFIGURATION_FILE).remove());
