@@ -18,10 +18,14 @@ public:
     QStringList runArg() const;
     bool removeTemplate() const;
     QProcessEnvironment processEnvirement() const;
+    QStringList outPutFiles() const;
+
 private:
     QString binarycreator;
     TemplateInfo generalInfo;
     QString getStyle(const QString &input) const;
+    QString installerFile() const;
+
 
 };
 

@@ -597,16 +597,22 @@ void deploytest::testQIF() {
 
     QString qmake = TestQtDir + "bin/qmake";
     auto comapareTree = utils.createTree({
-                                             "./" + DISTRO_DIR + "/Application.run",
+                                             "./" + DISTRO_DIR + "/InstallerTestQMLWidgets.run",
                                          });
 
+    auto comapareTreeMulti = utils.createTree({
+                                             "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.run",
+                                         });
 #else
     QString bin = TestBinDir + "TestQMLWidgets.exe";
     QString target1 = TestBinDir + "TestOnlyC.exe";
 
     QString qmake = TestQtDir + "bin/qmake.exe";
     auto comapareTree = utils.createTree({
-                                             "./" + DISTRO_DIR + "/Application.exe",
+                                             "./" + DISTRO_DIR + "/InstallerTestQMLWidgets.exe",
+                                         });
+    auto comapareTreeMulti = utils.createTree({
+                                             "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.exe",
                                          });
 
 #endif
@@ -648,7 +654,7 @@ void deploytest::testQIF() {
                    "-pluginOut", "/p",
                    "-qmlOut", "/q",
                    "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
-                   "-targetPackage", packageString, "qif"}, &comapareTree, {}, true);
+                   "-targetPackage", packageString, "qif"}, &comapareTreeMulti, {}, true);
 
 }
 
