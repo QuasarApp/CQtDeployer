@@ -80,7 +80,8 @@ bool QIF::deployTemplate() {
             info.Name = PathUtils::stripPath(it.first);
 
             if (!package->name().isEmpty()) {
-                info.Name = package->name();
+                QFileInfo targetInfo(*package->targets().begin());
+                info.Name = targetInfo.baseName();
             }
 
             auto location = cfg->getTargetDir() + "/" + getLocation() + "/packages/" +
