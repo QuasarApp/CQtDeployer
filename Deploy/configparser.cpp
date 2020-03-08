@@ -76,7 +76,7 @@ bool ConfigParser::parseParams() {
         path = DEFAULT_COFIGURATION_FILE;
     }
 
-    if (QFile::exists(path)) {
+    if (QFile::exists("./" + path)) {
         if (!loadFromFile(path)) {
             QuasarAppUtils::Params::verboseLog("failed to parse " + path,
                                                QuasarAppUtils::Error);
