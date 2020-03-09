@@ -73,9 +73,8 @@ bool ConfigParser::parseParams() {
 
     if (path.isEmpty() &&
             QuasarAppUtils::Params::customParamasSize() <= 0) {
-        path = "./" + DEFAULT_COFIGURATION_FILE;
+        path = DEFAULT_COFIGURATION_FILE;
     }
-    path = QFileInfo(path).absoluteFilePath();
 
     if (QFile::exists(path)) {
         if (!loadFromFile(path)) {
@@ -478,7 +477,7 @@ bool ConfigParser::parseDeployMode() {
     if (!setTargets(bin)) {
 
         auto binDir = QuasarAppUtils::Params::getStrArg("binDir");
-        if (!(setTargetsRecursive(binDir) || setTargets({"./"}))) {
+        if (!setTargetsRecursive(binDir)) {
             qCritical() << "setTargetDir fail!";
             return false;
         }
