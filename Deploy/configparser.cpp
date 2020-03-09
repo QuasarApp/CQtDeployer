@@ -68,16 +68,32 @@ bool ConfigParser::parseParams() {
     }
 
     auto path = QuasarAppUtils::Params::getStrArg("confFile");
+
+    qInfo() << "path of confFile: " + path;
+
     bool createFile = !QFile::exists(path) &&
             QuasarAppUtils::Params::isEndable("confFile");
 
+    qInfo() << "customParamasSize: " << QuasarAppUtils::Params::customParamasSize();
+
     if (path.isEmpty() &&
             QuasarAppUtils::Params::customParamasSize() <= 0) {
+
+        qInfo() << "path of confFile: " + path;
         path = "./" + DEFAULT_COFIGURATION_FILE;
+
     }
+
+    qInfo() << "path of confFile: " + path;
+
+
     path = QFileInfo(path).absoluteFilePath();
 
+    qInfo() << "last path of confFile: " + path;
+
     if (QFile::exists(path)) {
+        qInfo() << "path Exits: " + path;
+
         if (!loadFromFile(path)) {
             QuasarAppUtils::Params::verboseLog("failed to parse " + path,
                                                QuasarAppUtils::Error);
