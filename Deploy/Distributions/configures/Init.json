@@ -1,6 +1,6 @@
 {
-    "binDir": ".",
+    "binDir": "./",
     "clear": true,
     "libDir": "./",
-    "recursiveDepth": 5
+    "recursiveDepth": "5"
 }
