@@ -14,7 +14,6 @@
     <MaintenanceToolName>CQtDeployerTool</MaintenanceToolName>
     <WizardStyle>Modern</WizardStyle>
     <StyleSheet>style.css</StyleSheet>
-    <Banner>banner.png</Banner>
     <Logo>logo.png</Logo>
 
     <RemoteRepositories>

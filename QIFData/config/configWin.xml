@@ -12,9 +12,8 @@
     <RemoveTargetDir>true</RemoveTargetDir>
     <ControlScript>controlScript.js</ControlScript>
     <MaintenanceToolName>CQtDeployerTool</MaintenanceToolName>
-    <WizardStyle>Classic</WizardStyle>
+    <WizardStyle>Modern</WizardStyle>
     <StyleSheet>style.css</StyleSheet>
-    <Banner>banner.png</Banner>
     <Logo>logo.png</Logo>
 
     <RemoteRepositories>
