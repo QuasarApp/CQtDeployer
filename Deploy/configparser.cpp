@@ -75,6 +75,7 @@ bool ConfigParser::parseParams() {
             QuasarAppUtils::Params::customParamasSize() <= 0) {
         path = "./" + DEFAULT_COFIGURATION_FILE;
     }
+    path = QFileInfo(path).absoluteFilePath();
 
     if (QFile::exists(path)) {
         if (!loadFromFile(path)) {
