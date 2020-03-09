@@ -151,7 +151,7 @@ RunMode DeployCore::getMode() {
         return RunMode::Init;
     }
 
-    if (QuasarAppUtils::Params::customParamasSize() == 0 || C("bin") || C("binDir")) {
+    if (C("bin") || C("binDir")) {
         return RunMode::Deploy;
     }
 

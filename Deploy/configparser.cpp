@@ -477,7 +477,7 @@ bool ConfigParser::parseDeployMode() {
     if (!setTargets(bin)) {
 
         auto binDir = QuasarAppUtils::Params::getStrArg("binDir");
-        if (!(setTargetsRecursive(binDir) || setTargets({"./"}))) {
+        if (!setTargetsRecursive(binDir)) {
             qCritical() << "setTargetDir fail!";
             return false;
         }
