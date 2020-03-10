@@ -30,7 +30,13 @@ function systemIntegration() {
 
     if (systemInfo.kernelType === "winnt") {
 
-        component.addOperation('Execute', ["SETX", "cqtdeployer", "\"" + targetDir + "/" + VERSION + "/cqtdeployer.exe\""])
+        var PATH = installer.environmentVariable("PATH");
+
+        if (!PATH.includes("cqtdeployer")) {
+            component.addOperation('EnvironmentVariable', "PATH", PATH + ";%cqtdeployer%")
+        }
+
+        component.addOperation('Execute', ["SETX", "cqtdeployer", "\"" + targetDir + "/" + VERSION + "\""])
 
     } else {
 
