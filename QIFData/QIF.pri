@@ -20,7 +20,7 @@ alias.commands= $$PY $$PWD/scripts/alias.py
     buildSnap.depends += qif
 }
 
-deployOffline.depends += alias
+unix:deployOffline.depends += alias
 
 QMAKE_EXTRA_TARGETS += \
     qif \
