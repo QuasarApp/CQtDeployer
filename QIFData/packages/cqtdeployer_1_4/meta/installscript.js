@@ -63,6 +63,10 @@ function systemIntegration() {
                                            homeDir + "/.local/bin/cqtdeployer"],
                                "UNDOEXECUTE", ["rm", "-f", homeDir + "/.local/bin/cqtdeployer"] )
 
+        component.addOperation('Execute', ["ln", "-sf", targetDir + "/" + VERSION + "/cqt.sh",
+                                           homeDir + "/.local/bin/cqt"],
+                               "UNDOEXECUTE", ["rm", "-f", homeDir + "/.local/bin/cqt"] )
+
     }
 
 }

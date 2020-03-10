@@ -11,6 +11,7 @@ win32:PY = python
 unix: PY = python3
 
 qif.commands= $$PY $$PWD/scripts/QIF.py $$PLATFORM 3.2.0 $$PWD/packages/QIF/data
+alias.commands= $$PY $$PWD/scripts/alias.py
 
 !isEmpty( ONLINE ) {
 
@@ -19,5 +20,8 @@ qif.commands= $$PY $$PWD/scripts/QIF.py $$PLATFORM 3.2.0 $$PWD/packages/QIF/data
     buildSnap.depends += qif
 }
 
+deployOffline.depends += alias
+
 QMAKE_EXTRA_TARGETS += \
-    qif
+    qif \
+    alias
