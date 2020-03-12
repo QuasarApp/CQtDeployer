@@ -1,4 +1,4 @@
-var VERSION = "1.4"
+const VERSION = "1.4"
 
 function Component()
 {
@@ -30,9 +30,16 @@ function systemIntegration() {
 
     if (systemInfo.kernelType === "winnt") {
 
-        var PATH = installer.environmentVariable("PATH");
-        if (!PATH.includes(targetDir)) {
-            component.addOperation('EnvironmentVariable', "PATH", PATH + ";\"" + targetDir + "\\" + VERSION + "\"")
+        const CQT_VAR = "%cqtdeployer%"
+        const PATH = installer.environmentVariable("PATH");
+        const PATH_ORIGIN = PATH.replace(";" + CQT_VAR, "");
+
+        if (!PATH.includes(CQT_VAR)) {
+            component.addOperation('Execute', ["SETX", "cqtdeployer", "\"" + targetDir + "\\" + VERSION + "\""],
+                                   "UNDOEXECUTE", ["SETX", "cqtdeployer", ""])
+
+            component.addOperation('Execute', ["SETX", "PATH", PATH + ";" + CQT_VAR],
+                                   "UNDOEXECUTE", ["SETX", "PATH", PATH_ORIGIN] );
         }
 
     } else {
