@@ -25,6 +25,15 @@ public:
      */
     QHash<QString, int> compareTree(const QSet<QString>& leftTree, const QSet<QString>& rightTree);
 
+    /**
+     * @brief deployFile - deploy one file from recurses
+     * @param file
+     * @param distanation
+     * @return true if operation is seccessful
+     */
+    bool deployFile(const QString& file, const QString& distanation,
+                    const QHash<QByteArray, QByteArray> &replaceCase = {}) const;
+
 private:
     QString getFilePath(const QString &i);
 };

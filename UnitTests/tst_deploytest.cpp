@@ -1412,10 +1412,21 @@ void deploytest::testConfFile() {
 
     runTestParams({"-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"},
                   &comapareTree);
-
     QFile::remove(TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json");
 
+    auto file = "testCase.json";
+    QVERIFY(utils.deployFile(":/testResurces/testRes/testMultiPackageConfig.json", file,
+                            {{"$BIN_DIR", TestBinDir.toLatin1()}}));
 
+    comapareTree = Modules::onlyC(DISTRO_DIR + "/Dstro1") +
+            Modules::qtLibs(DISTRO_DIR + "/Dstro2") +
+            Modules::qmlLibs(DISTRO_DIR + "/Dstro2") +
+            Modules::qtWebEngine(DISTRO_DIR + "/Dstro2");
+
+
+    runTestParams({"-confFile", file,
+                  "-qmlDir", "Dstro2;" + TestBinDir + "/../"},
+                  &comapareTree);
 }
 
 void deploytest::testPackages() {

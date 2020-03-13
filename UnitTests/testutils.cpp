@@ -81,3 +81,23 @@ QHash<QString, int> TestUtils::compareTree(const QSet<QString> &leftTree, const 
     return result;
 }
 
+bool TestUtils::deployFile(const QString &file, const QString &distanation,
+                           const QHash<QByteArray, QByteArray> &replaceCase) const {
+    QFile f(file);
+    if (f.open(QIODevice::ReadOnly)) {
+        QFile dist(distanation);
+        if (!dist.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+            return false;
+        }
+
+        QByteArray data = f.readAll();
+        for (auto it = replaceCase.begin(); it != replaceCase.end(); ++it) {
+            data.replace(it.key(), it.value());
+        }
+
+        return dist.write(data);
+    }
+
+    return false;
+}
+
