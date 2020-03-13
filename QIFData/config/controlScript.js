@@ -37,13 +37,13 @@ Controller.prototype.installationFinished = function()
     if (systemInfo.kernelType === "winnt") {
 
         QMessageBox["information"](qsTr("install in system"), qsTr("Installer"),
-            qsTr("CQtDeployer successfully installed on your computer to use the call \"%cqtdeployer%\"."),
+            qsTr("CQtDeployer successfully installed on your computer to use the call \"cqtdeployer\"."),
                  QMessageBox.Ok);
 
     } else {
 
         QMessageBox["information"](qsTr("install in system"), qsTr("Installer"),
-            qsTr("CQtDeployer successfully installed on your computer to use the call \"cqtdeployer\"."),
+            qsTr("CQtDeployer successfully installed on your computer to use the call \"cqtdeployer\", cqt or cqtdeployer.cqt."),
                  QMessageBox.Ok);
     }
 
