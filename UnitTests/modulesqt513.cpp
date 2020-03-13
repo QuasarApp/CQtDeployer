@@ -33,8 +33,9 @@ QSet<QString> ModulesQt513::onlyC(const QString &distDir)
                     "./" + distDir + "/TestOnlyC.exe",
                     "./" + distDir + "/qt.conf",
                 }
+                );
 
-            #else
+#else
     auto Tree = utils.createTree(
     {
                     "./" + distDir + "/bin/TestOnlyC",
