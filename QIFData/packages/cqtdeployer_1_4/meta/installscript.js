@@ -50,7 +50,7 @@ function systemIntegration() {
                                    QMessageBox.Ok);
 
             const ansver = installer.execute('cat', [homeDir + "/.profile"]);
-            const result;
+            let result;
             if (ansver.length >= 2) {
                 result = ansver[0];
             }
