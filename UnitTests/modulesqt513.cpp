@@ -5715,7 +5715,7 @@ QSet<QString> ModulesQt513::qtWebEngine(const QString &distDir) {
                     "./" + distDir + "/translations/qtwebengine_uk.qm"
                 });
 #else
-    auto Tree = {};
+    auto Tree = utils.createTree({});
 #endif
     return Tree;
 }
