@@ -32,6 +32,9 @@ QSet<QString> ModulesQt513::onlyC(const QString &distDir)
     {
                     "./" + distDir + "/TestOnlyC.exe",
                     "./" + distDir + "/qt.conf",
+                    "./" + distDir + "/libgcc_s_seh-1.dll",
+                    "./" + distDir + "/libstdc++-6.dll",
+                    "./" + distDir + "/libwinpthread-1.dll",
                 }
                 );
 
