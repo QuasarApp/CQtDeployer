@@ -4594,7 +4594,7 @@ QSet<QString> ModulesQt513::qtWithoutTr(const QString &distDir) {
 
 QSet<QString> ModulesQt513::qtWebEngine(const QString &distDir) {
     TestUtils utils;
-
+#ifdef Q_OS_LINUX
     auto Tree = utils.createTree(
     {
                     "./" + distDir + "/bin/QtWebEngineProcess",
@@ -5714,6 +5714,9 @@ QSet<QString> ModulesQt513::qtWebEngine(const QString &distDir) {
                     "./" + distDir + "/translations/qtwebengine_ru.qm",
                     "./" + distDir + "/translations/qtwebengine_uk.qm"
                 });
+#else
+    return {};
+#endif
     return Tree;
 }
 QSet<QString> ModulesQt513::testEmptyParamsTree(const QString &distDir) {
