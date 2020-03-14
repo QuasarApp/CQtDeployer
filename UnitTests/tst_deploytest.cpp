@@ -1423,9 +1423,15 @@ void deploytest::testConfFile() {
             Modules::qmlLibs(DISTRO_DIR + "/Dstro2") +
             Modules::qtWebEngine(DISTRO_DIR + "/Dstro2");
 
+#ifdef Q_OS_LINUX
+    auto qmlDir = TestBinDir + "/../";
+#else
+    auto qmlDir = TestBinDir + "/../TestQMLWidgets";
+#endif
+
 
     runTestParams({"-confFile", file,
-                  "-qmlDir", "Dstro2;" + TestBinDir + "/../"},
+                  "-qmlDir", "Dstro2;" + qmlDir},
                   &comapareTree);
 }
 
