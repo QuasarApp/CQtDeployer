@@ -30,14 +30,19 @@ function systemIntegration() {
 
     if (systemInfo.kernelType === "winnt") {
 
-        const CQT_VAR = "%cqtdeployer%"
+        const CQT_VAR = "%cqt%"
         const PATH = installer.environmentVariable("PATH");
         const PATH_ORIGIN = PATH.replace(";" + CQT_VAR, "");
+
+        console.log("CQT_VAR=" + CQT_VAR)
+        console.log("PATH=" + PATH)
+        console.log("PATH_ORIGIN=" + PATH_ORIGIN)
 
         if (!PATH.includes(CQT_VAR)) {
             component.addOperation('Execute', ["SETX", "PATH", PATH + ";" + CQT_VAR]);
         }
-        component.addOperation('Execute', ["SETX", "cqtdeployer", "\"" + targetDir + "\\" + VERSION + "\""])
+        component.addOperation('Execute', ["SETX", "cqt", "\"" + targetDir + "\\" + VERSION + "\""])
+        component.addOperation('Execute', ["SETX", "cqtdeployer","\"" + CQT_VAR + "\\cqtdeployer.exe\""])
 
     } else {
 
