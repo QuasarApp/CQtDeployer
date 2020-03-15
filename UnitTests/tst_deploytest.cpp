@@ -501,30 +501,30 @@ void deploytest::testMSVC() {
 }
 
 void deploytest::testEmptyParamsString() {
-#ifdef QT_DEBUG
-    TestUtils utils;
+//#ifdef QT_DEBUG
+//    TestUtils utils;
 
-    QDir("./" + DISTRO_DIR).removeRecursively();
+//    QDir("./" + DISTRO_DIR).removeRecursively();
 
-    auto comapareTree = Modules::testEmptyParamsTree();
+//    auto comapareTree = Modules::testEmptyParamsTree();
 
-    runTestParams({}, &comapareTree);
-
-
-    auto emptyTree = utils.createTree({});
-
-    runTestParams({"clear"}, &emptyTree);
-
-    comapareTree = Modules::testEmptyParamsTree("testDeployDir");
-
-    runTestParams({"-bin", "./UnitTests",
-                  "-targetDir", "./testDeployDir"}, &comapareTree);
+//    runTestParams({}, &comapareTree);
 
 
-    comapareTree = utils.createTree({});
+//    auto emptyTree = utils.createTree({});
 
-    runTestParams({"clear", "-targetDir", "./testDeployDir"}, &comapareTree);
-#endif
+//    runTestParams({"clear"}, &emptyTree);
+
+//    comapareTree = Modules::testEmptyParamsTree("testDeployDir");
+
+//    runTestParams({"-bin", "./UnitTests",
+//                  "-targetDir", "./testDeployDir"}, &comapareTree);
+
+
+//    comapareTree = utils.createTree({});
+
+//    runTestParams({"clear", "-targetDir", "./testDeployDir"}, &comapareTree);
+//#endif
 }
 
 void deploytest::testWebEngine() {
