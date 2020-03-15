@@ -44,10 +44,6 @@ Envirement QIF::toolKitEnv() const {
     return result;
 }
 
-QString QIF::getConfig() const {
-    return ":/Distro/Distributions/configures/QIF.json";
-}
-
 QString QIF::runCmd() {
     QString base = "binarycreator";
 

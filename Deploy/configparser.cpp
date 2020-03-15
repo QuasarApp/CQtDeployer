@@ -60,13 +60,6 @@ bool parsePackagesPrivate(Container& mainContainer,
 
 bool ConfigParser::parseParams() {
 
-    auto distro = getDistribution();
-    if (!configureDistribution(distro)) {
-        QuasarAppUtils::Params::verboseLog("Configure distrebutive fail!",
-                                           QuasarAppUtils::Error);
-        return false;
-    }
-
     auto path = QuasarAppUtils::Params::getStrArg("confFile");
     bool createFile = !QFile::exists(path) &&
             QuasarAppUtils::Params::isEndable("confFile");
@@ -83,6 +76,9 @@ bool ConfigParser::parseParams() {
             return false;
         }
     }
+
+    auto distro = getDistribution();
+    _packing->setDistribution(distro);
 
     switch (DeployCore::getMode()) {
     case RunMode::Info: {
@@ -1120,16 +1116,6 @@ iDistribution *ConfigParser::getDistribution() {
     }
 
     return new DefaultDistro(_fileManager);
-}
-
-bool ConfigParser::configureDistribution(iDistribution *distro) {
-    if (!loadFromFile(distro->getConfig())) {
-        return false;
-    }
-
-    _packing->setDistribution(distro);
-
-    return true;
 }
 
 void ConfigParser::initEnvirement() {

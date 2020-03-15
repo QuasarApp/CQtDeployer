@@ -16,7 +16,6 @@ public:
     iDistribution(FileManager * fileManager);
     virtual ~iDistribution();
 
-    virtual QString getConfig() const = 0;
     virtual bool deployTemplate() = 0;
     virtual bool removeTemplate() const = 0;
     virtual Envirement toolKitEnv() const = 0;
