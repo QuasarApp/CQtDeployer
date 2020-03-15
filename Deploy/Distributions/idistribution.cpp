@@ -114,6 +114,14 @@ bool iDistribution::copyFile(const QString &from, const QString &to, bool isFile
     return _fileManager->copyFile(from, to, nullptr, isFileTarget);
 }
 
+void iDistribution::registerOutFiles() const {
+    auto files = outPutFiles();
+
+    for (const auto& i : files) {
+        _fileManager->addToDeployed(i);
+    }
+}
+
 QMap<int ,QPair<QString, const DistroModule*>>
 iDistribution::sortPackages(const QHash<QString, DistroModule> &input) {
     QMap<int, QPair<QString, const DistroModule *>> result;

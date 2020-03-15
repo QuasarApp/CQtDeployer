@@ -27,10 +27,15 @@
         <translation>Установщик</translation>
     </message>
     <message>
-        <location filename="controlScript.js" line="46"/>
+        <location filename="controlScript.js" line="40"/>
         <source>CQtDeployer successfully installed on your computer to use the call &quot;cqtdeployer&quot;.</source>
         <oldsource>To uninstall cqtdeployer on your system, you need administrator rights!. </oldsource>
         <translation type="unfinished">Чтобы удалить cqtdeployer в вашей системе, вам нужны права администратора !. </translation>
+    </message>
+    <message>
+        <location filename="controlScript.js" line="46"/>
+        <source>CQtDeployer successfully installed on your computer to use the call &quot;cqtdeployer&quot;, cqt or cqtdeployer.cqt.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>To install cqtdeployer on your system, you need administrator rights!. </source>
@@ -39,12 +44,6 @@
     <message>
         <source>The installation was successful, but cqtdeployer will not be available from the console. </source>
         <translation type="vanished">Установка прошла успешно, но cqtdeployer не будет доступен из консоли. </translation>
-    </message>
-    <message>
-        <location filename="controlScript.js" line="40"/>
-        <source>CQtDeployer successfully installed on your computer to use the call &quot;%cqtdeployer%&quot;.</source>
-        <oldsource>To take advantage of this program you will need to enter the full path to it. </oldsource>
-        <translation type="unfinished">Чтобы воспользоваться этой программой, вам нужно будет ввести полный путь к ней. </translation>
     </message>
     <message>
         <source>Example: </source>

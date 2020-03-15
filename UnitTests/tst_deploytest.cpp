@@ -501,30 +501,30 @@ void deploytest::testMSVC() {
 }
 
 void deploytest::testEmptyParamsString() {
-#ifdef QT_DEBUG
-    TestUtils utils;
+//#ifdef QT_DEBUG
+//    TestUtils utils;
 
-    QDir("./" + DISTRO_DIR).removeRecursively();
+//    QDir("./" + DISTRO_DIR).removeRecursively();
 
-    auto comapareTree = Modules::testEmptyParamsTree();
+//    auto comapareTree = Modules::testEmptyParamsTree();
 
-    runTestParams({}, &comapareTree);
-
-
-    auto emptyTree = utils.createTree({});
-
-    runTestParams({"clear"}, &emptyTree);
-
-    comapareTree = Modules::testEmptyParamsTree("testDeployDir");
-
-    runTestParams({"-bin", "./UnitTests",
-                  "-targetDir", "./testDeployDir"}, &comapareTree);
+//    runTestParams({}, &comapareTree);
 
 
-    comapareTree = utils.createTree({});
+//    auto emptyTree = utils.createTree({});
 
-    runTestParams({"clear", "-targetDir", "./testDeployDir"}, &comapareTree);
-#endif
+//    runTestParams({"clear"}, &emptyTree);
+
+//    comapareTree = Modules::testEmptyParamsTree("testDeployDir");
+
+//    runTestParams({"-bin", "./UnitTests",
+//                  "-targetDir", "./testDeployDir"}, &comapareTree);
+
+
+//    comapareTree = utils.createTree({});
+
+//    runTestParams({"clear", "-targetDir", "./testDeployDir"}, &comapareTree);
+//#endif
 }
 
 void deploytest::testWebEngine() {
@@ -597,16 +597,22 @@ void deploytest::testQIF() {
 
     QString qmake = TestQtDir + "bin/qmake";
     auto comapareTree = utils.createTree({
-                                             "./" + DISTRO_DIR + "/Application.run",
+                                             "./" + DISTRO_DIR + "/InstallerTestQMLWidgets.run",
                                          });
 
+    auto comapareTreeMulti = utils.createTree({
+                                             "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.run",
+                                         });
 #else
     QString bin = TestBinDir + "TestQMLWidgets.exe";
     QString target1 = TestBinDir + "TestOnlyC.exe";
 
     QString qmake = TestQtDir + "bin/qmake.exe";
     auto comapareTree = utils.createTree({
-                                             "./" + DISTRO_DIR + "/Application.exe",
+                                             "./" + DISTRO_DIR + "/InstallerTestQMLWidgets.exe",
+                                         });
+    auto comapareTreeMulti = utils.createTree({
+                                             "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.exe",
                                          });
 
 #endif
@@ -648,7 +654,7 @@ void deploytest::testQIF() {
                    "-pluginOut", "/p",
                    "-qmlOut", "/q",
                    "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
-                   "-targetPackage", packageString, "qif"}, &comapareTree, {}, true);
+                   "-targetPackage", packageString, "qif"}, &comapareTreeMulti, {}, true);
 
 }
 
@@ -662,7 +668,12 @@ void deploytest::testInit()
 
     QVERIFY(QFile(DEFAULT_COFIGURATION_FILE).remove());
 
-    runTestParams({"-init", "multiPackage"});
+    runTestParams({"-init", "multi"});
+    runTestParams({});
+
+    QVERIFY(QFile(DEFAULT_COFIGURATION_FILE).remove());
+
+    runTestParams({"-init", "single"});
     runTestParams({});
 
     QVERIFY(QFile(DEFAULT_COFIGURATION_FILE).remove());
@@ -1401,10 +1412,27 @@ void deploytest::testConfFile() {
 
     runTestParams({"-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"},
                   &comapareTree);
-
     QFile::remove(TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json");
 
+    auto file = "testCase.json";
+    QVERIFY(utils.deployFile(":/testResurces/testRes/testMultiPackageConfig.json", file,
+                            {{"$BIN_DIR", TestBinDir.toLatin1()}}));
 
+    comapareTree = Modules::onlyC(DISTRO_DIR + "/Dstro1") +
+            Modules::qtLibs(DISTRO_DIR + "/Dstro2") +
+            Modules::qmlLibs(DISTRO_DIR + "/Dstro2") +
+            Modules::qtWebEngine(DISTRO_DIR + "/Dstro2");
+
+#ifdef Q_OS_LINUX
+    auto qmlDir = TestBinDir + "/../";
+#else
+    auto qmlDir = TestBinDir + "/../TestQMLWidgets";
+#endif
+
+
+    runTestParams({"-confFile", file,
+                  "-qmlDir", "Dstro2;" + qmlDir},
+                  &comapareTree);
 }
 
 void deploytest::testPackages() {

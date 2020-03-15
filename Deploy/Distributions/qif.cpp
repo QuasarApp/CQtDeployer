@@ -79,6 +79,11 @@ bool QIF::deployTemplate() {
             TemplateInfo info;
             info.Name = PathUtils::stripPath(it.first);
 
+            if (info.Name.isEmpty()) {
+                QFileInfo targetInfo(*package->targets().begin());
+                info.Name = targetInfo.baseName();
+            }
+
             if (!package->name().isEmpty()) {
                 info.Name = package->name();
             }
@@ -187,17 +192,12 @@ bool QIF::deployTemplate() {
 QStringList QIF::runArg() const {
 
     auto location = DeployCore::_config->getTargetDir() + "/" + getLocation();
-#ifdef Q_OS_LINUX
-    QString sufix = ".run";
-#else
-    QString sufix = ".exe";
-#endif
 
     return {
         "-c", location + "/config/config.xml",
         "-p", location + "/packages/",
         "-v",
-        DeployCore::_config->getTargetDir() + "/" + generalInfo.Name + sufix
+        installerFile()
     };
 }
 
@@ -205,6 +205,7 @@ bool QIF::removeTemplate() const {
     auto customTemplate = QuasarAppUtils::Params::getStrArg("qif", "");
     const DeployConfig *cfg = DeployCore::_config;
 
+    registerOutFiles();
     if (customTemplate.isEmpty()) {
         return QDir(cfg->getTargetDir() + "/" + getLocation()).removeRecursively();
     }
@@ -214,6 +215,10 @@ bool QIF::removeTemplate() const {
 
 QProcessEnvironment QIF::processEnvirement() const {
     return QProcessEnvironment::systemEnvironment();
+}
+
+QStringList QIF::outPutFiles() const {
+    return {installerFile()};
 }
 
 QString QIF::getStyle(const QString& input) const {
@@ -235,5 +240,15 @@ QString QIF::getStyle(const QString& input) const {
                                        QuasarAppUtils::Error);
 
     return "";
+}
+
+QString QIF::installerFile() const {
+#ifdef Q_OS_LINUX
+    QString sufix = ".run";
+#else
+    QString sufix = ".exe";
+#endif
+
+    return DeployCore::_config->getTargetDir() + "/Installer" + generalInfo.Name + sufix;
 }
 

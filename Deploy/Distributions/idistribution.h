@@ -24,6 +24,7 @@ public:
 
     virtual QString runCmd() = 0;
     virtual QStringList runArg() const = 0;
+    virtual QStringList outPutFiles() const = 0;
 
     QString getClassName() const;
 
@@ -42,6 +43,8 @@ protected:
 
     bool moveData(const QString& from, const QString& to, const QString &ignore) const;
     bool copyFile(const QString& from, const QString& to, bool isFileTarget) const;
+
+    void registerOutFiles() const;
 
 
     QMap<int, QPair<QString, const DistroModule *>> sortPackages(const QHash<QString, DistroModule> &input);

@@ -17,6 +17,8 @@ public:
     QStringList runArg() const;
     bool removeTemplate() const;
     QProcessEnvironment processEnvirement() const;
+
+    QStringList outPutFiles() const;
 };
 
 #endif // DEFAULTDISTRO_H

@@ -36,3 +36,7 @@ bool DefaultDistro::removeTemplate() const {
 QProcessEnvironment DefaultDistro::processEnvirement() const {
     return QProcessEnvironment::systemEnvironment();
 }
+
+QStringList DefaultDistro::outPutFiles() const {
+    return {};
+}

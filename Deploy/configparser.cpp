@@ -193,6 +193,10 @@ QString ConfigParser::readKeyArray(int separatorLvl, const QJsonArray &array,
         } else {
             QString val = i.toString();
 
+            if (i.type() == QJsonValue::Double) {
+                val = QString::number(i.toDouble(0), 'f');
+            }
+
             if (!val.isEmpty()) {
                 if (PathUtils::isReleativePath(val)) {
                     list.push_back(QFileInfo(confFileDir + '/' + val).absoluteFilePath());
@@ -210,25 +214,44 @@ void ConfigParser::readKey(const QString& key, const QJsonObject& obj,
                            const QString& confFileDir) const {
 
     if (!QuasarAppUtils::Params::isEndable(key)) {
+        auto type = obj[key].type();
 
-         if (obj[key].isArray()) {
-             auto array = obj[key].toArray();
-             QuasarAppUtils::Params::setArg(key, readKeyArray(0, array, confFileDir));
+        switch (type) {
+        case QJsonValue::Array: {
+            auto array = obj[key].toArray();
+            QuasarAppUtils::Params::setArg(key, readKeyArray(0, array, confFileDir));
+            break;
+        }
+        case QJsonValue::Double: {
+            readString(key,
+                       QString::number(obj[key].toDouble(0), 'f'),
+                       confFileDir);
 
-         } else if (!obj[key].isUndefined()) {
-             QString val = obj[key].toString();
-             if (!val.isEmpty()) {
-                 if (PathUtils::isReleativePath(val)) {
-                     QuasarAppUtils::Params::setArg(key, QFileInfo(confFileDir + '/' + val).absoluteFilePath());
-                 } else {
-                     QuasarAppUtils::Params::setArg(key, val);
-                 }
-             } else {
-                 auto value = obj[key].toBool(true);
-                 QuasarAppUtils::Params::setEnable(key, value);
-             }
-         }
+            break;
+        }
+        case QJsonValue::String: {
+            readString(key,
+                       obj[key].toString(),
+                       confFileDir);
+            break;
+        }
+        default: {
+            auto value = obj[key].toBool(true);
+            QuasarAppUtils::Params::setEnable(key, value);
+            break;
+        }
+        }
 
+    }
+}
+
+void ConfigParser::readString(const QString &key, const QString &val,
+                              const QString& confFileDir) const
+{
+    if (PathUtils::isReleativePath(val)) {
+        QuasarAppUtils::Params::setArg(key, QFileInfo(confFileDir + '/' + val).absoluteFilePath());
+    } else {
+        QuasarAppUtils::Params::setArg(key, val);
     }
 }
 
@@ -477,7 +500,7 @@ bool ConfigParser::parseDeployMode() {
     if (!setTargets(bin)) {
 
         auto binDir = QuasarAppUtils::Params::getStrArg("binDir");
-        if (!(setTargetsRecursive(binDir) || setTargets({"./"}))) {
+        if (!setTargetsRecursive(binDir)) {
             qCritical() << "setTargetDir fail!";
             return false;
         }
@@ -540,10 +563,12 @@ bool ConfigParser::parseInfoMode() {
 bool ConfigParser::parseInitMode() {
 
     auto initLvl = QuasarAppUtils::Params::getStrArg("init");
-    QString sourceUrl(":/Distro/Distributions/configures/Init single configuration.json");
+    QString sourceUrl(":/Distro/Distributions/configures/Init.json");
 
-    if (initLvl == "multiPackage") {
+    if (initLvl == "multi") {
         sourceUrl = ":/Distro/Distributions/configures/Init multiPackage configuration.json";
+    } else if (initLvl == "single") {
+        sourceUrl = ":/Distro/Distributions/configures/Init single configuration.json";
     }
 
     QFile configFile(DEFAULT_COFIGURATION_FILE);

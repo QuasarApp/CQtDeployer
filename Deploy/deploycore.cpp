@@ -151,7 +151,7 @@ RunMode DeployCore::getMode() {
         return RunMode::Init;
     }
 
-    if (QuasarAppUtils::Params::customParamasSize() == 0 || C("bin") || C("binDir")) {
+    if (C("bin") || C("binDir")) {
         return RunMode::Deploy;
     }
 
@@ -175,8 +175,9 @@ void DeployCore::help() {
         {
             "Part 1 Boolean options", {
                 {"init", "will initialize cqtdeployer.json file (configuration file)."
-                 " For example: 'cqtdeployer init' - for initialize single package configuration."
-                 " 'cqtdeployer -init multiPackage' - for initialize multi package configuration"},
+                 " For example: 'cqtdeployer init' - for initialize base package configuration."
+                 " 'cqtdeployer -init multi' - for initialize multi package configuration"
+                 " 'cqtdeployer -init single' - for initialize singel package configuration"},
                 {"help / h", "Shows help"},
                 {"clear", "Deletes deployable files of the previous session."},
                 {"force-clear", "Deletes the destination directory before deployment."},

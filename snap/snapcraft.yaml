@@ -21,7 +21,10 @@ base: core18
 apps:
   cqtdeployer:
     command: desktop-launch $SNAP/cqtdeployer.sh
+    plugs: [home, removable-media, process-control]
 
+  cqt:
+    command: desktop-launch $SNAP/cqt.sh
     plugs: [home, removable-media, process-control]
 
 parts:
