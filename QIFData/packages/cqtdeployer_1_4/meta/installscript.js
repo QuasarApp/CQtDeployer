@@ -38,7 +38,7 @@ function systemIntegration() {
 
         component.addElevatedOperation('CreateLink',
                                [
-                                   "@ApplicationsDirX64@\\..\Windows\\system32\\cqtdeployer",
+                                   "@ApplicationsDirX64@\\..\\Windows\\system32\\cqtdeployer",
                                    "\"" + targetDir + "/" + VERSION + "/cqtdeployer.bat\""
                                ]
                               )
