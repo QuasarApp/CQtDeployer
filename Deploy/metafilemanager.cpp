@@ -34,7 +34,7 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
             "SET BASE_DIR=%~dp0\n"
             "SET PATH=%BASE_DIR%" + distro.getLibOutDir() + ";%PATH%\n"
             "%2\n"            
-            "start \"\" \"%BASE_DIR%" + distro.getBinOutDir() + "%0\" %1 \n";
+            "call \"%BASE_DIR%" + distro.getBinOutDir() + "%0\" %1 \n";
 
     content = content.arg(QFileInfo(target).fileName()).arg("%*");
     content = content.arg(generateCustoScriptBlok(true));
