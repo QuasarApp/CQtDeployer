@@ -3,6 +3,7 @@
 
 ****************************
 
+
 ## What is CQtDeployer
 The CQtDeployer is application for extract all depends library of executable and create launch script for your application.
 
@@ -12,52 +13,21 @@ Key differences of this program:
 * Flexibility: this application's got flags that help you to configure the deployment for your or your project's needs
 * Crossdeploy: this application's support windows and linux distrebutives, This means that you can use it not only to deploy a project for your platform, but also to deploy a project on Linux for Windows and vice versa. 
 
+## Supported platforms:
+* <img src="https://user-images.githubusercontent.com/12465465/67766480-929b5000-fa5f-11e9-8ae7-377d9ddb7c65.png"  height="100">
+* <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg"  height="100">
+
+## Support processors architectures:
+* x86
+* x86-64
+* ARM
+* ARM64
 
 ### How to use
 
 #### Example: cqtdeployer <-bin    [params]> [options]
 
-#### cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.12.4/gcc_64/bin/qmake clear
-
-#### Options:
-| Option                      | Descriptiion                                                    |
-|-----------------------------|-----------------------------------------------------------------|
-|   -bin    [list, params]    | Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe|
-|   -binDir [params]          | A folder which includes deployable files (recursive search).    |
-|   -confFile [params]        | The path to the json file with all deployment configurations. Using this file, you can add the necessary options, thereby simplifying the command invocation in the console. However, the parameters in Kansol have a higher priority than in the file. |
-|   -qmlDir [params]          | Qml data dir. For example -qmlDir ~/my/project/qml              |
-|   -qmake  [params]          | Qmake path. For example                                         |
-|                             | -qmake ~/Qt/5.14.0/gcc_64/bin/qmake                             |
-|   -ignore [list,params]     | The list of libs to ignore.                                     |
-|                             | For example -ignore libicudata.so.56,libicudata2.so.56          |
-|   -ignoreEnv [list,params]  | The list of the environment to ignore.                          |
-|                             | For example -ignoreEnv /bad/dir,/my/bad/Dir                     |
-|   -libDir [list,params]     | Sets additional paths for extra libs of an app.                 |
-|                             | For example -libDir ~/myLib,~/newLibs                           |
-|   -extraPlugin [list,params]| Sets an additional path to extraPlugin of an app                |
-|   -recursiveDepth [params]  | Sets the Depth of recursive search of libs (default 0)          |
-|   -targetDir [params]       | Sets target directory(by default it is the path to the first deployable file)|
-|   -verbose [0-3]            | Shows debug log                                                 |
-|  -qmlOut [params]           | Sets path to qml out directory                                  |
-|  -libOut [params]           | Sets path to libraries out directory                            |
-|  -trOut [params]            | Sets path to translations out directory                         |
-|  -pluginOut [params]        | Sets path to plugins out directory                              |
-|  -binOut [params]           | Sets path to binary out directory                               |
-|   deploySystem              | Deploys all libraries                                           |
-|   clear                     | Deletes deployable files of the previous session.               |
-|   force-clear               | Deletes the destination directory before deployment.            |
-|                             | For example -runScript myApp.sh                                 |
-|   allQmlDependes            | Extracts all the qml libraries.                                 |
-|                             | (not recommended, as it takes great amount of computer memory)  |
-|   version / v               | Shows compiled version                                          |
-|   help / h                  | Shows help.                                                     |
-|   deploySystem-with-libc    | deploy all libs libs (only linux)                               |
-|   noStrip                   | Skips strip step                                                |
-|   noTranslations            | Skips the translations files.                                   |
-|                             | It doesn't work without qmake and inside a snap package         |
-|   noOverwrite               | Prevents replacing existing files.                              |
-|   v / version               | Shows compiled version                                          |
-
+See list of all options [here](./doc/Options.md)
 
 
 #### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.12.4/gcc_64/bin/qmake clear
@@ -73,7 +43,7 @@ Key differences of this program:
      - Example: ~/Qt/5.14.0/gcc_64/bin/qmake -r
 - make -j$(nproc)
 - make deploy
-     - #this command requires installed [cqtdeployer](https://github.com/QuasarApp/Console-QtDeployer/releases)
+     - #this command requires installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
 - ./Distro/CQtDeployerInstaller.run
 
 ## Build for Windows (CMD)
@@ -88,19 +58,28 @@ Key differences of this program:
      - Example: C:/Qt/5.14.0/mingw73_64/bin/qmake.exe -r
 - migw32-make.exe -j$(nproc)
 - migw32-make.exe deploy
-     - #this command requires installed [cqtdeployer](https://github.com/QuasarApp/Console-QtDeployer/releases)
+     - #this command requires installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
 - ./Distro/CQtDeployerInstaller.exe
 
 ## Install 
-You can download the latest version of the application [here](https://github.com/QuasarApp/Console-QtDeployer/releases).
+You can download the latest version of the application [here](https://github.com/QuasarApp/CQtDeployer/releases).
 
 ### Snap 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/cqtdeployer)
+
+## Projects using CQtDeployer:
+
+- [QAmigo](https://github.com/QAmigo/QAmigo)
+- [QtSecret](https://github.com/QuasarApp/Qt-Secret)
+- [Hanoi-Towers](https://github.com/QuasarApp/Hanoi-Towers)
 
 ## Donate
 If you want to support the project,you can donate into our bitcoin wallet.
 
 ### Bitcoin address - 1NJNbDKmezcUcHRfzpBeq2fHeG21oEKX8Q
+
+## Thanks
+ * many thanks [Trail of Bits](https://github.com/trailofbits) for their library [pe-parser](https://github.com/trailofbits/pe-parse). Everything works perfectly.
 
 ***************************
 ***************************
@@ -113,49 +92,21 @@ Qt CQtDeployer - это приложением для извлечения вс�
 * Гибкость - это приложение имеет флаги, которые помогут вам настроить деплоинг под ваши нужды и нужды вашего проекта
 * Crossdeploy: приложение поддерживает Windows и дистрибутивы Linux, это означает, что вы можете использовать его не только для развертывания проекта для вашей платформы, но и для развертывания проекта в Linux для Windows и наоборот.
 
+## Поддерживаемые платформы:
+* <img src="https://user-images.githubusercontent.com/12465465/67766480-929b5000-fa5f-11e9-8ae7-377d9ddb7c65.png"  height="100">
+* <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg"  height="100">
+
+## Поддержка архитектур процессоров:
+* x86
+* x86-64
+* ARM
+* ARM64
+
 ### Как использовать
 #### пример : cqtdeployer <-bin    [params]> [options]
 
-#### Options:
-| Option                      | Descriptiion                                              |
-|-----------------------------|-----------------------------------------------------------|
-|   help / h                  | Показывает справку                                          |
-|   -bin    [list, params]    | Развертываемый файл или папка. пример -bin ~/my/project/bin/,~/my/project/bin.exe|
-|   -binDir [params]          | Папка с развертываемыми файлами (с рекурсивным поиском). |
-|   -confFile [params]        | Путь к файлу json со всеми конфигурациями развертывания. С помощью этого файла можно добавить нужные опции, тем самым упрастить вызов комманды в консоле. Однако пораметры в кансоле имеют больший приоритет чем в файле. |
-|   -qmlDir [params]          | Папка qml. пример -qmlDir ~/my/project/qml                |
-|   -qmake  [params]          | Путь к qmake. пример                                      |
-|                             | -qmake ~/Qt/5.14.0/gcc_64/bin/qmake                       |
-|   -ignore [list,params]     | Список библиотек для игнорирования                        |
-|                             | Пример -ignore libicudata.so.56,libicudata2.so.56         |
-|   -ignoreEnv [list,params]  | Список путей для игнорирования.                          |
-|                             | Пример -ignoreEnv /bad/dir,/my/bad/Dir                                |
-|  -libDir [list,params]      | Устанавливает дополнительные пути к библиотекам               |
-|                             | Пример -libDir ~/myLib,~/newLibs                          |
-|  -qmlOut [params]           | Установит путь к папке с qml                                  |
-|  -libOut [params]           | Установит путь к папке с зависимостями                            |
-|  -trOut [params]            | Установит путь к папке с файламми переводов                         |
-|  -pluginOut [params]        | Установит путь к папке с плагинами                               |
-|  -binOut [params]           | Установит путь к папке с исполняемыми файлами                               |
-|  -extraPlugin [list,params] | Устанавливает дополнительный путь для extraPlugin приложения |
-|  -recursiveDepth [params]   | Устанавливает глубину поиска библиотек (по умолчанию 0)       |
-|  -targetDir [params]        | Устанавливает целевой каталог (по умолчанию это путь к первому развертываемому файлу)|
-|  -verbose [0-3]             | Показывает дебаг лога                                          |
-|   deploySystem              | Копирует все библиотеки кроме libc                        |
-|   clear                     | Удаляет все старые файлы (с прошлого запуска)              |
-|   force-clear               | Удаляет целевую директорию перед развертыванием              |
-|                             | пример -runScript myApp.sh                                |
-|  allQmlDependes             | Извлекает все библиотеки qml.          |
-|                             | (не рекомендуется, так как занимает много памяти)         |
-|  deploySystem-with-libc     | Копирует все зависимости в том числе и libc     |
-|  noStrip                    | Пропускает шаг strip                                      |
-|  noTranslations             | Пропускает файлы переводов                                |
-|                             | не работает без qmake и в snap                            |
-|   noOverwrite               | Запрещает замену уже существующих файлов.                |
-|  v / version                | Показывает версию приложения                                          |
+Смотрите список всех опций [здесь](./doc/Options.md)
 
-
-#### Пример: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.12.4/gcc_64/bin/qmake clear
 
 ## Build для Linux
 - установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
@@ -167,7 +118,7 @@ Qt CQtDeployer - это приложением для извлечения вс�
      - Пример: ~/Qt/5.14.0/gcc_64/bin/qmake -r
 - make -j$(nproc)
 - make deploy
-     - эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/Console-QtDeployer/releases)
+     - эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
 - ./Distro/CQtDeployerInstaller.run
 
 ## Build для Windows (CMD)
@@ -182,7 +133,7 @@ Qt CQtDeployer - это приложением для извлечения вс�
     - Пример: C:/Qt/5.14.0/mingw73_64/bin/qmake.exe -r
 - migw32-make.exe -j$(nproc)
 - migw32-make.exe deploy
-    - эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/Console-QtDeployer/releases)
+    - эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
 - ./Distro/CQtDeployerInstaller.exe
 
 ### Snap
@@ -192,16 +143,16 @@ Qt CQtDeployer - это приложением для извлечения вс�
 ## Установить
 Вы можете загрузить последнюю версию приложения [здесь](https://github.com/QuasarApp/CQtDeployer/releases).
 
+## Проекты использующие CQtDeployer :
 
-### Snap
-[![Загрузите из Snap Store](https://snapcraft.io/static/images/badges/ru/snap-store-black.svg)](https://snapcraft.io/cqtdeployer)
-
-
-## Установить
-Вы можете загрузить последнюю версию приложения [здесь](https://github.com/QuasarApp/Console-QtDeployer/releases).
-
+- [QAmigo](https://github.com/QAmigo/QAmigo)
+- [QtSecret](https://github.com/QuasarApp/Qt-Secret)
+- [Hanoi-Towers](https://github.com/QuasarApp/Hanoi-Towers)
 
 ## Пожертвовать
 Если вы хотите помочь проекту, то вы можете пожертвовать небольшую сумму на наш биткойн-кошелек.
 
 ### Биткойн-адрес - 1NJNbDKmezcUcHRfzpBeq2fHeG21oEKX8Q
+
+## Благодарность
+ * Большое спасибо  [Trail of Bits](https://github.com/trailofbits) за их библиотеку [pe-parser](https://github.com/trailofbits/pe-parse). Все работает отлично.

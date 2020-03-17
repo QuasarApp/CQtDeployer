@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2019 QuasarApp.
+//# Copyright (C) 2018-2020 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -20,6 +20,7 @@ private:
     QSet<QString> dependncies;
     QString qtPath;
     LibPriority priority = NotFile;
+    WinAPI _winApi = WinAPI::NoWinAPI;
 
 public:
 
@@ -46,12 +47,16 @@ public:
     QSet<QString> getDependncies() const;
     void setDependncies(const QSet<QString> &value);
     void addDependncies(const QString &value);
+    void addDependncies(const QSet<QString> &value);
     void removeDependncies(const QString &value);
 
     LibPriority getPriority() const;
     void setPriority(const LibPriority &value);
     QString getQtPath() const;
     void setQtPath(const QString &value);
+    WinAPI getWinApi() const;
+    void setWinApi(WinAPI winApi);
+    bool isDependetOfQt() const;
 };
 
 uint qHash(const LibInfo& info);

@@ -7,12 +7,15 @@ contains(QMAKE_HOST.os, Linux):{
     QMAKE_BIN= $$QT_DIR/qmake
 }
 
-unix:deployTest.commands = cqtdeployer -bin $$exec clear -qmake $$QMAKE_BIN -targetDir $$PWD/deployTests -libDir $$PWD -recursiveDepth 4
+DEPLOYER=cqtdeployer
+win32:DEPLOYER=$$(cqtdeployer)
+
+deployTest.commands = $$DEPLOYER -bin $$exec clear -qmake $$QMAKE_BIN -targetDir $$PWD/deployTests -libDir $$PWD -recursiveDepth 4
 
 
 test.depends = deployTest
 unix:!android:test.commands = $$PWD/deployTests/UnitTests.sh -maxwarnings 100000
-#win32:test.commands = $$PWD/deployTests/UnitTests.exe -maxwarnings 100000
+win32:test.commands = $$PWD/deployTests/UnitTests.exe -maxwarnings 100000 -o $$PWD/buildLog.log
 
 contains(QMAKE_HOST.os, Linux):{
     win32:test.commands =

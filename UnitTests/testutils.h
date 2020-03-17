@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -24,6 +24,15 @@ public:
      * @return hash with pathes and indexes( 1 - missing left and -1 - missing right)
      */
     QHash<QString, int> compareTree(const QSet<QString>& leftTree, const QSet<QString>& rightTree);
+
+    /**
+     * @brief deployFile - deploy one file from recurses
+     * @param file
+     * @param distanation
+     * @return true if operation is seccessful
+     */
+    bool deployFile(const QString& file, const QString& distanation,
+                    const QHash<QByteArray, QByteArray> &replaceCase = {}) const;
 
 private:
     QString getFilePath(const QString &i);

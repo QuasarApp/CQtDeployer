@@ -1,0 +1,106 @@
+{
+    "noOverwrite": false,
+    "bin": "./",
+    "binDir": "./",
+    "qmlDir": [
+        [
+            "package2",
+            "./TestQMLWidgets/"
+        ],
+        [
+            "./qml/for/All"
+        ]
+    ],
+
+    "deploySystem": false,
+    "deploySystem-with-libc": false,
+    "qmake": "this parameter should contain the path to your qmake, for Windows this field is required. On Linux, you can remove it, then qmake will be found by rpath.",
+    "ignore": "ignoreLib.dll",
+    "ignoreEnv": "/my/ignore/path",
+    "clear": true,
+    "force-clear": false,
+    "allQmlDependes": false,
+    "libDir": "./",
+    "recursiveDepth": "3",
+    "extraLibs": "myExtraLib (libssl)",
+    "extraPlugin": "myExtraPulgin (platforms)",
+    "targetDir": "./Distro",
+    "targetPackage": [
+        [
+            "/package1/",
+            "TestOnlyC"
+        ],
+        [
+            "/package2/",
+            "TestQMLWidgets"
+        ]
+    ],
+    "noStrip": false,
+    "extractPlugins": false,
+    "noTranslations": false,
+    "qmlOut": "qml",
+    "libOut": "lib",
+    "trOut": "tr",
+    "pluginOut": "plug",
+    "binOut": "bin",
+    "recOut": "rec",
+    "verbose": "3",
+    "qif": false,
+    "noCheckRPATH": false,
+    "noCheckPATH": false,
+    "name": [
+        [
+            "package2",
+            "package2Application"
+        ],
+        [
+            "mainApplication"
+        ]
+    ],
+    "description": [
+        [
+            "package2",
+            "this is description for package 'package2'"
+        ],
+        [
+            "this is description for default package"
+        ]
+    ],
+    "deployVersion": [
+        [
+            "package2",
+            "1.0.0"
+        ],
+        [
+            "1.0.0"
+        ]
+    ],
+    "releaseDate": [
+        [
+            "package2",
+            "yyyy-MM-dd"
+        ],
+        [
+            "yyyy-MM-dd"
+        ]
+    ],
+    "icon": [
+        [
+            "package2",
+            "/path/icon.png"
+        ],
+        [
+            "/path/main/icon.png"
+        ]
+    ],
+    "publisher": [
+        [
+            "package2",
+            "team of package2"
+        ],
+        [
+            "main team"
+        ]
+    ],
+    "customScript": "echo 'I am use custom script!!!'"
+}

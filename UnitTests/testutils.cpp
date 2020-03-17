@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -35,7 +35,7 @@ QSet<QString> TestUtils::getTree(const QString &path, int limit, int depch) {
 
     QDir dir(info.absoluteFilePath());
     auto list = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
-    for (auto &i: list) {
+    for (const auto &i: list) {
         result.unite(getTree(i.absoluteFilePath(), limit, depch + 1));
     }
 
@@ -57,7 +57,7 @@ QString TestUtils::getFilePath(const QString& i) {
 
 QSet<QString> TestUtils::createTree(const QStringList &tree) {
     QSet<QString> res;
-    for (auto &i : tree) {
+    for (const auto &i : tree) {
         res.insert(getFilePath(i));
     }
 
@@ -79,5 +79,25 @@ QHash<QString, int> TestUtils::compareTree(const QSet<QString> &leftTree, const 
     }
 
     return result;
+}
+
+bool TestUtils::deployFile(const QString &file, const QString &distanation,
+                           const QHash<QByteArray, QByteArray> &replaceCase) const {
+    QFile f(file);
+    if (f.open(QIODevice::ReadOnly)) {
+        QFile dist(distanation);
+        if (!dist.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+            return false;
+        }
+
+        QByteArray data = f.readAll();
+        for (auto it = replaceCase.begin(); it != replaceCase.end(); ++it) {
+            data.replace(it.key(), it.value());
+        }
+
+        return dist.write(data);
+    }
+
+    return false;
 }
 

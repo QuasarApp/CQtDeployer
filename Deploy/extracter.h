@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -11,6 +11,7 @@
 #include <QString>
 #include <QStringList>
 #include <dependenciesscanner.h>
+#include "dependencymap.h"
 #include "deploy_global.h"
 #include "filemanager.h"
 #include "qml.h"
@@ -20,43 +21,52 @@ class MetaFileManager;
 
 class DEPLOYSHARED_EXPORT Extracter {
   private:
-    DeployCore::QtModule _qtModules = DeployCore::NONE;
 
-    QStringList neadedLibs;
-    QStringList systemLibs;
+    QHash<QString, DependencyMap> _packageDependencyes;
 
-    DependenciesScanner scaner;
+    DependenciesScanner *_scaner;
     FileManager *_fileManager;
     ConfigParser *_cqt;
     MetaFileManager *_metaFileManager;
 
-    void extract(const QString &file);
-    bool copyTranslations(QStringList list);
+    void extract(const QString &file, DependencyMap* depMap, const QString& mask = "");
+    bool copyTranslations(const QStringList &list, const QString &package);
 
     bool extractQml();
 
     QFileInfoList findFilesInsideDir(const QString &name, const QString &dirpath);
     bool extractQmlAll();
-    bool extractQmlFromSource(const QString &sourceDir);
-    QString filterQmlPath(const QString &path);
-    void extractLib(const QString & file);
+    bool extractQmlFromSource();
+    /**
+     * @brief extractLib
+     * @param file file of lib
+     * @param mask  extraction mask. Used to filter extracts objects
+     */
+    void extractLib(const QString & file, DependencyMap *depMap, const QString& mask = "");
 
     bool deployMSVC();
     bool extractWebEngine();
 
 
-    bool copyPlugin(const QString &plugin);
-    void copyPlugins(const QStringList &list);
+    bool copyPlugin(const QString &plugin, const QString &package);
+    void copyPlugins(const QStringList &list, const QString &package);
 
-
+    /**
+     * @brief compress - this function join all target dependecies in to one struct
+     */
+    void compress();
     void extractAllTargets();
-    void initQtModules();
     void extractPlugins();
     void copyFiles();
     void copyTr();
-    void copyExtraPlugins();
+    void copyExtraPlugins(const QString &package);
+    void copyLibs(const QSet<QString> &files, const QString &package);
+
+    bool isWebEngine(const QString& package) const;
+    void extractPluginLib(const QString &item, const QString &package);
+
 public:
-    explicit Extracter(FileManager *fileManager, ConfigParser * cqt);
+    explicit Extracter(FileManager *fileManager, ConfigParser * cqt, DependenciesScanner *_scaner);
     void deploy();
     void clear();
 

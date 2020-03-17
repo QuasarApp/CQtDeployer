@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -17,21 +17,31 @@
 
 bool MetaFileManager::createRunScriptWindows(const QString &target) {
 
-    if (DeployCore::_config->distroStruct.getBinOutDir() ==
-            DeployCore::_config->distroStruct.getLibOutDir() ) {
+    auto cnf = DeployCore::_config;
+
+    if (!cnf->targets().contains(target)) {
+        return false;
+    }
+    auto distro = cnf->getDistro(target);
+
+    if (distro.getBinOutDir() ==
+           distro.getLibOutDir() ) {
         return true;
     }
 
     QString content =
             "@echo off \n"
             "SET BASE_DIR=%~dp0\n"
-            "SET PATH=%BASE_DIR%" + DeployCore::_config->distroStruct.getLibOutDir() + ";%PATH%\n"
-            "call \"%BASE_DIR%" + DeployCore::_config->distroStruct.getBinOutDir() + "%0\" %1 \n";
+            "SET PATH=%BASE_DIR%" + distro.getLibOutDir() + ";%PATH%\n"
+            "%2\n"            
+            "call \"%BASE_DIR%" + distro.getBinOutDir() + "%0\" %1 \n";
 
     content = content.arg(QFileInfo(target).fileName()).arg("%*");
+    content = content.arg(generateCustoScriptBlok(true));
+
     content = QDir::toNativeSeparators(content);
 
-    QString fname = DeployCore::_config->targetDir + QDir::separator() + QFileInfo(target).baseName()+ ".bat";
+    QString fname = DeployCore::_config->getTargetDir(target) + QDir::separator() + QFileInfo(target).baseName()+ ".bat";
 
     QFile F(fname);
     if (!F.open(QIODevice::WriteOnly)) {
@@ -52,34 +62,44 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
 }
 
 bool MetaFileManager::createRunScriptLinux(const QString &target) {
+    auto cnf = DeployCore::_config;
+
+    if (!cnf->targets().contains(target)) {
+        return false;
+    }
+    auto distro = cnf->getDistro(target);
+
     QString content =
             "#!/bin/sh\n"
             "BASE_DIR=$(dirname \"$(readlink -f \"$0\")\")\n"
             "export "
-            "LD_LIBRARY_PATH=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getLibOutDir() + ":\"$BASE_DIR\":$LD_LIBRARY_PATH\n"
-            "export QML_IMPORT_PATH=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getQmlOutDir() + ":QML_IMPORT_PATH\n"
-            "export QML2_IMPORT_PATH=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getQmlOutDir() + ":QML2_IMPORT_PATH\n"
-            "export QT_PLUGIN_PATH=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getPluginsOutDir() + ":QT_PLUGIN_PATH\n"
-            "export QTWEBENGINEPROCESS_PATH=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getBinOutDir() + "/QtWebEngineProcess\n"
+            "LD_LIBRARY_PATH=\"$BASE_DIR\"" + distro.getLibOutDir() + ":\"$BASE_DIR\":$LD_LIBRARY_PATH\n"
+            "export QML_IMPORT_PATH=\"$BASE_DIR\"" + distro.getQmlOutDir() + ":$QML_IMPORT_PATH\n"
+            "export QML2_IMPORT_PATH=\"$BASE_DIR\"" + distro.getQmlOutDir() + ":$QML2_IMPORT_PATH\n"
+            "export QT_PLUGIN_PATH=\"$BASE_DIR\"" + distro.getPluginsOutDir() + ":$QT_PLUGIN_PATH\n"
+            "export QTWEBENGINEPROCESS_PATH=\"$BASE_DIR\"" + distro.getBinOutDir() + "QtWebEngineProcess\n"
             "export QTDIR=\"$BASE_DIR\"\n"
             "export "
-            "QT_QPA_PLATFORM_PLUGIN_PATH=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getPluginsOutDir() +
-            "/platforms:QT_QPA_PLATFORM_PLUGIN_PATH\n"
+            "QT_QPA_PLATFORM_PLUGIN_PATH=\"$BASE_DIR\"" + distro.getPluginsOutDir() +
+            "platforms:$QT_QPA_PLATFORM_PLUGIN_PATH\n"
             "%2"
-            "\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getBinOutDir() + "%1 \"$@\"";
+            "%3\n"
+            "\"$BASE_DIR\"" + distro.getBinOutDir() + "%1 \"$@\"";
 
     content = content.arg(QFileInfo(target).fileName());
     int ld_index = DeployCore::find("ld-linux", _fileManager->getDeployedFilesStringList());
 
     if (ld_index >= 0 && QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
 
-        content = content.arg(QString("\nexport LD_PRELOAD=\"$BASE_DIR\"" + DeployCore::_config->distroStruct.getLibOutDir() + "%0\n").
+        content = content.arg(QString("\nexport LD_PRELOAD=\"$BASE_DIR\"" + distro.getLibOutDir() + "%0\n").
             arg(QFileInfo(_fileManager->getDeployedFilesStringList()[ld_index]).fileName()));
     } else {
         content = content.arg("");
     }
 
-    QString fname = DeployCore::_config->targetDir + QDir::separator() + QFileInfo(target).baseName()+ ".sh";
+    content = content.arg(generateCustoScriptBlok(false));
+
+    QString fname = DeployCore::_config->getTargetDir(target) + QDir::separator() + QFileInfo(target).baseName()+ ".sh";
 
     QFile F(fname);
     if (!F.open(QIODevice::WriteOnly)) {
@@ -97,6 +117,28 @@ bool MetaFileManager::createRunScriptLinux(const QString &target) {
                             QFileDevice::WriteUser | QFileDevice::ReadUser |
                             QFileDevice::ExeOwner | QFileDevice::WriteOwner |
                             QFileDevice::ReadOwner);
+}
+
+QString MetaFileManager::generateCustoScriptBlok(bool bat) const {
+    QString res = "";
+
+    QString commentMarker = "# ";
+    if (bat) {
+        commentMarker = ":: ";
+    }
+
+    auto cstSh = QuasarAppUtils::Params::getStrArg("customScript", "");
+    if (cstSh.size()) {
+        res = "\n" +
+              commentMarker + "Begin Custom Script (generated by customScript flag)\n"
+              "%0\n" +
+              commentMarker + "End Custom Script\n"
+              "\n";
+
+        res = res.arg(cstSh);
+    }
+
+    return res;
 }
 
 MetaFileManager::MetaFileManager(FileManager *manager):
@@ -122,22 +164,28 @@ bool MetaFileManager::createRunScript(const QString &target) {
 
 }
 
-bool MetaFileManager::createQConf() {
+bool MetaFileManager::createQConf(const QString &target) {
+    auto cnf = DeployCore::_config;
+
+    if (!cnf->targets().contains(target)) {
+        return false;
+    }
+    auto distro = cnf->getDistro(target);
 
     QString content =
             "[Paths]\n"
-            "Prefix= ." + DeployCore::_config->distroStruct.getRootDir(DeployCore::_config->distroStruct.getBinOutDir()) + "\n"
-            "Libraries= ." + DeployCore::_config->distroStruct.getLibOutDir() + "\n"
-            "Plugins= ." + DeployCore::_config->distroStruct.getPluginsOutDir() + "\n"
-            "Imports= ." + DeployCore::_config->distroStruct.getQmlOutDir() + "\n"
-            "Translations= ." + DeployCore::_config->distroStruct.getTrOutDir() + "\n"
-            "Qml2Imports= ." + DeployCore::_config->distroStruct.getQmlOutDir() + "\n";
+            "Package= ." + distro.getRootDir(distro.getBinOutDir()) + "\n"
+            "Libraries= ." + distro.getLibOutDir() + "\n"
+            "Plugins= ." + distro.getPluginsOutDir() + "\n"
+            "Imports= ." + distro.getQmlOutDir() + "\n"
+            "Translations= ." + distro.getTrOutDir() + "\n"
+            "Qml2Imports= ." + distro.getQmlOutDir() + "\n";
 
 
     content.replace("//", "/");
     content = QDir::fromNativeSeparators(content);
 
-    QString fname = DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getBinOutDir() + "qt.conf";
+    QString fname = DeployCore::_config->getTargetDir(target) + distro.getBinOutDir() + "qt.conf";
 
     QFile F(fname);
     if (!F.open(QIODevice::WriteOnly)) {
@@ -159,14 +207,14 @@ bool MetaFileManager::createQConf() {
 
 void MetaFileManager::createRunMetaFiles() {
 
-    for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
+    for (auto i = DeployCore::_config->targets().cbegin(); i != DeployCore::_config->targets().cend(); ++i) {
 
-        if (!createRunScript(*i)) {
+        if (!createRunScript(i.key())) {
             qCritical() << "run script not created!";
         }
-    }
 
-    if (!createQConf()) {
-        QuasarAppUtils::Params::verboseLog("create qt.conf failr", QuasarAppUtils::Warning);
+        if (!createQConf(i.key())) {
+            QuasarAppUtils::Params::verboseLog("create qt.conf failr", QuasarAppUtils::Warning);
+        }
     }
 }

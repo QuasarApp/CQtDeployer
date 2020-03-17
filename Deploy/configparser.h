@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2019 QuasarApp.
+//# Copyright (C) 2018-2020 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -7,9 +7,11 @@
 
 #ifndef CQT_H
 #define CQT_H
+#include "deployconfig.h"
 #include "distrostruct.h"
 #include "envirement.h"
 #include "ignorerule.h"
+#include "targetinfo.h"
 
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -19,36 +21,10 @@
 #include <QDir>
 #include "deploy_global.h"
 
-#define DISTRO_DIR QString("DistributionKit")
-
-class  FileManager;
-
-struct DEPLOYSHARED_EXPORT DeployConfig {
-    QString qmake = "";
-    QString targetDir = "";
-    QString qmlDir = "";
-    int depchLimit = 0;
-    bool deployQml = false;
-    IgnoreRule ignoreList;
-    QStringList extraPlugins;
-    QString appDir;
-    QString qtDir;
-    QStringList extraPaths;
-    /**
-     * @brief targets
-     * key - path
-     * value - create wrapper
-     */
-    QSet<QString> targets;
-    Envirement envirement;
-    DistroStruct distroStruct;
-    QString translationDir;
-
-    /**
-     * @brief reset config file to default
-     */
-    void reset();
-};
+class FileManager;
+class DependenciesScanner;
+class Packing;
+class iDistribution;
 
 class DEPLOYSHARED_EXPORT ConfigParser
 {
@@ -56,39 +32,67 @@ private:
 
     DeployConfig _config;
     FileManager *_fileManager;
+    DependenciesScanner *_scaner;
+    Packing * _packing;
+
+    QHash<QString, QString> _Targetpackages;
+
     bool createFromDeploy(const QString& file) const;
     bool loadFromFile(const QString& file);
-    bool parseQtDeployMode();
-    bool parseQtInfoMode();
-    bool parseQtClearMode();
+    bool initDistroStruct();
+    bool initPackages();
+    bool parseDeployMode();
+    bool parseInfoMode();
+    bool parseInitMode();
+
+    bool parseClearMode();
+
+    QSet<QString> getQtPathesFromTargets();
 
     void setTargetDir(const QString &target = "");
     bool setTargets(const QStringList &value);
     bool setTargetsRecursive(const QString &dir);
     bool setBinDir(const QString &dir, bool recursive = false);
 
-
     void initIgnoreList();
     void initIgnoreEnvList();
 
-    void setQmake(const QString &value);
-    void setQtDir(const QString &value);
+    QString getPathFrmoQmakeLine(const QString& in) const;
+    bool initQmakePrivate(const QString& qmake);
+    bool initQmake();
+    bool initQmlInput();
+
+    bool setQmake(const QString &value);
+    bool setQtDir(const QString &value);
 
     void setExtraPath(const QStringList &value);
-    void setExtraPlugins(const QStringList &value);
+    void setExtraNames(const QStringList &value);
 
-    QString recursiveInvairement(QDir &dir, int depch = 0, int depchLimit = -1);
-    QString recursiveInvairement(const QString &dir, int depch);
+    void setExtraPlugins(const QStringList &value);
 
     void initEnvirement();
 
     QStringList getDirsRecursive(const QString &path, int maxDepch = -1, int depch = 0);
+    QSet<QString> getSetDirsRecursive(const QString &path, int maxDepch = -1, int depch = 0);
 
     QString getRelativeLink(const QString& from, const QString& to);
     void writeKey(const QString &key, QJsonObject &, const QString &confFileDir) const;
     void readKey(const QString &key, const QJsonObject &obj, const QString &confFileDir) const;
+    void readString(const QString &key, const QString &val, const QString &confFileDir) const;
+
+    QHash<QString, TargetInfo> createTarget(const QString &target);
+    QHash<QString, TargetInfo> moveTarget(TargetInfo target, const QString &newLocation);
+
+
+    QString readKeyArray(int separatorLvl, const QJsonArray &array, const QString &confFileDir) const;
+    QJsonValue writeKeyArray(int separatorLvl, const QString &parameter, const QString &confFileDir) const;
+    QString findWindowsPath(const QString &path) const;
+
+    iDistribution* getDistribution();
+
+    bool isNeededQt() const;
 public:
-    ConfigParser(FileManager *filemanager);
+    ConfigParser(FileManager *filemanager, DependenciesScanner *scaner, Packing* pac);
     bool parseParams();
     bool smartMoveTargets();
 

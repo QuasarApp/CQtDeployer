@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -8,11 +8,15 @@
 #include "dependenciesscanner.h"
 #include "deploycore.h"
 #include "quasarapp.h"
+#include "configparser.h"
 #include <QList>
 #include <QDir>
 #include <QDebug>
+#include "pathutils.h"
 
-DependenciesScanner::DependenciesScanner() {}
+DependenciesScanner::DependenciesScanner() {
+
+}
 
 void DependenciesScanner::clearScaned() {
     _scanedLibs.clear();
@@ -40,7 +44,7 @@ QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
     auto values = _EnvLibs.values(libName.toUpper());
     QMultiMap<LibPriority, LibInfo> res;
 
-    for (auto & lib : values) {
+    for (const auto & lib : values) {
         LibInfo info;
 
         auto priority = (DeployCore::getLibPriority(lib));
@@ -58,7 +62,10 @@ QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
 
         info.setPriority(priority);
 
-        res.insertMulti(info.getPriority(), info);
+        if (!DeployCore::_config->ignoreList.isIgnore(info)) {
+            res.insertMulti(info.getPriority(), info);
+        }
+
     }
 
     return res;
@@ -80,7 +87,7 @@ bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) const 
     }
 }
 
-void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res) {
+void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QString>& libStack) {
     QuasarAppUtils::Params::verboseLog("get recursive dependencies of " + lib.fullPath(),
                                        QuasarAppUtils::Info);
 
@@ -96,6 +103,14 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res) {
 
         return;
     }
+
+    if (libStack.contains(lib.fullPath())) {
+        QuasarAppUtils::Params::verboseLog("A recursive dependency was found in library " + lib.fullPath(),
+                                           QuasarAppUtils::Warning);
+        return;
+    }
+
+    libStack.insert(lib.fullPath());
 
     for (auto i : lib.dependncies) {
 
@@ -118,23 +133,51 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res) {
             LibInfo scanedLib = _scanedLibs.value(dep->fullPath());
 
             if (!scanedLib.isValid()) {
-                auto listDep =  res;
+                QSet<LibInfo> listDep =  {};
 
-                recursiveDep(*dep, listDep);
+                if (!lib.name.compare(dep.value().name, ONLY_WIN_CASE_INSENSIATIVE))
+                    continue;
+
+                recursiveDep(*dep, listDep, libStack);
 
                 dep->allDep = listDep;
+                lib.setWinApi(lib.getWinApi() | dep->getWinApi());
                 _scanedLibs.insert(dep->fullPath(), *dep);
 
                 res.unite(listDep);
             } else {
+                lib.setWinApi(lib.getWinApi() | scanedLib.getWinApi());
                 res.unite(scanedLib.allDep);
             }
         }
     }
+
+    libStack.remove(lib.fullPath());
+}
+
+void DependenciesScanner::addToWinAPI(const QString &lib, QHash<WinAPI, QSet<QString>>& res) {
+#ifdef Q_OS_WIN
+    if (QuasarAppUtils::Params::isEndable("deploySystem")) {
+        WinAPI api = _peScaner.getAPIModule(lib);
+        if (api != WinAPI::NoWinAPI) {
+            res[api] += lib;
+        }
+    }
+#else
+    Q_UNUSED(lib)
+    Q_UNUSED(res)
+
+#endif
 }
 
 void DependenciesScanner::setEnvironment(const QStringList &env) {
     QDir dir;
+    QHash<WinAPI, QSet<QString>> winAPI;
+
+#ifdef Q_OS_WIN
+    winAPI[WinAPI::Crt] += "UCRTBASE.DLL";
+#endif
+
     for (auto i : env) {
 
         dir.setPath(i);
@@ -142,17 +185,19 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
             continue;
         }
 
-        auto list = dir.entryInfoList(QStringList() << "*.dll" << ".DLL"
+        auto list = dir.entryInfoList(QStringList() << "*.dll" << "*.DLL"
                                       << "*.SO*" << "*.so*",
-                                      QDir::Files| QDir::NoDotAndDotDot);
+                                      QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
 
         for (auto i : list) {
-
+            addToWinAPI(i.fileName().toUpper(), winAPI);
             _EnvLibs.insertMulti(i.fileName().toUpper(), i.absoluteFilePath());
         }
 
     }
 
+
+    _peScaner.setWinAPI(winAPI);
 }
 
 QSet<LibInfo> DependenciesScanner::scan(const QString &path) {
@@ -164,7 +209,8 @@ QSet<LibInfo> DependenciesScanner::scan(const QString &path) {
         return result;
     }
 
-    recursiveDep(info, result);
+    QSet<QString> stack;
+    recursiveDep(info, result, stack);
 
     return result;
 }

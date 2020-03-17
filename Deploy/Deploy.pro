@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018-2019 QuasarApp.
+# Copyright (C) 2018-2020 QuasarApp.
 # Distributed under the lgplv3 software license, see the accompanying
 # Everyone is permitted to copy and distribute verbatim copies
 # of this license document, but changing it is not allowed.
@@ -19,7 +19,7 @@ TEMPLATE = lib
 
 DEFINES += DEPLOY_LIBRARY
 
-VERSION = 1.3.3.0
+VERSION = 1.4.0.0
 
 DEFINES += APP_VERSION='\\"$$VERSION\\"'
 
@@ -45,15 +45,23 @@ include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
 
 
 SOURCES += \
+    Distributions/defaultdistro.cpp \
+    Distributions/templateinfo.cpp \
+    dependencymap.cpp \
+    deployconfig.cpp \
+    distromodule.cpp \
     distrostruct.cpp \
     configparser.cpp \
     deploy.cpp \
     deploycore.cpp \
     envirement.cpp \
+    extra.cpp \
     extracter.cpp \
     filemanager.cpp \
+    Distributions/idistribution.cpp \
     ignorerule.cpp \
     metafilemanager.cpp \
+    packing.cpp \
     pathutils.cpp \
     pe.cpp \
     igetlibinfo.cpp \
@@ -61,20 +69,31 @@ SOURCES += \
     ../qtTools/src/shared/winutils/elfreader.cpp \
     elf.cpp \
     pluginsparser.cpp \
+    Distributions/qif.cpp \
     qml.cpp \
-    libinfo.cpp
+    libinfo.cpp \
+    qtdir.cpp \
+    targetinfo.cpp
 
 HEADERS += \
+    Distributions/defaultdistro.h \
+    Distributions/templateinfo.h \
+    dependencymap.h \
+    deployconfig.h \
+    distromodule.h \
     distrostruct.h \
     configparser.h \
     deploy.h \
     deploy_global.h \
     deploycore.h \
     envirement.h \
+    extra.h \
     extracter.h \
     filemanager.h \
+    Distributions/idistribution.h \
     ignorerule.h \
     metafilemanager.h \
+    packing.h \
     pathutils.h \
     pe.h \
     igetlibinfo.h \
@@ -82,7 +101,13 @@ HEADERS += \
     ../qtTools/src/shared/winutils/elfreader.h \
     elf.h \
     pluginsparser.h \
+    Distributions/qif.h \
     qml.h \
-    libinfo.h
+    libinfo.h \
+    qtdir.h \
+    targetinfo.h
 
 STATECHARTS +=
+
+RESOURCES += \
+    DeployResources.qrc

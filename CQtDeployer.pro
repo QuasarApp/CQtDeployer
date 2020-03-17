@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018-2019 QuasarApp.
+# Copyright (C) 2018-2020 QuasarApp.
 # Distributed under the lgplv3 software license, see the accompanying
 # Everyone is permitted to copy and distribute verbatim copies
 # of this license document, but changing it is not allowed.
@@ -17,11 +17,7 @@ CONFIG += ordered
                tests/TestQtWidgets \
                tests/TestQMLWidgets
 
-
-    contains(DEFINES, WITH_ALL_TESTS) {
-        SUBDIRS += tests/quicknanobrowser
-    }
-
+    unix:SUBDIRS += tests/quicknanobrowser
 
     contains(DEFINES, WITHOUT_TESTS) {
         SUBDIRS -= UnitTests \
@@ -37,7 +33,8 @@ CONFIG += ordered
     QuasarAppLib.file = $$PWD/QuasarAppLib/QuasarApp.pro
     Pe.file = $$PWD/pe/pe-parser-library/pe-parser-library.pro
 
-    include('$$PWD/installer/installerCQtDeployer.pri')
+    include('$$PWD/QIFData/installerCQtDeployer.pri')
+    include($$PWD/doc/wiki.pri)
 
     DISTFILES += \
         snap/snapcraft.yaml \

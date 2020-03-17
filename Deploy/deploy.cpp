@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -9,20 +9,30 @@
 #include "deploy.h"
 #include "extracter.h"
 #include "filemanager.h"
+#include "packing.h"
 #include <quasarapp.h>
 
 Deploy::Deploy() {
     _fileManager = new FileManager();
-    _paramsParser = new ConfigParser(_fileManager);
+    _scaner = new DependenciesScanner();
+    _packing = new Packing();
+    _paramsParser = new ConfigParser(_fileManager, _scaner, _packing);
+
 }
 
 int Deploy::run() {
-
     if (!prepare()) {
-        return 1;
+        return PrepareError;
     }
 
-    return deploy();
+    if (!deploy()) {
+        return DeployError;
+    }
+
+    if (!packing())
+        return PackingError;
+
+    return Good;
 }
 
 Deploy::~Deploy() {
@@ -38,21 +48,33 @@ Deploy::~Deploy() {
     if (_fileManager) {
         delete _fileManager;
     }
+
+    if (_scaner) {
+        delete _scaner;
+    }
+
+    if (_packing) {
+        delete _packing;
+    }
+
+    DeployCore::_config = nullptr;
 }
 
 bool Deploy::prepare() {
+
+
     if ( !_paramsParser->parseParams()) {
         return false;
     }
 
-    _extracter = new Extracter(_fileManager, _paramsParser);
+    _extracter = new Extracter(_fileManager, _paramsParser, _scaner);
 
     return true;
 }
 
-int Deploy::deploy() {
+bool Deploy::deploy() {
 
-    _fileManager->loadDeployemendFiles(_paramsParser->config()->targetDir);
+    _fileManager->loadDeployemendFiles(_paramsParser->config()->getTargetDir());
 
     switch (DeployCore::getMode() ) {
     case RunMode::Deploy:
@@ -64,7 +86,12 @@ int Deploy::deploy() {
     default:
         break;
     }
-    _fileManager->saveDeploymendFiles(_paramsParser->config()->targetDir);
+    _fileManager->saveDeploymendFiles(_paramsParser->config()->getTargetDir());
 
-    return 0;
+    return true;
+}
+
+bool Deploy::packing() {
+
+    return _packing->create();
 }

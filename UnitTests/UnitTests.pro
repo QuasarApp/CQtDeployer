@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018-2019 QuasarApp.
+# Copyright (C) 2018-2020 QuasarApp.
 # Distributed under the lgplv3 software license, see the accompanying
 # Everyone is permitted to copy and distribute verbatim copies
 # of this license document, but changing it is not allowed.
@@ -32,6 +32,8 @@ TEMPLATE = app
 SOURCES +=  tst_deploytest.cpp \
     libcreator.cpp \
     modules.cpp \
+    modulesqt513.cpp \
+    modulesqt514.cpp \
     qmlcreator.cpp \
     testutils.cpp
 
@@ -41,5 +43,7 @@ RESOURCES += \
 HEADERS += \
     libcreator.h \
     modules.h \
+    modulesqt513.h \
+    modulesqt514.h \
     qmlcreator.h \
     testutils.h

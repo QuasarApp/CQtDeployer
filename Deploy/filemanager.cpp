@@ -1,9 +1,11 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
  */
+
+
 
 #include "filemanager.h"
 #include <QDir>
@@ -12,6 +14,11 @@
 #include "deploycore.h"
 #include <QProcess>
 #include <fstream>
+#include "pathutils.h"
+
+#ifdef Q_OS_WIN
+#include "windows.h"
+#endif
 
 FileManager::FileManager() {
 }
@@ -34,7 +41,7 @@ QSet<QString> FileManager::getDeployedFiles() const {
 }
 
 QStringList FileManager::getDeployedFilesStringList() const {
-    return _deployedFiles.toList();
+    return _deployedFiles.values();
 }
 
 void FileManager::loadDeployemendFiles(const QString &targetDir) {
@@ -46,7 +53,7 @@ void FileManager::loadDeployemendFiles(const QString &targetDir) {
     QStringList deployedFiles = settings->getValue(targetDir, "").toStringList();
 
 //    _deployedFiles.clear();
-    _deployedFiles.unite(QSet<QString>::fromList(deployedFiles));
+    _deployedFiles.unite(QSet<QString>(deployedFiles.begin(), deployedFiles.end()));
 }
 
 
@@ -63,7 +70,20 @@ bool FileManager::addToDeployed(const QString& path) {
                 QuasarAppUtils::Params::verboseLog("permishens set fail", QuasarAppUtils::Warning);
             }
         }
+
+#ifdef Q_OS_WIN
+
+        if (info.isFile()) {
+            auto stdString = QDir::toNativeSeparators(info.absoluteFilePath()).toStdString();
+
+            DWORD attribute = GetFileAttributesA(stdString.c_str());
+            if (!SetFileAttributesA(stdString.c_str(), attribute & static_cast<DWORD>(~FILE_ATTRIBUTE_HIDDEN))) {
+                QuasarAppUtils::Params::verboseLog("attribute set fail", QuasarAppUtils::Warning);
+            }
+        }
+#endif
     }
+
     return true;
 }
 
@@ -75,7 +95,7 @@ void FileManager::saveDeploymendFiles(const QString& targetDir) {
 bool FileManager::strip(const QString &dir) const {
 
 #ifdef Q_OS_WIN
-    Q_UNUSED(dir);
+    Q_UNUSED(dir)
     return true;
 #else
     QFileInfo info(dir);
@@ -90,7 +110,7 @@ bool FileManager::strip(const QString &dir) const {
         auto list = d.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
 
         bool res = false;
-        for (auto &&i : list) {
+        for (const auto &i : list) {
             res = strip(i.absoluteFilePath()) || res;
         }
 
@@ -119,14 +139,14 @@ bool FileManager::strip(const QString &dir) const {
 
 
 bool FileManager::fileActionPrivate(const QString &file, const QString &target,
-                                         QStringList *masks, bool isMove) {
+                                         QStringList *masks, bool isMove, bool targetIsFile) {
     
     auto info = QFileInfo(file);
     
     bool copy = !masks;
     if (masks) {
         for (auto mask : *masks) {
-            if (info.absoluteFilePath().contains(mask)) {
+            if (info.absoluteFilePath().contains(mask, ONLY_WIN_CASE_INSENSIATIVE)) {
                 copy = true;
                 break;
             }
@@ -139,19 +159,24 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
     }
 
     auto name = info.fileName();
-    info.setFile(target + QDir::separator() + name);
+    QString tergetFile = target + QDir::separator() + name;
+    if (targetIsFile) {
+        tergetFile = target;
+    }
+
+    info.setFile(tergetFile);
 
     if (!initDir(info.absolutePath())) {
         return false;
     }
 
     if (QFileInfo(file).absoluteFilePath() ==
-            QFileInfo(target + QDir::separator() + name).absoluteFilePath()) {
+            QFileInfo(tergetFile).absoluteFilePath()) {
         return true;
     }
 
     if (!QuasarAppUtils::Params::isEndable("noOverwrite") &&
-            info.exists() && !removeFile( target + QDir::separator() + name)) {
+            info.exists() && !removeFile( tergetFile)) {
         return false;
     }
 
@@ -160,36 +185,42 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
     QFile sourceFile(file);
 
     if (!((isMove)?
-          sourceFile.rename(target + QDir::separator() + name):
-          sourceFile.copy(target + QDir::separator() + name))) {
+          sourceFile.rename(tergetFile):
+          sourceFile.copy(tergetFile))) {
 
-        QuasarAppUtils::Params::verboseLog("Qt Operation fail " + file + " >> " + target + QDir::separator() + name +
+        QuasarAppUtils::Params::verboseLog("Qt Operation fail " + file + " >> " + tergetFile +
                                            " Qt error: " + sourceFile.errorString(),
                                            QuasarAppUtils::Warning);
 
+        bool tarExits = QFileInfo(tergetFile).exists();
 
+        if ((!tarExits) ||
+            (tarExits && !QuasarAppUtils::Params::isEndable("noOverwrite"))) {
 
-        if (!(QuasarAppUtils::Params::isEndable("noOverwrite") &&
-                QFileInfo(target + QDir::separator() + name).exists())) {
             std::ifstream  src(file.toStdString(),
                                std::ios::binary);
 
-            std::ofstream  dst((target + QDir::separator() + name).toStdString(),
+            std::ofstream  dst((tergetFile).toStdString(),
                                std::ios::binary);
 
             dst << src.rdbuf();
 
-            if (!QFileInfo::exists(target + QDir::separator() + name)) {
+            if (!QFileInfo::exists(tergetFile)) {
                 QuasarAppUtils::Params::verboseLog("std Operation fail file not copied. "
                                                    "Сheck if you have access to the target dir",
                                                    QuasarAppUtils::Error);
                 return false;
 
             }
+
+            if (isMove) {
+                std::remove(file.toStdString().c_str());
+            }
+
         } else {
 
-            if (QFileInfo(target + QDir::separator() + name).exists()) {
-                qInfo() << target + QDir::separator() + name << " already exists!";
+            if (QFileInfo(tergetFile).exists()) {
+                qInfo() << tergetFile << " already exists!";
                 return true;
             }
 
@@ -197,7 +228,7 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
         }
     }
 
-    addToDeployed(target + QDir::separator() + name);
+    addToDeployed(tergetFile);
     return true;
 }
 
@@ -205,20 +236,23 @@ bool FileManager::removeFile(const QString &file) {
     return removeFile(QFileInfo (file));
 }
 
-bool FileManager::smartCopyFile(const QString &file, const QString &target, QStringList *mask) {
+bool FileManager::smartCopyFile(const QString &file,
+                                const QString &target,
+                                QStringList *mask,
+                                bool ifFileTarget) {
     auto config = DeployCore::_config;
 
-    if (file.contains(config->targetDir)) {
+    if (file.contains(config->getTargetDir(), ONLY_WIN_CASE_INSENSIATIVE)) {
         if (!moveFile(file, target, mask)) {
             QuasarAppUtils::Params::verboseLog(" file not moved! try copy");
 
-            if (!copyFile(file, target, mask)) {
+            if (!copyFile(file, target, mask, ifFileTarget)) {
                 qCritical() << "not copy target to bin dir " << file;
                 return false;
             }
         }
     } else {
-        if (!copyFile(file, target, mask)) {
+        if (!copyFile(file, target, mask, ifFileTarget)) {
             qCritical() << "not copy target to bin dir " << file;
             return false;
         }
@@ -227,8 +261,8 @@ bool FileManager::smartCopyFile(const QString &file, const QString &target, QStr
     return true;
 }
 
-bool FileManager::moveFile(const QString &file, const QString &target, QStringList *masks) {
-    return fileActionPrivate(file, target, masks, true);
+bool FileManager::moveFile(const QString &file, const QString &target, QStringList *masks, bool targetIsFile) {
+    return fileActionPrivate(file, target, masks, true, targetIsFile);
 }
 
 bool FileManager::copyFolder(const QString &from, const QString &to, const QStringList &filter,
@@ -238,15 +272,15 @@ bool FileManager::copyFolder(const QString &from, const QString &to, const QStri
 
     auto list = fromDir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries);
 
-    for (auto &&item : list) {
+    for (const auto &item : list) {
         if (QFileInfo(item).isDir()) {
 
             copyFolder(item.absoluteFilePath(), to + "/" + item.fileName(), filter, listOfCopiedItems, mask);
         } else {
 
             QString skipFilter = "";
-            for (auto && i: filter) {
-                if (item.fileName().contains(i)) {
+            for (const auto &i: filter) {
+                if (item.fileName().contains(i, ONLY_WIN_CASE_INSENSIATIVE)) {
                     skipFilter = i;
                     break;
                 }
@@ -289,6 +323,37 @@ bool FileManager::copyFolder(const QString &from, const QString &to, const QStri
     return true;
 }
 
+bool FileManager::moveFolder(const QString &from, const QString &to, const QString& ignore) {
+    QFileInfo info(from);
+
+    if (info.isFile()) {
+
+        if (ignore.size() && info.absoluteFilePath().contains(ignore)) {
+            return true;
+        }
+
+        if (!moveFile(info.absoluteFilePath(), to)) {
+            return false;
+        }
+        return true;
+    }
+
+    QDir dir(from);
+    auto list = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    for (const auto &i :list) {
+        auto targetDir = to;
+        if (i.isDir()) {
+            targetDir += "/" + i.fileName();
+        }
+
+        if (!moveFolder(i.absoluteFilePath(), targetDir, ignore)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void FileManager::clear(const QString& targetDir, bool force) {
     qInfo() << "clear start!";
 
@@ -318,14 +383,14 @@ void FileManager::clear(const QString& targetDir, bool force) {
 
         if (index.value().isFile()) {
             if (removeFile(index.value())) {
-                qInfo() << "Remove " << index.value().absoluteFilePath() << " becouse it is deployed file";
+                qInfo() << "Remove " << index.value().absoluteFilePath() << " because it is deployed file";
             }
 
         } else {
             QDir qdir(index.value().absoluteFilePath());
             if (!qdir.entryList(QDir::NoDotAndDotDot | QDir::AllEntries).count()) {
                 qdir.removeRecursively();
-                qInfo() << "Remove " << index.value().absoluteFilePath() << " becouse it is empty";
+                qInfo() << "Remove " << index.value().absoluteFilePath() << " because it is empty";
             }
         }
     }
@@ -333,22 +398,10 @@ void FileManager::clear(const QString& targetDir, bool force) {
     _deployedFiles.clear();
 }
 
-void FileManager::copyLibs(const QStringList &files) {
-    auto config = DeployCore::_config;
-
-    for (auto file : files) {
-        QFileInfo target(file);
-
-        if (!smartCopyFile(file, DeployCore::_config->targetDir + config->distroStruct.getLibOutDir())) {
-            QuasarAppUtils::Params::verboseLog(file + " not copied");
-        }
-    }
-}
-
 bool FileManager::copyFile(const QString &file, const QString &target,
-                      QStringList *masks) {
+                      QStringList *masks, bool targetIsFile) {
 
-    return fileActionPrivate(file, target, masks, false);
+    return fileActionPrivate(file, target, masks, false, targetIsFile);
 }
 
 bool FileManager::removeFile(const QFileInfo &file) {

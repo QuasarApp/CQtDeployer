@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -35,8 +35,10 @@ enum Platform {
     UnknownPlatform = 0x0,
     Win32           = 0x1,
     Win64           = 0x2,
+    Win             = Win32 | Win64,
     Unix32          = 0x4,
     Unix64          = 0x8,
+    Unix            = Unix32 | Unix64,
     GeneralFile     = 0xf
 };
 
@@ -44,14 +46,29 @@ enum LibPriority : int {
     QtLib = 0x0,
     ExtraLib,
     SystemLib,
-    ExtraFile,
+    AlienLib,
+//    ExtraFile,
     NotFile = 0xF,
 };
+
+enum class WinAPI : quint8 {
+    NoWinAPI    = 0x00,
+    Other       = 0x01,
+    Core        = 0x02,
+    Devices     = 0x04,
+    Eventing    = 0x08,
+    Crt         = 0x10,
+    Security    = 0x20,
+    Base        = 0x40
+};
+
+uint qHash (WinAPI i);
 
 enum class RunMode: int {
     Info,
     Deploy,
-    Clear
+    Clear,
+    Init
 };
 
 class Extracter;
@@ -128,27 +145,36 @@ public:
     static QtModuleEntry qtModuleEntries[];
     static const DeployConfig * _config;
 
-    static MSVCVersion getMSVC(const QString & _qmake);
-    static QString getVCredist(const QString & _qmake);
+    static MSVCVersion getMSVC(const QString & _qtBin);
+    static QString getVCredist(const QString & _qtBin);
 
     static bool isQtLib(const QString &lib);
     static bool isExtraLib(const QString &lib);
+    static QChar getSeparator(int lvl);
+    static bool isAlienLib(const QString &lib);
+
+    static char getEnvSeparator();
+
     static LibPriority getLibPriority(const QString &lib);
     static DeployCore::QtModule getQtModule(const QString& path);
     static void addQtModule(DeployCore::QtModule& module, const QString& path);
 
     static void verboseLog(const QString &str);
     static RunMode getMode();
-    static QString help();
+    static void help();
     static QStringList helpKeys();
 
-    static QStringList extractTranslation(const QStringList& libs);
+    static QStringList extractTranslation(const QSet<QString> &libs);
     static QString getAppVersion();
     static QString getQtVersion();
     static void printVersion();
     static int find(const QString &str, const QStringList &list);
     static bool isLib(const QFileInfo &file);
     static bool isExecutable(const QFileInfo &file);
+    static bool isContainsArraySeparators(const QString& val,
+                                          int lastLvl = 2);
+    static QString findProcess(const QString& env, const QString& proc);
+
 
 };
 

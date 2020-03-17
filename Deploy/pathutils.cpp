@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2019 QuasarApp.
+//# Copyright (C) 2018-2020 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -7,6 +7,7 @@
 
 #include "pathutils.h"
 
+#include <QDir>
 #include <QFileInfo>
 
 PathUtils::PathUtils()
@@ -21,10 +22,6 @@ QString PathUtils::toFullPath(QString path) {
     do {
         path.replace("//", "/");
     } while ((index = path.indexOf("//")) >= 0);
-
-    if (path.left(1) != '/') {
-        path.insert(0, '/');
-    }
 
     if (path.right(1) != '/') {
         path.insert(path.size(), '/');
@@ -66,7 +63,20 @@ QString PathUtils::getRelativeLink(QString from, QString to) {
 
 // TODO ignore labels may be mistaken for a path, which will lead to improper eating
 bool PathUtils::isPath(const QString &path) {
-    return path.contains('/') || path.contains('\\') || path == ".";
+    QFileInfo info(path);
+    return info.exists();
+//    return path.contains('/') || path.contains('\\') || path == ".";
+}
+
+bool PathUtils::isReleativePath(const QString &path) {
+    QString temp = QDir::fromNativeSeparators(path);
+    if (temp.size() == 1) {
+        return path[0] == '.';
+    } else if (temp.size() > 1) {
+        return path[0] == '.' && path[1] == '/';
+    }
+
+    return false;
 }
 
 QChar PathUtils::getDrive(QString path) {
@@ -88,10 +98,18 @@ bool PathUtils::isAbsalutPath(const QString &path) {
     return true;
 }
 
+QString PathUtils::fixPath(const QString &path) {
+#ifdef Q_OS_WIN
+    return stripPath(path.toUpper());
+#else
+    return stripPath(path);
+#endif
+}
+
 QString PathUtils::getReleativePath(QString path) {
     path = toFullPath(path);
 
-    int left = path.indexOf('/', 0) + 1;
+    int left = path.at(0) == '/';
     int righy = path.indexOf('/', left);
 
     while (righy > 0) {
@@ -107,12 +125,19 @@ QString PathUtils::getReleativePath(QString path) {
 
 QString PathUtils::stripPath(QString path) {
     path = toFullPath(path);
-    if (path.left(1) == '/') {
-        path.remove(0, 1);
-    }
 
     if (path.right(1) == '/') {
         return path.remove(path.size() - 1, 1);
+    }
+
+    return path;
+}
+
+QString PathUtils::fullStripPath(QString path) {
+    path = stripPath(path);
+
+    if (path.left(1) == '/') {
+        return path.remove(0, 1);
     }
 
     return path;

@@ -13,4 +13,8 @@
         <file alias="win64msvc.dll">testRes/win64/msvc/lib.dll</file>
         <file alias="qmlFile.qml">testRes/qml/Scene</file>
     </qresource>
+    <qresource prefix="/testResurces">
+        <file>testRes/TestQMLWidgets.sh</file>
+        <file>testRes/testMultiPackageConfig.json</file>
+    </qresource>
 </RCC>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -13,9 +13,10 @@
 #include <QFileInfo>
 #include <QList>
 #include <deploy.h>
+#include <QTimer>
 
 
-int main(int argc, const char *argv[]) {
+int main(int argc, char *argv[]) {
 
     QCoreApplication::setOrganizationName("QuasarApp");
     QCoreApplication::setOrganizationDomain("https://github.com/QuasarApp");
@@ -32,5 +33,4 @@ int main(int argc, const char *argv[]) {
 
     Deploy deploy;
     return deploy.run();
-
 }

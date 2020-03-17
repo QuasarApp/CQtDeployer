@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2019 QuasarApp.
+//# Copyright (C) 2018-2020 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -12,26 +12,35 @@
 #include <QStringList>
 #include "deploy_global.h"
 
-
+class QDir;
 
 class DEPLOYSHARED_EXPORT Envirement
 {
 private:
-    QSet<QString> _ignoreEnvList;
-    QSet<QString> _deployEnvironment;
+    Envirement *_ignoreEnvList = nullptr;
+    QSet<QString> _dataEnvironment;
 
+    QSet<QString> upper(const QSet<QString> &set) const;
 public:
     Envirement();
-    QStringList deployEnvironment() const;
+    ~Envirement();
+    QStringList environmentList() const;
     QStringList ignoreEnvList() const;
     void setIgnoreEnvList(const QStringList &ignoreEnvList);
 
-    void addEnv(const QString &dir, const QString &appDir = "", const QString &targetDir = "");
+    void addEnvRec(const QString &dir, int depch);
+
+    void addEnv(const QString &dir);
+    void addEnv(const QStringList &listDirs);
+
     // return true if file exits in this envirement
     bool inThisEnvirement(const QString &file) const;
 
     int size() const;
     QString concatEnv() const;
+
+    static QStringList recursiveInvairement(QDir &dir, int depch, int depchLimit = -1);
+    static QStringList recursiveInvairement(const QString &dir, int depch = -1);
 };
 
 #endif // ENVIREMENT_H

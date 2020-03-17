@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -20,53 +20,71 @@
 #include <QProcess>
 #include <QRegularExpression>
 #include <quasarapp.h>
-#include <stdio.h>
+#include <cstdio>
 
-#include <assert.h>
+#include <cassert>
 
 #include <fstream>
 
 bool Extracter::deployMSVC() {
     qInfo () << "try deploy msvc";
-    auto msvcInstaller = DeployCore::getVCredist(DeployCore::_config->qmake);
+    auto msvcInstaller = DeployCore::getVCredist(DeployCore::_config->qtDir.getBins());
 
     if (msvcInstaller.isEmpty()) {
         return false;
     }
 
-    return _fileManager->copyFile(msvcInstaller, DeployCore::_config->targetDir);
+    return _fileManager->copyFile(msvcInstaller, DeployCore::_config->getTargetDir());
+}
+
+bool Extracter::isWebEngine(const QString &package) const {
+    auto qtModules = _packageDependencyes.value(package).qtModules();
+
+    return static_cast<quint64>(qtModules) & static_cast<quint64>(DeployCore::QtModule::QtWebEngineModule);
 }
 
 bool Extracter::extractWebEngine() {
-    auto test = static_cast<quint64>(_qtModules) & static_cast<quint64>(DeployCore::QtModule::QtWebEngineModule);
-    if (test) {
 
-#ifdef Q_OS_UNIX
-        auto webEngeneBin = DeployCore::_config->qtDir + "/libexec/QtWebEngineProcess";
-#else
-        auto webEngeneBin = DeployCore::_config->qtDir + "/bin/QtWebEngineProcess.exe";
-#endif
-        auto destWebEngine = DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getBinOutDir();
-        auto resOut = DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getResOutDir();
-        auto res = DeployCore::_config->qtDir + "/resources/";
+    auto cnf = DeployCore::_config;
 
-        if (!_fileManager->copyFile(webEngeneBin, destWebEngine)) {
-            return false;
-        }
-        if (!_fileManager->copyFolder(res, resOut)) {
-            return false;
+    for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
+
+        const auto &package = i.key();
+        if (isWebEngine(package)) {
+            auto webEngeneBin = DeployCore::_config->qtDir.getLibexecs();
+            if (DeployCore::_config->qtDir.getQtPlatform() & Platform::Unix) {
+                webEngeneBin += "/QtWebEngineProcess";
+            } else {
+                webEngeneBin += "/QtWebEngineProcess.exe";
+            }
+
+            auto destWebEngine = DeployCore::_config->getTargetDir() + "/" + package + DeployCore::_config->packages()[package].getBinOutDir();
+            auto resOut = DeployCore::_config->getTargetDir() + "/" + package + DeployCore::_config->packages()[package].getResOutDir();
+            auto res = DeployCore::_config->qtDir.getResources();
+
+            if (!_fileManager->copyFile(webEngeneBin, destWebEngine)) {
+                return false;
+            }
+
+            if (!_fileManager->copyFolder(res, resOut)) {
+                return false;
+            }
         }
     }
 
     return true;
 }
 
-bool Extracter::copyPlugin(const QString &plugin) {
+bool Extracter::copyPlugin(const QString &plugin, const QString& package) {
 
     QStringList listItems;
 
-    auto pluginPath = DeployCore::_config->targetDir +
-            DeployCore::_config->distroStruct.getPluginsOutDir() +
+    auto cnf = DeployCore::_config;
+    auto targetPath = cnf->getTargetDir() + "/" + package;
+    auto distro = cnf->getDistroFromPackage(package);
+
+
+    auto pluginPath = targetPath + distro.getPluginsOutDir() +
             QFileInfo(plugin).fileName();
 
     if (!_fileManager->copyFolder(plugin, pluginPath,
@@ -74,53 +92,56 @@ bool Extracter::copyPlugin(const QString &plugin) {
         return false;
     }
 
-    for (auto item : listItems) {
-        extract(item);
+    for (const auto &item : listItems) {
+        extractPluginLib(item, package);
     }
 
     return true;
 }
 
-void Extracter::copyExtraPlugins() {
+void Extracter::copyExtraPlugins(const QString& package) {
     QFileInfo info;
+
+    auto cnf = DeployCore::_config;
+    auto targetPath = cnf->getTargetDir() + "/" + package;
+    auto distro = cnf->getDistroFromPackage(package);
 
     for (auto extraPlugin : DeployCore::_config->extraPlugins) {
 
         if (!PathUtils::isPath(extraPlugin)) {
-            extraPlugin = DeployCore::_config->qtDir + "/plugins/" + extraPlugin;
+            extraPlugin = DeployCore::_config->qtDir.getPlugins() + "/" + extraPlugin;
         }
 
         info.setFile(extraPlugin);
-        if (info.isDir() && info.absoluteFilePath().contains(DeployCore::_config->qtDir)) {
-
-            copyPlugin(info.absoluteFilePath());
+        if (info.isDir() && DeployCore::_config->qtDir.isQt(info.absoluteFilePath())) {
+            copyPlugin(info.absoluteFilePath(), package);
 
         } else if (info.exists()) {
             _fileManager->copyFile(info.absoluteFilePath(),
-                                  DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getPluginsOutDir());
-            extract(info.absoluteFilePath());
+                                  targetPath + distro.getPluginsOutDir());
+
+            extractPluginLib(info.absoluteFilePath(), package);
         }
     }
 }
 
-void Extracter::copyPlugins(const QStringList &list) {
-    for (auto plugin : list) {        
-        if (!copyPlugin(plugin)) {
+void Extracter::copyPlugins(const QStringList &list, const QString& package) {
+    for (const auto &plugin : list) {
+        if (!copyPlugin(plugin, package)) {
             qWarning() << plugin << " not copied!";
         }
     }
-    copyExtraPlugins();
+    copyExtraPlugins(package);
 }
 
 void Extracter::extractAllTargets() {
-    for (auto i = DeployCore::_config->targets.cbegin(); i != DeployCore::_config->targets.cend(); ++i) {
-        extract(*i);
-    }
-}
+    auto cfg = DeployCore::_config;
+    for (auto i = cfg->packages().cbegin(); i != cfg->packages().cend(); ++i) {
+        _packageDependencyes[i.key()] = {};
 
-void Extracter::initQtModules() {
-    for (auto i: neadedLibs) {
-        DeployCore::addQtModule(_qtModules, i);
+        for (const auto &target : i.value().targets()) {
+            extract(target, &_packageDependencyes[i.key()]);
+        }
     }
 }
 
@@ -129,40 +150,67 @@ void Extracter::clear() {
             QuasarAppUtils::Params::isEndable("force-clear")) {
         qInfo() << "clear old data";
 
-        _fileManager->clear(DeployCore::_config->targetDir,
+        _fileManager->clear(DeployCore::_config->getTargetDir(),
                             QuasarAppUtils::Params::isEndable("force-clear"));
     }
 }
 
-void Extracter::extractPlugins()
-{
+void Extracter::extractPlugins() {
+    auto cnf = DeployCore::_config;
     PluginsParser pluginsParser;
 
-    QStringList plugins;
-    pluginsParser.scan(DeployCore::_config->qtDir + "/plugins", plugins, _qtModules);
-    copyPlugins(plugins);
-}
+    for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
+        auto distro = cnf->getDistroFromPackage(i.key());
 
-void Extracter::copyFiles()
-{
-    _fileManager->copyLibs(neadedLibs);
-
-    if (QuasarAppUtils::Params::isEndable("deploySystem")) {
-        _fileManager->copyLibs(systemLibs);
-    }
-
-    if (!QuasarAppUtils::Params::isEndable("noStrip") && !_fileManager->strip(DeployCore::_config->targetDir)) {
-        QuasarAppUtils::Params::verboseLog("strip failed!");
+        QStringList plugins;
+        pluginsParser.scan(cnf->qtDir.getPlugins(), plugins, _packageDependencyes[i.key()].qtModules());
+        copyPlugins(plugins, i.key());
     }
 }
 
-void Extracter::copyTr()
-{
-    if (!QuasarAppUtils::Params::isEndable("noTranslations")) {
-        if (!copyTranslations(DeployCore::extractTranslation(neadedLibs))) {
-            QuasarAppUtils::Params::verboseLog("Failed to copy standard Qt translations",
-                                               QuasarAppUtils::Warning);
+void Extracter::copyLibs(const QSet<QString> &files, const QString& package) {
+    auto cnf = DeployCore::_config;
+    auto targetPath = cnf->getTargetDir() + "/" + package;
+    auto distro = cnf->getDistroFromPackage(package);
+
+    for (const auto &file : files) {
+        if (!_fileManager->smartCopyFile(file, targetPath + distro.getLibOutDir())) {
+            QuasarAppUtils::Params::verboseLog(file + " not copied");
         }
+    }
+}
+
+void Extracter::copyFiles() {
+    auto cnf = DeployCore::_config;
+
+    for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
+
+        copyLibs(_packageDependencyes[i.key()].neadedLibs(), i.key());
+
+        if (QuasarAppUtils::Params::isEndable("deploySystem")) {
+            copyLibs(_packageDependencyes[i.key()].systemLibs(), i.key());
+        }
+
+        if (!QuasarAppUtils::Params::isEndable("noStrip") && !_fileManager->strip(cnf->getTargetDir())) {
+            QuasarAppUtils::Params::verboseLog("strip failed!");
+        }
+    }
+}
+
+void Extracter::copyTr() {
+
+    if (!QuasarAppUtils::Params::isEndable("noTranslations")) {
+
+        auto cnf = DeployCore::_config;
+
+        for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
+            if (!copyTranslations(DeployCore::extractTranslation(_packageDependencyes[i.key()].neadedLibs()),
+                                  i.key())) {
+                QuasarAppUtils::Params::verboseLog("Failed to copy standard Qt translations",
+                                                   QuasarAppUtils::Warning);
+            }
+        }
+
     }
 }
 
@@ -171,14 +219,12 @@ void Extracter::deploy() {
 
     clear();
     _cqt->smartMoveTargets();
-    scaner.setEnvironment(DeployCore::_config->envirement.deployEnvironment());
+    _scaner->setEnvironment(DeployCore::_config->envirement.environmentList());
     extractAllTargets();
 
     if (DeployCore::_config->deployQml && !extractQml()) {
         qCritical() << "qml not extacted!";
     }
-
-    initQtModules();
 
     extractPlugins();
 
@@ -200,29 +246,32 @@ void Extracter::deploy() {
 
 }
 
-bool Extracter::copyTranslations(QStringList list) {
+bool Extracter::copyTranslations(const QStringList &list, const QString& package) {
 
-    QDir dir(DeployCore::_config->translationDir);
+    auto cnf = DeployCore::_config;
+
+    QDir dir(cnf->qtDir.getTranslations());
     if (!dir.exists() || list.isEmpty()) {
         return false;
     }
 
     QStringList filters;
-    for (auto &&i: list) {
+    for (const auto &i: list) {
         filters.push_back("*" + i + "*");
     }
 
     auto listItems = dir.entryInfoList(filters, QDir::Files | QDir::NoDotAndDotDot);
 
-    for (auto &&i: listItems) {
-        _fileManager->copyFile(i.absoluteFilePath(), DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getTrOutDir());
+    auto targetPath = cnf->getTargetDir() + "/" + package;
+    auto distro = cnf->getDistroFromPackage(package);
+
+    for (const auto &i: listItems) {
+        _fileManager->copyFile(i.absoluteFilePath(), targetPath + distro.getTrOutDir());
     }
 
-    auto webEngine = static_cast<quint64>(_qtModules) & static_cast<quint64>(DeployCore::QtModule::QtWebEngineModule);
-
-    if (webEngine) {
-        auto trOut = DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getTrOutDir();
-        auto tr = DeployCore::_config->qtDir + "/translations/qtwebengine_locales";
+    if (isWebEngine(package)) {
+        auto trOut = targetPath + distro.getTrOutDir();
+        auto tr = DeployCore::_config->qtDir.getTranslations() + "/qtwebengine_locales";
         _fileManager->copyFolder(tr, trOut + "/qtwebengine_locales");
     }
 
@@ -239,7 +288,7 @@ QFileInfoList Extracter::findFilesInsideDir(const QString &name,
 
     auto list = dir.entryInfoList( QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
 
-    for (auto && item :list) {
+    for (const auto & item :list) {
         if (item.isFile()) {
             if (item.fileName().contains(name)) {
                 files += item;
@@ -252,96 +301,123 @@ QFileInfoList Extracter::findFilesInsideDir(const QString &name,
     return files;
 }
 
-QString Extracter::filterQmlPath(const QString &path) {
-    if (path.contains(DeployCore::_config->qmlDir)) {
-        auto endIndex = path.indexOf(QDir::separator(), DeployCore::_config->qmlDir.size() + 1);
-        QString module =
-                path.mid(DeployCore::_config->qmlDir.size() + 1, endIndex - DeployCore::_config->qmlDir.size() - 1);
-        return DeployCore::_config->qmlDir + QDir::separator() + module;
-    }
+void Extracter::extractLib(const QString &file,
+                           DependencyMap* depMap,
+                           const QString& mask) {
 
-    return "";
-}
+    assert(depMap);
 
-void Extracter::extractLib(const QString &file) {
     qInfo() << "extract lib :" << file;
 
-    auto data = scaner.scan(file);
+    auto data = _scaner->scan(file);
 
-    for (auto &line : data) {
+    for (const auto &line : data) {
+
+        if (mask.size() && !line.getName().contains(mask, ONLY_WIN_CASE_INSENSIATIVE)) {
+            continue;
+        }
+
         if (DeployCore::_config->ignoreList.isIgnore(line)) {
             continue;
         }
 
-        if (line.getPriority() != LibPriority::SystemLib && !neadedLibs.contains(line.fullPath())) {
-            neadedLibs << line.fullPath();
+        if (line.getPriority() < LibPriority::SystemLib && !depMap->containsNeadedLib(line.fullPath())) {
+            depMap->addNeadedLib(line.fullPath());
+
         } else if (QuasarAppUtils::Params::isEndable("deploySystem") &&
-                    line.getPriority() == LibPriority::SystemLib &&
-                    !systemLibs.contains(line.fullPath())) {
-            systemLibs << line.fullPath();
+                    line.getPriority() >= LibPriority::SystemLib &&
+                    !depMap->containsSysLib(line.fullPath())) {
+
+            depMap->addSystemLib(line.fullPath());
         }
+    }
+}
+
+void Extracter::extractPluginLib(const QString& item, const QString& package) {
+    if (QuasarAppUtils::Params::isEndable("extractPlugins")) {
+        extract(item, &_packageDependencyes[package]);
+    } else {
+        extract(item, &_packageDependencyes[package], "Qt");
     }
 }
 
 bool Extracter::extractQmlAll() {
 
-    if (!QFileInfo::exists(DeployCore::_config->qmlDir)) {
+    if (!QFileInfo::exists(DeployCore::_config->qtDir.getQmls())) {
         qWarning() << "qml dir wrong!";
         return false;
     }
 
-    QStringList listItems;
+    auto cnf = DeployCore::_config;
 
-    if (!_fileManager->copyFolder(DeployCore::_config->qmlDir,
-                                 DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getQmlOutDir(),
-                    QStringList() << ".so.debug" << "d.dll" << ".pdb",
-                    &listItems)) {
-        return false;
-    }
 
-    for (auto item : listItems) {
-        extract(item);
+    for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
+        auto targetPath = cnf->getTargetDir() + "/" + i.key();
+        auto distro = cnf->getDistroFromPackage(i.key());
+
+        QStringList listItems;
+
+        if (!_fileManager->copyFolder(cnf->qtDir.getQmls(), targetPath + distro.getQmlOutDir(),
+                        QStringList() << ".so.debug" << "d.dll" << ".pdb",
+                        &listItems)) {
+            return false;
+        }
+
+        for (const auto &item : listItems) {
+            extractPluginLib(item, i.key());
+        }
+
     }
 
     return true;
 }
 
-bool Extracter::extractQmlFromSource(const QString& sourceDir) {
+bool Extracter::extractQmlFromSource() {
 
-    QFileInfo info(sourceDir);
+    auto cnf = DeployCore::_config;
 
-    if (!info.isDir()) {
-        qCritical() << "extract qml fail! qml source dir not exits or is not dir " << sourceDir;
-        return false;
-    }
+    for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
+        auto targetPath = cnf->getTargetDir() + "/" + i.key();
+        auto distro = cnf->getDistroFromPackage(i.key());
 
-    QuasarAppUtils::Params::verboseLog("extractQmlFromSource " + info.absoluteFilePath());
+        QStringList plugins;
+        QStringList listItems;
+        QStringList filter;
+        filter << ".so.debug" << "d.dll" << ".pdb";
 
-    if (!QFileInfo::exists(DeployCore::_config->qmlDir)) {
-        qWarning() << "qml dir wrong!";
-        return false;
-    }
+        for (const auto &qmlInput: distro.qmlInput()) {
+            QFileInfo info(qmlInput);
 
-    QStringList plugins;
-    QStringList listItems;
-    QStringList filter;
-    filter << ".so.debug" << "d.dll" << ".pdb";
+            if (!info.isDir()) {
+                qCritical() << "extract qml fail! qml source dir not exits or is not dir " << qmlInput;
+                continue;
+            }
+            QuasarAppUtils::Params::verboseLog("extractQmlFromSource " + info.absoluteFilePath());
 
-    QML ownQmlScaner(DeployCore::_config->qmlDir);
+            if (!QFileInfo::exists(cnf->qtDir.getQmls())) {
+                qWarning() << "qml dir wrong!";
+                continue;
+            }
 
-    if (!ownQmlScaner.scan(plugins, info.absoluteFilePath())) {
-        QuasarAppUtils::Params::verboseLog("qml scaner run failed!");
-        return false;
-    }
+            QML ownQmlScaner(cnf->qtDir.getQmls());
 
-    if (!_fileManager->copyFolder(DeployCore::_config->qmlDir,
-                                 DeployCore::_config->targetDir + DeployCore::_config->distroStruct.getQmlOutDir(),
-                    filter , &listItems, &plugins)) {
-        return false;
-    }
+            if (!ownQmlScaner.scan(plugins, info.absoluteFilePath())) {
+                QuasarAppUtils::Params::verboseLog("qml scaner run failed!",
+                                                   QuasarAppUtils::Error);
+                continue;
+            }
+        }
 
-    for (auto item : listItems) {
-        extract(item);
+        if (!_fileManager->copyFolder(cnf->qtDir.getQmls(),
+                                     targetPath + distro.getQmlOutDir(),
+                        filter , &listItems, &plugins)) {
+            return false;
+        }
+
+        for (const auto &item : listItems) {
+            extractPluginLib(item, i.key());
+        }
+
     }
 
     return true;
@@ -350,18 +426,21 @@ bool Extracter::extractQmlFromSource(const QString& sourceDir) {
 bool Extracter::extractQml() {
 
     if (QuasarAppUtils::Params::isEndable("qmlDir")) {
-        return extractQmlFromSource(
-                    QuasarAppUtils::Params::getStrArg("qmlDir"));
+        return extractQmlFromSource();
 
     } else if (QuasarAppUtils::Params::isEndable("allQmlDependes")) {
         return extractQmlAll();
 
-    } else {
-        return false;
     }
+    return false;
 }
 
-void Extracter::extract(const QString &file) {
+void Extracter::extract(const QString &file,
+                        DependencyMap *depMap,
+                        const QString &mask) {
+
+    assert(depMap);
+
     QFileInfo info(file);
 
     auto sufix = info.completeSuffix();
@@ -370,18 +449,19 @@ void Extracter::extract(const QString &file) {
             sufix.compare("exe", Qt::CaseSensitive) == 0 ||
             sufix.isEmpty() || sufix.contains("so", Qt::CaseSensitive)) {
 
-        extractLib(file);
+        extractLib(file, depMap, mask);
     } else {
         QuasarAppUtils::Params::verboseLog("file with sufix " + sufix + " not supported!");
     }
 
 }
 
-Extracter::Extracter(FileManager *fileManager, ConfigParser *cqt):
+Extracter::Extracter(FileManager *fileManager, ConfigParser *cqt,
+                     DependenciesScanner *scaner):
+    _scaner(scaner),
     _fileManager(fileManager),
-    _cqt(cqt) {
-
-    _qtModules = DeployCore::QtModule::NONE;
+    _cqt(cqt)
+    {
 
     assert(_cqt);
     assert(_fileManager);

@@ -1,10 +1,11 @@
 //#
-//# Copyright (C) 2018-2019 QuasarApp.
+//# Copyright (C) 2018-2020 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
 //#
 
+#include "deploycore.h"
 #include "envirement.h"
 #include "pathutils.h"
 #include "quasarapp.h"
@@ -12,107 +13,132 @@
 #include <QDir>
 #include <QFileInfo>
 
-QStringList Envirement::deployEnvironment() const
-{
-    return _deployEnvironment.toList();
+QSet<QString> Envirement::upper(const QSet<QString>& set) const {
+    QSet<QString> res;
+    for (const auto &i : set) {
+        res.insert(PathUtils::fixPath(i));
+    }
+    return res;
 }
 
-QStringList Envirement::ignoreEnvList() const
-{
-    return _ignoreEnvList.toList();
+QStringList Envirement::environmentList() const {
+    return _dataEnvironment.values();
 }
 
-void Envirement::setIgnoreEnvList(const QStringList &ignoreEnvList)
-{
-    _ignoreEnvList = ignoreEnvList.toSet();
+QStringList Envirement::ignoreEnvList() const {
+    return _ignoreEnvList->environmentList();
 }
 
-void Envirement::addEnv(const QString &dir, const QString &appDir, const QString& targetDir) {
+void Envirement::setIgnoreEnvList(const QStringList &ignoreEnvList) {
 
-    char separator = ':';
+    if (!_ignoreEnvList)
+        _ignoreEnvList = new Envirement();
 
-#ifdef Q_OS_WIN
-    separator = ';';
-#endif
+    _ignoreEnvList->addEnv(ignoreEnvList);
+}
 
+void Envirement::addEnvRec(const QString &dir, int depch) {
+    addEnv(Envirement::recursiveInvairement(dir, depch));
+}
+
+void Envirement::addEnv(const QString &dir) {
+
+    char separator = DeployCore::getEnvSeparator();
     if (dir.contains(separator)) {
-        auto list = dir.split(separator);
-        for (auto i : list) {
-            addEnv(i, appDir, targetDir);
+        addEnv(dir.split(separator));
+    } else {
+        addEnv(QStringList{dir});
+    }
+}
+
+void Envirement::addEnv(const QStringList &listDirs) {
+
+    for (const auto& i : listDirs) {
+        auto path = PathUtils::fixPath(QFileInfo(i).absoluteFilePath());
+
+        if (_ignoreEnvList && _ignoreEnvList->inThisEnvirement(i)) {
+            continue;
         }
-        return;
-    }
 
-    auto path = QFileInfo(dir).absoluteFilePath();
-
-    for (QString i :_ignoreEnvList) {
-        i = PathUtils::stripPath(i);
-#ifdef Q_OS_WIN
-        if (path.contains(i, Qt::CaseInsensitive)) {
-            return;
+        if (!QFileInfo(path).isDir()) {
+            QuasarAppUtils::Params::verboseLog("is not dir!! :" + path);
+            continue;
         }
-#else
-        if (path.contains(i)) {
-            return;
+
+        if (_dataEnvironment.contains(path)) {
+            QuasarAppUtils::Params::verboseLog ("Environment alredy added: " + path);
+            continue;
         }
-#endif
-    }
 
-    if (!appDir.isEmpty() && path.contains(appDir)) {
-        QuasarAppUtils::Params::verboseLog("is cqtdeployer dir!: " + path + " app dir : " + appDir);
-        return;
+        _dataEnvironment.insert(path);
     }
-
-    if (!QFileInfo(path).isDir()) {
-        QuasarAppUtils::Params::verboseLog("is not dir!! :" + path);
-        return;
-    }
-
-    if (_deployEnvironment.contains(path)) {
-        QuasarAppUtils::Params::verboseLog ("Environment alredy added: " + path);
-        return;
-    }
-
-    if (!targetDir.isEmpty() && path.contains(targetDir)) {
-        QuasarAppUtils::Params::verboseLog ("Skip paths becouse it is target : " + path);
-        return;
-    }
-
-    _deployEnvironment.insert(QDir::fromNativeSeparators(path));
 }
 
 bool Envirement::inThisEnvirement(const QString &file) const {
     QFileInfo info (file);
+
     if (info.isFile()) {
-        return _deployEnvironment.contains(info.absolutePath());
+        return _dataEnvironment.contains(PathUtils::fixPath(info.absolutePath()));
     }
 
-    return _deployEnvironment.contains(file);
+    return _dataEnvironment.contains(PathUtils::fixPath(file));
+
 }
 
 int Envirement::size() const {
-    return _deployEnvironment.size();
+    return _dataEnvironment.size();
 }
 
 QString Envirement::concatEnv() const {
 
-    if (_deployEnvironment.isEmpty()) {
+    if (_dataEnvironment.isEmpty()) {
         return "";
     }
 
-    QString result = *_deployEnvironment.begin();
-    for (auto i: _deployEnvironment) {
-#ifdef  Q_OS_UNIX
-        result += (":" + i);
-#else
-        result += (";" + i);
-#endif
+    QString result = *_dataEnvironment.begin();
+    for (auto i: _dataEnvironment) {
+        result += (DeployCore::getEnvSeparator() + i);
     }
 
     return result;
 }
 
-Envirement::Envirement()
-{
+QStringList Envirement::recursiveInvairement(QDir &dir, int depch, int depchLimit) {
 
+    if (!dir.exists() || (depchLimit >= 0 && depch >= depchLimit)) {
+        return {dir.absolutePath()};
+    }
+
+    QFileInfoList list = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+    QStringList res = {};
+
+    for (QFileInfo &i : list) {
+        if (!dir.cd(i.fileName())) {
+            continue;
+        }
+        res += Envirement::recursiveInvairement(dir, depch + 1, depchLimit);
+
+        dir.cdUp();
+    }
+
+    res += dir.absolutePath();
+
+    return res;
+}
+
+QStringList Envirement::recursiveInvairement(const QString &dir, int depch) {
+    QDir _dir(dir);
+
+    return recursiveInvairement(_dir, 0, depch);
+}
+
+Envirement::Envirement() {
+
+}
+
+Envirement::~Envirement() {
+    if (_ignoreEnvList) {
+        delete _ignoreEnvList;
+        _ignoreEnvList = nullptr;
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -73,7 +73,7 @@ bool PluginsParser::scan(const QString& pluginPath,
 
     QuasarAppUtils::Params::verboseLog("Modules Number :" + QString::number(qtModules), QuasarAppUtils::Info);
 
-    for (auto &&plugin: plugins) {
+    for (const auto &plugin: plugins) {
         auto module = qtModuleForPlugin(plugin.fileName());
         if (qtModules & module) {
 

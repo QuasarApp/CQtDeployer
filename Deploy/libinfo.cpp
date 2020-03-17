@@ -1,11 +1,12 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
  */
 
 #include "libinfo.h"
+#include "pathutils.h"
 
 bool operator ==(const LibInfo &left, const LibInfo &right) {
     return left.fullPath() == right.fullPath();
@@ -59,6 +60,10 @@ void LibInfo::addDependncies(const QString &value) {
     dependncies.insert(value);
 }
 
+void LibInfo::addDependncies(const QSet<QString> &value) {
+    dependncies += value;
+}
+
 void LibInfo::removeDependncies(const QString &value) {
     dependncies.remove(value);
 }
@@ -87,6 +92,24 @@ QString LibInfo::getQtPath() const
 void LibInfo::setQtPath(const QString &value)
 {
     qtPath = value;
+}
+
+WinAPI LibInfo::getWinApi() const {
+    return _winApi;
+}
+
+void LibInfo::setWinApi(WinAPI winApi) {
+    _winApi = winApi;
+}
+
+bool LibInfo::isDependetOfQt() const {
+    for (const auto& i : dependncies) {
+        if (DeployCore::isQtLib(i)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 QString LibInfo::fullPath() const {

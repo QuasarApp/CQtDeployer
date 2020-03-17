@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 QuasarApp.
+ * Copyright (C) 2018-2020 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -27,7 +27,6 @@ class DEPLOYSHARED_EXPORT DependenciesScanner {
 
 private:
 
-    QStringList _env;
     QMultiHash<QString, QString> _EnvLibs;
     QHash<QString, LibInfo> _scanedLibs;
 
@@ -37,9 +36,10 @@ private:
     PrivateScaner getScaner(const QString& lib) const;
 
     QMultiMap<LibPriority, LibInfo> getLibsFromEnvirement(const QString& libName) const;
-    bool fillLibInfo(LibInfo& info ,const QString& file) const;
 
-    void recursiveDep(LibInfo& lib, QSet<LibInfo> &res);
+    void recursiveDep(LibInfo& lib, QSet<LibInfo> &res, QSet<QString> &libStack);
+
+    void addToWinAPI(const QString& lib, QHash<WinAPI, QSet<QString> > &res);
 
 public:
     explicit DependenciesScanner();
@@ -47,6 +47,7 @@ public:
     void setEnvironment(const QStringList &env);
 
     QSet<LibInfo> scan(const QString& path);
+    bool fillLibInfo(LibInfo& info ,const QString& file) const;
 
     ~DependenciesScanner();
 
