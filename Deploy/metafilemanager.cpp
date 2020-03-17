@@ -26,7 +26,7 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
             "@echo off \n"
             "SET BASE_DIR=%~dp0\n"
             "SET PATH=%BASE_DIR%" + DeployCore::_config->distroStruct.getLibOutDir() + ";%PATH%\n"
-            "start \"\" \"%BASE_DIR%" + DeployCore::_config->distroStruct.getBinOutDir() + "%0\" %1 \n";
+            "call \"%BASE_DIR%" + DeployCore::_config->distroStruct.getBinOutDir() + "%0\" %1 \n";
 
     content = content.arg(QFileInfo(target).fileName()).arg("%*");
     content = QDir::toNativeSeparators(content);
