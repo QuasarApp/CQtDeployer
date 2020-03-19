@@ -2208,7 +2208,7 @@ void deploytest::testOutDirs() {
 
     QVERIFY(runScript.contains("SET BASE_DIR=%~dp0"));
     QVERIFY(runScript.contains("SET PATH=%BASE_DIR%\\lolLib\\;%PATH%"));
-    QVERIFY(runScript.contains("start \"\" \"%BASE_DIR%\\lol\\TestQMLWidgets.exe\" %*"));
+    QVERIFY(runScript.contains("call \"%BASE_DIR%\\lol\\TestQMLWidgets.exe\" %*"));
 
 
 #endif
