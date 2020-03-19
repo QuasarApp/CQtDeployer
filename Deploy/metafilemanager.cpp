@@ -174,7 +174,7 @@ bool MetaFileManager::createQConf(const QString &target) {
 
     QString content =
             "[Paths]\n"
-            "Package= ." + distro.getRootDir(distro.getBinOutDir()) + "\n"
+            "Prefix= ." + distro.getRootDir(distro.getBinOutDir()) + "\n"
             "Libraries= ." + distro.getLibOutDir() + "\n"
             "Plugins= ." + distro.getPluginsOutDir() + "\n"
             "Imports= ." + distro.getQmlOutDir() + "\n"
