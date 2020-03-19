@@ -32,16 +32,24 @@ function systemIntegration() {
         component.addOperation('EnvironmentVariable',
                                [
                                    "cqtdeployer",
-                                   "\"" + targetDir + "/" + VERSION + "/cqtdeployer.bat\""
+                                   "\"" + targetDir + "\\" + VERSION + "\\cqtdeployer.bat\""
                                ]
                               )
 
-        component.addElevatedOperation('CreateLink',
+        component.addOperation('EnvironmentVariable',
                                [
-                                   "@ApplicationsDirX64@\\..\\Windows\\system32\\cqtdeployer",
-                                   "\"" + targetDir + "/" + VERSION + "/cqtdeployer.bat\""
+                                   "cqtDir",
+                                   "\"" + targetDir + "\\" + VERSION + "\\\""
                                ]
                               )
+
+        const PATH = installer.environmentVariable("PATH");
+        console.log(PATH);
+
+        if (!PATH.includes("cqtDir"))
+            component.addOperation('Execute', ["SETX", "PATH", PATH + ";%cqtDir%"],
+                                   "UNDOEXECUTE", ["echo", "%PATH%"])
+
 
     } else {
 
