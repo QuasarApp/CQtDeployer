@@ -2177,7 +2177,7 @@ void deploytest::testOutDirs() {
     auto runScript = file.readAll();
     file.close();
 
-    QVERIFY(runScript.contains("Package= ./../"));
+    QVERIFY(runScript.contains("Prefix= ./../"));
     QVERIFY(runScript.contains("Libraries= ./lolLib/"));
     QVERIFY(runScript.contains("Plugins= ./p/"));
     QVERIFY(runScript.contains("Imports= ./q/"));
