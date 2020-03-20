@@ -66,9 +66,11 @@ function systemIntegration() {
                               )
 
         let PATH = installer.environmentVariable("PATH");
+        const cqtDir = installer.environmentVariable("cqtDir");
+
         console.log("path befor strip : " + PATH);
 
-        if (!PATH.includes("cqtDir")) {
+        if (!PATH.includes(cqtDir) || !cqtDir.length) {
             PATH = stripWinPath(PATH);
             console.log("path after strip : " + PATH);
 
