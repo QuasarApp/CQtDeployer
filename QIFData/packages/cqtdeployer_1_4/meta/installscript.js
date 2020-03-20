@@ -20,6 +20,28 @@ Component.prototype.createOperations = function()
 
 }
 
+function stripPath(path, separator) {
+    const array =  path.split(separator);
+
+    let newPath = [];
+
+    array.forEach(function (item) {
+        if (!newPath.includes(item)) {
+            newPath.push(item);
+        }
+    });
+
+    return newPath.join(separator);
+}
+
+function stripWinPath(path) {
+    return stripPath(path, ';');
+}
+
+function stripUnixPath(path) {
+    return stripPath(path, ':');
+}
+
 function systemIntegration() {
     targetDir = installer.value("TargetDir", "");
     homeDir = installer.value("HomeDir", "");
@@ -43,13 +65,16 @@ function systemIntegration() {
                                ]
                               )
 
-        const PATH = installer.environmentVariable("PATH");
-        console.log(PATH);
+        let PATH = installer.environmentVariable("PATH");
+        console.log("path befor strip : " + PATH);
 
-        if (!PATH.includes("cqtDir"))
-            component.addOperation('Execute', ["SETX", "PATH", "%cqtDir%"],
-                                   "UNDOEXECUTE", ["echo", "%PATH%"])
+        if (!PATH.includes("cqtDir")) {
+            PATH = stripWinPath(PATH);
+            console.log("path after strip : " + PATH);
 
+            component.addOperation('Execute', ["SETX", "PATH", PATH + ";%cqtDir%"],
+                                   "UNDOEXECUTE", ["cmd", "echo", "%PATH%"])
+        }
 
     } else {
 
