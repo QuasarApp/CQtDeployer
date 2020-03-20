@@ -47,7 +47,7 @@ function systemIntegration() {
         console.log(PATH);
 
         if (!PATH.includes("cqtDir"))
-            component.addOperation('Execute', ["SETX", "PATH", PATH + ";%cqtDir%"],
+            component.addOperation('Execute', ["SETX", "PATH", "%cqtDir%"],
                                    "UNDOEXECUTE", ["echo", "%PATH%"])
 
 
