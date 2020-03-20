@@ -72,8 +72,7 @@ function systemIntegration() {
             PATH = stripWinPath(PATH);
             console.log("path after strip : " + PATH);
 
-            component.addOperation('Execute', ["SETX", "PATH", PATH + ";%cqtDir%"],
-                                   "UNDOEXECUTE", ["cmd", "echo", "%PATH%"])
+            component.addOperation('Execute', ["SETX", "PATH", PATH + ";%cqtDir%"])
         }
 
     } else {
