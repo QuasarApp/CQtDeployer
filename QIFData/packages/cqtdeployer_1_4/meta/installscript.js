@@ -20,6 +20,28 @@ Component.prototype.createOperations = function()
 
 }
 
+function stripPath(path, separator) {
+    const array =  path.split(separator);
+
+    let newPath = [];
+
+    array.forEach(function (item) {
+        if (!newPath.includes(item)) {
+            newPath.push(item);
+        }
+    });
+
+    return newPath.join(separator);
+}
+
+function stripWinPath(path) {
+    return stripPath(path, ';');
+}
+
+function stripUnixPath(path) {
+    return stripPath(path, ':');
+}
+
 function systemIntegration() {
     targetDir = installer.value("TargetDir", "");
     homeDir = installer.value("HomeDir", "");
@@ -29,15 +51,31 @@ function systemIntegration() {
     console.log("hometDir "  + homeDir)
 
     if (systemInfo.kernelType === "winnt") {
+        component.addOperation('EnvironmentVariable',
+                               [
+                                   "cqtdeployer",
+                                   "\"" + targetDir + "\\" + VERSION + "\\cqtdeployer.bat\""
+                               ]
+                              )
 
-        const CQT_VAR = "%cqtdeployer%"
-        const PATH = installer.environmentVariable("PATH");
-        const PATH_ORIGIN = PATH.replace(";" + CQT_VAR, "");
+        component.addOperation('EnvironmentVariable',
+                               [
+                                   "cqtDir",
+                                   "\"" + targetDir + "\\" + VERSION + "\\\""
+                               ]
+                              )
 
-        if (!PATH.includes(CQT_VAR)) {
-            component.addOperation('Execute', ["SETX", "PATH", PATH + ";" + CQT_VAR]);
+        let PATH = installer.environmentVariable("PATH");
+        const cqtDir = installer.environmentVariable("cqtDir");
+
+        console.log("path befor strip : " + PATH);
+
+        if (!PATH.includes(cqtDir) || !cqtDir.length) {
+            PATH = stripWinPath(PATH);
+            console.log("path after strip : " + PATH);
+
+            component.addOperation('Execute', ["SETX", "PATH", PATH + ";%cqtDir%"])
         }
-        component.addOperation('Execute', ["SETX", "cqtdeployer", "\"" + targetDir + "\\" + VERSION + "\""])
 
     } else {
 

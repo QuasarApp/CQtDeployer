@@ -300,7 +300,10 @@ QStringList DeployCore::helpKeys() {
         "releaseDate",
         "icon",
         "publisher",
-        "customScript"
+        "customScript",
+        "qifStyle",
+        "qifBanner",
+        "qifLogo",
     };
 }
 

@@ -44,10 +44,6 @@ Envirement QIF::toolKitEnv() const {
     return result;
 }
 
-QString QIF::getConfig() const {
-    return ":/Distro/Distributions/configures/QIF.json";
-}
-
 QString QIF::runCmd() {
     QString base = "binarycreator";
 
@@ -124,9 +120,13 @@ bool QIF::deployTemplate() {
                 info.Publisher = package->publisher();
 
             QString cmdArray = "[";
+            int initSize = cmdArray.size();
             for (const auto &target :it.second->targets()) {
                 auto fileinfo =  QFileInfo(target);
                 if (fileinfo.suffix().compare("exe", ONLY_WIN_CASE_INSENSIATIVE) || fileinfo.suffix().isEmpty()) {
+                    if (cmdArray.size() > initSize) {
+                        cmdArray += ",";
+                    }
                     cmdArray += "\"" + info.Name + "/" + fileinfo.fileName() + "\"";
                 }
             }

@@ -8,11 +8,6 @@ DefaultDistro::DefaultDistro(FileManager *fileManager)
 
 };
 
-
-QString DefaultDistro::getConfig() const{
-    return ":/Distro/Distributions/configures/C and C++.json";
-}
-
 bool DefaultDistro::deployTemplate() {
     return true;
 }

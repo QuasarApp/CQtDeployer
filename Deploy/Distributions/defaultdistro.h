@@ -10,15 +10,15 @@ public:
 
     // iDistribution interface
 public:
-    QString getConfig() const;
-    bool deployTemplate();
-    Envirement toolKitEnv() const;
-    QString runCmd();
-    QStringList runArg() const;
-    bool removeTemplate() const;
-    QProcessEnvironment processEnvirement() const;
+    QString getConfig() const ;
+    bool deployTemplate() override;
+    Envirement toolKitEnv() const override;
+    QString runCmd() override;
+    QStringList runArg() const override;
+    bool removeTemplate() const override;
+    QProcessEnvironment processEnvirement() const override;
 
-    QStringList outPutFiles() const;
+    QStringList outPutFiles() const override;
 };
 
 #endif // DEFAULTDISTRO_H
