@@ -32,7 +32,7 @@ parts:
     # See 'snapcraft plugins'
 
     plugin: dump
-    source: QIFData/packages/cqtdeployer_1_4/data/1.4
+    source: QIFData/packages/cqtdeployer.1_4/data/1.4
 
     stage-packages:
       - libfreetype6
