@@ -37,7 +37,7 @@ unix:ONLINE_REPO_DIR = $$ONLINE/CQtDeployer/Linux
 win32:PY = python
 unix: PY = python3
 
-create_repo.commands = $$PY $$PWD/QuasarAppScripts/cp.py $$PWD/packages/ $$PWD/../Repo
+create_repo.commands = $$PY $$PWD/../QuasarAppScripts/cp.py $$PWD/packages/ $$PWD/../Repo
 
 chmodSnap.commands = chmod 777 -R $$DATA_DIR
 unix:deploy.depends += chmodSnap
@@ -59,6 +59,8 @@ message( ONLINE_REPO_DIR $$ONLINE_REPO_DIR)
 
 buildSnap.commands = snapcraft
 clearSnap.commands = rm parts prime stage *.snap -rdf
+clearSnap2.commands = rm parts prime stage *.snap -rdf
+
 deploySnap.commands = rm *.snap -rdf && chmod 777 -R $$PWD/../prime && snapcraft && cp *.snap $$PWD/../Distro/
 releaseSnap.commands = snapcraft push *.snap # bad patern
 
@@ -70,6 +72,7 @@ releaseSnap.commands = snapcraft push *.snap # bad patern
     unix:deploy.depends += clearSnap
     unix:deploy.depends += buildSnap
     unix:deploy.depends += deploySnap
+    unix:deploy.depends += clearSnap2
     unix:release.depends += releaseSnap
 }
 
