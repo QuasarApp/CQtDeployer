@@ -326,6 +326,10 @@ QString DeployCore::getAppVersion() {
     return APP_VERSION;
 }
 
+QString DeployCore::getAppVersionName() {
+    return "*** Binary Box ***";
+}
+
 QString DeployCore::getQtVersion() {
 #ifdef QT_VERSION_STR
     return QT_VERSION_STR;
@@ -335,7 +339,7 @@ QString DeployCore::getQtVersion() {
 }
 
 void DeployCore::printVersion() {
-    qInfo() << "CQtDeployer: " + getAppVersion();
+    qInfo() << "CQtDeployer: " + getAppVersion() + " " +  getAppVersionName();
     qInfo() << "Qt: " +  getQtVersion();
 }
 

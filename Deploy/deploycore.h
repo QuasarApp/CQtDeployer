@@ -166,6 +166,8 @@ public:
 
     static QStringList extractTranslation(const QSet<QString> &libs);
     static QString getAppVersion();
+    static QString getAppVersionName();
+
     static QString getQtVersion();
     static void printVersion();
     static int find(const QString &str, const QStringList &list);

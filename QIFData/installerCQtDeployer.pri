@@ -8,8 +8,8 @@ unix:OUT_FILE_OFF = CQtDeployerOfflineInstaller.run
 
 DEPLOY_TARGET = $$PWD/../CQtDeployer/build/release
 
-DATA_DIR = $$PWD/packages/cqtdeployer_1_4/data/1.4
-META_DIR = $$PWD/packages/cqtdeployer_1_4/meta/
+DATA_DIR = $$PWD/packages/cqtdeployer.1_4/data/1.4
+META_DIR = $$PWD/packages/cqtdeployer.1_4/meta/
 
 win32:OUT_LIB= -libOut lib
 win32:OUT_BIN= -binOut bin
@@ -37,7 +37,7 @@ unix:ONLINE_REPO_DIR = $$ONLINE/CQtDeployer/Linux
 win32:PY = python
 unix: PY = python3
 
-create_repo.commands = $$PY $$PWD/QuasarAppScripts/cp.py $$PWD/packages/ $$PWD/../Repo
+create_repo.commands = $$PY $$PWD/../QuasarAppScripts/cp.py $$PWD/packages/ $$PWD/../Repo
 
 chmodSnap.commands = chmod 777 -R $$DATA_DIR
 unix:deploy.depends += chmodSnap
@@ -59,6 +59,8 @@ message( ONLINE_REPO_DIR $$ONLINE_REPO_DIR)
 
 buildSnap.commands = snapcraft
 clearSnap.commands = rm parts prime stage *.snap -rdf
+clearSnap2.commands = rm parts prime stage -rdf
+
 deploySnap.commands = rm *.snap -rdf && chmod 777 -R $$PWD/../prime && snapcraft && cp *.snap $$PWD/../Distro/
 releaseSnap.commands = snapcraft push *.snap # bad patern
 
@@ -70,6 +72,7 @@ releaseSnap.commands = snapcraft push *.snap # bad patern
     unix:deploy.depends += clearSnap
     unix:deploy.depends += buildSnap
     unix:deploy.depends += deploySnap
+    unix:deploy.depends += clearSnap2
     unix:release.depends += releaseSnap
 }
 
@@ -86,6 +89,7 @@ QMAKE_EXTRA_TARGETS += \
     create_repo \
     release \
     clearSnap \
+    clearSnap2 \
     deploySnap \
     releaseSnap \
     buildSnap \
