@@ -59,7 +59,7 @@ message( ONLINE_REPO_DIR $$ONLINE_REPO_DIR)
 
 buildSnap.commands = snapcraft
 clearSnap.commands = rm parts prime stage *.snap -rdf
-clearSnap2.commands = rm parts prime stage *.snap -rdf
+clearSnap2.commands = rm parts prime stage -rdf
 
 deploySnap.commands = rm *.snap -rdf && chmod 777 -R $$PWD/../prime && snapcraft && cp *.snap $$PWD/../Distro/
 releaseSnap.commands = snapcraft push *.snap # bad patern
