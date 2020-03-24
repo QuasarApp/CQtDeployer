@@ -89,6 +89,7 @@ QMAKE_EXTRA_TARGETS += \
     create_repo \
     release \
     clearSnap \
+    clearSnap2 \
     deploySnap \
     releaseSnap \
     buildSnap \
