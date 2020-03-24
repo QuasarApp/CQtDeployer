@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Installer Framework</DisplayName>
     <Description>Qt Installer Framework for CQtDeployer</Description>
-    <Version>3.2.0</Version>
-    <ReleaseDate>2020-01-01</ReleaseDate>
+    <Version>3.2.2</Version>
+    <ReleaseDate>2020-03-24</ReleaseDate>
     <Default>true</Default>
 </Package>
