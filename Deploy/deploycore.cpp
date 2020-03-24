@@ -327,7 +327,7 @@ QString DeployCore::getAppVersion() {
 }
 
 QString DeployCore::getAppVersionName() {
-    return "\"Binary Box\"";
+    return "*** Binary Box ***";
 }
 
 QString DeployCore::getQtVersion() {
