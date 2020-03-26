@@ -123,7 +123,7 @@ bool QIF::deployTemplate() {
             int initSize = cmdArray.size();
             for (const auto &target :it.second->targets()) {
                 auto fileinfo =  QFileInfo(target);
-                if (fileinfo.suffix().compare("exe", ONLY_WIN_CASE_INSENSIATIVE) || fileinfo.suffix().isEmpty()) {
+                if (fileinfo.suffix().compare("exe", ONLY_WIN_CASE_INSENSIATIVE) == 0 || fileinfo.suffix().isEmpty()) {
                     if (cmdArray.size() > initSize) {
                         cmdArray += ",";
                     }
