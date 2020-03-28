@@ -53,8 +53,13 @@ QSet<QString> ModulesQt513::onlyC(const QString &distDir)
 
 QSet<QString> ModulesQt513::qtLibs(const QString &distDir) {
     TestUtils utils;
+
+    auto Tree = onlyC(distDir);
+
+    Tree = ignoreFilter(Tree, "/TestOnlyC");
+
 #ifdef Q_OS_WIN
-    auto Tree = utils.createTree(
+    Tree += utils.createTree(
     {
                     "./" + distDir + "/Qt5Core.dll",
                     "./" + distDir + "/Qt5Gui.dll",
@@ -66,9 +71,6 @@ QSet<QString> ModulesQt513::qtLibs(const QString &distDir) {
                     "./" + distDir + "/Qt5WebSockets.dll",
                     "./" + distDir + "/Qt5Widgets.dll",
                     "./" + distDir + "/QtWidgetsProject.exe",
-                    "./" + distDir + "/libgcc_s_seh-1.dll",
-                    "./" + distDir + "/libstdc++-6.dll",
-                    "./" + distDir + "/libwinpthread-1.dll",
                     "./" + distDir + "/plugins/iconengines/qsvgicon.dll",
                     "./" + distDir + "/plugins/imageformats/qgif.dll",
                     "./" + distDir + "/plugins/imageformats/qicns.dll",
@@ -84,13 +86,13 @@ QSet<QString> ModulesQt513::qtLibs(const QString &distDir) {
                     "./" + distDir + "/plugins/platforms/qoffscreen.dll",
                     "./" + distDir + "/plugins/platforms/qwebgl.dll",
                     "./" + distDir + "/plugins/platforms/qwindows.dll",
+                    "./" + distDir + "/plugins/platformthemes/libqxdgdesktopportal.dll",
                     "./" + distDir + "/plugins/styles/qwindowsvistastyle.dll",
                     "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_hangul.dll",
                     "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_openwnn.dll",
                     "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_pinyin.dll",
                     "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_tcime.dll",
                     "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_thai.dll",
-                    "./" + distDir + "/qt.conf",
                     "./" + distDir + "/translations/qtbase_ar.qm",
                     "./" + distDir + "/translations/qtbase_bg.qm",
                     "./" + distDir + "/translations/qtbase_ca.qm",
@@ -131,9 +133,8 @@ QSet<QString> ModulesQt513::qtLibs(const QString &distDir) {
                 });
 
 #else
-    auto Tree = utils.createTree(
+    Tree += utils.createTree(
     {
-                    "./" + distDir + "/bin/qt.conf",
                     "./" + distDir + "/QtWidgetsProject.sh",
                     "./" + distDir + "/bin/QtWidgetsProject",
                     "./" + distDir + "/lib/libQt5Core.so",
@@ -178,6 +179,8 @@ QSet<QString> ModulesQt513::qtLibs(const QString &distDir) {
                     "./" + distDir + "/plugins/platforms/libqwayland-xcomposite-glx.so",
                     "./" + distDir + "/plugins/platforms/libqwebgl.so",
                     "./" + distDir + "/plugins/platforms/libqxcb.so",
+                    "./" + distDir + "/plugins/platformthemes/libqgtk3.so",
+                    "./" + distDir + "/plugins/platformthemes/libqxdgdesktopportal.so",
                     "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_hangul.so",
                     "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_openwnn.so",
                     "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_pinyin.so",
@@ -252,6 +255,9 @@ QSet<QString> ModulesQt513::qtLibs(const QString &distDir) {
 QSet<QString> ModulesQt513::qmlLibs(const QString &distDir) {
     TestUtils utils;
 
+    auto Tree = qtLibs(distDir);
+
+
 #ifdef Q_OS_WIN
     auto tree = utils.createTree(
     {
@@ -286,6 +292,7 @@ QSet<QString> ModulesQt513::qmlLibs(const QString &distDir) {
                     "./" + distDir + "/plugins/platforms/qoffscreen.dll",
                     "./" + distDir + "/plugins/platforms/qwebgl.dll",
                     "./" + distDir + "/plugins/platforms/qwindows.dll",
+                    "./" + distDir + "/plugins/platformthemes/libqxdgdesktopportal.dll",
                     "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_hangul.dll",
                     "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_openwnn.dll",
                     "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_pinyin.dll",
@@ -849,6 +856,8 @@ QSet<QString> ModulesQt513::qmlLibs(const QString &distDir) {
                     "./" + distDir + "/plugins/platforms/libqwayland-xcomposite-glx.so",
                     "./" + distDir + "/plugins/platforms/libqwebgl.so",
                     "./" + distDir + "/plugins/platforms/libqxcb.so",
+                    "./" + distDir + "/plugins/platformthemes/libqgtk3.so",
+                    "./" + distDir + "/plugins/platformthemes/libqxdgdesktopportal.so",
                     "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_hangul.so",
                     "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_openwnn.so",
                     "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_pinyin.so",
@@ -1481,6 +1490,8 @@ QSet<QString> ModulesQt513::qmlLibsExtractPlugins(const QString &distDir) {
         "./" + distDir + "/plugins/platforms/libqwayland-xcomposite-glx.so",
         "./" + distDir + "/plugins/platforms/libqwebgl.so",
         "./" + distDir + "/plugins/platforms/libqxcb.so",
+        "./" + distDir + "/plugins/platformthemes/libqgtk3.so",
+        "./" + distDir + "/plugins/platformthemes/libqxdgdesktopportal.so",
         "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_hangul.so",
         "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_openwnn.so",
         "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_pinyin.so",
@@ -2103,6 +2114,8 @@ QSet<QString> ModulesQt513::separetedPackageslibs(const QString &distDir)
         "./" + distDir + "/p/platforms/libqwayland-xcomposite-glx.so",
         "./" + distDir + "/p/platforms/libqwebgl.so",
         "./" + distDir + "/p/platforms/libqxcb.so",
+        "./" + distDir + "/p/platformthemes/libqgtk3.so",
+        "./" + distDir + "/p/platformthemes/libqxdgdesktopportal.so",
         "./" + distDir + "/p/virtualkeyboard/libqtvirtualkeyboard_hangul.so",
         "./" + distDir + "/p/virtualkeyboard/libqtvirtualkeyboard_openwnn.so",
         "./" + distDir + "/p/virtualkeyboard/libqtvirtualkeyboard_pinyin.so",
@@ -2184,6 +2197,8 @@ QSet<QString> ModulesQt513::separetedPackageslibs(const QString &distDir)
         "./" + distDir + "/package2/ZzZ/plugins/platforms/libqwayland-xcomposite-glx.so",
         "./" + distDir + "/package2/ZzZ/plugins/platforms/libqwebgl.so",
         "./" + distDir + "/package2/ZzZ/plugins/platforms/libqxcb.so",
+        "./" + distDir + "/package2/ZzZ/plugins/platformthemes/libqgtk3.so",
+        "./" + distDir + "/package2/ZzZ/plugins/platformthemes/libqxdgdesktopportal.so",
         "./" + distDir + "/package2/ZzZ/plugins/virtualkeyboard/libqtvirtualkeyboard_hangul.so",
         "./" + distDir + "/package2/ZzZ/plugins/virtualkeyboard/libqtvirtualkeyboard_openwnn.so",
         "./" + distDir + "/package2/ZzZ/plugins/virtualkeyboard/libqtvirtualkeyboard_pinyin.so",
@@ -2825,6 +2840,7 @@ QSet<QString> ModulesQt513::separetedPackageslibs(const QString &distDir)
          "./" + distDir + "/package2/ZzZ/plugins/platforms/qoffscreen.dll",
          "./" + distDir + "/package2/ZzZ/plugins/platforms/qwebgl.dll",
          "./" + distDir + "/package2/ZzZ/plugins/platforms/qwindows.dll",
+         "./" + distDir + "/package2/ZzZ/plugins/platformthemes/libqxdgdesktopportal.dll",
          "./" + distDir + "/package2/ZzZ/plugins/virtualkeyboard/qtvirtualkeyboard_hangul.dll",
          "./" + distDir + "/package2/ZzZ/plugins/virtualkeyboard/qtvirtualkeyboard_openwnn.dll",
          "./" + distDir + "/package2/ZzZ/plugins/virtualkeyboard/qtvirtualkeyboard_pinyin.dll",
@@ -3413,6 +3429,7 @@ QSet<QString> ModulesQt513::outTestLibs(const QString &distDir) {
         "./" + distDir + "/p/platforms/qoffscreen.dll",
         "./" + distDir + "/p/platforms/qwebgl.dll",
         "./" + distDir + "/p/platforms/qwindows.dll",
+        "./" + distDir + "/p/platformthemes/libqxdgdesktopportal.dll",
         "./" + distDir + "/p/virtualkeyboard/qtvirtualkeyboard_hangul.dll",
         "./" + distDir + "/p/virtualkeyboard/qtvirtualkeyboard_openwnn.dll",
         "./" + distDir + "/p/virtualkeyboard/qtvirtualkeyboard_pinyin.dll",
@@ -3973,6 +3990,8 @@ QSet<QString> ModulesQt513::outTestLibs(const QString &distDir) {
              "./" + distDir + "/p/platforms/libqwayland-xcomposite-glx.so",
              "./" + distDir + "/p/platforms/libqwebgl.so",
              "./" + distDir + "/p/platforms/libqxcb.so",
+             "./" + distDir + "/p/platformthemes/libqgtk3.so",
+             "./" + distDir + "/p/platformthemes/libqxdgdesktopportal.so",
              "./" + distDir + "/p/virtualkeyboard/libqtvirtualkeyboard_hangul.so",
              "./" + distDir + "/p/virtualkeyboard/libqtvirtualkeyboard_openwnn.so",
              "./" + distDir + "/p/virtualkeyboard/libqtvirtualkeyboard_pinyin.so",
@@ -4474,125 +4493,7 @@ QSet<QString> ModulesQt513::outTestLibs(const QString &distDir) {
 
 QSet<QString> ModulesQt513::qtWithoutTr(const QString &distDir) {
     TestUtils utils;
-#ifdef Q_OS_WIN
-    auto Tree = utils.createTree(
-    {
-                    "./" + distDir + "/Qt5Core.dll",
-                    "./" + distDir + "/Qt5Gui.dll",
-                    "./" + distDir + "/Qt5Network.dll",
-                    "./" + distDir + "/Qt5Qml.dll",
-                    "./" + distDir + "/Qt5Quick.dll",
-                    "./" + distDir + "/Qt5Svg.dll",
-                    "./" + distDir + "/Qt5VirtualKeyboard.dll",
-                    "./" + distDir + "/Qt5WebSockets.dll",
-                    "./" + distDir + "/Qt5Widgets.dll",
-                    "./" + distDir + "/QtWidgetsProject.exe",
-                    "./" + distDir + "/libgcc_s_seh-1.dll",
-                    "./" + distDir + "/libstdc++-6.dll",
-                    "./" + distDir + "/libwinpthread-1.dll",
-                    "./" + distDir + "/plugins/iconengines/qsvgicon.dll",
-                    "./" + distDir + "/plugins/imageformats/qgif.dll",
-                    "./" + distDir + "/plugins/imageformats/qicns.dll",
-                    "./" + distDir + "/plugins/imageformats/qico.dll",
-                    "./" + distDir + "/plugins/imageformats/qjpeg.dll",
-                    "./" + distDir + "/plugins/imageformats/qsvg.dll",
-                    "./" + distDir + "/plugins/imageformats/qtga.dll",
-                    "./" + distDir + "/plugins/imageformats/qtiff.dll",
-                    "./" + distDir + "/plugins/imageformats/qwbmp.dll",
-                    "./" + distDir + "/plugins/imageformats/qwebp.dll",
-                    "./" + distDir + "/plugins/platforminputcontexts/qtvirtualkeyboardplugin.dll",
-                    "./" + distDir + "/plugins/platforms/qminimal.dll",
-                    "./" + distDir + "/plugins/platforms/qoffscreen.dll",
-                    "./" + distDir + "/plugins/platforms/qwebgl.dll",
-                    "./" + distDir + "/plugins/platforms/qwindows.dll",
-                    "./" + distDir + "/plugins/styles/qwindowsvistastyle.dll",
-                    "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_hangul.dll",
-                    "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_openwnn.dll",
-                    "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_pinyin.dll",
-                    "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_tcime.dll",
-                    "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_thai.dll",
-                    "./" + distDir + "/qt.conf"
-                });
-#else
-    auto Tree = utils.createTree(
-    {
-                    "./" + distDir + "/bin/qt.conf",
-                    "./" + distDir + "/QtWidgetsProject.sh",
-                    "./" + distDir + "/bin/QtWidgetsProject",
-                    "./" + distDir + "/lib/libQt5Core.so",
-                    "./" + distDir + "/lib/libQt5DBus.so",
-                    "./" + distDir + "/lib/libQt5EglFSDeviceIntegration.so",
-                    "./" + distDir + "/lib/libQt5Gui.so",
-                    "./" + distDir + "/lib/libQt5Network.so",
-                    "./" + distDir + "/lib/libQt5Qml.so",
-                    "./" + distDir + "/lib/libQt5Quick.so",
-                    "./" + distDir + "/lib/libQt5Svg.so",
-                    "./" + distDir + "/lib/libQt5VirtualKeyboard.so",
-                    "./" + distDir + "/lib/libQt5WaylandClient.so",
-                    "./" + distDir + "/lib/libQt5WaylandCompositor.so",
-                    "./" + distDir + "/lib/libQt5WebSockets.so",
-                    "./" + distDir + "/lib/libQt5Widgets.so",
-                    "./" + distDir + "/lib/libQt5XcbQpa.so",
-                    "./" + distDir + "/lib/libicudata.so",
-                    "./" + distDir + "/lib/libicui18n.so",
-                    "./" + distDir + "/lib/libicuuc.so",
-                    "./" + distDir + "/plugins/iconengines/libqsvgicon.so",
-                    "./" + distDir + "/plugins/imageformats/libqgif.so",
-                    "./" + distDir + "/plugins/imageformats/libqicns.so",
-                    "./" + distDir + "/plugins/imageformats/libqico.so",
-                    "./" + distDir + "/plugins/imageformats/libqjpeg.so",
-                    "./" + distDir + "/plugins/imageformats/libqsvg.so",
-                    "./" + distDir + "/plugins/imageformats/libqtga.so",
-                    "./" + distDir + "/plugins/imageformats/libqtiff.so",
-                    "./" + distDir + "/plugins/imageformats/libqwbmp.so",
-                    "./" + distDir + "/plugins/imageformats/libqwebp.so",
-                    "./" + distDir + "/plugins/platforminputcontexts/libcomposeplatforminputcontextplugin.so",
-                    "./" + distDir + "/plugins/platforminputcontexts/libibusplatforminputcontextplugin.so",
-                    "./" + distDir + "/plugins/platforminputcontexts/libqtvirtualkeyboardplugin.so",
-                    "./" + distDir + "/plugins/platforms/libqeglfs.so",
-                    "./" + distDir + "/plugins/platforms/libqlinuxfb.so",
-                    "./" + distDir + "/plugins/platforms/libqminimal.so",
-                    "./" + distDir + "/plugins/platforms/libqminimalegl.so",
-                    "./" + distDir + "/plugins/platforms/libqoffscreen.so",
-                    "./" + distDir + "/plugins/platforms/libqvnc.so",
-                    "./" + distDir + "/plugins/platforms/libqwayland-egl.so",
-                    "./" + distDir + "/plugins/platforms/libqwayland-generic.so",
-                    "./" + distDir + "/plugins/platforms/libqwayland-xcomposite-egl.so",
-                    "./" + distDir + "/plugins/platforms/libqwayland-xcomposite-glx.so",
-                    "./" + distDir + "/plugins/platforms/libqwebgl.so",
-                    "./" + distDir + "/plugins/platforms/libqxcb.so",
-                    "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_hangul.so",
-                    "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_openwnn.so",
-                    "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_pinyin.so",
-                    "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_tcime.so",
-                    "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_thai.so",
-                    "./" + distDir + "/plugins/wayland-decoration-client/libbradient.so",
-                    "./" + distDir + "/plugins/wayland-graphics-integration-client/libdmabuf-server.so",
-                    "./" + distDir + "/plugins/wayland-graphics-integration-client/libdrm-egl-server.so",
-                    "./" + distDir + "/plugins/wayland-graphics-integration-client/libqt-plugin-wayland-egl.so",
-                    "./" + distDir + "/plugins/wayland-graphics-integration-client/libshm-emulation-server.so",
-                    "./" + distDir + "/plugins/wayland-graphics-integration-client/libxcomposite-egl.so",
-                    "./" + distDir + "/plugins/wayland-graphics-integration-client/libxcomposite-glx.so",
-                    "./" + distDir + "/plugins/wayland-graphics-integration-server/libdmabuf-server.so",
-                    "./" + distDir + "/plugins/wayland-graphics-integration-server/libdrm-egl-server.so",
-                    "./" + distDir + "/plugins/wayland-graphics-integration-server/liblinux-dmabuf-unstable-v1.so",
-                    "./" + distDir + "/plugins/wayland-graphics-integration-server/libqt-plugin-wayland-egl.so",
-                    "./" + distDir + "/plugins/wayland-graphics-integration-server/libshm-emulation-server.so",
-                    "./" + distDir + "/plugins/wayland-graphics-integration-server/libwayland-eglstream-controller.so",
-                    "./" + distDir + "/plugins/wayland-graphics-integration-server/libxcomposite-egl.so",
-                    "./" + distDir + "/plugins/wayland-graphics-integration-server/libxcomposite-glx.so",
-                    "./" + distDir + "/plugins/wayland-shell-integration/libfullscreen-shell-v1.so",
-                    "./" + distDir + "/plugins/wayland-shell-integration/libivi-shell.so",
-                    "./" + distDir + "/plugins/wayland-shell-integration/libwl-shell.so",
-                    "./" + distDir + "/plugins/wayland-shell-integration/libxdg-shell-v5.so",
-                    "./" + distDir + "/plugins/wayland-shell-integration/libxdg-shell-v6.so",
-                    "./" + distDir + "/plugins/wayland-shell-integration/libxdg-shell.so",
-                    "./" + distDir + "/plugins/xcbglintegrations/libqxcb-egl-integration.so",
-                    "./" + distDir + "/plugins/xcbglintegrations/libqxcb-glx-integration.so"
-                }
-                );
-#endif
-    return Tree;
+    return ignoreFilter(qtLibs(distDir), "translations");
 }
 
 QSet<QString> ModulesQt513::qtWebEngine(const QString &distDir) {
@@ -4656,6 +4557,8 @@ QSet<QString> ModulesQt513::qtWebEngine(const QString &distDir) {
                     "./" + distDir + "/plugins/platforms/libqwayland-xcomposite-glx.so",
                     "./" + distDir + "/plugins/platforms/libqwebgl.so",
                     "./" + distDir + "/plugins/platforms/libqxcb.so",
+                    "./" + distDir + "/plugins/platformthemes/libqgtk3.so",
+                    "./" + distDir + "/plugins/platformthemes/libqxdgdesktopportal.so",
                     "./" + distDir + "/plugins/position/libqtposition_geoclue.so",
                     "./" + distDir + "/plugins/position/libqtposition_geoclue2.so",
                     "./" + distDir + "/plugins/position/libqtposition_positionpoll.so",
