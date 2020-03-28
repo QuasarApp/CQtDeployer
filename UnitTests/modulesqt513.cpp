@@ -2801,6 +2801,7 @@ QSet<QString> ModulesQt513::separetedPackageslibs(const QString &distDir)
          "./" + distDir + "/p/platforms/qoffscreen.dll",
          "./" + distDir + "/p/platforms/qwebgl.dll",
          "./" + distDir + "/p/platforms/qwindows.dll",
+         "./" + distDir + "/p/platformthemes/qxdgdesktopportal.dll",
          "./" + distDir + "/p/styles/qwindowsvistastyle.dll",
          "./" + distDir + "/p/virtualkeyboard/qtvirtualkeyboard_hangul.dll",
          "./" + distDir + "/p/virtualkeyboard/qtvirtualkeyboard_openwnn.dll",

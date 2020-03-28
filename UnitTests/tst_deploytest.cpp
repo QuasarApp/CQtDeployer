@@ -1371,7 +1371,9 @@ void deploytest::testConfFile() {
 #else
     comapareTree -= utils.createTree(
     {
-         "./" + DISTRO_DIR + "/Qt5WebSockets.dll"
+         "./" + DISTRO_DIR + "/Qt5WebSockets.dll",
+         "./" + DISTRO_DIR + "/Qt5DBus.dll"
+
     });
     auto bin =  TestBinDir + "QtWidgetsProject.exe";
 #endif
