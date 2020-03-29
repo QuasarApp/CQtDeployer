@@ -21,6 +21,7 @@ static const PluginModuleMapping pluginModuleMappings[] =
     {"iconengines", DeployCore::QtModule::QtGuiModule},
     {"imageformats", DeployCore::QtModule::QtGuiModule},
     {"platforms", DeployCore::QtModule::QtGuiModule},
+    {"platformthemes", DeployCore::QtModule::QtGuiModule},
     {"platforminputcontexts", DeployCore::QtModule::QtGuiModule},
     {"virtualkeyboard", DeployCore::QtModule::QtGuiModule},
     {"geoservices", DeployCore::QtModule::QtLocationModule},
