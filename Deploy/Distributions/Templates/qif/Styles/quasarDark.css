@@ -1,0 +1,62 @@
+QWidget
+{
+    color: white;
+    background-color: rgb(65, 65, 65);
+}
+
+.QLabel {
+    color: white;
+}
+
+.QPushButton {
+    background-color: transparent;
+    border: 2px solid rgb(65, 65, 65);
+    border-radius: 3px;
+    height: 30px;
+    min-width: 100px;
+    padding: 0 15px;
+}
+
+.QPushButton:pressed,
+.QPushButton:checked {
+    background-color: #008ec8;
+}
+
+.QPushButton:focus {
+    background-color: #008ec8;
+}
+
+.QPushButton:hover {
+    border: 2px solid #008ec8;
+}
+
+.QProgressBar {
+    background: #9fa2a1;
+    border: 1px solid rgb(95, 95, 95);
+    border-radius: 2px;
+    padding: 0;
+    margin: 0;
+    color: rgb(65, 65, 65);
+    height: 30px;
+    text-align: center;
+}
+
+.QProgressBar::chunk {
+    background: #ffffff;
+    border-radius: 2px;
+    margin: 0;
+}
+
+.QProgressBar:hover {
+    border-color: #008ec8;
+}
+
+.QLineEdit {
+    background-color: transparent;
+    border-color: #cdcdcd;
+    height: 30px;
+}
+
+.QLineEdit:hover {
+    border-color: #008ec8;
+}
