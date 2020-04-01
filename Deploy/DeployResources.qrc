@@ -16,5 +16,6 @@
     </qresource>
     <qresource prefix="/Styles">
         <file>Distributions/Templates/qif/Styles/quasar.css</file>
+        <file>Distributions/Templates/qif/Styles/quasarDark.css</file>
     </qresource>
 </RCC>
