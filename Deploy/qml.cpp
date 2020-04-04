@@ -111,7 +111,7 @@ bool QML::deployPath(const QString &path, QStringList &res) {
     for (auto info : infoList) {
         if (info.fileName().contains(".so.debug") ||
                 info.fileName().contains("d.dll")) {
-            QuasarAppUtils::Params::verboseLog("sciped debug lib " +
+            QuasarAppUtils::Params::log("sciped debug lib " +
                                                info.absoluteFilePath());
             continue;
         }

@@ -24,12 +24,10 @@ int main(int argc, char *argv[]) {
 
 
     if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
-        qWarning() << "wrong parametrs";
+        QuasarAppUtils::Params::log("wrong parametrs", QuasarAppUtils::Warning);
         DeployCore::help();
         exit(0);
     }
-    QuasarAppUtils::Params::setEnable("noWriteInFileLog", true);
-
 
     Deploy deploy;
     return deploy.run();

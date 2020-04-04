@@ -159,7 +159,6 @@ public:
     static DeployCore::QtModule getQtModule(const QString& path);
     static void addQtModule(DeployCore::QtModule& module, const QString& path);
 
-    static void verboseLog(const QString &str);
     static RunMode getMode();
     static void help();
     static QStringList helpKeys();
