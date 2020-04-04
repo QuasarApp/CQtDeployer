@@ -937,7 +937,7 @@ void deploytest::runTestParams(QStringList list,
                                const QStringList &checkableKeys,
                                bool noWarnings, bool onlySize) {
 
-    QuasarAppUtils::Params::parseParams(list << "-verbose" << "3");
+    QuasarAppUtils::Params::parseParams(list);
 
     Deploy deploy;
     if (deploy.run() != Good)
