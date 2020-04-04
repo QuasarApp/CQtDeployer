@@ -245,7 +245,7 @@ void DeployCore::help() {
 
         {
             "Part 4 QtInstallFramework options", {
-                {"-qifStyle [path/to/style.css]", "Sets the path to the CSS style file or sets the default style. Available styles: quasar "},
+                {"-qifStyle [path/to/style.css]", "Sets the path to the CSS style file or sets the default style. Available styles: quasar, quasarDark "},
                 {"-qifBanner [path/to/banner.png]", "Sets path to the banner png file."},
                 {"-qifLogo [path/to/logo.png]", "Sets path to the logo png file."},
             }
