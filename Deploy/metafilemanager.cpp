@@ -210,11 +210,12 @@ void MetaFileManager::createRunMetaFiles() {
     for (auto i = DeployCore::_config->targets().cbegin(); i != DeployCore::_config->targets().cend(); ++i) {
 
         if (!createRunScript(i.key())) {
-            qCritical() << "run script not created!";
+            QuasarAppUtils::Params::log("run script not created!",
+                                               QuasarAppUtils::Error);
         }
 
         if (!createQConf(i.key())) {
-            QuasarAppUtils::Params::verboseLog("create qt.conf failr", QuasarAppUtils::Warning);
+            QuasarAppUtils::Params::log("create qt.conf failr", QuasarAppUtils::Warning);
         }
     }
 }

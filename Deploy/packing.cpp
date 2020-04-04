@@ -58,7 +58,7 @@ bool Packing::create() {
     QString erroutLog = _proc->readAllStandardError();
     auto message = QString("message = %0").arg(stdoutLog + " " + erroutLog);
 
-    QuasarAppUtils::Params::verboseLog(message,
+    QuasarAppUtils::Params::log(message,
                                      QuasarAppUtils::Info);
 
     _pakage->removeTemplate();
@@ -72,10 +72,12 @@ void Packing::handleOutputUpdate() {
     QByteArray erroutLog = _proc->readAllStandardError();
 
     if (stdoutLog.size())
-        qInfo() << stdoutLog;
+        QuasarAppUtils::Params::log(stdoutLog,
+                                           QuasarAppUtils::Info);
 
     if (erroutLog.size())
-        qInfo() << erroutLog;
+        QuasarAppUtils::Params::log(erroutLog,
+                                           QuasarAppUtils::Info);
 }
 
 

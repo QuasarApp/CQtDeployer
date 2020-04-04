@@ -47,7 +47,7 @@ private:
 
     QSet<QString> getFilesTree(const QStringList& keys = {});
 
-    void runTestParams(const QStringList &list,
+    void runTestParams(QStringList list,
                        QSet<QString> *tree = nullptr,
                        const QStringList &checkableKeys = {},
                        bool noWarnings = false,
@@ -932,12 +932,12 @@ void deploytest::testSetTargetDir() {
 
 }
 
-void deploytest::runTestParams(const QStringList &list,
+void deploytest::runTestParams(QStringList list,
                                QSet<QString>* tree,
                                const QStringList &checkableKeys,
                                bool noWarnings, bool onlySize) {
 
-    QuasarAppUtils::Params::parseParams(list);
+    QuasarAppUtils::Params::parseParams(list << "-verbose" << "3");
 
     Deploy deploy;
     if (deploy.run() != Good)
