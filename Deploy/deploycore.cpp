@@ -136,12 +136,6 @@ LibPriority DeployCore::getLibPriority(const QString &lib) {
     return SystemLib;
 }
 
-void DeployCore::verboseLog(const QString &str) {
-    if (QuasarAppUtils::Params::isEndable("verbose")) {
-        qDebug() << str;
-    }
-}
-
 #define C(X) QuasarAppUtils::Params::isEndable(X)
 RunMode DeployCore::getMode() {
     if (C("help") || C("h") || C("v") || C("version")) {

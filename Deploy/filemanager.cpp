@@ -78,7 +78,7 @@ bool FileManager::addToDeployed(const QString& path) {
 
             DWORD attribute = GetFileAttributesA(stdString.c_str());
             if (!SetFileAttributesA(stdString.c_str(), attribute & static_cast<DWORD>(~FILE_ATTRIBUTE_HIDDEN))) {
-                QuasarAppUtils::Params::verboseLog("attribute set fail", QuasarAppUtils::Warning);
+                QuasarAppUtils::Params::log("attribute set fail", QuasarAppUtils::Warning);
             }
         }
 #endif

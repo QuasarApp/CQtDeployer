@@ -52,16 +52,16 @@ bool Extracter::extractWebEngine() {
 
         const auto &package = i.key();
         if (isWebEngine(package)) {
-            auto webEngeneBin = DeployCore::_config->qtDir.getLibexecs();
-            if (DeployCore::_config->qtDir.getQtPlatform() & Platform::Unix) {
+            auto webEngeneBin = cnf->qtDir.getLibexecs();
+            if (cnf->qtDir.getQtPlatform() & Platform::Unix) {
                 webEngeneBin += "/QtWebEngineProcess";
             } else {
                 webEngeneBin += "/QtWebEngineProcess.exe";
             }
 
-            auto destWebEngine = DeployCore::_config->getTargetDir() + "/" + package + DeployCore::_config->packages()[package].getBinOutDir();
-            auto resOut = DeployCore::_config->getTargetDir() + "/" + package + DeployCore::_config->packages()[package].getResOutDir();
-            auto res = DeployCore::_config->qtDir.getResources();
+            auto destWebEngine = cnf->getTargetDir() + "/" + package + cnf->packages()[package].getBinOutDir();
+            auto resOut = cnf->getTargetDir() + "/" + package + cnf->packages()[package].getResOutDir();
+            auto res = cnf->qtDir.getResources();
 
             if (!_fileManager->copyFile(webEngeneBin, destWebEngine)) {
                 return false;
@@ -107,14 +107,14 @@ void Extracter::copyExtraPlugins(const QString& package) {
     auto targetPath = cnf->getTargetDir() + "/" + package;
     auto distro = cnf->getDistroFromPackage(package);
 
-    for (auto extraPlugin : DeployCore::_config->extraPlugins) {
+    for (auto extraPlugin : cnf->extraPlugins) {
 
         if (!PathUtils::isPath(extraPlugin)) {
-            extraPlugin = DeployCore::_config->qtDir.getPlugins() + "/" + extraPlugin;
+            extraPlugin = cnf->qtDir.getPlugins() + "/" + extraPlugin;
         }
 
         info.setFile(extraPlugin);
-        if (info.isDir() && DeployCore::_config->qtDir.isQt(info.absoluteFilePath())) {
+        if (info.isDir() && cnf->qtDir.isQt(info.absoluteFilePath())) {
             copyPlugin(info.absoluteFilePath(), package);
 
         } else if (info.exists()) {
@@ -274,7 +274,7 @@ bool Extracter::copyTranslations(const QStringList &list, const QString& package
 
     if (isWebEngine(package)) {
         auto trOut = targetPath + distro.getTrOutDir();
-        auto tr = DeployCore::_config->qtDir.getTranslations() + "/qtwebengine_locales";
+        auto tr = cnf->qtDir.getTranslations() + "/qtwebengine_locales";
         _fileManager->copyFolder(tr, trOut + "/qtwebengine_locales");
     }
 
@@ -345,15 +345,13 @@ void Extracter::extractPluginLib(const QString& item, const QString& package) {
 }
 
 bool Extracter::extractQmlAll() {
+    auto cnf = DeployCore::_config;
 
-    if (!QFileInfo::exists(DeployCore::_config->qtDir.getQmls())) {
+    if (!QFileInfo::exists(cnf->qtDir.getQmls())) {
         QuasarAppUtils::Params::log("qml dir wrong!",
                                            QuasarAppUtils::Warning);
         return false;
     }
-
-    auto cnf = DeployCore::_config;
-
 
     for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
         auto targetPath = cnf->getTargetDir() + "/" + i.key();

@@ -652,13 +652,15 @@ bool ConfigParser::setTargets(const QStringList &value) {
         }
         else if (targetInfo.isDir()) {
             if (!setBinDir(i)) {
-                DeployCore::verboseLog(i + " du not contains executable binaries!");
+                QuasarAppUtils::Params::log(i + " du not contains executable binaries!",
+                                             QuasarAppUtils::Debug);
                 continue;
             }
             isfillList = true;
 
         } else {
-            DeployCore::verboseLog(targetInfo.absoluteFilePath() + " not exits!");
+            QuasarAppUtils::Params::log(targetInfo.absoluteFilePath() + " not exits!",
+                                         QuasarAppUtils::Debug);
         }
     }
 
@@ -673,7 +675,7 @@ bool ConfigParser::setTargets(const QStringList &value) {
 bool ConfigParser::setTargetsRecursive(const QString &dir) {
     if (!setBinDir(dir, true)) {
         QuasarAppUtils::Params::log("setBinDir failed!",
-                                           QuasarAppUtils::Warning);
+                                     QuasarAppUtils::Warning);
         return false;
     }
 
@@ -685,10 +687,12 @@ bool ConfigParser::setTargetsRecursive(const QString &dir) {
 bool ConfigParser::setBinDir(const QString &dir, bool recursive) {
     QDir d(dir);
     if (dir.isEmpty() || !d.exists()) {
-        DeployCore::verboseLog(dir + " dir not exits!");
+        QuasarAppUtils::Params::log(dir + " dir not exits!",
+                                     QuasarAppUtils::Debug);
         return false;
     }
-    DeployCore::verboseLog("setBinDir check path: " + dir);
+    QuasarAppUtils::Params::log("setBinDir check path: " + dir,
+                                 QuasarAppUtils::Debug);
     QFileInfoList list;
 
     if (recursive) {
