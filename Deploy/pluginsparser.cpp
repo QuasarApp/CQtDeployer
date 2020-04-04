@@ -72,13 +72,13 @@ bool PluginsParser::scan(const QString& pluginPath,
 
     auto plugins = QDir(pluginPath).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
 
-    QuasarAppUtils::Params::verboseLog("Modules Number :" + QString::number(qtModules), QuasarAppUtils::Info);
+    QuasarAppUtils::Params::log("Modules Number :" + QString::number(qtModules), QuasarAppUtils::Info);
 
     for (const auto &plugin: plugins) {
         auto module = qtModuleForPlugin(plugin.fileName());
         if (qtModules & module) {
 
-            QuasarAppUtils::Params::verboseLog("deploye plugin : " + plugin.absoluteFilePath(), QuasarAppUtils::Info);
+            QuasarAppUtils::Params::log("deploye plugin : " + plugin.absoluteFilePath(), QuasarAppUtils::Info);
 
             resDependencies.append(plugin.absoluteFilePath());
         }

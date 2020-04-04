@@ -236,7 +236,7 @@ QString QIF::getStyle(const QString& input) const {
         return f.absoluteFilePath();
     }
 
-    QuasarAppUtils::Params::verboseLog(input +  " not exits",
+    QuasarAppUtils::Params::log(input +  " not exits",
                                        QuasarAppUtils::Error);
 
     return "";

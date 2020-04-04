@@ -26,7 +26,7 @@
     "pluginOut": "plug",
     "binOut": "bin",
     "recOut": "rec",
-    "verbose": "3",
+    "verbose": "1",
     "qif": false,
     "noCheckRPATH": false,
     "noCheckPATH": false,

@@ -15,6 +15,7 @@
 #include <QFileInfo>
 #include <QLibraryInfo>
 #include <configparser.h>
+#include <iostream>
 
 //QString DeployCore::qtDir = "";
 //QStringList DeployCore::extraPaths = QStringList();
@@ -99,11 +100,11 @@ DeployCore::QtModule DeployCore::getQtModule(const QString& path) {
 
 void DeployCore::addQtModule(DeployCore::QtModule &module, const QString &path) {
 
-    QuasarAppUtils::Params::verboseLog("current module " + QString::number(module),
+    QuasarAppUtils::Params::log("current module " + QString::number(module),
                                        QuasarAppUtils::Info);
 
     auto mod = getQtModule(path);
-    QuasarAppUtils::Params::verboseLog("add new module from path " + path  +
+    QuasarAppUtils::Params::log("add new module from path " + path  +
                                        " module value " + QString::number(mod),
                                        QuasarAppUtils::Info);
 
@@ -133,12 +134,6 @@ LibPriority DeployCore::getLibPriority(const QString &lib) {
     }
 
     return SystemLib;
-}
-
-void DeployCore::verboseLog(const QString &str) {
-    if (QuasarAppUtils::Params::isEndable("verbose")) {
-        qDebug() << str;
-    }
 }
 
 #define C(X) QuasarAppUtils::Params::isEndable(X)
@@ -236,9 +231,6 @@ void DeployCore::help() {
                 {"-releaseDate [package;val,val]", "Sets release date for package"},
                 {"-icon [package;val,val]", "Sets path to icon for package"},
                 {"-publisher [package;val,val]", "Sets publisher for package"},
-                {"-qifStyle [path/to/style.css]", "Sets the path to the CSS style file or sets the default style. Available styles: quasar "},
-                {"-qifBanner [path/to/banner.png]", "Sets path to the banner png file."},
-                {"-qifLogo [path/to/logo.png]", "Sets path to the logo png file."},
 
             }
         },
@@ -339,8 +331,8 @@ QString DeployCore::getQtVersion() {
 }
 
 void DeployCore::printVersion() {
-    qInfo() << "CQtDeployer: " + getAppVersion() + " " +  getAppVersionName();
-    qInfo() << "Qt: " +  getQtVersion();
+    std::cout << QString{"CQtDeployer: " + getAppVersion() + " " +  getAppVersionName()}.toStdString() << std::endl;
+    std::cout << QString{"Qt: " +  getQtVersion()}.toStdString() << std::endl;
 }
 
 bool DeployCore::isExecutable(const QFileInfo& file) {
@@ -392,19 +384,19 @@ MSVCVersion DeployCore::getMSVC(const QString &_qtBin) {
     QDir dir = QFileInfo(_qtBin).absoluteFilePath();
 
     if (!dir.cdUp()) {
-        QuasarAppUtils::Params::verboseLog("is not standart qt repo");
+        QuasarAppUtils::Params::log("is not standart qt repo");
         return static_cast<MSVCVersion>(res);
     }
 
     auto msvcPath = dir.absolutePath();
 
     if (!(dir.cdUp() && dir.cdUp())) {
-        QuasarAppUtils::Params::verboseLog("is not standart qt repo");
+        QuasarAppUtils::Params::log("is not standart qt repo");
         return static_cast<MSVCVersion>(res);
     }
 
     if (!msvcPath.contains("msvc")) {
-        QuasarAppUtils::Params::verboseLog("vcredis not defined");
+        QuasarAppUtils::Params::log("vcredis not defined");
         return static_cast<MSVCVersion>(res);
     }
 
@@ -441,7 +433,7 @@ QString DeployCore::getVCredist(const QString &_qtbinDir) {
     QDir dir = _qtbinDir;
 
     if (!(dir.cdUp() && dir.cdUp() && dir.cdUp() && dir.cd("vcredist"))) {
-        QuasarAppUtils::Params::verboseLog("redist not findet!");
+        QuasarAppUtils::Params::log("redist not findet!");
         return "";
     }
 
