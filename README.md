@@ -13,6 +13,12 @@ Key differences of this program:
 * Performance: this program deploys the application several times faster (up to 10 seconds)
 * Flexibility: this application's got flags that help you to configure the deployment for your or your project's needs
 * Crossdeploy: this application's support windows and linux distrebutives, This means that you can use it not only to deploy a project for your platform, but also to deploy a project on Linux for Windows and vice versa. 
+* Fast create installers : Upon completion of the deployment, you will receive a self-contained installer of your distribution.
+
+## screenshots
+![defaultStyle](https://user-images.githubusercontent.com/12465465/78639719-197a1180-78b7-11ea-9e82-a03dd43f4bd2.png)
+![quasaraStyle](https://user-images.githubusercontent.com/12465465/78639720-1aab3e80-78b7-11ea-9604-3dcdd7c78482.png)
+![customStyle](https://user-images.githubusercontent.com/12465465/78639716-17b04e00-78b7-11ea-9002-a8b45a43807f.png)
 
 ## Supported platforms:
 * <img src="https://user-images.githubusercontent.com/12465465/67766480-929b5000-fa5f-11e9-8ae7-377d9ddb7c65.png"  height="100">
@@ -94,6 +100,13 @@ If you want to support the project,you can donate into our bitcoin wallet.
 * Производительность - эта программа развертывает приложение в несколько раз быстрее (до 10 секунд)
 * Гибкость - это приложение имеет флаги, которые помогут вам настроить деплоинг под ваши нужды и нужды вашего проекта
 * Crossdeploy: приложение поддерживает Windows и дистрибутивы Linux, это означает, что вы можете использовать его не только для развертывания проекта для вашей платформы, но и для развертывания проекта в Linux для Windows и наоборот.
+* Быстрое создание установщиков. По завершении развертывания вы получите автономный установщик вашего дистрибутива.
+
+## Скриншоты
+![defaultStyle](https://user-images.githubusercontent.com/12465465/78639719-197a1180-78b7-11ea-9e82-a03dd43f4bd2.png)
+![quasaraStyle](https://user-images.githubusercontent.com/12465465/78639720-1aab3e80-78b7-11ea-9604-3dcdd7c78482.png)
+![customStyle](https://user-images.githubusercontent.com/12465465/78639716-17b04e00-78b7-11ea-9002-a8b45a43807f.png)
+
 
 ## Поддерживаемые платформы:
 * <img src="https://user-images.githubusercontent.com/12465465/67766480-929b5000-fa5f-11e9-8ae7-377d9ddb7c65.png"  height="100">
