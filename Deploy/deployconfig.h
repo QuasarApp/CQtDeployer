@@ -64,6 +64,11 @@ public:
      * If target value well be empty then return main root of all targets.
      */
     QString getTargetDir(const QString& target = "") const;
+
+    /**
+     * @brief setTargetDir
+     * @param target
+     */
     void setTargetDir(const QString& target);
 
     /**

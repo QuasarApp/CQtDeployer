@@ -1,4 +1,6 @@
-function Component(){}
+function Component() {
+
+}
 
 const extractFileName = (path) => {
     const fullName = path.substring(path.lastIndexOf('/') + 1);

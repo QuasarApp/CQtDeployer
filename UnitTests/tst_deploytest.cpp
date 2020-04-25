@@ -622,6 +622,8 @@ void deploytest::testQIF() {
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
                    "qif", "verbose"}, &comapareTree, {}, true);
 
+    // test clear for qif
+    runTestParams({"clear", "verbose"}, {} , {}, true);
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,

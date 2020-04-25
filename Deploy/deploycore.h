@@ -32,14 +32,14 @@ struct DEPLOYSHARED_EXPORT QtModuleEntry {
 
 
 enum Platform {
-    UnknownPlatform = 0x0,
-    Win32           = 0x1,
-    Win64           = 0x2,
+    UnknownPlatform = 0x00,
+    Win32           = 0x01,
+    Win64           = 0x02,
     Win             = Win32 | Win64,
-    Unix32          = 0x4,
-    Unix64          = 0x8,
+    Unix32          = 0x04,
+    Unix64          = 0x08,
     Unix            = Unix32 | Unix64,
-    GeneralFile     = 0xf
+    GeneralFile     = 0x10
 };
 
 enum LibPriority : int {
@@ -47,7 +47,6 @@ enum LibPriority : int {
     ExtraLib,
     SystemLib,
     AlienLib,
-//    ExtraFile,
     NotFile = 0xF,
 };
 

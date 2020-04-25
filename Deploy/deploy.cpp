@@ -21,16 +21,22 @@ Deploy::Deploy() {
 }
 
 int Deploy::run() {
+
     if (!prepare()) {
         return PrepareError;
     }
+
+    _fileManager->loadDeployemendFiles(_paramsParser->config()->getTargetDir());
 
     if (!deploy()) {
         return DeployError;
     }
 
-    if (!packing())
+    if (!packing()) {
+        _fileManager->saveDeploymendFiles(_paramsParser->config()->getTargetDir());
         return PackingError;
+    }
+    _fileManager->saveDeploymendFiles(_paramsParser->config()->getTargetDir());
 
     return Good;
 }
@@ -74,7 +80,6 @@ bool Deploy::prepare() {
 
 bool Deploy::deploy() {
 
-    _fileManager->loadDeployemendFiles(_paramsParser->config()->getTargetDir());
 
     switch (DeployCore::getMode() ) {
     case RunMode::Deploy:
@@ -86,7 +91,6 @@ bool Deploy::deploy() {
     default:
         break;
     }
-    _fileManager->saveDeploymendFiles(_paramsParser->config()->getTargetDir());
 
     return true;
 }
