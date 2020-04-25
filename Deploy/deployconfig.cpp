@@ -25,7 +25,14 @@ QString DeployConfig::getTargetDir(const QString &target) const {
 
 void DeployConfig::setTargetDir(const QString &target) {
     targetDir = target;
-    ignoreList.addRule(targetDir);
+
+    if (targetDir.right(1) != "/" ) {
+        ignoreList.addRule(targetDir + "/");
+    }
+    else {
+        ignoreList.addRule(targetDir);
+    }
+
 }
 
 DistroModule DeployConfig::getDistro(const QString &target) const {
