@@ -756,7 +756,6 @@ void ConfigParser::initIgnoreList()
     }
 
     IgnoreData ruleUnix, ruleWin;
-
     Envirement envUnix, envWin;
 
     if (!QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {

@@ -52,7 +52,6 @@ void FileManager::loadDeployemendFiles(const QString &targetDir) {
 
     QStringList deployedFiles = settings->getValue(targetDir, "").toStringList();
 
-//    _deployedFiles.clear();
     _deployedFiles.unite(QSet<QString>(deployedFiles.begin(), deployedFiles.end()));
 }
 
@@ -85,6 +84,11 @@ bool FileManager::addToDeployed(const QString& path) {
     }
 
     return true;
+}
+
+void FileManager::removeFromDeployed(const QString &path) {
+
+    _deployedFiles -= path;
 }
 
 void FileManager::saveDeploymendFiles(const QString& targetDir) {
@@ -183,6 +187,7 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
     QuasarAppUtils::Params::log(((isMove)? "move :": "copy :") + file,
                                        QuasarAppUtils::Info);
     QFile sourceFile(file);
+    auto sourceFileAbsalutePath = QFileInfo(file).absoluteFilePath();
 
     if (!((isMove)?
           sourceFile.rename(tergetFile):
@@ -227,6 +232,10 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
 
             return false;
         }
+    }
+
+    if (isMove) {
+        removeFromDeployed(sourceFileAbsalutePath);
     }
 
     addToDeployed(tergetFile);
