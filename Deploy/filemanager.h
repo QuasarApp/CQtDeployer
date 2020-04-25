@@ -62,6 +62,7 @@ public:
 
     bool strip(const QString &dir) const;
     bool addToDeployed(const QString& path);
+    void removeFromDeployed(const QString& path);
 
     void saveDeploymendFiles(const QString &targetDir);
     void loadDeployemendFiles(const QString &targetDir);

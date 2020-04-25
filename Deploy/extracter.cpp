@@ -89,7 +89,7 @@ bool Extracter::copyPlugin(const QString &plugin, const QString& package) {
             QFileInfo(plugin).fileName();
 
     if (!_fileManager->copyFolder(plugin, pluginPath,
-                    QStringList() << ".so.debug" << "d.dll", &listItems)) {
+                    QStringList() << ".so.debug" << "d.dll" << ".pdb", &listItems)) {
         return false;
     }
 
