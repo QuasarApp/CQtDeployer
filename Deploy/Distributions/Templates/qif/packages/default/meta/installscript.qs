@@ -1,6 +1,6 @@
 function Component(){}
 
-const extractFileName = (path) => {
+function extractFileName(path) {
     const fullName = path.substring(path.lastIndexOf('/') + 1);
 
     const index = fullName.lastIndexOf('.');
@@ -11,7 +11,7 @@ const extractFileName = (path) => {
     return fullName;
 }
 
-const generateShortCutCmd = (cmd) => {
+function generateShortCutCmd(cmd) {
     if (systemInfo.kernelType === "winnt") {
 
         console.log("create icons!!! on Windows");
@@ -39,7 +39,7 @@ const generateShortCutCmd = (cmd) => {
     }
 }
 
-Component.prototype.createOperations = () => {
+Component.prototype.createOperations = function() {
     // call default implementation to actually install README.txt!
     component.createOperations();
 
