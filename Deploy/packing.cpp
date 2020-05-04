@@ -38,6 +38,13 @@ bool Packing::create() {
 
     const DeployConfig *cfg = DeployCore::_config;
 
+    QFileInfo cmdInfo(_pakage->runCmd());
+
+    auto allExecRight =  QFile::ExeUser | QFile::ExeGroup | QFile::ExeOwner;
+    if (!cmdInfo.permission(allExecRight)) {
+        QFile::setPermissions(cmdInfo.absoluteFilePath(), cmdInfo.permissions() | allExecRight);
+    }
+
     _proc->setProgram(_pakage->runCmd());
     _proc->setProcessEnvironment(_proc->processEnvironment());
     _proc->setArguments(_pakage->runArg());
