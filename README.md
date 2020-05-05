@@ -15,7 +15,26 @@ Key differences of this program:
 * Crossdeploy: this application's support windows and linux distrebutives, This means that you can use it not only to deploy a project for your platform, but also to deploy a project on Linux for Windows and vice versa. 
 * Fast create installers : Upon completion of the deployment, you will receive a self-contained installer of your distribution.
 
-## Examples
+## Supported platforms:
+* <img src="https://user-images.githubusercontent.com/12465465/67766480-929b5000-fa5f-11e9-8ae7-377d9ddb7c65.png"  height="100">
+* <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg"  height="100">
+
+## Support processors architectures:
+* x86
+* x86-64
+* ARM
+* ARM64
+
+## How to use
+
+#### Example: cqtdeployer <-bin    [params]> [options]
+
+See list of all options [here](https://github.com/QuasarApp/CQtDeployer/wiki/Options)
+
+
+#### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.12.4/gcc_64/bin/qmake clear
+
+## More examples
 #### Project structure after deploy:
 ``` bash
  #linux
@@ -51,34 +70,13 @@ Key differences of this program:
 
 ``` bash
  #linux
- cqtdeployer -bin Application qif -qifStyle quasar
+ cqtdeployer -bin Application qif -qifStyle path/to/myStyle.css
  
  #windows
  cqtdeployer -bin Application.exe -qmake /path/to/qmake.exe qif -qifStyle path/to/myStyle.css
 
 ```
 <img src="https://user-images.githubusercontent.com/12465465/78639716-17b04e00-78b7-11ea-9002-a8b45a43807f.png"  height="400">
-
-
-## Supported platforms:
-* <img src="https://user-images.githubusercontent.com/12465465/67766480-929b5000-fa5f-11e9-8ae7-377d9ddb7c65.png"  height="100">
-* <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg"  height="100">
-
-## Support processors architectures:
-* x86
-* x86-64
-* ARM
-* ARM64
-
-### How to use
-
-#### Example: cqtdeployer <-bin    [params]> [options]
-
-See list of all options [here](https://github.com/QuasarApp/CQtDeployer/wiki/Options)
-
-
-#### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.12.4/gcc_64/bin/qmake clear
-
 
 ## Build for Linux
 - install qt and qt QtInstallFrameWork from [qt installer](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f9bb77-7bb77-4bb77-4)
@@ -142,7 +140,25 @@ If you want to support the project,you can donate into our bitcoin wallet.
 * Crossdeploy: приложение поддерживает Windows и дистрибутивы Linux, это означает, что вы можете использовать его не только для развертывания проекта для вашей платформы, но и для развертывания проекта в Linux для Windows и наоборот.
 * Быстрое создание установщиков. По завершении развертывания вы получите автономный установщик вашего дистрибутива.
 
-## Примеры
+
+## Поддерживаемые платформы:
+* <img src="https://user-images.githubusercontent.com/12465465/67766480-929b5000-fa5f-11e9-8ae7-377d9ddb7c65.png"  height="100">
+* <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg"  height="100">
+
+## Поддержка архитектур процессоров:
+* x86
+* x86-64
+* ARM
+* ARM64
+
+## Как использовать
+#### пример : cqtdeployer <-bin    [params]> [options]
+Смотрите список всех опций [здесь](https://github.com/QuasarApp/CQtDeployer/wiki/%D0%9F%D0%B0%D1%80%D0%B0%D0%BC%D0%B5%D1%82%D1%80%D1%8B
+)
+
+#### пример: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.12.4/gcc_64/bin/qmake clear
+
+## Еще примеры
 #### Стуктура проекта после развертывания:
 ``` bash
  #linux
@@ -178,7 +194,7 @@ If you want to support the project,you can donate into our bitcoin wallet.
 
 ``` bash
  #linux
- cqtdeployer -bin Application qif -qifStyle quasar
+ cqtdeployer -bin Application qif -qifStyle path/to/myStyle.css
  
  #windows
  cqtdeployer -bin Application.exe -qmake /path/to/qmake.exe qif -qifStyle path/to/myStyle.css
@@ -186,22 +202,6 @@ If you want to support the project,you can donate into our bitcoin wallet.
 ```
 <img src="https://user-images.githubusercontent.com/12465465/78639716-17b04e00-78b7-11ea-9002-a8b45a43807f.png"  height="400">
 
-
-
-## Поддерживаемые платформы:
-* <img src="https://user-images.githubusercontent.com/12465465/67766480-929b5000-fa5f-11e9-8ae7-377d9ddb7c65.png"  height="100">
-* <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg"  height="100">
-
-## Поддержка архитектур процессоров:
-* x86
-* x86-64
-* ARM
-* ARM64
-
-### Как использовать
-#### пример : cqtdeployer <-bin    [params]> [options]
-Смотрите список всех опций [здесь](https://github.com/QuasarApp/CQtDeployer/wiki/%D0%9F%D0%B0%D1%80%D0%B0%D0%BC%D0%B5%D1%82%D1%80%D1%8B
-)
 
 ## Build для Linux
 - установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
