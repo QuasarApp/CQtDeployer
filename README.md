@@ -51,7 +51,7 @@ Key differences of this program:
 
 ``` bash
  #linux
- cqtdeployer -bin Application qif -qifStyle quasar
+ cqtdeployer -bin Application qif -qifStyle path/to/myStyle.css
  
  #windows
  cqtdeployer -bin Application.exe -qmake /path/to/qmake.exe qif -qifStyle path/to/myStyle.css
@@ -178,7 +178,7 @@ If you want to support the project,you can donate into our bitcoin wallet.
 
 ``` bash
  #linux
- cqtdeployer -bin Application qif -qifStyle quasar
+ cqtdeployer -bin Application qif -qifStyle path/to/myStyle.css
  
  #windows
  cqtdeployer -bin Application.exe -qmake /path/to/qmake.exe qif -qifStyle path/to/myStyle.css
