@@ -181,6 +181,7 @@ void DeployCore::help() {
                 {"noOverwrite", "Prevents replacing existing files."},
                 {"noCheckRPATH", "Disables automatic search of paths to qmake in executable files."},
                 {"noCheckPATH", "Disables automatic search of paths to qmake in system PATH."},
+                {"noRecursiveiIgnoreEnv", "Disables recursive ignore for ignoreEnv option."},
                 {"v / version", "Shows compiled version"},
                 {"extractPlugins", "This flag will cause cqtdeployer to retrieve dependencies from plugins. Starting with version 1.4,"
                  " this option has been disabled by default, as it can add low-level graphics libraries to the distribution,"
@@ -210,7 +211,7 @@ void DeployCore::help() {
                  " This option is case sensitive."},
                 {"-customScript [scriptCode]", "Insert extra code inTo All run script."},
                 {"-extraPlugin [list,params]", "Sets an additional path to extraPlugin of an app"},
-                {"-recursiveDepth [params]", "Sets the Depth of recursive search of libs (default 0)"},
+                {"-recursiveDepth [params]", "Sets the Depth of recursive search of libs and depth for ignoreEnv option (default 0)"},
                 {"-targetDir [params]", "Sets target directory(by default it is the path to the first deployable file)"},
                 {"-verbose [0-3]", "Shows debug log"},
 
