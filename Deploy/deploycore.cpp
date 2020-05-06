@@ -276,6 +276,7 @@ QStringList DeployCore::helpKeys() {
         "noStrip",
         "extractPlugins",
         "noTranslations",
+        "noRecursiveiIgnoreEnv"
         "qmlOut",
         "libOut",
         "trOut",
