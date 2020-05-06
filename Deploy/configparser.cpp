@@ -510,14 +510,6 @@ bool ConfigParser::parseDeployMode() {
         }
     }
 
-    initIgnoreEnvList();
-    initEnvirement();
-    initIgnoreList();
-    if (!initDistroStruct()) {
-        return false;
-    }
-
-
     _config.depchLimit = 0;
 
     if (QuasarAppUtils::Params::isEndable("recursiveDepth")) {
@@ -528,6 +520,14 @@ bool ConfigParser::parseDeployMode() {
             QuasarAppUtils::Params::log("recursiveDepth is invalid! use default value 0",
                                                QuasarAppUtils::Warning);
         }
+    }
+
+
+    initIgnoreEnvList();
+    initEnvirement();
+    initIgnoreList();
+    if (!initDistroStruct()) {
+        return false;
     }
 
     auto listLibDir = QuasarAppUtils::Params::getStrArg("libDir").
@@ -850,8 +850,12 @@ void ConfigParser::initIgnoreEnvList() {
     ignoreEnvList.push_back(_config.appDir);
     ignoreEnvList.push_back(_config.getTargetDir());
 
+    if (QuasarAppUtils::Params::isEndable("noRecursiveiIgnoreEnv")) {
+        _config.envirement.setIgnoreEnvList(ignoreEnvList);
+    } else {
+        _config.envirement.setIgnoreEnvListRecursive(ignoreEnvList, _config.depchLimit);
+    }
 
-    _config.envirement.setIgnoreEnvList(ignoreEnvList);
 
 }
 
