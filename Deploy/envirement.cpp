@@ -37,6 +37,15 @@ void Envirement::setIgnoreEnvList(const QStringList &ignoreEnvList) {
     _ignoreEnvList->addEnv(ignoreEnvList);
 }
 
+void Envirement::setIgnoreEnvListRecursive(const QStringList &ignoreEnvList, int depch) {
+    if (!_ignoreEnvList)
+        _ignoreEnvList = new Envirement();
+
+    for (const auto &i: ignoreEnvList) {
+        _ignoreEnvList->addEnvRec(i, depch);
+    }
+}
+
 void Envirement::addEnvRec(const QString &dir, int depch) {
     addEnv(Envirement::recursiveInvairement(dir, depch));
 }
