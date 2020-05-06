@@ -155,7 +155,7 @@ function systemIntegration() {
                                            homeDir + "/.local/bin/cqtdeployer.cqt"],
                                "UNDOEXECUTE", ["rm", "-f", homeDir + "/.local/bin/cqtdeployer.cqt"] )
 
-        generateShortCutCmd("cqtdeployer");
+        generateShortCutCmd(VERSION + "/cqtdeployer");
 
     }
 
