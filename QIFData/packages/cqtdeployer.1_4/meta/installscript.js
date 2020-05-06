@@ -42,6 +42,45 @@ function stripUnixPath(path) {
     return stripPath(path, ':');
 }
 
+function extractFileName(path) {
+    const fullName = path.substring(path.lastIndexOf('/') + 1);
+
+    const index = fullName.lastIndexOf('.');
+    if (index >= 0) {
+        return fullName.substring(0, index)
+    }
+
+    return fullName;
+}
+
+function generateShortCutCmd(cmd, icon) {
+    if (systemInfo.kernelType === "winnt") {
+
+        console.log("create icons!!! on Windows");
+        component.addOperation("CreateShortcut",
+                               "@TargetDir@/" + cmd,
+                               "@DesktopDir@/" + extractFileName(cmd) + ".lnk");
+
+    }
+
+
+    if (systemInfo.kernelType === "linux") {
+        console.log("create icons!!! on LINUX");
+        const name = extractFileName(cmd);
+        component.addOperation("CreateDesktopEntry",
+                               "@HomeDir@/.local/share/applications/" + name + ".desktop",
+                               "Version=@Version@\n
+                                Type=Application\n
+                                Terminal=true\n
+                                Exec=@TargetDir@/" + cmd + ".sh\n
+                                Name=" + name + "\n
+                                Icon=@TargetDir@/" + icon + "\n
+                                Name[en_US]=" + name);
+
+        console.log("create icons!!! on LINUX done");
+    }
+}
+
 function systemIntegration() {
     targetDir = installer.value("TargetDir", "");
     homeDir = installer.value("HomeDir", "");
@@ -115,6 +154,8 @@ function systemIntegration() {
         component.addOperation('Execute', ["ln", "-sf", targetDir + "/" + VERSION + "/cqt.sh",
                                            homeDir + "/.local/bin/cqtdeployer.cqt"],
                                "UNDOEXECUTE", ["rm", "-f", homeDir + "/.local/bin/cqtdeployer.cqt"] )
+
+        generateShortCutCmd(VERSION + "/cqtdeployer", VERSION + "/icon.png");
 
     }
 

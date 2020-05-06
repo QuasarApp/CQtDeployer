@@ -38,6 +38,7 @@ CONFIG += ordered
 
     DISTFILES += \
         snap/snapcraft.yaml \
+        snap/gui/cqtdeployer.desktop \
         README.md \
 
 

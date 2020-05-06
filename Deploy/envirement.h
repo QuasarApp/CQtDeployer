@@ -27,6 +27,7 @@ public:
     QStringList environmentList() const;
     QStringList ignoreEnvList() const;
     void setIgnoreEnvList(const QStringList &ignoreEnvList);
+    void setIgnoreEnvListRecursive(const QStringList &ignoreEnvList, int depch = -1);
 
     void addEnvRec(const QString &dir, int depch);
 
