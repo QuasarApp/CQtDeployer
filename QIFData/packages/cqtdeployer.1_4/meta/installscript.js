@@ -53,7 +53,7 @@ function extractFileName(path) {
     return fullName;
 }
 
-function generateShortCutCmd(cmd) {
+function generateShortCutCmd(cmd, icon) {
     if (systemInfo.kernelType === "winnt") {
 
         console.log("create icons!!! on Windows");
@@ -74,7 +74,7 @@ function generateShortCutCmd(cmd) {
                                 Terminal=true\n
                                 Exec=@TargetDir@/" + cmd + ".sh\n
                                 Name=" + name + "\n
-                                Icon=@TargetDir@/$LOCAL_ICON\n
+                                Icon=@TargetDir@/" + icon + "\n
                                 Name[en_US]=" + name);
 
         console.log("create icons!!! on LINUX done");
@@ -155,7 +155,7 @@ function systemIntegration() {
                                            homeDir + "/.local/bin/cqtdeployer.cqt"],
                                "UNDOEXECUTE", ["rm", "-f", homeDir + "/.local/bin/cqtdeployer.cqt"] )
 
-        generateShortCutCmd(VERSION + "/cqtdeployer");
+        generateShortCutCmd(VERSION + "/cqtdeployer", VERSION + "/icon.png");
 
     }
 
