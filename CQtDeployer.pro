@@ -7,6 +7,12 @@
 
 TEMPLATE = subdirs
 CONFIG += ordered
+
+lessThan(QT_MAJOR_VERSION, 6):lessThan(QT_MINOR_VERSION, 14) {
+    message(Tests is disabled!)
+    DEFINES += WITHOUT_TESTS
+}
+
 !android {
     SUBDIRS += QuasarAppLib \
                Pe \

@@ -52,7 +52,11 @@ void FileManager::loadDeployemendFiles(const QString &targetDir) {
 
     QStringList deployedFiles = settings->getValue(targetDir, "").toStringList();
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+    _deployedFiles.unite(deployedFiles.toSet());
+#else
     _deployedFiles.unite(QSet<QString>(deployedFiles.begin(), deployedFiles.end()));
+#endif
 }
 
 
