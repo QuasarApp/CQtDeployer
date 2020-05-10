@@ -89,6 +89,7 @@ See list of all options [here](https://github.com/QuasarApp/CQtDeployer/wiki/Opt
 - make -j$(nproc)
 - make deploy
      - #this command requires installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
+     - ##### If you are building cqtdeployer using qt from your OS repository, use only the cqtdeployer installed from the github installer. The fact is that the snap package does not have access to system libraryes.
 - ./Distro/CQtDeployerInstaller.run
 
 ## Build for Windows (CMD)
@@ -111,6 +112,14 @@ You can download the latest version of the application [here](https://github.com
 
 ### Snap 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/cqtdeployer)
+
+#### Features of the snap version
+The snap package does not have access to system libraries. This means deploySystem options will not work. This also means that if you manually specify libDir or extraLib, then libraries that are not in home will not be found.
+If these restrictions bother you, use the [Installer](https://github.com/QuasarApp/CQtDeployer/releases) classic version of the application.
+
+If you are using the snap version of the application. Enable all permissions for cqtdeployer.
+this can be done in the snap-store
+Or starting with ubuntu 20.04 in the ubuntu application settings manager.
 
 ## Projects using CQtDeployer:
 
@@ -214,6 +223,7 @@ If you want to support the project,you can donate into our bitcoin wallet.
 - make -j$(nproc)
 - make deploy
      - эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
+     - ##### Если вы собираете cqtdeployer, используя qt из своего репозитория ОС, используйте только cqtdeployer, установленный из установщика github. Дело в том, что пакет моментальных снимков не имеет доступа к системным библиотекам.
 - ./Distro/CQtDeployerInstaller.run
 
 ## Build для Windows (CMD)
@@ -234,6 +244,13 @@ If you want to support the project,you can donate into our bitcoin wallet.
 ### Snap
 [![Загрузите из Snap Store](https://snapcraft.io/static/images/badges/ru/snap-store-black.svg)](https://snapcraft.io/cqtdeployer)
 
+#### Особенности snap версии
+В snap пакет не имеет доступ к системным библиотекам. Это значит что опции deploySystem не будут работать. Так же это значит что нсли вы в ручную укажите libDir или extraLib, то библиотеки находящиеся не в home не будут найдены.
+Если вам мешают эти ограничения используйте [Установщик](https://github.com/QuasarApp/CQtDeployer/releases) класической версии приложения. 
+
+Если вы используете snap версию приложения. Включите все разрешения для cqtdeployer.
+это можно сделать в snap-store 
+Или начиная с ubuntu 20.04 в менеджере натроек приложений ubuntu. 
 
 ## Установить
 Вы можете загрузить последнюю версию приложения [здесь](https://github.com/QuasarApp/CQtDeployer/releases).
