@@ -1773,6 +1773,7 @@ void deploytest::testLibDir() {
 //task #258
 //https://github.com/QuasarApp/CQtDeployer/issues/258
 
+    extraPath = "./" + DISTRO_DIR + "2/lib";
 
 #ifdef Q_OS_UNIX
     comapareTreeExtraLib = utils.createTree(
@@ -1784,7 +1785,6 @@ void deploytest::testLibDir() {
         "./" + DISTRO_DIR + "/lib/libgcc_s.so"
     });
 
-    extraPath = "./" + DISTRO_DIR + "2/lib";
 
 #else
 
@@ -1796,7 +1796,6 @@ void deploytest::testLibDir() {
         "./" + DISTRO_DIR + "/libstdc++-6.dll",
 
     });
-    extraPath = "./" + DISTRO_DIR + "2/bin";
 
 #endif
     runTestParams({"-bin", bin, "clear" ,
