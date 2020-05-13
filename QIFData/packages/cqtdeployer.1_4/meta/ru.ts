@@ -14,19 +14,12 @@
         <translation type="obsolete">Этот пакет содержит CQtDeployer</translation>
     </message>
     <message>
-        <location filename="installscript.js" line="125"/>
         <source>install in system</source>
         <translation>Установка в систему</translation>
     </message>
     <message>
-        <location filename="installscript.js" line="125"/>
         <source>Installer</source>
         <translation>Установщик</translation>
-    </message>
-    <message>
-        <location filename="installscript.js" line="126"/>
-        <source>The &quot;~/local/bin&quot; folder was not initialized, you may need to reboot to work correctly!</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>To uninstall cqtdeployer on your system, you need administrator rights!. </source>
@@ -51,6 +44,10 @@
     <message>
         <source>CQtDeployer successfully installed on your computer to use the call &quot;cqtdeployer&quot;.</source>
         <translation type="vanished">CQtDeployer успешно установлен на вашем компьютере, чтобы использоваться введите в консоле &quot;cqtdeployer&quot;.</translation>
+    </message>
+    <message>
+        <source>The &quot;~/local/bin&quot; folder was not initialized, you may need to reboot to work correctly!</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
