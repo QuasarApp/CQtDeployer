@@ -73,7 +73,7 @@ bool QML::extractImportsFromDir(const QString &path, bool recursive) {
     return true;
 }
 
-QString QML::getPathFromImport(const QString &import) {
+QString QML::getPathFromImport(const QString &import, bool checkVersions) {
     auto importData = import.split("#");
 
     int index;
@@ -87,21 +87,26 @@ QString QML::getPathFromImport(const QString &import) {
     }
 
     auto words = importData.value(index).split(QRegExp("[/\\\\]"));
-
-    bool isSecond = importData.first() == "2";
+    const bool isSecond = importData.first() == "2" && checkVersions;
+    bool secondVersion = isSecond;
 
     QString path;
     for (auto i = words.rbegin(); i != words.rend(); ++i) {
         QString word = *i;
-        if (isSecond && secondVersions.contains(word)) {
-            isSecond = false;
+        if (secondVersion && secondVersions.contains(word)) {
+            secondVersion = false;
             word.push_back(".2");
         }
 
         path.push_front(word + "/");
     }
+    auto info = QFileInfo(_qmlRoot + "/" + path);
 
-    return QFileInfo(_qmlRoot + "/" + path).absoluteFilePath();
+    if (isSecond && !info.exists()) {
+        return getPathFromImport(import, false);
+    }
+
+    return info.absoluteFilePath();
 }
 
 bool QML::deployPath(const QString &path, QStringList &res) {
