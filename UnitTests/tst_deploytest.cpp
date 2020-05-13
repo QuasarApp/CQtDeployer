@@ -1784,6 +1784,8 @@ void deploytest::testLibDir() {
         "./" + DISTRO_DIR + "/lib/libgcc_s.so"
     });
 
+    extraPath = "./" + DISTRO_DIR + "2/lib";
+
 #else
 
     comapareTreeExtraLib = utils.createTree(
@@ -1794,14 +1796,14 @@ void deploytest::testLibDir() {
         "./" + DISTRO_DIR + "/libstdc++-6.dll",
 
     });
+    extraPath = "./" + DISTRO_DIR + "2/bin";
 
 #endif
     runTestParams({"-bin", bin, "clear" ,
-                   "-libDir", "./" + DISTRO_DIR + "2/",
-                   "-recursiveDepth", "2",
+                   "-libDir", extraPath,
                    "noCheckRPATH, noCheckPATH"}, &comapareTreeExtraLib, {}, true);
 
-    QDir("./" + DISTRO_DIR + "2/").removeRecursively();
+    QDir(extraPath).removeRecursively();
 
 }
 
