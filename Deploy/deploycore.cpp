@@ -207,7 +207,7 @@ void DeployCore::help() {
                 {"-ignoreEnv [list,params]", "The list of the environment to ignore. For example -ignoreEnv /bad/dir,/my/bad/Dir"},
                 {"-libDir [list,params]", "Sets additional paths for extra libs of an app. For example -libDir ~/myLib,~/newLibs"},
                 {"-extraLibs [list,params]", "Sets the mask of the library name for forced copying."
-                 " Example: '-extraLib mySql' - forces to copy all libraries whose names contain mySql to the project folder."
+                 " Example: '-extraLibs mySql' - forces to copy all libraries whose names contain mySql to the project folder."
                  " This option is case sensitive."},
                 {"-customScript [scriptCode]", "Insert extra code inTo All run script."},
                 {"-extraPlugin [list,params]", "Sets an additional path to extraPlugin of an app"},
