@@ -1,5 +1,6 @@
-# CQtDeployer [![CQtDeployer](https://snapcraft.io/cqtdeployer/badge.svg)](https://snapcraft.io/cqtdeployer)
-# ![Logo](https://i.ibb.co/phDBvfr/qt.png)
+# CQtDeployer [![cqtdeployer](https://snapcraft.io//cqtdeployer/badge.svg)](https://snapcraft.io/cqtdeployer)
+[![cqtdeployer](https://snapcraft.io//cqtdeployer/trending.svg?name=0)](https://snapcraft.io/cqtdeployer)
+# ![Logo](res/CQtDeployer_banner_web.png)
 
 ****************************
 
@@ -27,7 +28,7 @@ Key differences of this program:
 
 #### Example: cqtdeployer <-bin    [params]> [options]
 
-See list of all options [here](./doc/Options.md)
+See list of all options [here](https://github.com/QuasarApp/CQtDeployer/wiki/Options)
 
 
 #### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.12.4/gcc_64/bin/qmake clear
@@ -56,7 +57,7 @@ See list of all options [here](./doc/Options.md)
 - qmake.exe -r
      - Here you must definitely call the qmake that was loaded from the 1st item.
      - Example: C:/Qt/5.14.0/mingw73_64/bin/qmake.exe -r
-- migw32-make.exe -j$(nproc)
+- migw32-make.exe -j8
 - migw32-make.exe deploy
      - #this command requires installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
 - ./Distro/CQtDeployerInstaller.exe
@@ -72,6 +73,8 @@ You can download the latest version of the application [here](https://github.com
 - [QAmigo](https://github.com/QAmigo/QAmigo)
 - [QtSecret](https://github.com/QuasarApp/Qt-Secret)
 - [Hanoi-Towers](https://github.com/QuasarApp/Hanoi-Towers)
+- [distbuilder](https://github.com/BuvinJT/distbuilder)
+- [Manager_v2](https://github.com/dimkatsi91/Manager_v2)
 
 ## Donate
 If you want to support the project,you can donate into our bitcoin wallet.
@@ -85,7 +88,7 @@ If you want to support the project,you can donate into our bitcoin wallet.
 ***************************
 ***************************
 
-Qt CQtDeployer - это приложением для извлечения всех зависимых библиотек исполняемого файла и создает сценарий запуска для вашего приложения.
+**CQtDeployer** - это приложение преднознаена для извлечения всех зависимых библиотек исполняемого файла и создания сценария запуска для вашего приложения.
 
 Основные отличия этой программы:
 * Производительность - эта программа развертывает приложение в несколько раз быстрее (до 10 секунд)
@@ -104,9 +107,8 @@ Qt CQtDeployer - это приложением для извлечения вс�
 
 ### Как использовать
 #### пример : cqtdeployer <-bin    [params]> [options]
-
-Смотрите список всех опций [здесь](./doc/Options.md)
-
+Смотрите список всех опций [здесь](https://github.com/QuasarApp/CQtDeployer/wiki/%D0%9F%D0%B0%D1%80%D0%B0%D0%BC%D0%B5%D1%82%D1%80%D1%8B
+)
 
 ## Build для Linux
 - установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
@@ -131,8 +133,8 @@ Qt CQtDeployer - это приложением для извлечения вс�
 - qmake.exe -r
     - Здесь нужно обязательно вызвать тот qmake, который был загружен из 1го пункта.
     - Пример: C:/Qt/5.14.0/mingw73_64/bin/qmake.exe -r
-- migw32-make.exe -j$(nproc)
-- migw32-make.exe deploy
+- migw32-make -j8
+- migw32-make deploy
     - эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
 - ./Distro/CQtDeployerInstaller.exe
 
@@ -148,6 +150,8 @@ Qt CQtDeployer - это приложением для извлечения вс�
 - [QAmigo](https://github.com/QAmigo/QAmigo)
 - [QtSecret](https://github.com/QuasarApp/Qt-Secret)
 - [Hanoi-Towers](https://github.com/QuasarApp/Hanoi-Towers)
+- [distbuilder](https://github.com/BuvinJT/distbuilder)
+- [Manager_v2](https://github.com/dimkatsi91/Manager_v2)
 
 ## Пожертвовать
 Если вы хотите помочь проекту, то вы можете пожертвовать небольшую сумму на наш биткойн-кошелек.
