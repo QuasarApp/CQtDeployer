@@ -188,6 +188,7 @@ void DeployCore::help() {
                  " which will not be compatible with equipment on users' hosts."},
                 {"allQmlDependes", "Extracts all the qml libraries. (not recommended, as it takes great amount of computer memory)"},
                 {"qif", "Create the QIF installer for deployement programm"},
+                {"qifFromSystem", "force use system binarycreator tool of qif from path or qt"},
                 {"deploySystem", "Deploys all libraries  (do not work in snap )"},
                 {"deploySystem-with-libc", "deploy all libs libs (only linux) (do not work in snap )"},
 
@@ -276,7 +277,8 @@ QStringList DeployCore::helpKeys() {
         "noStrip",
         "extractPlugins",
         "noTranslations",
-        "noRecursiveiIgnoreEnv"
+        "noRecursiveiIgnoreEnv",
+        "qifFromSystem",
         "qmlOut",
         "libOut",
         "trOut",
