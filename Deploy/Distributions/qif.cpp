@@ -14,23 +14,29 @@ QIF::QIF(FileManager *fileManager)
 
 Envirement QIF::toolKitEnv() const {
     Envirement result;
-    result.addEnv(QProcessEnvironment::systemEnvironment().value("PATH"));
 
-// BASE
-    const DeployConfig *cfg = DeployCore::_config;
-    auto basePATH = cfg->qtDir.getBins() + "/../../../Tools/QtInstallerFramework/";
-    QDir QifDir(basePATH);
-    auto list = QifDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    if (QuasarAppUtils::Params::isEndable("qifFromSystem")) {
+        result.addEnv(QProcessEnvironment::systemEnvironment().value("PATH"));
 
-    QMap<double, QString> sortedItems;
-    for (const auto& i : list) {
-        sortedItems.insert(i.toDouble(), i);
+    // BASE
+        const DeployConfig *cfg = DeployCore::_config;
+        auto basePATH = cfg->qtDir.getBins() + "/../../../Tools/QtInstallerFramework/";
+        QDir QifDir(basePATH);
+        auto list = QifDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+        QMap<double, QString> sortedItems;
+        for (const auto& i : list) {
+            sortedItems.insert(i.toDouble(), i);
+        }
+
+        if (sortedItems.size()) {
+            basePATH += ("/" + sortedItems.last() + "/bin");
+            result.addEnv(basePATH);
+        }
+
+        return result;
     }
 
-    if (sortedItems.size()) {
-        basePATH += ("/" + sortedItems.last() + "/bin");
-        result.addEnv(basePATH);
-    }
 
 
 // SNAP
