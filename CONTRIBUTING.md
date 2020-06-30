@@ -1,20 +1,24 @@
 # QuassarApp operation rules
 ## General rules
 ### QuasarApp internal developers
-* If there is no indication, separate from the master branch.
-* We realize the task
-* Upon completion of work, issue a Pull Request to the master.
+* if there is no instruction to complete the task, separate you new branch from the version branch (for example v1.x).
+* Realize the task
+* At the end of the work, create a pull request to the branch from which you created the branch.
+Example:
+I made corrections for version 1.5 and created branching from branch v1.5, which means that I should create a pull request to branch v1.5,
 
 ### External QuasarApp Developers
 * Making Fork repository.
-* If there is no indication, separate from the master branch.
-* We realize the task
-* Upon completion of work, issue a Pull Request to the master.
-* Before starting work on the Task, drag it to [inProgress](https://github.com/orgs/QuasarApp/projects) in projects
+* Switch to the branch of the version in which you need to perform the correction (example of the names of the branch with the version: v1.x).
+* Realize the task
+* Upon completion, create a Pull Request in the branch from which they are separated.
+   Example:
+   I made corrections for version 1.5 and created branching from branch v1.5, which means that I should create a pull request to branch v1.5,
+* ( not necessary ) Before starting work on the Task, drag it to [inProgress](https://github.com/orgs/QuasarApp/projects) in projects
 
 ### Prohibited from working in QuassarApp
 
-* Use push force. All problems need to be solved by a new committee.
+* Using 'push force'. All problems need to be solved by a new committee.
 * Push code directly to master.
 * Break the code design rules. If some aspect is not described, you need to write in the same style as it was written before you.
 * Move the code for no particular reason.
@@ -25,7 +29,7 @@
 The content of the pull request must include:
 * The number of the task that solves (if performed according to the task)
 * A complete description of everything that was done in the task.
-* In the case when a pull creation is created, the Task is still running, marking the Pull Request header with a WIP tag (example [WIP] MyTask)
+* In the case when a pull creation is created and you still work on the task, marking the Pull Request header with a WIP tag (example [WIP] MyTask)
 * Pull Request must always be assigned to the branch from which you separated.
 
 ## Making Tasks
@@ -35,7 +39,7 @@ You must:
 * Completely describe the problem or task.
 * If you have a solution to the problem fully describe what and how to do.
 
-## Code Registration
+## Code Guideline
 
 When writing code follows the following rules: (inscribed written in order of importance)
 1. If in order to achieve high performance gains (over 10%) you need to sacrifice any of the rules, donate them.
@@ -45,61 +49,65 @@ When writing code follows the following rules: (inscribed written in order of im
 5. In headings it is necessary to null the signs.
 6. Template functions are described in cpp files.
 7. If possible, think through your code so that it does not have a cast.
-8. Write class access specifiers in the following order: private, private slots, protected, protected slots, public, public slots, signals
+8. Write class access specifiers in the following order: public, public slots, siganls, protected, protected slots, private, private slots. 
 9. Carefully check and arrange spaces between operators in the code.
 10. Moving the bracket to the next line is prohibited.
 11. When transferring the shift should be equal to 4 spaces.
 12. Before pushing the code, be sure to run the tests.
 
-# Правила работы QuassarApp
-## Общие правила
-### Внутренние разработчики QuasarApp
-* Если нет никаких указаний отделяемся от ветки master
-* Реализуем поставленную задачу 
-* По завершению работы оформить  Pull Request в master.
+# QuassarApp правила работы
+## Основные правила
+### QuasarApp внутренние разработчики
+* Если нет инструкции для выполнения задачи, отделите новую ветку от ветви версии (например, v1.5).
+* Реализовать задачу
+* В конце работы создайте пул-запрос к ветке, из которой вы создали ветку.
+Пример:
+Я внес исправления для версии 1.5 и создал ветвление из ветви v1.5, что означает, что я должен создать запрос на извлечение в ветке v1.5,
 
 ### Внешние разработчики QuasarApp
-* Делаем Fork репозитория.
-* Если нет никаких указаний отделяемся от ветки master
-* Реализуем поставленную задачу 
-* По завершению работы оформить Pull Request в master.
-* Перед началом работы над Задачей, перетащить ее в [inProgress](https://github.com/orgs/QuasarApp/projects) в проектах
+* Создание Fork репозитория.
+* Переключитесь на ветку версии, в которой нужно выполнить исправление (пример названий ветки с версией: v1.x).
+* Реализовать задачу
+* По завершении создайте Запрос на извлечение в ветке, от которой они отделены.
+   Пример:
+   Я внес исправления для версии 1.5 и создал ветвление из ветви v1.5, что означает, что я должен создать запрос на извлечение в ветке v1.5,
+* (не обязательно) Перед началом работы над задачей перетащите ее на [inProgress] (https://github.com/orgs/QuasarApp/projects) в проектах
 
-### При работе в QuassarApp запрещается
+### Запрещено работать в QuassarApp
 
-* Использовать push force. Все проблемы нужно решать новым комитом.
-* Пушить код напрямую в master.
-* Нарушать правила оформления кода. Если какой то аспект не описан, писать нужно в том-же стиле как было написано до вас.
-* Перемещать код без особой на это причины. 
+* Использовать push force. Все проблемы должны быть решены новым комитетом.
+* Пушить код на прямую в мастер или другую ветку релиза.
+* Нарушать правила оформления кода. Если какой-то аспект не описан, вам нужно писать в том же стиле, в котором он был написан до вас.
+* Переместить код без особой причины.
 
 
-## Оформление  Pull Request
+## Выполнение запроса на слияние
 
-Содержимое Pull Request должно обязательно включать:
-* Номер задания которую решает (если выполнялось по поставленной задаче)
-* Полное описание всего что было сделано в задаче.
-* В случае когда создается пулреквест а Задача еще выполняется помечать заголовок Pull Request тегом WIP (пример [WIP] MyTask)
-* Pull Request всегда должен быть назначен именно в ту ветку от которой вы отделялись.
+Содержание pool request должно включать:
+* Номер задачи, которая решается (если выполняется согласно задаче)
+* Полное описание всего, что было сделано в задании.
+* В случае создания извлечения и задача все еще выполняется, помечая заголовок запроса на извлечение тегом WIP (пример [WIP] MyTask)
+* Запрос на извлечение всегда должен быть назначен ветви, от которой вы отделены.
 
-## Оформление Задачи
-В случае необходимости назначить на кого-то задачу
+## Выполнение задач
+При необходимости назначьте кому-нибудь задачу
 Вы должны:
-* Создать соответствующее обсуждение на github, выбранного репазитория.
-* Полностью описать проблему или задачу.
-* Если у вас есть решение задачи полностью описать что и как делать.
+* Создайте соответствующую дискуссию на GitHub, выбранном хранилище.
+* Полностью опишите проблему или задачу.
+* Если у вас есть решение проблемы, полностью опишите, что и как делать.
 
-## Оформление кода
+## Регистрация кода
 
-При написании кода придерживается следующих правил: (привила записаны в порядке важности)
-1. Если ради достижения высокого прироста производительности (более 10%) вам нужно пожертвовать каким либо из правил, жертвуйте ими.
-2. Не в коем случае не использовать C-style Cast.
-3. Все подключаемые заголовки по максимуму должны хранится в cpp файлах.
-4. Если в классе используются указатели то инициализировать прототипы этих классов в место подключения заголовка: сlass a; a *value = nullptr;
-5. В заголовках обязательно занулять указатели.
-6. Шаблонные функции описывать в cpp файлах.
-7. По возможности продумывать ваш код так что бы в нем не было cast.
-8. Спецификаторы доступа класса писать в следующем порядке private, private slots, protected, protected slots, public, public slots, signals
-9. Внимательно проверять и расставлять пробелы между операторами в коде.
-10. Перенос скобки на следующую строку запрещается. 
-11. При переносе сдвиг должен быть равен 4 пробела.
-12. Перед пушем кода обязательно прогнать тесты.
+При написании кода соблюдайте следующие правила: (надписи пишутся в порядке важности)
+1. Если для достижения высокой производительности (более 10%) вам необходимо пожертвовать каким-либо из правил, пожертвуйте их.
+2. Ни в коем случае не используйте C-стиль Cast.
+3. Все подключенные заголовки должны быть максимально сохранены в файлах cpp.
+4. Если в классе используются указатели, инициализируйте прототипы этих классов в том месте, где связан заголовок: class a; * значение = nullptr;
+5. В заголовках необходимо обнулить знаки.
+6. Функции шаблона описаны в файлах cpp.
+7. Если возможно, продумайте свой код так, чтобы в нем не было приведений.
+8. Напишите спецификаторы доступа к классам в следующем порядке: общедоступные, общедоступные, защищенные, защищенные, частные, частные.
+9. Тщательно проверьте и расставьте пробелы между операторами в коде.
+10. Перемещение скобки на следующую строку запрещено.
+11. При переносе смена должна быть равна 4 пробелам.
+12. Прежде чем пушить код, обязательно запустите тесты.
