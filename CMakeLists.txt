@@ -10,6 +10,6 @@
 project(CQtDeployer LANGUAGES CXX)
 
 cmake_minimum_required(VERSION 3.1)
-include(CMake/QuasarAppCITargets.cmake)
+include(QuasarAppLib/CMake/QuasarAppCITargets.cmake)
 
 initAll()
