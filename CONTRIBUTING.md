@@ -16,7 +16,7 @@ I made corrections for version 1.5 and created branching from branch v1.5, which
    I made corrections for version 1.5 and created branching from branch v1.5, which means that I should create a pull request to branch v1.5,
 * ( not necessary ) Before starting work on the Task, drag it to [inProgress](https://github.com/orgs/QuasarApp/projects) in projects
 
-### Prohibited from working in QuassarApp
+### Forbidden
 
 * Using 'push force'. All problems need to be solved by a new committee.
 * Push code directly to master.
