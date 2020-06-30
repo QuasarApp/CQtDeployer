@@ -45,7 +45,7 @@ When writing code follows the following rules: (inscribed written in order of im
 1. If in order to achieve high performance gains (over 10%) you need to sacrifice any of the rules, donate them.
 2. In no case do not use the C-style Cast.
 3. All connected headers should be stored to the maximum in cpp files.
-4. 4. Use fast forward declaration. If pointers are used in the class, then initialize the prototypes of these classes as follows: class a; a* value = nullptr; without connecting the headers of the types of indicators.
+4. Use fast forward declaration. If pointers are used in the class, then initialize the prototypes of these classes as follows: class a; a* value = nullptr; without connecting the headers of the types of indicators.
 5. In headings it is necessary to null the signs.
 6. Template functions are described in cpp files.
 7. If possible, think through your code so that it does not have a cast.
