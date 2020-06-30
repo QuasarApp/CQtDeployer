@@ -84,7 +84,7 @@ bool MetaFileManager::createRunScriptLinux(const QString &target) {
             "platforms:$QT_QPA_PLATFORM_PLUGIN_PATH\n"
             "%2"
             "%3\n"
-            "\"$BASE_DIR\"" + distro.getBinOutDir() + "%1 \"$@\"";
+            "\"$BASE_DIR" + distro.getBinOutDir() + "%1\" \"$@\"";
 
     content = content.arg(QFileInfo(target).fileName());
     int ld_index = DeployCore::find("ld-linux", _fileManager->getDeployedFilesStringList());
