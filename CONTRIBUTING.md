@@ -5,7 +5,7 @@
 * Realize the task
 * At the end of the work, create a pull request to the branch from which you created the branch.
 Example:
-I made corrections for version 1.5 and created branching from branch v1.5, which means that I should create a pull request to branch v1.5,
+I made corrections for version 1.5 and created a new branch from branch v1.5, which means that I should create a pull request to branch v1.5,
 
 ### External QuasarApp Developers
 * Making Fork repository.
@@ -13,12 +13,12 @@ I made corrections for version 1.5 and created branching from branch v1.5, which
 * Realize the task
 * Upon completion, create a Pull Request in the branch from which they are separated.
    Example:
-   I made corrections for version 1.5 and created branching from branch v1.5, which means that I should create a pull request to branch v1.5,
+I made corrections for version 1.5 and created a new branch from branch v1.5, which means that I should create a pull request to branch v1.5,
 * ( not necessary ) Before starting work on the Task, drag it to [inProgress](https://github.com/orgs/QuasarApp/projects) in projects
 
 ### Forbidden
 
-* Using 'push force'. All problems need to be solved by a new committee.
+* Using 'push force'. All conflicts need to be solved by a new commite.
 * Push code directly to master.
 * Break the code design rules. If some aspect is not described, you need to write in the same style as it was written before you.
 * Move the code for no particular reason.
@@ -29,7 +29,7 @@ I made corrections for version 1.5 and created branching from branch v1.5, which
 The content of the pull request must include:
 * The number of the task that solves (if performed according to the task)
 * A complete description of everything that was done in the task.
-* In the case when a pull creation is created and you still work on the task, marking the Pull Request header with a WIP tag (example [WIP] MyTask)
+* In the case when a pull creation is created and you still work on the task, change the header of the pool request by adding a WIP tag to the beginning (example [WIP] MyTask)
 * Pull Request must always be assigned to the branch from which you separated.
 
 ## Making Tasks
@@ -45,7 +45,7 @@ When writing code follows the following rules: (inscribed written in order of im
 1. If in order to achieve high performance gains (over 10%) you need to sacrifice any of the rules, donate them.
 2. In no case do not use the C-style Cast.
 3. All connected headers should be stored to the maximum in cpp files.
-4. If the class uses pointers, then initialize the prototypes of these classes to the place where the header is connected: class a; a * value = nullptr;
+4. 4. Use fast forward declaration. If pointers are used in the class, then initialize the prototypes of these classes as follows: class a; a* value = nullptr; without connecting the headers of the types of indicators.
 5. In headings it is necessary to null the signs.
 6. Template functions are described in cpp files.
 7. If possible, think through your code so that it does not have a cast.
@@ -75,7 +75,7 @@ When writing code follows the following rules: (inscribed written in order of im
 
 ### Запрещено работать в QuassarApp
 
-* Использовать push force. Все проблемы должны быть решены новым комитетом.
+* Использовать push force. Все проблемы должны быть решены новым комитом.
 * Пушить код на прямую в мастер или другую ветку релиза.
 * Нарушать правила оформления кода. Если какой-то аспект не описан, вам нужно писать в том же стиле, в котором он был написан до вас.
 * Переместить код без особой причины.
@@ -86,7 +86,7 @@ When writing code follows the following rules: (inscribed written in order of im
 Содержание pool request должно включать:
 * Номер задачи, которая решается (если выполняется согласно задаче)
 * Полное описание всего, что было сделано в задании.
-* В случае создания извлечения и задача все еще выполняется, помечая заголовок запроса на извлечение тегом WIP (пример [WIP] MyTask)
+* В случае создания Poll request и задача все еще выполняется, изменить заголовок запроса на извлечение, добавив в начало тег WIP (пример [WIP] MyTask)
 * Запрос на извлечение всегда должен быть назначен ветви, от которой вы отделены.
 
 ## Выполнение задач
@@ -99,10 +99,10 @@ When writing code follows the following rules: (inscribed written in order of im
 ## Регистрация кода
 
 При написании кода соблюдайте следующие правила: (надписи пишутся в порядке важности)
-1. Если для достижения высокой производительности (более 10%) вам необходимо пожертвовать каким-либо из правил, пожертвуйте их.
+1. Если для достижения высокой производительности (более 10%) вам необходимо пожертвовать каким-либо из правил, пожертвуйте им.
 2. Ни в коем случае не используйте C-стиль Cast.
 3. Все подключенные заголовки должны быть максимально сохранены в файлах cpp.
-4. Если в классе используются указатели, инициализируйте прототипы этих классов в том месте, где связан заголовок: class a; * значение = nullptr;
+4. Используйте fast forward declaration. Если в классе используются указатели, то инициализируйте прототипы этих классов следующим образом: class a; a* значение = nullptr; без подключения заголовков типа созданного обьекта.
 5. В заголовках необходимо обнулить знаки.
 6. Функции шаблона описаны в файлах cpp.
 7. Если возможно, продумайте свой код так, чтобы в нем не было приведений.
