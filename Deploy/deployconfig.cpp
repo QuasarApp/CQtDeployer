@@ -1,4 +1,5 @@
 #include "deployconfig.h"
+#include "quasarapp.h"
 
 void DeployConfig::reset() {
     *this = DeployConfig{};
@@ -53,6 +54,15 @@ QHash<QString, TargetInfo> &DeployConfig::targetsEdit() {
 
 QHash<QString, DistroModule> &DeployConfig::packagesEdit() {
     return _packages;
+}
+
+Platform DeployConfig::getPlatform() const {
+    Platform result = Platform::UnknownPlatform;
+    for( auto it = _targets.begin(); it != _targets.end(); ++it) {
+        result = result | it.value().getPlatform();
+    }
+
+    return result;
 }
 
 const QHash<QString, TargetInfo> &DeployConfig::targets() const {

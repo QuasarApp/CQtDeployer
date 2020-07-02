@@ -33,13 +33,25 @@ struct DEPLOYSHARED_EXPORT QtModuleEntry {
 
 enum Platform {
     UnknownPlatform = 0x00,
+    // Windows
     Win32           = 0x01,
     Win64           = 0x02,
     Win             = Win32 | Win64,
-    Unix32          = 0x04,
-    Unix64          = 0x08,
-    Unix            = Unix32 | Unix64,
-    GeneralFile     = 0x10
+
+    // Unix
+    Unix_x86_32     = 0x04,
+    Unix_x86_64     = 0x08,
+    Unix_x86        = Unix_x86_32 | Unix_x86_64,
+    Unix_ARM_32     = 0x10,
+    Unix_ARM_64     = 0x20,
+    Unix_ARM        = Unix_x86_32 | Unix_x86_64,
+    Unix            = Unix_x86 | Unix_ARM,
+
+    // Other
+
+    // Web
+    WebGl           = 0x40,
+    GeneralFile     = 0x80
 };
 
 enum LibPriority : int {

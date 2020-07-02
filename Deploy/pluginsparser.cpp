@@ -5,6 +5,7 @@
  * of this license document, but changing it is not allowed.
  */
 
+#include "deployconfig.h"
 #include "pluginsparser.h"
 #include <QDir>
 #include <dependenciesscanner.h>
@@ -53,6 +54,35 @@ static const PluginModuleMapping pluginModuleMappings[] =
 
 };
 
+static const PlatformMapping platformMappings[] =
+{
+    {"qminimal",                Unix | Win },
+    {"minimalegl",              Unix | Win },
+    {"qandroid",                UnknownPlatform },
+    {"qbsdfb",                  UnknownPlatform },
+    {"qcocoa",                  UnknownPlatform },
+    {"qdirect2d",               Win },
+    {"qdirectfb",               UnknownPlatform },
+    {"qeglfs",                  Unix_ARM },
+    {"qhaiku",                  UnknownPlatform },
+    {"qios",                    UnknownPlatform },
+    {"qlinuxfb",                Unix_ARM },
+    {"qmirclient",              Unix },
+    {"qopenwf",                 Unix },
+    {"qqnx",                    UnknownPlatform },
+    {"qvnc",                    Unix_x86_64 },
+    {"qwasm",                   UnknownPlatform },
+    {"qwindows",                Win },
+    {"qwinrt",                  Win },
+    {"qxcb",                    Unix },
+    {"webgl",                   WebGl },
+    {"qwayland-xcomposite-glx", Unix_x86_64},
+    {"qwayland-xcomposite-egl", Unix_x86_64},
+    {"qwayland-generic",        Unix_x86_64},
+    {"qwayland-egl",            Unix_x86_64}
+
+};
+
 quint64 PluginsParser::qtModuleForPlugin(const QString &subDirName) {
     const auto end = std::end(pluginModuleMappings);
 
@@ -64,6 +94,27 @@ quint64 PluginsParser::qtModuleForPlugin(const QString &subDirName) {
     });
 
     return result != end ? result->module : 0; // "designer"
+}
+
+Platform PluginsParser::platformForPlugin(const QString &name) {
+    const auto end = std::end(platformMappings);
+    const auto result =
+        std::find_if(std::begin(platformMappings), end,
+                     [&name] (const PlatformMapping &m) {
+
+        return name == QLatin1String(m._pluginName);
+    });
+
+    return (result != end) ? result->_platform : Platform::UnknownPlatform; // "designer"
+}
+
+QString PluginsParser::getPluginNameFromFile(const QString &baseNaem) const {
+
+    if (baseNaem.left(3) == "lib") {
+        return baseNaem.right(baseNaem.size() - 3);
+    }
+
+    return baseNaem;
 }
 
 bool PluginsParser::scan(const QString& pluginPath,
@@ -86,3 +137,36 @@ bool PluginsParser::scan(const QString& pluginPath,
 
     return true;
 }
+
+void PluginsParser::scanPlatforms(Platform platform, QStringList &resDependencies) {
+    const DeployConfig* cnf = DeployCore::_config;
+
+    QString platformPluginPath = cnf->qtDir.getPlugins() + "/platforms/";
+    auto plugins = QDir(platformPluginPath).entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
+
+    for (const auto &plugin: plugins) {
+        QStringList ignoreList = {{".so.debug"}, {"d.dll"}, {".pdb"}};
+
+        bool ignore = false;
+        for (const auto& i: ignoreList) {
+            if (plugin.fileName().contains(i, ONLY_WIN_CASE_INSENSIATIVE)) {
+                ignore = true;
+                break;
+            }
+        }
+
+        if (ignore) {
+            continue;
+        }
+
+        auto pluginPlatform = platformForPlugin(getPluginNameFromFile(plugin.baseName()));
+        if (platform & pluginPlatform) {
+
+            QuasarAppUtils::Params::log("get platform : " + plugin.absoluteFilePath(), QuasarAppUtils::Info);
+
+            resDependencies.append(plugin.absoluteFilePath());
+        }
+    }
+}
+
+

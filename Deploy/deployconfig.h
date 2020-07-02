@@ -91,6 +91,8 @@ public:
     QHash<QString, TargetInfo>& targetsEdit();
     QHash<QString, DistroModule>& packagesEdit();
 
+    Platform getPlatform() const;
+
 private:
 
     /**

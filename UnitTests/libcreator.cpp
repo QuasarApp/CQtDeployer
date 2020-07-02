@@ -50,7 +50,7 @@ void LibCreator::initLinux64() {
                   "libgcc_s.so.1",
                   "libc.so.6",
               },
-              Platform::Unix64);
+              Platform::Unix_x86_64);
     createLib(":/linux64.so", {
                   "libQt5Core.so.5",
                   "libpthread.so.0",
@@ -60,7 +60,7 @@ void LibCreator::initLinux64() {
                   "libc.so.6",
 
               },
-              Platform::Unix64);
+              Platform::Unix_x86_64);
 
 }
 

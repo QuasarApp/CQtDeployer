@@ -57,6 +57,7 @@ class DEPLOYSHARED_EXPORT Extracter {
     void compress();
     void extractAllTargets();
     void extractPlugins();
+
     void copyFiles();
     void copyTr();
     void copyExtraPlugins(const QString &package);

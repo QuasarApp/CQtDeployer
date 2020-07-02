@@ -88,6 +88,7 @@ bool Extracter::copyPlugin(const QString &plugin, const QString& package) {
     auto pluginPath = targetPath + distro.getPluginsOutDir() +
             QFileInfo(plugin).fileName();
 
+
     if (!_fileManager->copyFolder(plugin, pluginPath,
                     QStringList() << ".so.debug" << "d.dll" << ".pdb", &listItems)) {
         return false;
@@ -167,6 +168,17 @@ void Extracter::extractPlugins() {
         QStringList plugins;
         pluginsParser.scan(cnf->qtDir.getPlugins(), plugins, _packageDependencyes[i.key()].qtModules());
         copyPlugins(plugins, i.key());
+
+        pluginsParser.scanPlatforms(cnf->getPlatform(), plugins);
+        auto targetPath = cnf->getTargetDir() + "/" + i.key() +
+                "/" + distro.getPluginsOutDir() + "/platforms";
+
+        for (const auto& plugin :plugins) {
+            _fileManager->copyFile(plugin, targetPath);
+
+            extractPluginLib(plugin, i.key());
+        }
+
     }
 }
 
