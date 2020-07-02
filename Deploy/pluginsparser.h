@@ -37,14 +37,14 @@ public:
     bool scan(const QString &pluginPath, QStringList& resDependencies,
               DeployCore::QtModule qtModules);
 
-    void scanPlatforms(Platform platform, QStringList& resDependencies);
+    void scanPlatforms(Platform platform, QStringList& resDependencies) const;
 
 
 private:
     DependenciesScanner *_libScaner = nullptr;
 
     quint64 qtModuleForPlugin(const QString &subDirName);
-    Platform platformForPlugin(const QString &name);
+    Platform platformForPlugin(const QString &name) const;
 
     bool copyPlugin(const QString &plugin, const QString &package);
     void copyExtraPlugins(const QString &package);

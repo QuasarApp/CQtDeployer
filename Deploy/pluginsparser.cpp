@@ -21,7 +21,6 @@ static const PluginModuleMapping pluginModuleMappings[] =
     {"accessible", DeployCore::QtModule::QtGuiModule},
     {"iconengines", DeployCore::QtModule::QtGuiModule},
     {"imageformats", DeployCore::QtModule::QtGuiModule},
-    {"platforms", DeployCore::QtModule::QtGuiModule},
     {"platformthemes", DeployCore::QtModule::QtGuiModule},
     {"platforminputcontexts", DeployCore::QtModule::QtGuiModule},
     {"virtualkeyboard", DeployCore::QtModule::QtGuiModule},
@@ -96,7 +95,7 @@ quint64 PluginsParser::qtModuleForPlugin(const QString &subDirName) {
     return result != end ? result->module : 0; // "designer"
 }
 
-Platform PluginsParser::platformForPlugin(const QString &name) {
+Platform PluginsParser::platformForPlugin(const QString &name) const {
     const auto end = std::end(platformMappings);
     const auto result =
         std::find_if(std::begin(platformMappings), end,
@@ -138,7 +137,7 @@ bool PluginsParser::scan(const QString& pluginPath,
     return true;
 }
 
-void PluginsParser::scanPlatforms(Platform platform, QStringList &resDependencies) {
+void PluginsParser::scanPlatforms(Platform platform, QStringList &resDependencies) const {
     const DeployConfig* cnf = DeployCore::_config;
 
     QString platformPluginPath = cnf->qtDir.getPlugins() + "/platforms/";

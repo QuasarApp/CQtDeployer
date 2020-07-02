@@ -158,6 +158,24 @@ void Extracter::clear() {
     }
 }
 
+void Extracter::extractPlatforms(const PluginsParser& pluginsParser,
+                                 const QString& package) {
+
+    auto cnf = DeployCore::_config;
+    QStringList plugins;
+    auto distro = cnf->getDistroFromPackage(package);
+
+    pluginsParser.scanPlatforms(cnf->getPlatform(), plugins);
+    auto targetPath = cnf->getTargetDir() + "/" + package +
+            "/" + distro.getPluginsOutDir() + "/platforms";
+
+    for (const auto& plugin :plugins) {
+        _fileManager->copyFile(plugin, targetPath);
+
+        extractPluginLib(plugin, package);
+    }
+}
+
 void Extracter::extractPlugins() {
     auto cnf = DeployCore::_config;
     PluginsParser pluginsParser;
@@ -169,16 +187,11 @@ void Extracter::extractPlugins() {
         pluginsParser.scan(cnf->qtDir.getPlugins(), plugins, _packageDependencyes[i.key()].qtModules());
         copyPlugins(plugins, i.key());
 
-        pluginsParser.scanPlatforms(cnf->getPlatform(), plugins);
-        auto targetPath = cnf->getTargetDir() + "/" + i.key() +
-                "/" + distro.getPluginsOutDir() + "/platforms";
-
-        for (const auto& plugin :plugins) {
-            _fileManager->copyFile(plugin, targetPath);
-
-            extractPluginLib(plugin, i.key());
+        if (QuasarAppUtils::Params::isEndable("allPlatforms")) {
+            copyPlugin("platforms", i.key());
+        } else {
+            extractPlatforms(pluginsParser, i.key());
         }
-
     }
 }
 

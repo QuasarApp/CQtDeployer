@@ -18,6 +18,7 @@
 
 class ConfigParser;
 class MetaFileManager;
+class PluginsParser;
 
 class DEPLOYSHARED_EXPORT Extracter {
   private:
@@ -65,6 +66,9 @@ class DEPLOYSHARED_EXPORT Extracter {
 
     bool isWebEngine(const QString& package) const;
     void extractPluginLib(const QString &item, const QString &package);
+
+    void extractPlatforms(const PluginsParser& pluginsParser,
+                          const QString& package);
 
 public:
     explicit Extracter(FileManager *fileManager, ConfigParser * cqt, DependenciesScanner *_scaner);

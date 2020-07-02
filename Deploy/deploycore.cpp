@@ -190,7 +190,8 @@ void DeployCore::help() {
                 {"qif", "Create the QIF installer for deployement programm"},
                 {"qifFromSystem", "force use system binarycreator tool of qif from path or qt"},
                 {"deploySystem", "Deploys all libraries  (do not work in snap )"},
-                {"deploySystem-with-libc", "deploy all libs libs (only linux) (do not work in snap )"},
+                {"deploySystem-with-libc", "deploy all libs (only linux) (do not work in snap )"},
+                {"allPlatforms", "deploy all platforms plugins (big size)."},
 
             }
         },
@@ -300,6 +301,7 @@ QStringList DeployCore::helpKeys() {
         "qifStyle",
         "qifBanner",
         "qifLogo",
+        "allPlatforms"
     };
 }
 
