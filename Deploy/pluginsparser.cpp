@@ -42,6 +42,7 @@ static const PluginModuleMapping pluginModuleMappings[] =
     {"styles", DeployCore::QtModule::QtWidgetsModule},
     {"sceneparsers", DeployCore::QtModule::Qt3DRendererModule},
     {"renderplugins", DeployCore::QtModule::Qt3DRendererModule},
+    {"renderers", DeployCore::QtModule::Qt3DRendererModule},
     {"geometryloaders", DeployCore::QtModule::Qt3DRendererModule},
     {"webview", DeployCore::QtModule::QtWebViewModule},
     {"xcbglintegrations", DeployCore::QtModule::QtGuiModule},
