@@ -212,7 +212,6 @@ void DeployCore::help() {
                  " Example: '-extraLibs mySql' - forces to copy all libraries whose names contain mySql to the project folder."
                  " This option is case sensitive."},
                 {"-customScript [scriptCode]", "Insert extra code inTo All run script."},
-                {"-extraPlugin [list,params]", "Sets an additional path to extraPlugin of an app"},
                 {"-recursiveDepth [params]", "Sets the Depth of recursive search of libs and depth for ignoreEnv option (default 0)"},
                 {"-targetDir [params]", "Sets target directory(by default it is the path to the first deployable file)"},
                 {"-verbose [0-3]", "Shows debug log"},
@@ -234,6 +233,9 @@ void DeployCore::help() {
                 {"-releaseDate [package;val,val]", "Sets release date for package"},
                 {"-icon [package;val,val]", "Sets path to icon for package"},
                 {"-publisher [package;val,val]", "Sets publisher for package"},
+                {"-extraPlugin [package;val,val]", "Sets an additional path to extraPlugin of an app"},
+                {"-enablePlugins [package;val,val]", "Enable an additional plugin for app"},
+                {"-disablePlugins [package;val,val]", "Disable an additional plugin for app"},
 
             }
         },
