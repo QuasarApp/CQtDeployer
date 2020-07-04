@@ -67,8 +67,6 @@ private:
     void initIgnoreList();
     void initIgnoreEnvList();
 
-    void initPluginsList();
-
     QString getPathFrmoQmakeLine(const QString& in) const;
     bool initQmakePrivate(const QString& qmake);
     bool initQmake();

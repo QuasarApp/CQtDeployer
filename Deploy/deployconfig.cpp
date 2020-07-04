@@ -62,7 +62,7 @@ Platform DeployConfig::getPlatform(const QString& package) const {
     if (_packages.contains(package)) {
         auto disto = getDistroFromPackage(package);
 
-        for( auto it = disto.targets().begin(); it != disto.targets().end(); ++it) {
+        for( auto it = disto.targets().cbegin(); it != disto.targets().cend(); ++it) {
             result = result | _targets.value(*it).getPlatform();
         }
 
@@ -70,7 +70,7 @@ Platform DeployConfig::getPlatform(const QString& package) const {
     }
 
 
-    for( auto it = _targets.begin(); it != _targets.end(); ++it) {
+    for( auto it = _targets.cbegin(); it != _targets.cend(); ++it) {
         result = result | it.value().getPlatform();
     }
 

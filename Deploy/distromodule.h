@@ -36,13 +36,13 @@ public:
     QString publisher() const;
     void setPublisher(const QString &publisher);
 
-    QSet<QString> enabled() const;
-    void setEnabled(const QSet<QString> &enabled);
-    void addEnabled(const QString &enabled);
+    QSet<QString> enabledPlugins() const;
+    void setEnabledPlugins(const QSet<QString> &enabled);
+    void addEnabledPlugins(const QString &enabled);
 
-    QSet<QString> disabled() const;
-    void setDisabled(const QSet<QString> &disabled);
-    void addDisabled(const QString &disabled);
+    QSet<QString> disabledPlugins() const;
+    void setDisabledPlugins(const QSet<QString> &disabled);
+    void addDisabledPlugins(const QString &disabled);
 
     QSet<QString> extraPlugins() const;
     void setExtraPlugins(const QSet<QString> &extraPlugins);

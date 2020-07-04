@@ -140,13 +140,20 @@ bool PluginsParser::initDeployPluginsList() {
     const DeployConfig* cnf = DeployCore::_config;
     for (auto package = cnf->packages().cbegin(); package != cnf->packages().cend(); ++package) {
 
+        auto distro = cnf->getDistroFromPackage(package.key());
+
         QList<QString> desabledFromPlatform;
         scanPlatforms(package.key(), desabledFromPlatform);
 
-        auto enablePlugins = QuasarAppUtils::Params::getStrArg("enablePlugins");
-        auto disablePlugins = QuasarAppUtils::Params::getStrArg("disablePlugins");
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+        auto enablePlugins = distro.enabledPlugins().toList();
+        auto disablePlugins = distro.disabledPlugins().toList();
+#else
+        auto enablePlugins =  QStringList(distro.enabledPlugins().cbegin(), distro.enabledPlugins().cend());
+        auto disablePlugins = QStringList(distro.disabledPlugins().cbegin(), distro.disabledPlugins().cend());
+#endif
 
-        auto forbidenPlugins = defaultForbidenPlugins() + disablePlugins.split(',') + desabledFromPlatform;
+        auto forbidenPlugins = defaultForbidenPlugins() + disablePlugins + desabledFromPlatform;
 
         for (const auto plugin: forbidenPlugins) {
             if (!enablePlugins.contains(plugin)) {
@@ -216,7 +223,7 @@ bool PluginsParser::isDisavledPlugin(const QString &plugin, const QString &packa
     return _disabledPlugins[package].contains(plugin);
 }
 
-QStringList PluginsParser::defaultForbidenPlugins() const {
+QStringList PluginsParser::defaultForbidenPlugins() {
     return {
         "qtvirtualkeyboardplugin",
         "virtualkeyboard",

@@ -422,6 +422,24 @@ bool FileManager::copyFile(const QString &file, const QString &target,
     return fileActionPrivate(file, target, masks, false, targetIsFile);
 }
 
+QString FileManager::changeDistanation(const QString& absalutePath,
+                                       QString basePath,
+                                       int depch) {
+
+    auto prefixes = absalutePath.split(QRegExp("[\\/]"), QString::SkipEmptyParts);
+    depch = std::min(depch, prefixes.size());
+    while (depch) {
+        auto index = prefixes.size() - depch;
+        if (index >= 0) {
+            basePath += "/" + prefixes[index];
+        }
+
+        depch--;
+    }
+
+    return basePath;
+}
+
 bool FileManager::copyFiles(const QStringList &source,
                             const QString &to, int saveStructSize,
                             const QStringList &filter,
@@ -461,14 +479,7 @@ bool FileManager::copyFiles(const QStringList &source,
                 continue;
             }
 
-        auto prefixes = info.absolutePath().split(QRegExp("[\\/]"));
-        auto distanation = to;
-        while (saveStructSize--) {
-            auto index = prefixes.size() - saveStructSize;
-            if (index >= 0) {
-                distanation += "/" + prefixes[index];
-            }
-        }
+        auto distanation = changeDistanation(info.absolutePath(), to, saveStructSize);
 
         if (!copyFile(info.absoluteFilePath(), distanation , mask)) {
             QuasarAppUtils::Params::log(

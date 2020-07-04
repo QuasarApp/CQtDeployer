@@ -40,6 +40,12 @@ public:
 
     bool initDeployPluginsList();
 
+    /**
+     * @brief defaultForbidenPlugins - this method return list of forbiden plugins
+     *  forbidenPlugin - it is a plugin that depends on several Qt modules and significantly increases the size of the distribution.
+     * @return
+     */
+    static QStringList defaultForbidenPlugins();
 private:
     DependenciesScanner *_libScaner = nullptr;
     QHash<QString, QSet<QString>> _disabledPlugins;
@@ -56,12 +62,7 @@ private:
     void scanPluginGroup(const QString &pluginFolder, QStringList &result, const QString &package) const;
     bool isDisavledPlugin(const QString &plugin, const QString &package) const;
 
-    /**
-     * @brief defaultForbidenPlugins - this method return list of forbiden plugins
-     *  forbidenPlugin - it is a plugin that depends on several Qt modules and significantly increases the size of the distribution.
-     * @return
-     */
-    QStringList defaultForbidenPlugins() const;
+
 };
 
 #endif // QTMODULES_H

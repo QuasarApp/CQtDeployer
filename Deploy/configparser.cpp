@@ -33,27 +33,27 @@
 
 static QString defaultPackage = "";
 
-template<typename Container, typename Setter>
+template<typename Container, typename Adder>
 bool parsePackagesPrivate(Container& mainContainer,
                           const QStringList &inputParamsList,
-                          Setter setter) {
+                          Adder adder) {
 
     for (const auto& str: inputParamsList) {
-        auto pair = str.split(DeployCore::getSeparator(1));
-        auto first = pair.value(0, "");
-        auto second = pair.value(1, "");
-        if (pair.size() == 1)
-            (mainContainer[defaultPackage].*setter)(first);
+        auto paramsList = str.split(DeployCore::getSeparator(1));
+        auto first = paramsList.value(0, "");
+        auto second = paramsList.value(1, "");
+        if (paramsList.size() == 1)
+            (mainContainer[defaultPackage].*adder)(first);
         else {
             first = PathUtils::fullStripPath(first);
             if (!mainContainer.contains(first)) {
                 return false;
             }
 
-            (mainContainer[first].*setter)(second);
-
+            for (int i = 1; i < paramsList.size(); ++i) {
+                (mainContainer[first].*adder)(paramsList[i]);
+            }
         }
-
     }
 
     return true;
@@ -859,10 +859,6 @@ void ConfigParser::initIgnoreEnvList() {
 
 }
 
-void ConfigParser::initPluginsList() {
-    _pluginsParser->initDeployPluginsList();
-}
-
 QString ConfigParser::getPathFrmoQmakeLine(const QString &in) const {
     auto list = in.split(':');
     if (list.size() > 1) {
@@ -1132,17 +1128,23 @@ bool ConfigParser::initPlugins() {
         };
 
 
-    if (listExtraPlugin.size() && !parsePackagesPrivate(_config.packagesEdit(), listExtraPlugin, &DistroModule::addExtraPlugins)) {
+    if (listExtraPlugin.size() && !parsePackagesPrivate(_config.packagesEdit(),
+                                                        listExtraPlugin,
+                                                        &DistroModule::addExtraPlugins)) {
         erroLog("extra plugins");
         return false;
     }
 
-    if (listEnablePlugins.size() && !parsePackagesPrivate(_config.packagesEdit(), listEnablePlugins, &DistroModule::addEnabled)) {
+    if (listEnablePlugins.size() && !parsePackagesPrivate(_config.packagesEdit(),
+                                                          listEnablePlugins,
+                                                          &DistroModule::addEnabledPlugins)) {
         erroLog("enable plugins");
         return false;
     }
 
-    if (listDisablePlugins.size() && !parsePackagesPrivate(_config.packagesEdit(), listDisablePlugins, &DistroModule::addDisabled)) {
+    if (listDisablePlugins.size() && !parsePackagesPrivate(_config.packagesEdit(),
+                                                           listDisablePlugins,
+                                                           &DistroModule::addDisabledPlugins)) {
         erroLog("disable plugins");
         return false;
     }

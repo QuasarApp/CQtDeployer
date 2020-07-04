@@ -98,6 +98,9 @@ void Extracter::clear() {
 }
 
 void Extracter::copyExtraPlugins(const QString& package) {
+
+    _pluginsParser->initDeployPluginsList();
+
     QFileInfo info;
 
     auto cnf = DeployCore::_config;

@@ -9,6 +9,7 @@
 #include "deploycore.h"
 #include "quasarapp.h"
 #include "pathutils.h"
+#include "pluginsparser.h"
 
 #include <QDebug>
 #include <QDir>
@@ -233,9 +234,12 @@ void DeployCore::help() {
                 {"-releaseDate [package;val,val]", "Sets release date for package"},
                 {"-icon [package;val,val]", "Sets path to icon for package"},
                 {"-publisher [package;val,val]", "Sets publisher for package"},
-                {"-extraPlugin [package;val,val]", "Sets an additional path to extraPlugin of an app"},
-                {"-enablePlugins [package;val,val]", "Enable an additional plugin for app"},
-                {"-disablePlugins [package;val,val]", "Disable an additional plugin for app"},
+                {"-extraPlugin [package;val1;val2,SingeleVal]", "Sets an additional path to extraPlugin of an app"},
+                {"-enablePlugins [package;val1;val2,SingeleVal", "Enable an additional plugin for distribution."
+                 " By default disabled next plugins: " + PluginsParser::defaultForbidenPlugins().join(',')},
+                {"-disablePlugins [package;val1;val2,SingeleVal]", "Disable an additional plugin for distribution. "
+                 "You can disable any plugin of your Qt build, just see the yourQtFolder/plugins forlder for available plugins."
+                 " Example if you want disable qxcb plugin: -disablePlugins qxcb. Note that the name of the plugin is indicated without its extension"},
 
             }
         },

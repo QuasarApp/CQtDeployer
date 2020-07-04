@@ -88,31 +88,31 @@ void DistroModule::setPublisher(const QString &publisher)
     _publisher = publisher;
 }
 
-QSet<QString> DistroModule::enabled() const
+QSet<QString> DistroModule::enabledPlugins() const
 {
     return _enabled;
 }
 
-void DistroModule::setEnabled(const QSet<QString> &enabled)
+void DistroModule::setEnabledPlugins(const QSet<QString> &enabled)
 {
     _enabled = enabled;
 }
 
-void DistroModule::addEnabled(const QString &enabled) {
+void DistroModule::addEnabledPlugins(const QString &enabled) {
     _enabled += enabled;
 }
 
-QSet<QString> DistroModule::disabled() const
+QSet<QString> DistroModule::disabledPlugins() const
 {
     return _disabled;
 }
 
-void DistroModule::setDisabled(const QSet<QString> &disabled)
+void DistroModule::setDisabledPlugins(const QSet<QString> &disabled)
 {
     _disabled = disabled;
 }
 
-void DistroModule::addDisabled(const QString &disabled) {
+void DistroModule::addDisabledPlugins(const QString &disabled) {
     _disabled += disabled;
 }
 

@@ -23,7 +23,15 @@ private:
     bool initDir(const QString &path);
     QSet<QString> _deployedFiles;
 
-
+    /**
+     * @brief changeDistanation - this function create new distanation path.
+     *  (merge base path and pathFrom with depth)
+     * @param absalutePath
+     * @param basePath
+     * @param depch
+     * @return the new path
+     */
+    QString changeDistanation(const QString &absalutePath, QString basePath, int depch);
 public:
     FileManager();
 
