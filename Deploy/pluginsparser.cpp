@@ -21,6 +21,7 @@ static const PluginModuleMapping pluginModuleMappings[] =
     {"accessible", DeployCore::QtModule::QtGuiModule},
     {"iconengines", DeployCore::QtModule::QtGuiModule},
     {"imageformats", DeployCore::QtModule::QtGuiModule},
+    {"platforms", DeployCore::QtModule::QtGuiModule},
     {"platformthemes", DeployCore::QtModule::QtGuiModule},
     {"platforminputcontexts", DeployCore::QtModule::QtGuiModule},
     {"virtualkeyboard", DeployCore::QtModule::QtGuiModule},
@@ -56,7 +57,7 @@ static const PluginModuleMapping pluginModuleMappings[] =
 static const PlatformMapping platformMappings[] =
 {
     {"qminimal",                Unix | Win },
-    {"minimalegl",              Unix | Win },
+    {"qminimalegl",             Unix | Win },
     {"qandroid",                UnknownPlatform },
     {"qbsdfb",                  UnknownPlatform },
     {"qcocoa",                  UnknownPlatform },
@@ -69,7 +70,7 @@ static const PlatformMapping platformMappings[] =
     {"qmirclient",              Unix },
     {"qopenwf",                 Unix },
     {"qqnx",                    UnknownPlatform },
-    {"qvnc",                    Unix_x86_64 },
+    {"qvnc",                    WebRemote },
     {"qwasm",                   UnknownPlatform },
     {"qwindows",                Win },
     {"qwinrt",                  Win },
@@ -86,8 +87,8 @@ quint64 PluginsParser::qtModuleForPlugin(const QString &subDirName) {
     const auto end = std::end(pluginModuleMappings);
 
     const auto result =
-        std::find_if(std::begin(pluginModuleMappings), end,
-                     [&subDirName] (const PluginModuleMapping &m) {
+            std::find_if(std::begin(pluginModuleMappings), end,
+                         [&subDirName] (const PluginModuleMapping &m) {
 
         return subDirName == QLatin1String(m.directoryName);
     });
@@ -98,8 +99,8 @@ quint64 PluginsParser::qtModuleForPlugin(const QString &subDirName) {
 Platform PluginsParser::platformForPlugin(const QString &name) const {
     const auto end = std::end(platformMappings);
     const auto result =
-        std::find_if(std::begin(platformMappings), end,
-                     [&name] (const PlatformMapping &m) {
+            std::find_if(std::begin(platformMappings), end,
+                         [&name] (const PlatformMapping &m) {
 
         return name == QLatin1String(m._pluginName);
     });
@@ -118,7 +119,8 @@ QString PluginsParser::getPluginNameFromFile(const QString &baseNaem) const {
 
 bool PluginsParser::scan(const QString& pluginPath,
                          QStringList &resDependencies,
-                         DeployCore::QtModule qtModules) {
+                         DeployCore::QtModule qtModules,
+                         const QString& package) {
 
     auto plugins = QDir(pluginPath).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
 
@@ -127,20 +129,53 @@ bool PluginsParser::scan(const QString& pluginPath,
     for (const auto &plugin: plugins) {
         auto module = qtModuleForPlugin(plugin.fileName());
         if (qtModules & module) {
-
-            QuasarAppUtils::Params::log("deploye plugin : " + plugin.absoluteFilePath(), QuasarAppUtils::Info);
-
-            resDependencies.append(plugin.absoluteFilePath());
+            scanPluginGroup(plugin.absoluteFilePath(), resDependencies, package);
         }
     }
 
     return true;
 }
 
-void PluginsParser::scanPlatforms(Platform platform, QStringList &resDependencies) const {
+bool PluginsParser::initDeployPluginsList() {
     const DeployConfig* cnf = DeployCore::_config;
+    for (auto package = cnf->packages().cbegin(); package != cnf->packages().cend(); ++package) {
 
-    QString platformPluginPath = cnf->qtDir.getPlugins() + "/platforms/";
+        QList<QString> desabledFromPlatform;
+        scanPlatforms(package.key(), desabledFromPlatform);
+
+        auto enablePlugins = QuasarAppUtils::Params::getStrArg("enablePlugins");
+        auto disablePlugins = QuasarAppUtils::Params::getStrArg("disablePlugins");
+
+        auto forbidenPlugins = defaultForbidenPlugins() + disablePlugins.split(',') + desabledFromPlatform;
+
+        for (const auto plugin: forbidenPlugins) {
+            if (!enablePlugins.contains(plugin)) {
+                if (QFileInfo(cnf->qtDir.getPlugins() + "/" + plugin).isDir()) {
+                     auto listPlugins = QDir(cnf->qtDir.getPlugins() + "/" + plugin).entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
+
+                     for (const auto &plugin: listPlugins) {
+                         QuasarAppUtils::Params::log("Disable plugin: " + plugin.baseName(), QuasarAppUtils::Debug);
+                         _disabledPlugins[package.key()].insert(getPluginNameFromFile( plugin.baseName()));
+                     }
+
+                } else {
+                    QuasarAppUtils::Params::log("Disable plugin: " + plugin, QuasarAppUtils::Debug);
+                    _disabledPlugins[package.key()].insert(getPluginNameFromFile(plugin));
+                }
+            }
+        }
+
+    }
+
+    return true;
+
+}
+
+void PluginsParser::scanPlatforms(const QString& package, QList<QString>& disabledPlugins) {
+    const DeployConfig* cnf = DeployCore::_config;
+    auto platform = cnf->getPlatform(package);
+
+    QString platformPluginPath = cnf->qtDir.getPlugins() + "/platforms";
     auto plugins = QDir(platformPluginPath).entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
 
     for (const auto &plugin: plugins) {
@@ -159,13 +194,33 @@ void PluginsParser::scanPlatforms(Platform platform, QStringList &resDependencie
         }
 
         auto pluginPlatform = platformForPlugin(getPluginNameFromFile(plugin.baseName()));
-        if (platform & pluginPlatform) {
+        if (!(platform & pluginPlatform)) {
 
-            QuasarAppUtils::Params::log("get platform : " + plugin.absoluteFilePath(), QuasarAppUtils::Info);
-
-            resDependencies.append(plugin.absoluteFilePath());
+            QuasarAppUtils::Params::log("platform : " + plugin.baseName() + " is disabled", QuasarAppUtils::Info);
+            disabledPlugins += getPluginNameFromFile(plugin.baseName());
         }
     }
+}
+
+void PluginsParser::scanPluginGroup(const QString& pluginFolder, QStringList &result, const QString &package) const {
+    auto plugins = QDir(pluginFolder).entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
+
+    for (const auto& info: plugins) {
+        if (!isDisavledPlugin(getPluginNameFromFile(info.baseName()), package)) {
+            result += info.absoluteFilePath();
+        }
+    }
+}
+
+bool PluginsParser::isDisavledPlugin(const QString &plugin, const QString &package) const {
+    return _disabledPlugins[package].contains(plugin);
+}
+
+QStringList PluginsParser::defaultForbidenPlugins() const {
+    return {
+        "qtvirtualkeyboardplugin",
+        "virtualkeyboard",
+    };
 }
 
 

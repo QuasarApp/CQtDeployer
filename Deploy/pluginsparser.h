@@ -35,13 +35,14 @@ class DEPLOYSHARED_EXPORT PluginsParser
 public:
     PluginsParser();
     bool scan(const QString &pluginPath, QStringList& resDependencies,
-              DeployCore::QtModule qtModules);
+              DeployCore::QtModule qtModules, const QString &package);
 
-    void scanPlatforms(Platform platform, QStringList& resDependencies) const;
 
+    bool initDeployPluginsList();
 
 private:
     DependenciesScanner *_libScaner = nullptr;
+    QHash<QString, QSet<QString>> _disabledPlugins;
 
     quint64 qtModuleForPlugin(const QString &subDirName);
     Platform platformForPlugin(const QString &name) const;
@@ -50,6 +51,17 @@ private:
     void copyExtraPlugins(const QString &package);
     void copyPlugins(const QStringList &list, const QString &package);
     QString getPluginNameFromFile(const QString& baseNaem) const;
+
+    void scanPlatforms(const QString &package, QList<QString> &disabledPlugins);
+    void scanPluginGroup(const QString &pluginFolder, QStringList &result, const QString &package) const;
+    bool isDisavledPlugin(const QString &plugin, const QString &package) const;
+
+    /**
+     * @brief defaultForbidenPlugins - this method return list of forbiden plugins
+     *  forbidenPlugin - it is a plugin that depends on several Qt modules and significantly increases the size of the distribution.
+     * @return
+     */
+    QStringList defaultForbidenPlugins() const;
 };
 
 #endif // QTMODULES_H

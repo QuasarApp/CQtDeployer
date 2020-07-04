@@ -10,13 +10,16 @@
 #include "extracter.h"
 #include "filemanager.h"
 #include "packing.h"
+#include "pluginsparser.h"
 #include <quasarapp.h>
 
 Deploy::Deploy() {
     _fileManager = new FileManager();
     _scaner = new DependenciesScanner();
     _packing = new Packing();
-    _paramsParser = new ConfigParser(_fileManager, _scaner, _packing);
+    _pluginParser = new PluginsParser();
+
+    _paramsParser = new ConfigParser(_fileManager, _pluginParser, _scaner, _packing);
 
 }
 
@@ -63,6 +66,10 @@ Deploy::~Deploy() {
         delete _packing;
     }
 
+    if (_pluginParser) {
+        delete _pluginParser;
+    }
+
     DeployCore::_config = nullptr;
 }
 
@@ -73,7 +80,7 @@ bool Deploy::prepare() {
         return false;
     }
 
-    _extracter = new Extracter(_fileManager, _paramsParser, _scaner);
+    _extracter = new Extracter(_fileManager, _pluginParser, _paramsParser, _scaner);
 
     return true;
 }

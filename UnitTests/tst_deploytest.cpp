@@ -18,6 +18,7 @@
 #include <pathutils.h>
 #include <dependencymap.h>
 #include <packing.h>
+#include <pluginsparser.h>
 
 #include <QMap>
 #include <QByteArray>
@@ -349,8 +350,9 @@ void deploytest::testDeployTarget() {
     FileManager file;
     DependenciesScanner scan;
     Packing pac;
+    PluginsParser _pluginParser;
 
-    ConfigParser *deploy = new ConfigParser(&file, &scan, &pac);
+    ConfigParser *deploy = new ConfigParser(&file, &_pluginParser, &scan, &pac);
 
     QStringList targets;
     targets << "./test/bins/execTarget.exe";
@@ -358,31 +360,31 @@ void deploytest::testDeployTarget() {
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file, &scan, &pac);
+    deploy = new ConfigParser(&file, &_pluginParser, &scan, &pac);
     targets << "./test/bins/execTarget";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file, &scan, &pac);
+    deploy = new ConfigParser(&file, &_pluginParser, &scan, &pac);
     targets << "./test/bins/execTarget.exe" << "./test/bins/execTarget";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file, &scan, &pac);
+    deploy = new ConfigParser(&file, &_pluginParser, &scan, &pac);
     targets << "./test/bns/execTarget.exe";
     QVERIFY(!deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file, &scan, &pac);
+    deploy = new ConfigParser(&file, &_pluginParser, &scan, &pac);
     targets << "./test/bins/";
     QVERIFY(deploy->setTargets(targets));
     delete deploy;
     targets.clear();
 
-    deploy = new ConfigParser(&file, &scan, &pac);
+    deploy = new ConfigParser(&file, &_pluginParser, &scan, &pac);
     targets << "./test/bins/" << "./test/warning/";
     QVERIFY(deploy->setTargets(targets));
 
@@ -915,7 +917,8 @@ void deploytest::testSetTargetDir() {
     FileManager file;
     DependenciesScanner scan;
     Packing pac;
-    ConfigParser  dep(&file, &scan, &pac);
+    PluginsParser _plugins;
+    ConfigParser  dep(&file, &_plugins, &scan, &pac);
 
     dep.setTargetDir();
 

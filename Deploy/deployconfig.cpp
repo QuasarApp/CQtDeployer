@@ -56,13 +56,27 @@ QHash<QString, DistroModule> &DeployConfig::packagesEdit() {
     return _packages;
 }
 
-Platform DeployConfig::getPlatform() const {
+Platform DeployConfig::getPlatform(const QString& package) const {
     Platform result = Platform::UnknownPlatform;
+
+    if (_packages.contains(package)) {
+        auto disto = getDistroFromPackage(package);
+
+        for( auto it = disto.targets().begin(); it != disto.targets().end(); ++it) {
+            result = result | _targets.value(*it).getPlatform();
+        }
+
+        return result;
+    }
+
+
     for( auto it = _targets.begin(); it != _targets.end(); ++it) {
         result = result | it.value().getPlatform();
     }
 
     return result;
+
+
 }
 
 const QHash<QString, TargetInfo> &DeployConfig::targets() const {

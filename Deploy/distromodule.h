@@ -36,6 +36,18 @@ public:
     QString publisher() const;
     void setPublisher(const QString &publisher);
 
+    QSet<QString> enabled() const;
+    void setEnabled(const QSet<QString> &enabled);
+    void addEnabled(const QString &enabled);
+
+    QSet<QString> disabled() const;
+    void setDisabled(const QSet<QString> &disabled);
+    void addDisabled(const QString &disabled);
+
+    QSet<QString> extraPlugins() const;
+    void setExtraPlugins(const QSet<QString> &extraPlugins);
+    void addExtraPlugins(const QString &extraPlugin);
+
 private:
     QString _name;
     QString _description;
@@ -46,6 +58,11 @@ private:
 
     QSet<QString> _targets;
     QSet<QString> _qmlInput;
+
+    // plugins
+    QSet<QString> _enabled;
+    QSet<QString> _disabled;
+    QSet<QString> _extraPlugins;
 };
 
 #endif // DISTROMODULE_H

@@ -27,11 +27,6 @@ public:
     IgnoreRule ignoreList;
 
     /**
-     * @brief extraPlugins - list with pathes of extra plugins or plugins names
-     */
-    QStringList extraPlugins;
-
-    /**
      * @brief appDir - it is cqtdeployer library location for ignre cqtdeployr libraries
      */
     QString appDir;
@@ -91,7 +86,7 @@ public:
     QHash<QString, TargetInfo>& targetsEdit();
     QHash<QString, DistroModule>& packagesEdit();
 
-    Platform getPlatform() const;
+    Platform getPlatform(const QString& package) const;
 
 private:
 

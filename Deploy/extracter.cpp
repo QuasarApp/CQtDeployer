@@ -76,67 +76,6 @@ bool Extracter::extractWebEngine() {
     return true;
 }
 
-bool Extracter::copyPlugin(const QString &plugin, const QString& package) {
-
-    QStringList listItems;
-
-    auto cnf = DeployCore::_config;
-    auto targetPath = cnf->getTargetDir() + "/" + package;
-    auto distro = cnf->getDistroFromPackage(package);
-
-
-    auto pluginPath = targetPath + distro.getPluginsOutDir() +
-            QFileInfo(plugin).fileName();
-
-
-    if (!_fileManager->copyFolder(plugin, pluginPath,
-                    QStringList() << ".so.debug" << "d.dll" << ".pdb", &listItems)) {
-        return false;
-    }
-
-    for (const auto &item : listItems) {
-        extractPluginLib(item, package);
-    }
-
-    return true;
-}
-
-void Extracter::copyExtraPlugins(const QString& package) {
-    QFileInfo info;
-
-    auto cnf = DeployCore::_config;
-    auto targetPath = cnf->getTargetDir() + "/" + package;
-    auto distro = cnf->getDistroFromPackage(package);
-
-    for (auto extraPlugin : cnf->extraPlugins) {
-
-        if (!PathUtils::isPath(extraPlugin)) {
-            extraPlugin = cnf->qtDir.getPlugins() + "/" + extraPlugin;
-        }
-
-        info.setFile(extraPlugin);
-        if (info.isDir() && cnf->qtDir.isQt(info.absoluteFilePath())) {
-            copyPlugin(info.absoluteFilePath(), package);
-
-        } else if (info.exists()) {
-            _fileManager->copyFile(info.absoluteFilePath(),
-                                  targetPath + distro.getPluginsOutDir());
-
-            extractPluginLib(info.absoluteFilePath(), package);
-        }
-    }
-}
-
-void Extracter::copyPlugins(const QStringList &list, const QString& package) {
-    for (const auto &plugin : list) {
-        if (!copyPlugin(plugin, package)) {
-            QuasarAppUtils::Params::log("not copied!",
-                                               QuasarAppUtils::Warning);
-        }
-    }
-    copyExtraPlugins(package);
-}
-
 void Extracter::extractAllTargets() {
     auto cfg = DeployCore::_config;
     for (auto i = cfg->packages().cbegin(); i != cfg->packages().cend(); ++i) {
@@ -158,41 +97,51 @@ void Extracter::clear() {
     }
 }
 
-void Extracter::extractPlatforms(const PluginsParser& pluginsParser,
-                                 const QString& package) {
+void Extracter::copyExtraPlugins(const QString& package) {
+    QFileInfo info;
 
     auto cnf = DeployCore::_config;
-    QStringList plugins;
+    auto targetPath = cnf->getTargetDir() + "/" + package;
     auto distro = cnf->getDistroFromPackage(package);
 
-    pluginsParser.scanPlatforms(cnf->getPlatform(), plugins);
-    auto targetPath = cnf->getTargetDir() + "/" + package +
-            "/" + distro.getPluginsOutDir() + "/platforms";
+    for (auto extraPlugin : distro.extraPlugins()) {
 
-    for (const auto& plugin :plugins) {
-        _fileManager->copyFile(plugin, targetPath);
+        if (!PathUtils::isPath(extraPlugin)) {
+            extraPlugin = cnf->qtDir.getPlugins() + "/" + extraPlugin;
+        }
 
-        extractPluginLib(plugin, package);
+        info.setFile(extraPlugin);
+        if (info.exists()) {
+            _fileManager->copyFile(info.absoluteFilePath(),
+                                  targetPath + distro.getPluginsOutDir());
+
+            extractPluginLib(info.absoluteFilePath(), package);
+        }
     }
 }
 
 void Extracter::extractPlugins() {
     auto cnf = DeployCore::_config;
-    PluginsParser pluginsParser;
 
     for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
+        auto targetPath = cnf->getTargetDir() + "/" + i.key();
         auto distro = cnf->getDistroFromPackage(i.key());
 
         QStringList plugins;
-        pluginsParser.scan(cnf->qtDir.getPlugins(), plugins, _packageDependencyes[i.key()].qtModules());
-        copyPlugins(plugins, i.key());
+        QStringList listItems;
 
-        if (QuasarAppUtils::Params::isEndable("allPlatforms")) {
-            copyPlugin("platforms", i.key());
-        } else {
-            extractPlatforms(pluginsParser, i.key());
+        _pluginsParser->scan(cnf->qtDir.getPlugins(), plugins, _packageDependencyes[i.key()].qtModules(), i.key());
+
+        _fileManager->copyFiles(plugins, targetPath + distro.getPluginsOutDir(), 1,
+                                 QStringList() << ".so.debug" << "d.dll" << ".pdb", &listItems);
+
+        for (const auto &item : listItems) {
+            extractPluginLib(item, i.key());
         }
+
+        copyExtraPlugins(i.key());
     }
+
 }
 
 void Extracter::copyLibs(const QSet<QString> &files, const QString& package) {
@@ -485,15 +434,17 @@ void Extracter::extract(const QString &file,
 
 }
 
-Extracter::Extracter(FileManager *fileManager, ConfigParser *cqt,
+Extracter::Extracter(FileManager *fileManager, PluginsParser *pluginsParser, ConfigParser *cqt,
                      DependenciesScanner *scaner):
     _scaner(scaner),
     _fileManager(fileManager),
+    _pluginsParser(pluginsParser),
     _cqt(cqt)
     {
 
     assert(_cqt);
     assert(_fileManager);
+    assert(_pluginsParser);
     assert(DeployCore::_config);
 
     _metaFileManager = new MetaFileManager(_fileManager);

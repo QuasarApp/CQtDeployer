@@ -15,6 +15,7 @@
 #include "filemanager.h"
 #include "packing.h"
 #include "pathutils.h"
+#include "pluginsparser.h"
 #include "quasarapp.h"
 
 #include <cassert>
@@ -535,12 +536,11 @@ bool ConfigParser::parseDeployMode() {
     auto listNamesMasks = QuasarAppUtils::Params::getStrArg("extraLibs").
             split(DeployCore::getSeparator(0));
 
-    auto listExtraPlugin = QuasarAppUtils::Params::getStrArg("extraPlugin").
-            split(DeployCore::getSeparator(0));
+
 
     setExtraPath(listLibDir);
     setExtraNames(listNamesMasks);
-    setExtraPlugins(listExtraPlugin);
+    initPlugins();
 
     if (!initQmake()) {
         return false;
@@ -859,6 +859,10 @@ void ConfigParser::initIgnoreEnvList() {
 
 }
 
+void ConfigParser::initPluginsList() {
+    _pluginsParser->initDeployPluginsList();
+}
+
 QString ConfigParser::getPathFrmoQmakeLine(const QString &in) const {
     auto list = in.split(':');
     if (list.size() > 1) {
@@ -1110,11 +1114,40 @@ void ConfigParser::setExtraNames(const QStringList &value) {
     }
 }
 
-void ConfigParser::setExtraPlugins(const QStringList &value) {
-    for (const auto &i : value) {
-        if (!i.isEmpty())
-            _config.extraPlugins.append(i);
+bool ConfigParser::initPlugins() {
+
+    auto listExtraPlugin = QuasarAppUtils::Params::getStrArg("extraPlugin").
+            split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
+
+    auto listEnablePlugins = QuasarAppUtils::Params::getStrArg("enablePlugins").
+            split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
+
+    auto listDisablePlugins = QuasarAppUtils::Params::getStrArg("disablePlugins").
+            split(DeployCore::getSeparator(0), QString::SkipEmptyParts);
+
+    auto erroLog = [](const QString &flag){
+            QuasarAppUtils::Params::log(QString("Set %0 fail, because you try set %0 for not inited package."
+                                               " Use 'targetPackage' flag for init the packages").arg(flag),
+                                               QuasarAppUtils::Error);
+        };
+
+
+    if (listExtraPlugin.size() && !parsePackagesPrivate(_config.packagesEdit(), listExtraPlugin, &DistroModule::addExtraPlugins)) {
+        erroLog("extra plugins");
+        return false;
     }
+
+    if (listEnablePlugins.size() && !parsePackagesPrivate(_config.packagesEdit(), listEnablePlugins, &DistroModule::addEnabled)) {
+        erroLog("enable plugins");
+        return false;
+    }
+
+    if (listDisablePlugins.size() && !parsePackagesPrivate(_config.packagesEdit(), listDisablePlugins, &DistroModule::addDisabled)) {
+        erroLog("disable plugins");
+        return false;
+    }
+
+    return true;
 }
 
 QString ConfigParser::findWindowsPath(const QString& path) const {
@@ -1222,12 +1255,14 @@ bool ConfigParser::smartMoveTargets() {
     return result;
 }
 
-ConfigParser::ConfigParser(FileManager *filemanager, DependenciesScanner* scaner, Packing *pac):
+ConfigParser::ConfigParser(FileManager *filemanager, PluginsParser *pluginsParser, DependenciesScanner* scaner, Packing *pac):
     _fileManager(filemanager),
+    _pluginsParser(pluginsParser),
     _scaner(scaner),
     _packing(pac) {
 
     assert(_fileManager);
+    assert(_pluginsParser);
     assert(_scaner);
     assert(_packing);
 

@@ -30,6 +30,24 @@ public:
     bool copyFile(const QString &file, const QString &target,
                   QStringList *mask = nullptr, bool targetIsFile = false);
 
+    /**
+     * @brief copyFiles - copy files (source) to (to)
+     * @param source - copy source files
+     * @param to - distanation folder
+     * @param saveStructSize - size of name of source file to save after copy. example:
+     *  copy /Foo/A.txt /Bar/ (size 0) - result file copyed to /Bar/A.txt
+     *  copy /Foo/A.txt /Bar/ (size 1) - to /Bar/Foo/A.txt
+     * @param filter - list of forbiden names for ignore files
+     * @param listOfCopiedItems - list of copyed files
+     * @param mask - mask of copyed files
+     * @return true if files copyed
+     */
+    bool copyFiles(const QStringList &source, const QString &to, int saveStructSize = 0,
+                    const QStringList &filter = QStringList(),
+                    QStringList *listOfCopiedItems = nullptr,
+                    QStringList *mask = nullptr);
+
+
     bool removeFile(const QString &file);
     bool removeFile(const QFileInfo &file);
 
