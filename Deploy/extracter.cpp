@@ -99,7 +99,6 @@ void Extracter::clear() {
 
 void Extracter::copyExtraPlugins(const QString& package) {
 
-    _pluginsParser->initDeployPluginsList();
 
     QFileInfo info;
 
@@ -125,6 +124,8 @@ void Extracter::copyExtraPlugins(const QString& package) {
 
 void Extracter::extractPlugins() {
     auto cnf = DeployCore::_config;
+
+    _pluginsParser->initDeployPluginsList();
 
     for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
         auto targetPath = cnf->getTargetDir() + "/" + i.key();

@@ -46,9 +46,9 @@ static const PluginModuleMapping pluginModuleMappings[] =
     {"geometryloaders", DeployCore::QtModule::Qt3DRendererModule},
     {"webview", DeployCore::QtModule::QtWebViewModule},
     {"xcbglintegrations", DeployCore::QtModule::QtGuiModule},
-    {"wayland-decoration-client", DeployCore::QtModule::QtGuiModule},
-    {"wayland-graphics-integration-client", DeployCore::QtModule::QtGuiModule},
-    {"wayland-graphics-integration-server", DeployCore::QtModule::QtGuiModule},
+    {"wayland-decoration-client", DeployCore::QtModule::QtQuickModule},
+    {"wayland-graphics-integration-client", DeployCore::QtModule::QtQuickModule},
+    {"wayland-graphics-integration-server", DeployCore::QtModule::QtQuickModule},
     {"wayland-shell-integration", DeployCore::QtModule::QtGuiModule},
 
 
@@ -58,6 +58,7 @@ static const PlatformMapping platformMappings[] =
 {
     {"qminimal",                Unix | Win },
     {"qminimalegl",             Unix | Win },
+    {"qoffscreen",              Unix | Win},
     {"qandroid",                UnknownPlatform },
     {"qbsdfb",                  UnknownPlatform },
     {"qcocoa",                  UnknownPlatform },
@@ -186,19 +187,6 @@ void PluginsParser::scanPlatforms(const QString& package, QList<QString>& disabl
     auto plugins = QDir(platformPluginPath).entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
 
     for (const auto &plugin: plugins) {
-        QStringList ignoreList = {{".so.debug"}, {"d.dll"}, {".pdb"}};
-
-        bool ignore = false;
-        for (const auto& i: ignoreList) {
-            if (plugin.fileName().contains(i, ONLY_WIN_CASE_INSENSIATIVE)) {
-                ignore = true;
-                break;
-            }
-        }
-
-        if (ignore) {
-            continue;
-        }
 
         auto pluginPlatform = platformForPlugin(getPluginNameFromFile(plugin.baseName()));
         if (!(platform & pluginPlatform)) {
