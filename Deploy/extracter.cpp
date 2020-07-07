@@ -108,16 +108,35 @@ void Extracter::copyExtraPlugins(const QString& package) {
 
     for (auto extraPlugin : distro.extraPlugins()) {
 
-        if (!PathUtils::isPath(extraPlugin)) {
-            extraPlugin = cnf->qtDir.getPlugins() + "/" + extraPlugin;
-        }
-
         info.setFile(extraPlugin);
-        if (info.exists()) {
-            _fileManager->copyFile(info.absoluteFilePath(),
-                                  targetPath + distro.getPluginsOutDir());
+
+        if (info.isFile()) {
+            if (!_fileManager->copyFile(info.absoluteFilePath(),
+                                   targetPath + distro.getPluginsOutDir())) {
+
+                QuasarAppUtils::Params::log("fail to copy extra plugin from:" + info.absoluteFilePath() +
+                                            " to: " + targetPath + distro.getPluginsOutDir(),
+                                            QuasarAppUtils::Warning);
+            }
 
             extractPluginLib(info.absoluteFilePath(), package);
+            continue;
+        }
+
+        if (info.isDir()) {
+            QStringList plugins;
+            if (!_fileManager->copyFolder(info.absoluteFilePath(),
+                                     targetPath + distro.getPluginsOutDir() + info.fileName()
+                                          , {}, &plugins)) {
+
+                QuasarAppUtils::Params::log("fail to copy extra plugin from:" + info.absoluteFilePath() +
+                                            " to: " + targetPath + distro.getPluginsOutDir(),
+                                            QuasarAppUtils::Warning);
+            }
+
+            for (const auto& plugin : plugins) {
+                extractPluginLib(plugin, package);
+            }
         }
     }
 }

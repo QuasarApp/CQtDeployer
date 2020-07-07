@@ -17,10 +17,6 @@ public:
     static QSet<QString> qtLibs(const QString &distDir = DISTRO_DIR);
     static QSet<QString> onlyC(const QString &distDir = DISTRO_DIR);
     static QSet<QString> qmlLibs(const QString &distDir = DISTRO_DIR);
-    static QSet<QString> qmlLibsExtractPlugins(const QString &distDir = DISTRO_DIR);
-    static QSet<QString> separetedPackageslibs(const QString &distDir = DISTRO_DIR);
-
-    static QSet<QString> outTestLibs(const QString &distDir = DISTRO_DIR);
 
     static QSet<QString> qtWithoutTr(const QString &distDir = DISTRO_DIR);
     static QSet<QString> qtWebEngine(const QString &distDir = DISTRO_DIR);

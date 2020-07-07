@@ -18,13 +18,14 @@ public:
     ModulesQt513();
 
     static QSet<QString> ignoreFilter(const QSet<QString>& input, const QString& filter);
+    static QSet<QString> replace(const QSet<QString> &data, const QMap<QString, QString>& replaceMap);
+
+
     static QSet<QString> onlyC(const QString &distDir = DISTRO_DIR);
     static QSet<QString> qtLibs(const QString &distDir = DISTRO_DIR);
     static QSet<QString> qmlLibs(const QString &distDir = DISTRO_DIR);
-    static QSet<QString> qmlLibsExtractPlugins(const QString &distDir = DISTRO_DIR);
-    static QSet<QString> separetedPackageslibs(const QString &distDir = DISTRO_DIR);
-
-    static QSet<QString> outTestLibs(const QString &distDir = DISTRO_DIR);
+    static QSet<QString> testDistroLibs(const QString &distDir = DISTRO_DIR);
+    static QSet<QString> testOutLibs(const QString &distDir = DISTRO_DIR);
 
     static QSet<QString> qtWithoutTr(const QString &distDir = DISTRO_DIR);
     static QSet<QString> qtWebEngine(const QString &distDir = DISTRO_DIR);

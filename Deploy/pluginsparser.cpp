@@ -84,7 +84,7 @@ static const PlatformMapping platformMappings[] =
 
 };
 
-quint64 PluginsParser::qtModuleForPlugin(const QString &subDirName) {
+quint64 PluginsParser::qtModuleForPlugin(const QString &subDirName) const {
     const auto end = std::end(pluginModuleMappings);
 
     const auto result =
@@ -124,17 +124,30 @@ bool PluginsParser::scan(const QString& pluginPath,
                          const QString& package) {
 
     auto plugins = QDir(pluginPath).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-
-    QuasarAppUtils::Params::log("Modules Number :" + QString::number(qtModules), QuasarAppUtils::Info);
-
     for (const auto &plugin: plugins) {
-        auto module = qtModuleForPlugin(plugin.fileName());
-        if (qtModules & module) {
-            scanPluginGroup(plugin.absoluteFilePath(), resDependencies, package);
-        }
+        scanPluginGroup(plugin, resDependencies, package, qtModules);
     }
 
     return true;
+}
+
+void PluginsParser::addPlugins(const QStringList& list, const QString& package, QHash<QString, QSet<QString>>& container) {
+    const DeployConfig* cnf = DeployCore::_config;
+
+    for (const auto plugin: list) {
+        if (QFileInfo(cnf->qtDir.getPlugins() + "/" + plugin).isDir()) {
+             auto listPlugins = QDir(cnf->qtDir.getPlugins() + "/" + plugin).entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
+
+             for (const auto &plugin: listPlugins) {
+                 QuasarAppUtils::Params::log("Disable plugin: " + plugin.baseName(), QuasarAppUtils::Debug);
+                 container[package].insert(getPluginNameFromFile( plugin.baseName()));
+             }
+
+        } else {
+            QuasarAppUtils::Params::log("Disable plugin: " + plugin, QuasarAppUtils::Debug);
+            container[package].insert(getPluginNameFromFile(plugin));
+        }
+    }
 }
 
 bool PluginsParser::initDeployPluginsList() {
@@ -156,23 +169,8 @@ bool PluginsParser::initDeployPluginsList() {
 
         auto forbidenPlugins = defaultForbidenPlugins() + disablePlugins + desabledFromPlatform;
 
-        for (const auto plugin: forbidenPlugins) {
-            if (!enablePlugins.contains(plugin)) {
-                if (QFileInfo(cnf->qtDir.getPlugins() + "/" + plugin).isDir()) {
-                     auto listPlugins = QDir(cnf->qtDir.getPlugins() + "/" + plugin).entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
-
-                     for (const auto &plugin: listPlugins) {
-                         QuasarAppUtils::Params::log("Disable plugin: " + plugin.baseName(), QuasarAppUtils::Debug);
-                         _disabledPlugins[package.key()].insert(getPluginNameFromFile( plugin.baseName()));
-                     }
-
-                } else {
-                    QuasarAppUtils::Params::log("Disable plugin: " + plugin, QuasarAppUtils::Debug);
-                    _disabledPlugins[package.key()].insert(getPluginNameFromFile(plugin));
-                }
-            }
-        }
-
+        addPlugins(forbidenPlugins, package.key(), _disabledPlugins);
+        addPlugins(enablePlugins, package.key(), _enabledPlugins);
     }
 
     return true;
@@ -197,18 +195,28 @@ void PluginsParser::scanPlatforms(const QString& package, QList<QString>& disabl
     }
 }
 
-void PluginsParser::scanPluginGroup(const QString& pluginFolder, QStringList &result, const QString &package) const {
-    auto plugins = QDir(pluginFolder).entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
+void PluginsParser::scanPluginGroup(const QFileInfo& plugin,
+                                    QStringList &result,
+                                    const QString &package,
+                                    DeployCore::QtModule qtModules) const {
+
+    auto plugins = QDir(plugin.absoluteFilePath()).entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
+    auto module = qtModuleForPlugin(plugin.fileName());
 
     for (const auto& info: plugins) {
-        if (!isDisavledPlugin(getPluginNameFromFile(info.baseName()), package)) {
+        if (isEnabledPlugin(getPluginNameFromFile(info.baseName()), package) ||
+                (!isDisabledPlugin(getPluginNameFromFile(info.baseName()), package) && (qtModules & module))) {
             result += info.absoluteFilePath();
         }
     }
 }
 
-bool PluginsParser::isDisavledPlugin(const QString &plugin, const QString &package) const {
+bool PluginsParser::isDisabledPlugin(const QString &plugin, const QString &package) const {
     return _disabledPlugins[package].contains(plugin);
+}
+
+bool PluginsParser::isEnabledPlugin(const QString &plugin, const QString &package) const {
+    return _enabledPlugins[package].contains(plugin);
 }
 
 QStringList PluginsParser::defaultForbidenPlugins() {

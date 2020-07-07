@@ -101,6 +101,9 @@ private slots:
     // tested flags qmlDir qmake
     void testQt();
 
+
+    void testWebEngine();
+
     // tested flags confFile
     void testConfFile();
 
@@ -132,7 +135,6 @@ private slots:
 
     void testEmptyParamsString();
 
-    void testWebEngine();
 
     // extractPlugins flags
     void testExtractPlugins();
@@ -622,7 +624,7 @@ void deploytest::testQIF() {
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
-                   "qif", "verbose"}, &comapareTree, {}, true);
+                   "qif", "qifFromSystem", "verbose"}, &comapareTree, {}, true);
 
     // test clear for qif
     runTestParams({"clear", "verbose"}, {} , {}, true);
@@ -630,7 +632,7 @@ void deploytest::testQIF() {
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
-                   "qif",
+                   "qif", "qifFromSystem",
                    "-qifStyle", "quasar",
                    "-qifBanner", TestBinDir + "/../../res/cqtdeployer banner.png",
                    "-qifLogo", TestBinDir + "/../../res/icon.png",
@@ -658,7 +660,8 @@ void deploytest::testQIF() {
                    "-pluginOut", "/p",
                    "-qmlOut", "/q",
                    "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
-                   "-targetPackage", packageString, "qif"}, &comapareTreeMulti, {}, true);
+                   "-targetPackage", packageString,
+                   "qif", "qifFromSystem"}, &comapareTreeMulti, {}, true);
 
 }
 
@@ -1483,7 +1486,7 @@ void deploytest::testPackages() {
 
     auto packageString = "package1;" + QFileInfo(target1).absoluteFilePath() + ",package2/ZzZ;" + QFileInfo(target2).absoluteFilePath();
 
-    comapareTree = Modules::separetedPackageslibs();
+    comapareTree = Modules::testDistroLibs(DISTRO_DIR);
 
     runTestParams({"-bin", bin, "force-clear",
                    "-binOut", "/lol",
@@ -1860,7 +1863,11 @@ void deploytest::testExtraPlugins() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
-                   "-extraPlugin", "sqldrivers"}, &comapareTree);
+                   "-enablePlugins", "sqldrivers"}, &comapareTree);
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-extraPlugin", TestQtDir + "/plugins/sqldrivers"}, &comapareTree);
 }
 
 void deploytest::testTargetDir() {
@@ -2169,7 +2176,8 @@ void deploytest::testOutDirs() {
 
 
 #endif
-    auto comapareTree = Modules::outTestLibs();
+
+    auto comapareTree = Modules::testOutLibs();
 
     runTestParams({"-bin", bin, "clear" ,
                    "-binOut", "/lol",

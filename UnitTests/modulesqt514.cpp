@@ -59,64 +59,6 @@ QSet<QString> ModulesQt514::qmlLibs(const QString &distDir)
     return res;
 }
 
-QSet<QString> ModulesQt514::qmlLibsExtractPlugins(const QString &distDir)
-{
-    auto res = ModulesQt513::qmlLibsExtractPlugins(distDir);
-    return res;
-}
-
-QSet<QString> ModulesQt514::separetedPackageslibs(const QString &distDir)
-{
-    TestUtils utils;
-    auto res = ModulesQt513::separetedPackageslibs(distDir);
-
-#ifdef Q_OS_WIN
-    res += utils.createTree(
-            {
-                "./" + distDir + "/lolLib/Qt5QmlModels.dll",
-                "./" + distDir + "/package2/ZzZ/Qt5QmlModels.dll",
-                "./" + distDir + "/package2/ZzZ/Qt5QmlWorkerScript.dll",
-            }
-        );
-#else
-    res += utils.createTree(
-            {
-                "./" + distDir + "/lolLib/libQt5QmlModels.so",
-                "./" + distDir + "/p/wayland-graphics-integration-client/libvulkan-server.so",
-                "./" + distDir + "/p/wayland-graphics-integration-server/libvulkan-server.so",
-                "./" + distDir + "/package2/ZzZ/lib/libQt5QmlModels.so",
-                "./" + distDir + "/package2/ZzZ/lib/libQt5QmlWorkerScript.so",
-                "./" + distDir + "/package2/ZzZ/plugins/wayland-graphics-integration-client/libvulkan-server.so",
-                "./" + distDir + "/package2/ZzZ/plugins/wayland-graphics-integration-server/libvulkan-server.so",
-            }
-        );
-#endif
-
-    return res;
-}
-
-QSet<QString> ModulesQt514::outTestLibs(const QString &distDir)
-{
-    TestUtils utils;
-    auto res = ModulesQt513::outTestLibs(distDir);
-
-#ifdef Q_OS_WIN
-    res += utils.createTree({
-        "./" + distDir + "/lolLib/Qt5QmlModels.dll",
-        "./" + distDir + "/lolLib/Qt5QmlWorkerScript.dll",
-    });
-#else
-    res += utils.createTree({
-        "./" + distDir + "/lolLib/libQt5QmlModels.so",
-        "./" + distDir + "/lolLib/libQt5QmlWorkerScript.so",
-        "./" + distDir + "/p/wayland-graphics-integration-client/libvulkan-server.so",
-        "./" + distDir + "/p/wayland-graphics-integration-server/libvulkan-server.so"
-    });
-#endif
-
-    return res;
-}
-
 QSet<QString> ModulesQt514::qtWithoutTr(const QString &distDir)
 {
     TestUtils utils;
