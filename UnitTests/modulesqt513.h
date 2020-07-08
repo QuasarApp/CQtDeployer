@@ -17,19 +17,19 @@ class ModulesQt513
 public:
     ModulesQt513();
 
-    static QSet<QString> ignoreFilter(const QSet<QString>& input, const QString& filter);
-    static QSet<QString> replace(const QSet<QString> &data, const QMap<QString, QString>& replaceMap);
+    virtual QSet<QString> ignoreFilter(const QSet<QString>& input, const QString& filter) const;
+    virtual QSet<QString> replace(const QSet<QString> &data, const QMap<QString, QString>& replaceMap) const;
 
 
-    static QSet<QString> onlyC(const QString &distDir = DISTRO_DIR);
-    static QSet<QString> qtLibs(const QString &distDir = DISTRO_DIR);
-    static QSet<QString> qmlLibs(const QString &distDir = DISTRO_DIR);
-    static QSet<QString> testDistroLibs(const QString &distDir = DISTRO_DIR);
-    static QSet<QString> testOutLibs(const QString &distDir = DISTRO_DIR);
+    virtual QSet<QString> onlyC(const QString &distDir = DISTRO_DIR) const;
+    virtual QSet<QString> qtLibs(const QString &distDir = DISTRO_DIR) const;
+    virtual QSet<QString> qmlLibs(const QString &distDir = DISTRO_DIR) const;
+    virtual QSet<QString> testDistroLibs(const QString &distDir = DISTRO_DIR) const;
+    virtual QSet<QString> testOutLibs(const QString &distDir = DISTRO_DIR) const;
 
-    static QSet<QString> qtWithoutTr(const QString &distDir = DISTRO_DIR);
-    static QSet<QString> qtWebEngine(const QString &distDir = DISTRO_DIR);
-    static QSet<QString> testEmptyParamsTree(const QString &distDir = DISTRO_DIR);
+    virtual QSet<QString> qtWithoutTr(const QString &distDir = DISTRO_DIR) const;
+    virtual QSet<QString> qtWebEngine(const QString &distDir = DISTRO_DIR) const;
+    virtual QSet<QString> testEmptyParamsTree(const QString &distDir = DISTRO_DIR) const;
 
 
 };

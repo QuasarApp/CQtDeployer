@@ -14,12 +14,12 @@ class ModulesQt514 : public ModulesQt513
 public:
     ModulesQt514();
 
-    static QSet<QString> qtLibs(const QString &distDir = DISTRO_DIR);
-    static QSet<QString> onlyC(const QString &distDir = DISTRO_DIR);
-    static QSet<QString> qmlLibs(const QString &distDir = DISTRO_DIR);
+    QSet<QString> qtLibs(const QString &distDir = DISTRO_DIR) const override;
+    QSet<QString> onlyC(const QString &distDir = DISTRO_DIR) const override;
+    QSet<QString> qmlLibs(const QString &distDir = DISTRO_DIR) const override;
 
-    static QSet<QString> qtWithoutTr(const QString &distDir = DISTRO_DIR);
-    static QSet<QString> qtWebEngine(const QString &distDir = DISTRO_DIR);
+    QSet<QString> qtWithoutTr(const QString &distDir = DISTRO_DIR) const override;
+    QSet<QString> qtWebEngine(const QString &distDir = DISTRO_DIR) const override;
 };
 
 #endif // MODULESQT514_H

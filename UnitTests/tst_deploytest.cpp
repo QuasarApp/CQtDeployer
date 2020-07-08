@@ -510,7 +510,7 @@ void deploytest::testEmptyParamsString() {
 
     //    QDir("./" + DISTRO_DIR).removeRecursively();
 
-    //    auto comapareTree = Modules::testEmptyParamsTree();
+    //    auto comapareTree = TestModule.testEmptyParamsTree();
 
     //    runTestParams({}, &comapareTree);
 
@@ -519,7 +519,7 @@ void deploytest::testEmptyParamsString() {
 
     //    runTestParams({"clear"}, &emptyTree);
 
-    //    comapareTree = Modules::testEmptyParamsTree("testDeployDir");
+    //    comapareTree = TestModule.testEmptyParamsTree("testDeployDir");
 
     //    runTestParams({"-bin", "./UnitTests",
     //                  "-targetDir", "./testDeployDir"}, &comapareTree);
@@ -538,7 +538,7 @@ void deploytest::testWebEngine() {
     QString bin = TestBinDir + "quicknanobrowser";
     QString qmake = TestQtDir + "bin/qmake";
 
-    auto comapareTree = Modules::qtWebEngine();
+    auto comapareTree = TestModule.qtWebEngine();
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
@@ -559,7 +559,7 @@ void deploytest::testExtractPlugins() {
     QString qmake = TestQtDir + "bin/qmake.exe";
 
 #endif
-    auto comapareTree = Modules::qmlLibs();
+    auto comapareTree = TestModule.qmlLibs();
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
@@ -1352,8 +1352,8 @@ void deploytest::testConfFile() {
     QVERIFY(QuasarAppUtils::Params::isEndable("clear"));
     QVERIFY(QuasarAppUtils::Params::isEndable("bin"));
 
-    comapareTree += Modules::qtLibs();
-    comapareTree += Modules::qmlLibs();
+    comapareTree += TestModule.qtLibs();
+    comapareTree += TestModule.qmlLibs();
 
     runTestParams({"-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json",
                    "-qmake", qmake,
@@ -1366,9 +1366,9 @@ void deploytest::testConfFile() {
     QFile::remove(TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json");
 
     // Test generar string in confFile
-    comapareTree = Modules::qtLibs();
+    comapareTree = TestModule.qtLibs();
 
-    comapareTree = Modules::ignoreFilter(comapareTree, "/plugins/p");
+    comapareTree = TestModule.ignoreFilter(comapareTree, "/plugins/p");
 #ifdef Q_OS_UNIX
     comapareTree -= utils.createTree(
     {
@@ -1426,10 +1426,10 @@ void deploytest::testConfFile() {
     QVERIFY(utils.deployFile(":/testResurces/testRes/testMultiPackageConfig.json", file,
     {{"$BIN_DIR", TestBinDir.toLatin1()}}));
 
-    comapareTree = Modules::onlyC(DISTRO_DIR + "/Dstro1") +
-            Modules::qtLibs(DISTRO_DIR + "/Dstro2") +
-            Modules::qmlLibs(DISTRO_DIR + "/Dstro2") +
-            Modules::qtWebEngine(DISTRO_DIR + "/Dstro2");
+    comapareTree = TestModule.onlyC(DISTRO_DIR + "/Dstro1") +
+            TestModule.qtLibs(DISTRO_DIR + "/Dstro2") +
+            TestModule.qmlLibs(DISTRO_DIR + "/Dstro2") +
+            TestModule.qtWebEngine(DISTRO_DIR + "/Dstro2");
 
 #ifdef Q_OS_LINUX
     auto qmlDir = TestBinDir + "/../";
@@ -1486,7 +1486,7 @@ void deploytest::testPackages() {
 
     auto packageString = "package1;" + QFileInfo(target1).absoluteFilePath() + ",package2/ZzZ;" + QFileInfo(target2).absoluteFilePath();
 
-    comapareTree = Modules::testDistroLibs(DISTRO_DIR);
+    comapareTree = TestModule.testDistroLibs(DISTRO_DIR);
 
     runTestParams({"-bin", bin, "force-clear",
                    "-binOut", "/lol",
@@ -1529,7 +1529,7 @@ void deploytest::testQt() {
 #endif
 
 
-    auto comapareTree = Modules::qtLibs();
+    auto comapareTree = TestModule.qtLibs();
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake}, &comapareTree);
@@ -1543,14 +1543,14 @@ void deploytest::testQt() {
 #endif
 
 
-    comapareTree = Modules::qtWithoutTr();
+    comapareTree = TestModule.qtWithoutTr();
 
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake, "noTranslations"}, &comapareTree);
 
 
-    comapareTree = Modules::qmlLibs();
+    comapareTree = TestModule.qmlLibs();
 
 #ifdef Q_OS_UNIX
     bin = TestBinDir + "TestQMLWidgets";
@@ -1682,7 +1682,7 @@ void deploytest::testIgnore() {
                    "-ignoreEnv", TestQtDir + "/lib," + TestQtDir + "/bin" }, &comapareTree);
 
 
-    comapareTree = Modules::qtLibs() - removeTree;
+    comapareTree = TestModule.qtLibs() - removeTree;
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
@@ -1851,7 +1851,7 @@ void deploytest::testExtraPlugins() {
                 });
 #endif
 
-    auto comapareTree = Modules::qtLibs();
+    auto comapareTree = TestModule.qtLibs();
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
@@ -2039,7 +2039,7 @@ void deploytest::testSystemLib() {
     QString qmake = TestQtDir + "bin/qmake.exe";
     bin = TestBinDir + "QtWidgetsProject.exe";
 
-    comapareTree += Modules::qtLibs();
+    comapareTree += TestModule.qtLibs();
 
     comapareTree -= utils.createTree(
     {
@@ -2177,7 +2177,7 @@ void deploytest::testOutDirs() {
 
 #endif
 
-    auto comapareTree = Modules::testOutLibs();
+    auto comapareTree = TestModule.testOutLibs();
 
     runTestParams({"-bin", bin, "clear" ,
                    "-binOut", "/lol",

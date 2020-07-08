@@ -13,13 +13,13 @@ ModulesQt514::ModulesQt514()
 
 }
 
-QSet<QString> ModulesQt514::qtLibs(const QString &distDir)
+QSet<QString> ModulesQt514::qtLibs(const QString &distDir) const
 {
     TestUtils utils;
     auto res = ModulesQt513::qtLibs(distDir);
 
 #ifdef Q_OS_WIN
-    res += utils.createTree({
+    res -= utils.createTree({
     });
 #else
     res += utils.createTree({
@@ -29,14 +29,14 @@ QSet<QString> ModulesQt514::qtLibs(const QString &distDir)
     return res;
 }
 
-QSet<QString> ModulesQt514::onlyC(const QString &distDir)
+QSet<QString> ModulesQt514::onlyC(const QString &distDir) const
 {
     TestUtils utils;
     auto res = ModulesQt513::onlyC(distDir);
     return res;
 }
 
-QSet<QString> ModulesQt514::qmlLibs(const QString &distDir)
+QSet<QString> ModulesQt514::qmlLibs(const QString &distDir) const
 {
     TestUtils utils;
 
@@ -59,7 +59,7 @@ QSet<QString> ModulesQt514::qmlLibs(const QString &distDir)
     return res;
 }
 
-QSet<QString> ModulesQt514::qtWithoutTr(const QString &distDir)
+QSet<QString> ModulesQt514::qtWithoutTr(const QString &distDir) const
 {
     TestUtils utils;
     auto res = ModulesQt513::qtWithoutTr(distDir);
@@ -74,7 +74,7 @@ QSet<QString> ModulesQt514::qtWithoutTr(const QString &distDir)
     return res;
 }
 
-QSet<QString> ModulesQt514::qtWebEngine(const QString &distDir)
+QSet<QString> ModulesQt514::qtWebEngine(const QString &distDir) const
 {
     TestUtils utils;
 
