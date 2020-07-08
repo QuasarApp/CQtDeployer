@@ -1827,7 +1827,6 @@ void deploytest::testExtraPlugins() {
 
     auto pluginTree = utils.createTree(
     {
-                    "./" + DISTRO_DIR + "/bin/qt.conf",
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlodbc.so",
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlpsql.so",
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlite.so",
@@ -1841,7 +1840,6 @@ void deploytest::testExtraPlugins() {
 
     auto pluginTree = utils.createTree(
     {
-                    "./" + DISTRO_DIR + "/qt.conf",
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/qsqlmysql.dll",
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/qsqlodbc.dll",
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/qsqlite.dll",
@@ -1868,6 +1866,20 @@ void deploytest::testExtraPlugins() {
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                    "-extraPlugin", TestQtDir + "/plugins/sqldrivers"}, &comapareTree);
+
+    comapareTree -= pluginTree;
+    comapareTree -= utils.createTree(
+    {
+                    "./" + DISTRO_DIR + "/plugins/platforms/libqxcb.so",
+                    "./" + DISTRO_DIR + "/plugins/xcbglintegrations/libqxcb-egl-integration.so",
+                    "./" + DISTRO_DIR + "/plugins/xcbglintegrations/libqxcb-glx-integration.so",
+                    "./" + DISTRO_DIR + "/lib/libQt5XcbQpa.so",
+
+                });
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-disablePlugins", "qxcb,xcbglintegrations"}, &comapareTree);
 }
 
 void deploytest::testTargetDir() {

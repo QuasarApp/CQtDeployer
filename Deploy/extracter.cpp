@@ -237,7 +237,7 @@ void Extracter::deploy() {
     }
 
     if (!deployMSVC()) {
-        QuasarAppUtils::Params::log("deploy msvc failed");
+        QuasarAppUtils::Params::log("deploy msvc failed", QuasarAppUtils::Warning);
     }
 
     _metaFileManager->createRunMetaFiles();
