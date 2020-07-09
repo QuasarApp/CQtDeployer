@@ -234,18 +234,23 @@ void DeployCore::help() {
                 {"-releaseDate [package;val,val]", "Sets release date for package"},
                 {"-icon [package;val,val]", "Sets path to icon for package"},
                 {"-publisher [package;val,val]", "Sets publisher for package"},
-                {"-extraPlugin [package;val1;val2,SingeleVal]", "Sets an additional path to extraPlugin of an app"},
-                {"-enablePlugins [package;val1;val2,SingeleVal", "Enable an additional plugin for distribution."
-                 " By default disabled next plugins: " + PluginsParser::defaultForbidenPlugins().join(',')},
-                {"-disablePlugins [package;val1;val2,SingeleVal]", "Disable an additional plugin for distribution. "
+            }
+        },
+
+        {
+            "Part 4 Plugins Control Options", {
+                {"-extraPlugin [package;val1;val2,SingeleVal]", "Sets an additional path to third-party application plug-in"},
+                {"-enablePlugins [package;val1;val2,SingeleVal", "Enables additional plugins for distribution."
+                 " By default disabled next plugins: " + PluginsParser::defaultForbidenPlugins().join(',') + " if you want enable"
+                 " it then use '-enablePlugins " + PluginsParser::defaultForbidenPlugins().join(',') + "' option"},
+                {"-disablePlugins [package;val1;val2,SingeleVal]", "Disables plugins for distribution. "
                  "You can disable any plugin of your Qt build, just see the yourQtFolder/plugins forlder for available plugins."
                  " Example if you want disable qxcb plugin: -disablePlugins qxcb. Note that the name of the plugin is indicated without its extension"},
 
             }
         },
-
         {
-            "Part 4 QtInstallFramework options", {
+            "Part 5 QtInstallFramework options", {
                 {"-qifStyle [path/to/style.css]", "Sets the path to the CSS style file or sets the default style. Available styles: quasar "},
                 {"-qifBanner [path/to/banner.png]", "Sets path to the banner png file."},
                 {"-qifLogo [path/to/logo.png]", "Sets path to the logo png file."},
