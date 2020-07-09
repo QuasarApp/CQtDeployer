@@ -20,18 +20,56 @@ struct DEPLOYSHARED_EXPORT PluginModuleMapping
     quint64 module;
 };
 
+struct DEPLOYSHARED_EXPORT PlatformMapping
+{
+    const char *_pluginName;
+    Platform _platform;
+};
+
+/**
+ * @brief The PluginsParser class - scaner of plugins
+ */
 class DEPLOYSHARED_EXPORT PluginsParser
 {
-private:
-    DependenciesScanner *_libScaner = nullptr;
 
-    quint64 qtModuleForPlugin(const QString &subDirName);
 public:
     PluginsParser();
     bool scan(const QString &pluginPath, QStringList& resDependencies,
-              DeployCore::QtModule qtModules);
+              DeployCore::QtModule qtModules, const QString &package);
 
 
+    bool initDeployPluginsList();
+
+    /**
+     * @brief defaultForbidenPlugins - this method return list of forbiden plugins
+     *  forbidenPlugin - it is a plugin that depends on several Qt modules and significantly increases the size of the distribution.
+     * @return
+     */
+    static QStringList defaultForbidenPlugins();
+private:
+    DependenciesScanner *_libScaner = nullptr;
+    QHash<QString, QSet<QString>> _disabledPlugins;
+    QHash<QString, QSet<QString>> _enabledPlugins;
+
+    quint64 qtModuleForPlugin(const QString &subDirName) const;
+    Platform platformForPlugin(const QString &name) const;
+
+    bool copyPlugin(const QString &plugin, const QString &package);
+    void copyExtraPlugins(const QString &package);
+    void copyPlugins(const QStringList &list, const QString &package);
+    QString getPluginNameFromFile(const QString& baseNaem) const;
+
+    void scanPlatforms(const QString &package, QList<QString> &disabledPlugins);
+    void scanPluginGroup(const QFileInfo &pluginFolder,
+                         QStringList &result,
+                         const QString &package,
+                         DeployCore::QtModule qtModules) const;
+    bool isDisabledPlugin(const QString &plugin, const QString &package) const;
+    bool isEnabledPlugin(const QString &plugin, const QString &package) const;
+
+    void addPlugins(const QStringList &list,
+                   const QString &package,
+                   QHash<QString, QSet<QString>> &container);
 };
 
 #endif // QTMODULES_H

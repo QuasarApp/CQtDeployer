@@ -13,34 +13,30 @@ ModulesQt514::ModulesQt514()
 
 }
 
-QSet<QString> ModulesQt514::qtLibs(const QString &distDir)
+QSet<QString> ModulesQt514::qtLibs(const QString &distDir) const
 {
     TestUtils utils;
     auto res = ModulesQt513::qtLibs(distDir);
 
 #ifdef Q_OS_WIN
-    res += utils.createTree({
-        {"./" + distDir + "/Qt5QmlModels.dll"},
+    res -= utils.createTree({
     });
 #else
     res += utils.createTree({
-        {"./" + distDir + "/lib/libQt5QmlModels.so"},
-        {"./" + distDir + "/plugins/wayland-graphics-integration-client/libvulkan-server.so"},
-        {"./" + distDir + "/plugins/wayland-graphics-integration-server/libvulkan-server.so"},
     });
 #endif
 
     return res;
 }
 
-QSet<QString> ModulesQt514::onlyC(const QString &distDir)
+QSet<QString> ModulesQt514::onlyC(const QString &distDir) const
 {
     TestUtils utils;
     auto res = ModulesQt513::onlyC(distDir);
     return res;
 }
 
-QSet<QString> ModulesQt514::qmlLibs(const QString &distDir)
+QSet<QString> ModulesQt514::qmlLibs(const QString &distDir) const
 {
     TestUtils utils;
 
@@ -63,84 +59,22 @@ QSet<QString> ModulesQt514::qmlLibs(const QString &distDir)
     return res;
 }
 
-QSet<QString> ModulesQt514::qmlLibsExtractPlugins(const QString &distDir)
-{
-    auto res = ModulesQt513::qmlLibsExtractPlugins(distDir);
-    return res;
-}
-
-QSet<QString> ModulesQt514::separetedPackageslibs(const QString &distDir)
-{
-    TestUtils utils;
-    auto res = ModulesQt513::separetedPackageslibs(distDir);
-
-#ifdef Q_OS_WIN
-    res += utils.createTree(
-            {
-                "./" + distDir + "/lolLib/Qt5QmlModels.dll",
-                "./" + distDir + "/package2/ZzZ/Qt5QmlModels.dll",
-                "./" + distDir + "/package2/ZzZ/Qt5QmlWorkerScript.dll",
-            }
-        );
-#else
-    res += utils.createTree(
-            {
-                "./" + distDir + "/lolLib/libQt5QmlModels.so",
-                "./" + distDir + "/p/wayland-graphics-integration-client/libvulkan-server.so",
-                "./" + distDir + "/p/wayland-graphics-integration-server/libvulkan-server.so",
-                "./" + distDir + "/package2/ZzZ/lib/libQt5QmlModels.so",
-                "./" + distDir + "/package2/ZzZ/lib/libQt5QmlWorkerScript.so",
-                "./" + distDir + "/package2/ZzZ/plugins/wayland-graphics-integration-client/libvulkan-server.so",
-                "./" + distDir + "/package2/ZzZ/plugins/wayland-graphics-integration-server/libvulkan-server.so",
-            }
-        );
-#endif
-
-    return res;
-}
-
-QSet<QString> ModulesQt514::outTestLibs(const QString &distDir)
-{
-    TestUtils utils;
-    auto res = ModulesQt513::outTestLibs(distDir);
-
-#ifdef Q_OS_WIN
-    res += utils.createTree({
-        "./" + distDir + "/lolLib/Qt5QmlModels.dll",
-        "./" + distDir + "/lolLib/Qt5QmlWorkerScript.dll",
-    });
-#else
-    res += utils.createTree({
-        "./" + distDir + "/lolLib/libQt5QmlModels.so",
-        "./" + distDir + "/lolLib/libQt5QmlWorkerScript.so",
-        "./" + distDir + "/p/wayland-graphics-integration-client/libvulkan-server.so",
-        "./" + distDir + "/p/wayland-graphics-integration-server/libvulkan-server.so"
-    });
-#endif
-
-    return res;
-}
-
-QSet<QString> ModulesQt514::qtWithoutTr(const QString &distDir)
+QSet<QString> ModulesQt514::qtWithoutTr(const QString &distDir) const
 {
     TestUtils utils;
     auto res = ModulesQt513::qtWithoutTr(distDir);
 
 #ifdef Q_OS_WIN
     res += utils.createTree({
-        {"./" + distDir + "/Qt5QmlModels.dll"},
     });
 #else
     res += utils.createTree({
-        {"./" + distDir + "/lib/libQt5QmlModels.so"},
-        {"./" + distDir + "/plugins/wayland-graphics-integration-client/libvulkan-server.so"},
-        {"./" + distDir + "/plugins/wayland-graphics-integration-server/libvulkan-server.so"},
     });
 #endif
     return res;
 }
 
-QSet<QString> ModulesQt514::qtWebEngine(const QString &distDir)
+QSet<QString> ModulesQt514::qtWebEngine(const QString &distDir) const
 {
     TestUtils utils;
 
@@ -151,8 +85,6 @@ QSet<QString> ModulesQt514::qtWebEngine(const QString &distDir)
     res += utils.createTree({
         "./" + distDir + "/lib/libQt5QmlModels.so",
         "./" + distDir + "/lib/libQt5QmlWorkerScript.so",
-        "./" + distDir + "/plugins/wayland-graphics-integration-client/libvulkan-server.so",
-        "./" + distDir + "/plugins/wayland-graphics-integration-server/libvulkan-server.so",
         "./" + distDir + "/qml/QtQml/WorkerScript.2/libworkerscriptplugin.so",
         "./" + distDir + "/qml/QtQml/WorkerScript.2/plugins.qmltypes",
         "./" + distDir + "/qml/QtQml/WorkerScript.2/qmldir",

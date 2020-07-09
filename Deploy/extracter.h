@@ -18,14 +18,22 @@
 
 class ConfigParser;
 class MetaFileManager;
+class PluginsParser;
 
 class DEPLOYSHARED_EXPORT Extracter {
-  private:
+
+public:
+    explicit Extracter(FileManager *fileManager, PluginsParser* pluginsParser, ConfigParser * cqt, DependenciesScanner *_scaner);
+    void deploy();
+    void clear();
+
+private:
 
     QHash<QString, DependencyMap> _packageDependencyes;
 
     DependenciesScanner *_scaner;
     FileManager *_fileManager;
+    PluginsParser* _pluginsParser;
     ConfigParser *_cqt;
     MetaFileManager *_metaFileManager;
 
@@ -38,39 +46,30 @@ class DEPLOYSHARED_EXPORT Extracter {
     bool extractQmlAll();
     bool extractQmlFromSource();
     /**
-     * @brief extractLib
-     * @param file file of lib
-     * @param mask  extraction mask. Used to filter extracts objects
-     */
+   * @brief extractLib
+   * @param file file of lib
+   * @param mask  extraction mask. Used to filter extracts objects
+   */
     void extractLib(const QString & file, DependencyMap *depMap, const QString& mask = "");
 
     bool deployMSVC();
     bool extractWebEngine();
-
-
-    bool copyPlugin(const QString &plugin, const QString &package);
-    void copyPlugins(const QStringList &list, const QString &package);
-
     /**
-     * @brief compress - this function join all target dependecies in to one struct
-     */
+   * @brief compress - this function join all target dependecies in to one struct
+   */
     void compress();
     void extractAllTargets();
     void extractPlugins();
+
     void copyFiles();
     void copyTr();
-    void copyExtraPlugins(const QString &package);
     void copyLibs(const QSet<QString> &files, const QString &package);
 
     bool isWebEngine(const QString& package) const;
     void extractPluginLib(const QString &item, const QString &package);
 
-public:
-    explicit Extracter(FileManager *fileManager, ConfigParser * cqt, DependenciesScanner *_scaner);
-    void deploy();
-    void clear();
-
     friend class deploytest;
+    void copyExtraPlugins(const QString &package);
 };
 
 #endif // EXTRACTER_H_H

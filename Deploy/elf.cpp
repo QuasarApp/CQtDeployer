@@ -55,10 +55,12 @@ bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
 
     auto headers = reader.readHeaders();
 
-    if (headers.elfclass == ElfClass::Elf_ELFCLASS32) {
-        info.setPlatform(Unix32);
-    } else if (headers.elfclass == ElfClass::Elf_ELFCLASS64) {
-        info.setPlatform(Unix64);
+    if (headers.elfmachine == ElfMachine::Elf_EM_386) {
+        info.setPlatform(Unix_x86_32);
+    } else if (headers.elfmachine == ElfMachine::Elf_EM_X86_64) {
+        info.setPlatform(Unix_x86_64);
+    } else if (headers.elfmachine == ElfMachine::Elf_EM_ARM) {
+        info.setPlatform(Unix_ARM_32);
     } else {
         info.setPlatform(UnknownPlatform);
         return false;

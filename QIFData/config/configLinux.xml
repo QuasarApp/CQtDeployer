@@ -3,7 +3,7 @@
     <WizardDefaultWidth>640px</WizardDefaultWidth>
     <WizardDefaultHeight>400px</WizardDefaultHeight>
     <Name>CQtDeployer</Name>
-    <Version>1.4.4.1</Version>
+    <Version>1.4.5.0</Version>
     <Title>CQtDeployer</Title>
     <Publisher>QuasarApp</Publisher>
     <StartMenuDir>CQtDeployer</StartMenuDir>
