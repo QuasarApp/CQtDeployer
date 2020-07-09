@@ -35,6 +35,7 @@ public:
     void clear();
 
     bool isValid() const;
+    bool isScaned() const;
 
     friend class DependenciesScanner;
     const QSet<LibInfo>& getAllDep() const;

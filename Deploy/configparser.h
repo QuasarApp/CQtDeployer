@@ -25,13 +25,23 @@ class FileManager;
 class DependenciesScanner;
 class Packing;
 class iDistribution;
+class PluginsParser;
 
 class DEPLOYSHARED_EXPORT ConfigParser
 {
+public:
+    ConfigParser(FileManager *filemanager, PluginsParser* pluginsParser, DependenciesScanner *scaner, Packing* pac);
+    bool parseParams();
+    bool smartMoveTargets();
+
+    const DeployConfig* config() const;
+    friend class deploytest;
+
 private:
 
     DeployConfig _config;
     FileManager *_fileManager;
+    PluginsParser *_pluginsParser;
     DependenciesScanner *_scaner;
     Packing * _packing;
 
@@ -68,7 +78,7 @@ private:
     void setExtraPath(const QStringList &value);
     void setExtraNames(const QStringList &value);
 
-    void setExtraPlugins(const QStringList &value);
+    bool initPlugins();
 
     void initEnvirement();
 
@@ -91,14 +101,6 @@ private:
     iDistribution* getDistribution();
 
     bool isNeededQt() const;
-public:
-    ConfigParser(FileManager *filemanager, DependenciesScanner *scaner, Packing* pac);
-    bool parseParams();
-    bool smartMoveTargets();
-
-    const DeployConfig* config() const;
-    friend class deploytest;
-
 };
 
 #endif // CQT_H

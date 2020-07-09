@@ -13,5 +13,11 @@ Modules::Modules()
 
 }
 
+Modules &Modules::instance() {
+    static Modules* val = new Modules();
+
+    return *val;
+}
+
 
 

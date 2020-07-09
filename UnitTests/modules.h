@@ -29,6 +29,10 @@
 {
 public:
     Modules();
+
+    static Modules& instance();
 };
+
+#define TestModule Modules::instance()
 
 #endif // MODULES_H

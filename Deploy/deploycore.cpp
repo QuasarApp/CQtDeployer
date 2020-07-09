@@ -9,6 +9,7 @@
 #include "deploycore.h"
 #include "quasarapp.h"
 #include "pathutils.h"
+#include "pluginsparser.h"
 
 #include <QDebug>
 #include <QDir>
@@ -190,7 +191,8 @@ void DeployCore::help() {
                 {"qif", "Create the QIF installer for deployement programm"},
                 {"qifFromSystem", "force use system binarycreator tool of qif from path or qt"},
                 {"deploySystem", "Deploys all libraries  (do not work in snap )"},
-                {"deploySystem-with-libc", "deploy all libs libs (only linux) (do not work in snap )"},
+                {"deploySystem-with-libc", "deploy all libs (only linux) (do not work in snap )"},
+                {"allPlatforms", "deploy all platforms plugins (big size)."},
 
             }
         },
@@ -211,7 +213,6 @@ void DeployCore::help() {
                  " Example: '-extraLibs mySql' - forces to copy all libraries whose names contain mySql to the project folder."
                  " This option is case sensitive."},
                 {"-customScript [scriptCode]", "Insert extra code inTo All run script."},
-                {"-extraPlugin [list,params]", "Sets an additional path to extraPlugin of an app"},
                 {"-recursiveDepth [params]", "Sets the Depth of recursive search of libs and depth for ignoreEnv option (default 0)"},
                 {"-targetDir [params]", "Sets target directory(by default it is the path to the first deployable file)"},
                 {"-verbose [0-3]", "Shows debug log"},
@@ -233,12 +234,23 @@ void DeployCore::help() {
                 {"-releaseDate [package;val,val]", "Sets release date for package"},
                 {"-icon [package;val,val]", "Sets path to icon for package"},
                 {"-publisher [package;val,val]", "Sets publisher for package"},
-
             }
         },
 
         {
-            "Part 4 QtInstallFramework options", {
+            "Part 4 Plugins Control Options", {
+                {"-extraPlugin [package;val1;val2,SingeleVal]", "Sets an additional path to third-party application plug-in"},
+                {"-enablePlugins [package;val1;val2,SingeleVal", "Enables additional plugins for distribution."
+                 " By default disabled next plugins: " + PluginsParser::defaultForbidenPlugins().join(',') + " if you want enable"
+                 " it then use '-enablePlugins " + PluginsParser::defaultForbidenPlugins().join(',') + "' option"},
+                {"-disablePlugins [package;val1;val2,SingeleVal]", "Disables plugins for distribution. "
+                 "You can disable any plugin of your Qt build, just see the yourQtFolder/plugins forlder for available plugins."
+                 " Example if you want disable qxcb plugin: -disablePlugins qxcb. Note that the name of the plugin is indicated without its extension"},
+
+            }
+        },
+        {
+            "Part 5 QtInstallFramework options", {
                 {"-qifStyle [path/to/style.css]", "Sets the path to the CSS style file or sets the default style. Available styles: quasar "},
                 {"-qifBanner [path/to/banner.png]", "Sets path to the banner png file."},
                 {"-qifLogo [path/to/logo.png]", "Sets path to the logo png file."},
@@ -300,6 +312,7 @@ QStringList DeployCore::helpKeys() {
         "qifStyle",
         "qifBanner",
         "qifLogo",
+        "allPlatforms"
     };
 }
 

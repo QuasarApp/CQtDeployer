@@ -15,6 +15,7 @@ class ConfigParser;
 class Extracter;
 class FileManager;
 class DependenciesScanner;
+class PluginsParser;
 class Packing;
 
 enum exitCodes {
@@ -34,6 +35,8 @@ private:
     Extracter *_extracter = nullptr;
     FileManager *_fileManager = nullptr;
     DependenciesScanner *_scaner = nullptr;
+    PluginsParser *_pluginParser = nullptr;
+
     Packing *_packing = nullptr;
 
     bool prepare();
