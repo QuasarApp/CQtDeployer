@@ -11,5 +11,5 @@ project(CQtDeployer LANGUAGES CXX)
 
 cmake_minimum_required(VERSION 3.1)
 include(QuasarAppLib/CMake/QuasarAppCITargets.cmake)
-
+print(CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH})
 initAll()
