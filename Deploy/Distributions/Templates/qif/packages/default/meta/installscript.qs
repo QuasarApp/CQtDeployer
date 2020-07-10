@@ -32,7 +32,7 @@ function generateShortCutCmd(cmd) {
                                "Version=@Version@\n
                                 Type=Application\n
                                 Terminal=false\n
-                                Exec=@TargetDir@/" + cmd + ".sh\n
+                                Exec=\"@TargetDir@/" + cmd + ".sh\"\n
                                 Name=" + name + "\n
                                 Icon=@TargetDir@/$LOCAL_ICON\n
                                 Name[en_US]=" + name);
