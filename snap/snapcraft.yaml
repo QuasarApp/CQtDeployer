@@ -22,7 +22,7 @@ icon: snap/gui/icon.png
 plugs:
   system-libs:
     interface: system-files
-    read: [/usr/lib/, /lib/]
+    read: [/usr/lib, /lib]
 
 apps:
   cqtdeployer:
