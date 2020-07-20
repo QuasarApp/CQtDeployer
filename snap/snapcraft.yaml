@@ -22,11 +22,11 @@ icon: snap/gui/icon.png
 apps:
   cqtdeployer:
     command: desktop-launch $SNAP/cqtdeployer.sh
-    plugs: [classic]
+    plugs: [classic-support]
 
   cqt:
     command: desktop-launch $SNAP/cqt.sh
-    plugs: [classic]
+    plugs: [classic-support]
 
 parts:
   cqtdeployer:
