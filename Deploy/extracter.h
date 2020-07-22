@@ -54,6 +54,14 @@ private:
 
     bool deployMSVC();
     bool extractWebEngine();
+
+    /**
+     * @brief angleGLLibs -
+     *  @note see task 398 (https://github.com/QuasarApp/CQtDeployer/issues/398)
+     * @return
+     */
+    QList<QString> angleGLLibs();
+
     /**
    * @brief compress - this function join all target dependecies in to one struct
    */

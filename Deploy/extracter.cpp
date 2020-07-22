@@ -53,15 +53,23 @@ bool Extracter::extractWebEngine() {
         const auto &package = i.key();
         if (isWebEngine(package)) {
             auto webEngeneBin = cnf->qtDir.getLibexecs();
+
             if (cnf->qtDir.getQtPlatform() & Platform::Unix) {
                 webEngeneBin += "/QtWebEngineProcess";
             } else {
                 webEngeneBin += "/QtWebEngineProcess.exe";
+
             }
 
             auto destWebEngine = cnf->getTargetDir() + "/" + package + cnf->packages()[package].getBinOutDir();
             auto resOut = cnf->getTargetDir() + "/" + package + cnf->packages()[package].getResOutDir();
+            auto libOut = cnf->getTargetDir() + "/" + package + cnf->packages()[package].getLibOutDir();
+
             auto res = cnf->qtDir.getResources();
+
+            if (!_fileManager->copyFiles(angleGLLibs(), libOut)) {
+                return false;
+            }
 
             if (!_fileManager->copyFile(webEngeneBin, destWebEngine)) {
                 return false;
@@ -74,6 +82,21 @@ bool Extracter::extractWebEngine() {
     }
 
     return true;
+}
+
+QList<QString> Extracter::angleGLLibs() {
+    auto cnf = DeployCore::_config;
+
+    if (cnf->qtDir.getQtPlatform() & Platform::Win) {
+        return {
+            cnf->qtDir.getBins() + "/d3dcompiler_47.dll",
+            cnf->qtDir.getBins() + "/libEGL.dll",
+            cnf->qtDir.getBins() + "/libGLESv2.dll",
+        };
+    }
+
+    return {};
+
 }
 
 void Extracter::extractAllTargets() {
