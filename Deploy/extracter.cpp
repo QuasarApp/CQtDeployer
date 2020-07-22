@@ -86,13 +86,12 @@ bool Extracter::extractWebEngine() {
 
 QList<QString> Extracter::angleGLLibs() {
     auto cnf = DeployCore::_config;
-    cnf->qtDir.getLibs();
 
     if (cnf->qtDir.getQtPlatform() & Platform::Win) {
         return {
-            cnf->qtDir.getLibs() + "/d3dcompiler_47.dll",
-            cnf->qtDir.getLibs() + "/libEGL.dll",
-            cnf->qtDir.getLibs() + "/libGLESv2.dll",
+            cnf->qtDir.getBins() + "/d3dcompiler_47.dll",
+            cnf->qtDir.getBins() + "/libEGL.dll",
+            cnf->qtDir.getBins() + "/libGLESv2.dll",
         };
     }
 
