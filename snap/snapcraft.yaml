@@ -25,7 +25,6 @@ apps:
 
   cqt:
     command: cqt.sh
-    plugs: [classic-support]
 
 parts:
   cqtdeployer:
