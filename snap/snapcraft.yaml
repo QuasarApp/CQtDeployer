@@ -22,7 +22,6 @@ icon: snap/gui/cqtdeployer.png
 apps:
   cqtdeployer:
     command: cqtdeployer.sh
-    plugs: [classic-support]
 
   cqt:
     command: cqt.sh
