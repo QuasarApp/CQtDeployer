@@ -15,6 +15,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QLibraryInfo>
+#include <QProcess>
 #include <configparser.h>
 #include <iostream>
 
@@ -530,6 +531,32 @@ char DeployCore::getEnvSeparator() {
 #else
     return ';';
 #endif
+}
+
+bool DeployCore::isSnap() {
+    return QProcessEnvironment::systemEnvironment().value("SNAP").size();
+}
+
+QString DeployCore::snapRootFS() {
+    return "/var/lib/snapd/hostfs";
+}
+
+QString DeployCore::transportPathToSnapRoot(const QString &path) {
+    if (isSnap()) {
+
+        if (path.size() && path[0] != "/") {
+            auto absalutPath = QProcessEnvironment::systemEnvironment().value("PWD") + "/" + path;
+            if (!absalutPath.contains(DeployCore::snapRootFS())) {
+                return snapRootFS() + "/" + absalutPath;
+            }
+        }
+
+        if (!path.contains(DeployCore::snapRootFS())) {
+            return snapRootFS() + "/" + path;
+        }
+    }
+
+    return path;
 }
 
 uint qHash(WinAPI i) {

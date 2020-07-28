@@ -760,8 +760,10 @@ void ConfigParser::initIgnoreList()
 
     if (!QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
 
-        envUnix.addEnv(Envirement::recursiveInvairement("/lib", 3));
-        envUnix.addEnv(Envirement::recursiveInvairement("/usr/lib", 3));
+        envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/lib"), 3));
+        envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/usr/lib"), 3));
+
+
         ruleUnix.prority = SystemLib;
         ruleUnix.platform = Unix;
         ruleUnix.enfirement = envUnix;
@@ -1067,7 +1069,7 @@ void ConfigParser::setExtraPath(const QStringList &value) {
     QDir dir;
 
     for (const auto &i : value) {
-        QFileInfo info(i);
+        QFileInfo info(DeployCore::transportPathToSnapRoot(i));
         if (info.isDir()) {
             if (_config.targets().contains(info.absoluteFilePath())) {
                 QuasarAppUtils::Params::log("skip the extra lib path because it is target!",
@@ -1177,16 +1179,19 @@ iDistribution *ConfigParser::getDistribution() {
 void ConfigParser::initEnvirement() {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
-    auto path = env.value("PATH");
+    if (!DeployCore::isSnap()) {
+        auto path = env.value("PATH");
 
-    _config.envirement.addEnv(env.value("LD_LIBRARY_PATH"));
-    _config.envirement.addEnv(path);
+        _config.envirement.addEnv(env.value("LD_LIBRARY_PATH"));
+        _config.envirement.addEnv(path);
+    }
 
     QStringList dirs;
 #ifdef Q_OS_LINUX
 
-    dirs.append(getDirsRecursive("/lib", 5));
-    dirs.append(getDirsRecursive("/usr/lib", 5));
+    dirs.append(getDirsRecursive(DeployCore::transportPathToSnapRoot("/lib"), 5));
+    dirs.append(getDirsRecursive(DeployCore::transportPathToSnapRoot("/usr/lib"), 5));
+
 #else
     auto winPath = findWindowsPath(path);
     dirs.append(getDirsRecursive(winPath + "/System32", 2));

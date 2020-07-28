@@ -34,6 +34,8 @@ public:
     void addEnv(const QString &dir);
     void addEnv(const QStringList &listDirs);
 
+    void clear();
+
     // return true if file exits in this envirement
     bool inThisEnvirement(const QString &file) const;
 
