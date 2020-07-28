@@ -21,11 +21,11 @@ icon: snap/gui/icon.png
 
 apps:
   cqtdeployer:
-    command: $SNAP/cqtdeployer.sh
+    command: desktop-launch $SNAP/cqtdeployer.sh
     plugs: [classic-support]
 
   cqt:
-    command: $SNAP/cqt.sh
+    command: desktop-launch $SNAP/cqt.sh
     plugs: [classic-support]
 
 parts:
@@ -39,6 +39,8 @@ parts:
       - libfreetype6
       - libpng16-16
 
+    after: [cqtdeployer-wrapper]
+
   qif:
     plugin: dump
     source: QIFData/packages/QIF/data/
@@ -47,3 +49,6 @@ parts:
       snapcraftctl stage
       chmod 777 -R "$SNAPCRAFT_STAGE/QIF"
 
+  cqtdeployer-wrapper:
+    plugin: dump
+    source: QuasarAppLib/Etalons/snap/wrapper
