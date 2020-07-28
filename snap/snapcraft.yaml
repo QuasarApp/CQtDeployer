@@ -15,16 +15,23 @@ description: |
   Flexibility-this application has flags that will help you configure the deployment as you need and your project
 
 grade: stable # must be 'stable' to release into candidate/stable channels
-confinement: classic # use 'strict' once you have the right plugs and slots
+confinement: strict # use 'strict' once you have the right plugs and slots
 base: core18
 icon: snap/gui/icon.png
+
+plugs:
+  system-libs:
+    interface: system-files
+    read: [/usr/lib, /lib]
 
 apps:
   cqtdeployer:
     command: desktop-launch $SNAP/cqtdeployer.sh
+    plugs: [home, removable-media, process-control, system-libs]
 
   cqt:
     command: desktop-launch $SNAP/cqt.sh
+    plugs: [home, removable-media, process-control, system-libs]
 
 parts:
   cqtdeployer:
