@@ -498,6 +498,10 @@ bool ConfigParser::parseDeployMode() {
         QuasarAppUtils::Params::setEnable("deploySystem", true );
     }
 
+    if (!checkSnapPermisions()) {
+        return false;
+    }
+
     auto bin = QuasarAppUtils::Params::getStrArg("bin").
             split(DeployCore::getSeparator(0));
 
@@ -1205,6 +1209,27 @@ void ConfigParser::initEnvirement() {
         QuasarAppUtils::Params::log("system environment is empty",
                                            QuasarAppUtils::Warning);
     }
+}
+
+bool ConfigParser::checkSnapPermisions() {
+
+    if (!DeployCore::isSnap())
+        return true;
+
+    if (QuasarAppUtils::Params::isEndable("deploySystem") &&
+            !QFile::exists(DeployCore::snapRootFS() + "/usr/lib")) {
+        QuasarAppUtils::Params::log("You use option deploySystem, but not added permision system-backup for cqtdeployer."
+                                    " Please add permision system-backup befor usong cqtdeployer."
+                                    " Add system-backup permision from console: "
+                                    "'snap connect cqtdeployer:system-backup :system-backup'"
+                                    ""
+                                    "GUI: Open the gnome system setting >> Applications >> CQtDeployer. "
+                                    "in menu rights and permisions enable system-backup.");
+
+        return false;
+    }
+
+    return true;
 }
 
 QStringList ConfigParser::getDirsRecursive(const QString &path, int maxDepch, int depch) {
