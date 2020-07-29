@@ -1,3 +1,4 @@
+#include "deploycore.h"
 #include "distromodule.h"
 
 DistroModule::DistroModule() {
@@ -25,7 +26,7 @@ void DistroModule::setQmlInput(const QSet<QString> &qmlInput) {
 }
 
 void DistroModule::addQmlInput(const QString &target) {
-    _qmlInput.insert(target);
+    _qmlInput.insert(DeployCore::transportPathToSnapRoot(target));
 }
 
 QString DistroModule::name() const
@@ -127,6 +128,6 @@ void DistroModule::setExtraPlugins(const QSet<QString> &extraPlugins)
 }
 
 void DistroModule::addExtraPlugins(const QString &extraPlugin) {
-    _extraPlugins += extraPlugin;
+    _extraPlugins += DeployCore::transportPathToSnapRoot(extraPlugin);
 
 }

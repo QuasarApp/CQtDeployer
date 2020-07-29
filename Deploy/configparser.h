@@ -82,6 +82,8 @@ private:
 
     void initEnvirement();
 
+    bool checkSnapPermisions();
+
     QStringList getDirsRecursive(const QString &path, int maxDepch = -1, int depch = 0);
     QSet<QString> getSetDirsRecursive(const QString &path, int maxDepch = -1, int depch = 0);
 

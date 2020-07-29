@@ -305,7 +305,7 @@ bool FileManager::copyFolder(const QString &from, const QString &to, const QStri
             if (!skipFilter.isEmpty()) {
                 QuasarAppUtils::Params::log(
                             item.absoluteFilePath() + " ignored by filter " + skipFilter,
-                            QuasarAppUtils::VerboseLvl::Info);
+                            QuasarAppUtils::VerboseLvl::Debug);
                 continue;
             }
             auto config = DeployCore::_config;
@@ -319,7 +319,7 @@ bool FileManager::copyFolder(const QString &from, const QString &to, const QStri
                 if (auto rule = config->ignoreList.isIgnore(info)) {
                     QuasarAppUtils::Params::log(
                                 item.absoluteFilePath() + " ignored by rule " + rule->label,
-                                QuasarAppUtils::VerboseLvl::Info);
+                                QuasarAppUtils::VerboseLvl::Debug);
                     continue;
                 }
 
@@ -461,7 +461,7 @@ bool FileManager::copyFiles(const QStringList &source,
         if (!skipFilter.isEmpty()) {
             QuasarAppUtils::Params::log(
                         info.absoluteFilePath() + " ignored by filter " + skipFilter,
-                        QuasarAppUtils::VerboseLvl::Info);
+                        QuasarAppUtils::VerboseLvl::Debug);
             continue;
         }
         auto config = DeployCore::_config;

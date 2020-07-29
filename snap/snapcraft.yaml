@@ -21,11 +21,11 @@ icon: snap/gui/icon.png
 apps:
   cqtdeployer:
     command: desktop-launch $SNAP/cqtdeployer.sh
-    plugs: [home, removable-media, process-control]
+    plugs: [home, removable-media, process-control, system-backup]
 
   cqt:
     command: desktop-launch $SNAP/cqt.sh
-    plugs: [home, removable-media, process-control]
+    plugs: [home, removable-media, process-control, system-backup]
 
 parts:
   cqtdeployer:
