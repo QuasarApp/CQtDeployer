@@ -83,6 +83,14 @@ void Envirement::addEnv(const QStringList &listDirs) {
     }
 }
 
+void Envirement::clear() {
+    if (_ignoreEnvList)
+        delete _ignoreEnvList;
+
+    _dataEnvironment.clear();
+
+}
+
 bool Envirement::inThisEnvirement(const QString &file) const {
     QFileInfo info (file);
 
