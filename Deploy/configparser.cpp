@@ -1182,9 +1182,9 @@ iDistribution *ConfigParser::getDistribution() {
 
 void ConfigParser::initEnvirement() {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    auto path = env.value("PATH");
 
     if (!DeployCore::isSnap()) {
-        auto path = env.value("PATH");
 
         _config.envirement.addEnv(env.value("LD_LIBRARY_PATH"));
         _config.envirement.addEnv(path);
@@ -1216,15 +1216,27 @@ bool ConfigParser::checkSnapPermisions() {
     if (!DeployCore::isSnap())
         return true;
 
-    if (QuasarAppUtils::Params::isEndable("deploySystem") &&
-            !QFile::exists(DeployCore::snapRootFS() + "/usr/lib")) {
-        QuasarAppUtils::Params::log("You use option deploySystem, but not added permision system-backup for cqtdeployer."
+
+    bool system = QuasarAppUtils::Params::isEndable("deploySystem") ||
+            QuasarAppUtils::Params::isEndable("extraLibs");
+    bool checkPath = QDir(DeployCore::snapRootFS()).entryList(QDir::AllEntries | QDir::NoDotAndDotDot).size();
+
+    if (system && !checkPath) {
+
+        QuasarAppUtils::Params::log("You use a deploySystem or extraLibs options,"
+                                    " but not added permision system-backup for cqtdeployer."
                                     " Please add permision system-backup befor usong cqtdeployer."
-                                    " Add system-backup permision from console: "
-                                    "'snap connect cqtdeployer:system-backup :system-backup'"
-                                    ""
+                                    " Add system-backup permision from console: ",
+                                    QuasarAppUtils::Error);
+
+        QuasarAppUtils::Params::log(
+                                    "'snap connect cqtdeployer:system-backup :system-backup'",
+                                    QuasarAppUtils::Info);
+
+        QuasarAppUtils::Params::log(
                                     "GUI: Open the gnome system setting >> Applications >> CQtDeployer. "
-                                    "in menu rights and permisions enable system-backup.");
+                                    "in menu rights and permisions enable system-backup.",
+                                    QuasarAppUtils::Info);
 
         return false;
     }

@@ -307,7 +307,7 @@ void Extracter::extractLib(const QString &file,
 
     assert(depMap);
     QuasarAppUtils::Params::log("extract lib :" + file,
-                                       QuasarAppUtils::Info);
+                                 QuasarAppUtils::Debug);
 
     auto data = _scaner->scan(file);
 
