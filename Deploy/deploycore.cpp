@@ -541,7 +541,7 @@ QString DeployCore::snapRootFS() {
 }
 
 QString DeployCore::transportPathToSnapRoot(const QString &path) {
-    if (isSnap()) {
+    if (isSnap() && checkSystemBakupSnapInterface()) {
 
         if (path.size() && path[0] != "/") {
             auto absalutPath = QProcessEnvironment::systemEnvironment().value("PWD") + "/" + path;
@@ -556,6 +556,10 @@ QString DeployCore::transportPathToSnapRoot(const QString &path) {
     }
 
     return path;
+}
+
+bool DeployCore::checkSystemBakupSnapInterface() {
+    return QDir(DeployCore::snapRootFS()).entryList(QDir::AllEntries | QDir::NoDotAndDotDot).size();
 }
 
 uint qHash(WinAPI i) {

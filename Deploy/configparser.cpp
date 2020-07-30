@@ -1219,9 +1219,8 @@ bool ConfigParser::checkSnapPermisions() {
 
     bool system = QuasarAppUtils::Params::isEndable("deploySystem") ||
             QuasarAppUtils::Params::isEndable("extraLibs");
-    bool checkPath = QDir(DeployCore::snapRootFS()).entryList(QDir::AllEntries | QDir::NoDotAndDotDot).size();
 
-    if (system && !checkPath) {
+    if (system && !DeployCore::checkSystemBakupSnapInterface()) {
 
         QuasarAppUtils::Params::log("You use a deploySystem or extraLibs options,"
                                     " but not added permision system-backup for cqtdeployer."

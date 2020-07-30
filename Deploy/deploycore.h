@@ -193,6 +193,7 @@ public:
     static bool isSnap();
     static QString snapRootFS();
     static QString transportPathToSnapRoot(const QString &path);
+    static bool checkSystemBakupSnapInterface();
 };
 
 #endif // DEPLOYUTILS_H
