@@ -15,6 +15,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QLibraryInfo>
+#include <QProcess>
 #include <configparser.h>
 #include <iostream>
 
@@ -102,12 +103,12 @@ DeployCore::QtModule DeployCore::getQtModule(const QString& path) {
 void DeployCore::addQtModule(DeployCore::QtModule &module, const QString &path) {
 
     QuasarAppUtils::Params::log("current module " + QString::number(module),
-                                       QuasarAppUtils::Info);
+                                       QuasarAppUtils::Debug);
 
     auto mod = getQtModule(path);
     QuasarAppUtils::Params::log("add new module from path " + path  +
                                        " module value " + QString::number(mod),
-                                       QuasarAppUtils::Info);
+                                       QuasarAppUtils::Debug);
 
 
     module = static_cast<DeployCore::QtModule>(
@@ -529,6 +530,36 @@ char DeployCore::getEnvSeparator() {
 #else
     return ';';
 #endif
+}
+
+bool DeployCore::isSnap() {
+    return QProcessEnvironment::systemEnvironment().value("SNAP").size();
+}
+
+QString DeployCore::snapRootFS() {
+    return "/var/lib/snapd/hostfs";
+}
+
+QString DeployCore::transportPathToSnapRoot(const QString &path) {
+    if (isSnap() && checkSystemBakupSnapInterface()) {
+
+        if (path.size() && path[0] != "/") {
+            auto absalutPath = QProcessEnvironment::systemEnvironment().value("PWD") + "/" + path;
+            if (!absalutPath.contains(DeployCore::snapRootFS())) {
+                return snapRootFS() + "/" + absalutPath;
+            }
+        }
+
+        if (!path.contains(DeployCore::snapRootFS())) {
+            return snapRootFS() + "/" + path;
+        }
+    }
+
+    return path;
+}
+
+bool DeployCore::checkSystemBakupSnapInterface() {
+    return QDir(DeployCore::snapRootFS()).entryList(QDir::AllEntries | QDir::NoDotAndDotDot).size();
 }
 
 uint qHash(WinAPI i) {

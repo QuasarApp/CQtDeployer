@@ -498,6 +498,10 @@ bool ConfigParser::parseDeployMode() {
         QuasarAppUtils::Params::setEnable("deploySystem", true );
     }
 
+    if (!checkSnapPermisions()) {
+        return false;
+    }
+
     auto bin = QuasarAppUtils::Params::getStrArg("bin").
             split(DeployCore::getSeparator(0));
 
@@ -760,8 +764,10 @@ void ConfigParser::initIgnoreList()
 
     if (!QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
 
-        envUnix.addEnv(Envirement::recursiveInvairement("/lib", 3));
-        envUnix.addEnv(Envirement::recursiveInvairement("/usr/lib", 3));
+        envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/lib"), 3));
+        envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/usr/lib"), 3));
+
+
         ruleUnix.prority = SystemLib;
         ruleUnix.platform = Unix;
         ruleUnix.enfirement = envUnix;
@@ -1067,7 +1073,7 @@ void ConfigParser::setExtraPath(const QStringList &value) {
     QDir dir;
 
     for (const auto &i : value) {
-        QFileInfo info(i);
+        QFileInfo info(DeployCore::transportPathToSnapRoot(i));
         if (info.isDir()) {
             if (_config.targets().contains(info.absoluteFilePath())) {
                 QuasarAppUtils::Params::log("skip the extra lib path because it is target!",
@@ -1176,17 +1182,20 @@ iDistribution *ConfigParser::getDistribution() {
 
 void ConfigParser::initEnvirement() {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-
     auto path = env.value("PATH");
 
-    _config.envirement.addEnv(env.value("LD_LIBRARY_PATH"));
-    _config.envirement.addEnv(path);
+    if (!DeployCore::isSnap()) {
+
+        _config.envirement.addEnv(env.value("LD_LIBRARY_PATH"));
+        _config.envirement.addEnv(path);
+    }
 
     QStringList dirs;
 #ifdef Q_OS_LINUX
 
-    dirs.append(getDirsRecursive("/lib", 5));
-    dirs.append(getDirsRecursive("/usr/lib", 5));
+    dirs.append(getDirsRecursive(DeployCore::transportPathToSnapRoot("/lib"), 5));
+    dirs.append(getDirsRecursive(DeployCore::transportPathToSnapRoot("/usr/lib"), 5));
+
 #else
     auto winPath = findWindowsPath(path);
     dirs.append(getDirsRecursive(winPath + "/System32", 2));
@@ -1200,6 +1209,38 @@ void ConfigParser::initEnvirement() {
         QuasarAppUtils::Params::log("system environment is empty",
                                            QuasarAppUtils::Warning);
     }
+}
+
+bool ConfigParser::checkSnapPermisions() {
+
+    if (!DeployCore::isSnap())
+        return true;
+
+
+    bool system = QuasarAppUtils::Params::isEndable("deploySystem") ||
+            QuasarAppUtils::Params::isEndable("extraLibs");
+
+    if (system && !DeployCore::checkSystemBakupSnapInterface()) {
+
+        QuasarAppUtils::Params::log("You use a deploySystem or extraLibs options,"
+                                    " but not added permision system-backup for cqtdeployer."
+                                    " Please add permision system-backup befor usong cqtdeployer."
+                                    " Add system-backup permision from console: ",
+                                    QuasarAppUtils::Error);
+
+        QuasarAppUtils::Params::log(
+                                    "'snap connect cqtdeployer:system-backup :system-backup'",
+                                    QuasarAppUtils::Info);
+
+        QuasarAppUtils::Params::log(
+                                    "GUI: Open the gnome system setting >> Applications >> CQtDeployer. "
+                                    "in menu rights and permisions enable system-backup.",
+                                    QuasarAppUtils::Info);
+
+        return false;
+    }
+
+    return true;
 }
 
 QStringList ConfigParser::getDirsRecursive(const QString &path, int maxDepch, int depch) {

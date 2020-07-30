@@ -190,6 +190,10 @@ public:
     static QString findProcess(const QString& env, const QString& proc);
 
 
+    static bool isSnap();
+    static QString snapRootFS();
+    static QString transportPathToSnapRoot(const QString &path);
+    static bool checkSystemBakupSnapInterface();
 };
 
 #endif // DEPLOYUTILS_H

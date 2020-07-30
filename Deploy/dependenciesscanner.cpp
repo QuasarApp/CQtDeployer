@@ -99,7 +99,7 @@ bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) const 
 
 void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QString>& libStack) {
     QuasarAppUtils::Params::log("get recursive dependencies of " + lib.fullPath(),
-                                       QuasarAppUtils::Info);
+                                       QuasarAppUtils::Debug);
 
     if (_scanedLibs.contains(lib.fullPath())) {
         auto scanedLib = _scanedLibs.value(lib.fullPath());
