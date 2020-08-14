@@ -74,7 +74,8 @@ SOURCES += \
     qml.cpp \
     libinfo.cpp \
     qtdir.cpp \
-    targetinfo.cpp
+    targetinfo.cpp \
+    zipcompresser.cpp
 
 HEADERS += \
     Distributions/defaultdistro.h \
@@ -106,7 +107,8 @@ HEADERS += \
     qml.h \
     libinfo.h \
     qtdir.h \
-    targetinfo.h
+    targetinfo.h \
+    zipcompresser.h
 
 STATECHARTS +=
 

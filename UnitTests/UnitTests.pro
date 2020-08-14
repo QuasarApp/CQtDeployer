@@ -17,6 +17,8 @@ CONFIG(release, debug|release): {
 
 include('$$PWD/../QuasarAppLib/QuasarLib.pri')
 include('$$PWD/../Deploy/Deploy.pri')
+include('$$PWD/../zip/zip.pri')
+
 include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
 
 

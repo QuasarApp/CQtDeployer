@@ -19,6 +19,7 @@
 #include <dependencymap.h>
 #include <packing.h>
 #include <pluginsparser.h>
+#include <zipcompresser.h>
 
 #include <QMap>
 #include <QByteArray>
@@ -89,6 +90,8 @@ private slots:
     // end old tests
 
     // tested flags customScript
+
+    void testZip();
     void costomScript();
     void testDistroStruct();
 
@@ -937,6 +940,23 @@ void deploytest::testSetTargetDir() {
     QVERIFY(dep.config()->getTargetDir() == QFileInfo("./" + DISTRO_DIR + "2").absoluteFilePath());
     dep.setTargetDir("./ff");
     QVERIFY(dep.config()->getTargetDir() == QFileInfo("./" + DISTRO_DIR + "2").absoluteFilePath());
+
+}
+
+void deploytest::testZip() {
+    TestUtils utils;
+
+    ZipCompresser zip;
+    auto befor = utils.getTree("./test");
+
+    QVERIFY(zip.compress("./test", "./arr.zip"));
+    QVERIFY(QDir("./test").removeRecursively());
+    QVERIFY(zip.extract("./arr.zip", "./test"));
+
+    auto after = utils.getTree("./test");
+
+    QVERIFY(utils.compareTree(befor, after).size() == 0);
+
 
 }
 
