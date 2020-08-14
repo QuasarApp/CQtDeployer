@@ -83,7 +83,7 @@ public:
     const QHash<QString, TargetInfo>& targets() const;
     const QHash<QString, DistroModule>& packages() const;
 
-    QHash<QString, TargetInfo>& targetsEdit();
+    QMultiHash<QString, TargetInfo> &targetsEdit();
     QHash<QString, DistroModule>& packagesEdit();
 
     Platform getPlatform(const QString& package) const;
@@ -95,7 +95,7 @@ private:
      * key - path
      * value - create wrapper
      */
-    QHash<QString, TargetInfo> _targets;
+    QMultiHash<QString, TargetInfo> _targets;
 
     /**
      * @brief packages

@@ -384,9 +384,9 @@ void FileManager::clear(const QString& targetDir, bool force) {
                                     QuasarAppUtils::Warning);
     }
 
-    QMap<int, QFileInfo> sortedOldData;
+    QMultiMap<int, QFileInfo> sortedOldData;
     for (auto& i : _deployedFiles) {
-        sortedOldData.insertMulti(i.size(), QFileInfo(i));
+        sortedOldData.insert(i.size(), QFileInfo(i));
     }
 
     for (auto it = sortedOldData.end(); it != sortedOldData.begin(); --it) {
@@ -426,7 +426,7 @@ QString FileManager::changeDistanation(const QString& absalutePath,
                                        QString basePath,
                                        int depch) {
 
-    auto prefixes = absalutePath.split(QRegExp("[\\/]"), QString::SkipEmptyParts);
+    auto prefixes = absalutePath.split(QRegExp("[\\/]"), Qt::SkipEmptyParts);
     depch = std::min(depch, prefixes.size());
     while (depch) {
         auto index = prefixes.size() - depch;

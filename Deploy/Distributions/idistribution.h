@@ -46,7 +46,7 @@ protected:
     void registerOutFiles() const;
 
 
-    QMap<int, QPair<QString, const DistroModule *>> sortPackages(const QHash<QString, DistroModule> &input);
+    QMultiMap<int, QPair<QString, const DistroModule *> > sortPackages(const QHash<QString, DistroModule> &input);
 private:
 
     QString _location = "Temp Template";
