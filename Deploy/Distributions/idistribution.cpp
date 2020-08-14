@@ -122,12 +122,4 @@ void iDistribution::registerOutFiles() const {
     }
 }
 
-QMultiMap<int ,QPair<QString, const DistroModule*>>
-iDistribution::sortPackages(const QHash<QString, DistroModule> &input) {
-    QMultiMap<int, QPair<QString, const DistroModule *>> result;
-    for (auto it = input.cbegin(); it != input.cend(); ++it ) {
-        result.insert(0xFFFF - it.key().size(), {it.key(), &it.value()});
-    }
 
-    return result;
-}

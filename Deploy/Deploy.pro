@@ -48,6 +48,7 @@ include('$$PWD/../zip/zip.pri')
 SOURCES += \
     Distributions/defaultdistro.cpp \
     Distributions/templateinfo.cpp \
+    Distributions/ziparhive.cpp \
     dependencymap.cpp \
     deployconfig.cpp \
     distromodule.cpp \
@@ -80,6 +81,7 @@ SOURCES += \
 HEADERS += \
     Distributions/defaultdistro.h \
     Distributions/templateinfo.h \
+    Distributions/ziparhive.h \
     dependencymap.h \
     deployconfig.h \
     distromodule.h \

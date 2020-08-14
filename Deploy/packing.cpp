@@ -1,6 +1,7 @@
 #include "Distributions/idistribution.h"
 #include "deployconfig.h"
 #include "packing.h"
+#include "pathutils.h"
 #include "quasarapp.h"
 #include <QDebug>
 #include <QProcess>
@@ -21,60 +22,103 @@ Packing::~Packing() {
     _proc->kill();
 }
 
-void Packing::setDistribution(iDistribution *pakage) {
-    _pakage = pakage;
+void Packing::setDistribution(const QList<iDistribution*> &pakages) {
+    _pakage = pakages;
 }
 
 bool Packing::create() {
 
-    if (!_pakage)
-        return false;
+    for (auto package : _pakage) {
 
-    if (!_pakage->deployTemplate())
-        return false;
+        if (!package)
+            return false;
 
-    if (!_pakage->runCmd().size())
-        return true;
+        if (!package->deployTemplate())
+            return false;
 
+        if (package->runCmd().size()) {
+            const DeployConfig *cfg = DeployCore::_config;
+
+            QFileInfo cmdInfo(_pakage->runCmd());
+
+            auto allExecRight =  QFile::ExeUser | QFile::ExeGroup | QFile::ExeOwner;
+            if (!cmdInfo.permission(allExecRight)) {
+                QFile::setPermissions(cmdInfo.absoluteFilePath(), cmdInfo.permissions() | allExecRight);
+            }
+
+            _proc->setProgram(_pakage->runCmd());
+            _proc->setProcessEnvironment(_proc->processEnvironment());
+            _proc->setArguments(_pakage->runArg());
+            _proc->setWorkingDirectory(cfg->getTargetDir());
+
+            _proc->start();
+
+            if (!_proc->waitForStarted(1000)) {
+                return false;
+            }
+
+            if (!_proc->waitForFinished(-1)) {
+                return false;
+            }
+
+            auto exit = QString("exit code = %0").arg(_proc->exitCode());
+            QString stdoutLog = _proc->readAllStandardOutput();
+            QString erroutLog = _proc->readAllStandardError();
+            auto message = QString("message = %0").arg(stdoutLog + " " + erroutLog);
+
+            if (_proc->exitCode() != 0) {
+                QuasarAppUtils::Params::log(message, QuasarAppUtils::Error);
+
+                if (QuasarAppUtils::Params::isDebug())
+                    return false;
+            }
+        }
+
+        _pakage->removeTemplate();
+
+    }
+}
+
+QMultiMap<int ,QPair<QString, const DistroModule*>>
+sortPackages(const QHash<QString, DistroModule> &input) {
+    QMultiMap<int, QPair<QString, const DistroModule *>> result;
+    for (auto it = input.cbegin(); it != input.cend(); ++it ) {
+        result.insert(0xFFFF - it.key().size(), {it.key(), &it.value()});
+    }
+
+    return result;
+}
+
+void Packing::collectPackages() {
     const DeployConfig *cfg = DeployCore::_config;
 
-    QFileInfo cmdInfo(_pakage->runCmd());
+    auto sortedMap = sortPackages(cfg->packages());
 
-    auto allExecRight =  QFile::ExeUser | QFile::ExeGroup | QFile::ExeOwner;
-    if (!cmdInfo.permission(allExecRight)) {
-        QFile::setPermissions(cmdInfo.absoluteFilePath(), cmdInfo.permissions() | allExecRight);
-    }
+    for (auto &it : sortedMap) {
+        auto package = it.second;
 
-    _proc->setProgram(_pakage->runCmd());
-    _proc->setProcessEnvironment(_proc->processEnvironment());
-    _proc->setArguments(_pakage->runArg());
-    _proc->setWorkingDirectory(cfg->getTargetDir());
+        QString Name = PathUtils::stripPath(it.first);
 
-    _proc->start();
+        if (Name.isEmpty()) {
+            QFileInfo targetInfo(*package->targets().begin());
+            Name = targetInfo.baseName();
+        }
 
-    if (!_proc->waitForStarted(1000)) {
-        return false;
-    }
+        if (!package->name().isEmpty()) {
+            Name = package->name();
+        }
 
-    if (!_proc->waitForFinished(-1)) {
-        return false;
-    }
+        QString tmpPakcageLocation = "tmp_data";
+        auto location = cfg->getTargetDir() + "/"  + tmpPakcageLocation + "/" +
+                ((it.first.isEmpty())? "Application": Name);
 
-    auto exit = QString("exit code = %0").arg(_proc->exitCode());
-    QString stdoutLog = _proc->readAllStandardOutput();
-    QString erroutLog = _proc->readAllStandardError();
-    auto message = QString("message = %0").arg(stdoutLog + " " + erroutLog);
 
-    if (_proc->exitCode() != 0) {
-        QuasarAppUtils::Params::log(message, QuasarAppUtils::Error);
+        _packages.insert(it.first, location);
 
-        if (QuasarAppUtils::Params::isDebug())
+        if (!moveData(cfg->getTargetDir() + "/" + it.first, location, tmpPakcageLocation)) {
             return false;
+        }
     }
-
-    _pakage->removeTemplate();
-
-    return !_proc->exitCode();
 }
 
 void Packing::handleOutputUpdate() {
@@ -84,11 +128,11 @@ void Packing::handleOutputUpdate() {
 
     if (stdoutLog.size())
         QuasarAppUtils::Params::log(stdoutLog,
-                                           QuasarAppUtils::Info);
+                                    QuasarAppUtils::Info);
 
     if (erroutLog.size())
         QuasarAppUtils::Params::log(erroutLog,
-                                           QuasarAppUtils::Info);
+                                    QuasarAppUtils::Info);
 }
 
 

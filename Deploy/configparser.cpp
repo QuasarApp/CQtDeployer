@@ -22,6 +22,7 @@
 
 #include <Distributions/defaultdistro.h>
 #include <Distributions/qif.h>
+#include <Distributions/ziparhive.h>
 /**
  * this function init packages of project
  * inputParamsList - list of parameters
@@ -1173,6 +1174,10 @@ QString ConfigParser::findWindowsPath(const QString& path) const {
 }
 
 iDistribution *ConfigParser::getDistribution() {
+    if (QuasarAppUtils::Params::isEndable("zip")) {
+        return new ZipArhive(_fileManager);
+    }
+
     if (QuasarAppUtils::Params::isEndable("qif")) {
         return new QIF(_fileManager);
     }

@@ -20,11 +20,15 @@ class DEPLOYSHARED_EXPORT Packing : public QObject
 public:
     Packing();
     ~Packing();
-    void setDistribution(iDistribution *pakage);
+    void setDistribution(const QList<iDistribution*> &pakages);
     bool create();
 private:
-    iDistribution *_pakage = nullptr;
+
+    void collectPackages();
+
+    QList<iDistribution*> _pakage;
     QProcess *_proc = nullptr;
+    QHash<QString, QString> _packages;
 
 private slots:
     void handleOutputUpdate();
