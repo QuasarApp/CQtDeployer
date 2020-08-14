@@ -16,6 +16,7 @@ lessThan(QT_MAJOR_VERSION, 6):lessThan(QT_MINOR_VERSION, 14) {
 !android {
     SUBDIRS += QuasarAppLib \
                Pe \
+               zip \
                Deploy \
                CQtDeployer \
                UnitTests \
