@@ -14,7 +14,7 @@ Controller.prototype.ComponentSelectionPageCallback = function()
     var widget = gui.currentPageWidget(); // get the current wizard page
     if (widget !== null && installer.isInstaller()) {
         widget.deselectAll();
-        widget.selectComponent('cqtdeployer.1_4');
+        widget.selectComponent('cqtdeployer.1_5');
     }
 }
 
