@@ -7,10 +7,9 @@ function Component()
 }
 
 function generateTr() {
-    component.setValue("DisplayName", qsTr("CQtDeployer " + VERSION));
-    component.setValue("Description", qsTr("This package contains CQtDeployer version " + VERSION));
+    component.setValue("DisplayName", qsTr("CQtDeployer " + VERSION + " Alpha"));
+    component.setValue("Description", qsTr("This package contains CQtDeployer version " + VERSION + " Do not use this version because it is unstable and may lead to unwanted bugs or consequences. Use this version exclusively for testing new functionality."));
 }
-
 
 Component.prototype.createOperations = function()
 {
