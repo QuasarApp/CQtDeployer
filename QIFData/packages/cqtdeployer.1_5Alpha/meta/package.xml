@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>CQtDeployer 1.5</DisplayName>
-    <Description>CQtDeployer 1.5</Description>
+    <DisplayName>CQtDeployer 1.5 Alpha</DisplayName>
+    <Description>CQtDeployer 1.5 Alpha. Do not use this version because it is unstable and may lead to unwanted bugs or consequences. Use this version exclusively for testing new functionality.</Description>
     <Version>1.5.0.0</Version>
     <Default>true</Default>
     <ForcedInstallation>false</ForcedInstallation>
