@@ -5,7 +5,7 @@
 /**
  * @brief The ZipArhive class provide interface for reate final zip arhive
  */
-class ZipArhive: public iDistribution
+class DEPLOYSHARED_EXPORT ZipArhive: public iDistribution
 {
 public:
     ZipArhive(FileManager *fileManager);

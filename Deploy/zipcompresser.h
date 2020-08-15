@@ -9,13 +9,14 @@
 #define ZIPCOMPRESSER_H
 
 #include <QString>
+#include <deploy_global.h>
 
 class zip_t;
 
 /**
  * @brief The ZipCompresser class - this is cpp wraper for use zip C library
  */
-class ZipCompresser
+class DEPLOYSHARED_EXPORT ZipCompresser
 {
 public:
     ZipCompresser();
