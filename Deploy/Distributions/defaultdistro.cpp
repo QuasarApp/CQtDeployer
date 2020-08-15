@@ -8,7 +8,7 @@ DefaultDistro::DefaultDistro(FileManager *fileManager)
 
 };
 
-bool DefaultDistro::deployTemplate() {
+bool DefaultDistro::deployTemplate(PackageControl &pkg) {
     return true;
 }
 

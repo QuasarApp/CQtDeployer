@@ -11,7 +11,7 @@ public:
     // iDistribution interface
 public:
     QString getConfig() const ;
-    bool deployTemplate() override;
+    bool deployTemplate(PackageControl &pkg) override;
     Envirement toolKitEnv() const override;
     QString runCmd() override;
     QStringList runArg() const override;

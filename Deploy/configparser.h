@@ -100,7 +100,7 @@ private:
     QJsonValue writeKeyArray(int separatorLvl, const QString &parameter, const QString &confFileDir) const;
     QString findWindowsPath(const QString &path) const;
 
-    iDistribution* getDistribution();
+    QList<iDistribution *> getDistribution();
 
     bool isNeededQt() const;
 };

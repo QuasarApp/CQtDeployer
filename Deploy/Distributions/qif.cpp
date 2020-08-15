@@ -5,6 +5,7 @@
 
 #include <QDateTime>
 #include <QProcess>
+#include <packagecontrol.h>
 #include <pathutils.h>
 
 QIF::QIF(FileManager *fileManager)
@@ -63,7 +64,7 @@ QString QIF::runCmd() {
     return binarycreator;
 }
 
-bool QIF::deployTemplate() {
+bool QIF::deployTemplate(PackageControl &pkg) {
     auto customTemplate = QuasarAppUtils::Params::getStrArg("qif", "");
     const DeployConfig *cfg = DeployCore::_config;
 
@@ -74,61 +75,60 @@ bool QIF::deployTemplate() {
     if (customTemplate.isEmpty()) {
         // default template
 
-        auto sortedMap = sortPackages(cfg->packages());
-
-        for (auto &it : sortedMap) {
-            auto package = it.second;
+        for (auto it = cfg->packages().begin();
+             it != cfg->packages().end(); ++it) {
+            auto package = it.value();
 
             TemplateInfo info;
-            info.Name = PathUtils::stripPath(it.first);
+            info.Name = PathUtils::stripPath(it.key());
 
             if (info.Name.isEmpty()) {
-                QFileInfo targetInfo(*package->targets().begin());
+                QFileInfo targetInfo(*package.targets().begin());
                 info.Name = targetInfo.baseName();
             }
 
-            if (!package->name().isEmpty()) {
-                info.Name = package->name();
+            if (!package.name().isEmpty()) {
+                info.Name = package.name();
             }
 
             auto location = cfg->getTargetDir() + "/" + getLocation() + "/packages/" +
-                    ((it.first.isEmpty())? "Application": info.Name);
+                    ((it.key().isEmpty())? "Application": info.Name);
 
             auto locationData = location + "/data/" + info.Name;
 
             info.Description = "This package contains the " + info.Name;
-            if (!package->description().isEmpty())
-                info.Description = package->description();
+            if (!package.description().isEmpty())
+                info.Description = package.description();
 
             info.Version = "1.0";
-            if (!package->version().isEmpty())
-                info.Version = package->version();
+            if (!package.version().isEmpty())
+                info.Version = package.version();
 
             info.ReleaseData = QDate::currentDate().toString("yyyy-MM-dd");
-            if (!package->releaseData().isEmpty())
-                info.ReleaseData = package->releaseData();
+            if (!package.releaseData().isEmpty())
+                info.ReleaseData = package.releaseData();
 
             info.Icon = "icons/Icon.png";
-            if (package->icon().isEmpty()) {
+            if (package.icon().isEmpty()) {
                 if (!copyFile(":/Templates/QIF/Distributions/Templates/qif/Icon.png",
                               locationData + "/icons/", false)) {
                     return false;
                 }
             } else {
-                QFileInfo iconInfo(package->icon());
+                QFileInfo iconInfo(package.icon());
                 info.Icon = info.Name + "/icons/" + iconInfo.fileName();
-                if (!copyFile(package->icon(), locationData + "/icons/", false)) {
+                if (!copyFile(package.icon(), locationData + "/icons/", false)) {
                     return false;
                 }
             }
 
             info.Publisher = "Company";
-            if (!package->publisher().isEmpty())
-                info.Publisher = package->publisher();
+            if (!package.publisher().isEmpty())
+                info.Publisher = package.publisher();
 
             QString cmdArray = "[";
             int initSize = cmdArray.size();
-            for (const auto &target :it.second->targets()) {
+            for (const auto &target :package.targets()) {
                 auto fileinfo =  QFileInfo(target);
                 if (fileinfo.suffix().compare("exe", ONLY_WIN_CASE_INSENSIATIVE) == 0 || fileinfo.suffix().isEmpty()) {
                     if (cmdArray.size() > initSize) {
@@ -152,7 +152,7 @@ bool QIF::deployTemplate() {
                 return false;
             }
 
-            if (!moveData(cfg->getTargetDir() + "/" + it.first, locationData, getLocation())) {
+            if (!pkg.movePackage(it.key(), locationData)) {
                 return false;
             }
 

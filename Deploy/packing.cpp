@@ -1,5 +1,6 @@
 #include "Distributions/idistribution.h"
 #include "deployconfig.h"
+#include "filemanager.h"
 #include "packing.h"
 #include "pathutils.h"
 #include "quasarapp.h"
@@ -7,7 +8,10 @@
 #include <QProcess>
 #include <QThread>
 
-Packing::Packing() {
+Packing::Packing(FileManager *fileManager) {
+    assert(fileManager);
+
+    _fileManager = fileManager;
     _proc = new QProcess(this);
 
     connect(_proc, SIGNAL(readyReadStandardError()),
@@ -28,27 +32,31 @@ void Packing::setDistribution(const QList<iDistribution*> &pakages) {
 
 bool Packing::create() {
 
+    if (!collectPackages()) {
+        return false;
+    }
+
     for (auto package : _pakage) {
 
         if (!package)
             return false;
 
-        if (!package->deployTemplate())
+        if (!package->deployTemplate(*this))
             return false;
 
         if (package->runCmd().size()) {
             const DeployConfig *cfg = DeployCore::_config;
 
-            QFileInfo cmdInfo(_pakage->runCmd());
+            QFileInfo cmdInfo(package->runCmd());
 
             auto allExecRight =  QFile::ExeUser | QFile::ExeGroup | QFile::ExeOwner;
             if (!cmdInfo.permission(allExecRight)) {
                 QFile::setPermissions(cmdInfo.absoluteFilePath(), cmdInfo.permissions() | allExecRight);
             }
 
-            _proc->setProgram(_pakage->runCmd());
+            _proc->setProgram(package->runCmd());
             _proc->setProcessEnvironment(_proc->processEnvironment());
-            _proc->setArguments(_pakage->runArg());
+            _proc->setArguments(package->runArg());
             _proc->setWorkingDirectory(cfg->getTargetDir());
 
             _proc->start();
@@ -74,9 +82,27 @@ bool Packing::create() {
             }
         }
 
-        _pakage->removeTemplate();
+        if (!restorePackagesLocations()) {
+            return false;
+        }
 
+        package->removeTemplate();
     }
+
+    return true;
+}
+
+bool Packing::movePackage(const QString &package,
+                          const QString &newLocation) {
+
+    if (moveData(_packagesLocations.value(package),
+                 newLocation)) {
+
+        _packagesLocations[package] = newLocation;
+        return true;
+    }
+
+    return false;
 }
 
 QMultiMap<int ,QPair<QString, const DistroModule*>>
@@ -89,7 +115,7 @@ sortPackages(const QHash<QString, DistroModule> &input) {
     return result;
 }
 
-void Packing::collectPackages() {
+bool Packing::collectPackages() {
     const DeployConfig *cfg = DeployCore::_config;
 
     auto sortedMap = sortPackages(cfg->packages());
@@ -113,12 +139,29 @@ void Packing::collectPackages() {
                 ((it.first.isEmpty())? "Application": Name);
 
 
-        _packages.insert(it.first, location);
+        _packagesLocations.insert(it.first, location);
 
         if (!moveData(cfg->getTargetDir() + "/" + it.first, location, tmpPakcageLocation)) {
             return false;
         }
     }
+
+    _defaultPackagesLocations = _packagesLocations;
+    return true;
+}
+
+bool Packing::moveData(const QString &from, const QString &to, const QString &ignore) const {
+    return _fileManager->moveFolder(from, to, ignore);
+}
+
+bool Packing::restorePackagesLocations() {
+    for (auto it = _packagesLocations.begin(); it != _packagesLocations.end(); ++it) {
+        if (!moveData(it.value(), _defaultPackagesLocations.value(it.key()))) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 void Packing::handleOutputUpdate() {

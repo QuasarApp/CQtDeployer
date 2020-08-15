@@ -1173,16 +1173,19 @@ QString ConfigParser::findWindowsPath(const QString& path) const {
     return "C:/" + win_magic;
 }
 
-iDistribution *ConfigParser::getDistribution() {
+QList<iDistribution *> ConfigParser::getDistribution() {
+    QList<iDistribution *> distros;
     if (QuasarAppUtils::Params::isEndable("zip")) {
-        return new ZipArhive(_fileManager);
+        distros.push_back(new ZipArhive(_fileManager));
     }
 
     if (QuasarAppUtils::Params::isEndable("qif")) {
-        return new QIF(_fileManager);
+        distros.push_back(new QIF(_fileManager));
     }
 
-    return new DefaultDistro(_fileManager);
+     distros.push_back(new DefaultDistro(_fileManager));
+
+     return distros;
 }
 
 void ConfigParser::initEnvirement() {

@@ -12,32 +12,31 @@ ZipArhive::ZipArhive(FileManager *fileManager)
     setLocation("tmp zip");
 }
 
-bool ZipArhive::deployTemplate() {
+bool ZipArhive::deployTemplate(PackageControl &pkg) {
     // default template
     const DeployConfig *cfg = DeployCore::_config;
 
-    auto sortedMap = sortPackages(cfg->packages());
-
     ZipCompresser zipWorker;
-    for (auto &it : sortedMap) {
-        auto package = it.second;
+    for (auto it = cfg->packages().begin();
+         it != cfg->packages().end(); ++it) {
+        auto package = it.value();
 
         TemplateInfo info;
-        info.Name = PathUtils::stripPath(it.first);
+        info.Name = PathUtils::stripPath(it.key());
 
         if (info.Name.isEmpty()) {
-            QFileInfo targetInfo(*package->targets().begin());
+            QFileInfo targetInfo(*package.targets().begin());
             info.Name = targetInfo.baseName();
         }
 
-        if (!package->name().isEmpty()) {
-            info.Name = package->name();
+        if (!package.name().isEmpty()) {
+            info.Name = package.name();
         }
 
         auto location = cfg->getTargetDir() + "/" + getLocation() + "/" +
-                ((it.first.isEmpty())? "Application": info.Name);
+                ((it.key().isEmpty())? "Application": info.Name);
 
-        if (!moveData(cfg->getTargetDir() + "/" + it.first, location, getLocation())) {
+        if (!moveData(cfg->getTargetDir() + "/" + it.key(), location, getLocation())) {
             return false;
         }
 

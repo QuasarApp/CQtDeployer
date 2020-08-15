@@ -12,13 +12,13 @@ public:
 
     // iDistribution interface
 public:
-    bool deployTemplate();
-    bool removeTemplate() const;
-    Envirement toolKitEnv() const;
-    QProcessEnvironment processEnvirement() const;
-    QString runCmd();
-    QStringList runArg() const;
-    QStringList outPutFiles() const;
+    bool deployTemplate(PackageControl &pkg) override;
+    bool removeTemplate() const override;
+    Envirement toolKitEnv() const override;
+    QProcessEnvironment processEnvirement() const override;
+    QString runCmd() override;
+    QStringList runArg() const override;
+    QStringList outPutFiles() const override;
 private:
     QStringList outFiles;
 };

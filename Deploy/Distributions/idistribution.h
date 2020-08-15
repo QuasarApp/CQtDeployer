@@ -9,6 +9,7 @@
 #include <QFileInfo>
 class FileManager;
 class DistroModule;
+class PackageControl;
 
 class DEPLOYSHARED_EXPORT iDistribution
 {
@@ -16,7 +17,7 @@ public:
     iDistribution(FileManager * fileManager);
     virtual ~iDistribution();
 
-    virtual bool deployTemplate() = 0;
+    virtual bool deployTemplate(PackageControl& pkgCtrl) = 0;
     virtual bool removeTemplate() const = 0;
     virtual Envirement toolKitEnv() const = 0;
     virtual QProcessEnvironment processEnvirement() const = 0;

@@ -63,6 +63,7 @@ SOURCES += \
     Distributions/idistribution.cpp \
     ignorerule.cpp \
     metafilemanager.cpp \
+    packagecontrol.cpp \
     packing.cpp \
     pathutils.cpp \
     pe.cpp \
@@ -97,6 +98,7 @@ HEADERS += \
     Distributions/idistribution.h \
     ignorerule.h \
     metafilemanager.h \
+    packagecontrol.h \
     packing.h \
     pathutils.h \
     pe.h \

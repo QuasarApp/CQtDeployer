@@ -354,7 +354,7 @@ void deploytest::testDeployTarget() {
 
     FileManager file;
     DependenciesScanner scan;
-    Packing pac;
+    Packing pac(&file);
     PluginsParser _pluginParser;
 
     ConfigParser *deploy = new ConfigParser(&file, &_pluginParser, &scan, &pac);
@@ -922,7 +922,7 @@ void deploytest::testSetTargetDir() {
 
     FileManager file;
     DependenciesScanner scan;
-    Packing pac;
+    Packing pac(&file);
     PluginsParser _plugins;
     ConfigParser  dep(&file, &_plugins, &scan, &pac);
 

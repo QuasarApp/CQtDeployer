@@ -3,7 +3,7 @@
 
 #include "idistribution.h"
 
-
+class PackageControl;
 /**
  * @brief The QIF class provides interface betvin deployment targets and Qt Installer Framework
  */
@@ -13,7 +13,7 @@ public:
     QIF(FileManager *fileManager);
     Envirement toolKitEnv() const override;
     QString runCmd() override;
-    bool deployTemplate() override;
+    bool deployTemplate(PackageControl &pkg) override;
     QStringList runArg() const override;
     bool removeTemplate() const override;
     QProcessEnvironment processEnvirement() const override;
