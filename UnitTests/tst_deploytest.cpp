@@ -637,8 +637,8 @@ void deploytest::testQIF() {
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
                    "qif", "qifFromSystem",
                    "-qifStyle", "quasar",
-                   "-qifBanner", TestBinDir + "/../../res/cqtdeployer banner.png",
-                   "-qifLogo", TestBinDir + "/../../res/icon.png",
+                   "-qifBanner", TestBinDir + "/../../res/CQtDeployer_banner_web.png",
+                   "-qifLogo", TestBinDir + "/../../res/CQtDeployer defaultIcon_web.png",
                    "verbose"}, &comapareTree, {}, true);
 
 

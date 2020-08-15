@@ -101,6 +101,12 @@ bool iDistribution::unpackDir(const QString &resource,
     return true;
 }
 
+bool iDistribution::copyDir(const QString &resource,
+                            const QString &target) const {
+
+    return _fileManager->copyFolder(resource, target, {}, nullptr, nullptr, true);
+}
+
 bool iDistribution::moveData(const QString &from,
                              const QString &to,
                              const QString& ignore) const {

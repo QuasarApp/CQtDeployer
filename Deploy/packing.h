@@ -25,6 +25,7 @@ public:
     bool create();
 
     bool movePackage(const QString &package, const QString &newLocation);
+    bool copyPackage(const QString &package, const QString &newLocation);
 
 private:
 
@@ -34,7 +35,7 @@ private:
 
     bool restorePackagesLocations();
 
-    QList<iDistribution*> _pakage;
+    QList<iDistribution*> _pakages;
     QProcess *_proc = nullptr;
     QHash<QString, QString> _packagesLocations;
     QHash<QString, QString> _defaultPackagesLocations;

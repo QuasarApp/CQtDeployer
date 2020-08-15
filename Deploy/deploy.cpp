@@ -104,5 +104,8 @@ bool Deploy::deploy() {
 
 bool Deploy::packing() {
 
+    if (DeployCore::getMode() != RunMode::Deploy)
+        return true;
+
     return _packing->create();
 }

@@ -8,6 +8,8 @@
 #include <QProcess>
 #include <QThread>
 
+#define TMP_PACKAGE_DIR "tmp_data"
+
 Packing::Packing(FileManager *fileManager) {
     assert(fileManager);
 
@@ -27,7 +29,7 @@ Packing::~Packing() {
 }
 
 void Packing::setDistribution(const QList<iDistribution*> &pakages) {
-    _pakage = pakages;
+    _pakages = pakages;
 }
 
 bool Packing::create() {
@@ -36,7 +38,7 @@ bool Packing::create() {
         return false;
     }
 
-    for (auto package : _pakage) {
+    for (auto package : _pakages) {
 
         if (!package)
             return false;
@@ -87,9 +89,11 @@ bool Packing::create() {
         }
 
         package->removeTemplate();
+        delete package;
     }
 
-    return true;
+    const DeployConfig *cfg = DeployCore::_config;
+    return QDir(cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR).removeRecursively();
 }
 
 bool Packing::movePackage(const QString &package,
@@ -105,45 +109,18 @@ bool Packing::movePackage(const QString &package,
     return false;
 }
 
-QMultiMap<int ,QPair<QString, const DistroModule*>>
-sortPackages(const QHash<QString, DistroModule> &input) {
-    QMultiMap<int, QPair<QString, const DistroModule *>> result;
-    for (auto it = input.cbegin(); it != input.cend(); ++it ) {
-        result.insert(0xFFFF - it.key().size(), {it.key(), &it.value()});
-    }
-
-    return result;
+bool Packing::copyPackage(const QString &package, const QString &newLocation) {
+    return _fileManager->copyFolder(_packagesLocations[package], newLocation, {}, nullptr, nullptr, true);
 }
 
 bool Packing::collectPackages() {
     const DeployConfig *cfg = DeployCore::_config;
 
-    auto sortedMap = sortPackages(cfg->packages());
-
-    for (auto &it : sortedMap) {
-        auto package = it.second;
-
-        QString Name = PathUtils::stripPath(it.first);
-
-        if (Name.isEmpty()) {
-            QFileInfo targetInfo(*package->targets().begin());
-            Name = targetInfo.baseName();
-        }
-
-        if (!package->name().isEmpty()) {
-            Name = package->name();
-        }
-
-        QString tmpPakcageLocation = "tmp_data";
-        auto location = cfg->getTargetDir() + "/"  + tmpPakcageLocation + "/" +
-                ((it.first.isEmpty())? "Application": Name);
-
-
-        _packagesLocations.insert(it.first, location);
-
-        if (!moveData(cfg->getTargetDir() + "/" + it.first, location, tmpPakcageLocation)) {
+    for (auto it = cfg->packages().begin(); it != cfg->packages().end(); ++it) {
+        if (!moveData(cfg->getTargetDir() + "/" + it.key(), cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR + "/" + it.key()))
             return false;
-        }
+
+        _packagesLocations.insert(it.key(), cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR + "/" + it.key());
     }
 
     _defaultPackagesLocations = _packagesLocations;
@@ -151,7 +128,14 @@ bool Packing::collectPackages() {
 }
 
 bool Packing::moveData(const QString &from, const QString &to, const QString &ignore) const {
-    return _fileManager->moveFolder(from, to, ignore);
+
+    if (from == to )
+        return true;
+
+    if (!_fileManager->moveFolder(from, to, ignore)) {
+        return false;
+    }
+    return QDir(from).removeRecursively();
 }
 
 bool Packing::restorePackagesLocations() {
@@ -160,6 +144,7 @@ bool Packing::restorePackagesLocations() {
             return false;
         }
     }
+    _packagesLocations = _defaultPackagesLocations;
 
     return true;
 }

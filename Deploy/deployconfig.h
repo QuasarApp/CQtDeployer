@@ -88,6 +88,9 @@ public:
 
     Platform getPlatform(const QString& package) const;
 
+    QString getDefaultPackage() const;
+    void setDefaultPackage(const QString &value);
+
 private:
 
     /**
@@ -109,6 +112,8 @@ private:
      * @brief targetDir -  targe directory (this folder conteins all files of distrebution kit)
      */
     QString targetDir = "";
+    QString defaultPackage = "";
+
 
 };
 

@@ -1,6 +1,7 @@
 #include "ziparhive.h"
 
 #include <deploycore.h>
+#include <packagecontrol.h>
 #include <pathutils.h>
 #include <zipcompresser.h>
 #include "deployconfig.h"
@@ -36,7 +37,7 @@ bool ZipArhive::deployTemplate(PackageControl &pkg) {
         auto location = cfg->getTargetDir() + "/" + getLocation() + "/" +
                 ((it.key().isEmpty())? "Application": info.Name);
 
-        if (!moveData(cfg->getTargetDir() + "/" + it.key(), location, getLocation())) {
+        if (!pkg.movePackage(it.key(), location)) {
             return false;
         }
 

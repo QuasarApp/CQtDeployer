@@ -79,6 +79,15 @@ Platform DeployConfig::getPlatform(const QString& package) const {
 
 }
 
+QString DeployConfig::getDefaultPackage() const {
+    return defaultPackage;
+}
+
+void DeployConfig::setDefaultPackage(const QString &value)
+{
+    defaultPackage = value;
+}
+
 const QHash<QString, TargetInfo> &DeployConfig::targets() const {
     return _targets;
 }

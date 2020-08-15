@@ -20,7 +20,7 @@ Envirement QIF::toolKitEnv() const {
     if (QuasarAppUtils::Params::isEndable("qifFromSystem")) {
         result.addEnv(QProcessEnvironment::systemEnvironment().value("PATH"));
 
-    // BASE
+        // BASE
         const DeployConfig *cfg = DeployCore::_config;
         auto basePATH = cfg->qtDir.getBins() + "/../../../Tools/QtInstallerFramework/";
         QDir QifDir(basePATH);
@@ -41,12 +41,12 @@ Envirement QIF::toolKitEnv() const {
 
 
 
-// SNAP
+    // SNAP
 
     QString AppPath = QuasarAppUtils::Params::getStrArg("appPath", "");
     result.addEnv(AppPath + "/../QIF/");
 
-//Installer
+    //Installer
     result.addEnvRec(AppPath + "/../../QIF/", 2);
 
     return result;
@@ -79,10 +79,12 @@ bool QIF::deployTemplate(PackageControl &pkg) {
              it != cfg->packages().end(); ++it) {
             auto package = it.value();
 
+
             TemplateInfo info;
             info.Name = PathUtils::stripPath(it.key());
+            bool fDefaultPakcage = cfg->getDefaultPackage() == info.Name;
 
-            if (info.Name.isEmpty()) {
+            if (fDefaultPakcage) {
                 QFileInfo targetInfo(*package.targets().begin());
                 info.Name = targetInfo.baseName();
             }
@@ -91,10 +93,11 @@ bool QIF::deployTemplate(PackageControl &pkg) {
                 info.Name = package.name();
             }
 
-            auto location = cfg->getTargetDir() + "/" + getLocation() + "/packages/" +
-                    ((it.key().isEmpty())? "Application": info.Name);
-
-            auto locationData = location + "/data/" + info.Name;
+            auto location = cfg->getTargetDir() + "/" + getLocation() + "/packages/" + info.Name;
+            auto locationData = location + "/data";
+            if (cfg->getDefaultPackage() != info.Name) {
+                locationData += "/" + info.Name;
+            }
 
             info.Description = "This package contains the " + info.Name;
             if (!package.description().isEmpty())
@@ -156,7 +159,8 @@ bool QIF::deployTemplate(PackageControl &pkg) {
                 return false;
             }
 
-            generalInfo = info;
+            if (fDefaultPakcage)
+                generalInfo = info;
 
         }
 
@@ -202,9 +206,9 @@ QStringList QIF::runArg() const {
 
     return {
         "-c", location + "/config/config.xml",
-        "-p", location + "/packages/",
-        "-v",
-        installerFile()
+                "-p", location + "/packages/",
+                "-v",
+                installerFile()
     };
 }
 
@@ -244,7 +248,7 @@ QString QIF::getStyle(const QString& input) const {
     }
 
     QuasarAppUtils::Params::log(input +  " not exits",
-                                       QuasarAppUtils::Error);
+                                QuasarAppUtils::Error);
 
     return "";
 }

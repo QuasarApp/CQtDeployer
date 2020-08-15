@@ -43,6 +43,7 @@ protected:
 
     bool moveData(const QString& from, const QString& to, const QString &ignore) const;
     bool copyFile(const QString& from, const QString& to, bool isFileTarget) const;
+    bool copyDir(const QString &resource, const QString &target) const;
 
     void registerOutFiles() const;
 
