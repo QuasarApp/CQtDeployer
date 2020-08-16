@@ -24,8 +24,9 @@ bool ZipArhive::deployTemplate(PackageControl &pkg) {
 
         TemplateInfo info;
         info.Name = PathUtils::stripPath(it.key());
+        bool fDefaultPakcage = cfg->getDefaultPackage() == info.Name;
 
-        if (info.Name.isEmpty()) {
+        if (fDefaultPakcage) {
             QFileInfo targetInfo(*package.targets().begin());
             info.Name = targetInfo.baseName();
         }
@@ -34,15 +35,16 @@ bool ZipArhive::deployTemplate(PackageControl &pkg) {
             info.Name = package.name();
         }
 
-        auto location = cfg->getTargetDir() + "/" + getLocation() + "/" +
-                ((it.key().isEmpty())? "Application": info.Name);
+        auto location = cfg->getTargetDir() + "/" + getLocation() + "/" + info.Name;
 
         if (!pkg.movePackage(it.key(), location)) {
             return false;
         }
 
-        auto arr = cfg->getTargetDir() + info.Name + ".zip";
-        zipWorker.compress(location, arr);
+        auto arr = cfg->getTargetDir() + "/" + info.Name + ".zip";
+        if (!zipWorker.compress(location, arr)) {
+                return false;
+        }
 
         outFiles.push_back(arr);
     }
