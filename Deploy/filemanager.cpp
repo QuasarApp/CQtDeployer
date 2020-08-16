@@ -282,7 +282,7 @@ bool FileManager::moveFile(const QString &file, const QString &target, QStringLi
 }
 
 bool FileManager::copyFolder(const QString &from, const QString &to, const QStringList &filter,
-                             QStringList *listOfCopiedItems, QStringList *mask) {
+                             QStringList *listOfCopiedItems, QStringList *mask, bool force) {
 
     QDir fromDir(from);
 
@@ -291,37 +291,39 @@ bool FileManager::copyFolder(const QString &from, const QString &to, const QStri
     for (const auto &item : list) {
         if (QFileInfo(item).isDir()) {
 
-            copyFolder(item.absoluteFilePath(), to + "/" + item.fileName(), filter, listOfCopiedItems, mask);
+            copyFolder(item.absoluteFilePath(), to + "/" + item.fileName(), filter, listOfCopiedItems, mask, force);
         } else {
 
-            QString skipFilter = "";
-            for (const auto &i: filter) {
-                if (item.fileName().contains(i, ONLY_WIN_CASE_INSENSIATIVE)) {
-                    skipFilter = i;
-                    break;
+            if (!force) {
+                QString skipFilter = "";
+                for (const auto &i: filter) {
+                    if (item.fileName().contains(i, ONLY_WIN_CASE_INSENSIATIVE)) {
+                        skipFilter = i;
+                        break;
+                    }
                 }
-            }
 
-            if (!skipFilter.isEmpty()) {
-                QuasarAppUtils::Params::log(
-                            item.absoluteFilePath() + " ignored by filter " + skipFilter,
-                            QuasarAppUtils::VerboseLvl::Debug);
-                continue;
-            }
-            auto config = DeployCore::_config;
-
-            LibInfo info;
-            info.setName(item.fileName());
-            info.setPath(item.absolutePath());
-            info.setPlatform(GeneralFile);
-
-            if (config)
-                if (auto rule = config->ignoreList.isIgnore(info)) {
+                if (!skipFilter.isEmpty()) {
                     QuasarAppUtils::Params::log(
-                                item.absoluteFilePath() + " ignored by rule " + rule->label,
+                                item.absoluteFilePath() + " ignored by filter " + skipFilter,
                                 QuasarAppUtils::VerboseLvl::Debug);
                     continue;
                 }
+                auto config = DeployCore::_config;
+
+                LibInfo info;
+                info.setName(item.fileName());
+                info.setPath(item.absolutePath());
+                info.setPlatform(GeneralFile);
+
+                if (config)
+                    if (auto rule = config->ignoreList.isIgnore(info)) {
+                        QuasarAppUtils::Params::log(
+                                    item.absoluteFilePath() + " ignored by rule " + rule->label,
+                                    QuasarAppUtils::VerboseLvl::Debug);
+                        continue;
+                    }
+            }
 
             if (!copyFile(item.absoluteFilePath(), to , mask)) {
                 QuasarAppUtils::Params::log(
@@ -384,9 +386,9 @@ void FileManager::clear(const QString& targetDir, bool force) {
                                     QuasarAppUtils::Warning);
     }
 
-    QMap<int, QFileInfo> sortedOldData;
+    QMultiMap<int, QFileInfo> sortedOldData;
     for (auto& i : _deployedFiles) {
-        sortedOldData.insertMulti(i.size(), QFileInfo(i));
+        sortedOldData.insert(i.size(), QFileInfo(i));
     }
 
     for (auto it = sortedOldData.end(); it != sortedOldData.begin(); --it) {
@@ -426,7 +428,7 @@ QString FileManager::changeDistanation(const QString& absalutePath,
                                        QString basePath,
                                        int depch) {
 
-    auto prefixes = absalutePath.split(QRegExp("[\\/]"), QString::SkipEmptyParts);
+    auto prefixes = absalutePath.split(QRegExp("[\\/]"), Qt::SkipEmptyParts);
     depch = std::min(depch, prefixes.size());
     while (depch) {
         auto index = prefixes.size() - depch;

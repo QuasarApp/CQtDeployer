@@ -17,6 +17,8 @@ CONFIG(release, debug|release): {
 
 include('$$PWD/../QuasarAppLib/QuasarLib.pri')
 include('$$PWD/../Deploy/Deploy.pri')
+include('$$PWD/../zip/zip.pri')
+
 include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
 
 
@@ -34,6 +36,7 @@ SOURCES +=  tst_deploytest.cpp \
     modules.cpp \
     modulesqt513.cpp \
     modulesqt514.cpp \
+    modulesqt515.cpp \
     qmlcreator.cpp \
     testutils.cpp
 
@@ -45,5 +48,6 @@ HEADERS += \
     modules.h \
     modulesqt513.h \
     modulesqt514.h \
+    modulesqt515.h \
     qmlcreator.h \
     testutils.h

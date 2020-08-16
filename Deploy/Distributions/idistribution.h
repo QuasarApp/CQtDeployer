@@ -9,6 +9,7 @@
 #include <QFileInfo>
 class FileManager;
 class DistroModule;
+class PackageControl;
 
 class DEPLOYSHARED_EXPORT iDistribution
 {
@@ -16,7 +17,7 @@ public:
     iDistribution(FileManager * fileManager);
     virtual ~iDistribution();
 
-    virtual bool deployTemplate() = 0;
+    virtual bool deployTemplate(PackageControl& pkgCtrl) = 0;
     virtual bool removeTemplate() const = 0;
     virtual Envirement toolKitEnv() const = 0;
     virtual QProcessEnvironment processEnvirement() const = 0;
@@ -42,11 +43,10 @@ protected:
 
     bool moveData(const QString& from, const QString& to, const QString &ignore) const;
     bool copyFile(const QString& from, const QString& to, bool isFileTarget) const;
+    bool copyDir(const QString &resource, const QString &target) const;
 
     void registerOutFiles() const;
 
-
-    QMap<int, QPair<QString, const DistroModule *>> sortPackages(const QHash<QString, DistroModule> &input);
 private:
 
     QString _location = "Temp Template";

@@ -16,3 +16,6 @@
 [submodule "doc/wiki"]
 	path = doc/wiki
 	url = https://github.com/QuasarApp/CQtDeployer.wiki.git
+[submodule "zip"]
+	path = zip
+	url = https://github.com/QuasarApp/zip.git

@@ -21,13 +21,13 @@ QStringList QML::extractImportsFromFile(const QString &filepath) {
     content.remove(QRegExp("/\\*(.*)\\*/"));
 
     for (const QString &line : content.split("\n"))
-        for (QString &word : line.split(";", QString::SkipEmptyParts))
+        for (QString &word : line.split(";", Qt::SkipEmptyParts))
         {
             word = word.simplified();
             if (word.startsWith("//")) continue;
             if (!word.startsWith("import")) continue;
 
-            QStringList list = word.split(" ", QString::SkipEmptyParts);
+            QStringList list = word.split(" ", Qt::SkipEmptyParts);
             if (list.count() != 3)
             {
                 if (list.count() == 5)
@@ -115,7 +115,8 @@ bool QML::deployPath(const QString &path, QStringList &res) {
 
     for (auto info : infoList) {
         if (info.fileName().contains(".so.debug") ||
-                info.fileName().contains("d.dll")) {
+                info.fileName().contains("d.dll") ||
+                info.fileName().contains(".dll.debug")) {
             QuasarAppUtils::Params::log("sciped debug lib " +
                                                info.absoluteFilePath());
             continue;

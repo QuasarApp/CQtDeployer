@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QProcess>
 #include "deploy_global.h"
+#include "packagecontrol.h"
 
 /**
  * @brief The Packing class - this class have interface for configure package and
@@ -12,22 +13,38 @@
 
 class ConfigParser;
 class iDistribution;
+class FileManager;
 
-class DEPLOYSHARED_EXPORT Packing : public QObject
-
+class DEPLOYSHARED_EXPORT Packing : public QObject, public PackageControl
 {
     Q_OBJECT
 public:
-    Packing();
+    Packing(FileManager *fileManager);
     ~Packing();
-    void setDistribution(iDistribution *pakage);
+    void setDistribution(const QList<iDistribution*> &pakages);
     bool create();
+
+    bool movePackage(const QString &package, const QString &newLocation);
+    bool copyPackage(const QString &package, const QString &newLocation);
+
 private:
-    iDistribution *_pakage = nullptr;
+
+    bool collectPackages();
+    bool moveData(const QString& from, const QString& to,
+                  const QString &ignore = "") const;
+
+    bool restorePackagesLocations();
+
+    QList<iDistribution*> _pakages;
     QProcess *_proc = nullptr;
+    QHash<QString, QString> _packagesLocations;
+    QHash<QString, QString> _defaultPackagesLocations;
+
+    FileManager* _fileManager = nullptr;
 
 private slots:
     void handleOutputUpdate();
+
 
 };
 

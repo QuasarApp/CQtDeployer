@@ -19,7 +19,7 @@ TEMPLATE = lib
 
 DEFINES += DEPLOY_LIBRARY
 
-VERSION = 1.4.5.2
+VERSION = 1.5.0.0
 
 DEFINES += APP_VERSION='\\"$$VERSION\\"'
 
@@ -42,11 +42,13 @@ CONFIG(release, debug|release): {
 
 include('$$PWD/../QuasarAppLib/QuasarLib.pri')
 include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
+include('$$PWD/../zip/zip.pri')
 
 
 SOURCES += \
     Distributions/defaultdistro.cpp \
     Distributions/templateinfo.cpp \
+    Distributions/ziparhive.cpp \
     dependencymap.cpp \
     deployconfig.cpp \
     distromodule.cpp \
@@ -61,6 +63,7 @@ SOURCES += \
     Distributions/idistribution.cpp \
     ignorerule.cpp \
     metafilemanager.cpp \
+    packagecontrol.cpp \
     packing.cpp \
     pathutils.cpp \
     pe.cpp \
@@ -73,11 +76,13 @@ SOURCES += \
     qml.cpp \
     libinfo.cpp \
     qtdir.cpp \
-    targetinfo.cpp
+    targetinfo.cpp \
+    zipcompresser.cpp
 
 HEADERS += \
     Distributions/defaultdistro.h \
     Distributions/templateinfo.h \
+    Distributions/ziparhive.h \
     dependencymap.h \
     deployconfig.h \
     distromodule.h \
@@ -93,6 +98,7 @@ HEADERS += \
     Distributions/idistribution.h \
     ignorerule.h \
     metafilemanager.h \
+    packagecontrol.h \
     packing.h \
     pathutils.h \
     pe.h \
@@ -105,7 +111,8 @@ HEADERS += \
     qml.h \
     libinfo.h \
     qtdir.h \
-    targetinfo.h
+    targetinfo.h \
+    zipcompresser.h
 
 STATECHARTS +=
 

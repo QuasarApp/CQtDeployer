@@ -149,8 +149,9 @@ void Extracter::copyExtraPlugins(const QString& package) {
         if (info.isDir()) {
             QStringList plugins;
             if (!_fileManager->copyFolder(info.absoluteFilePath(),
-                                     targetPath + distro.getPluginsOutDir() + info.fileName()
-                                          , {}, &plugins)) {
+                                          targetPath + distro.getPluginsOutDir() + info.fileName(),
+                                          QStringList() << ".so.debug" << "d.dll" << ".pdb" << ".dll.debug",
+                                          &plugins)) {
 
                 QuasarAppUtils::Params::log("fail to copy extra plugin from:" + info.absoluteFilePath() +
                                             " to: " + targetPath + distro.getPluginsOutDir(),
@@ -179,7 +180,7 @@ void Extracter::extractPlugins() {
         _pluginsParser->scan(cnf->qtDir.getPlugins(), plugins, _packageDependencyes[i.key()].qtModules(), i.key());
 
         _fileManager->copyFiles(plugins, targetPath + distro.getPluginsOutDir(), 1,
-                                 QStringList() << ".so.debug" << "d.dll" << ".pdb", &listItems);
+                                 QStringList() << ".so.debug" << "d.dll" << ".pdb" << ".dll.debug", &listItems);
 
         for (const auto &item : listItems) {
             extractPluginLib(item, i.key());
@@ -380,7 +381,7 @@ bool Extracter::extractQmlAll() {
         QStringList listItems;
 
         if (!_fileManager->copyFolder(cnf->qtDir.getQmls(), targetPath + distro.getQmlOutDir(),
-                        QStringList() << ".so.debug" << "d.dll" << ".pdb",
+                        QStringList() << ".so.debug" << "d.dll" << ".pdb" << ".dll.debug",
                         &listItems)) {
             return false;
         }
@@ -405,7 +406,7 @@ bool Extracter::extractQmlFromSource() {
         QStringList plugins;
         QStringList listItems;
         QStringList filter;
-        filter << ".so.debug" << "d.dll" << ".pdb";
+        filter << ".so.debug" << "d.dll" << ".pdb" << ".dll.debug";
 
         for (const auto &qmlInput: distro.qmlInput()) {
             QFileInfo info(qmlInput);

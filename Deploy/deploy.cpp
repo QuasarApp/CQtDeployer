@@ -16,7 +16,7 @@
 Deploy::Deploy() {
     _fileManager = new FileManager();
     _scaner = new DependenciesScanner();
-    _packing = new Packing();
+    _packing = new Packing(_fileManager);
     _pluginParser = new PluginsParser();
 
     _paramsParser = new ConfigParser(_fileManager, _pluginParser, _scaner, _packing);
@@ -103,6 +103,9 @@ bool Deploy::deploy() {
 }
 
 bool Deploy::packing() {
+
+    if (DeployCore::getMode() != RunMode::Deploy)
+        return true;
 
     return _packing->create();
 }

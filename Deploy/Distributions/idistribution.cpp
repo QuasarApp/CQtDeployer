@@ -101,6 +101,12 @@ bool iDistribution::unpackDir(const QString &resource,
     return true;
 }
 
+bool iDistribution::copyDir(const QString &resource,
+                            const QString &target) const {
+
+    return _fileManager->copyFolder(resource, target, {}, nullptr, nullptr, true);
+}
+
 bool iDistribution::moveData(const QString &from,
                              const QString &to,
                              const QString& ignore) const {
@@ -122,12 +128,4 @@ void iDistribution::registerOutFiles() const {
     }
 }
 
-QMap<int ,QPair<QString, const DistroModule*>>
-iDistribution::sortPackages(const QHash<QString, DistroModule> &input) {
-    QMap<int, QPair<QString, const DistroModule *>> result;
-    for (auto it = input.cbegin(); it != input.cend(); ++it ) {
-        result.insertMulti(0xFFFF - it.key().size(), {it.key(), &it.value()});
-    }
 
-    return result;
-}

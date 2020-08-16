@@ -73,7 +73,7 @@ QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
         }
 
         if (!DeployCore::_config->ignoreList.isIgnore(info)) {
-            res.insertMulti(info.getPriority(), info);
+            res.insert(info.getPriority(), info);
         }
 
     }
@@ -202,7 +202,7 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
 
         for (auto i : list) {
             addToWinAPI(i.fileName().toUpper(), winAPI);
-            _EnvLibs.insertMulti(i.fileName().toUpper(), i.absoluteFilePath());
+            _EnvLibs.insert(i.fileName().toUpper(), i.absoluteFilePath());
         }
 
     }

@@ -76,9 +76,9 @@ public:
     bool copyFolder(const QString &from, const QString &to,
                     const QStringList &filter = QStringList(),
                     QStringList *listOfCopiedItems = nullptr,
-                    QStringList *mask = nullptr);
+                    QStringList *mask = nullptr, bool force = false);
 
-    bool moveFolder(const QString &from, const QString &to, const QString &ignore);
+    bool moveFolder(const QString &from, const QString &to, const QString &ignore = "");
 
     void clear(const QString& targetDir, bool force);
 
