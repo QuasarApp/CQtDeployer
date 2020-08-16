@@ -28,6 +28,7 @@
     "recOut": "rec",
     "verbose": "1",
     "qif": false,
+    "zip": false,
     "noCheckRPATH": false,
     "noCheckPATH": false,
     "name": "mainApplication",
