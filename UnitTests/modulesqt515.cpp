@@ -35,7 +35,16 @@ QSet<QString> ModulesQt515::qmlLibs(const QString &distDir) const {
 
 #ifdef Q_OS_WIN
     res += utils.createTree({
-
+                                "./" + distDir + "/qml/QtQuick/Controls.2/Fusion/VerticalHeaderView.qml",
+                                "./" + distDir + "/qml/QtQuick/Controls.2/Fusion/HorizontalHeaderView.qml",
+                                "./" + distDir + "/qml/QtQuick/Controls.2/HorizontalHeaderView.qml",
+                                "./" + distDir + "/qml/QtQuick/Controls.2/Imagine/HorizontalHeaderView.qml",
+                                "./" + distDir + "/qml/QtQuick/Controls.2/Imagine/VerticalHeaderView.qml",
+                                "./" + distDir + "/qml/QtQuick/Controls.2/Material/HorizontalHeaderView.qml",
+                                "./" + distDir + "/qml/QtQuick/Controls.2/Material/VerticalHeaderView.qml",
+                                "./" + distDir + "/qml/QtQuick/Controls.2/Universal/HorizontalHeaderView.qml",
+                                "./" + distDir + "/qml/QtQuick/Controls.2/Universal/VerticalHeaderView.qml",
+                                "./" + distDir + "/qml/QtQuick/Controls.2/VerticalHeaderView.qml"
     });
 #else
     res -= utils.createTree({
@@ -110,6 +119,20 @@ QSet<QString> ModulesQt515::testDistroLibs(const QString &distDir) const {
     auto res = ModulesQt514::testDistroLibs(distDir);
 
 #ifdef Q_OS_WIN
+
+    res += utils.createTree({
+                                "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/Fusion/VerticalHeaderView.qml",
+                                "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/Fusion/HorizontalHeaderView.qml",
+                                "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/HorizontalHeaderView.qml",
+                                "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/Imagine/HorizontalHeaderView.qml",
+                                "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/Imagine/VerticalHeaderView.qml",
+                                "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/Material/HorizontalHeaderView.qml",
+                                "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/Material/VerticalHeaderView.qml",
+                                "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/Universal/HorizontalHeaderView.qml",
+                                "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/Universal/VerticalHeaderView.qml",
+                                "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/VerticalHeaderView.qml"
+    });
+
 #else
     res += utils.createTree({
                                 "./" + distDir + "/package2/ZzZ/plugins/wayland-graphics-integration-server/libqt-wayland-compositor-dmabuf-server-buffer.so",
@@ -154,6 +177,18 @@ QSet<QString> ModulesQt515::testOutLibs(const QString &distDir) const {
     auto res = ModulesQt514::testOutLibs(distDir);
 
 #ifdef Q_OS_WIN
+    res += utils.createTree({
+                                "./" + distDir + "/q/QtQuick/Controls.2/Fusion/VerticalHeaderView.qml",
+                                "./" + distDir + "/q/QtQuick/Controls.2/Fusion/HorizontalHeaderView.qml",
+                                "./" + distDir + "/q/QtQuick/Controls.2/HorizontalHeaderView.qml",
+                                "./" + distDir + "/q/QtQuick/Controls.2/Imagine/HorizontalHeaderView.qml",
+                                "./" + distDir + "/q/QtQuick/Controls.2/Imagine/VerticalHeaderView.qml",
+                                "./" + distDir + "/q/QtQuick/Controls.2/Material/HorizontalHeaderView.qml",
+                                "./" + distDir + "/q/QtQuick/Controls.2/Material/VerticalHeaderView.qml",
+                                "./" + distDir + "/q/QtQuick/Controls.2/Universal/HorizontalHeaderView.qml",
+                                "./" + distDir + "/q/QtQuick/Controls.2/Universal/VerticalHeaderView.qml",
+                                "./" + distDir + "/q/QtQuick/Controls.2/VerticalHeaderView.qml"
+    });
 #else
     res += utils.createTree({
                                 "./" + distDir + "/q/QtQuick/Controls.2/Fusion/HorizontalHeaderView.qml",
