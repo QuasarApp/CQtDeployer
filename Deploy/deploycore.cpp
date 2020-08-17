@@ -191,6 +191,7 @@ void DeployCore::help() {
                 {"allQmlDependes", "Extracts all the qml libraries. (not recommended, as it takes great amount of computer memory)"},
                 {"qif", "Create the QIF installer for deployement programm"},
                 {"qifFromSystem", "force use system binarycreator tool of qif from path or qt"},
+                {"zip", "Create the ZIP arhive for deployement programm"},
                 {"deploySystem", "Deploys all libraries  (do not work in snap )"},
                 {"deploySystem-with-libc", "deploy all libs (only linux) (do not work in snap )"},
 
@@ -252,7 +253,7 @@ void DeployCore::help() {
         },
         {
             "Part 5 QtInstallFramework options", {
-                {"-qifStyle [path/to/style.css]", "Sets the path to the CSS style file or sets the default style. Available styles: quasar "},
+                {"-qifStyle [path/to/style.css]", "Sets the path to the CSS style file or sets the default style. Available styles: quasar, quasarDark"},
                 {"-qifBanner [path/to/banner.png]", "Sets path to the banner png file."},
                 {"-qifLogo [path/to/logo.png]", "Sets path to the logo png file."},
             }
@@ -313,6 +314,7 @@ QStringList DeployCore::helpKeys() {
         "qifStyle",
         "qifBanner",
         "qifLogo",
+        "zip",
     };
 }
 

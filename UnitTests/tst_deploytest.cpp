@@ -145,6 +145,12 @@ private slots:
     // qif flags
     void testQIF();
 
+    // zip flags
+    void testZIP();
+
+    // qif and zip flags
+    void testMultiPacking();
+
     // init flags
     void testInit();
 
@@ -666,6 +672,110 @@ void deploytest::testQIF() {
                    "-targetPackage", packageString,
                    "qif", "qifFromSystem"}, &comapareTreeMulti, {}, true);
 
+}
+
+void deploytest::testZIP() {
+
+    TestUtils utils;
+
+    auto comapareTree = utils.createTree({
+                                             "./" + DISTRO_DIR + "/TestQMLWidgets.zip",
+                                         });
+
+    auto comapareTreeMulti = utils.createTree({
+                                                  "./" + DISTRO_DIR + "/QtWidgetsProject.zip",
+                                                  "./" + DISTRO_DIR + "/package1.zip",
+                                                  "./" + DISTRO_DIR + "/package2.zip",
+
+                                              });
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestQMLWidgets";
+    QString target1 = TestBinDir + "TestOnlyC";
+
+    QString qmake = TestQtDir + "bin/qmake";
+
+#else
+    QString bin = TestBinDir + "TestQMLWidgets.exe";
+    QString target1 = TestBinDir + "TestOnlyC.exe";
+
+    QString qmake = TestQtDir + "bin/qmake.exe";
+
+#endif
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                   "zip", "verbose"}, &comapareTree, {}, true);
+
+    // test clear for qif
+    runTestParams({"clear", "verbose"}, {} , {}, true);
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                   "zip",
+                   "verbose"}, &comapareTree, {}, true);
+
+
+#ifdef Q_OS_UNIX
+    QString target2 = TestBinDir + "TestQMLWidgets";
+    QString target3 = TestBinDir + "QtWidgetsProject";
+
+#else
+    QString target2 = TestBinDir + "TestQMLWidgets.exe";
+    QString target3 = TestBinDir + "QtWidgetsProject.exe";
+
+#endif
+    bin = target1;
+    bin += "," + target2;
+    bin += "," + target3;
+
+    auto packageString = "/package1/;" + QFileInfo(target1).absoluteFilePath() + ",/package2/;" + QFileInfo(target2).absoluteFilePath();
+    runTestParams({"-bin", bin, "force-clear",
+                   "-binOut", "/lol",
+                   "-libOut", "/lolLib",
+                   "-trOut", "/lolTr",
+                   "-pluginOut", "/p",
+                   "-qmlOut", "/q",
+                   "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
+                   "-targetPackage", packageString,
+                   "zip"}, &comapareTreeMulti, {}, true);
+}
+
+void deploytest::testMultiPacking() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+
+    auto comapareTree = utils.createTree({
+                                             "./" + DISTRO_DIR + "/TestQMLWidgets.zip",
+                                             "./" + DISTRO_DIR + "/InstallerTestQMLWidgets.run",
+                                         });
+
+    QString bin = TestBinDir + "TestQMLWidgets";
+    QString target1 = TestBinDir + "TestOnlyC";
+
+    QString qmake = TestQtDir + "bin/qmake";
+
+#else
+    auto comapareTree = utils.createTree({
+                                             "./" + DISTRO_DIR + "/TestQMLWidgets.zip",
+                                             "./" + DISTRO_DIR + "/InstallerTestQMLWidgets.exe",
+                                         });
+    QString bin = TestBinDir + "TestQMLWidgets.exe";
+    QString target1 = TestBinDir + "TestOnlyC.exe";
+
+    QString qmake = TestQtDir + "bin/qmake.exe";
+
+#endif
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                   "zip",
+                   "qif", "qifFromSystem",
+                   "verbose"}, &comapareTree, {}, true);
 }
 
 void deploytest::testInit()

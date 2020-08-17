@@ -85,8 +85,7 @@ bool ZipCompresser::add(const QString& root, const QString& path, zip_t * zip) c
             return false;
         }
         auto data = src.readAll();
-        const char *buf = data.data();
-        if (zip_entry_write(zip, buf, strlen(buf)) != 0) {
+        if (zip_entry_write(zip, data.data(), data.size()) != 0) {
             return false;
         }
 
