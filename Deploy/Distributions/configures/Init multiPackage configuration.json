@@ -24,7 +24,7 @@
     "recursiveDepth": "3",
     "extraLibs": "myExtraLib (libssl)",
     "extraPlugin": "myExtraPulgin (platforms)",
-    "targetDir": "./Distro",
+    "targetDir": "./DistributionKit",
     "targetPackage": [
         [
             "/package1/",
