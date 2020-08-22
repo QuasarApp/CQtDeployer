@@ -3,7 +3,8 @@
 # ![Logo](res/CQtDeployer_banner_web.png)
 
 ****************************
-
+## Support the project
+If you like what we do and it benefits you, you can support the project on the official page [QuasarApp in Patreon](https://www.patreon.com/QuasarApp)
 
 ## What is CQtDeployer
 The CQtDeployer is application for extract all depends library of executable and create launch script for your application.
@@ -129,10 +130,6 @@ Or starting with ubuntu 20.04 in the ubuntu application settings manager.
 - [distbuilder](https://github.com/BuvinJT/distbuilder)
 - [Manager_v2](https://github.com/dimkatsi91/Manager_v2)
 
-## Donate
-If you want to support the project,you can donate into our bitcoin wallet.
-
-### Bitcoin address - 1NJNbDKmezcUcHRfzpBeq2fHeG21oEKX8Q
 
 ## Thanks
  * many thanks [Trail of Bits](https://github.com/trailofbits) for their library [pe-parser](https://github.com/trailofbits/pe-parse). Everything works perfectly.
@@ -140,6 +137,8 @@ If you want to support the project,you can donate into our bitcoin wallet.
 ***************************
 ***************************
 ***************************
+
+
 
 **CQtDeployer** - это приложение преднознаена для извлечения всех зависимых библиотек исполняемого файла и создания сценария запуска для вашего приложения.
 
@@ -149,6 +148,8 @@ If you want to support the project,you can donate into our bitcoin wallet.
 * Crossdeploy: приложение поддерживает Windows и дистрибутивы Linux, это означает, что вы можете использовать его не только для развертывания проекта для вашей платформы, но и для развертывания проекта в Linux для Windows и наоборот.
 * Быстрое создание установщиков. По завершении развертывания вы получите автономный установщик вашего дистрибутива.
 
+## Поддержите проект
+Если вам нравится то, что мы делаем, и это приносит вам пользу, вы можете поддержать проект на официальной странице [QuasarApp в Patreon](https://www.patreon.com/QuasarApp)
 
 ## Поддерживаемые платформы:
 * <img src="https://user-images.githubusercontent.com/12465465/67766480-929b5000-fa5f-11e9-8ae7-377d9ddb7c65.png"  height="100">
@@ -262,11 +263,6 @@ If you want to support the project,you can donate into our bitcoin wallet.
 - [Hanoi-Towers](https://github.com/QuasarApp/Hanoi-Towers)
 - [distbuilder](https://github.com/BuvinJT/distbuilder)
 - [Manager_v2](https://github.com/dimkatsi91/Manager_v2)
-
-## Пожертвовать
-Если вы хотите помочь проекту, то вы можете пожертвовать небольшую сумму на наш биткойн-кошелек.
-
-### Биткойн-адрес - 1NJNbDKmezcUcHRfzpBeq2fHeG21oEKX8Q
 
 ## Благодарность
  * Большое спасибо  [Trail of Bits](https://github.com/trailofbits) за их библиотеку [pe-parser](https://github.com/trailofbits/pe-parse). Все работает отлично.
