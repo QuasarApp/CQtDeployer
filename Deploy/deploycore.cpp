@@ -179,7 +179,7 @@ void DeployCore::help() {
                 {"clear", "Deletes deployable files of the previous session."},
                 {"force-clear", "Deletes the destination directory before deployment."},
                 {"noStrip", "Skips strip step"},
-                {"noTranslations", "Skips the translations files. It doesn't work without qmake and inside a snap package"},
+                {"noTranslations", "Skips the translations files. It doesn't work without qmake."},
                 {"noOverwrite", "Prevents replacing existing files."},
                 {"noCheckRPATH", "Disables automatic search of paths to qmake in executable files."},
                 {"noCheckPATH", "Disables automatic search of paths to qmake in system PATH."},
@@ -192,8 +192,8 @@ void DeployCore::help() {
                 {"qif", "Create the QIF installer for deployement programm"},
                 {"qifFromSystem", "force use system binarycreator tool of qif from path or qt"},
                 {"zip", "Create the ZIP arhive for deployement programm"},
-                {"deploySystem", "Deploys all libraries  (do not work in snap )"},
-                {"deploySystem-with-libc", "deploy all libs (only linux) (do not work in snap )"},
+                {"deploySystem", "Deploys all libraries  (on snap version you need to turn on permission)"},
+                {"deploySystem-with-libc", "deploy all libs (only linux) (on snap version you need to turn on permission)"},
 
             }
         },
@@ -229,7 +229,8 @@ void DeployCore::help() {
                 {"-pluginOut [package;path,path]", "Sets path to plugins out directory"},
                 {"-binOut [package;path,path]", "Sets path to binary out directory"},
                 {"-recOut [package;path,path]", "Sets path to recurses out directory"},
-                {"-name [package;val,val]", "Sets name for package. If this if you do not specify a package, the value will be assigned to the default package ("")"},
+                {"-name [package;val,val]", "Sets name for package. "
+                 "If this if you do not specify a package, the value will be assigned to the default package ("")"},
                 {"-description [package;val,val]", "Sets description for package"},
                 {"-deployVersion [package;val,val]", "Sets version for package"},
                 {"-releaseDate [package;val,val]", "Sets release date for package"},
@@ -247,15 +248,23 @@ void DeployCore::help() {
                  " it then use '-enablePlugins " + PluginsParser::defaultForbidenPlugins().join(',') + "' option"},
                 {"-disablePlugins [package;val1;val2,SingeleVal]", "Disables plugins for distribution. "
                  "You can disable any plugin of your Qt build, just see the yourQtFolder/plugins forlder for available plugins."
-                 " Example if you want disable qxcb plugin: -disablePlugins qxcb. Note that the name of the plugin is indicated without its extension"},
+                 " Example if you want disable qxcb plugin: -disablePlugins qxcb."
+                 " Note that the name of the plugin is indicated without its extension"},
 
             }
         },
         {
             "Part 5 QtInstallFramework options", {
-                {"-qifStyle [path/to/style.css]", "Sets the path to the CSS style file or sets the default style. Available styles: quasar, quasarDark"},
+                {"-qifStyle [path/to/style.css]", "Sets the path to the CSS style file or sets the default style."
+                 " Available styles: quasar, quasarDark"},
                 {"-qifBanner [path/to/banner.png]", "Sets path to the banner png file."},
                 {"-qifLogo [path/to/logo.png]", "Sets path to the logo png file."},
+            }
+        },
+        {
+            "Support", {
+                {"Support for you", "If you have any questions or problems with cqtdeployer you can write to us about the problem on the GitHub page: https://github.com/QuasarApp/CQtDeployer/issues"},
+                {"Support for us", "If you liked cqtdeployer, then you can join any patreon plan of your choice for support us: https://www.patreon.com/QuasarApp"},
             }
         }
     };
