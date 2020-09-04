@@ -79,48 +79,8 @@ See list of all options [here](https://github.com/QuasarApp/CQtDeployer/wiki/Opt
 ```
 <img src="https://user-images.githubusercontent.com/12465465/78639716-17b04e00-78b7-11ea-9002-a8b45a43807f.png"  height="400">
 
-## Build for Linux
-- install qt and qt QtInstallFrameWork from [qt installer](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f9bb77-7bb77-4bb77-4)
-- git clone https://github.com/QuasarApp/CQtDeployer.git
-- cd CQtDeployer
-- git submodule update --init --recursive
-- qmake -r
-     - Here you must definitely call the qmake that was loaded from the 1st item.
-     - Example: ~/Qt/5.14.0/gcc_64/bin/qmake -r
-- make -j$(nproc)
-- make deploy
-     - #this command requires installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
-     - ##### If you are building cqtdeployer using qt from your OS repository, use only the cqtdeployer installed from the github installer. The fact is that the snap package does not have access to system libraryes.
-- ./Distro/CQtDeployerInstaller.run
-
-## Build for Windows (CMD)
-- install qt and qt QtInstallFrameWork from [qt installer](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f9bb77-7bb77-4bb77-4)
-- git clone https://github.com/QuasarApp/CQtDeployer.git
-- cd CQtDeployer
-- git submodule update --init --recursive
-- SET PATH=C:/Qt/Tools/mingw730_64/bin;%PATH%
-     - It is important to set up the qt environment.
-- qmake.exe -r
-     - Here you must definitely call the qmake that was loaded from the 1st item.
-     - Example: C:/Qt/5.14.0/mingw73_64/bin/qmake.exe -r
-- migw32-make -j8
-- migw32-make deploy
-     - #this command requires installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
-- ./Distro/CQtDeployerInstaller.exe
-
-## Install 
-You can download the latest version of the application [here](https://github.com/QuasarApp/CQtDeployer/releases).
-
-### Snap 
-[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/cqtdeployer)
-
-#### Features of the snap version
-The snap package does not have access to system libraries. This means deploySystem options will not work. This also means that if you manually specify libDir or extraLib, then libraries that are not in home will not be found.
-If these restrictions bother you, use the [Installer](https://github.com/QuasarApp/CQtDeployer/releases) classic version of the application.
-
-If you are using the snap version of the application. Enable all permissions for cqtdeployer.
-this can be done in the snap-store
-Or starting with ubuntu 20.04 in the ubuntu application settings manager.
+## Build and install
+The Building or installation instructions see on wiki [page](https://github.com/QuasarApp/CQtDeployer/wiki/Build-and-Install)
 
 ## Projects using CQtDeployer:
 
@@ -212,49 +172,9 @@ Or starting with ubuntu 20.04 in the ubuntu application settings manager.
 ```
 <img src="https://user-images.githubusercontent.com/12465465/78639716-17b04e00-78b7-11ea-9002-a8b45a43807f.png"  height="400">
 
+## Сборка и установка
+Инструкции по сборке или установке см. В [вики](https://github.com/QuasarApp/CQtDeployer/wiki/%D0%A1%D0%B1%D0%BE%D1%80%D0%BA%D0%B0-%D0%B8-%D0%A3%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0)
 
-## Build для Linux
-- установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
-- git clone https://github.com/QuasarApp/CQtDeployer.git
-- cd CQtDeployer
-- git submodule update --init --recursive
-- qmake -r
-     - Здесь нужно обязательно вызвать тот qmake, который был загружен из 1го пункта.
-     - Пример: ~/Qt/5.14.0/gcc_64/bin/qmake -r
-- make -j$(nproc)
-- make deploy
-     - эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
-     - ##### Если вы собираете cqtdeployer, используя qt из своего репозитория ОС, используйте только cqtdeployer, установленный из установщика github. Дело в том, что пакет моментальных снимков не имеет доступа к системным библиотекам.
-- ./Distro/CQtDeployerInstaller.run
-
-## Build для Windows (CMD)
-- установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
-- git clone https://github.com/QuasarApp/CQtDeployer.git
-- cd CQtDeployer
-- git submodule update --init --recursive
-- SET PATH=C:/Qt/Tools/mingw730_64/bin;%PATH%
-    - Здесь важно настроить окружение qt.
-- qmake.exe -r
-    - Здесь нужно обязательно вызвать тот qmake, который был загружен из 1го пункта.
-    - Пример: C:/Qt/5.14.0/mingw73_64/bin/qmake.exe -r
-- migw32-make -j8
-- migw32-make deploy
-    - эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
-- ./Distro/CQtDeployerInstaller.exe
-
-### Snap
-[![Загрузите из Snap Store](https://snapcraft.io/static/images/badges/ru/snap-store-black.svg)](https://snapcraft.io/cqtdeployer)
-
-#### Особенности snap версии
-В snap пакет не имеет доступ к системным библиотекам. Это значит что опции deploySystem не будут работать. Так же это значит что нсли вы в ручную укажите libDir или extraLib, то библиотеки находящиеся не в home не будут найдены.
-Если вам мешают эти ограничения используйте [Установщик](https://github.com/QuasarApp/CQtDeployer/releases) класической версии приложения. 
-
-Если вы используете snap версию приложения. Включите все разрешения для cqtdeployer.
-это можно сделать в snap-store 
-Или начиная с ubuntu 20.04 в менеджере натроек приложений ubuntu. 
-
-## Установить
-Вы можете загрузить последнюю версию приложения [здесь](https://github.com/QuasarApp/CQtDeployer/releases).
 
 ## Проекты использующие CQtDeployer :
 
