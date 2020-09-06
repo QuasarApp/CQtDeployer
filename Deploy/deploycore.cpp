@@ -189,7 +189,8 @@ void DeployCore::help() {
                  " this option has been disabled by default, as it can add low-level graphics libraries to the distribution,"
                  " which will not be compatible with equipment on users' hosts."},
                 {"allQmlDependes", "Extracts all the qml libraries. (not recommended, as it takes great amount of computer memory)"},
-                {"qif", "Create the QIF installer for deployement programm"},
+                {"qif", "Create the QIF installer for deployement programm"
+                        " You can specify the path to your own installer template. Examples: cqtdeployer -qif path/to/myCustom/qif."},
                 {"qifFromSystem", "force use system binarycreator tool of qif from path or qt"},
                 {"zip", "Create the ZIP arhive for deployement programm"},
                 {"deploySystem", "Deploys all libraries  (on snap version you need to turn on permission)"},
