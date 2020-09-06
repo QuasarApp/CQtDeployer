@@ -633,7 +633,8 @@ void deploytest::testQIF() {
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
-                   "qif", "qifFromSystem", "verbose"}, &comapareTree, {}, true);
+                   "-qif", TestBinDir + "/../../UnitTests/testRes/QIFCustomTemplate",
+                   "qifFromSystem", "verbose"}, &comapareTree, {}, true);
 
     // test clear for qif
     runTestParams({"clear", "verbose"}, {} , {}, true);
