@@ -2,9 +2,9 @@
 <Package>
     <DisplayName>CQtDeployer</DisplayName>
     <Description>CQtDeployer</Description>
-    <Version>1</Version>
+    <Version>1.4</Version>
     <Default>true</Default>
     <ForcedInstallation>false</ForcedInstallation>
-    <ReleaseDate>2020-03-25</ReleaseDate>
+    <ReleaseDate>2020-09-06</ReleaseDate>
     <SortingPriority>100</SortingPriority>
 </Package>

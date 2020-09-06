@@ -6,7 +6,7 @@
     <Default>true</Default>
     <ForcedInstallation>false</ForcedInstallation>
     <Script>installscript.js</Script>
-    <ReleaseDate>2020-08-28</ReleaseDate>
+    <ReleaseDate>2020-09-06</ReleaseDate>
     <SortingPriority>201</SortingPriority>
     <Translations>
         <Translation>ru.qm</Translation>
