@@ -641,10 +641,10 @@ void deploytest::testQIF() {
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
                    "-qif", TestBinDir + "/../../UnitTests/testRes/QIFCustomTemplate",
                    "-name", "org.qtproject.ifw.example.stylesheet",
-                   "qifFromSystem", "verbose"}, &comapareTreeCustom, {}, true);
+                   "qifFromSystem"}, &comapareTreeCustom, {}, true);
 
     // test clear for qif
-    runTestParams({"clear", "verbose"}, {} , {}, true);
+    runTestParams({"clear"}, {} , {}, true);
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
@@ -652,8 +652,7 @@ void deploytest::testQIF() {
                    "qif", "qifFromSystem",
                    "-qifStyle", "quasar",
                    "-qifBanner", TestBinDir + "/../../res/CQtDeployer_banner_web.png",
-                   "-qifLogo", TestBinDir + "/../../res/CQtDeployer defaultIcon_web.png",
-                   "verbose"}, &comapareTree, {}, true);
+                   "-qifLogo", TestBinDir + "/../../res/CQtDeployer defaultIcon_web.png"}, &comapareTree, {}, true);
 
 
 #ifdef Q_OS_UNIX
