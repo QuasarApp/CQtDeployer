@@ -83,6 +83,7 @@ HEADERS += \
     Distributions/defaultdistro.h \
     Distributions/templateinfo.h \
     Distributions/ziparhive.h \
+    defines.h \
     dependencymap.h \
     deployconfig.h \
     distromodule.h \

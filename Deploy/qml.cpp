@@ -10,6 +10,7 @@
 #include <QDir>
 #include <QFile>
 #include <quasarapp.h>
+#include <deploycore.h>
 
 QStringList QML::extractImportsFromFile(const QString &filepath) {
     QStringList imports;
@@ -21,13 +22,13 @@ QStringList QML::extractImportsFromFile(const QString &filepath) {
     content.remove(QRegExp("/\\*(.*)\\*/"));
 
     for (const QString &line : content.split("\n"))
-        for (QString &word : line.split(";", Qt::SkipEmptyParts))
+        for (QString &word : line.split(";", splitbehavior))
         {
             word = word.simplified();
             if (word.startsWith("//")) continue;
             if (!word.startsWith("import")) continue;
 
-            QStringList list = word.split(" ", Qt::SkipEmptyParts);
+            QStringList list = word.split(" ", splitbehavior);
             if (list.count() != 3)
             {
                 if (list.count() == 5)
