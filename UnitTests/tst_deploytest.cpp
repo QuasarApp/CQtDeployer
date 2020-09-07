@@ -616,6 +616,10 @@ void deploytest::testQIF() {
     auto comapareTreeMulti = utils.createTree({
                                                   "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.run",
                                               });
+
+    auto comapareTreeCustom = utils.createTree({
+                                                  "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.run",
+                                              });
 #else
     QString bin = TestBinDir + "TestQMLWidgets.exe";
     QString target1 = TestBinDir + "TestOnlyC.exe";
@@ -627,14 +631,17 @@ void deploytest::testQIF() {
     auto comapareTreeMulti = utils.createTree({
                                                   "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.exe",
                                               });
+    auto comapareTreeCustom = utils.createTree({
+                                                  "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.exe",
+                                              });
 
 #endif
-
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
                    "-qif", TestBinDir + "/../../UnitTests/testRes/QIFCustomTemplate",
-                   "qifFromSystem", "verbose"}, &comapareTree, {}, true);
+                   "-name", "org.qtproject.ifw.example.stylesheet",
+                   "qifFromSystem", "verbose"}, &comapareTreeCustom, {}, true);
 
     // test clear for qif
     runTestParams({"clear", "verbose"}, {} , {}, true);
