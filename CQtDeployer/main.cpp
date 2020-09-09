@@ -13,29 +13,8 @@
 #include <QFileInfo>
 #include <QList>
 #include <deploy.h>
-#include <QTimer>
-
-#include <signal.h>
-#include <unistd.h>
-#include <execinfo.h>
-
-void handler(int sig) {
-  void *array[10];
-  size_t size;
-
-  // get void*'s for all entries on the stack
-  size = backtrace(array, 10);
-
-  // print out all the frames to stderr
-  fprintf(stderr, "Error: signal %d:\n", sig);
-  backtrace_symbols_fd(array, size, STDERR_FILENO);
-  exit(1);
-}
 
 int main(int argc, char *argv[]) {
-
-    signal(SIGSEGV, handler);   // install our handler
-
 
     QCoreApplication::setOrganizationName("QuasarApp");
     QCoreApplication::setOrganizationDomain("https://github.com/QuasarApp");
