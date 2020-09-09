@@ -30,7 +30,6 @@
 #include "qmlcreator.h"
 #include "testutils.h"
 
-#include "backward-cpp/backward.hpp"
 // add necessary includes here
 
 
@@ -43,7 +42,6 @@ class deploytest : public QObject
 
 private:
     QHash<QString, QSet<QString>> filesTree;
-    backward::SignalHandling bt;
 
     bool runProcess(const QString& DistroPath,
                     const QString& filename,
@@ -250,8 +248,6 @@ QSet<QString> deploytest::getFilesTree(const QStringList &keys) {
 }
 
 deploytest::deploytest() {
-    QVERIFY(bt.loaded());
-
 
     TestUtils utils;
 

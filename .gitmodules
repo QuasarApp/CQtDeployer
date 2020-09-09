@@ -19,6 +19,3 @@
 [submodule "zip"]
 	path = zip
 	url = https://github.com/QuasarApp/zip.git
-[submodule "UnitTests/backward-cpp"]
-	path = UnitTests/backward-cpp
-	url = https://github.com/QuasarApp/backward-cpp.git
