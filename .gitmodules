@@ -16,3 +16,6 @@
 [submodule "doc/wiki"]
 	path = doc/wiki
 	url = https://github.com/QuasarApp/CQtDeployer.wiki.git
+[submodule "UnitTests/backward-cpp"]
+	path = UnitTests/backward-cpp
+	url = https://github.com/QuasarApp/backward-cpp.git

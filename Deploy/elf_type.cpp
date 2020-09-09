@@ -5,7 +5,7 @@
 //# of this license document, but changing it is not allowed.
 //#
 
-#include "elf.h"
+#include "elf_type.h"
 #include <cmath>
 #include <QFileInfo>
 #include <quasarapp.h>

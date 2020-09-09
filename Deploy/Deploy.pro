@@ -54,6 +54,7 @@ SOURCES += \
     configparser.cpp \
     deploy.cpp \
     deploycore.cpp \
+    elf_type.cpp \
     envirement.cpp \
     extra.cpp \
     extracter.cpp \
@@ -63,11 +64,10 @@ SOURCES += \
     metafilemanager.cpp \
     packing.cpp \
     pathutils.cpp \
-    pe.cpp \
     igetlibinfo.cpp \
     dependenciesscanner.cpp \
     ../qtTools/src/shared/winutils/elfreader.cpp \
-    elf.cpp \
+    pe_type.cpp \
     pluginsparser.cpp \
     Distributions/qif.cpp \
     qml.cpp \
@@ -86,6 +86,7 @@ HEADERS += \
     deploy.h \
     deploy_global.h \
     deploycore.h \
+    elf_type.h \
     envirement.h \
     extra.h \
     extracter.h \
@@ -95,11 +96,10 @@ HEADERS += \
     metafilemanager.h \
     packing.h \
     pathutils.h \
-    pe.h \
     igetlibinfo.h \
     dependenciesscanner.h \
     ../qtTools/src/shared/winutils/elfreader.h \
-    elf.h \
+    pe_type.h \
     pluginsparser.h \
     Distributions/qif.h \
     qml.h \

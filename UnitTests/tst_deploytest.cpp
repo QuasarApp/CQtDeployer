@@ -28,23 +28,9 @@
 #include "modules.h"
 #include "qmlcreator.h"
 #include "testutils.h"
+
+#include "backward-cpp/backward.hpp"
 // add necessary includes here
-#include <signal.h>
-#include <unistd.h>
-#include <execinfo.h>
-
-void handler(int sig) {
-  void *array[10];
-  size_t size;
-
-  // get void*'s for all entries on the stack
-  size = backtrace(array, 10);
-
-  // print out all the frames to stderr
-  fprintf(stderr, "Error: signal %d:\n", sig);
-  backtrace_symbols_fd(array, size, STDERR_FILENO);
-  exit(1);
-}
 
 
 const QString TestBinDir = TEST_BIN_DIR;
@@ -56,7 +42,7 @@ class deploytest : public QObject
 
 private:
     QHash<QString, QSet<QString>> filesTree;
-
+    backward::SignalHandling bt;
 
     bool runProcess(const QString& DistroPath,
                     const QString& filename,
@@ -255,8 +241,7 @@ QSet<QString> deploytest::getFilesTree(const QStringList &keys) {
 }
 
 deploytest::deploytest() {
-    signal(SIGSEGV, handler);   // install our handler
-    signal(SIGABRT, handler);   // install our handler
+    QVERIFY(bt.loaded());
 
 
     TestUtils utils;
