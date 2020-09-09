@@ -5,7 +5,7 @@
  * of this license document, but changing it is not allowed.
  */
 
-#include "pe.h"
+#include "pe_type.h"
 
 #include <QFile>
 #include <QFileInfo>

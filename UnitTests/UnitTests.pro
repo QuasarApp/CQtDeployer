@@ -45,6 +45,7 @@ RESOURCES += \
     res.qrc
 
 HEADERS += \
+    backward-cpp/backward.hpp \
     libcreator.h \
     modules.h \
     modulesqt513.h \
