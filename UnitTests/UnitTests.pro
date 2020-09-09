@@ -52,5 +52,3 @@ HEADERS += \
     qmlcreator.h \
     testutils.h
 
-win32:LIBS += -lpsapi -limagehlp
-
