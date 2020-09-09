@@ -30,6 +30,23 @@
 #include "qmlcreator.h"
 #include "testutils.h"
 // add necessary includes here
+#include <signal.h>
+#include <unistd.h>
+#include <execinfo.h>
+
+void handler(int sig) {
+  void *array[10];
+  size_t size;
+
+  // get void*'s for all entries on the stack
+  size = backtrace(array, 10);
+
+  // print out all the frames to stderr
+  fprintf(stderr, "Error: signal %d:\n", sig);
+  backtrace_symbols_fd(array, size, STDERR_FILENO);
+  exit(1);
+}
+
 
 const QString TestBinDir = TEST_BIN_DIR;
 const QString TestQtDir = QT_BASE_DIR;
@@ -247,6 +264,10 @@ QSet<QString> deploytest::getFilesTree(const QStringList &keys) {
 }
 
 deploytest::deploytest() {
+    signal(SIGSEGV, handler);   // install our handler
+    signal(SIGABRT, handler);   // install our handler
+
+
     TestUtils utils;
 
     auto tempTree = utils.getTree(TestQtDir);
