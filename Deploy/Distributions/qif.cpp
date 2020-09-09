@@ -81,7 +81,7 @@ bool QIF::deployTemplate(PackageControl &pkg) {
         QuasarAppUtils::Params::log("Using custom template for installer: " + customTemplate,
                                     QuasarAppUtils::Info);
 
-        auto availablePacakages = QDir(defaultPackageTempalte).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+        auto availablePacakages = QDir(customTemplate + "/packages").entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
 
         for (const auto& pkg: availablePacakages) {
             pakcagesTemplates.insert(pkg.fileName(), pkg.absoluteFilePath());

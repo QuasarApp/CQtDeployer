@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QProcess>
 #include <QThread>
+#include <cassert>
 
 #define TMP_PACKAGE_DIR "tmp_data"
 

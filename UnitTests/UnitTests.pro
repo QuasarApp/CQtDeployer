@@ -25,7 +25,7 @@ include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
 QT_DIR = $$[QT_HOST_BINS]/../
 DEFINES+=QT_BASE_DIR='\\"$$QT_DIR\\"'
 DEFINES+=TEST_BIN_DIR='\\"$$PWD/../tests/build/\\"'
-DEFINES+=QTEST_FUNCTION_TIMEOUT=900000
+#DEFINES+=QTEST_FUNCTION_TIMEOUT=900000
 
 CONFIG += qt console warn_on depend_includepath testcase
 CONFIG -= app_bundle
@@ -45,6 +45,7 @@ RESOURCES += \
     res.qrc
 
 HEADERS += \
+    backward-cpp/backward.hpp \
     libcreator.h \
     modules.h \
     modulesqt513.h \
@@ -52,3 +53,4 @@ HEADERS += \
     modulesqt515.h \
     qmlcreator.h \
     testutils.h
+

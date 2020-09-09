@@ -12,6 +12,7 @@
 #include <QDebug>
 #include <QFileInfo>
 #include "deploy_global.h"
+#include "defines.h"
 
 enum MSVCVersion: int {
     MSVC_Unknown = 0x0,
@@ -195,5 +196,6 @@ public:
     static QString transportPathToSnapRoot(const QString &path);
     static bool checkSystemBakupSnapInterface();
 };
+
 
 #endif // DEPLOYUTILS_H

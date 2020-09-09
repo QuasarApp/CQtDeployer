@@ -23,6 +23,8 @@
 #include <Distributions/defaultdistro.h>
 #include <Distributions/qif.h>
 #include <Distributions/ziparhive.h>
+
+
 /**
  * this function init packages of project
  * inputParamsList - list of parameters
@@ -325,38 +327,38 @@ bool ConfigParser::initDistroStruct() {
 #ifdef Q_OS_LINUX
 
     auto binOut = QuasarAppUtils::Params::getStrArg("binOut").
-            split(DeployCore::getSeparator(0), Qt::SkipEmptyParts);
+            split(DeployCore::getSeparator(0), splitbehavior);
     auto libOut = QuasarAppUtils::Params::getStrArg("libOut").
-            split(DeployCore::getSeparator(0), Qt::SkipEmptyParts);
+            split(DeployCore::getSeparator(0), splitbehavior);
 
 #else
     auto binOut = QuasarAppUtils::Params::getStrArg("binOut").
-            split(DeployCore::getSeparator(0), Qt::SkipEmptyParts);
+            split(DeployCore::getSeparator(0), splitbehavior);
     auto libOut = QuasarAppUtils::Params::getStrArg("libOut").
-            split(DeployCore::getSeparator(0), Qt::SkipEmptyParts);
+            split(DeployCore::getSeparator(0), splitbehavior);
 #endif
 
     auto qmlOut = QuasarAppUtils::Params::getStrArg("qmlOut").
-            split(DeployCore::getSeparator(0), Qt::SkipEmptyParts);
+            split(DeployCore::getSeparator(0), splitbehavior);
     auto trOut = QuasarAppUtils::Params::getStrArg("trOut").
-            split(DeployCore::getSeparator(0), Qt::SkipEmptyParts);
+            split(DeployCore::getSeparator(0), splitbehavior);
     auto pluginOut = QuasarAppUtils::Params::getStrArg("pluginOut").
-            split(DeployCore::getSeparator(0), Qt::SkipEmptyParts);
+            split(DeployCore::getSeparator(0), splitbehavior);
     auto recOut = QuasarAppUtils::Params::getStrArg("recOut").
-            split(DeployCore::getSeparator(0), Qt::SkipEmptyParts);
+            split(DeployCore::getSeparator(0), splitbehavior);
 
     auto name = QuasarAppUtils::Params::getStrArg("name").
-            split(DeployCore::getSeparator(0), Qt::SkipEmptyParts);
+            split(DeployCore::getSeparator(0), splitbehavior);
     auto description = QuasarAppUtils::Params::getStrArg("description").
-            split(DeployCore::getSeparator(0), Qt::SkipEmptyParts);
+            split(DeployCore::getSeparator(0), splitbehavior);
     auto deployVersion = QuasarAppUtils::Params::getStrArg("deployVersion").
-            split(DeployCore::getSeparator(0), Qt::SkipEmptyParts);
+            split(DeployCore::getSeparator(0), splitbehavior);
     auto releaseDate = QuasarAppUtils::Params::getStrArg("releaseDate").
-            split(DeployCore::getSeparator(0), Qt::SkipEmptyParts);
+            split(DeployCore::getSeparator(0), splitbehavior);
     auto icon = QuasarAppUtils::Params::getStrArg("icon").
-            split(DeployCore::getSeparator(0), Qt::SkipEmptyParts);
+            split(DeployCore::getSeparator(0), splitbehavior);
     auto publisher = QuasarAppUtils::Params::getStrArg("publisher").
-            split(DeployCore::getSeparator(0), Qt::SkipEmptyParts);
+            split(DeployCore::getSeparator(0), splitbehavior);
 
     auto erroLog = [](const QString &flag){
         QuasarAppUtils::Params::log(QString("Set %0 fail, because you try set %0 for not inited package."
@@ -479,7 +481,7 @@ bool ConfigParser::initPackages() {
 bool ConfigParser::initQmlInput() {
 
     auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir").
-            split(DeployCore::getSeparator(0), Qt::SkipEmptyParts);
+            split(DeployCore::getSeparator(0), splitbehavior);
 
     if (QuasarAppUtils::Params::isEndable("allQmlDependes")) {
         _config.deployQml = true;
@@ -1130,13 +1132,13 @@ void ConfigParser::setExtraNames(const QStringList &value) {
 bool ConfigParser::initPlugins() {
 
     auto listExtraPlugin = QuasarAppUtils::Params::getStrArg("extraPlugin").
-            split(DeployCore::getSeparator(0), Qt::SkipEmptyParts);
+            split(DeployCore::getSeparator(0), splitbehavior);
 
     auto listEnablePlugins = QuasarAppUtils::Params::getStrArg("enablePlugins").
-            split(DeployCore::getSeparator(0), Qt::SkipEmptyParts);
+            split(DeployCore::getSeparator(0), splitbehavior);
 
     auto listDisablePlugins = QuasarAppUtils::Params::getStrArg("disablePlugins").
-            split(DeployCore::getSeparator(0), Qt::SkipEmptyParts);
+            split(DeployCore::getSeparator(0), splitbehavior);
 
     auto erroLog = [](const QString &flag){
         QuasarAppUtils::Params::log(QString("Set %0 fail, because you try set %0 for not inited package."

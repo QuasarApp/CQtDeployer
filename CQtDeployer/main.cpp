@@ -13,8 +13,6 @@
 #include <QFileInfo>
 #include <QList>
 #include <deploy.h>
-#include <QTimer>
-
 
 int main(int argc, char *argv[]) {
 
