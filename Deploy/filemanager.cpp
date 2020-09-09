@@ -499,6 +499,10 @@ bool FileManager::copyFiles(const QStringList &source,
 
 bool FileManager::removeFile(const QFileInfo &file) {
 
+    if (!file.exists()) {
+        return true;
+    }
+
     if (!QFile::remove(file.absoluteFilePath())) {
         QuasarAppUtils::Params::log("Qt Operation fail (remove file) " + file.absoluteFilePath(),
                                     QuasarAppUtils::Warning);
