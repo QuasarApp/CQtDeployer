@@ -191,8 +191,13 @@ void DeployCore::help() {
                 {"allQmlDependes", "Extracts all the qml libraries. (not recommended, as it takes great amount of computer memory)"},
                 {"qif", "Create the QIF installer for deployement programm"},
                 {"qifFromSystem", "force use system binarycreator tool of qif from path or qt"},
-                {"deploySystem", "Deploys all libraries  (on snap version you need to turn on permission)"},
-                {"deploySystem-with-libc", "deploy all libs (only linux) (on snap version you need to turn on permission)"},
+                {"deploySystem", "Deploys all libraries."
+                 " Not recomendet because there may be conflicts with system libraries"
+                 " (on snap version you need to turn on permission)"},
+                {"deploySystem-with-libc", "deploy all libs include libc (only linux)."
+                 " Do not use this option with gui application."
+                 " For gui application sue the deploySystem option "
+                 "(on snap version you need to turn on permission)"},
                 {"allPlatforms", "deploy all platforms plugins (big size)."},
 
             }
