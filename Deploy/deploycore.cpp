@@ -192,9 +192,14 @@ void DeployCore::help() {
                 {"qif", "Create the QIF installer for deployement programm"
                         " You can specify the path to your own installer template. Examples: cqtdeployer -qif path/to/myCustom/qif."},
                 {"qifFromSystem", "force use system binarycreator tool of qif from path or qt"},
-                {"zip", "Create the ZIP arhive for deployement programm"},
-                {"deploySystem", "Deploys all libraries  (on snap version you need to turn on permission)"},
-                {"deploySystem-with-libc", "deploy all libs (only linux) (on snap version you need to turn on permission)"},
+                {"zip", "Create the ZIP arhive for deployement programm"},                
+                {"deploySystem", "Deploys all libraries."
+                 " Not recomendet because there may be conflicts with system libraries"
+                 " (on snap version you need to turn on permission)"},
+                {"deploySystem-with-libc", "deploy all libs include libc (only linux)."
+                 " Do not use this option with gui application."
+                 " For gui application sue the deploySystem option "
+                 "(on snap version you need to turn on permission)"},
 
             }
         },
