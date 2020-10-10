@@ -90,6 +90,7 @@ The Building or installation instructions see on wiki [page](https://github.com/
 - [distbuilder](https://github.com/BuvinJT/distbuilder)
 - [Manager_v2](https://github.com/dimkatsi91/Manager_v2)
 - [IDE65XX](https://github.com/emartisoft/IDE65XX)
+- [Tanks](https://github.com/anevero/tanks)
 
 
 ## Thanks
@@ -185,6 +186,8 @@ The Building or installation instructions see on wiki [page](https://github.com/
 - [distbuilder](https://github.com/BuvinJT/distbuilder)
 - [Manager_v2](https://github.com/dimkatsi91/Manager_v2)
 - [IDE65XX](https://github.com/emartisoft/IDE65XX)
+- [Tanks](https://github.com/anevero/tanks)
+
 
 ## Благодарность
  * Большое спасибо  [Trail of Bits](https://github.com/trailofbits) за их библиотеку [pe-parser](https://github.com/trailofbits/pe-parse). Все работает отлично.
