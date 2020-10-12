@@ -86,6 +86,13 @@ public:
     QHash<QString, TargetInfo>& targetsEdit();
     QHash<QString, DistroModule>& packagesEdit();
 
+    /**
+     * @brief getPlatform This method return a platform of distribution.
+     *  If you set a pacakge name then this method return platform of package.
+     *  IF package name is empty or not exits then method return platform for all distribution.
+     * @param package This is name of pacakge. Set this parameter to empty string for get a distribution of all pacakges.
+     * @return platform of distribution.
+     */
     Platform getPlatform(const QString& package) const;
 
 private:

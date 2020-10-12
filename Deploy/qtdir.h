@@ -34,7 +34,6 @@ public:
     void setResources(const QString &value);
     Platform getQtPlatform() const;
     void setQtPlatform(const Platform &value);
-    bool isQt(QString path) const;
 
 };
 

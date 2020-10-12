@@ -535,15 +535,8 @@ bool ConfigParser::parseDeployMode() {
         return false;
     }
 
-    auto listLibDir = QuasarAppUtils::Params::getStrArg("libDir").
-            split(DeployCore::getSeparator(0));
-    auto listNamesMasks = QuasarAppUtils::Params::getStrArg("extraLibs").
-            split(DeployCore::getSeparator(0));
-
-
-
-    setExtraPath(listLibDir);
-    setExtraNames(listNamesMasks);
+    initExtraPath();
+    initExtraNames();
     initPlugins();
 
     if (!initQmake()) {
@@ -1069,10 +1062,13 @@ bool ConfigParser::setQtDir(const QString &value) {
     return true;
 }
 
-void ConfigParser::setExtraPath(const QStringList &value) {
+void ConfigParser::initExtraPath() {
+    auto listLibDir = QuasarAppUtils::Params::getStrArg("libDir").
+            split(DeployCore::getSeparator(0));
+
     QDir dir;
 
-    for (const auto &i : value) {
+    for (const auto &i : listLibDir) {
         QFileInfo info(DeployCore::transportPathToSnapRoot(i));
         if (info.isDir()) {
             if (_config.targets().contains(info.absoluteFilePath())) {
@@ -1100,19 +1096,36 @@ void ConfigParser::setExtraPath(const QStringList &value) {
     }
 }
 
-void ConfigParser::setExtraNames(const QStringList &value) {
-    for (const auto &i : value) {
-        if (i.size() > 1) {
-            _config.extraPaths.addtExtraNamesMasks({i});
+void ConfigParser::initExtraNames() {
 
-            QuasarAppUtils::Params::log(i + " added like a file name mask",
-                                               QuasarAppUtils::Info);
-        } else {
-            QuasarAppUtils::Params::log(i + " not added in file mask because"
-                                                   " the file mask must be large 2 characters",
-                                               QuasarAppUtils::Warning);
+    const auto deployExtraNames = [this](const QStringList& listNamesMasks){
+        for (const auto &i : listNamesMasks) {
+            if (i.size() > 1) {
+                _config.extraPaths.addtExtraNamesMasks({i});
+
+                QuasarAppUtils::Params::log(i + " added like a file name mask",
+                                                   QuasarAppUtils::Info);
+            } else {
+                QuasarAppUtils::Params::log(i + " not added in file mask because"
+                                                       " the file mask must be large 2 characters",
+                                                   QuasarAppUtils::Warning);
+            }
         }
+    };
 
+    auto listNamesMasks = QuasarAppUtils::Params::getStrArg("extraLibs").
+            split(DeployCore::getSeparator(0));
+
+    deployExtraNames(listNamesMasks);
+
+/*
+ * Task https://github.com/QuasarApp/CQtDeployer/issues/422
+ * We need to add to extra names libraries without which qt will not work,
+ *
+*/
+    if (isNeededQt()) {
+        auto libs = DeployCore::Qt3rdpartyLibs( _config.getPlatform(""));
+        deployExtraNames(libs);
     }
 }
 

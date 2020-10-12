@@ -166,6 +166,15 @@ public:
     static QChar getSeparator(int lvl);
     static bool isAlienLib(const QString &lib);
 
+    /**
+     * @brief QtThreethepartyLibs This method return list of 3rdparty libraryes of qt for selected platform.
+     * @param platform This is OS name.
+     * @return list of 3rdparty libs.
+     * @note This method is hardcode.
+     * @note See Task https://github.com/QuasarApp/CQtDeployer/issues/422 of the CQtDeployer project.
+     */
+    static QStringList Qt3rdpartyLibs(Platform platform);
+
     static char getEnvSeparator();
 
     static LibPriority getLibPriority(const QString &lib);
