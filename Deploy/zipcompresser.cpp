@@ -70,9 +70,6 @@ bool ZipCompresser::add(const QString& root, const QString& path, zip_t * zip) c
 
     if (info.isFile()) {
         std::string _file_tmp = path.toStdString();
-        if (_file_tmp.size() == 0) {
-            _file_tmp += "/" + info.fileName().toStdString();
-        }
 
         const char *file = _file_tmp.c_str();
 
@@ -98,7 +95,7 @@ bool ZipCompresser::add(const QString& root, const QString& path, zip_t * zip) c
 
     auto list = dir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
     for (const auto& entry: list) {
-        if (!add(root, path + "/" + entry, zip)) {
+        if (!add(root, (path.size())? path + "/" + entry: entry, zip)) {
             return false;
         }
     }
