@@ -84,14 +84,14 @@ The Building or installation instructions see on wiki [page](https://github.com/
 
 ## Projects using CQtDeployer:
 
-- [QAmigo](https://github.com/QAmigo/QAmigo)
-- [QtSecret](https://github.com/QuasarApp/Qt-Secret)
-- [Hanoi-Towers](https://github.com/QuasarApp/Hanoi-Towers)
-- [distbuilder](https://github.com/BuvinJT/distbuilder)
-- [Manager_v2](https://github.com/dimkatsi91/Manager_v2)
-- [IDE65XX](https://github.com/emartisoft/IDE65XX)
-- [Tanks](https://github.com/anevero/tanks)
-
+- [QAmigo](https://github.com/QAmigo/QAmigo) - Qt cross-platform serial port socket assistant for visualizing data. 
+- [QtSecret](https://github.com/QuasarApp/Qt-Secret) - Simple encryption library supporting RSA and AES algorithms. 
+- [Hanoi-Towers](https://github.com/QuasarApp/Hanoi-Towers) -  Hanoi Towers Game 
+- [distbuilder](https://github.com/BuvinJT/distbuilder) -  Distribution Builder 
+- [Manager_v2](https://github.com/dimkatsi91/Manager_v2) - Qt Quick Controls 2 - Linux Manager Desktop Application 
+- [IDE65XX](https://github.com/emartisoft/IDE65XX) - IDE 65XX is one of the open source IDE options available for developers working with Kick Assembler. 
+- [Tanks](https://github.com/anevero/tanks) - 2D game written in C++ & Qt for Windows, Linux and Android 
+- [stegano](https://github.com/taskmaster9001/stegano) - Bit-level Image Manipulation Software with Qt Framework - Steganography Pet Project 
 
 ## Thanks
  * many thanks [Trail of Bits](https://github.com/trailofbits) for their library [pe-parser](https://github.com/trailofbits/pe-parse). Everything works perfectly.
@@ -187,7 +187,7 @@ The Building or installation instructions see on wiki [page](https://github.com/
 - [Manager_v2](https://github.com/dimkatsi91/Manager_v2)
 - [IDE65XX](https://github.com/emartisoft/IDE65XX)
 - [Tanks](https://github.com/anevero/tanks)
-
+- [stegano](https://github.com/taskmaster9001/stegano)
 
 ## Благодарность
  * Большое спасибо  [Trail of Bits](https://github.com/trailofbits) за их библиотеку [pe-parser](https://github.com/trailofbits/pe-parse). Все работает отлично.
