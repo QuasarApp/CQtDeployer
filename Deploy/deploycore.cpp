@@ -199,6 +199,7 @@ void DeployCore::help() {
                  " For gui application sue the deploySystem option "
                  "(on snap version you need to turn on permission)"},
                 {"allPlatforms", "deploy all platforms plugins (big size)."},
+                {"noQt", "Ignore the error of initialize of a qmake. Use only if your application does not use the qt framework."},
 
             }
         },
@@ -327,7 +328,8 @@ QStringList DeployCore::helpKeys() {
         "qifStyle",
         "qifBanner",
         "qifLogo",
-        "allPlatforms"
+        "allPlatforms",
+        "noQt"
     };
 }
 
@@ -516,7 +518,14 @@ bool DeployCore::isQtLib(const QString &lib) {
  * Task https://github.com/QuasarApp/CQtDeployer/issues/422
  * All qt libs need to contains the Qt label.
 */
-    return isLib(info) && info.fileName().contains("Qt", ONLY_WIN_CASE_INSENSIATIVE);
+    bool isQt = isLib(info) && info.fileName().contains("Qt", ONLY_WIN_CASE_INSENSIATIVE);
+
+    if (isQt && QuasarAppUtils::Params::isEndable("noQt") &&
+            !QuasarAppUtils::Params::isEndable("qmake")) {
+        return false;
+    }
+
+    return isQt;
 }
 
 bool DeployCore::isExtraLib(const QString &lib) {

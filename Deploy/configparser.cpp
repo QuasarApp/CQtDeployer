@@ -608,6 +608,7 @@ QSet<QString> ConfigParser::getQtPathesFromTargets() {
 }
 
 bool ConfigParser::isNeededQt() const {
+
     for (const auto &i: _config.targets()) {
         if (i.isValid() && i.isDependetOfQt()) {
             return true;
@@ -896,6 +897,8 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
 }
 
 bool ConfigParser::initQmake() {
+
+
 
     if (!isNeededQt()) {
         QuasarAppUtils::Params::log("deploy only C/C++ libraryes because a qmake is not needed"
