@@ -897,6 +897,13 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
 
 bool ConfigParser::initQmake() {
 
+    if (!isNeededQt()) {
+        QuasarAppUtils::Params::log("deploy only C/C++ libraryes because a qmake is not needed"
+                                    " for the distribution",
+                                     QuasarAppUtils::Info);
+        return true;
+    }
+
     auto qmake = QuasarAppUtils::Params::getStrArg("qmake");
 
     QFileInfo info(qmake);
@@ -907,27 +914,31 @@ bool ConfigParser::initQmake() {
 
         if (qtList.isEmpty()) {
 
-            if (!QuasarAppUtils::Params::isEndable("noCheckPATH") && isNeededQt()) {
+            if (!QuasarAppUtils::Params::isEndable("noCheckPATH")) {
                 auto env = QProcessEnvironment::systemEnvironment();
                 auto proc = DeployCore::findProcess(env.value("PATH"), "qmake");
                 if (proc.isEmpty()) {
-                    QuasarAppUtils::Params::log("The deployment target requir Qt libs, but init qmake is failed.",
-                                                       QuasarAppUtils::Error);
+                    QuasarAppUtils::Params::log("The deployment target requir Qt libs, but init qmake is failed."
+                                                "Use the qmake option for set a path to qmake.",
+                                                QuasarAppUtils::Error);
                     return false;
                 }
 
                 return initQmakePrivate(proc);
             }
-            QuasarAppUtils::Params::log("deploy only C libs because qmake is not found",
-                                               QuasarAppUtils::Info);
-            return true;
+
+            QuasarAppUtils::Params::log("You Application requeriment Qt libs but the qmake not findet by option 'qmake' and RPATH."
+                                        "You use option noCheckPATH. Disable the option noCheckPATH from your deploy command for search qmake from PATH",
+                                         QuasarAppUtils::Error);
+
+            return false;
 
         }
 
         if (qtList.size() > 1) {
             QuasarAppUtils::Params::log("Your deployment targets were compiled by different qmake,"
-                                               "qt auto-capture is not possible. Use the -qmake flag to solve this problem.",
-                                               QuasarAppUtils::Error);
+                                        "qt auto-capture is not possible. Use the -qmake flag to solve this problem.",
+                                         QuasarAppUtils::Error);
             return false;
         }
 
@@ -939,6 +950,7 @@ bool ConfigParser::initQmake() {
 
         return initQmakePrivate(QFileInfo(qt + "/qmake").absoluteFilePath());
     }
+
     return initQmakePrivate(qmake);
 }
 

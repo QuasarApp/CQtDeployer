@@ -14,7 +14,7 @@ class DEPLOYSHARED_EXPORT QtDir {
     QString translations;
     QString resources;
 
-    Platform qtPlatform;
+    Platform qtPlatform = UnknownPlatform;
 
 
 public:
