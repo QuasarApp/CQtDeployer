@@ -839,7 +839,7 @@ void deploytest::testCheckQt() {
 
     Deploy *deployer = new Deploy();
     QuasarAppUtils::Params::parseParams({"-binDir", TestBinDir, "clear",
-                                         "noCheckRPATH", "noCheckPATH"});
+                                         "noCheckRPATH", "noCheckPATH", "noQt"});
     QVERIFY(deployer->prepare());
 
 
