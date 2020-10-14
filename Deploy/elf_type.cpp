@@ -76,7 +76,7 @@ bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
             }
 
             if (QFileInfo(*i).isDir()) {
-                info.setQtPath(*i);
+                info.setQtPath(DeployCore::transportPathToSnapRoot(*i));
             }
 
         }

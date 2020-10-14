@@ -764,9 +764,13 @@ void ConfigParser::initIgnoreList()
 
     if (!QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
 
-        envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/lib"), 3));
-        envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/usr/lib"), 3));
+        envUnix.addEnv(Envirement::recursiveInvairement("/lib", 3));
+        envUnix.addEnv(Envirement::recursiveInvairement("/usr/lib", 3));
 
+        if (DeployCore::isSnap()) {
+            envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/lib"), 3));
+            envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/usr/lib"), 3));
+        }
 
         ruleUnix.prority = SystemLib;
         ruleUnix.platform = Unix;
@@ -851,6 +855,12 @@ void ConfigParser::initIgnoreEnvList() {
 
             ignoreEnvList.append(path);
         }
+    }
+
+    // forbid pathes of the snap container
+    if (DeployCore::isSnap()) {
+        ignoreEnvList.push_back("/lib");
+        ignoreEnvList.push_back("/usr/lib");
     }
 
     ignoreEnvList.push_back(_config.appDir);
