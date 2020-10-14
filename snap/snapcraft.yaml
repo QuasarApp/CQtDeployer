@@ -20,11 +20,11 @@ base: core18
 icon: snap/gui/icon.png
 apps:
   cqtdeployer:
-    command: $SNAP/cqtdeployer.sh
+    command: bash $SNAP/cqtdeployer.sh
     plugs: [home, removable-media, process-control, system-backup]
 
   cqt:
-    command: $SNAP/cqt.sh
+    command: bash $SNAP/cqt.sh
     plugs: [home, removable-media, process-control, system-backup]
 
 parts:
