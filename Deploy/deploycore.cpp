@@ -135,6 +135,10 @@ LibPriority DeployCore::getLibPriority(const QString &lib) {
         return AlienLib;
     }
 
+    if (isAllowedLib(lib)) {
+        return AllowedLib;
+    }
+
     return SystemLib;
 }
 
@@ -540,6 +544,11 @@ bool DeployCore::isExtraLib(const QString &lib) {
 bool DeployCore::isAlienLib(const QString &lib) {
     return lib.contains("/opt/", ONLY_WIN_CASE_INSENSIATIVE) ||
             lib.contains("/PROGRAM FILES", ONLY_WIN_CASE_INSENSIATIVE);
+}
+
+bool DeployCore::isAllowedLib(const QString &lib) {
+    QFileInfo info(lib);
+    return _config->allowedPaths.contains(info.absoluteFilePath());
 }
 
 QStringList DeployCore::Qt3rdpartyLibs(Platform platform) {

@@ -1116,7 +1116,7 @@ void ConfigParser::initExtraNames() {
     const auto deployExtraNames = [this](const QStringList& listNamesMasks){
         for (const auto &i : listNamesMasks) {
             if (i.size() > 1) {
-                _config.extraPaths.addtExtraNamesMasks({i});
+                _config.allowedPaths.addtExtraNamesMasks({i});
 
                 QuasarAppUtils::Params::log(i + " added like a file name mask",
                                                    QuasarAppUtils::Info);

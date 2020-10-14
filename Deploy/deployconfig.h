@@ -42,6 +42,11 @@ public:
     Extra extraPaths;
 
     /**
+     * @brief allowedPaths  - it is list with filters for allowed pathes, files or libraries
+     */
+    Extra allowedPaths;
+
+    /**
      * @brief envirement - envirement for find libraries
      */
     Envirement envirement;
