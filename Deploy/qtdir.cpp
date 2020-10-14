@@ -65,3 +65,17 @@ Platform QtDir::getQtPlatform() const {
 void QtDir::setQtPlatform(const Platform &value) {
     qtPlatform = value;
 }
+
+bool QtDir::isQt(QString path) const {
+
+    path =  PathUtils::fixPath(path);
+
+    return
+            (!libs.isEmpty() && path.contains(libs)) ||
+            (!bins.isEmpty() && path.contains(bins)) ||
+    (!libexecs.isEmpty() && path.contains(libexecs)) ||
+    (!plugins.isEmpty() && path.contains(plugins)) ||
+    (!qmls.isEmpty() && path.contains(qmls)) ||
+    (!translations.isEmpty() && path.contains(translations)) ||
+    (!resources.isEmpty() && path.contains(resources));
+}

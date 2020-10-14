@@ -513,12 +513,16 @@ QString DeployCore::getMSVCVersion(MSVCVersion msvc) {
 }
 
 bool DeployCore::isQtLib(const QString &lib) {
-    QFileInfo info((lib));
+    QFileInfo info(lib);
 /*
  * Task https://github.com/QuasarApp/CQtDeployer/issues/422
  * All qt libs need to contains the Qt label.
 */
     bool isQt = isLib(info) && info.fileName().contains("Qt", ONLY_WIN_CASE_INSENSIATIVE);
+
+    if (_config) {
+        isQt = isQt && _config->qtDir.isQt(info.absoluteFilePath());
+    }
 
     if (isQt && QuasarAppUtils::Params::isEndable("noQt") &&
             !QuasarAppUtils::Params::isEndable("qmake")) {

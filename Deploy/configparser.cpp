@@ -1139,7 +1139,7 @@ void ConfigParser::initExtraNames() {
  *
 */
     if (isNeededQt()) {
-        auto libs = DeployCore::Qt3rdpartyLibs( _config.getPlatform(""));
+        auto libs = DeployCore::Qt3rdpartyLibs( _config.getPlatformOfAll());
         deployExtraNames(libs);
     }
 }

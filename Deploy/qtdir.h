@@ -35,6 +35,12 @@ public:
     Platform getQtPlatform() const;
     void setQtPlatform(const Platform &value);
 
+    /**
+     * @brief isQt - This method check a path for belonging to QtDirs.
+     * @param path This is cheecked path of library or any qt file.
+     * @return true if object is qt.
+     */
+    bool isQt(QString path) const;
 };
 
 #endif // QTDIR_H

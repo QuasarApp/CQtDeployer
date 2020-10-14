@@ -1598,7 +1598,8 @@ void deploytest::testIgnore() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
-                   "-ignoreEnv", TestQtDir + "/lib," + TestQtDir + "/bin" }, &comapareTree);
+                   "-ignoreEnv", TestQtDir + "/lib," + TestQtDir + "/bin" },
+                  &comapareTree);
 
 
     comapareTree = TestModule.qtLibs() - removeTree;
