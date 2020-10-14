@@ -1615,6 +1615,9 @@ void deploytest::testIgnore() {
     {
                     "./" + DISTRO_DIR + "/qt.conf",
                     "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
+                    "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
+                    "./" + DISTRO_DIR + "/libstdc++-6.dll",
+                    "./" + DISTRO_DIR + "/libwinpthread-1.dll"
 
                 });
 
@@ -1630,13 +1633,6 @@ void deploytest::testIgnore() {
 #else
         QString bin = TestBinDir + "QtWidgetsProject.exe";
         QString qmake = TestQtDir + "bin/qmake.exe";
-
-        comapareTree += utils.createTree(
-        {
-                        "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
-                        "./" + DISTRO_DIR + "/libstdc++-6.dll",
-                        "./" + DISTRO_DIR + "/libwinpthread-1.dll"
-                    });
 
 #endif
     }
