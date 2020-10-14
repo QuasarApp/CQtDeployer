@@ -1685,7 +1685,7 @@ void deploytest::testIgnore() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
-                   "-ignoreEnv", TestQtDir + "/lib," + TestQtDir + "/bin" },
+                   "-ignoreEnv", TestQtDir + "/lib," + TestQtDir + "/bin," + TestQtDir + "/../../Tools/" },
                   &comapareTree);
 
 
