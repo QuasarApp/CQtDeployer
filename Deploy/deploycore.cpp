@@ -13,6 +13,7 @@
 
 #include <QDebug>
 #include <QDir>
+#include <QDir>
 #include <QFileInfo>
 #include <QLibraryInfo>
 #include <QProcess>
@@ -557,6 +558,10 @@ QString DeployCore::snapRootFS() {
 
 QString DeployCore::transportPathToSnapRoot(const QString &path) {
     if (isSnap() && checkSystemBakupSnapInterface()) {
+
+        if(QFileInfo(path).isWritable()) {
+            return path;
+        }
 
         if (path.size() && path[0] != "/") {
             auto absalutPath = QProcessEnvironment::systemEnvironment().value("PWD") + "/" + path;
