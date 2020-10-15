@@ -873,7 +873,8 @@ QString ConfigParser::getPathFrmoQmakeLine(const QString &in) const {
     auto list = in.split(':');
     if (list.size() > 1) {
         list.removeAt(0);
-        return QFileInfo(list.join(':')).absoluteFilePath().remove('\r');
+        return DeployCore::transportPathToSnapRoot(
+                    QFileInfo(list.join(':')).absoluteFilePath().remove('\r'));
     }
 
     return "";
