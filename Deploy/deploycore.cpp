@@ -135,6 +135,10 @@ LibPriority DeployCore::getLibPriority(const QString &lib) {
         return AlienLib;
     }
 
+    if (isAllowedLib(lib)) {
+        return AllowedLib;
+    }
+
     return SystemLib;
 }
 
@@ -199,6 +203,7 @@ void DeployCore::help() {
                  " For gui application sue the deploySystem option "
                  "(on snap version you need to turn on permission)"},
                 {"allPlatforms", "deploy all platforms plugins (big size)."},
+                {"noQt", "Ignore the error of initialize of a qmake. Use only if your application does not use the qt framework."},
 
             }
         },
@@ -327,7 +332,8 @@ QStringList DeployCore::helpKeys() {
         "qifStyle",
         "qifBanner",
         "qifLogo",
-        "allPlatforms"
+        "allPlatforms",
+        "noQt"
     };
 }
 
@@ -511,13 +517,23 @@ QString DeployCore::getMSVCVersion(MSVCVersion msvc) {
 }
 
 bool DeployCore::isQtLib(const QString &lib) {
-    QFileInfo info((lib));
+    QFileInfo info(lib);
+/*
+ * Task https://github.com/QuasarApp/CQtDeployer/issues/422
+ * All qt libs need to contains the Qt label.
+*/
+    bool isQt = isLib(info) && info.fileName().contains("Qt", ONLY_WIN_CASE_INSENSIATIVE);
 
     if (_config) {
-        return _config->qtDir.isQt(info.absoluteFilePath());
+        isQt = isQt && _config->qtDir.isQt(info.absoluteFilePath());
     }
 
-    return isLib(info) && info.fileName().contains("Qt", Qt::CaseInsensitive);
+    if (isQt && QuasarAppUtils::Params::isEndable("noQt") &&
+            !QuasarAppUtils::Params::isEndable("qmake")) {
+        return false;
+    }
+
+    return isQt;
 }
 
 bool DeployCore::isExtraLib(const QString &lib) {
@@ -527,7 +543,63 @@ bool DeployCore::isExtraLib(const QString &lib) {
 
 bool DeployCore::isAlienLib(const QString &lib) {
     return lib.contains("/opt/", ONLY_WIN_CASE_INSENSIATIVE) ||
-           lib.contains("/PROGRAM FILES", ONLY_WIN_CASE_INSENSIATIVE);
+            lib.contains("/PROGRAM FILES", ONLY_WIN_CASE_INSENSIATIVE);
+}
+
+bool DeployCore::isAllowedLib(const QString &lib) {
+    QFileInfo info(lib);
+    return _config->allowedPaths.contains(info.absoluteFilePath());
+}
+
+QStringList DeployCore::Qt3rdpartyLibs(Platform platform) {
+
+    QStringList result;
+
+    result << QStringList {
+              // Begin SQL LIBS
+              // See task https://github.com/QuasarApp/CQtDeployer/issues/367
+
+              "libpq",
+              "libmysqlclient"
+
+              // End SQL LIBS
+};
+
+    if (platform & Platform::Win) {
+        result << QStringList {
+                  // Qml Gl driver wraper
+                  "d3dcompiler_47",
+                  "libEGL",
+                  "libGLESv2",
+
+                  // gcc runtime libs ow mingw
+                  "libgcc_s_seh",
+                  "libstdc++",
+                  "libwinpthread",
+
+                  // OpenglES libs
+                  "opengl32sw",
+    };
+    }
+
+    if (platform & Platform::Unix) {
+        result << QStringList {
+                  // Begin  Unicode libs
+
+                  "libicudata",
+                  "libicui18n",
+                  "libicuio",
+                  "libicule",
+                  "libiculx",
+                  "libicutest",
+                  "libicutu",
+                  "libicuuc",
+
+                  // End Unicode libs
+    };
+    }
+
+    return result;
 }
 
 QChar DeployCore::getSeparator(int lvl) {

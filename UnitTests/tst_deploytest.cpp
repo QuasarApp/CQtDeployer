@@ -478,7 +478,12 @@ void deploytest::testExtractLib() {
         QVERIFY(info.getPlatform() == platforms.value(lib));
 
         for (const auto &dep : deb.value(lib)) {
-            bool test = info.getDependncies().contains(dep.toUpper());
+            QString depName = dep;
+            if (info.getPlatform() & Platform::Win) {
+                depName = dep.toUpper();
+            }
+
+            bool test = info.getDependncies().contains(depName);
             QVERIFY(test);
         }
 
@@ -834,7 +839,7 @@ void deploytest::testCheckQt() {
 
     Deploy *deployer = new Deploy();
     QuasarAppUtils::Params::parseParams({"-binDir", TestBinDir, "clear",
-                                         "noCheckRPATH", "noCheckPATH"});
+                                         "noCheckRPATH", "noCheckPATH", "noQt"});
     QVERIFY(deployer->prepare());
 
 
@@ -842,8 +847,8 @@ void deploytest::testCheckQt() {
         {TestQtDir + "/", false},
         {TestQtDir + "", false},
         {TestQtDir + "/bin/file1", false},
-        {TestQtDir + "/lib/file12", false},
-        {TestQtDir + "/resurces/file13", false},
+        {TestQtDir + "/lib/file12.so", false},
+        {TestQtDir + "/resurces/file13.dll", false},
         {TestQtDir + "/libexec/f", false},
         {TestQtDir + "/mkspecs", false},
         {TestQtDir + "/qml", false},
@@ -855,8 +860,8 @@ void deploytest::testCheckQt() {
         {TestQtDir + "\\bin\\file1", false},
         {TestQtDir + "\\lib\\file12", false},
         {TestQtDir + "\\resurces\\file13", false},
-        {TestQtDir + "\\libexec\\f", false},
-        {TestQtDir + "\\mkspecs", false},
+        {TestQtDir + "\\libexec\\f.so", false},
+        {TestQtDir + "\\mkspecs.dll", false},
         {TestQtDir + "\\qml", false},
         {TestQtDir + "\\plugins", false},
         {TestQtDir + "\\file", false},
@@ -887,30 +892,34 @@ void deploytest::testCheckQt() {
     cases = QList<QPair<QString, bool>>{
         {TestQtDir + "/", false},
         {TestQtDir + "", false},
-        {TestQtDir + "/bin/file1", true},
-        {TestQtDir + "/lib/file12", true},
-        {TestQtDir + "/resources/file13", true},
-        {TestQtDir + "/libexec/f", true},
+        {TestQtDir + "/bin/file1", false},
+        {TestQtDir + "/lib/file12", false},
+        {TestQtDir + "/bin/file1Qt.so", true},
+        {TestQtDir + "/lib/file12", false},
+        {TestQtDir + "/resources/Qtfile13.so", true},
+        {TestQtDir + "/libexec/Qtf.dll", true},
         {TestQtDir + "/mkspecs", false},
-        {TestQtDir + "/qml", true},
-        {TestQtDir + "/plugins", true},
+        {TestQtDir + "/qml", false},
+        {TestQtDir + "/plugins", false},
         {TestQtDir + "/file", false},
 
         {TestQtDir + "\\", false},
         {TestQtDir + "", false},
-        {TestQtDir + "\\bin\\file1", true},
-        {TestQtDir + "\\lib\\file12", true},
-        {TestQtDir + "\\resources\\file13", true},
-        {TestQtDir + "\\libexec\\f", true},
+        {TestQtDir + "\\bin\\Qtfile1.dll", true},
+        {TestQtDir + "\\lib\\file12", false},
+        {TestQtDir + "\\resources\\fileQt13.dll", true},
+        {TestQtDir + "\\libexec\\fQt", false},
         {TestQtDir + "\\mkspecs", false},
-        {TestQtDir + "\\qml", true},
-        {TestQtDir + "\\plugins", true},
+        {TestQtDir + "\\qml", false},
+        {TestQtDir + "\\plugins", false},
         {TestQtDir + "\\file", false},
 
     };
 
     for (const auto &i: cases) {
-        QVERIFY(DeployCore::isQtLib(i.first) == i.second);
+        auto dexription = QString("The isQtLib(%0) function should be return %1").arg(
+                    i.first).arg(i.second);
+        QVERIFY2(DeployCore::isQtLib(i.first) == i.second, dexription.toLatin1().data());
     }
 
     delete deployer;
@@ -1202,7 +1211,7 @@ void deploytest::testBinDir() {
 
 
     runTestParams({"-binDir", TestBinDir, "clear",
-                   "noCheckRPATH", "noCheckPATH"}, &comapareTree);
+                   "noCheckRPATH", "noCheckPATH", "noQt"}, &comapareTree);
 }
 
 void deploytest::testConfFile() {
@@ -1235,7 +1244,7 @@ void deploytest::testConfFile() {
      "./" + DISTRO_DIR + "/quicknanobrowser.sh"});
 #endif
 
-    runTestParams({"-bin", TestBinDir, "clear" , "noCheckRPATH", "noCheckPATH",
+    runTestParams({"-bin", TestBinDir, "clear" , "noCheckRPATH", "noCheckPATH", "noQt",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 
 
@@ -1248,11 +1257,11 @@ void deploytest::testConfFile() {
 
 #ifdef Q_OS_UNIX
     runTestParams({"-bin", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
-                   "clear", "noCheckRPATH", "noCheckPATH",
+                   "clear", "noCheckRPATH", "noCheckPATH", "noQt",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #else
     runTestParams({"-bin", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
-                   "clear" , "-libDir", "L:/never/absalut/path", "noCheckPATH",
+                   "clear" , "-libDir", "L:/never/absalut/path", "noCheckPATH", "noQt",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
 #endif
 
@@ -1310,11 +1319,11 @@ void deploytest::testConfFile() {
 
 #ifdef Q_OS_UNIX
     runTestParams({"-bin", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
-                   "clear" , "noCheckRPATH", "noCheckPATH",
+                   "clear" , "noCheckRPATH", "noCheckPATH", "noQt",
                    "-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"}, &comapareTree);
 #else
     runTestParams({"-bin", TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestQMLWidgets.exe",
-                   "clear" , "noCheckPATH",
+                   "clear" , "noCheckPATH", "noQt",
                    "-confFile", TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json"}, &comapareTree);
 #endif
 
@@ -1606,6 +1615,9 @@ void deploytest::testIgnore() {
     {
                     "./" + DISTRO_DIR + "/qt.conf",
                     "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
+                    "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
+                    "./" + DISTRO_DIR + "/libstdc++-6.dll",
+                    "./" + DISTRO_DIR + "/libwinpthread-1.dll"
 
                 });
 
@@ -1621,13 +1633,6 @@ void deploytest::testIgnore() {
 #else
         QString bin = TestBinDir + "QtWidgetsProject.exe";
         QString qmake = TestQtDir + "bin/qmake.exe";
-
-        comapareTree += utils.createTree(
-        {
-                        "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
-                        "./" + DISTRO_DIR + "/libstdc++-6.dll",
-                        "./" + DISTRO_DIR + "/libwinpthread-1.dll"
-                    });
 
 #endif
     }
@@ -1680,7 +1685,9 @@ void deploytest::testIgnore() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
-                   "-ignoreEnv", TestQtDir + "/lib," + TestQtDir + "/bin" }, &comapareTree);
+                   "-recursiveDepth", "3",
+                   "-ignoreEnv", TestQtDir + "/lib," + TestQtDir + "/bin," + TestQtDir + "/../../Tools" },
+                  &comapareTree);
 
 
     comapareTree = TestModule.qtLibs() - removeTree;
@@ -1774,12 +1781,12 @@ void deploytest::testLibDir() {
     runTestParams({"-bin", bin, "clear" ,
                    "-libDir", extraPath,
                    "-recursiveDepth", "5",
-                   "noCheckRPATH, noCheckPATH"}, &comapareTree, {}, true);
+                   "noCheckRPATH, noCheckPATH", "noQt"}, &comapareTree, {}, true);
 
     runTestParams({"-bin", bin, "clear" ,
                    "-targetDir", "./" + DISTRO_DIR + "2",
                    "-extraLibs", "stdc,gcc",
-                   "noCheckRPATH, noCheckPATH"}, &comapareTreeExtraLib, {}, true);
+                   "noCheckRPATH, noCheckPATH", "noQt"}, &comapareTreeExtraLib, {}, true);
 
     //task #258
     //https://github.com/QuasarApp/CQtDeployer/issues/258
@@ -1812,7 +1819,7 @@ void deploytest::testLibDir() {
 #endif
     runTestParams({"-bin", bin, "clear" ,
                    "-libDir", extraPath,
-                   "noCheckRPATH, noCheckPATH"}, &comapareTreeExtraLib, {}, true);
+                   "noCheckRPATH, noCheckPATH", "noQt"}, &comapareTreeExtraLib, {}, true);
 
     QDir(extraPath).removeRecursively();
 

@@ -535,15 +535,8 @@ bool ConfigParser::parseDeployMode() {
         return false;
     }
 
-    auto listLibDir = QuasarAppUtils::Params::getStrArg("libDir").
-            split(DeployCore::getSeparator(0));
-    auto listNamesMasks = QuasarAppUtils::Params::getStrArg("extraLibs").
-            split(DeployCore::getSeparator(0));
-
-
-
-    setExtraPath(listLibDir);
-    setExtraNames(listNamesMasks);
+    initExtraPath();
+    initExtraNames();
     initPlugins();
 
     if (!initQmake()) {
@@ -615,6 +608,7 @@ QSet<QString> ConfigParser::getQtPathesFromTargets() {
 }
 
 bool ConfigParser::isNeededQt() const {
+
     for (const auto &i: _config.targets()) {
         if (i.isValid() && i.isDependetOfQt()) {
             return true;
@@ -904,6 +898,15 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
 
 bool ConfigParser::initQmake() {
 
+
+
+    if (!isNeededQt()) {
+        QuasarAppUtils::Params::log("deploy only C/C++ libraryes because a qmake is not needed"
+                                    " for the distribution",
+                                     QuasarAppUtils::Info);
+        return true;
+    }
+
     auto qmake = QuasarAppUtils::Params::getStrArg("qmake");
 
     QFileInfo info(qmake);
@@ -914,27 +917,31 @@ bool ConfigParser::initQmake() {
 
         if (qtList.isEmpty()) {
 
-            if (!QuasarAppUtils::Params::isEndable("noCheckPATH") && isNeededQt()) {
+            if (!QuasarAppUtils::Params::isEndable("noCheckPATH")) {
                 auto env = QProcessEnvironment::systemEnvironment();
                 auto proc = DeployCore::findProcess(env.value("PATH"), "qmake");
                 if (proc.isEmpty()) {
-                    QuasarAppUtils::Params::log("The deployment target requir Qt libs, but init qmake is failed.",
-                                                       QuasarAppUtils::Error);
+                    QuasarAppUtils::Params::log("The deployment target requir Qt libs, but init qmake is failed."
+                                                "Use the qmake option for set a path to qmake.",
+                                                QuasarAppUtils::Error);
                     return false;
                 }
 
                 return initQmakePrivate(proc);
             }
-            QuasarAppUtils::Params::log("deploy only C libs because qmake is not found",
-                                               QuasarAppUtils::Info);
-            return true;
+
+            QuasarAppUtils::Params::log("You Application requeriment Qt libs but the qmake not findet by option 'qmake' and RPATH."
+                                        "You use option noCheckPATH. Disable the option noCheckPATH from your deploy command for search qmake from PATH",
+                                         QuasarAppUtils::Error);
+
+            return false;
 
         }
 
         if (qtList.size() > 1) {
             QuasarAppUtils::Params::log("Your deployment targets were compiled by different qmake,"
-                                               "qt auto-capture is not possible. Use the -qmake flag to solve this problem.",
-                                               QuasarAppUtils::Error);
+                                        "qt auto-capture is not possible. Use the -qmake flag to solve this problem.",
+                                         QuasarAppUtils::Error);
             return false;
         }
 
@@ -946,6 +953,7 @@ bool ConfigParser::initQmake() {
 
         return initQmakePrivate(QFileInfo(qt + "/qmake").absoluteFilePath());
     }
+
     return initQmakePrivate(qmake);
 }
 
@@ -1069,10 +1077,13 @@ bool ConfigParser::setQtDir(const QString &value) {
     return true;
 }
 
-void ConfigParser::setExtraPath(const QStringList &value) {
+void ConfigParser::initExtraPath() {
+    auto listLibDir = QuasarAppUtils::Params::getStrArg("libDir").
+            split(DeployCore::getSeparator(0));
+
     QDir dir;
 
-    for (const auto &i : value) {
+    for (const auto &i : listLibDir) {
         QFileInfo info(DeployCore::transportPathToSnapRoot(i));
         if (info.isDir()) {
             if (_config.targets().contains(info.absoluteFilePath())) {
@@ -1100,19 +1111,36 @@ void ConfigParser::setExtraPath(const QStringList &value) {
     }
 }
 
-void ConfigParser::setExtraNames(const QStringList &value) {
-    for (const auto &i : value) {
-        if (i.size() > 1) {
-            _config.extraPaths.addtExtraNamesMasks({i});
+void ConfigParser::initExtraNames() {
 
-            QuasarAppUtils::Params::log(i + " added like a file name mask",
-                                               QuasarAppUtils::Info);
-        } else {
-            QuasarAppUtils::Params::log(i + " not added in file mask because"
-                                                   " the file mask must be large 2 characters",
-                                               QuasarAppUtils::Warning);
+    const auto deployExtraNames = [this](const QStringList& listNamesMasks){
+        for (const auto &i : listNamesMasks) {
+            if (i.size() > 1) {
+                _config.allowedPaths.addtExtraNamesMasks({i});
+
+                QuasarAppUtils::Params::log(i + " added like a file name mask",
+                                                   QuasarAppUtils::Info);
+            } else {
+                QuasarAppUtils::Params::log(i + " not added in file mask because"
+                                                       " the file mask must be large 2 characters",
+                                                   QuasarAppUtils::Warning);
+            }
         }
+    };
 
+    auto listNamesMasks = QuasarAppUtils::Params::getStrArg("extraLibs").
+            split(DeployCore::getSeparator(0));
+
+    deployExtraNames(listNamesMasks);
+
+/*
+ * Task https://github.com/QuasarApp/CQtDeployer/issues/422
+ * We need to add to extra names libraries without which qt will not work,
+ *
+*/
+    if (isNeededQt()) {
+        auto libs = DeployCore::Qt3rdpartyLibs( _config.getPlatformOfAll());
+        deployExtraNames(libs);
     }
 }
 

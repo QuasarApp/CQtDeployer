@@ -65,18 +65,19 @@ Platform DeployConfig::getPlatform(const QString& package) const {
         for( auto it = disto.targets().cbegin(); it != disto.targets().cend(); ++it) {
             result = result | _targets.value(*it).getPlatform();
         }
-
-        return result;
     }
 
+    return result;
+}
+
+Platform DeployConfig::getPlatformOfAll() const {
+    Platform result = Platform::UnknownPlatform;
 
     for( auto it = _targets.cbegin(); it != _targets.cend(); ++it) {
         result = result | it.value().getPlatform();
     }
 
     return result;
-
-
 }
 
 const QHash<QString, TargetInfo> &DeployConfig::targets() const {

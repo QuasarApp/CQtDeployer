@@ -87,7 +87,7 @@ bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
 
     auto dep = reader.dependencies();
     for (const auto &i : dep) {
-        info.addDependncies(i.toUpper());
+        info.addDependncies(i);
     }
 
     return true;

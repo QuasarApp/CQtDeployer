@@ -42,6 +42,11 @@ public:
     Extra extraPaths;
 
     /**
+     * @brief allowedPaths  - it is list with filters for allowed pathes, files or libraries
+     */
+    Extra allowedPaths;
+
+    /**
      * @brief envirement - envirement for find libraries
      */
     Envirement envirement;
@@ -86,7 +91,19 @@ public:
     QHash<QString, TargetInfo>& targetsEdit();
     QHash<QString, DistroModule>& packagesEdit();
 
+    /**
+     * @brief getPlatform This method return a platform of distribution.
+     *  If you set a pacakge name then this method return platform of package.
+     * @param package This is name of pacakge. Set this parameter to empty string for get a distribution of all pacakges.
+     * @return platform of distribution.
+     */
     Platform getPlatform(const QString& package) const;
+
+    /**
+     * @brief getPlatformOfAll This method return paltform of all targets of distributuon.
+     * @return platform of all targets.
+     */
+    Platform getPlatformOfAll() const;
 
 private:
 
