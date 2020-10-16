@@ -540,6 +540,16 @@ bool ConfigParser::parseDeployMode() {
     initPlugins();
 
     if (!initQmake()) {
+
+        if (DeployCore::isSnap()) {
+            QuasarAppUtils::Params::log("If you are using qmake from the system repository,"
+                                        " then you should use the classic version of the CQtDeployer instead of the snap version."
+                                        " This is due to the fact that the snap version runs in an isolated container and has limited access"
+                                        " to system utilities and the environment. "
+                                        "For get the classic version of cqtdeployer use the cqtdeployer installer "
+                                        "https://github.com/QuasarApp/CQtDeployer/releases");
+        }
+
         return false;
     }
 
@@ -758,9 +768,13 @@ void ConfigParser::initIgnoreList()
 
     if (!QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
 
-        envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/lib"), 3));
-        envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/usr/lib"), 3));
+        envUnix.addEnv(Envirement::recursiveInvairement("/lib", 3));
+        envUnix.addEnv(Envirement::recursiveInvairement("/usr/lib", 3));
 
+        if (DeployCore::isSnap()) {
+            envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/lib"), 3));
+            envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/usr/lib"), 3));
+        }
 
         ruleUnix.prority = SystemLib;
         ruleUnix.platform = Unix;
@@ -847,6 +861,12 @@ void ConfigParser::initIgnoreEnvList() {
         }
     }
 
+    // forbid pathes of the snap container
+    if (DeployCore::isSnap()) {
+        ignoreEnvList.push_back("/lib");
+        ignoreEnvList.push_back("/usr/lib");
+    }
+
     ignoreEnvList.push_back(_config.appDir);
     ignoreEnvList.push_back(_config.getTargetDir());
 
@@ -863,7 +883,8 @@ QString ConfigParser::getPathFrmoQmakeLine(const QString &in) const {
     auto list = in.split(':');
     if (list.size() > 1) {
         list.removeAt(0);
-        return QFileInfo(list.join(':')).absoluteFilePath().remove('\r');
+        return DeployCore::transportPathToSnapRoot(
+                    QFileInfo(list.join(':')).absoluteFilePath().remove('\r'));
     }
 
     return "";
@@ -886,7 +907,7 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
                                            QuasarAppUtils::Warning);
 
         if (!setQtDir(dir.absolutePath())){
-            QuasarAppUtils::Params::log("fail ini qmake",
+            QuasarAppUtils::Params::log("fail init qmake",
                                                QuasarAppUtils::Error);
             return false;
         }
@@ -1119,11 +1140,11 @@ void ConfigParser::initExtraNames() {
                 _config.allowedPaths.addtExtraNamesMasks({i});
 
                 QuasarAppUtils::Params::log(i + " added like a file name mask",
-                                                   QuasarAppUtils::Info);
+                                            QuasarAppUtils::Debug);
             } else {
                 QuasarAppUtils::Params::log(i + " not added in file mask because"
-                                                       " the file mask must be large 2 characters",
-                                                   QuasarAppUtils::Warning);
+                                                " the file mask must be large 2 characters",
+                                            QuasarAppUtils::Warning);
             }
         }
     };
