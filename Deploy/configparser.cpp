@@ -1130,11 +1130,11 @@ void ConfigParser::initExtraNames() {
                 _config.allowedPaths.addtExtraNamesMasks({i});
 
                 QuasarAppUtils::Params::log(i + " added like a file name mask",
-                                                   QuasarAppUtils::Info);
+                                            QuasarAppUtils::Debug);
             } else {
                 QuasarAppUtils::Params::log(i + " not added in file mask because"
-                                                       " the file mask must be large 2 characters",
-                                                   QuasarAppUtils::Warning);
+                                                " the file mask must be large 2 characters",
+                                            QuasarAppUtils::Warning);
             }
         }
     };
