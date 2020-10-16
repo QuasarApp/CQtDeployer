@@ -76,7 +76,7 @@ bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
             }
 
             if (QFileInfo(*i).isDir()) {
-                info.setQtPath(*i);
+                info.setQtPath(DeployCore::transportPathToSnapRoot(*i));
             }
 
         }
@@ -87,7 +87,7 @@ bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
 
     auto dep = reader.dependencies();
     for (const auto &i : dep) {
-        info.addDependncies(i.toUpper());
+        info.addDependncies(i);
     }
 
     return true;

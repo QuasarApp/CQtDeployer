@@ -14,7 +14,7 @@ class DEPLOYSHARED_EXPORT QtDir {
     QString translations;
     QString resources;
 
-    Platform qtPlatform;
+    Platform qtPlatform = UnknownPlatform;
 
 
 public:
@@ -34,8 +34,13 @@ public:
     void setResources(const QString &value);
     Platform getQtPlatform() const;
     void setQtPlatform(const Platform &value);
-    bool isQt(QString path) const;
 
+    /**
+     * @brief isQt - This method check a path for belonging to QtDirs.
+     * @param path This is cheecked path of library or any qt file.
+     * @return true if object is qt.
+     */
+    bool isQt(QString path) const;
 };
 
 #endif // QTDIR_H

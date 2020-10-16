@@ -34,7 +34,7 @@
  * important : package in inputParamsList must be second.
  */
 
-static QString defaultPackage;
+static QString defaultPackage = "";
 
 template<typename Container, typename Adder>
 bool parsePackagesPrivate(Container& mainContainer,
@@ -361,12 +361,12 @@ bool ConfigParser::initDistroStruct() {
             split(DeployCore::getSeparator(0), splitbehavior);
 
     auto erroLog = [](const QString &flag){
-        QuasarAppUtils::Params::log(QString("Set %0 fail, because you try set %0 for not inited package."
-                                            " Use 'targetPackage' flag for init the packages").arg(flag),
-                                    QuasarAppUtils::Error);
-    };
+            QuasarAppUtils::Params::log(QString("Set %0 fail, because you try set %0 for not inited package."
+                                               " Use 'targetPackage' flag for init the packages").arg(flag),
+                                               QuasarAppUtils::Error);
+        };
 
-    // init distro stucts for all targets
+// init distro stucts for all targets
     if (binOut.size() && !parsePackagesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir)) {
         erroLog("binOut");
         return false;
@@ -462,7 +462,7 @@ bool ConfigParser::initPackages() {
 
         QuasarAppUtils::Params::log(
                     "Set Default Package to " + defaultPackage,
-                    QuasarAppUtils::Info);
+                     QuasarAppUtils::Info);
     }
 
     // init default packages
@@ -489,12 +489,12 @@ bool ConfigParser::initQmlInput() {
     }
 
     auto erroLog = [](const QString &flag){
-        QuasarAppUtils::Params::log(QString("Set %0 fail, because you try set %0 for not inited package."
-                                            " Use 'targetPackage' flag for init the packages").arg(flag),
-                                    QuasarAppUtils::Error);
-    };
+            QuasarAppUtils::Params::log(QString("Set %0 fail, because you try set %0 for not inited package."
+                                               " Use 'targetPackage' flag for init the packages").arg(flag),
+                                               QuasarAppUtils::Error);
+        };
 
-    // init distro stucts for all targets
+// init distro stucts for all targets
     _config.deployQml = qmlDir.size();
 
     if (qmlDir.size() && !parsePackagesPrivate(_config.packagesEdit(), qmlDir, &DistroModule::addQmlInput)) {
@@ -548,18 +548,21 @@ bool ConfigParser::parseDeployMode() {
         return false;
     }
 
-    auto listLibDir = QuasarAppUtils::Params::getStrArg("libDir").
-            split(DeployCore::getSeparator(0));
-    auto listNamesMasks = QuasarAppUtils::Params::getStrArg("extraLibs").
-            split(DeployCore::getSeparator(0));
-
-
-
-    setExtraPath(listLibDir);
-    setExtraNames(listNamesMasks);
+    initExtraPath();
+    initExtraNames();
     initPlugins();
 
     if (!initQmake()) {
+
+        if (DeployCore::isSnap()) {
+            QuasarAppUtils::Params::log("If you are using qmake from the system repository,"
+                                        " then you should use the classic version of the CQtDeployer instead of the snap version."
+                                        " This is due to the fact that the snap version runs in an isolated container and has limited access"
+                                        " to system utilities and the environment. "
+                                        "For get the classic version of cqtdeployer use the cqtdeployer installer "
+                                        "https://github.com/QuasarApp/CQtDeployer/releases");
+        }
+
         return false;
     }
 
@@ -628,6 +631,7 @@ QSet<QString> ConfigParser::getQtPathesFromTargets() {
 }
 
 bool ConfigParser::isNeededQt() const {
+
     for (const auto &i: _config.targets()) {
         if (i.isValid() && i.isDependetOfQt()) {
             return true;
@@ -692,7 +696,7 @@ bool ConfigParser::setTargets(const QStringList &value) {
 bool ConfigParser::setTargetsRecursive(const QString &dir) {
     if (!setBinDir(dir, true)) {
         QuasarAppUtils::Params::log("setBinDir failed!",
-                                    QuasarAppUtils::Warning);
+                                     QuasarAppUtils::Warning);
         return false;
     }
 
@@ -777,9 +781,13 @@ void ConfigParser::initIgnoreList()
 
     if (!QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
 
-        envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/lib"), 3));
-        envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/usr/lib"), 3));
+        envUnix.addEnv(Envirement::recursiveInvairement("/lib", 3));
+        envUnix.addEnv(Envirement::recursiveInvairement("/usr/lib", 3));
 
+        if (DeployCore::isSnap()) {
+            envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/lib"), 3));
+            envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/usr/lib"), 3));
+        }
 
         ruleUnix.prority = SystemLib;
         ruleUnix.platform = Unix;
@@ -866,6 +874,12 @@ void ConfigParser::initIgnoreEnvList() {
         }
     }
 
+    // forbid pathes of the snap container
+    if (DeployCore::isSnap()) {
+        ignoreEnvList.push_back("/lib");
+        ignoreEnvList.push_back("/usr/lib");
+    }
+
     ignoreEnvList.push_back(_config.appDir);
     ignoreEnvList.push_back(_config.getTargetDir());
 
@@ -882,7 +896,8 @@ QString ConfigParser::getPathFrmoQmakeLine(const QString &in) const {
     auto list = in.split(':');
     if (list.size() > 1) {
         list.removeAt(0);
-        return QFileInfo(list.join(':')).absoluteFilePath().remove('\r');
+        return DeployCore::transportPathToSnapRoot(
+                    QFileInfo(list.join(':')).absoluteFilePath().remove('\r'));
     }
 
     return "";
@@ -905,7 +920,7 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
                                     QuasarAppUtils::Warning);
 
         if (!setQtDir(dir.absolutePath())){
-            QuasarAppUtils::Params::log("fail ini qmake",
+            QuasarAppUtils::Params::log("fail init qmake",
                                         QuasarAppUtils::Error);
             return false;
         }
@@ -917,6 +932,15 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
 
 bool ConfigParser::initQmake() {
 
+
+
+    if (!isNeededQt()) {
+        QuasarAppUtils::Params::log("deploy only C/C++ libraryes because a qmake is not needed"
+                                    " for the distribution",
+                                     QuasarAppUtils::Info);
+        return true;
+    }
+
     auto qmake = QuasarAppUtils::Params::getStrArg("qmake");
 
     QFileInfo info(qmake);
@@ -927,27 +951,31 @@ bool ConfigParser::initQmake() {
 
         if (qtList.isEmpty()) {
 
-            if (!QuasarAppUtils::Params::isEndable("noCheckPATH") && isNeededQt()) {
+            if (!QuasarAppUtils::Params::isEndable("noCheckPATH")) {
                 auto env = QProcessEnvironment::systemEnvironment();
                 auto proc = DeployCore::findProcess(env.value("PATH"), "qmake");
                 if (proc.isEmpty()) {
-                    QuasarAppUtils::Params::log("The deployment target requir Qt libs, but init qmake is failed.",
+                    QuasarAppUtils::Params::log("The deployment target requir Qt libs, but init qmake is failed."
+                                                "Use the qmake option for set a path to qmake.",
                                                 QuasarAppUtils::Error);
                     return false;
                 }
 
                 return initQmakePrivate(proc);
             }
-            QuasarAppUtils::Params::log("deploy only C libs because qmake is not found",
-                                        QuasarAppUtils::Info);
-            return true;
+
+            QuasarAppUtils::Params::log("You Application requeriment Qt libs but the qmake not findet by option 'qmake' and RPATH."
+                                        "You use option noCheckPATH. Disable the option noCheckPATH from your deploy command for search qmake from PATH",
+                                         QuasarAppUtils::Error);
+
+            return false;
 
         }
 
         if (qtList.size() > 1) {
             QuasarAppUtils::Params::log("Your deployment targets were compiled by different qmake,"
                                         "qt auto-capture is not possible. Use the -qmake flag to solve this problem.",
-                                        QuasarAppUtils::Error);
+                                         QuasarAppUtils::Error);
             return false;
         }
 
@@ -959,6 +987,7 @@ bool ConfigParser::initQmake() {
 
         return initQmakePrivate(QFileInfo(qt + "/qmake").absoluteFilePath());
     }
+
     return initQmakePrivate(qmake);
 }
 
@@ -1082,10 +1111,13 @@ bool ConfigParser::setQtDir(const QString &value) {
     return true;
 }
 
-void ConfigParser::setExtraPath(const QStringList &value) {
+void ConfigParser::initExtraPath() {
+    auto listLibDir = QuasarAppUtils::Params::getStrArg("libDir").
+            split(DeployCore::getSeparator(0));
+
     QDir dir;
 
-    for (const auto &i : value) {
+    for (const auto &i : listLibDir) {
         QFileInfo info(DeployCore::transportPathToSnapRoot(i));
         if (info.isDir()) {
             if (_config.targets().contains(info.absoluteFilePath())) {
@@ -1113,19 +1145,36 @@ void ConfigParser::setExtraPath(const QStringList &value) {
     }
 }
 
-void ConfigParser::setExtraNames(const QStringList &value) {
-    for (const auto &i : value) {
-        if (i.size() > 1) {
-            _config.extraPaths.addtExtraNamesMasks({i});
+void ConfigParser::initExtraNames() {
 
-            QuasarAppUtils::Params::log(i + " added like a file name mask",
-                                        QuasarAppUtils::Info);
-        } else {
-            QuasarAppUtils::Params::log(i + " not added in file mask because"
-                                            " the file mask must be large 2 characters",
-                                        QuasarAppUtils::Warning);
+    const auto deployExtraNames = [this](const QStringList& listNamesMasks){
+        for (const auto &i : listNamesMasks) {
+            if (i.size() > 1) {
+                _config.allowedPaths.addtExtraNamesMasks({i});
+
+                QuasarAppUtils::Params::log(i + " added like a file name mask",
+                                            QuasarAppUtils::Debug);
+            } else {
+                QuasarAppUtils::Params::log(i + " not added in file mask because"
+                                                " the file mask must be large 2 characters",
+                                            QuasarAppUtils::Warning);
+            }
         }
+    };
 
+    auto listNamesMasks = QuasarAppUtils::Params::getStrArg("extraLibs").
+            split(DeployCore::getSeparator(0));
+
+    deployExtraNames(listNamesMasks);
+
+/*
+ * Task https://github.com/QuasarApp/CQtDeployer/issues/422
+ * We need to add to extra names libraries without which qt will not work,
+ *
+*/
+    if (isNeededQt()) {
+        auto libs = DeployCore::Qt3rdpartyLibs( _config.getPlatformOfAll());
+        deployExtraNames(libs);
     }
 }
 
@@ -1141,10 +1190,10 @@ bool ConfigParser::initPlugins() {
             split(DeployCore::getSeparator(0), splitbehavior);
 
     auto erroLog = [](const QString &flag){
-        QuasarAppUtils::Params::log(QString("Set %0 fail, because you try set %0 for not inited package."
-                                            " Use 'targetPackage' flag for init the packages").arg(flag),
-                                    QuasarAppUtils::Error);
-    };
+            QuasarAppUtils::Params::log(QString("Set %0 fail, because you try set %0 for not inited package."
+                                               " Use 'targetPackage' flag for init the packages").arg(flag),
+                                               QuasarAppUtils::Error);
+        };
 
 
     if (listExtraPlugin.size() && !parsePackagesPrivate(_config.packagesEdit(),

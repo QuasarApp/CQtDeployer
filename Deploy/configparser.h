@@ -75,8 +75,8 @@ private:
     bool setQmake(const QString &value);
     bool setQtDir(const QString &value);
 
-    void setExtraPath(const QStringList &value);
-    void setExtraNames(const QStringList &value);
+    void initExtraPath();
+    void initExtraNames();
 
     bool initPlugins();
 

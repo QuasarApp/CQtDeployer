@@ -56,7 +56,7 @@ private:
     bool extractWebEngine();
 
     /**
-     * @brief angleGLLibs -
+     * @brief angleGLLibs This method return the list of not dependent libs but needed wor working of web Engine (Windows only).
      *  @note see task 398 (https://github.com/QuasarApp/CQtDeployer/issues/398)
      * @return
      */

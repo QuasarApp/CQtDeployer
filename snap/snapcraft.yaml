@@ -20,11 +20,11 @@ base: core18
 icon: snap/gui/icon.png
 apps:
   cqtdeployer:
-    command: desktop-launch $SNAP/cqtdeployer.sh
+    command: bash $SNAP/cqtdeployer.sh
     plugs: [home, removable-media, process-control, system-backup]
 
   cqt:
-    command: desktop-launch $SNAP/cqt.sh
+    command: bash $SNAP/cqt.sh
     plugs: [home, removable-media, process-control, system-backup]
 
 parts:
@@ -38,7 +38,6 @@ parts:
       - libfreetype6
       - libpng16-16
 
-    after: [cqtdeployer-wrapper]
 
   qif:
     plugin: dump
@@ -48,6 +47,3 @@ parts:
       snapcraftctl stage
       chmod 777 -R "$SNAPCRAFT_STAGE/QIF"
 
-  cqtdeployer-wrapper:
-    plugin: dump
-    source: QuasarAppLib/Etalons/snap/wrapper
