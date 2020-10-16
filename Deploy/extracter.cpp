@@ -357,11 +357,8 @@ void Extracter::extractLib(const QString &file,
 }
 
 void Extracter::extractPluginLib(const QString& item, const QString& package) {
-    if (QuasarAppUtils::Params::isEndable("extractPlugins")) {
-        extract(item, &_packageDependencyes[package]);
-    } else {
-        extract(item, &_packageDependencyes[package], "Qt");
-    }
+    extract(item, &_packageDependencyes[package]);
+
 }
 
 bool Extracter::extractQmlAll() {
