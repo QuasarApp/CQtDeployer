@@ -231,7 +231,10 @@ QSet<QString> ModulesQt515::testOutLibs(const QString &distDir) const {
                                 "./" + distDir + "/p/wayland-graphics-integration-server/libqt-wayland-compositor-wayland-egl.so",
                                 "./" + distDir + "/p/wayland-graphics-integration-server/libqt-wayland-compositor-wayland-eglstream-controller.so",
                                 "./" + distDir + "/p/wayland-graphics-integration-server/libqt-wayland-compositor-xcomposite-egl.so",
-                                "./" + distDir + "/p/wayland-graphics-integration-server/libqt-wayland-compositor-xcomposite-glx.so"
+                                "./" + distDir + "/p/wayland-graphics-integration-server/libqt-wayland-compositor-xcomposite-glx.so",
+                                "./" + distDir + "/q/QtQuick/Controls.2/designer/InsetSection.qml",
+                                "./" + distDir + "/translations/qtdeclarative_tr.qm",
+                                "./" + distDir + "/translations/qtbase_tr.qm",
                             });
 
     res -= utils.createTree({
@@ -244,9 +247,7 @@ QSet<QString> ModulesQt515::testOutLibs(const QString &distDir) const {
                                 "./" + distDir + "/p/wayland-graphics-integration-server/libwayland-eglstream-controller.so",
                                 "./" + distDir + "/p/wayland-graphics-integration-server/libxcomposite-egl.so",
                                 "./" + distDir + "/p/wayland-graphics-integration-server/libxcomposite-glx.so",
-                                "./" + distDir + "/q/QtQuick/Controls.2/designer/InsetSection.qml",
-                                "./" + distDir + "/translations/qtdeclarative_tr.qm",
-                                "./" + distDir + "/translations/qtbase_tr.qm",
+
                             });
 #endif
     return res;
