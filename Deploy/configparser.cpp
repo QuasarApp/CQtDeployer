@@ -930,7 +930,7 @@ bool ConfigParser::initQmake() {
 
             if (!QuasarAppUtils::Params::isEndable("noCheckPATH")) {
                 auto env = QProcessEnvironment::systemEnvironment();
-                auto proc = DeployCore::findProcess(env.value("PATH"), "qexit make");
+                auto proc = DeployCore::findProcess(env.value("PATH"), "qmake");
                 if (proc.isEmpty()) {
                     QuasarAppUtils::Params::log("The deployment target requir Qt libs, but init qmake is failed."
                                                 "Use the qmake option for set a path to qmake.",
