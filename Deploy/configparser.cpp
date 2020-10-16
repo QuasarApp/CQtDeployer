@@ -897,7 +897,7 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
                                            QuasarAppUtils::Warning);
 
         if (!setQtDir(dir.absolutePath())){
-            QuasarAppUtils::Params::log("fail ini qmake",
+            QuasarAppUtils::Params::log("fail init qmake",
                                                QuasarAppUtils::Error);
             return false;
         }
@@ -930,7 +930,7 @@ bool ConfigParser::initQmake() {
 
             if (!QuasarAppUtils::Params::isEndable("noCheckPATH")) {
                 auto env = QProcessEnvironment::systemEnvironment();
-                auto proc = DeployCore::findProcess(env.value("PATH"), "qmake");
+                auto proc = DeployCore::findProcess(env.value("PATH"), "qexit make");
                 if (proc.isEmpty()) {
                     QuasarAppUtils::Params::log("The deployment target requir Qt libs, but init qmake is failed."
                                                 "Use the qmake option for set a path to qmake.",
