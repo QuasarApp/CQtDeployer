@@ -57,11 +57,25 @@ enum Platform {
     GeneralFile     = 0x0100
 };
 
+/**
+ * @brief The LibPriority enum This is library priority.
+ * The lower the priority of the topics, the library is the most suitable for distribution.
+ */
 enum LibPriority : int {
+    // ================= General Libraryes
+    /// This is qt libraryes.
     QtLib = 0x0,
+    /// This is user libraryes.
     ExtraLib,
+    /// This is qt 3dParty and user libraryes. (distribution-safe libraries)
+    AllowedLib,
+
+    // ================= System Libraryes
+    /// This is rest of all libraryes (frm system and another).
     SystemLib,
+    /// This is libraryes from another proggram distributions.
     AlienLib,
+    /// This is General Files.
     NotFile = 0xF,
 };
 
@@ -166,6 +180,22 @@ public:
     static bool isExtraLib(const QString &lib);
     static QChar getSeparator(int lvl);
     static bool isAlienLib(const QString &lib);
+
+    /**
+     * @brief isAllowedLib This method checks the library if the library is allowed or not, allowet libraryes is added with extraLibs method.
+     * @param lib This is library fuul path
+     * @return true if lirary is allowed
+     */
+    static bool isAllowedLib(const QString &lib);
+
+    /**
+     * @brief QtThreethepartyLibs This method return list of 3rdparty libraryes of qt for selected platform.
+     * @param platform This is OS name.
+     * @return list of 3rdparty libs.
+     * @note This method is hardcode.
+     * @note See Task https://github.com/QuasarApp/CQtDeployer/issues/422 of the CQtDeployer project.
+     */
+    static QStringList Qt3rdpartyLibs(Platform platform);
 
     static char getEnvSeparator();
 

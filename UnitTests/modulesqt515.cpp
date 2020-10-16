@@ -18,9 +18,11 @@ QSet<QString> ModulesQt515::qtLibs(const QString &distDir) const {
 
 #ifdef Q_OS_WIN
     res -= utils.createTree({
+                                "./" + distDir + "/translations/qtbase_tr.qm",
     });
 #else
     res += utils.createTree({
+                                "./" + distDir + "/translations/qtbase_tr.qm",
     });
 #endif
 
@@ -44,7 +46,9 @@ QSet<QString> ModulesQt515::qmlLibs(const QString &distDir) const {
                                 "./" + distDir + "/qml/QtQuick/Controls.2/Material/VerticalHeaderView.qml",
                                 "./" + distDir + "/qml/QtQuick/Controls.2/Universal/HorizontalHeaderView.qml",
                                 "./" + distDir + "/qml/QtQuick/Controls.2/Universal/VerticalHeaderView.qml",
-                                "./" + distDir + "/qml/QtQuick/Controls.2/VerticalHeaderView.qml"
+                                "./" + distDir + "/qml/QtQuick/Controls.2/VerticalHeaderView.qml",
+                                "./" + distDir + "/qml/QtQuick/Controls.2/designer/InsetSection.qml",
+                                "./" + distDir + "/translations/qtdeclarative_tr.qm",
     });
 #else
     res -= utils.createTree({
@@ -78,7 +82,10 @@ QSet<QString> ModulesQt515::qmlLibs(const QString &distDir) const {
                                 "./" + distDir + "/qml/QtQuick/Controls.2/Material/VerticalHeaderView.qml",
                                 "./" + distDir + "/qml/QtQuick/Controls.2/Universal/HorizontalHeaderView.qml",
                                 "./" + distDir + "/qml/QtQuick/Controls.2/Universal/VerticalHeaderView.qml",
-                                "./" + distDir + "/qml/QtQuick/Controls.2/VerticalHeaderView.qml"
+                                "./" + distDir + "/qml/QtQuick/Controls.2/VerticalHeaderView.qml",
+
+                                "./" + distDir + "/qml/QtQuick/Controls.2/designer/InsetSection.qml",
+                                "./" + distDir + "/translations/qtdeclarative_tr.qm",
                             }
 );
 #endif
@@ -130,7 +137,13 @@ QSet<QString> ModulesQt515::testDistroLibs(const QString &distDir) const {
                                 "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/Material/VerticalHeaderView.qml",
                                 "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/Universal/HorizontalHeaderView.qml",
                                 "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/Universal/VerticalHeaderView.qml",
-                                "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/VerticalHeaderView.qml"
+                                "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/VerticalHeaderView.qml",
+                                "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/designer/InsetSection.qml",
+                                "./" + distDir + "/package2/ZzZ/translations/qtdeclarative_tr.qm",
+                                "./" + distDir + "/package2/ZzZ/translations/qtbase_tr.qm",
+                                "./" + distDir + "/lolTr/qtbase_tr.qm",
+
+
     });
 
 #else
@@ -153,7 +166,12 @@ QSet<QString> ModulesQt515::testDistroLibs(const QString &distDir) const {
                                 "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/Material/VerticalHeaderView.qml",
                                 "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/Universal/HorizontalHeaderView.qml",
                                 "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/Universal/VerticalHeaderView.qml",
-                                "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/VerticalHeaderView.qml"
+                                "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/VerticalHeaderView.qml",
+                                "./" + distDir + "/package2/ZzZ/q/and/q/QtQuick/Controls.2/designer/InsetSection.qml",
+                                "./" + distDir + "/package2/ZzZ/translations/qtdeclarative_tr.qm",
+                                "./" + distDir + "/package2/ZzZ/translations/qtbase_tr.qm",
+                                "./" + distDir + "/lolTr/qtbase_tr.qm",
+
                             });
 
     res -= utils.createTree({
@@ -187,7 +205,11 @@ QSet<QString> ModulesQt515::testOutLibs(const QString &distDir) const {
                                 "./" + distDir + "/q/QtQuick/Controls.2/Material/VerticalHeaderView.qml",
                                 "./" + distDir + "/q/QtQuick/Controls.2/Universal/HorizontalHeaderView.qml",
                                 "./" + distDir + "/q/QtQuick/Controls.2/Universal/VerticalHeaderView.qml",
-                                "./" + distDir + "/q/QtQuick/Controls.2/VerticalHeaderView.qml"
+                                "./" + distDir + "/q/QtQuick/Controls.2/VerticalHeaderView.qml",
+                                "./" + distDir + "/q/QtQuick/Controls.2/designer/InsetSection.qml",
+                                "./" + distDir + "/lolTr/qtdeclarative_tr.qm",
+                                "./" + distDir + "/lolTr/qtbase_tr.qm",
+
     });
 #else
     res += utils.createTree({
@@ -209,7 +231,10 @@ QSet<QString> ModulesQt515::testOutLibs(const QString &distDir) const {
                                 "./" + distDir + "/p/wayland-graphics-integration-server/libqt-wayland-compositor-wayland-egl.so",
                                 "./" + distDir + "/p/wayland-graphics-integration-server/libqt-wayland-compositor-wayland-eglstream-controller.so",
                                 "./" + distDir + "/p/wayland-graphics-integration-server/libqt-wayland-compositor-xcomposite-egl.so",
-                                "./" + distDir + "/p/wayland-graphics-integration-server/libqt-wayland-compositor-xcomposite-glx.so"
+                                "./" + distDir + "/p/wayland-graphics-integration-server/libqt-wayland-compositor-xcomposite-glx.so",
+                                "./" + distDir + "/q/QtQuick/Controls.2/designer/InsetSection.qml",
+                                "./" + distDir + "/lolTr/qtdeclarative_tr.qm",
+                                "./" + distDir + "/lolTr/qtbase_tr.qm",
                             });
 
     res -= utils.createTree({
@@ -221,7 +246,8 @@ QSet<QString> ModulesQt515::testOutLibs(const QString &distDir) const {
                                 "./" + distDir + "/p/wayland-graphics-integration-server/libvulkan-server.so",
                                 "./" + distDir + "/p/wayland-graphics-integration-server/libwayland-eglstream-controller.so",
                                 "./" + distDir + "/p/wayland-graphics-integration-server/libxcomposite-egl.so",
-                                "./" + distDir + "/p/wayland-graphics-integration-server/libxcomposite-glx.so"
+                                "./" + distDir + "/p/wayland-graphics-integration-server/libxcomposite-glx.so",
+
                             });
 #endif
     return res;
