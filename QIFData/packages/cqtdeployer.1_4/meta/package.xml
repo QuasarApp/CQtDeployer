@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>CQtDeployer 1.4</DisplayName>
     <Description>CQtDeployer 1.4</Description>
-    <Version>1.4.5.5</Version>
+    <Version>1.4.6.0</Version>
     <Default>true</Default>
     <ForcedInstallation>false</ForcedInstallation>
     <Script>installscript.js</Script>
