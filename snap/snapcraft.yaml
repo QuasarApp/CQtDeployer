@@ -47,3 +47,4 @@ parts:
       snapcraftctl stage
       chmod 777 -R "$SNAPCRAFT_STAGE/QIF"
 
+

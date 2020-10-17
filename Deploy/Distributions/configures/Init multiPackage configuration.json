@@ -36,7 +36,6 @@
         ]
     ],
     "noStrip": false,
-    "extractPlugins": false,
     "noTranslations": false,
     "qmlOut": "qml",
     "libOut": "lib",
