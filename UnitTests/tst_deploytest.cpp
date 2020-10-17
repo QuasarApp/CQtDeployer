@@ -1960,12 +1960,7 @@ void deploytest::testSystemLib() {
                     "./" + DISTRO_DIR + "/libstdc++-6.dll",
                     "./" + DISTRO_DIR + "/libwinpthread-1.dll",
                     "./" + DISTRO_DIR + "/msvcrt.dll",
-                    "./" + DISTRO_DIR + "/qt.conf",
-                    "./" + DISTRO_DIR + "/oleaut32.dll",
-                    "./" + DISTRO_DIR + "/bcryptprimitives.dll",
-                    "./" + DISTRO_DIR + "/msvcp_win.dll",
-                    "./" + DISTRO_DIR + "/wtsapi32.dll",
-                    "./" + DISTRO_DIR + "/combase.dll",
+                    "./" + DISTRO_DIR + "/qt.conf"
                 });
 
 #endif
@@ -2116,6 +2111,11 @@ void deploytest::testSystemLib() {
                     "./" + DISTRO_DIR + "/uxtheme.dll",
                     "./" + DISTRO_DIR + "/version.dll",
                     "./" + DISTRO_DIR + "/ucrtbase.dll",
+                    "./" + DISTRO_DIR + "/oleaut32.dll",
+                    "./" + DISTRO_DIR + "/bcryptprimitives.dll",
+                    "./" + DISTRO_DIR + "/msvcp_win.dll",
+                    "./" + DISTRO_DIR + "/wtsapi32.dll",
+                    "./" + DISTRO_DIR + "/combase.dll",
 
                 });
 
