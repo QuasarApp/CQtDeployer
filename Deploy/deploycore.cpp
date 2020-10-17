@@ -189,9 +189,6 @@ void DeployCore::help() {
                 {"noCheckPATH", "Disables automatic search of paths to qmake in system PATH."},
                 {"noRecursiveiIgnoreEnv", "Disables recursive ignore for ignoreEnv option."},
                 {"v / version", "Shows compiled version"},
-                {"extractPlugins", "This flag will cause cqtdeployer to retrieve dependencies from plugins. Starting with version 1.4,"
-                 " this option has been disabled by default, as it can add low-level graphics libraries to the distribution,"
-                 " which will not be compatible with equipment on users' hosts."},
                 {"allQmlDependes", "Extracts all the qml libraries. (not recommended, as it takes great amount of computer memory)"},
                 {"qif", "Create the QIF installer for deployement programm"
                         " You can specify the path to your own installer template. Examples: cqtdeployer -qif path/to/myCustom/qif."},

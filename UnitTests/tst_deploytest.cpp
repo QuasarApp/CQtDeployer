@@ -139,10 +139,6 @@ private slots:
 
     void testEmptyParamsString();
 
-
-    // extractPlugins flags
-    void testExtractPlugins();
-
     // qif flags
     void testQIF();
 
@@ -561,52 +557,6 @@ void deploytest::testWebEngine() {
                    "-qmlDir", TestBinDir + "/../quicknanobrowser"}, &comapareTree);
 
 #endif
-}
-
-void deploytest::testExtractPlugins() {
-    TestUtils utils;
-
-#ifdef Q_OS_UNIX
-    QString bin = TestBinDir + "TestQMLWidgets";
-    QString qmake = TestQtDir + "bin/qmake";
-
-#else
-    QString bin = TestBinDir + "TestQMLWidgets.exe";
-    QString qmake = TestQtDir + "bin/qmake.exe";
-
-#endif
-    auto comapareTree = TestModule.qmlLibs();
-
-    runTestParams({"-bin", bin, "clear" ,
-                   "-qmake", qmake,
-                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
-                   "extractPlugins"}, &comapareTree);
-
-
-    QuasarAppUtils::Params::parseParams({"-bin", bin, "clear" ,
-                                         "-qmake", qmake,
-                                         "-qmlDir", TestBinDir + "/../TestQMLWidgets",
-                                         "extractPlugins", "deploySystem"});
-
-    Deploy deploy;
-    QVERIFY(deploy.run() == Good);
-
-    QVERIFY(DeployCore::_config);
-    QVERIFY(!DeployCore::_config->getTargetDir().isEmpty());
-
-    auto resultTree = utils.getTree(DeployCore::_config->getTargetDir());
-    auto comapre = utils.compareTree(resultTree, comapareTree);
-
-#ifdef   Q_OS_LINUX
-    QVERIFY(comapre.size());
-#endif
-    for (auto i = comapre.begin(); i != comapre.end(); ++i) {
-        if (i.value() != 1 && getFilesTree().contains(QFileInfo(i.key()).fileName())) {
-            qCritical() << "missing library found " << i.key();
-            QVERIFY(false);
-        }
-
-    }
 }
 
 void deploytest::testQIF() {
@@ -1977,6 +1927,7 @@ void deploytest::testExtraPlugins() {
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlpsql.so",
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlite.so",
                     "./" + DISTRO_DIR + "/lib/libQt5Sql.so",
+                    "./" + DISTRO_DIR + "/lib/libpq.so",
 
                 });
 #else
@@ -2298,6 +2249,11 @@ void deploytest::testSystemLib() {
                     "./" + DISTRO_DIR + "/uxtheme.dll",
                     "./" + DISTRO_DIR + "/version.dll",
                     "./" + DISTRO_DIR + "/ucrtbase.dll",
+                    "./" + DISTRO_DIR + "/oleaut32.dll",
+                    "./" + DISTRO_DIR + "/bcryptprimitives.dll",
+                    "./" + DISTRO_DIR + "/msvcp_win.dll",
+                    "./" + DISTRO_DIR + "/wtsapi32.dll",
+                    "./" + DISTRO_DIR + "/combase.dll",
 
                 });
 
