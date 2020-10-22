@@ -115,12 +115,30 @@ bool PE::getLibInfo(const QString &lib, LibInfo &info) const {
     if (!parsedPeLib)
         return false;
 
-    if (static_cast<RunType>(parsedPeLib->peHeader.nt.OptionalMagic) == RunType::_32bit) {
-        info.setPlatform(Platform::Win32);
-    } else if (static_cast<RunType>(parsedPeLib->peHeader.nt.OptionalMagic) == RunType::_64bit) {
-        info.setPlatform(Platform::Win64);
+    if (parsedPeLib->peHeader.nt.FileHeader.Machine == peparse::IMAGE_FILE_MACHINE_ARM ||
+        parsedPeLib->peHeader.nt.FileHeader.Machine == peparse::IMAGE_FILE_MACHINE_ARM64 ||
+        parsedPeLib->peHeader.nt.FileHeader.Machine == peparse::IMAGE_FILE_MACHINE_ARMNT) {
+
+        if (parsedPeLib->peHeader.nt.OptionalMagic == peparse::NT_OPTIONAL_32_MAGIC) {
+            info.setPlatform(Win_ARM_32);
+
+        } else {
+            info.setPlatform(win_ARM_64);
+        }
+
+    } else if (parsedPeLib->peHeader.nt.FileHeader.Machine == peparse::IMAGE_FILE_MACHINE_I386 ||
+               parsedPeLib->peHeader.nt.FileHeader.Machine == peparse::IMAGE_FILE_MACHINE_AMD64) {
+
+        if (parsedPeLib->peHeader.nt.OptionalMagic == peparse::NT_OPTIONAL_32_MAGIC) {
+            info.setPlatform(Win32);
+
+        } else {
+            info.setPlatform(Win64);
+        }
+
     } else {
-        info.setPlatform(Platform::UnknownPlatform);
+        info.setPlatform(UnknownPlatform);
+        return false;
     }
 
     info.setName(QFileInfo(lib).fileName());
