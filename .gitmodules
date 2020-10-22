@@ -19,3 +19,6 @@
 [submodule "zip"]
 	path = zip
 	url = https://github.com/QuasarApp/zip.git
+[submodule "res/DoxyStyle"]
+	path = res/DoxyStyle
+	url = https://github.com/QuasarApp/DoxyStyle.git

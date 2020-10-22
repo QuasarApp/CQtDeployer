@@ -37,24 +37,26 @@ enum Platform {
     // Windows
     Win32           = 0x0001,
     Win64           = 0x0002,
+    Win_ARM_32      = 0x0004,
+    win_ARM_64      = 0x0008,
     Win             = Win32 | Win64,
 
     // Unix
-    Unix_x86_32     = 0x0004,
-    Unix_x86_64     = 0x0008,
+    Unix_x86_32     = 0x0010,
+    Unix_x86_64     = 0x0020,
     Unix_x86        = Unix_x86_32 | Unix_x86_64,
-    Unix_ARM_32     = 0x0010,
-    Unix_ARM_64     = 0x0020,
+    Unix_ARM_32     = 0x0040,
+    Unix_ARM_64     = 0x0080,
     Unix_ARM        = Unix_x86_32 | Unix_x86_64,
     Unix            = Unix_x86 | Unix_ARM,
 
     // Other
 
     // Web
-    WebGl           = 0x0040,
-    WebRemote       = 0x0080,
+    WebGl           = 0x0100,
+    WebRemote       = 0x0200,
 
-    GeneralFile     = 0x0100
+    GeneralFile     = 0x0400
 };
 
 /**

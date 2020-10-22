@@ -33,12 +33,6 @@ private:
 
 public:
 
-    enum class RunType: unsigned short {
-        _UNKNOWN = 0x0,
-        _32bit = 0x10B,
-        _64bit = 0x20B,
-        _ROM = 0x107,
-    };
     PE();
     WinAPI getAPIModule(const QString &libName) const;
 
