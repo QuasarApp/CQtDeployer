@@ -14,3 +14,4 @@ cmake_minimum_required(VERSION 3.1)
 include(QuasarAppLib/CMake/QuasarAppCITargets.cmake)
 
 initAll()
+addDoc(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/doxygen.conf)
