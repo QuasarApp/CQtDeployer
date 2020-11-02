@@ -37,12 +37,6 @@ bool Deb::deployTemplate(PackageControl &pkg) {
             return false;
         }
 
-        auto arr = cfg->getTargetDir() + "/" + info.Name + ".zip";
-        if (!zipWorker.compress(location, arr)) {
-                return false;
-        }
-
-        outFiles.push_back(arr);
     }
 
     return true;

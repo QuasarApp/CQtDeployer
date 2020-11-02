@@ -1,0 +1,7 @@
+Package: $NAME
+Priority: optional
+Maintainer: $MAINTAINER
+Version: $VERSION
+Homepage: $HOMEPAGE
+Description: $DESCRIPTION
+
