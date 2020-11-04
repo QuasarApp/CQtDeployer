@@ -18,15 +18,15 @@ print("PLATFORM=" + PLATFORM)
 print("VERSION=" + VERSION)
 
 command = ["aqt",
-            "tool",
-            "--outputdir",
-            PATHQIF,
-            PLATFORM,
-            "tools_ifw",
-            VERSION,
-            " "]
+           "tool",
+           "--outputdir",
+           PATHQIF,
+           PLATFORM,
+           "tools_ifw",
+           VERSION,
+           " "]
 
-print("command=" + "".join(command))
+print("command=" + " ".join(command))
 
 subprocess.call(command)
 
