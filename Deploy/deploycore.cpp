@@ -594,6 +594,9 @@ QStringList DeployCore::Qt3rdpartyLibs(Platform platform) {
                   "libicuuc",
 
                   // End Unicode libs
+
+                  // xcb plugin
+                  "libxcb-xinerama",
     };
     }
 
