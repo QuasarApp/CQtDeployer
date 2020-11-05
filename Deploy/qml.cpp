@@ -9,9 +9,20 @@
 
 #include <QDir>
 #include <QFile>
-#include <quasarapp.h>
+#include "quasarapp.h"
+#include "deploycore.h"
+#include "deployconfig.h"
 
 QStringList QML::extractImportsFromFile(const QString &filepath) {
+
+    if (DeployCore::_config && DeployCore::_config->qtDir.getQtVersion() == QtMajorVersion::Qt6) {
+        return extractImportsFromFileQt6(filepath);
+    }
+
+    return extractImportsFromFileQt5(filepath);
+}
+
+QStringList QML::extractImportsFromFileQt5(const QString &filepath) {
     QStringList imports;
     QFile F(filepath);
     if (!F.open(QIODevice::ReadOnly)) return QStringList();
@@ -44,6 +55,11 @@ QStringList QML::extractImportsFromFile(const QString &filepath) {
     return imports;
 }
 
+QStringList QML::extractImportsFromFileQt6(const QString &filepath) {
+
+    return {};
+}
+
 bool QML::extractImportsFromDir(const QString &path, bool recursive) {
     QDir dir(path);
 
@@ -74,6 +90,14 @@ bool QML::extractImportsFromDir(const QString &path, bool recursive) {
 }
 
 QString QML::getPathFromImport(const QString &import, bool checkVersions) {
+    if (DeployCore::_config && DeployCore::_config->qtDir.getQtVersion() == QtMajorVersion::Qt6) {
+        return getPathFromImportQt6(import, checkVersions);
+    }
+
+    return getPathFromImportQt5(import, checkVersions);
+}
+
+QString QML::getPathFromImportQt5(const QString &import, bool checkVersions) {
     auto importData = import.split("#");
 
     int index;
@@ -107,6 +131,12 @@ QString QML::getPathFromImport(const QString &import, bool checkVersions) {
     }
 
     return info.absoluteFilePath();
+}
+
+
+QString QML::getPathFromImportQt6(const QString &import, bool checkVersions) {
+
+    return "";
 }
 
 bool QML::deployPath(const QString &path, QStringList &res) {

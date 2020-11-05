@@ -1,6 +1,14 @@
 #include "pathutils.h"
 #include "qtdir.h"
 
+QtMajorVersion QtDir::getQtVersion() const {
+    return _qtVersion;
+}
+
+void QtDir::setQtVersion(const QtMajorVersion &qtVersion) {
+    _qtVersion = qtVersion;
+}
+
 QString QtDir::getLibs() const {
     return libs;
 }

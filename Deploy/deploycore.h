@@ -23,6 +23,16 @@ enum MSVCVersion: int {
     MSVC_19 = 0x80,
 };
 
+/**
+ * @brief The QtMajorVersion enum
+ */
+enum QtMajorVersion: int {
+    NoQt = 0x0,
+    Qt4 = 0x01,
+    Qt5 = 0x02,
+    Qt6 = 0x04
+};
+
 struct DEPLOYSHARED_EXPORT QtModuleEntry {
     quint64 module;
     const char *option;
@@ -175,7 +185,7 @@ public:
     static MSVCVersion getMSVC(const QString & _qtBin);
     static QString getVCredist(const QString & _qtBin);
 
-    static bool isQtLib(const QString &lib);
+    static QtMajorVersion isQtLib(const QString &lib);
     static bool isExtraLib(const QString &lib);
     static QChar getSeparator(int lvl);
     static bool isAlienLib(const QString &lib);

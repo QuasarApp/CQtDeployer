@@ -617,15 +617,15 @@ QSet<QString> ConfigParser::getQtPathesFromTargets() {
     return res;
 }
 
-bool ConfigParser::isNeededQt() const {
+QtMajorVersion ConfigParser::isNeededQt() const {
 
     for (const auto &i: _config.targets()) {
-        if (i.isValid() && i.isDependetOfQt()) {
-            return true;
+        if (i.isValid()) {
+            return i.isDependetOfQt();
         }
     }
 
-    return false;
+    return QtMajorVersion::NoQt;
 }
 
 void ConfigParser::setTargetDir(const QString &target) {
@@ -920,7 +920,6 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
 bool ConfigParser::initQmake() {
 
 
-
     if (!isNeededQt()) {
         QuasarAppUtils::Params::log("deploy only C/C++ libraryes because a qmake is not needed"
                                     " for the distribution",
@@ -1028,6 +1027,9 @@ bool ConfigParser::setQmake(const QString &value) {
             }
         }
     }
+
+    _config.qtDir.setQtVersion(isNeededQt());
+
     _config.envirement.addEnv(_config.qtDir.getLibs());
     _config.envirement.addEnv(_config.qtDir.getBins());
 
@@ -1091,6 +1093,8 @@ bool ConfigParser::setQtDir(const QString &value) {
 #ifdef Q_OS_WIN
     _config.qtDir.setQtPlatform(Platform::Win);
 #endif
+
+    _config.qtDir.setQtVersion(isNeededQt());
 
     _config.envirement.addEnv(_config.qtDir.getLibs());
     _config.envirement.addEnv(_config.qtDir.getBins());
