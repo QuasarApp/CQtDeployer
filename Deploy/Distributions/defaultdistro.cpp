@@ -57,3 +57,11 @@ QProcessEnvironment DefaultDistro::processEnvirement() const {
 QStringList DefaultDistro::outPutFiles() const {
     return {};
 }
+
+QString DefaultDistro::dataLocation(const QString &) const {
+    return "";
+}
+
+QString DefaultDistro::location(const QString &) const {
+    return "";
+}

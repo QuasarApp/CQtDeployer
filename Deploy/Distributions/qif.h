@@ -21,6 +21,10 @@ public:
     QProcessEnvironment processEnvirement() const override;
     QStringList outPutFiles() const override;
 
+protected:
+    QString dataLocation(const QString &packageName) const override;
+    QString location(const QString &packageName) const override;
+
 private:
 
     QString getStyle(const QString &input) const;
@@ -45,6 +49,8 @@ private:
 
     QString binarycreator;
     TemplateInfo generalInfo;
+
+
 };
 
 #endif // QIF_H

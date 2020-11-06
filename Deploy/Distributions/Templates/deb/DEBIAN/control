@@ -3,5 +3,6 @@ Priority: optional
 Maintainer: $MAINTAINER
 Version: $VERSION
 Homepage: $HOMEPAGE
+Depends: libgl1-mesa-dev
 Description: $DESCRIPTION
 

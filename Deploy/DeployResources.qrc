@@ -18,4 +18,10 @@
         <file>Distributions/Templates/qif/Styles/quasar.css</file>
         <file>Distributions/Templates/qif/Styles/quasarDark.css</file>
     </qresource>
+    <qresource prefix="/Templates/DEB">
+        <file>Distributions/Templates/deb/opt/default/Icon.png</file>
+        <file>Distributions/Templates/deb/DEBIAN/prerm</file>
+        <file>Distributions/Templates/deb/DEBIAN/control</file>
+        <file>Distributions/Templates/deb/DEBIAN/postinst</file>
+    </qresource>
 </RCC>

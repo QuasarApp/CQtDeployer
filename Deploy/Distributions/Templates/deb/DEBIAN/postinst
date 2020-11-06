@@ -1,0 +1,41 @@
+#!/bin/bash
+
+APPS=["array", "of", "cmds"]
+
+TARGET_DIR=/opt/$APPNAME/
+
+#creating shortcut
+DEST_FILE=
+DEST_NAME=
+SRC_FILE=
+function createShortCut {
+
+    echo "create shortCut"
+    rm -f $DEST_FILE
+    touch $DEST_FILE
+
+    if test -f $DEST_FILE; then
+        echo "[Desktop Entry]" >> $DEST_FILE
+        echo "Encoding=UTF-8" >> $DEST_FILE
+        echo "Name=$DEST_NAME" >> $DEST_FILE
+        echo "Type=Application" >> $DEST_FILE
+        echo "Icon=$TARGET_DIR/Icon.png" >> $DEST_FILE
+        echo "Terminal=false" >> $DEST_FILE
+        echo "Exec=$SRC_FILE" >> $DEST_FILE
+
+        chmod +x $DEST_FILE
+    fi
+}
+
+
+for app in "${APPS[@]}"
+do
+    echo "$app"
+    
+    DEST_NAME=$app
+    SRC_FILE="$TARGET_DIR/$app.sh"
+    DEST_FILE="/usr/share/applications/$DEST_NAME.desktop"
+    createShortCut
+done
+
+

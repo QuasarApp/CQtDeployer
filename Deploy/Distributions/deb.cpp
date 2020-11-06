@@ -3,11 +3,12 @@
 #include <deployconfig.h>
 #include <pathutils.h>
 #include <packagecontrol.h>
+#include <QProcess>
 
 Deb::Deb(FileManager *fileManager):
     iDistribution(fileManager)
 {
-
+    setLocation("tmp DEB");
 }
 
 bool Deb::deployTemplate(PackageControl &pkg) {
@@ -19,24 +20,21 @@ bool Deb::deployTemplate(PackageControl &pkg) {
         auto package = it.value();
 
         TemplateInfo info;
-        info.Name = PathUtils::stripPath(it.key());
-        bool fDefaultPakcage = cfg->getDefaultPackage() == info.Name;
 
-        if (fDefaultPakcage) {
-            QFileInfo targetInfo(*package.targets().begin());
-            info.Name = targetInfo.baseName();
-        }
+        if (!collectInfo(it, cfg, info)) {
+            return false;
+        };
 
-        if (!package.name().isEmpty()) {
-            info.Name = package.name();
-        }
+        auto local = location(info.Name);
 
-        auto location = cfg->getTargetDir() + "/" + getLocation() + "/" + info.Name;
-
-        if (!pkg.movePackage(it.key(), location)) {
+        if (!pkg.movePackage(it.key(), local)) {
             return false;
         }
 
+        if (!unpackDir("qrc:/Templates/DEB/Distributions/Templates/deb",
+                       local, info, {""})) {
+            return false;
+        }
     }
 
     return true;
@@ -47,21 +45,34 @@ bool Deb::removeTemplate() const {
 }
 
 Envirement Deb::toolKitEnv() const {
+    Envirement result;
+    result.addEnv(QProcessEnvironment::systemEnvironment().value("PATH"));
 
+    return result;
 }
 
 QProcessEnvironment Deb::processEnvirement() const {
-
+    return QProcessEnvironment::systemEnvironment();
 }
 
 QString Deb::runCmd() {
-
+    return "dpkg-deb";
 }
 
 QStringList Deb::runArg() const {
-
+    return {"--build"};
 }
 
 QStringList Deb::outPutFiles() const {
 
+}
+
+QString Deb::dataLocation(const QString &packageName) const {
+    return location(packageName);
+}
+
+QString Deb::location(const QString &packageName) const {
+    const DeployConfig* cfg = DeployCore::_config;
+
+    return cfg->getTargetDir() + "/" + getLocation() + "/" + packageName;
 }

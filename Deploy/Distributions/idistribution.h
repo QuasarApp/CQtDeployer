@@ -5,11 +5,13 @@
 #include "envirement.h"
 #include "templateinfo.h"
 #include <QProcess>
-
+#include <QHash>
 #include <QFileInfo>
+
 class FileManager;
 class DistroModule;
 class PackageControl;
+class DeployConfig;
 
 class DEPLOYSHARED_EXPORT iDistribution
 {
@@ -46,6 +48,31 @@ protected:
     bool copyDir(const QString &resource, const QString &target) const;
 
     void registerOutFiles() const;
+
+    /**
+     * @brief collectInfo This method collect information about package.
+     * @param it This is iterator of package.
+     * @param cfg This is pointer to config.
+     * @param info This is return value (created template information)
+     * @return true if information collected successful.
+     */
+    bool collectInfo(const QHash<QString, DistroModule>::const_iterator &it,
+                     const DeployConfig *cfg,
+                     TemplateInfo& info);
+
+    /**
+     * @brief dataLocation This method should be retrun location of application or package files.
+     * @param packageName This is name of package that request data location.
+     *  @return return location of data files.
+     */
+    virtual QString dataLocation(const QString& packageName) const = 0;
+
+    /**
+     * @brief location This method return main patho to files of package.
+     * @param packageName This is name of package that request data location.
+     * @return location of package.
+     */
+    virtual QString location(const QString& packageName) const = 0;
 
 private:
 

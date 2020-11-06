@@ -5,6 +5,7 @@
 
 #include <QDateTime>
 #include <QProcess>
+#include <deploycore.h>
 #include <packagecontrol.h>
 #include <pathutils.h>
 
@@ -135,10 +136,12 @@ QStringList QIF::runArg() const {
     auto location = DeployCore::_config->getTargetDir() + "/" + getLocation();
 
     return {
-        "-c", location + "/config/config.xml",
-                "-p", location + "/packages/",
-                "-v",
-                installerFile()
+        "-c",
+        location + "/config/config.xml",
+        "-p",
+        location + "/packages/",
+        "-v",
+        installerFile()
     };
 }
 
@@ -157,6 +160,22 @@ QProcessEnvironment QIF::processEnvirement() const {
 
 QStringList QIF::outPutFiles() const {
     return {installerFile()};
+}
+
+QString QIF::dataLocation(const QString &packageName) const {
+    const DeployConfig* cfg = DeployCore::_config;
+
+    QString result = location(packageName) + "/data";
+    if (cfg->getDefaultPackage() != packageName) {
+        result += "/" + packageName;
+    }
+
+    return result;
+}
+
+QString QIF::location(const QString &packageName) const {
+    const DeployConfig* cfg = DeployCore::_config;
+    return cfg->getTargetDir() + "/" + getLocation() + "/packages/" + packageName;
 }
 
 QString QIF::getStyle(const QString& input) const {
@@ -199,83 +218,22 @@ bool QIF::deployPackage(const QHash<QString, DistroModule>::const_iterator& it,
     auto package = it.value();
 
     TemplateInfo info;
-    info.Name = PathUtils::stripPath(it.key());
-    bool fDefaultPakcage = cfg->getDefaultPackage() == info.Name;
-
-    if (fDefaultPakcage) {
-        QFileInfo targetInfo(*package.targets().begin());
-        info.Name = targetInfo.baseName();
+    if (!collectInfo(it, cfg, info)) {
+        return false;
     }
 
-    if (!package.name().isEmpty()) {
-        info.Name = package.name();
-    }
-
-    auto location = cfg->getTargetDir() + "/" + getLocation() + "/packages/" + info.Name;
-    auto locationData = location + "/data";
-    if (cfg->getDefaultPackage() != info.Name) {
-        locationData += "/" + info.Name;
-    }
-
-    info.Description = "This package contains the " + info.Name;
-    if (!package.description().isEmpty())
-        info.Description = package.description();
-
-    info.Version = "1.0";
-    if (!package.version().isEmpty())
-        info.Version = package.version();
-
-    info.ReleaseData = QDate::currentDate().toString("yyyy-MM-dd");
-    if (!package.releaseData().isEmpty())
-        info.ReleaseData = package.releaseData();
-
-    info.Icon = "icons/Icon.png";
-    if (package.icon().isEmpty()) {
-        if (!copyFile(":/Templates/QIF/Distributions/Templates/qif/Icon.png",
-                      locationData + "/icons/", false)) {
-            return false;
-        }
-    } else {
-        QFileInfo iconInfo(package.icon());
-        info.Icon = info.Name + "/icons/" + iconInfo.fileName();
-        if (!copyFile(package.icon(), locationData + "/icons/", false)) {
-            return false;
-        }
-    }
-
-    info.Publisher = "Company";
-    if (!package.publisher().isEmpty())
-        info.Publisher = package.publisher();
-
-    QString cmdArray = "[";
-    int initSize = cmdArray.size();
-    for (const auto &target :package.targets()) {
-        auto fileinfo =  QFileInfo(target);
-        if (fileinfo.suffix().compare("exe", ONLY_WIN_CASE_INSENSIATIVE) == 0 || fileinfo.suffix().isEmpty()) {
-            if (cmdArray.size() > initSize) {
-                cmdArray += ",";
-            }
-            cmdArray += "\"" + info.Name + "/" + fileinfo.fileName() + "\"";
-        }
-    }
-    cmdArray += "]";
-
-    info.Custom = {{"[\"array\", \"of\", \"cmds\"]", cmdArray},
-                   {"$LOCAL_ICON", info.Name + "/icons/" + QFileInfo(info.Icon).fileName()}};
-
-
-    if (info.Name.isEmpty()) {
-        info.Name = "Application";
-    }
+    auto localData = dataLocation(info.Name);
+    auto local = location(info.Name);
 
     if (!unpackDir(pakcagesTemplates.value(package.name(), defaultPackageTempalte),
-                   location, info, sufixes)) {
+                   local, info, sufixes)) {
         return false;
     }
 
-    if (!pkg.movePackage(it.key(), locationData)) {
+    if (!pkg.movePackage(it.key(), localData)) {
         return false;
     }
+    bool fDefaultPakcage = cfg->getDefaultPackage() == info.Name;
 
     if (fDefaultPakcage)
         generalInfo = info;
