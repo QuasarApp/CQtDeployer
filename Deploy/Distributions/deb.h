@@ -20,11 +20,17 @@ public:
     QString runCmd() override;
     QStringList runArg() const override;
     QStringList outPutFiles() const override;
+    bool cb() const override;
 
     // iDistribution interface
 protected:
     QString dataLocation(const QString &packageName) const override;
     QString location(const QString &packageName) const override;
+
+private:
+    QStringList outFiles;
+    QStringList packageFolders;
+
 };
 
 #endif // DEB_H

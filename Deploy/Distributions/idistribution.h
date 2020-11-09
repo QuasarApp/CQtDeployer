@@ -28,6 +28,8 @@ public:
     virtual QStringList runArg() const = 0;
     virtual QStringList outPutFiles() const = 0;
 
+    virtual bool cb() const;
+
     QString getClassName() const;
 
 protected:
@@ -41,7 +43,8 @@ protected:
     bool unpackDir(const QString& resource,
                    const QString& target,
                    const TemplateInfo& info,
-                   const QStringList &sufixes) const;
+                   const QStringList &sufixes,
+                   const QHash<QString, QString> &folderNewNames = {}) const;
 
     bool moveData(const QString& from, const QString& to, const QString &ignore) const;
     bool copyFile(const QString& from, const QString& to, bool isFileTarget) const;

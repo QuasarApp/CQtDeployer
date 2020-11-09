@@ -19,6 +19,10 @@ iDistribution::iDistribution(FileManager *fileManager) {
     assert(_fileManager);
 }
 
+bool iDistribution::cb() const  {
+    return true;
+}
+
 QString iDistribution::getClassName() const {
     return typeid(*this).name();
 }
@@ -78,7 +82,8 @@ bool iDistribution::unpackFile(const QFileInfo &resource,
 bool iDistribution::unpackDir(const QString &resource,
                               const QString &target,
                               const TemplateInfo &info,
-                              const QStringList &sufixes) const {
+                              const QStringList &sufixes,
+                              const QHash<QString, QString> &folderNewNames) const {
 
 
     QDir res(resource);
@@ -91,9 +96,14 @@ bool iDistribution::unpackDir(const QString &resource,
                 return false;
             }
         } else {
+            QString targetName = item.fileName();
+            if (folderNewNames.contains(targetName)) {
+                targetName = folderNewNames.value(targetName, "");
+            }
+
             if (!unpackDir(item.absoluteFilePath(),
-                           target + "/" + item.fileName(),
-                           info, sufixes)) {
+                           target + "/" + targetName,
+                           info, sufixes, folderNewNames)) {
 
                 return false;
             }

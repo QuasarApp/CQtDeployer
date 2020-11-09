@@ -23,25 +23,36 @@ bool Deb::deployTemplate(PackageControl &pkg) {
 
         if (!collectInfo(it, cfg, info)) {
             return false;
-        };
+        }
 
         auto local = location(info.Name);
+        auto localData = dataLocation(info.Name);
 
-        if (!pkg.movePackage(it.key(), local)) {
+        if (!pkg.movePackage(it.key(), localData)) {
             return false;
         }
 
-        if (!unpackDir("qrc:/Templates/DEB/Distributions/Templates/deb",
-                       local, info, {""})) {
+        QHash<QString, QString> replace = {
+            {"default", info.Name}
+        };
+
+        if (!unpackDir(":/Templates/DEB/Distributions/Templates/deb",
+                       local, info, {""}, replace)) {
             return false;
         }
+
+        outFiles.push_back(info.Name + ".deb");
+        packageFolders.push_back(local);
     }
 
     return true;
 }
 
 bool Deb::removeTemplate() const {
+    const DeployConfig *cfg = DeployCore::_config;
 
+    registerOutFiles();
+    return QDir(cfg->getTargetDir() + "/" + getLocation()).removeRecursively();
 }
 
 Envirement Deb::toolKitEnv() const {
@@ -60,15 +71,30 @@ QString Deb::runCmd() {
 }
 
 QStringList Deb::runArg() const {
-    return {"--build"};
+    return QStringList{"--build", "--verbose"} << packageFolders;
 }
 
 QStringList Deb::outPutFiles() const {
+    return outFiles;
+}
 
+bool Deb::cb() const {
+    const DeployConfig* cfg = DeployCore::_config;
+
+    QString from = cfg->getTargetDir() + "/" +  getLocation() + "/";
+    QString to = cfg->getTargetDir() + "/" +  getLocation() + "/../";
+
+    for (const QString& file : outPutFiles()) {
+        if(!moveData(from + file, to, "")) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 QString Deb::dataLocation(const QString &packageName) const {
-    return location(packageName);
+    return location(packageName) + "/opt/" + packageName;
 }
 
 QString Deb::location(const QString &packageName) const {

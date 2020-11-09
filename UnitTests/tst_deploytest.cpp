@@ -145,6 +145,9 @@ private slots:
     // zip flags
     void testZIP();
 
+    // deb flags
+    void testDEB();
+
     // qif and zip flags
     void testMultiPacking();
 
@@ -705,6 +708,63 @@ void deploytest::testZIP() {
                    "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
                    "-targetPackage", packageString,
                    "zip"}, &comapareTreeMulti, {}, true);
+}
+
+void deploytest::testDEB() {
+
+#ifdef Q_OS_UNIX
+    TestUtils utils;
+
+    auto comapareTree = utils.createTree({
+                                             "./" + DISTRO_DIR + "/TestQMLWidgets.deb",
+                                         });
+
+    auto comapareTreeMulti = utils.createTree({
+                                                  "./" + DISTRO_DIR + "/QtWidgetsProject.deb",
+                                                  "./" + DISTRO_DIR + "/package1.deb",
+                                                  "./" + DISTRO_DIR + "/package2.deb",
+
+                                              });
+
+    QString bin = TestBinDir + "TestQMLWidgets";
+    QString target1 = TestBinDir + "TestOnlyC";
+
+    QString qmake = TestQtDir + "bin/qmake";
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                   "deb", "verbose"}, &comapareTree, {}, true);
+
+    // test clear for qif
+    runTestParams({"clear", "verbose"}, {} , {}, true);
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                   "deb",
+                   "verbose"}, &comapareTree, {}, true);
+
+
+    QString target2 = TestBinDir + "TestQMLWidgets";
+    QString target3 = TestBinDir + "QtWidgetsProject";
+
+    bin = target1;
+    bin += "," + target2;
+    bin += "," + target3;
+
+    auto packageString = "/package1/;" + QFileInfo(target1).absoluteFilePath() + ",/package2/;" + QFileInfo(target2).absoluteFilePath();
+    runTestParams({"-bin", bin, "force-clear",
+                   "-binOut", "/lol",
+                   "-libOut", "/lolLib",
+                   "-trOut", "/lolTr",
+                   "-pluginOut", "/p",
+                   "-qmlOut", "/q",
+                   "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
+                   "-targetPackage", packageString,
+                   "deb"}, &comapareTreeMulti, {}, true);
+#endif
+
 }
 
 void deploytest::testMultiPacking() {

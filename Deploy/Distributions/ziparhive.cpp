@@ -26,7 +26,7 @@ bool ZipArhive::deployTemplate(PackageControl &pkg) {
 
         if (!collectInfo(it, cfg, info)) {
             return false;
-        };
+        }
 
         auto local = location(info.Name);
 
@@ -51,7 +51,6 @@ bool ZipArhive::removeTemplate() const {
     registerOutFiles();
     return QDir(cfg->getTargetDir() + "/" + getLocation()).removeRecursively();
 
-    return true;
 }
 
 Envirement ZipArhive::toolKitEnv() const {

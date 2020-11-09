@@ -20,6 +20,7 @@
 
 #include <cassert>
 
+#include <Distributions/deb.h>
 #include <Distributions/defaultdistro.h>
 #include <Distributions/qif.h>
 #include <Distributions/ziparhive.h>
@@ -1236,6 +1237,10 @@ QString ConfigParser::findWindowsPath(const QString& path) const {
 
 QList<iDistribution *> ConfigParser::getDistribution() {
     QList<iDistribution *> distros;
+    if (QuasarAppUtils::Params::isEndable("deb")) {
+        distros.push_back(new Deb(_fileManager));
+    }
+
     if (QuasarAppUtils::Params::isEndable("zip")) {
         distros.push_back(new ZipArhive(_fileManager));
     }

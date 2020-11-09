@@ -85,6 +85,10 @@ bool Packing::create() {
             }
         }
 
+        if (!package->cb()) {
+            return false;
+        }
+
         if (!restorePackagesLocations()) {
             return false;
         }
