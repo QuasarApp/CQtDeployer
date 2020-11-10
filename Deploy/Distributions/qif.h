@@ -14,9 +14,8 @@ class DEPLOYSHARED_EXPORT QIF: public iDistribution
 public:
     QIF(FileManager *fileManager);
     Envirement toolKitEnv() const override;
-    QString runCmd() override;
+    QList<SystemCommandData> runCmd() override;
     bool deployTemplate(PackageControl &pkg) override;
-    QStringList runArg() const override;
     bool removeTemplate() const override;
     QProcessEnvironment processEnvirement() const override;
     QStringList outPutFiles() const override;

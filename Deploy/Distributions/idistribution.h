@@ -13,6 +13,11 @@ class DistroModule;
 class PackageControl;
 class DeployConfig;
 
+struct SystemCommandData {
+    QString command;
+    QStringList arguments;
+};
+
 class DEPLOYSHARED_EXPORT iDistribution
 {
 public:
@@ -24,8 +29,7 @@ public:
     virtual Envirement toolKitEnv() const = 0;
     virtual QProcessEnvironment processEnvirement() const = 0;
 
-    virtual QString runCmd() = 0;
-    virtual QStringList runArg() const = 0;
+    virtual QList<SystemCommandData> runCmd() = 0;
     virtual QStringList outPutFiles() const = 0;
 
     virtual bool cb() const;

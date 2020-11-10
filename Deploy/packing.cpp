@@ -47,19 +47,22 @@ bool Packing::create() {
         if (!package->deployTemplate(*this))
             return false;
 
-        if (package->runCmd().size()) {
+        auto commands = package->runCmd();
+
+        for (const auto& cmd: commands) {
             const DeployConfig *cfg = DeployCore::_config;
 
-            QFileInfo cmdInfo(package->runCmd());
+
+            QFileInfo cmdInfo(cmd.command);
 
             auto allExecRight =  QFile::ExeUser | QFile::ExeGroup | QFile::ExeOwner;
             if (!cmdInfo.permission(allExecRight)) {
                 QFile::setPermissions(cmdInfo.absoluteFilePath(), cmdInfo.permissions() | allExecRight);
             }
 
-            _proc->setProgram(package->runCmd());
+            _proc->setProgram(cmd.command);
             _proc->setProcessEnvironment(_proc->processEnvironment());
-            _proc->setArguments(package->runArg());
+            _proc->setArguments(cmd.arguments);
             _proc->setWorkingDirectory(cfg->getTargetDir());
 
             _proc->start();

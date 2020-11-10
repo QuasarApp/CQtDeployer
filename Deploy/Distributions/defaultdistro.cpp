@@ -38,11 +38,7 @@ Envirement DefaultDistro::toolKitEnv() const {
     return {};
 }
 
-QString DefaultDistro::runCmd() {
-    return "";
-}
-
-QStringList DefaultDistro::runArg() const {
+QList<SystemCommandData> DefaultDistro::runCmd() {
     return {};
 }
 

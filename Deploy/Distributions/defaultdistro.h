@@ -11,8 +11,7 @@ public:
     QString getConfig() const ;
     bool deployTemplate(PackageControl &pkg) override;
     Envirement toolKitEnv() const override;
-    QString runCmd() override;
-    QStringList runArg() const override;
+    QList<SystemCommandData> runCmd() override;
     bool removeTemplate() const override;
     QProcessEnvironment processEnvirement() const override;
 

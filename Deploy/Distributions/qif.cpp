@@ -53,16 +53,32 @@ Envirement QIF::toolKitEnv() const {
     return result;
 }
 
-QString QIF::runCmd() {
+QList<SystemCommandData> QIF::runCmd() {
     QString base = "binarycreator";
+
+    SystemCommandData cmd;
 
     if (binarycreator.isEmpty())
         binarycreator = DeployCore::findProcess(toolKitEnv().concatEnv(), base);
 
-    if (binarycreator.isEmpty())
-        return base;
+    if (binarycreator.isEmpty()) {
+        cmd.command = base;
+    } else {
+        cmd.command = binarycreator;
+    }
 
-    return binarycreator;
+    auto location = DeployCore::_config->getTargetDir() + "/" + getLocation();
+
+    cmd.arguments = QStringList{
+        "-c",
+        location + "/config/config.xml",
+        "-p",
+        location + "/packages/",
+        "-v",
+        installerFile()
+    };
+
+    return {cmd};
 }
 
 bool QIF::deployTemplate(PackageControl &pkg) {
@@ -129,20 +145,6 @@ bool QIF::deployTemplate(PackageControl &pkg) {
     }
 
     return true;
-}
-
-QStringList QIF::runArg() const {
-
-    auto location = DeployCore::_config->getTargetDir() + "/" + getLocation();
-
-    return {
-        "-c",
-        location + "/config/config.xml",
-        "-p",
-        location + "/packages/",
-        "-v",
-        installerFile()
-    };
 }
 
 bool QIF::removeTemplate() const {

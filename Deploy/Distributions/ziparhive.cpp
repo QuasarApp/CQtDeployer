@@ -61,18 +61,13 @@ QProcessEnvironment ZipArhive::processEnvirement() const {
     return QProcessEnvironment::systemEnvironment();
 }
 
-QString ZipArhive::runCmd() {
-    return "";
-}
-
-QStringList ZipArhive::runArg() const {
+QList<SystemCommandData> ZipArhive::runCmd() {
     return {};
 }
 
 QStringList ZipArhive::outPutFiles() const {
     return outFiles;
 }
-
 
 QString ZipArhive::dataLocation(const QString &packageName) const {
     return location(packageName);

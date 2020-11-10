@@ -66,12 +66,13 @@ QProcessEnvironment Deb::processEnvirement() const {
     return QProcessEnvironment::systemEnvironment();
 }
 
-QString Deb::runCmd() {
-    return "dpkg-deb";
-}
+QList<SystemCommandData> Deb::runCmd() {
+    QList<SystemCommandData> res;
+    for (const auto& dir: packageFolders) {
+        res.push_back({"dpkg-deb", QStringList{"--build", "--verbose"} << dir});
+    }
 
-QStringList Deb::runArg() const {
-    return QStringList{"--build", "--verbose"} << packageFolders;
+    return res;
 }
 
 QStringList Deb::outPutFiles() const {

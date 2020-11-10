@@ -16,8 +16,7 @@ public:
     bool removeTemplate() const override;
     Envirement toolKitEnv() const override;
     QProcessEnvironment processEnvirement() const override;
-    QString runCmd() override;
-    QStringList runArg() const override;
+    QList<SystemCommandData> runCmd() override;
     QStringList outPutFiles() const override;
 
     // iDistribution interface

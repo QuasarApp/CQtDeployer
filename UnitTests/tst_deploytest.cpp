@@ -774,6 +774,7 @@ void deploytest::testMultiPacking() {
 
     auto comapareTree = utils.createTree({
                                              "./" + DISTRO_DIR + "/TestQMLWidgets.zip",
+                                             "./" + DISTRO_DIR + "/TestQMLWidgets.deb",
                                              "./" + DISTRO_DIR + "/InstallerTestQMLWidgets.run",
                                          });
 
@@ -781,6 +782,14 @@ void deploytest::testMultiPacking() {
     QString target1 = TestBinDir + "TestOnlyC";
 
     QString qmake = TestQtDir + "bin/qmake";
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                   "zip",
+                   "qif", "qifFromSystem",
+                   "deb",
+                   "verbose"}, &comapareTree, {}, true);
 
 #else
     auto comapareTree = utils.createTree({
@@ -792,14 +801,14 @@ void deploytest::testMultiPacking() {
 
     QString qmake = TestQtDir + "bin/qmake.exe";
 
-#endif
-
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
                    "zip",
                    "qif", "qifFromSystem",
                    "verbose"}, &comapareTree, {}, true);
+
+#endif
 }
 
 void deploytest::testInit()
