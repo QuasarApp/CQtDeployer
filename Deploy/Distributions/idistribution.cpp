@@ -143,12 +143,13 @@ void iDistribution::registerOutFiles() const {
 bool iDistribution::collectInfo(
         const QHash<QString, DistroModule>::const_iterator& it,
         const DeployConfig * cfg,
-        TemplateInfo &info) {
+        TemplateInfo &info,
+        bool &fDefaultPakcage) {
 
     auto package = it.value();
 
     info.Name = PathUtils::stripPath(it.key());
-    bool fDefaultPakcage = cfg->getDefaultPackage() == info.Name;
+    fDefaultPakcage = cfg->getDefaultPackage() == info.Name;
 
     if (fDefaultPakcage) {
         QFileInfo targetInfo(*package.targets().begin());

@@ -20,8 +20,8 @@ bool Deb::deployTemplate(PackageControl &pkg) {
         auto package = it.value();
 
         TemplateInfo info;
-
-        if (!collectInfo(it, cfg, info)) {
+        bool fDefaultPakcage;
+        if (!collectInfo(it, cfg, info, fDefaultPakcage)) {
             return false;
         }
 

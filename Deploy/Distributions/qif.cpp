@@ -220,7 +220,8 @@ bool QIF::deployPackage(const QHash<QString, DistroModule>::const_iterator& it,
     auto package = it.value();
 
     TemplateInfo info;
-    if (!collectInfo(it, cfg, info)) {
+    bool fDefaultPakcage;
+    if (!collectInfo(it, cfg, info, fDefaultPakcage)) {
         return false;
     }
 
@@ -235,7 +236,6 @@ bool QIF::deployPackage(const QHash<QString, DistroModule>::const_iterator& it,
     if (!pkg.movePackage(it.key(), localData)) {
         return false;
     }
-    bool fDefaultPakcage = cfg->getDefaultPackage() == info.Name;
 
     if (fDefaultPakcage)
         generalInfo = info;

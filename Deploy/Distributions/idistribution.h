@@ -61,11 +61,14 @@ protected:
      * @param it This is iterator of package.
      * @param cfg This is pointer to config.
      * @param info This is return value (created template information)
+     * @param fDefaultPakcage This is return value
+     * (return true if package that collected information is a default package)
      * @return true if information collected successful.
      */
     bool collectInfo(const QHash<QString, DistroModule>::const_iterator &it,
                      const DeployConfig *cfg,
-                     TemplateInfo& info);
+                     TemplateInfo& info,
+                     bool &fDefaultPakcage);
 
     /**
      * @brief dataLocation This method should be retrun location of application or package files.
