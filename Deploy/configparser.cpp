@@ -361,6 +361,9 @@ bool ConfigParser::initDistroStruct() {
     auto publisher = QuasarAppUtils::Params::getStrArg("publisher").
             split(DeployCore::getSeparator(0), splitbehavior);
 
+    auto homepage = QuasarAppUtils::Params::getStrArg("homepage").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
     auto erroLog = [](const QString &flag){
             QuasarAppUtils::Params::log(QString("Set %0 fail, because you try set %0 for not inited package."
                                                " Use 'targetPackage' flag for init the packages").arg(flag),
@@ -425,6 +428,11 @@ bool ConfigParser::initDistroStruct() {
 
     if (publisher.size() && !parsePackagesPrivate(mainDistro, publisher, &DistroModule::setPublisher)) {
         erroLog("Publisher");
+        return false;
+    }
+
+    if (publisher.size() && !parsePackagesPrivate(mainDistro, homepage, &DistroModule::setHomePage)) {
+        erroLog("HomePage");
         return false;
     }
 

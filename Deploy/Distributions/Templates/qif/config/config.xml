@@ -10,4 +10,5 @@
     <RemoveTargetDir>true</RemoveTargetDir>
     <ControlScript>controlScript.qs</ControlScript>
     <MaintenanceToolName>$NAMETool</MaintenanceToolName>
+    <ProductUrl>$HOMEPAGE</ProductUrl>
 </Installer>

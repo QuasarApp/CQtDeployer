@@ -1,6 +1,6 @@
 Package: $NAME
 Priority: optional
-Maintainer: $MAINTAINER
+Maintainer: $PUBLISHER
 Version: $VERSION
 Homepage: $HOMEPAGE
 Architecture: all

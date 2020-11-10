@@ -166,6 +166,9 @@ bool iDistribution::collectInfo(
     if (!package.description().isEmpty())
         info.Description = package.description();
 
+    if (!package.homePage().isEmpty())
+        info.Homepage = package.homePage();
+
     info.Version = "1.0";
     if (!package.version().isEmpty())
         info.Version = package.version();
@@ -176,7 +179,7 @@ bool iDistribution::collectInfo(
 
     info.Icon = "icons/Icon.png";
     if (package.icon().isEmpty()) {
-        if (!copyFile(":/Templates/QIF/Distributions/Templates/qif/Icon.png",
+        if (!copyFile(":/Templates/QIF/Distributions/Templates/Icon.png",
                       localData + "/icons/", false)) {
             return false;
         }
@@ -193,20 +196,26 @@ bool iDistribution::collectInfo(
         info.Publisher = package.publisher();
 
     QString cmdArray = "[";
+    QString bashArray = "";
+
     int initSize = cmdArray.size();
     for (const auto &target :package.targets()) {
         auto fileinfo =  QFileInfo(target);
         if (fileinfo.suffix().compare("exe", ONLY_WIN_CASE_INSENSIATIVE) == 0 || fileinfo.suffix().isEmpty()) {
             if (cmdArray.size() > initSize) {
                 cmdArray += ",";
+                bashArray += " ";
             }
             cmdArray += "\"" + info.Name + "/" + fileinfo.fileName() + "\"";
+            bashArray += fileinfo.fileName();
         }
     }
     cmdArray += "]";
 
     info.Custom = {{"[\"array\", \"of\", \"cmds\"]", cmdArray},
                    {"$LOCAL_ICON", info.Name + "/icons/" + QFileInfo(info.Icon).fileName()}};
+
+    info.Custom["$BASH_ARRAY_APPLICATIONS"] = bashArray;
 
 
     if (info.Name.isEmpty()) {

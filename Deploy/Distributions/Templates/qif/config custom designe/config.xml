@@ -16,4 +16,6 @@
     <StyleSheet>style.css</StyleSheet>
     <Banner>banner.png</Banner>
     <Logo>logo.png</Logo>
+    <ProductUrl>$HOMEPAGE</ProductUrl>
+
 </Installer>

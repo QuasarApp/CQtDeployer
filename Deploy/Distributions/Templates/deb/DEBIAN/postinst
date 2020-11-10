@@ -1,8 +1,8 @@
 #!/bin/bash
 
-APPS=["array", "of", "cmds"]
+APPS=$BASH_ARRAY_APPLICATIONS
 
-TARGET_DIR=/opt/$APPNAME/
+TARGET_DIR=/opt/$NAME/
 
 #creating shortcut
 DEST_FILE=
@@ -16,26 +16,32 @@ function createShortCut {
 
     if test -f $DEST_FILE; then
         echo "[Desktop Entry]" >> $DEST_FILE
+        echo "Version=$VERSION" >> $DEST_FILE
         echo "Encoding=UTF-8" >> $DEST_FILE
         echo "Name=$DEST_NAME" >> $DEST_FILE
         echo "Type=Application" >> $DEST_FILE
-        echo "Icon=$TARGET_DIR/Icon.png" >> $DEST_FILE
+        echo "Icon=$TARGET_DIR/icons/Icon.png" >> $DEST_FILE
         echo "Terminal=false" >> $DEST_FILE
         echo "Exec=$SRC_FILE" >> $DEST_FILE
 
-        chmod +x $DEST_FILE
+        chmod 775 $DEST_FILE
     fi
 }
 
+echo "Available commands:"
 
 for app in "${APPS[@]}"
 do
-    echo "$app"
     
     DEST_NAME=$app
+
     SRC_FILE="$TARGET_DIR/$app.sh"
-    DEST_FILE="/usr/share/applications/$DEST_NAME.desktop"
+    DEST_FILE="/usr/share/applications/$app.desktop"
     createShortCut
+
+    ln -s "$TARGET_DIR/$app.sh" /usr/bin/"${app,,}"
+
+    echo "${app,,}"
 done
 
 
