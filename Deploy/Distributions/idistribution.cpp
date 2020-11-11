@@ -179,7 +179,7 @@ bool iDistribution::collectInfo(
 
     info.Icon = "icons/Icon.png";
     if (package.icon().isEmpty()) {
-        if (!copyFile(":/shared/Distributions/Templates/Icon.png",
+        if (!copyFile(":/Templates/QIF/Distributions/Templates/Icon.png",
                       localData + "/icons/", false)) {
             return false;
         }

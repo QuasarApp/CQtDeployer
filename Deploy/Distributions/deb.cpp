@@ -3,7 +3,7 @@
 #include <deployconfig.h>
 #include <pathutils.h>
 #include <packagecontrol.h>
-#include <QProcess>
+#include <quasarapp.h>
 
 Deb::Deb(FileManager *fileManager):
     iDistribution(fileManager)
@@ -18,6 +18,21 @@ bool Deb::deployTemplate(PackageControl &pkg) {
     for (auto it = cfg->packages().begin();
          it != cfg->packages().end(); ++it) {
         auto package = it.value();
+
+        QString defaultPackageTempalte = ":/Templates/DEB/Distributions/Templates/deb";
+        auto customTemplate = QuasarAppUtils::Params::getStrArg("deb", "");
+        QHash<QString, QString> pakcagesTemplates;
+
+        if (!customTemplate.isEmpty()) {
+            QuasarAppUtils::Params::log("Using custom template for installer: " + customTemplate,
+                                        QuasarAppUtils::Info);
+
+            auto availablePacakages = QDir(customTemplate).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+            for (const auto& pkg: availablePacakages) {
+                pakcagesTemplates.insert(pkg.fileName(), pkg.absoluteFilePath());
+            }
+        }
 
         TemplateInfo info;
         bool fDefaultPakcage;
@@ -36,7 +51,7 @@ bool Deb::deployTemplate(PackageControl &pkg) {
             {"default", info.Name}
         };
 
-        if (!unpackDir(":/Templates/DEB/Distributions/Templates/deb",
+        if (!unpackDir(pakcagesTemplates.value(info.Name, defaultPackageTempalte),
                        local, info, {""}, replace)) {
             return false;
         }

@@ -141,12 +141,14 @@ private slots:
 
     // qif flags
     void testQIF();
+    void testQIFCustom();
 
     // zip flags
     void testZIP();
 
     // deb flags
     void testDEB();
+    void testDEBCustom();
 
     // qif and zip flags
     void testMultiPacking();
@@ -577,9 +579,6 @@ void deploytest::testQIF() {
                                                   "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.run",
                                               });
 
-    auto comapareTreeCustom = utils.createTree({
-                                                  "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.run",
-                                              });
 #else
     QString bin = TestBinDir + "TestQMLWidgets.exe";
     QString target1 = TestBinDir + "TestOnlyC.exe";
@@ -591,20 +590,8 @@ void deploytest::testQIF() {
     auto comapareTreeMulti = utils.createTree({
                                                   "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.exe",
                                               });
-    auto comapareTreeCustom = utils.createTree({
-                                                  "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.exe",
-                                              });
 
 #endif
-    runTestParams({"-bin", bin, "clear" ,
-                   "-qmake", qmake,
-                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
-                   "-qif", TestBinDir + "/../../UnitTests/testRes/QIFCustomTemplate",
-                   "-name", "org.qtproject.ifw.example.stylesheet",
-                   "qifFromSystem"}, &comapareTreeCustom, {}, true);
-
-    // test clear for qif
-    runTestParams({"clear"}, {} , {}, true);
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
@@ -641,6 +628,35 @@ void deploytest::testQIF() {
 
 }
 
+void deploytest::testQIFCustom() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestQMLWidgets";
+
+    QString qmake = TestQtDir + "bin/qmake";
+
+    auto comapareTreeCustom = utils.createTree({
+                                                  "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.run",
+                                              });
+#else
+    QString bin = TestBinDir + "TestQMLWidgets.exe";
+
+    QString qmake = TestQtDir + "bin/qmake.exe";
+    auto comapareTreeCustom = utils.createTree({
+                                                  "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.exe",
+                                              });
+
+#endif
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                   "-qif", TestBinDir + "/../../UnitTests/testRes/QIFCustomTemplate",
+                   "-name", "org.qtproject.ifw.example.stylesheet",
+                   "qifFromSystem"}, &comapareTreeCustom, {}, true);
+}
+
 void deploytest::testZIP() {
 
     TestUtils utils;
@@ -675,14 +691,9 @@ void deploytest::testZIP() {
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
                    "zip", "verbose"}, &comapareTree, {}, true);
 
-    // test clear for qif
-    runTestParams({"clear", "verbose"}, {} , {}, true);
 
-    runTestParams({"-bin", bin, "clear" ,
-                   "-qmake", qmake,
-                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
-                   "zip",
-                   "verbose"}, &comapareTree, {}, true);
+    // test clear for zip
+    runTestParams({"clear", "verbose"}, {} , {}, true);
 
 
 #ifdef Q_OS_UNIX
@@ -736,14 +747,8 @@ void deploytest::testDEB() {
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
                    "deb", "verbose"}, &comapareTree, {}, true);
 
-    // test clear for qif
+    // test clear for deb
     runTestParams({"clear", "verbose"}, {} , {}, true);
-
-    runTestParams({"-bin", bin, "clear" ,
-                   "-qmake", qmake,
-                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
-                   "deb",
-                   "verbose"}, &comapareTree, {}, true);
 
 
     QString target2 = TestBinDir + "TestQMLWidgets";
@@ -765,6 +770,25 @@ void deploytest::testDEB() {
                    "deb"}, &comapareTreeMulti, {}, true);
 #endif
 
+}
+
+void deploytest::testDEBCustom() {
+    TestUtils utils;
+
+    QString bin = TestBinDir + "TestQMLWidgets";
+
+    QString qmake = TestQtDir + "bin/qmake";
+
+    auto comapareTreeCustom = utils.createTree({
+                                                  "./" + DISTRO_DIR + "/chrome.deb",
+                                              });
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                   "-deb", TestBinDir + "/../../UnitTests/testRes/DEBCustomTemplate",
+                   "-name", "chrome"},
+                  &comapareTreeCustom, {}, true);
 }
 
 void deploytest::testMultiPacking() {
