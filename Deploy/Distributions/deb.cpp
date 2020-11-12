@@ -56,6 +56,10 @@ bool Deb::deployTemplate(PackageControl &pkg) {
             return false;
         }
 
+        if (!QFile::setPermissions(local +  "/DEBIAN",  static_cast<QFile::Permission>(0x7775))) {
+            QuasarAppUtils::Params::log("permishens set fail", QuasarAppUtils::Warning);
+        }
+
         outFiles.push_back(info.Name + ".deb");
         packageFolders.push_back(local);
     }
