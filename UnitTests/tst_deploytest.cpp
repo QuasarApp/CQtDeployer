@@ -773,6 +773,8 @@ void deploytest::testDEB() {
 }
 
 void deploytest::testDEBCustom() {
+#ifdef Q_OS_UNIX
+
     TestUtils utils;
 
     QString bin = TestBinDir + "TestQMLWidgets";
@@ -789,6 +791,7 @@ void deploytest::testDEBCustom() {
                    "-deb", TestBinDir + "/../../UnitTests/testRes/DEBCustomTemplate",
                    "-name", "chrome"},
                   &comapareTreeCustom, {}, true);
+#endif
 }
 
 void deploytest::testMultiPacking() {
@@ -847,11 +850,16 @@ void deploytest::testInit()
 
     runTestParams({"-init", "multi"});
 
-    QFile::copy("UnitTests", "TestQMLWidgets");
+#ifdef Q_OS_UNIX
+    auto targetName = "UnitTests";
+#else
+    auto targetName = "UnitTests.exe";
+#endif
+    QFile::copy(targetName, "TestQMLWidgets");
 
     runTestParams({});
 
-    QFile::remove("TestQMLWidgets");
+    QFile::remove(targetName);
 
 
     QVERIFY(QFile(DEFAULT_COFIGURATION_FILE).remove());
