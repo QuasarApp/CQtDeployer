@@ -72,6 +72,8 @@ bool Packing::create() {
             }
 
             if (!_proc->waitForFinished(-1)) {
+                QuasarAppUtils::Params::log(_proc->errorString(), QuasarAppUtils::Error);
+
                 return false;
             }
 
