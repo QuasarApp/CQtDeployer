@@ -455,6 +455,14 @@ bool ConfigParser::initPackages() {
 
             auto list = _config.getTargetsListByFilter(pair.value(1, ""));
 
+            if (!list.size()) {
+                auto warning = QString("You create the %0 package with the %1 pattern, "
+                                       "but no matches were found for this pattern. ").
+                        arg(package, pair.value(1, ""));
+                QuasarAppUtils::Params::log(warning, QuasarAppUtils::Warning);
+                continue;
+            }
+
             for (auto it = list.begin(); it != list.end(); ++it) {
                 if (!configuredTargets.contains(it.key())) {
                     configuredTargets.insert(it.key());
@@ -475,14 +483,19 @@ bool ConfigParser::initPackages() {
     }
 
     // init default packages
+    bool fdefaultPackage = false;
     for (auto it = _config.targetsEdit().begin(); it != _config.targetsEdit().end(); ++it) {
         if (!configuredTargets.contains(it.key())) {
             configuredTargets.insert(it.key());
             it.value().setPackage(defaultPackage);
+            fdefaultPackage = true;
         }
     }
-    _config.packagesEdit().insert(defaultPackage, {});
-    _config.setDefaultPackage(defaultPackage);
+
+    if (fdefaultPackage) {
+        _config.packagesEdit().insert(defaultPackage, {});
+        _config.setDefaultPackage(defaultPackage);
+    }
 
     return true;
 }

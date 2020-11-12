@@ -846,7 +846,13 @@ void deploytest::testInit()
     QVERIFY(QFile(DEFAULT_COFIGURATION_FILE).remove());
 
     runTestParams({"-init", "multi"});
+
+    QFile::copy("UnitTests", "TestQMLWidgets");
+
     runTestParams({});
+
+    QFile::remove("TestQMLWidgets");
+
 
     QVERIFY(QFile(DEFAULT_COFIGURATION_FILE).remove());
 
