@@ -131,3 +131,11 @@ void DistroModule::addExtraPlugins(const QString &extraPlugin) {
     _extraPlugins += DeployCore::transportPathToSnapRoot(extraPlugin);
 
 }
+
+QString DistroModule::homePage() const {
+    return _homePage;
+}
+
+void DistroModule::setHomePage(const QString &homePage) {
+    _homePage = homePage;
+}

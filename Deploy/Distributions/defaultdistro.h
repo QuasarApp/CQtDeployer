@@ -8,17 +8,19 @@ class DEPLOYSHARED_EXPORT DefaultDistro : public iDistribution
 public:
     DefaultDistro(FileManager *);
 
-    // iDistribution interface
-public:
     QString getConfig() const ;
     bool deployTemplate(PackageControl &pkg) override;
     Envirement toolKitEnv() const override;
-    QString runCmd() override;
-    QStringList runArg() const override;
+    QList<SystemCommandData> runCmd() override;
     bool removeTemplate() const override;
     QProcessEnvironment processEnvirement() const override;
 
     QStringList outPutFiles() const override;
+
+    // iDistribution interface
+protected:
+    QString dataLocation(const QString &packageName) const override;
+    QString location(const QString &packageName) const override;
 };
 
 #endif // DEFAULTDISTRO_H
