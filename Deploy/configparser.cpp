@@ -20,6 +20,7 @@
 
 #include <cassert>
 
+#include <Distributions/deb.h>
 #include <Distributions/defaultdistro.h>
 #include <Distributions/qif.h>
 #include <Distributions/ziparhive.h>
@@ -360,6 +361,9 @@ bool ConfigParser::initDistroStruct() {
     auto publisher = QuasarAppUtils::Params::getStrArg("publisher").
             split(DeployCore::getSeparator(0), splitbehavior);
 
+    auto homepage = QuasarAppUtils::Params::getStrArg("homepage").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
     auto erroLog = [](const QString &flag){
             QuasarAppUtils::Params::log(QString("Set %0 fail, because you try set %0 for not inited package."
                                                " Use 'targetPackage' flag for init the packages").arg(flag),
@@ -427,6 +431,11 @@ bool ConfigParser::initDistroStruct() {
         return false;
     }
 
+    if (publisher.size() && !parsePackagesPrivate(mainDistro, homepage, &DistroModule::setHomePage)) {
+        erroLog("HomePage");
+        return false;
+    }
+
     return true;
 }
 
@@ -445,6 +454,14 @@ bool ConfigParser::initPackages() {
             auto package = PathUtils::fullStripPath(pair.value(0, ""));
 
             auto list = _config.getTargetsListByFilter(pair.value(1, ""));
+
+            if (!list.size()) {
+                auto warning = QString("You create the %0 package with the %1 pattern, "
+                                       "but no matches were found for this pattern. ").
+                        arg(package, pair.value(1, ""));
+                QuasarAppUtils::Params::log(warning, QuasarAppUtils::Warning);
+                continue;
+            }
 
             for (auto it = list.begin(); it != list.end(); ++it) {
                 if (!configuredTargets.contains(it.key())) {
@@ -466,14 +483,19 @@ bool ConfigParser::initPackages() {
     }
 
     // init default packages
+    bool fdefaultPackage = false;
     for (auto it = _config.targetsEdit().begin(); it != _config.targetsEdit().end(); ++it) {
         if (!configuredTargets.contains(it.key())) {
             configuredTargets.insert(it.key());
             it.value().setPackage(defaultPackage);
+            fdefaultPackage = true;
         }
     }
-    _config.packagesEdit().insert(defaultPackage, {});
-    _config.setDefaultPackage(defaultPackage);
+
+    if (fdefaultPackage) {
+        _config.packagesEdit().insert(defaultPackage, {});
+        _config.setDefaultPackage(defaultPackage);
+    }
 
     return true;
 }
@@ -1236,6 +1258,10 @@ QString ConfigParser::findWindowsPath(const QString& path) const {
 
 QList<iDistribution *> ConfigParser::getDistribution() {
     QList<iDistribution *> distros;
+    if (QuasarAppUtils::Params::isEndable("deb")) {
+        distros.push_back(new Deb(_fileManager));
+    }
+
     if (QuasarAppUtils::Params::isEndable("zip")) {
         distros.push_back(new ZipArhive(_fileManager));
     }

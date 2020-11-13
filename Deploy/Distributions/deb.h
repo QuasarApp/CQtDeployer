@@ -1,32 +1,35 @@
-#ifndef ZIPARHIVE_H
-#define ZIPARHIVE_H
+#ifndef DEB_H
+#define DEB_H
+
 #include "idistribution.h"
 
 /**
- * @brief The ZipArhive class provide interface for reate final zip arhive
+ * @brief The deb class contains methods for create a debian pacakge.
  */
-class DEPLOYSHARED_EXPORT ZipArhive: public iDistribution
+class DEPLOYSHARED_EXPORT Deb: public iDistribution
 {
 public:
-    ZipArhive(FileManager *fileManager);
+    Deb(FileManager *fileManager);
 
     // iDistribution interface
 public:
-    bool deployTemplate(PackageControl &pkg) override;
+    bool deployTemplate(PackageControl &pkgCtrl) override;
     bool removeTemplate() const override;
     Envirement toolKitEnv() const override;
     QProcessEnvironment processEnvirement() const override;
     QList<SystemCommandData> runCmd() override;
     QStringList outPutFiles() const override;
+    bool cb() const override;
 
     // iDistribution interface
 protected:
     QString dataLocation(const QString &packageName) const override;
     QString location(const QString &packageName) const override;
+
 private:
     QStringList outFiles;
-
+    QStringList packageFolders;
 
 };
 
-#endif // ZIPARHIVE_H
+#endif // DEB_H

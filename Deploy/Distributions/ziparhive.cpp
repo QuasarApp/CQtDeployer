@@ -23,26 +23,19 @@ bool ZipArhive::deployTemplate(PackageControl &pkg) {
         auto package = it.value();
 
         TemplateInfo info;
-        info.Name = PathUtils::stripPath(it.key());
-        bool fDefaultPakcage = cfg->getDefaultPackage() == info.Name;
-
-        if (fDefaultPakcage) {
-            QFileInfo targetInfo(*package.targets().begin());
-            info.Name = targetInfo.baseName();
+        bool fDefaultPakcage;
+        if (!collectInfo(it, cfg, info, fDefaultPakcage)) {
+            return false;
         }
 
-        if (!package.name().isEmpty()) {
-            info.Name = package.name();
-        }
+        auto local = location(info.Name);
 
-        auto location = cfg->getTargetDir() + "/" + getLocation() + "/" + info.Name;
-
-        if (!pkg.movePackage(it.key(), location)) {
+        if (!pkg.movePackage(it.key(), local)) {
             return false;
         }
 
         auto arr = cfg->getTargetDir() + "/" + info.Name + ".zip";
-        if (!zipWorker.compress(location, arr)) {
+        if (!zipWorker.compress(local, arr)) {
                 return false;
         }
 
@@ -58,7 +51,6 @@ bool ZipArhive::removeTemplate() const {
     registerOutFiles();
     return QDir(cfg->getTargetDir() + "/" + getLocation()).removeRecursively();
 
-    return true;
 }
 
 Envirement ZipArhive::toolKitEnv() const {
@@ -69,11 +61,7 @@ QProcessEnvironment ZipArhive::processEnvirement() const {
     return QProcessEnvironment::systemEnvironment();
 }
 
-QString ZipArhive::runCmd() {
-    return "";
-}
-
-QStringList ZipArhive::runArg() const {
+QList<SystemCommandData> ZipArhive::runCmd() {
     return {};
 }
 
@@ -81,3 +69,12 @@ QStringList ZipArhive::outPutFiles() const {
     return outFiles;
 }
 
+QString ZipArhive::dataLocation(const QString &packageName) const {
+    return location(packageName);
+}
+
+QString ZipArhive::location(const QString &packageName) const {
+    const DeployConfig *cfg = DeployCore::_config;
+
+    return cfg->getTargetDir() + "/" + getLocation() + "/" + packageName;
+}

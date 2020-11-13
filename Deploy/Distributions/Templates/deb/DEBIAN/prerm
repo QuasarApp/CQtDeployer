@@ -1,0 +1,14 @@
+#!/bin/bash
+
+APPS=$BASH_ARRAY_APPLICATIONS
+
+for app in "${APPS[@]}"
+do
+
+    SRC_FILE="$TARGET_DIR/$app.sh"
+    rm "/usr/share/applications/$app.desktop"
+
+    rm /usr/bin/"${app,,}"
+
+    echo "Remove ${app,,}"
+done

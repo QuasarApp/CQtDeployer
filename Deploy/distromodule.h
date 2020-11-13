@@ -48,6 +48,9 @@ public:
     void setExtraPlugins(const QSet<QString> &extraPlugins);
     void addExtraPlugins(const QString &extraPlugin);
 
+    QString homePage() const;
+    void setHomePage(const QString &homePage);
+
 private:
     QString _name;
     QString _description;
@@ -55,6 +58,7 @@ private:
     QString _releaseData;
     QString _icon;
     QString _publisher;
+    QString _homePage;
 
     QSet<QString> _targets;
     QSet<QString> _qmlInput;

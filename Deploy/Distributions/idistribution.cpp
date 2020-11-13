@@ -7,7 +7,9 @@
 #include <filemanager.h>
 #include "deploycore.h"
 #include "pathutils.h"
+#include <QDate>
 #include <QMap>
+#include <deployconfig.h>
 #include <distromodule.h>
 
 iDistribution::~iDistribution() = default;
@@ -15,6 +17,10 @@ iDistribution::~iDistribution() = default;
 iDistribution::iDistribution(FileManager *fileManager) {
     _fileManager = fileManager;
     assert(_fileManager);
+}
+
+bool iDistribution::cb() const  {
+    return true;
 }
 
 QString iDistribution::getClassName() const {
@@ -76,7 +82,8 @@ bool iDistribution::unpackFile(const QFileInfo &resource,
 bool iDistribution::unpackDir(const QString &resource,
                               const QString &target,
                               const TemplateInfo &info,
-                              const QStringList &sufixes) const {
+                              const QStringList &sufixes,
+                              const QHash<QString, QString> &folderNewNames) const {
 
 
     QDir res(resource);
@@ -89,9 +96,14 @@ bool iDistribution::unpackDir(const QString &resource,
                 return false;
             }
         } else {
+            QString targetName = item.fileName();
+            if (folderNewNames.contains(targetName)) {
+                targetName = folderNewNames.value(targetName, "");
+            }
+
             if (!unpackDir(item.absoluteFilePath(),
-                           target + "/" + item.fileName(),
-                           info, sufixes)) {
+                           target + "/" + targetName,
+                           info, sufixes, folderNewNames)) {
 
                 return false;
             }
@@ -126,6 +138,91 @@ void iDistribution::registerOutFiles() const {
     for (const auto& i : files) {
         _fileManager->addToDeployed(i);
     }
+}
+
+bool iDistribution::collectInfo(
+        const QHash<QString, DistroModule>::const_iterator& it,
+        const DeployConfig * cfg,
+        TemplateInfo &info,
+        bool &fDefaultPakcage) {
+
+    auto package = it.value();
+
+    info.Name = PathUtils::stripPath(it.key());
+    fDefaultPakcage = cfg->getDefaultPackage() == info.Name;
+
+    if (fDefaultPakcage) {
+        QFileInfo targetInfo(*package.targets().begin());
+        info.Name = targetInfo.baseName();
+    }
+
+    if (!package.name().isEmpty()) {
+        info.Name = package.name();
+    }
+
+    auto localData = dataLocation(info.Name);
+
+    info.Description = "This package contains the " + info.Name;
+    if (!package.description().isEmpty())
+        info.Description = package.description();
+
+    if (!package.homePage().isEmpty())
+        info.Homepage = package.homePage();
+
+    info.Version = "1.0";
+    if (!package.version().isEmpty())
+        info.Version = package.version();
+
+    info.ReleaseData = QDate::currentDate().toString("yyyy-MM-dd");
+    if (!package.releaseData().isEmpty())
+        info.ReleaseData = package.releaseData();
+
+    info.Icon = "icons/Icon.png";
+    if (package.icon().isEmpty()) {
+        if (!copyFile(":/Templates/QIF/Distributions/Templates/Icon.png",
+                      localData + "/icons/", false)) {
+            return false;
+        }
+    } else {
+        QFileInfo iconInfo(package.icon());
+        info.Icon = info.Name + "/icons/" + iconInfo.fileName();
+        if (!copyFile(package.icon(), localData + "/icons/", false)) {
+            return false;
+        }
+    }
+
+    info.Publisher = "Company";
+    if (!package.publisher().isEmpty())
+        info.Publisher = package.publisher();
+
+    QString cmdArray = "[";
+    QString bashArray = "";
+
+    int initSize = cmdArray.size();
+    for (const auto &target :package.targets()) {
+        auto fileinfo =  QFileInfo(target);
+        if (fileinfo.suffix().compare("exe", ONLY_WIN_CASE_INSENSIATIVE) == 0 || fileinfo.suffix().isEmpty()) {
+            if (cmdArray.size() > initSize) {
+                cmdArray += ",";
+                bashArray += " ";
+            }
+            cmdArray += "\"" + info.Name + "/" + fileinfo.fileName() + "\"";
+            bashArray += fileinfo.fileName();
+        }
+    }
+    cmdArray += "]";
+
+    info.Custom = {{"[\"array\", \"of\", \"cmds\"]", cmdArray},
+                   {"$LOCAL_ICON", info.Name + "/icons/" + QFileInfo(info.Icon).fileName()}};
+
+    info.Custom["$BASH_ARRAY_APPLICATIONS"] = bashArray;
+
+
+    if (info.Name.isEmpty()) {
+        info.Name = "Application";
+    }
+
+    return true;
 }
 
 
