@@ -891,28 +891,15 @@ void deploytest::testInit()
     TestUtils utils;
 
     runTestParams({"init"});
-    runTestParams({});
 
     QVERIFY(QFile(DEFAULT_COFIGURATION_FILE).remove());
 
     runTestParams({"-init", "multi"});
 
-#ifdef Q_OS_UNIX
-    auto targetName = "UnitTests";
-#else
-    auto targetName = "UnitTests.exe";
-#endif
-    QFile::copy(targetName, "TestQMLWidgets");
-
-    runTestParams({});
-
-    QFile::remove(targetName);
-
 
     QVERIFY(QFile(DEFAULT_COFIGURATION_FILE).remove());
 
     runTestParams({"-init", "single"});
-    runTestParams({});
 
     QVERIFY(QFile(DEFAULT_COFIGURATION_FILE).remove());
 

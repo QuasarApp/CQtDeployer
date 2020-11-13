@@ -73,6 +73,9 @@ bool Packing::create() {
 
             if (!_proc->waitForFinished(-1)) {
                 QuasarAppUtils::Params::log(_proc->errorString(), QuasarAppUtils::Error);
+                QuasarAppUtils::Params::log(QString("Process error code: %0").arg(_proc->error()),
+                                            QuasarAppUtils::Error);
+
 
                 return false;
             }
