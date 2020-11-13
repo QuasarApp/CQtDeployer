@@ -67,7 +67,7 @@ bool Packing::create() {
 
             _proc->start();
 
-            if (!_proc->waitForStarted(1000)) {
+            if (!_proc->waitForStarted()) {
                 return false;
             }
 

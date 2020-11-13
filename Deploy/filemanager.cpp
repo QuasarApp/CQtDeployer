@@ -222,8 +222,8 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
 
             }
 
-            if (isMove) {
-                std::remove(file.toStdString().c_str());
+            if (isMove && std::remove(file.toStdString().c_str())) {
+                return false;
             }
 
         } else {

@@ -238,10 +238,7 @@ QSet<QString> deploytest::getFilesTree(const QStringList &keys) {
     QSet<QString> result;
 
     if (keys.isEmpty()) {
-        for (auto it = filesTree.begin(); it != filesTree.end(); ++it) {
-            result += filesTree[it.key()];
-        }
-        return result;
+        return filesTree["all"];
     }
 
     for (const auto& i: keys) {
@@ -269,6 +266,18 @@ deploytest::deploytest() {
     for (const QString &i: tempTree) {
         filesTree["/usr/lib"].insert(QFileInfo(i).fileName());
     }
+
+    tempTree = utils.getTree("C:/windows/system32", 2);
+    for (const QString &i: tempTree) {
+        filesTree["C:/windows/system32"].insert(QFileInfo(i).fileName());
+    }
+
+    QSet<QString> all;
+    for (const auto& i : filesTree) {
+        all.unite(i);
+    }
+    filesTree["all"] = all;
+
 
 }
 
