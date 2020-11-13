@@ -10,7 +10,7 @@ unix: PLATFORM = linux
 win32:PY = python
 unix: PY = python3
 
-qif.commands= $$PY $$PWD/scripts/QIF.py $$PLATFORM 3.2.2 $$PWD/packages/QIF/data
+qif.commands= $$PY $$PWD/scripts/QIF.py $$PLATFORM 4.0 $$PWD/packages/QIF/data
 alias.commands= $$PY $$PWD/scripts/alias.py
 
 !isEmpty( ONLINE ) {

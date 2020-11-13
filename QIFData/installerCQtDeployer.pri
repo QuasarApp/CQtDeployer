@@ -1,4 +1,4 @@
-include($$PWD/../installer/InstallerBase.pri);
+include($$PWD/InstallerBase.pri);
 mkpath( $$PWD/../Distro)
 win32:OUT_FILE = CQtDeployerInstaller.exe
 unix:OUT_FILE = CQtDeployerInstaller.run
