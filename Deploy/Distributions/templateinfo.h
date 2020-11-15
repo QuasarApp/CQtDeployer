@@ -13,6 +13,7 @@ struct DEPLOYSHARED_EXPORT TemplateInfo
     QString ReleaseData;
     QString Icon;
     QString Publisher;
+    QString Homepage;
 
     QHash<QString, QString> Custom;
 };

@@ -38,11 +38,7 @@ Envirement DefaultDistro::toolKitEnv() const {
     return {};
 }
 
-QString DefaultDistro::runCmd() {
-    return "";
-}
-
-QStringList DefaultDistro::runArg() const {
+QList<SystemCommandData> DefaultDistro::runCmd() {
     return {};
 }
 
@@ -56,4 +52,12 @@ QProcessEnvironment DefaultDistro::processEnvirement() const {
 
 QStringList DefaultDistro::outPutFiles() const {
     return {};
+}
+
+QString DefaultDistro::dataLocation(const QString &) const {
+    return "";
+}
+
+QString DefaultDistro::location(const QString &) const {
+    return "";
 }

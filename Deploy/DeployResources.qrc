@@ -9,7 +9,6 @@
         <file>Distributions/Templates/qif/packages/default/meta/installscript.qs</file>
         <file>Distributions/Templates/qif/config/controlScript.qs</file>
         <file>Distributions/Templates/qif/config/config.xml</file>
-        <file>Distributions/Templates/qif/Icon.png</file>
         <file>Distributions/Templates/qif/config custom designe/config.xml</file>
         <file>Distributions/Templates/qif/config custom designe/controlScript.qs</file>
         <file>Distributions/Templates/qif/config custom designe/style.css</file>
@@ -17,5 +16,13 @@
     <qresource prefix="/Styles">
         <file>Distributions/Templates/qif/Styles/quasar.css</file>
         <file>Distributions/Templates/qif/Styles/quasarDark.css</file>
+    </qresource>
+    <qresource prefix="/Templates/DEB">
+        <file>Distributions/Templates/deb/DEBIAN/prerm</file>
+        <file>Distributions/Templates/deb/DEBIAN/control</file>
+        <file>Distributions/Templates/deb/DEBIAN/postinst</file>
+    </qresource>
+    <qresource prefix="/shared">
+        <file>Distributions/Templates/Icon.png</file>
     </qresource>
 </RCC>

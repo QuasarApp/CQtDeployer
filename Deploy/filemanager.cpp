@@ -69,7 +69,7 @@ bool FileManager::addToDeployed(const QString& path) {
         if (info.isFile() && (completeSufix.isEmpty() || completeSufix.toLower() == "run"
                               || completeSufix.toLower() == "sh")) {
 
-            if (!QFile::setPermissions(path, static_cast<QFile::Permission>(0x7777))) {
+            if (!QFile::setPermissions(path, static_cast<QFile::Permission>(0x7775))) {
                 QuasarAppUtils::Params::log("permishens set fail", QuasarAppUtils::Warning);
             }
         }
@@ -222,8 +222,8 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
 
             }
 
-            if (isMove) {
-                std::remove(file.toStdString().c_str());
+            if (isMove && std::remove(file.toStdString().c_str())) {
+                return false;
             }
 
         } else {
@@ -343,6 +343,9 @@ bool FileManager::copyFolder(const QString &from, const QString &to, const QStri
 
 bool FileManager::moveFolder(const QString &from, const QString &to, const QString& ignore) {
     QFileInfo info(from);
+
+    if (!info.exists())
+        return false;
 
     if (info.isFile()) {
 

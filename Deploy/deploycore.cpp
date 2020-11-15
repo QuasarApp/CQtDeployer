@@ -190,10 +190,12 @@ void DeployCore::help() {
                 {"noRecursiveiIgnoreEnv", "Disables recursive ignore for ignoreEnv option."},
                 {"v / version", "Shows compiled version"},
                 {"allQmlDependes", "Extracts all the qml libraries. (not recommended, as it takes great amount of computer memory)"},
-                {"qif", "Create the QIF installer for deployement programm"
+                {"qif", "Create the QIF installer for deployment programm"
                         " You can specify the path to your own installer template. Examples: cqtdeployer -qif path/to/myCustom/qif."},
                 {"qifFromSystem", "force use system binarycreator tool of qif from path or qt"},
-                {"zip", "Create the ZIP arhive for deployement programm"},                
+                {"zip", "Create the ZIP arhive for deployment programm"},
+                {"deb", "Create the deb package for deployment programm"
+                        " You can specify the path to your own debian template. Examples: cqtdeployer -deb path/to/myCustom/DEBIAN."},
                 {"deploySystem", "Deploys all libraries."
                  " Not recomendet because there may be conflicts with system libraries"
                  " (on snap version you need to turn on permission)"},
@@ -237,13 +239,15 @@ void DeployCore::help() {
                 {"-pluginOut [package;path,path]", "Sets path to plugins out directory"},
                 {"-binOut [package;path,path]", "Sets path to binary out directory"},
                 {"-recOut [package;path,path]", "Sets path to recurses out directory"},
-                {"-name [package;val,val]", "Sets name for package. "
+                {"-name [package;val,val]", "Sets name for a package. "
                  "If this if you do not specify a package, the value will be assigned to the default package ("")"},
-                {"-description [package;val,val]", "Sets description for package"},
-                {"-deployVersion [package;val,val]", "Sets version for package"},
-                {"-releaseDate [package;val,val]", "Sets release date for package"},
-                {"-icon [package;val,val]", "Sets path to icon for package"},
-                {"-publisher [package;val,val]", "Sets publisher for package"},
+                {"-description [package;val,val]", "Sets description for a package"},
+                {"-deployVersion [package;val,val]", "Sets version for a package"},
+                {"-releaseDate [package;val,val]", "Sets release date for a package"},
+                {"-icon [package;val,val]", "Sets path to icon for a package"},
+                {"-publisher [package;val,val]", "Sets publisher for a package"},
+                {"-homepage [package;val,val]", "Sets the homepage url for a package"},
+
             }
         },
 
@@ -331,7 +335,8 @@ QStringList DeployCore::helpKeys() {
         "qifBanner",
         "qifLogo",
         "zip",
-        "noQt"
+        "noQt",
+        "homepage"
     };
 }
 

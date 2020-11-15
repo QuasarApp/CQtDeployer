@@ -46,6 +46,7 @@ include('$$PWD/../zip/zip.pri')
 
 
 SOURCES += \
+    Distributions/deb.cpp \
     Distributions/defaultdistro.cpp \
     Distributions/templateinfo.cpp \
     Distributions/ziparhive.cpp \
@@ -80,6 +81,7 @@ SOURCES += \
     zipcompresser.cpp
 
 HEADERS += \
+    Distributions/deb.h \
     Distributions/defaultdistro.h \
     Distributions/templateinfo.h \
     Distributions/ziparhive.h \

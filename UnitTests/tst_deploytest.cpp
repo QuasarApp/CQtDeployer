@@ -141,9 +141,17 @@ private slots:
 
     // qif flags
     void testQIF();
+    void testQIFMulti();
+    void testQIFCustom();
 
     // zip flags
     void testZIP();
+    void testZIPMulti();
+
+    // deb flags
+    void testDEB();
+    void testDEBMulti();
+    void testDEBCustom();
 
     // qif and zip flags
     void testMultiPacking();
@@ -230,10 +238,7 @@ QSet<QString> deploytest::getFilesTree(const QStringList &keys) {
     QSet<QString> result;
 
     if (keys.isEmpty()) {
-        for (auto it = filesTree.begin(); it != filesTree.end(); ++it) {
-            result += filesTree[it.key()];
-        }
-        return result;
+        return filesTree["all"];
     }
 
     for (const auto& i: keys) {
@@ -244,6 +249,8 @@ QSet<QString> deploytest::getFilesTree(const QStringList &keys) {
 }
 
 deploytest::deploytest() {
+
+    qputenv("QTEST_FUNCTION_TIMEOUT", "1800000");
 
     TestUtils utils;
 
@@ -261,6 +268,18 @@ deploytest::deploytest() {
     for (const QString &i: tempTree) {
         filesTree["/usr/lib"].insert(QFileInfo(i).fileName());
     }
+
+    tempTree = utils.getTree("C:/windows/system32", 2);
+    for (const QString &i: tempTree) {
+        filesTree["C:/windows/system32"].insert(QFileInfo(i).fileName());
+    }
+
+    QSet<QString> all;
+    for (const auto& i : filesTree) {
+        all.unite(i);
+    }
+    filesTree["all"] = all;
+
 
 }
 
@@ -570,13 +589,6 @@ void deploytest::testQIF() {
                                              "./" + DISTRO_DIR + "/InstallerTestQMLWidgets.run",
                                          });
 
-    auto comapareTreeMulti = utils.createTree({
-                                                  "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.run",
-                                              });
-
-    auto comapareTreeCustom = utils.createTree({
-                                                  "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.run",
-                                              });
 #else
     QString bin = TestBinDir + "TestQMLWidgets.exe";
     QString target1 = TestBinDir + "TestOnlyC.exe";
@@ -585,23 +597,8 @@ void deploytest::testQIF() {
     auto comapareTree = utils.createTree({
                                              "./" + DISTRO_DIR + "/InstallerTestQMLWidgets.exe",
                                          });
-    auto comapareTreeMulti = utils.createTree({
-                                                  "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.exe",
-                                              });
-    auto comapareTreeCustom = utils.createTree({
-                                                  "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.exe",
-                                              });
 
 #endif
-    runTestParams({"-bin", bin, "clear" ,
-                   "-qmake", qmake,
-                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
-                   "-qif", TestBinDir + "/../../UnitTests/testRes/QIFCustomTemplate",
-                   "-name", "org.qtproject.ifw.example.stylesheet",
-                   "qifFromSystem"}, &comapareTreeCustom, {}, true);
-
-    // test clear for qif
-    runTestParams({"clear"}, {} , {}, true);
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
@@ -611,6 +608,32 @@ void deploytest::testQIF() {
                    "-qifBanner", TestBinDir + "/../../res/CQtDeployer_banner_web.png",
                    "-qifLogo", TestBinDir + "/../../res/CQtDeployer defaultIcon_web.png"}, &comapareTree, {}, true);
 
+
+
+
+}
+
+void deploytest::testQIFMulti() {
+    TestUtils utils;
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestQMLWidgets";
+    QString target1 = TestBinDir + "TestOnlyC";
+
+    QString qmake = TestQtDir + "bin/qmake";
+    auto comapareTreeMulti = utils.createTree({
+                                                  "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.run",
+                                              });
+
+#else
+    QString bin = TestBinDir + "TestQMLWidgets.exe";
+    QString target1 = TestBinDir + "TestOnlyC.exe";
+
+    QString qmake = TestQtDir + "bin/qmake.exe";
+    auto comapareTreeMulti = utils.createTree({
+                                                  "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.exe",
+                                              });
+
+#endif
 
 #ifdef Q_OS_UNIX
     QString target2 = TestBinDir + "TestQMLWidgets";
@@ -635,7 +658,35 @@ void deploytest::testQIF() {
                    "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
                    "-targetPackage", packageString,
                    "qif", "qifFromSystem"}, &comapareTreeMulti, {}, true);
+}
 
+void deploytest::testQIFCustom() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestQMLWidgets";
+
+    QString qmake = TestQtDir + "bin/qmake";
+
+    auto comapareTreeCustom = utils.createTree({
+                                                  "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.run",
+                                              });
+#else
+    QString bin = TestBinDir + "TestQMLWidgets.exe";
+
+    QString qmake = TestQtDir + "bin/qmake.exe";
+    auto comapareTreeCustom = utils.createTree({
+                                                  "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.exe",
+                                              });
+
+#endif
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                   "-qif", TestBinDir + "/../../UnitTests/testRes/QIFCustomTemplate",
+                   "-name", "org.qtproject.ifw.example.stylesheet",
+                   "qifFromSystem"}, &comapareTreeCustom, {}, true);
 }
 
 void deploytest::testZIP() {
@@ -646,12 +697,7 @@ void deploytest::testZIP() {
                                              "./" + DISTRO_DIR + "/TestQMLWidgets.zip",
                                          });
 
-    auto comapareTreeMulti = utils.createTree({
-                                                  "./" + DISTRO_DIR + "/QtWidgetsProject.zip",
-                                                  "./" + DISTRO_DIR + "/package1.zip",
-                                                  "./" + DISTRO_DIR + "/package2.zip",
 
-                                              });
 
 #ifdef Q_OS_UNIX
     QString bin = TestBinDir + "TestQMLWidgets";
@@ -672,23 +718,37 @@ void deploytest::testZIP() {
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
                    "zip", "verbose"}, &comapareTree, {}, true);
 
-    // test clear for qif
+
+    // test clear for zip
     runTestParams({"clear", "verbose"}, {} , {}, true);
 
-    runTestParams({"-bin", bin, "clear" ,
-                   "-qmake", qmake,
-                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
-                   "zip",
-                   "verbose"}, &comapareTree, {}, true);
+}
 
+void deploytest::testZIPMulti() {
+    TestUtils utils;
+
+    auto comapareTreeMulti = utils.createTree({
+                                                  "./" + DISTRO_DIR + "/QtWidgetsProject.zip",
+                                                  "./" + DISTRO_DIR + "/package1.zip",
+                                                  "./" + DISTRO_DIR + "/package2.zip",
+
+                                              });
 
 #ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestQMLWidgets";
+    QString target1 = TestBinDir + "TestOnlyC";
+
+    QString qmake = TestQtDir + "bin/qmake";
     QString target2 = TestBinDir + "TestQMLWidgets";
     QString target3 = TestBinDir + "QtWidgetsProject";
 
 #else
     QString target2 = TestBinDir + "TestQMLWidgets.exe";
     QString target3 = TestBinDir + "QtWidgetsProject.exe";
+    QString bin = TestBinDir + "TestQMLWidgets.exe";
+    QString target1 = TestBinDir + "TestOnlyC.exe";
+
+    QString qmake = TestQtDir + "bin/qmake.exe";
 
 #endif
     bin = target1;
@@ -707,6 +767,91 @@ void deploytest::testZIP() {
                    "zip"}, &comapareTreeMulti, {}, true);
 }
 
+void deploytest::testDEB() {
+
+#ifdef Q_OS_UNIX
+    TestUtils utils;
+
+    auto comapareTree = utils.createTree({
+                                             "./" + DISTRO_DIR + "/TestQMLWidgets.deb",
+                                         });
+
+
+    QString bin = TestBinDir + "TestQMLWidgets";
+    QString target1 = TestBinDir + "TestOnlyC";
+
+    QString qmake = TestQtDir + "bin/qmake";
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                   "deb", "verbose"}, &comapareTree, {}, true);
+
+    // test clear for deb
+    runTestParams({"clear", "verbose"}, {} , {}, true);
+
+#endif
+
+}
+
+void deploytest::testDEBMulti() {
+#ifdef Q_OS_UNIX
+    TestUtils utils;
+
+    auto comapareTreeMulti = utils.createTree({
+                                                  "./" + DISTRO_DIR + "/QtWidgetsProject.deb",
+                                                  "./" + DISTRO_DIR + "/package1.deb",
+                                                  "./" + DISTRO_DIR + "/package2.deb",
+
+                                              });
+
+    QString bin = TestBinDir + "TestQMLWidgets";
+    QString target1 = TestBinDir + "TestOnlyC";
+
+    QString qmake = TestQtDir + "bin/qmake";
+
+    QString target2 = TestBinDir + "TestQMLWidgets";
+    QString target3 = TestBinDir + "QtWidgetsProject";
+
+    bin = target1;
+    bin += "," + target2;
+    bin += "," + target3;
+
+    auto packageString = "/package1/;" + QFileInfo(target1).absoluteFilePath() + ",/package2/;" + QFileInfo(target2).absoluteFilePath();
+    runTestParams({"-bin", bin, "force-clear",
+                   "-binOut", "/lol",
+                   "-libOut", "/lolLib",
+                   "-trOut", "/lolTr",
+                   "-pluginOut", "/p",
+                   "-qmlOut", "/q",
+                   "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
+                   "-targetPackage", packageString,
+                   "deb"}, &comapareTreeMulti, {}, true);
+#endif
+}
+
+void deploytest::testDEBCustom() {
+#ifdef Q_OS_UNIX
+
+    TestUtils utils;
+
+    QString bin = TestBinDir + "TestQMLWidgets";
+
+    QString qmake = TestQtDir + "bin/qmake";
+
+    auto comapareTreeCustom = utils.createTree({
+                                                  "./" + DISTRO_DIR + "/chrome.deb",
+                                              });
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                   "-deb", TestBinDir + "/../../UnitTests/testRes/DEBCustomTemplate",
+                   "-name", "chrome"},
+                  &comapareTreeCustom, {}, true);
+#endif
+}
+
 void deploytest::testMultiPacking() {
     TestUtils utils;
 
@@ -714,6 +859,7 @@ void deploytest::testMultiPacking() {
 
     auto comapareTree = utils.createTree({
                                              "./" + DISTRO_DIR + "/TestQMLWidgets.zip",
+                                             "./" + DISTRO_DIR + "/TestQMLWidgets.deb",
                                              "./" + DISTRO_DIR + "/InstallerTestQMLWidgets.run",
                                          });
 
@@ -721,6 +867,14 @@ void deploytest::testMultiPacking() {
     QString target1 = TestBinDir + "TestOnlyC";
 
     QString qmake = TestQtDir + "bin/qmake";
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets",
+                   "zip",
+                   "qif", "qifFromSystem",
+                   "deb",
+                   "verbose"}, &comapareTree, {}, true);
 
 #else
     auto comapareTree = utils.createTree({
@@ -732,14 +886,14 @@ void deploytest::testMultiPacking() {
 
     QString qmake = TestQtDir + "bin/qmake.exe";
 
-#endif
-
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
                    "zip",
                    "qif", "qifFromSystem",
                    "verbose"}, &comapareTree, {}, true);
+
+#endif
 }
 
 void deploytest::testInit()
@@ -748,17 +902,15 @@ void deploytest::testInit()
     TestUtils utils;
 
     runTestParams({"init"});
-    runTestParams({});
 
     QVERIFY(QFile(DEFAULT_COFIGURATION_FILE).remove());
 
     runTestParams({"-init", "multi"});
-    runTestParams({});
+
 
     QVERIFY(QFile(DEFAULT_COFIGURATION_FILE).remove());
 
     runTestParams({"-init", "single"});
-    runTestParams({});
 
     QVERIFY(QFile(DEFAULT_COFIGURATION_FILE).remove());
 
