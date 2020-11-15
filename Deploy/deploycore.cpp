@@ -557,7 +557,7 @@ QStringList DeployCore::Qt3rdpartyLibs(Platform platform) {
               // See task https://github.com/QuasarApp/CQtDeployer/issues/367
 
               "libpq",
-              "libmysqlclient"
+              "mysqlclient"
 
               // End SQL LIBS
 };
@@ -596,6 +596,10 @@ QStringList DeployCore::Qt3rdpartyLibs(Platform platform) {
 
                   // xcb plugin
                   "libxcb-xinerama",
+
+                  // qt GUI
+                  "libpng",
+                  "libjpeg"
     };
     }
 
