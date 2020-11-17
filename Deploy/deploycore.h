@@ -182,8 +182,7 @@ public:
     DeployCore() = delete;
 
 
-    static QtModuleEntry qtModuleEntriesQt5[];
-    static QtModuleEntry qtModuleEntriesQt6[];
+    static QtModuleEntry qtModuleEntries[];
 
     static const DeployConfig * _config;
 

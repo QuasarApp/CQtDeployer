@@ -25,112 +25,61 @@
 
 const DeployConfig* DeployCore::_config = nullptr;
 
-QtModuleEntry DeployCore::qtModuleEntriesQt5[] = {
-    { QtBluetoothModule, "bluetooth", "Qt5Bluetooth", nullptr },
-    { QtConcurrentModule, "concurrent", "Qt5Concurrent", "qtbase" },
-    { QtCoreModule, "core", "Qt5Core", "qtbase" },
-    { QtDeclarativeModule, "declarative", "Qt5Declarative", "qtquick1" },
-    { QtDesignerModule, "designer", "Qt5Designer", nullptr },
-    { QtDesignerComponents, "designercomponents", "Qt5DesignerComponents", nullptr },
+QtModuleEntry DeployCore::qtModuleEntries[] = {
+    { QtBluetoothModule, "bluetooth", "Bluetooth", nullptr },
+    { QtConcurrentModule, "concurrent", "Concurrent", "qtbase" },
+    { QtCoreModule, "core", "Core", "qtbase" },
+    { QtDeclarativeModule, "declarative", "Declarative", "qtquick1" },
+    { QtDesignerModule, "designer", "Designer", nullptr },
+    { QtDesignerComponents, "designercomponents", "DesignerComponents", nullptr },
     { QtEnginioModule, "enginio", "Enginio", nullptr },
-    { QtGamePadModule, "gamepad", "Qt5Gamepad", nullptr },
-    { QtGuiModule, "gui", "Qt5Gui", "qtbase" },
-    { QtHelpModule, "qthelp", "Qt5Help", "qt_help" },
-    { QtMultimediaModule, "multimedia", "Qt5Multimedia", "qtmultimedia" },
-    { QtMultimediaWidgetsModule, "multimediawidgets", "Qt5MultimediaWidgets", "qtmultimedia" },
-    { QtMultimediaQuickModule, "multimediaquick", "Qt5MultimediaQuick_p", "qtmultimedia" },
-    { QtNetworkModule, "network", "Qt5Network", "qtbase" },
-    { QtNfcModule, "nfc", "Qt5Nfc", nullptr },
-    { QtOpenGLModule, "opengl", "Qt5OpenGL", nullptr },
-    { QtPositioningModule, "positioning", "Qt5Positioning", nullptr },
-    { QtPrintSupportModule, "printsupport", "Qt5PrintSupport", nullptr },
-    { QtQmlModule, "qml", "Qt5Qml", "qtdeclarative" },
+    { QtGamePadModule, "gamepad", "Gamepad", nullptr },
+    { QtGuiModule, "gui", "Gui", "qtbase" },
+    { QtHelpModule, "qthelp", "Help", "qt_help" },
+    { QtMultimediaModule, "multimedia", "Multimedia", "qtmultimedia" },
+    { QtMultimediaWidgetsModule, "multimediawidgets", "MultimediaWidgets", "qtmultimedia" },
+    { QtMultimediaQuickModule, "multimediaquick", "MultimediaQuick_p", "qtmultimedia" },
+    { QtNetworkModule, "network", "Network", "qtbase" },
+    { QtNfcModule, "nfc", "Nfc", nullptr },
+    { QtOpenGLModule, "opengl", "OpenGL", nullptr },
+    { QtOpenGLWidgetsModule, "openglwidgets", "OpenGLWidgets", nullptr },
+    { QtPositioningModule, "positioning", "Positioning", nullptr },
+    { QtPrintSupportModule, "printsupport", "PrintSupport", nullptr },
+    { QtQmlModule, "qml", "Qml", "qtdeclarative" },
     { QtQmlToolingModule, "qmltooling", "qmltooling", nullptr },
-    { QtQuickModule, "quick", "Qt5Quick", "qtdeclarative" },
-    { QtQuickParticlesModule, "quickparticles", "Qt5QuickParticles", nullptr },
-    { QtQuickWidgetsModule, "quickwidgets", "Qt5QuickWidgets", nullptr },
-    { QtScriptModule, "script", "Qt5Script", "qtscript" },
-    { QtScriptToolsModule, "scripttools", "Qt5ScriptTools", "qtscript" },
-    { QtSensorsModule, "sensors", "Qt5Sensors", nullptr },
-    { QtSerialPortModule, "serialport", "Qt5SerialPort", "qtserialport" },
-    { QtSqlModule, "sql", "Qt5Sql", "qtbase" },
-    { QtSvgModule, "svg", "Qt5Svg", nullptr },
-    { QtTestModule, "test", "Qt5Test", "qtbase" },
-    { QtWebKitModule, "webkit", "Qt5WebKit", nullptr },
-    { QtWebKitWidgetsModule, "webkitwidgets", "Qt5WebKitWidgets", nullptr },
-    { QtWebSocketsModule, "websockets", "Qt5WebSockets", nullptr },
-    { QtWidgetsModule, "widgets", "Qt5Widgets", "qtbase" },
-    { QtWinExtrasModule, "winextras", "Qt5WinExtras", nullptr },
-    { QtXmlModule, "xml", "Qt5Xml", "qtbase" },
-    { QtXmlPatternsModule, "xmlpatterns", "Qt5XmlPatterns", "qtxmlpatterns" },
-    { QtWebEngineCoreModule, "webenginecore", "Qt5WebEngineCore", nullptr },
-    { QtWebEngineModule, "webengine", "Qt5WebEngine", "qtwebengine" },
-    { QtWebEngineWidgetsModule, "webenginewidgets", "Qt5WebEngineWidgets", nullptr },
-    { Qt3DCoreModule, "3dcore", "Qt53DCore", nullptr },
-    { Qt3DRendererModule, "3drenderer", "Qt53DRender", nullptr },
-    { Qt3DQuickModule, "3dquick", "Qt53DQuick", nullptr },
-    { Qt3DQuickRendererModule, "3dquickrenderer", "Qt53DQuickRender", nullptr },
-    { Qt3DInputModule, "3dinput", "Qt53DInput", nullptr },
-    { Qt3DAnimationModule, "3danimation", "Qt53DAnimation", nullptr },
-    { Qt3DExtrasModule, "3dextras", "Qt53DExtras", nullptr },
-    { QtLocationModule, "geoservices", "Qt5Location", nullptr },
-    { QtWebChannelModule, "webchannel", "Qt5WebChannel", nullptr },
-    { QtTextToSpeechModule, "texttospeech", "Qt5TextToSpeech", nullptr },
-    { QtSerialBusModule, "serialbus", "Qt5SerialBus", nullptr },
-    { QtWebViewModule, "webview", "Qt5WebView", nullptr }
-};
-
-QtModuleEntry DeployCore::qtModuleEntriesQt6[] = {
-    { QtBluetoothModule, "bluetooth", "Qt6Bluetooth", nullptr },
-    { QtConcurrentModule, "concurrent", "Qt6Concurrent", "qtbase" },
-    { QtCoreModule, "core", "Qt6Core", "qtbase" },
-    { QtDeclarativeModule, "declarative", "Qt6Declarative", "qtquick1" },
-    { QtDesignerModule, "designer", "Qt6Designer", nullptr },
-    { QtDesignerComponents, "designercomponents", "Qt6DesignerComponents", nullptr },
-    { QtGamePadModule, "gamepad", "Qt6Gamepad", nullptr },
-    { QtGuiModule, "gui", "Qt6Gui", "qtbase" },
-    { QtHelpModule, "qthelp", "Qt6Help", "qt_help" },
-    { QtMultimediaModule, "multimedia", "Qt6Multimedia", "qtmultimedia" },
-    { QtMultimediaWidgetsModule, "multimediawidgets", "Qt6MultimediaWidgets", "qtmultimedia" },
-    { QtMultimediaQuickModule, "multimediaquick", "Qt6MultimediaQuick_p", "qtmultimedia" },
-    { QtNetworkModule, "network", "Qt6Network", "qtbase" },
-    { QtNfcModule, "nfc", "Qt6Nfc", nullptr },
-    { QtOpenGLModule, "opengl", "Qt6OpenGL", nullptr },
-    { QtOpenGLWidgetsModule, "openglwidgets", "Qt6OpenGLWidgets", nullptr },
-    { QtPositioningModule, "positioning", "Qt6Positioning", nullptr },
-    { QtPrintSupportModule, "printsupport", "Qt6PrintSupport", nullptr },
-    { QtQmlModule, "qml", "Qt6Qml", "qtdeclarative" },
-    { QtQmlToolingModule, "qmltooling", "qmltooling", nullptr },
-    { QtQuickModule, "quick", "Qt6Quick", "qtdeclarative" },
-    { QtQuickParticlesModule, "quickparticles", "Qt6QuickParticles", nullptr },
-    { QtQuickWidgetsModule, "quickwidgets", "Qt6QuickWidgets", nullptr },
-    { QtScriptModule, "script", "Qt6Script", "qtscript" },
-    { QtScriptToolsModule, "scripttools", "Qt6ScriptTools", "qtscript" },
-    { QtSensorsModule, "sensors", "Qt6Sensors", nullptr },
-    { QtSerialPortModule, "serialport", "Qt6SerialPort", "qtserialport" },
-    { QtSqlModule, "sql", "Qt6Sql", "qtbase" },
-    { QtSvgModule, "svg", "Qt6Svg", nullptr },
-    { QtSvgWidgetsModule, "svgwidgets", "Qt6SvgWidgets", nullptr },
-    { QtTestModule, "test", "Qt6Test", "qtbase" },
-    { QtWebSocketsModule, "websockets", "Qt6WebSockets", nullptr },
-    { QtWidgetsModule, "widgets", "Qt6Widgets", "qtbase" },
-    { QtWinExtrasModule, "winextras", "Qt6WinExtras", nullptr },
-    { QtXmlModule, "xml", "Qt6Xml", "qtbase" },
-    { QtWebEngineCoreModule, "webenginecore", "Qt6WebEngineCore", nullptr },
-    { QtWebEngineModule, "webengine", "Qt6WebEngine", "qtwebengine" },
-    { QtWebEngineWidgetsModule, "webenginewidgets", "Qt6WebEngineWidgets", nullptr },
-    { Qt3DCoreModule, "3dcore", "Qt63DCore", nullptr },
-    { Qt3DRendererModule, "3drenderer", "Qt63DRender", nullptr },
-    { Qt3DQuickModule, "3dquick", "Qt63DQuick", nullptr },
-    { Qt3DQuickRendererModule, "3dquickrenderer", "Qt63DQuickRender", nullptr },
-    { Qt3DInputModule, "3dinput", "Qt63DInput", nullptr },
-    { Qt3DAnimationModule, "3danimation", "Qt63DAnimation", nullptr },
-    { Qt3DExtrasModule, "3dextras", "Qt63DExtras", nullptr },
-    { QtLocationModule, "geoservices", "Qt6Location", nullptr },
-    { QtWebChannelModule, "webchannel", "Qt6WebChannel", nullptr },
-    { QtTextToSpeechModule, "texttospeech", "Qt6TextToSpeech", nullptr },
-    { QtSerialBusModule, "serialbus", "Qt6SerialBus", nullptr },
-    { QtWebViewModule, "webview", "Qt6WebView", nullptr }
+    { QtQuickModule, "quick", "Quick", "qtdeclarative" },
+    { QtQuickParticlesModule, "quickparticles", "QuickParticles", nullptr },
+    { QtQuickWidgetsModule, "quickwidgets", "QuickWidgets", nullptr },
+    { QtScriptModule, "script", "Script", "qtscript" },
+    { QtScriptToolsModule, "scripttools", "ScriptTools", "qtscript" },
+    { QtSensorsModule, "sensors", "Sensors", nullptr },
+    { QtSerialPortModule, "serialport", "SerialPort", "qtserialport" },
+    { QtSqlModule, "sql", "Sql", "qtbase" },
+    { QtSvgWidgetsModule, "svgwidgets", "SvgWidgets", nullptr },
+    { QtSvgModule, "svg", "Svg", nullptr },
+    { QtTestModule, "test", "Test", "qtbase" },
+    { QtWebKitModule, "webkit", "WebKit", nullptr },
+    { QtWebKitWidgetsModule, "webkitwidgets", "WebKitWidgets", nullptr },
+    { QtWebSocketsModule, "websockets", "WebSockets", nullptr },
+    { QtWidgetsModule, "widgets", "Widgets", "qtbase" },
+    { QtWinExtrasModule, "winextras", "WinExtras", nullptr },
+    { QtXmlModule, "xml", "Xml", "qtbase" },
+    { QtXmlPatternsModule, "xmlpatterns", "XmlPatterns", "qtxmlpatterns" },
+    { QtWebEngineCoreModule, "webenginecore", "WebEngineCore", nullptr },
+    { QtWebEngineModule, "webengine", "WebEngine", "qtwebengine" },
+    { QtWebEngineWidgetsModule, "webenginewidgets", "WebEngineWidgets", nullptr },
+    { Qt3DCoreModule, "3dcore", "3DCore", nullptr },
+    { Qt3DRendererModule, "3drenderer", "3DRender", nullptr },
+    { Qt3DQuickModule, "3dquick", "3DQuick", nullptr },
+    { Qt3DQuickRendererModule, "3dquickrenderer", "3DQuickRender", nullptr },
+    { Qt3DInputModule, "3dinput", "3DInput", nullptr },
+    { Qt3DAnimationModule, "3danimation", "3DAnimation", nullptr },
+    { Qt3DExtrasModule, "3dextras", "3DExtras", nullptr },
+    { QtLocationModule, "geoservices", "Location", nullptr },
+    { QtWebChannelModule, "webchannel", "WebChannel", nullptr },
+    { QtTextToSpeechModule, "texttospeech", "TextToSpeech", nullptr },
+    { QtSerialBusModule, "serialbus", "SerialBus", nullptr },
+    { QtWebViewModule, "webview", "WebView", nullptr }
 };
 
 DeployCore::QtModule DeployCore::getQtModule(const QString& path) {
@@ -140,28 +89,13 @@ DeployCore::QtModule DeployCore::getQtModule(const QString& path) {
         return DeployCore::QtModule::NONE;
     }
 
-    if (Qt & QtMajorVersion::Qt6) {
-
-        int modulesCount = sizeof (qtModuleEntriesQt6) / sizeof (QtModuleEntry);
-
-        auto lIbName = QFileInfo(path).fileName();
-
-        for (int i = 0; i < modulesCount; ++i) {
-            if (lIbName.contains(qtModuleEntriesQt6[i].libraryName)) {
-                return static_cast<DeployCore::QtModule>(qtModuleEntriesQt6[i].module);
-            }
-        }
-
-        return DeployCore::QtModule::NONE;
-    }
-
-    int modulesCount = sizeof (qtModuleEntriesQt5) / sizeof (QtModuleEntry);
+    int modulesCount = sizeof (qtModuleEntries) / sizeof (QtModuleEntry);
 
     auto lIbName = QFileInfo(path).fileName();
 
     for (int i = 0; i < modulesCount; ++i) {
-        if (lIbName.contains(qtModuleEntriesQt5[i].libraryName)) {
-            return static_cast<DeployCore::QtModule>(qtModuleEntriesQt5[i].module);
+        if (lIbName.contains(qtModuleEntries[i].libraryName)) {
+            return static_cast<DeployCore::QtModule>(qtModuleEntries[i].module);
         }
     }
 
