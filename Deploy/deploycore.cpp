@@ -25,7 +25,7 @@
 
 const DeployConfig* DeployCore::_config = nullptr;
 
-QtModuleEntry DeployCore::qtModuleEntries[] = {
+QtModuleEntry DeployCore::qtModuleEntriesQt5[] = {
     { QtBluetoothModule, "bluetooth", "Qt5Bluetooth", nullptr },
     { QtConcurrentModule, "concurrent", "Qt5Concurrent", "qtbase" },
     { QtCoreModule, "core", "Qt5Core", "qtbase" },
@@ -80,20 +80,88 @@ QtModuleEntry DeployCore::qtModuleEntries[] = {
     { QtWebViewModule, "webview", "Qt5WebView", nullptr }
 };
 
-DeployCore::QtModule DeployCore::getQtModule(const QString& path) {
-    auto priority = DeployCore::getLibPriority(path);
+QtModuleEntry DeployCore::qtModuleEntriesQt6[] = {
+    { QtBluetoothModule, "bluetooth", "Qt6Bluetooth", nullptr },
+    { QtConcurrentModule, "concurrent", "Qt6Concurrent", "qtbase" },
+    { QtCoreModule, "core", "Qt6Core", "qtbase" },
+    { QtDeclarativeModule, "declarative", "Qt6Declarative", "qtquick1" },
+    { QtDesignerModule, "designer", "Qt6Designer", nullptr },
+    { QtDesignerComponents, "designercomponents", "Qt6DesignerComponents", nullptr },
+    { QtGamePadModule, "gamepad", "Qt6Gamepad", nullptr },
+    { QtGuiModule, "gui", "Qt6Gui", "qtbase" },
+    { QtHelpModule, "qthelp", "Qt6Help", "qt_help" },
+    { QtMultimediaModule, "multimedia", "Qt6Multimedia", "qtmultimedia" },
+    { QtMultimediaWidgetsModule, "multimediawidgets", "Qt6MultimediaWidgets", "qtmultimedia" },
+    { QtMultimediaQuickModule, "multimediaquick", "Qt6MultimediaQuick_p", "qtmultimedia" },
+    { QtNetworkModule, "network", "Qt6Network", "qtbase" },
+    { QtNfcModule, "nfc", "Qt6Nfc", nullptr },
+    { QtOpenGLModule, "opengl", "Qt6OpenGL", nullptr },
+    { QtOpenGLWidgetsModule, "openglwidgets", "Qt6OpenGLWidgets", nullptr },
+    { QtPositioningModule, "positioning", "Qt6Positioning", nullptr },
+    { QtPrintSupportModule, "printsupport", "Qt6PrintSupport", nullptr },
+    { QtQmlModule, "qml", "Qt6Qml", "qtdeclarative" },
+    { QtQmlToolingModule, "qmltooling", "qmltooling", nullptr },
+    { QtQuickModule, "quick", "Qt6Quick", "qtdeclarative" },
+    { QtQuickParticlesModule, "quickparticles", "Qt6QuickParticles", nullptr },
+    { QtQuickWidgetsModule, "quickwidgets", "Qt6QuickWidgets", nullptr },
+    { QtScriptModule, "script", "Qt6Script", "qtscript" },
+    { QtScriptToolsModule, "scripttools", "Qt6ScriptTools", "qtscript" },
+    { QtSensorsModule, "sensors", "Qt6Sensors", nullptr },
+    { QtSerialPortModule, "serialport", "Qt6SerialPort", "qtserialport" },
+    { QtSqlModule, "sql", "Qt6Sql", "qtbase" },
+    { QtSvgModule, "svg", "Qt6Svg", nullptr },
+    { QtSvgWidgetsModule, "svgwidgets", "Qt6SvgWidgets", nullptr },
+    { QtTestModule, "test", "Qt6Test", "qtbase" },
+    { QtWebSocketsModule, "websockets", "Qt6WebSockets", nullptr },
+    { QtWidgetsModule, "widgets", "Qt6Widgets", "qtbase" },
+    { QtWinExtrasModule, "winextras", "Qt6WinExtras", nullptr },
+    { QtXmlModule, "xml", "Qt6Xml", "qtbase" },
+    { QtWebEngineCoreModule, "webenginecore", "Qt6WebEngineCore", nullptr },
+    { QtWebEngineModule, "webengine", "Qt6WebEngine", "qtwebengine" },
+    { QtWebEngineWidgetsModule, "webenginewidgets", "Qt6WebEngineWidgets", nullptr },
+    { Qt3DCoreModule, "3dcore", "Qt63DCore", nullptr },
+    { Qt3DRendererModule, "3drenderer", "Qt63DRender", nullptr },
+    { Qt3DQuickModule, "3dquick", "Qt63DQuick", nullptr },
+    { Qt3DQuickRendererModule, "3dquickrenderer", "Qt63DQuickRender", nullptr },
+    { Qt3DInputModule, "3dinput", "Qt63DInput", nullptr },
+    { Qt3DAnimationModule, "3danimation", "Qt63DAnimation", nullptr },
+    { Qt3DExtrasModule, "3dextras", "Qt63DExtras", nullptr },
+    { QtLocationModule, "geoservices", "Qt6Location", nullptr },
+    { QtWebChannelModule, "webchannel", "Qt6WebChannel", nullptr },
+    { QtTextToSpeechModule, "texttospeech", "Qt6TextToSpeech", nullptr },
+    { QtSerialBusModule, "serialbus", "Qt6SerialBus", nullptr },
+    { QtWebViewModule, "webview", "Qt6WebView", nullptr }
+};
 
-    if (priority != QtLib) {
+DeployCore::QtModule DeployCore::getQtModule(const QString& path) {
+    auto Qt = DeployCore::isQtLib(path);
+
+    if (!Qt) {
         return DeployCore::QtModule::NONE;
     }
 
-    int modulesCount = sizeof (qtModuleEntries) / sizeof (QtModuleEntry);
+    if (Qt & QtMajorVersion::Qt6) {
+
+        int modulesCount = sizeof (qtModuleEntriesQt6) / sizeof (QtModuleEntry);
+
+        auto lIbName = QFileInfo(path).fileName();
+
+        for (int i = 0; i < modulesCount; ++i) {
+            if (lIbName.contains(qtModuleEntriesQt6[i].libraryName)) {
+                return static_cast<DeployCore::QtModule>(qtModuleEntriesQt6[i].module);
+            }
+        }
+
+        return DeployCore::QtModule::NONE;
+    }
+
+    int modulesCount = sizeof (qtModuleEntriesQt5) / sizeof (QtModuleEntry);
 
     auto lIbName = QFileInfo(path).fileName();
 
     for (int i = 0; i < modulesCount; ++i) {
-        if (lIbName.contains(qtModuleEntries[i].libraryName)) {
-            return static_cast<DeployCore::QtModule>(qtModuleEntries[i].module);
+        if (lIbName.contains(qtModuleEntriesQt5[i].libraryName)) {
+            return static_cast<DeployCore::QtModule>(qtModuleEntriesQt5[i].module);
         }
     }
 
