@@ -1844,6 +1844,7 @@ void deploytest::testExtraPlugins() {
     comapareTree -= utils.createTree(
     {
                     "./" + DISTRO_DIR + "/plugins/platforms/libqxcb.so",
+                    "./" + DISTRO_DIR + "/lib/libxcb-xinerama.so.0",
                     "./" + DISTRO_DIR + "/plugins/xcbglintegrations/libqxcb-egl-integration.so",
                     "./" + DISTRO_DIR + "/plugins/xcbglintegrations/libqxcb-glx-integration.so",
                     "./" + DISTRO_DIR + "/lib/libQt5XcbQpa.so",
