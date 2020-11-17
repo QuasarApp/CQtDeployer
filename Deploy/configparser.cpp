@@ -619,13 +619,14 @@ QSet<QString> ConfigParser::getQtPathesFromTargets() {
 
 QtMajorVersion ConfigParser::isNeededQt() const {
 
+    auto Qt = QtMajorVersion::NoQt;
     for (const auto &i: _config.targets()) {
         if (i.isValid()) {
-            return i.isDependetOfQt();
+            Qt = Qt | i.isDependetOfQt();
         }
     }
 
-    return QtMajorVersion::NoQt;
+    return Qt;
 }
 
 void ConfigParser::setTargetDir(const QString &target) {

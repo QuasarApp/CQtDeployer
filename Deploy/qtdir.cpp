@@ -79,11 +79,11 @@ bool QtDir::isQt(QString path) const {
     path =  PathUtils::fixPath(path);
 
     return
-            (!libs.isEmpty() && path.contains(libs)) ||
-            (!bins.isEmpty() && path.contains(bins)) ||
-    (!libexecs.isEmpty() && path.contains(libexecs)) ||
-    (!plugins.isEmpty() && path.contains(plugins)) ||
-    (!qmls.isEmpty() && path.contains(qmls)) ||
-    (!translations.isEmpty() && path.contains(translations)) ||
-    (!resources.isEmpty() && path.contains(resources));
+        (!libs.isEmpty() && path.contains(libs, ONLY_WIN_CASE_INSENSIATIVE)) ||
+        (!bins.isEmpty() && path.contains(bins, ONLY_WIN_CASE_INSENSIATIVE)) ||
+        (!libexecs.isEmpty() && path.contains(libexecs, ONLY_WIN_CASE_INSENSIATIVE)) ||
+        (!plugins.isEmpty() && path.contains(plugins, ONLY_WIN_CASE_INSENSIATIVE)) ||
+        (!qmls.isEmpty() && path.contains(qmls, ONLY_WIN_CASE_INSENSIATIVE)) ||
+        (!translations.isEmpty() && path.contains(translations, ONLY_WIN_CASE_INSENSIATIVE)) ||
+        (!resources.isEmpty() && path.contains(resources, ONLY_WIN_CASE_INSENSIATIVE));
 }
