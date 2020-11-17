@@ -14,15 +14,6 @@
 #include "deployconfig.h"
 
 QStringList QML::extractImportsFromFile(const QString &filepath) {
-
-    if (DeployCore::_config && DeployCore::_config->qtDir.getQtVersion() == QtMajorVersion::Qt6) {
-        return extractImportsFromFileQt6(filepath);
-    }
-
-    return extractImportsFromFileQt5(filepath);
-}
-
-QStringList QML::extractImportsFromFileQt5(const QString &filepath) {
     QStringList imports;
     QFile F(filepath);
     if (!F.open(QIODevice::ReadOnly)) return QStringList();
@@ -39,25 +30,22 @@ QStringList QML::extractImportsFromFileQt5(const QString &filepath) {
             if (!word.startsWith("import")) continue;
 
             QStringList list = word.split(" ", QString::SkipEmptyParts);
-            if (list.count() != 3)
-            {
-                if (list.count() == 5)
-                {
-                    if (list[3] != "as") continue;
-                }
-                else
-                    continue;
-            }
 
-            imports << (list[2][0] + "#" + list[1].replace(".", "/"));
+            if (list.count() == 3 || (list.count() == 5  && list[3] == "as")) {
+                if (list[2] == "auto") {
+                    // qt6
+                    imports << (list[1].replace(".", "/"));
+                    continue;
+                }
+                // qt5
+                imports << (list[2][0] + "#" + list[1].replace(".", "/"));
+            } else if (list.count() == 2 || (list.count() == 4  && list[2] == "as")) {
+                // qt6
+                imports << (list[1].replace(".", "/"));
+            }
         }
 
     return imports;
-}
-
-QStringList QML::extractImportsFromFileQt6(const QString &filepath) {
-
-    return {};
 }
 
 bool QML::extractImportsFromDir(const QString &path, bool recursive) {
@@ -90,14 +78,12 @@ bool QML::extractImportsFromDir(const QString &path, bool recursive) {
 }
 
 QString QML::getPathFromImport(const QString &import, bool checkVersions) {
-    if (DeployCore::_config && DeployCore::_config->qtDir.getQtVersion() == QtMajorVersion::Qt6) {
-        return getPathFromImportQt6(import, checkVersions);
+    if (!import.contains("#")) {
+        // qt 6
+        auto info = QFileInfo(_qmlRoot + "/" + import);
+        return info.absoluteFilePath();
     }
 
-    return getPathFromImportQt5(import, checkVersions);
-}
-
-QString QML::getPathFromImportQt5(const QString &import, bool checkVersions) {
     auto importData = import.split("#");
 
     int index;
@@ -131,12 +117,6 @@ QString QML::getPathFromImportQt5(const QString &import, bool checkVersions) {
     }
 
     return info.absoluteFilePath();
-}
-
-
-QString QML::getPathFromImportQt6(const QString &import, bool checkVersions) {
-
-    return "";
 }
 
 bool QML::deployPath(const QString &path, QStringList &res) {

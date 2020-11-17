@@ -143,6 +143,8 @@ private slots:
     void testInit();
 
     void testDependencyMap();
+
+    void testQmlScaner();
 };
 
 bool deploytest::runProcess(const QString &DistroPath,
@@ -679,6 +681,50 @@ void deploytest::testDependencyMap() {
                                  DeployCore::QtModule::QtHelpModule));
 
 
+
+}
+
+void deploytest::testQmlScaner() {
+
+    // qt5
+    auto qmlRoot = QFileInfo(TestQtDir + "/qml").absoluteFilePath();
+    QML *scaner = new QML(qmlRoot);
+    auto imports = scaner->extractImportsFromFile(":/qmlFile.qml");
+
+    scaner->scanQmlTree(qmlRoot);
+
+    QSet<QString> results = {
+        {qmlRoot + "/QtQuick.2/"},
+        {qmlRoot + "/QtQuick/Controls.2/"},
+        {qmlRoot + "/QtQuick/Controls.2/Material/"},
+        {qmlRoot + "/QtQuick/Layouts/"},
+    };
+
+    QVERIFY(results.size() == imports.size());
+
+    for (auto import: imports) {
+        auto path = scaner->getPathFromImport(import);
+        QVERIFY(results.contains(path));
+    }
+
+
+    // qt6
+
+    results = {
+        {qmlRoot + "/QtQuick"},
+        {qmlRoot + "/QtQuick/Controls"},
+        {qmlRoot + "/QtQuick/Controls/Material"},
+        {qmlRoot + "/QtQuick/Layouts"},
+    };
+
+    imports = scaner->extractImportsFromFile(":/qmlFileQt6.qml");
+
+    QVERIFY(results.size() == imports.size());
+
+    for (auto import: imports) {
+        auto path = scaner->getPathFromImport(import);
+        QVERIFY(results.contains(path));
+    }
 
 }
 
