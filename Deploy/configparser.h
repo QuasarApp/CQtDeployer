@@ -82,6 +82,10 @@ private:
 
     void initEnvirement();
 
+    /**
+     * @brief checkSnapPermisions This method checks the required permissions. Of all the permissions granted, this method returns true, otherwise false.
+     * @return
+     */
     bool checkSnapPermisions();
 
     QStringList getDirsRecursive(const QString &path, int maxDepch = -1, int depch = 0);
@@ -102,7 +106,7 @@ private:
 
     QList<iDistribution *> getDistribution();
 
-    bool isNeededQt() const;
+    QtMajorVersion isNeededQt() const;
 };
 
 #endif // CQT_H

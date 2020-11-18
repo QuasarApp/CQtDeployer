@@ -11,6 +11,7 @@
 #include <QFile>
 #include <quasarapp.h>
 #include <deploycore.h>
+#include "deployconfig.h"
 
 QStringList QML::extractImportsFromFile(const QString &filepath) {
     QStringList imports;
@@ -29,17 +30,19 @@ QStringList QML::extractImportsFromFile(const QString &filepath) {
             if (!word.startsWith("import")) continue;
 
             QStringList list = word.split(" ", splitbehavior);
-            if (list.count() != 3)
-            {
-                if (list.count() == 5)
-                {
-                    if (list[3] != "as") continue;
-                }
-                else
-                    continue;
-            }
 
-            imports << (list[2][0] + "#" + list[1].replace(".", "/"));
+            if (list.count() == 3 || (list.count() == 5  && list[3] == "as")) {
+                if (list[2] == "auto") {
+                    // qt6
+                    imports << (list[1].replace(".", "/"));
+                    continue;
+                }
+                // qt5
+                imports << (list[2][0] + "#" + list[1].replace(".", "/"));
+            } else if (list.count() == 2 || (list.count() == 4  && list[2] == "as")) {
+                // qt6
+                imports << (list[1].replace(".", "/"));
+            }
         }
 
     return imports;
@@ -75,6 +78,12 @@ bool QML::extractImportsFromDir(const QString &path, bool recursive) {
 }
 
 QString QML::getPathFromImport(const QString &import, bool checkVersions) {
+    if (!import.contains("#")) {
+        // qt 6
+        auto info = QFileInfo(_qmlRoot + "/" + import);
+        return info.absoluteFilePath();
+    }
+
     auto importData = import.split("#");
 
     int index;
@@ -115,11 +124,9 @@ bool QML::deployPath(const QString &path, QStringList &res) {
     auto infoList = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs);
 
     for (auto info : infoList) {
-        if (info.fileName().contains(".so.debug") ||
-                info.fileName().contains("d.dll") ||
-                info.fileName().contains(".dll.debug")) {
+        if (DeployCore::isDebugFile(info.fileName())) {
             QuasarAppUtils::Params::log("sciped debug lib " +
-                                               info.absoluteFilePath());
+                                        info.absoluteFilePath());
             continue;
         }
 

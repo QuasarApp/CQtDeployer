@@ -160,6 +160,8 @@ private slots:
     void testInit();
 
     void testDependencyMap();
+
+    void testQmlScaner();
 };
 
 bool deploytest::runProcess(const QString &DistroPath,
@@ -955,6 +957,50 @@ void deploytest::testDependencyMap() {
 
 }
 
+void deploytest::testQmlScaner() {
+
+    // qt5
+    auto qmlRoot = QFileInfo(TestQtDir + "/qml").absoluteFilePath();
+    QML *scaner = new QML(qmlRoot);
+    auto imports = scaner->extractImportsFromFile(":/qmlFile.qml");
+
+    scaner->scanQmlTree(qmlRoot);
+
+    QSet<QString> results = {
+        {qmlRoot + "/QtQuick.2/"},
+        {qmlRoot + "/QtQuick/Controls.2/"},
+        {qmlRoot + "/QtQuick/Controls.2/Material/"},
+        {qmlRoot + "/QtQuick/Layouts/"},
+    };
+
+    QVERIFY(results.size() == imports.size());
+
+    for (auto import: imports) {
+        auto path = scaner->getPathFromImport(import);
+        QVERIFY(results.contains(path));
+    }
+
+
+    // qt6
+
+    results = {
+        {qmlRoot + "/QtQuick"},
+        {qmlRoot + "/QtQuick/Controls"},
+        {qmlRoot + "/QtQuick/Controls/Material"},
+        {qmlRoot + "/QtQuick/Layouts"},
+    };
+
+    imports = scaner->extractImportsFromFile(":/qmlFileQt6.qml");
+
+    QVERIFY(results.size() == imports.size());
+
+    for (auto import: imports) {
+        auto path = scaner->getPathFromImport(import);
+        QVERIFY(results.contains(path));
+    }
+
+}
+
 void deploytest::testQmlExtrct() {
     QmlCreator creator("./");
     auto imports = creator.getQmlImports();
@@ -1066,28 +1112,28 @@ void deploytest::testCheckQt() {
     QVERIFY(deployer->prepare());
 
 
-    auto cases = QList<QPair<QString, bool>>{
-        {TestQtDir + "/", false},
-        {TestQtDir + "", false},
-        {TestQtDir + "/bin/file1", false},
-        {TestQtDir + "/lib/file12.so", false},
-        {TestQtDir + "/resurces/file13.dll", false},
-        {TestQtDir + "/libexec/f", false},
-        {TestQtDir + "/mkspecs", false},
-        {TestQtDir + "/qml", false},
-        {TestQtDir + "/plugins", false},
-        {TestQtDir + "/file", false},
+    auto cases = QList<QPair<QString, QtMajorVersion>>{
+        {TestQtDir + "/", QtMajorVersion::NoQt},
+        {TestQtDir + "", QtMajorVersion::NoQt},
+        {TestQtDir + "/bin/file1", QtMajorVersion::NoQt},
+        {TestQtDir + "/lib/file12.so", QtMajorVersion::NoQt},
+        {TestQtDir + "/resurces/file13.dll", QtMajorVersion::NoQt},
+        {TestQtDir + "/libexec/f", QtMajorVersion::NoQt},
+        {TestQtDir + "/mkspecs", QtMajorVersion::NoQt},
+        {TestQtDir + "/qml", QtMajorVersion::NoQt},
+        {TestQtDir + "/plugins", QtMajorVersion::NoQt},
+        {TestQtDir + "/file", QtMajorVersion::NoQt},
 
-        {TestQtDir + "\\", false},
-        {TestQtDir + "", false},
-        {TestQtDir + "\\bin\\file1", false},
-        {TestQtDir + "\\lib\\file12", false},
-        {TestQtDir + "\\resurces\\file13", false},
-        {TestQtDir + "\\libexec\\f.so", false},
-        {TestQtDir + "\\mkspecs.dll", false},
-        {TestQtDir + "\\qml", false},
-        {TestQtDir + "\\plugins", false},
-        {TestQtDir + "\\file", false},
+        {TestQtDir + "\\", QtMajorVersion::NoQt},
+        {TestQtDir + "", QtMajorVersion::NoQt},
+        {TestQtDir + "\\bin\\file1", QtMajorVersion::NoQt},
+        {TestQtDir + "\\lib\\file12", QtMajorVersion::NoQt},
+        {TestQtDir + "\\resurces\\file13", QtMajorVersion::NoQt},
+        {TestQtDir + "\\libexec\\f.so", QtMajorVersion::NoQt},
+        {TestQtDir + "\\mkspecs.dll", QtMajorVersion::NoQt},
+        {TestQtDir + "\\qml", QtMajorVersion::NoQt},
+        {TestQtDir + "\\plugins", QtMajorVersion::NoQt},
+        {TestQtDir + "\\file", QtMajorVersion::NoQt},
 
     };
 
@@ -1112,30 +1158,44 @@ void deploytest::testCheckQt() {
     QVERIFY(deployer->prepare());
 
 
-    cases = QList<QPair<QString, bool>>{
-        {TestQtDir + "/", false},
-        {TestQtDir + "", false},
-        {TestQtDir + "/bin/file1", false},
-        {TestQtDir + "/lib/file12", false},
-        {TestQtDir + "/bin/file1Qt.so", true},
-        {TestQtDir + "/lib/file12", false},
-        {TestQtDir + "/resources/Qtfile13.so", true},
-        {TestQtDir + "/libexec/Qtf.dll", true},
-        {TestQtDir + "/mkspecs", false},
-        {TestQtDir + "/qml", false},
-        {TestQtDir + "/plugins", false},
-        {TestQtDir + "/file", false},
+    cases = QList<QPair<QString, QtMajorVersion>>{
+        {TestQtDir + "/", QtMajorVersion::NoQt},
+        {TestQtDir + "", QtMajorVersion::NoQt},
+        {TestQtDir + "/bin/file1", QtMajorVersion::NoQt},
+        {TestQtDir + "/lib/file12", QtMajorVersion::NoQt},
+        {TestQtDir + "/lib/file12", QtMajorVersion::NoQt},
 
-        {TestQtDir + "\\", false},
-        {TestQtDir + "", false},
-        {TestQtDir + "\\bin\\Qtfile1.dll", true},
-        {TestQtDir + "\\lib\\file12", false},
-        {TestQtDir + "\\resources\\fileQt13.dll", true},
-        {TestQtDir + "\\libexec\\fQt", false},
-        {TestQtDir + "\\mkspecs", false},
-        {TestQtDir + "\\qml", false},
-        {TestQtDir + "\\plugins", false},
-        {TestQtDir + "\\file", false},
+        {TestQtDir + "/mkspecs", QtMajorVersion::NoQt},
+        {TestQtDir + "/qml", QtMajorVersion::NoQt},
+        {TestQtDir + "/plugins", QtMajorVersion::NoQt},
+        {TestQtDir + "/file", QtMajorVersion::NoQt},
+
+        {TestQtDir + "\\", QtMajorVersion::NoQt},
+        {TestQtDir + "", QtMajorVersion::NoQt},
+        {TestQtDir + "\\lib\\file12", QtMajorVersion::NoQt},
+        {TestQtDir + "\\libexec\\fQt", QtMajorVersion::NoQt},
+        {TestQtDir + "\\mkspecs", QtMajorVersion::NoQt},
+        {TestQtDir + "\\qml", QtMajorVersion::NoQt},
+        {TestQtDir + "\\plugins", QtMajorVersion::NoQt},
+        {TestQtDir + "\\file", QtMajorVersion::NoQt},
+
+        {TestQtDir + "/bin/file1Qt4.so", QtMajorVersion::Qt4},
+        {TestQtDir + "/resources/Qt4file13.so", QtMajorVersion::Qt4},
+        {TestQtDir + "/libexec/Qt4f.dll", QtMajorVersion::Qt4},
+        {TestQtDir + "\\bin\\Qt4file1.dll", QtMajorVersion::Qt4},
+        {TestQtDir + "\\resources\\fileQt413.dll", QtMajorVersion::Qt4},
+
+        {TestQtDir + "/bin/file1Qt5.so", QtMajorVersion::Qt5},
+        {TestQtDir + "/resources/Qt5file13.so", QtMajorVersion::Qt5},
+        {TestQtDir + "/libexec/Qt5f.dll", QtMajorVersion::Qt5},
+        {TestQtDir + "\\bin\\Qt5file1.dll", QtMajorVersion::Qt5},
+        {TestQtDir + "\\resources\\fileQt513.dll", QtMajorVersion::Qt5},
+
+        {TestQtDir + "/bin/file1Qt6.so", QtMajorVersion::Qt6},
+        {TestQtDir + "/resources/Qt6file13.so", QtMajorVersion::Qt6},
+        {TestQtDir + "/libexec/Qt6f.dll", QtMajorVersion::Qt6},
+        {TestQtDir + "\\bin\\Qt6file1.dll", QtMajorVersion::Qt6},
+        {TestQtDir + "\\resources\\fileQt613.dll", QtMajorVersion::Qt6},
 
     };
 

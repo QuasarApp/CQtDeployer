@@ -24,6 +24,16 @@ enum MSVCVersion: int {
     MSVC_19 = 0x80,
 };
 
+/**
+ * @brief The QtMajorVersion enum
+ */
+enum QtMajorVersion: int {
+    NoQt = 0x0,
+    Qt4 = 0x01,
+    Qt5 = 0x02,
+    Qt6 = 0x04
+};
+
 struct DEPLOYSHARED_EXPORT QtModuleEntry {
     quint64 module;
     const char *option;
@@ -166,19 +176,23 @@ public:
         QtGamePadModule           = 0x0001000000000000,
         Qt3DAnimationModule       = 0x0002000000000000,
         QtWebViewModule           = 0x0004000000000000,
-        Qt3DExtrasModule          = 0x0008000000000000
+        Qt3DExtrasModule          = 0x0008000000000000,
+        // Qt6
+        QtOpenGLWidgetsModule     = 0x0010000000000000,
+        QtSvgWidgetsModule        = 0x0020000000000000
     };
 
     DeployCore() = delete;
 
 
     static QtModuleEntry qtModuleEntries[];
+
     static const DeployConfig * _config;
 
     static MSVCVersion getMSVC(const QString & _qtBin);
     static QString getVCredist(const QString & _qtBin);
 
-    static bool isQtLib(const QString &lib);
+    static QtMajorVersion isQtLib(const QString &lib);
     static bool isExtraLib(const QString &lib);
     static QChar getSeparator(int lvl);
     static bool isAlienLib(const QString &lib);
@@ -222,6 +236,8 @@ public:
                                           int lastLvl = 2);
     static QString findProcess(const QString& env, const QString& proc);
 
+    static QStringList debugExtensions();
+    static bool isDebugFile(const QString& file);
 
     static bool isSnap();
     static QString snapRootFS();
