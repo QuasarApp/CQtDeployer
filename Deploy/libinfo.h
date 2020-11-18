@@ -57,7 +57,7 @@ public:
     void setQtPath(const QString &value);
     WinAPI getWinApi() const;
     void setWinApi(WinAPI winApi);
-    bool isDependetOfQt() const;
+    QtMajorVersion isDependetOfQt() const;
 };
 
 uint qHash(const LibInfo& info);

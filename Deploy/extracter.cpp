@@ -28,7 +28,7 @@
 
 bool Extracter::deployMSVC() {
     QuasarAppUtils::Params::log("try deploy msvc",
-                                       QuasarAppUtils::Info);
+                                QuasarAppUtils::Info);
     auto msvcInstaller = DeployCore::getVCredist(DeployCore::_config->qtDir.getBins());
 
     if (msvcInstaller.isEmpty()) {
@@ -89,8 +89,8 @@ QList<QString> Extracter::angleGLLibs() {
     if (cnf->qtDir.getQtPlatform() & Platform::Win) {
         return {
             cnf->qtDir.getBins() + "/d3dcompiler_47.dll",
-            cnf->qtDir.getBins() + "/libEGL.dll",
-            cnf->qtDir.getBins() + "/libGLESv2.dll",
+                    cnf->qtDir.getBins() + "/libEGL.dll",
+                    cnf->qtDir.getBins() + "/libGLESv2.dll",
         };
     }
 
@@ -113,7 +113,7 @@ void Extracter::clear() {
     if (QuasarAppUtils::Params::isEndable("clear") ||
             QuasarAppUtils::Params::isEndable("force-clear")) {
         QuasarAppUtils::Params::log("clear old data",
-                                           QuasarAppUtils::Info);
+                                    QuasarAppUtils::Info);
         _fileManager->clear(DeployCore::_config->getTargetDir(),
                             QuasarAppUtils::Params::isEndable("force-clear"));
     }
@@ -134,7 +134,7 @@ void Extracter::copyExtraPlugins(const QString& package) {
 
         if (info.isFile()) {
             if (!_fileManager->copyFile(info.absoluteFilePath(),
-                                   targetPath + distro.getPluginsOutDir())) {
+                                        targetPath + distro.getPluginsOutDir())) {
 
                 QuasarAppUtils::Params::log("fail to copy extra plugin from:" + info.absoluteFilePath() +
                                             " to: " + targetPath + distro.getPluginsOutDir(),
@@ -149,7 +149,7 @@ void Extracter::copyExtraPlugins(const QString& package) {
             QStringList plugins;
             if (!_fileManager->copyFolder(info.absoluteFilePath(),
                                           targetPath + distro.getPluginsOutDir() + info.fileName(),
-                                          QStringList() << ".so.debug" << "d.dll" << ".pdb" << ".dll.debug",
+                                          DeployCore::debugExtensions(),
                                           &plugins)) {
 
                 QuasarAppUtils::Params::log("fail to copy extra plugin from:" + info.absoluteFilePath() +
@@ -179,7 +179,7 @@ void Extracter::extractPlugins() {
         _pluginsParser->scan(cnf->qtDir.getPlugins(), plugins, _packageDependencyes[i.key()].qtModules(), i.key());
 
         _fileManager->copyFiles(plugins, targetPath + distro.getPluginsOutDir(), 1,
-                                 QStringList() << ".so.debug" << "d.dll" << ".pdb" << ".dll.debug", &listItems);
+                                DeployCore::debugExtensions(), &listItems);
 
         for (const auto &item : listItems) {
             extractPluginLib(item, i.key());
@@ -229,7 +229,7 @@ void Extracter::copyTr() {
             if (!copyTranslations(DeployCore::extractTranslation(_packageDependencyes[i.key()].neadedLibs()),
                                   i.key())) {
                 QuasarAppUtils::Params::log("Failed to copy standard Qt translations",
-                                                   QuasarAppUtils::Warning);
+                                            QuasarAppUtils::Warning);
             }
         }
 
@@ -238,7 +238,7 @@ void Extracter::copyTr() {
 
 void Extracter::deploy() {
     QuasarAppUtils::Params::log("target deploy started!!",
-                                       QuasarAppUtils::Info);
+                                QuasarAppUtils::Info);
     clear();
     _cqt->smartMoveTargets();
     _scaner->setEnvironment(DeployCore::_config->envirement.environmentList());
@@ -246,7 +246,7 @@ void Extracter::deploy() {
 
     if (DeployCore::_config->deployQml && !extractQml()) {
         QuasarAppUtils::Params::log("qml not extacted!",
-                                           QuasarAppUtils::Error);
+                                    QuasarAppUtils::Error);
     }
 
     extractPlugins();
@@ -265,7 +265,7 @@ void Extracter::deploy() {
 
     _metaFileManager->createRunMetaFiles();
     QuasarAppUtils::Params::log("deploy done!",
-                                       QuasarAppUtils::Info);
+                                QuasarAppUtils::Info);
 
 }
 
@@ -304,7 +304,7 @@ bool Extracter::copyTranslations(const QStringList &list, const QString& package
 
 
 QFileInfoList Extracter::findFilesInsideDir(const QString &name,
-                                         const QString &dirpath) {
+                                            const QString &dirpath) {
     QFileInfoList files;
 
     QDir dir(dirpath);
@@ -330,7 +330,7 @@ void Extracter::extractLib(const QString &file,
 
     assert(depMap);
     QuasarAppUtils::Params::log("extract lib :" + file,
-                                 QuasarAppUtils::Debug);
+                                QuasarAppUtils::Debug);
 
     auto data = _scaner->scan(file);
 
@@ -348,8 +348,8 @@ void Extracter::extractLib(const QString &file,
             depMap->addNeadedLib(line.fullPath());
 
         } else if (QuasarAppUtils::Params::isEndable("deploySystem") &&
-                    line.getPriority() >= LibPriority::SystemLib &&
-                    !depMap->containsSysLib(line.fullPath())) {
+                   line.getPriority() >= LibPriority::SystemLib &&
+                   !depMap->containsSysLib(line.fullPath())) {
 
             depMap->addSystemLib(line.fullPath());
         }
@@ -366,7 +366,7 @@ bool Extracter::extractQmlAll() {
 
     if (!QFileInfo::exists(cnf->qtDir.getQmls())) {
         QuasarAppUtils::Params::log("qml dir wrong!",
-                                           QuasarAppUtils::Warning);
+                                    QuasarAppUtils::Warning);
         return false;
     }
 
@@ -377,8 +377,8 @@ bool Extracter::extractQmlAll() {
         QStringList listItems;
 
         if (!_fileManager->copyFolder(cnf->qtDir.getQmls(), targetPath + distro.getQmlOutDir(),
-                        QStringList() << ".so.debug" << "d.dll" << ".pdb" << ".dll.debug",
-                        &listItems)) {
+                                      DeployCore::debugExtensions(),
+                                      &listItems)) {
             return false;
         }
 
@@ -401,22 +401,20 @@ bool Extracter::extractQmlFromSource() {
 
         QStringList plugins;
         QStringList listItems;
-        QStringList filter;
-        filter << ".so.debug" << "d.dll" << ".pdb" << ".dll.debug";
 
         for (const auto &qmlInput: distro.qmlInput()) {
             QFileInfo info(qmlInput);
 
             if (!info.isDir()) {
                 QuasarAppUtils::Params::log("extract qml fail! qml source dir not exits or is not dir " + qmlInput,
-                                                   QuasarAppUtils::Error);
+                                            QuasarAppUtils::Error);
                 continue;
             }
             QuasarAppUtils::Params::log("extractQmlFromSource " + info.absoluteFilePath());
 
             if (!QFileInfo::exists(cnf->qtDir.getQmls())) {
                 QuasarAppUtils::Params::log("qml dir wrong!",
-                                                   QuasarAppUtils::Warning);
+                                            QuasarAppUtils::Warning);
                 continue;
             }
 
@@ -424,14 +422,15 @@ bool Extracter::extractQmlFromSource() {
 
             if (!ownQmlScaner.scan(plugins, info.absoluteFilePath())) {
                 QuasarAppUtils::Params::log("qml scaner run failed!",
-                                                   QuasarAppUtils::Error);
+                                            QuasarAppUtils::Error);
                 continue;
             }
         }
 
         if (!_fileManager->copyFolder(cnf->qtDir.getQmls(),
-                                     targetPath + distro.getQmlOutDir(),
-                        filter , &listItems, &plugins)) {
+                                      targetPath + distro.getQmlOutDir(),
+                                      DeployCore::debugExtensions() ,
+                                      &listItems, &plugins)) {
             return false;
         }
 
@@ -483,7 +482,7 @@ Extracter::Extracter(FileManager *fileManager, PluginsParser *pluginsParser, Con
     _fileManager(fileManager),
     _pluginsParser(pluginsParser),
     _cqt(cqt)
-    {
+{
 
     assert(_cqt);
     assert(_fileManager);

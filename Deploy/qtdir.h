@@ -16,7 +16,7 @@ class DEPLOYSHARED_EXPORT QtDir {
 
     Platform qtPlatform = UnknownPlatform;
 
-
+    QtMajorVersion _qtVersion;
 public:
     QString getLibs() const;
     void setLibs(const QString &value);
@@ -41,6 +41,13 @@ public:
      * @return true if object is qt.
      */
     bool isQt(QString path) const;
+
+    /**
+     * @brief getQtVersion This method return information of version of qt
+     * @return the masjor version of qt
+     */
+    QtMajorVersion getQtVersion() const;
+    void setQtVersion(const QtMajorVersion &qtVersion);
 };
 
 #endif // QTDIR_H
