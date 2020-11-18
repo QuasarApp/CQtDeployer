@@ -233,6 +233,8 @@ public:
                                           int lastLvl = 2);
     static QString findProcess(const QString& env, const QString& proc);
 
+    static QStringList debugExtensions();
+    static bool isDebugFile(const QString& file);
 
     static bool isSnap();
     static QString snapRootFS();

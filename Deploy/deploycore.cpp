@@ -402,6 +402,21 @@ QString DeployCore::findProcess(const QString &env, const QString& proc) {
     return "";
 }
 
+QStringList DeployCore::debugExtensions() {
+    return {".debug", "d.dll", ".pdb"};
+}
+
+bool DeployCore::isDebugFile(const QString &file) {
+    auto debug = debugExtensions();
+    for (const auto& debugEx: debug) {
+        if (file.contains(debugEx, ONLY_WIN_CASE_INSENSIATIVE)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 int DeployCore::find(const QString &str, const QStringList &list) {
     for (int i = 0 ; i < list.size(); ++i) {
         if (list[i].contains(str))
