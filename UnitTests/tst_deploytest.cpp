@@ -238,6 +238,8 @@ QSet<QString> deploytest::getFilesTree(const QStringList &keys) {
 
 deploytest::deploytest() {
 
+    qputenv("QTEST_FUNCTION_TIMEOUT", "1800000");
+
     TestUtils utils;
 
     auto tempTree = utils.getTree(TestQtDir);
