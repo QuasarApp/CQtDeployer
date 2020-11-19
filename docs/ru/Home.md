@@ -8,12 +8,12 @@
 * [Описание CQtDeployer](Description)
 * [Параметры](Options)
 * [Руководство](Guide)
-* [Краткое Руководство](quickguide)
+* [Краткое Руководство](QuickGuide)
 * [Сборка и установка](Build-and-Install)
 * [Файл развертывания](DeployConfigFile)
 * [Упаковка](Packing)
 * [Список изменений](Changelog)
-* [Обзоры](ReleaseReviews.en)
+* [Обзоры](ReleaseReviews)
 * [Сравнение возможностей](CompareFeatures)
 
 

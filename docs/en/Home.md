@@ -8,7 +8,7 @@
 * [Description CQtDeployer](Description)
 * [Options](Options)
 * [Guide](Guide)
-* [Quick guide](quickguide)
+* [Quick guide](QuickGuide)
 * [Build and Install](Build-and-Install)
 * [Deploy file](DeployConfigFile)
 * [Packing](Packing)
