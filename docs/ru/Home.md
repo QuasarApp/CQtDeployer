@@ -11,8 +11,8 @@
 * [Краткое Руководство](quickguide)
 * [Сборка и установка](Build-and-Install)
 * [Файл развертывания](DeployConfigFile)
-* [Упаковка](Packing(en))
-* [Список изменений](ChangelogEn)
+* [Упаковка](Packing)
+* [Список изменений](Changelog)
 * [Обзоры](ReleaseReviews.en)
 * [Сравнение возможностей](CompareFeatures)
 

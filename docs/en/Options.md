@@ -19,6 +19,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 ## Options:
 
 ### Boolean options
+
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |   init                      | will initialize cqtdeployer.json file (configuration file)|
@@ -50,6 +51,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   deploySystem-with-libc    | Deploy all libs include libc (only linux). Do not use this option for a gui application, for gu use the deploySystem option                             |
 
 ### Deploy options:
+
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |   -bin [list, params]       | Deployable file or folder.                | 
@@ -79,6 +81,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   -verbose [0-3]            | Shows debug log                                                 |
 
 ## Controll of packages options:
+
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |   -targetPackage [package;tar1,package;tar2]| Creates a new package and adds 'tar1 and tar2' to it |
@@ -107,6 +110,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 | |Example: if you want disable qxcb plugin: -disablePlugins qxcb. Note that the name of the plugin is indicated without its extension.|
 
 ## QtInstallFramework options:
+
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |  -qifStyle [path/to/style.css]| Sets the path to the CSS style file or sets the default style. Available styles: quasar |

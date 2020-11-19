@@ -11,9 +11,9 @@
 * [Quick guide](quickguide)
 * [Build and Install](Build-and-Install)
 * [Deploy file](DeployConfigFile)
-* [Packing](Packing(en))
-* [Change log page](ChangelogEn)
-* [Reviews](ReleaseReviews.en)
+* [Packing](Packing)
+* [Change log page](Changelog)
+* [Reviews](ReleaseReviews)
 * [Compare Features](CompareFeatures)
 
 
