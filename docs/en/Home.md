@@ -5,14 +5,17 @@
 
 # Main sections
 
-* [Description CQtDeployer](https://github.com/QuasarApp/CQtDeployer/wiki/Description)
-* [Options](https://github.com/QuasarApp/CQtDeployer/wiki/Options)
-* [Guide](https://github.com/QuasarApp/CQtDeployer/wiki/Guide)
-* [Quick guide](./quickguide)
-* [Build and Install](https://github.com/QuasarApp/CQtDeployer/wiki/Build-and-Install)
-* [Example](https://github.com/QuasarApp/CQtDeployer/tree/master/examples/TestQMLWidgets)
-* [Deploy file](https://github.com/QuasarApp/CQtDeployer/wiki/DeployConfigFileEn)
-* [Packing](https://github.com/QuasarApp/CQtDeployer/wiki/Packing(en))
-* [Change log page](https://github.com/QuasarApp/CQtDeployer/wiki/ChangelogEn)
-* [Reviews](https://github.com/QuasarApp/CQtDeployer/wiki/ReleaseReviews.en)
-* [Compare Features](https://github.com/QuasarApp/CQtDeployer/wiki/CompareFeatures)
+* [Description CQtDeployer](Description)
+* [Options](Options)
+* [Guide](Guide)
+* [Quick guide](quickguide)
+* [Build and Install](Build-and-Install)
+* [Deploy file](DeployConfigFile)
+* [Packing](Packing(en))
+* [Change log page](ChangelogEn)
+* [Reviews](ReleaseReviews.en)
+* [Compare Features](CompareFeatures)
+
+
+## Support the project
+If you like what we do and it benefits you, you can support the project on the official page [QuasarApp in Patreon](https://www.patreon.com/QuasarApp)

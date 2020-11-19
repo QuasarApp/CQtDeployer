@@ -41,11 +41,11 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |   qif                       | Создаст установщик QIF для развертываемой программы"      |
 |                             | Примеры: cqtdeployer qif                                  |
 |                             | Начиная с версии CQtDeployer 1.5 вы можете указать путь к своему собственному шаблону установщика. |
-|                             | Примеры: cqtdeployer -qif path/to/myCustom/qif. Подробнее можно посмотреть [здесь](https://github.com/QuasarApp/CQtDeployer/wiki/QIF(ru))        |
+|                             | Примеры: cqtdeployer -qif path/to/myCustom/qif. Подробнее можно посмотреть [здесь](QIF)        |
 |   deb                       | Создаст deb пакет для развертываемой программы"      |
 |                             | Примеры: cqtdeployer deb                                  |
 |                             | Вы можете указать путь к своему собственному шаблону пакета. |
-|                             | Примеры: cqtdeployer -deb path/to/myCustom/DEBIAN. Подробнее можно посмотреть [здесь](https://github.com/QuasarApp/CQtDeployer/wiki/DEB(ru))        |
+|                             | Примеры: cqtdeployer -deb path/to/myCustom/DEBIAN. Подробнее можно посмотреть [здесь](DEB)        |
 |   deploySystem              | Копирует все библиотеки кроме libc                        |
 |                             | (не рекомендуется, так как занимает много памяти, возможны конфликты библиотек)         |
 |   deploySystem-with-libc    | Копирует все зависимости в том числе и libc, не рекомендуется использовать с gui приложения, в место этого используйте  опцию deploySystem              |
@@ -55,7 +55,7 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |-----------------------------|-----------------------------------------------------------|
 |  -bin    [list, params]     | Развертываемый файл или папка. пример -bin ~/my/project/bin/,~/my/project/bin.exe|
 |  -binDir [params]           | Папка с развертываемыми файлами (с рекурсивным поиском).  |
-|  -confFile [params]         | Путь к файлу json со всеми конфигурациями развертывания. С помощью этого файла можно добавить нужные опции, тем самым упрастить вызов комманды в консоле. Однако пораметры в кансоле имеют больший приоритет чем в файле. Для получения дополнительной информации об этом флаге см. [Вики](https://github.com/QuasarApp/CQtDeployer/wiki/DeployConfigFileRu) |
+|  -confFile [params]         | Путь к файлу json со всеми конфигурациями развертывания. С помощью этого файла можно добавить нужные опции, тем самым упрастить вызов комманды в консоле. Однако пораметры в кансоле имеют больший приоритет чем в файле. Для получения дополнительной информации об этом флаге см. [Вики](DeployConfigFile) |
 |  -qmlDir [params]           | Папка qml. пример -qmlDir ~/my/project/qml                |
 |  -qmake  [params]           | Путь к qmake. пример                                      |
 |                             | -qmake ~/Qt/5.14.0/gcc_64/bin/qmake                       |

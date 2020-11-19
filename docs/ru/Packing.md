@@ -6,7 +6,7 @@
 
 ## Автоматические пакеты
 Пакеты с этим типом создаются автоматически.
-По умолчанию в дистрибутиве есть один основной пакет. Вы можете настроить его, используя [Параметры управления пакетами](Options.md).
+По умолчанию в дистрибутиве есть один основной пакет. Вы можете настроить его, используя [Параметры управления пакетами](Options).
 
 #### Пример (Установить новое имя для pacakge)
 ```
@@ -122,6 +122,6 @@ cqtdeployer ... -qif /path/to/my/template/installer
 ```
 
 ## Доступные пакеты
-* [Qt Install Framework](https://github.com/QuasarApp/CQtDeployer/wiki/QIF(en))
-* [ZIP-архив](https://github.com/QuasarApp/CQtDeployer/wiki/ZIP(en))
-* [Пакет DEB](https://github.com/QuasarApp/CQtDeployer/wiki/DEB(en))
+* [Qt Install Framework](QIF)
+* [ZIP-архив](ZIP)
+* [Пакет DEB](DEB)

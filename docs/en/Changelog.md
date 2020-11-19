@@ -135,7 +135,7 @@
 ## CQtDeployer 1.3.1
 - Fixed a task #191 (ignore command for plugins)
 - Fixed a task #192  (invalid paths when creating) 
-- Fixed absalute pathes of deployement file (see [confFile](https://github.com/QuasarApp/CQtDeployer/wiki/DeployConfigFileEn))
+- Fixed absalute pathes of deployement file (see [confFile](DeployConfigFile))
 ---
 
 ## CQtDeployer 1.3.0

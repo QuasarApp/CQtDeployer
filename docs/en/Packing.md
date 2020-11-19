@@ -6,7 +6,7 @@
 
 ## Automatic Packages
 Packages with this type creates automaticly.
-By default the distribution have a one main package. You can configure it using [Controll of packages options](Options.md).
+By default the distribution have a one main package. You can configure it using [Controll of packages options](Options).
 
 #### Example (Set new name for pacakge)
 ```
@@ -122,6 +122,6 @@ Example:
 ```
 
 ## Available packages
-* [Qt Install Framework](https://github.com/QuasarApp/CQtDeployer/wiki/QIF(en) )
-* [ZIP Arhive](https://github.com/QuasarApp/CQtDeployer/wiki/ZIP(en) )
-* [DEB Package](https://github.com/QuasarApp/CQtDeployer/wiki/DEB(en) )
+* [Qt Install Framework](QIF)
+* [ZIP Arhive](ZIP)
+* [DEB Package](DEB)

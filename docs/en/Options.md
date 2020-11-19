@@ -41,11 +41,11 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   qif                       | Create the QIF installer for deployment programm"              |
 |                             | Example: cqtdeployer qif" },                              |
 |                             | Starting with CQtDeployer 1.5 you can specify the path to your own installer template. |
-|                             | Examples: cqtdeployer -qif path/to/myCustom/qif. More details can be found [here](https://github.com/QuasarApp/CQtDeployer/wiki/QIF(en)) |
+|                             | Examples: cqtdeployer -qif path/to/myCustom/qif. More details can be found [here](QIF) |
 |   deb                       | Create the deb package for deployment programm"              |
 |                             | Example: cqtdeployer deb" },                              |
 |                             | you can specify the path to your own DEBIAN template. |
-|                             | Examples: cqtdeployer -deb path/to/myCustom/DEBIAN. More details can be found [here](https://github.com/QuasarApp/CQtDeployer/wiki/DEB(en)) |
+|                             | Examples: cqtdeployer -deb path/to/myCustom/DEBIAN. More details can be found [here](DEB) |
 |   deploySystem              | Deploys all libraries not recomendet because there may be conflicts with system libraries                                           |
 |   deploySystem-with-libc    | Deploy all libs include libc (only linux). Do not use this option for a gui application, for gu use the deploySystem option                             |
 
@@ -59,7 +59,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |                             | Using this file, you can add the necessary options, |
 |                             | thereby simplifying  in the command invocation the console. |
 |                             | However, the parameters in Kansol have a higher priority than in the file.|
-|                             | For more info about this flag see [wiki](https://github.com/QuasarApp/CQtDeployer/wiki/DeployConfigFileEn)                           |
+|                             | For more info about this flag see [wiki](DeployConfigFile)                           |
 |   -qmlDir [params]          | Qml data dir. For example -qmlDir ~/my/project/qml              |
 |   -qmake  [params]          | Qmake path. For example                                         |
 |                             | -qmake ~/Qt/5.14.0/gcc_64/bin/qmake                             |
@@ -114,4 +114,4 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -qifLogo [path/to/logo.png]| Sets path to the logo png file.                                |
 
 
-#### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.14.1/gcc_64/bin/qmake clear
+#### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.15.4/gcc_64/bin/qmake clear
