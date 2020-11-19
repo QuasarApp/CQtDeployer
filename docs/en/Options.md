@@ -19,6 +19,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 ## Options:
 
 ### Boolean options
+
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |   init                      | will initialize cqtdeployer.json file (configuration file)|
@@ -49,7 +50,8 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   deploySystem              | Deploys all libraries not recomendet because there may be conflicts with system libraries                                           |
 |   deploySystem-with-libc    | Deploy all libs include libc (only linux). Do not use this option for a gui application, for gu use the deploySystem option                             |
 
-### Deploy options:
+### Deploy options
+
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |   -bin [list, params]       | Deployable file or folder.                | 
@@ -78,7 +80,8 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   -targetDir [params]       | Sets target directory(by default it is the path to the first deployable file)|
 |   -verbose [0-3]            | Shows debug log                                                 |
 
-## Controll of packages options:
+### Controll of packages options
+
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |   -targetPackage [package;tar1,package;tar2]| Creates a new package and adds 'tar1 and tar2' to it |
@@ -96,7 +99,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -publisher [package;val,val]| Sets publisher for package                                       |
 |  -homepage [package;val,val] | Sets the homepage url for a package                              |
 
-## Plugins Controll Options
+### Plugins Controll Options
 
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
@@ -106,7 +109,8 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |                    |You can disable any plugin of your Qt build, just see the yourQtFolder/plugins forlder for available plugins.|
 | |Example: if you want disable qxcb plugin: -disablePlugins qxcb. Note that the name of the plugin is indicated without its extension.|
 
-## QtInstallFramework options:
+### QtInstallFramework options
+
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |  -qifStyle [path/to/style.css]| Sets the path to the CSS style file or sets the default style. Available styles: quasar |

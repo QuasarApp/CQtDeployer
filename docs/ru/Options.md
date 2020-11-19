@@ -21,6 +21,7 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 ## Параметры:
 
 ### Флаги
+
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |   init                      | проинициализирует файл cqtdeployer.json (файл конфигурации)|
@@ -51,6 +52,7 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |   deploySystem-with-libc    | Копирует все зависимости в том числе и libc, не рекомендуется использовать с gui приложения, в место этого используйте  опцию deploySystem              |
 
 ### Параметры развертывания:
+
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |  -bin    [list, params]     | Развертываемый файл или папка. пример -bin ~/my/project/bin/,~/my/project/bin.exe|
@@ -72,7 +74,8 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -targetDir [params]        | Устанавливает целевой каталог (по умолчанию это путь к первому развертываемому файлу)|
 |  -verbose [0-3]             | Показывает дебаг лога                                     |
 
-## Параметры управлениями пакетами:
+### Параметры управлениями пакетами:
+
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |  -targetPackage [package;tar1,package;tar2]| Создает новый пакет и добавляет в него 'tar1 и tar2'|
@@ -90,7 +93,8 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -publisher [package;val,val]| Установит Издательство (автора) префиксу                  |
 |  -homepage [package;val,val] | Установит URL-адрес домашней страницы для пакета          |
 
-## Параметры управления плагинами
+### Параметры управления плагинами:
+
 | Option                      | Descriptiion                                              |
 | ----------------------------|---------------------------------------------------------- |
 | -extraPlugin [пакет; val1; val2, SingeleVal] | Устанавливает дополнительный путь к стороннему плагину приложения |
@@ -99,7 +103,8 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 | | Вы можете отключить любой плагин вашей сборки Qt, просто проверте список доступных плагинов в свой qlFolder/plugins папке.
 | | Пример: Если вы хотите отключить плагин qxcb: -disablePlugins qxcb. Обратите внимание, что имя плагина указывается без его расширения.
 
-## Параметры QtInstallFramework:
+### Параметры QtInstallFramework:
+
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |  -qifStyle [path/to/style.css]| Устанавливает путь к CSS файлу стиля или устанавливает стиль по умолчанию. Доступные стили: quasar |
