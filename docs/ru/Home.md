@@ -13,7 +13,7 @@
 * [Файл развертывания](DeployConfigFile)
 * [Упаковка](Packing)
 * [Список изменений](Changelog)
-* [Обзоры](ReleaseReviews.en)
+* [Обзоры](ReleaseReviews)
 * [Сравнение возможностей](CompareFeatures)
 
 
