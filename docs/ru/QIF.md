@@ -45,6 +45,11 @@
 
 # Пользовательский Шаблон для QIF 
 Начиная с Версии CQtDeployer 1.5 вы можете использовать свой собственный шаблон установщика. Для этого вы должны передать в параметр qif путь к вашему шаблону.
+
+```
+cqtdeployer ... -qif /path/to/my/custom/qif/template
+```
+
 ### Шаблон 
 Шаблон qif долже содержать 2 папки:
 * packages 
@@ -79,3 +84,26 @@
 
 Если имена папок не совподут с именами пакетов то CQtDeployer будет использовать стандартный пакет для QIF.
 
+Если у вас только один пакет, вы можете использовать опцию **name** для установки имени приложения.
+
+```
+cqtdeployer ... -qif /path/to/my/custom/qif/template -name myCustomInstaller
+```
+
+#### Не забудьте переименовать папку вашего пакета в имя пакета из опции имени.
+
+
+``` bash
+.
+├── config
+│   ├── config.xml
+│   └── style.qss
+└── packages
+    └── myCustomInstaller  << "This is folder of the your package"
+        └── meta
+            ├── installscript.qs
+            └── package.xml
+
+4 directories, 4 files
+
+```
