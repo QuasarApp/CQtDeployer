@@ -46,6 +46,11 @@ Or you can describe packages in [configuration file](DeployConfigFile)
 
 # Custom Template for QIF
 Starting with CQtDeployer Version 1.5 you can use your own installer template. To do this, you must pass the path to your template to the qif parameter.
+
+```
+cqtdeployer ... -qif /path/to/my/custom/qif/template
+```
+
 ### Template
 The qif template should contain 2 folders:
 * packages
@@ -80,3 +85,27 @@ For example:
 ```
 
 If the folder names do not match the package names then CQtDeployer will use the standard QIF package.
+
+If you have only one package then you can use the **name** option for set name the application.
+
+```
+cqtdeployer ... -qif /path/to/my/custom/qif/template -name myCustomInstaller
+```
+
+#### Do not forget to rename the your package folder to the packaga name of the name option.
+
+
+``` bash
+.
+├── config
+│   ├── config.xml
+│   └── style.qss
+└── packages
+    └── myCustomInstaller  << "This is folder of the your package"
+        └── meta
+            ├── installscript.qs
+            └── package.xml
+
+4 directories, 4 files
+
+```
