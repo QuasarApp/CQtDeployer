@@ -1,113 +1,95 @@
-### Introduction
-In this article we will look at how to properly collect all qt dependencies for your application, which was collected dynamically.
+# How to deploy C++ Application 
+Hi my name is Yankovich Andrei and i an maintainer of the [CQtDeployer tool](https://github.com/QuasarApp/CQtDeployer).
 
-### For a start, a little theory.
+In this article i describe deploy processes of c++/qt application with cqtdeployer.
 
-### Why is this needed?
+## Recommendation 
+If you want maximum stability of your distribution and you want to run your application on different Distributions with a different versions then you need to use Qt from official [build](https://www.qt.io/download-open-source?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5).
 
-There are several ways to build applications, the main ones are:
-* Static build
-Static assembly involves the creation of a binary, which will be all the necessary links to it. In other words, all that is needed for his work will lie in it. This approach is suitable for small console applications that have few dependencies, otherwise the size of the final binary will be extremely large.
+## Case 
+In this case we deploy Qt GUI Application for Ubuntu 16.04,Ubuntu 18.04 and Ubuntu 20.04 ++.
 
-* Dynamic build
-It differs from static in that only the source code of your application will be in the binary (the size of the binary will be minimal), but when you run such an application it will need third-party libraries that were used when writing it.
+**If you want support all distributions begin from Ubuntu 16.04 you need build and deploy you application on the older distribution (in my case it is 16.04)**
 
-### Now a little description.
+## Install CQtDeployer 
+If you want use system qt from your OS then install [classic](https://github.com/QuasarApp/CQtDeployer/releases/download/1.4.7/LinuxInstaller.run) version of the cqtdeployer.
 
-The CQtDeployer is application for extract all depends library of executable and create launch script for your application.
-
-### Let's take an example.
-
-For example, I wrote a simple qt application using qml - MyApp.
-### MyApp (main.cpp)
-```cpp
-#include <QGuiApplication>
-#include <QQmlApplicationEngine>
-
-int main (int argc, char * argv [])
-{
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
-    QGuiApplication app (argc, argv);
-
-    QQmlApplicationEngine engine;
-    engine.load (QUrl (QStringLiteral("qrc: /main.qml")));
-    if (engine.rootObjects ().isEmpty )
-        return -1;
-
-    return app.exec ();
-}
-
-```
-### MyApp (main.qml)
-```qml
-import QtQuick 2.9
-import QtQuick.Controls 2.2
-
-ApplicationWindow {
-    visible: true
-    width: 640
-    height: 480
-    title: qsTr ("Scroll")
-
-    ScrollView {
-        anchors.fill: parent
-
-        ListView {
-            width: parent.width
-            model: 20
-            delegate: ItemDelegate {
-                text: "Item" + (index + 1)
-                width: parent.width
-            }
-        }
-    }
-}
-
+```bash
+wget https://github.com/QuasarApp/CQtDeployer/releases/download/1.4.7/LinuxInstaller.run
 ```
 
-MyApp is linked dynamically, that is, it needs qt libraries to work.
-If we try to start the application, right after the build we get an error:
+```
+chmod +x LinuxInstaller.run
+./LinuxInstaller.run
+```
+![CQtDeployer Setup](https://user-images.githubusercontent.com/12465465/100077575-9280a600-2e53-11eb-8d9d-d184341cfa7c.png)
+
+Select latest stable version (1.4)
+
+![Screenshot from 2020-11-24 12-50-54](https://user-images.githubusercontent.com/12465465/100077707-bb08a000-2e53-11eb-9838-6f896af33105.png)
+
+Done.
+
+If You use official qt build then you can use snap version of the cqtdeployer.
+
+```
+sudo snap install cqtdeployer
+```
+
+After install add requirement permissions.
+
+```
+sudo snap connect cqtdeployer:process-control
+sudo snap connect cqtdeployer:removable-media
+sudo snap connect cqtdeployer:system-backup
+```
+
+Done!!!
+
+## Deploy Qt GUI Application
+
+### Deploy yor executable file.
+
+* For Linux systems:
 ``` bash
-~/build-MyApp-Desktop_Qt_5_11_1_GCC_64bit4-Release $ ./MyApp ./MyApp: /usr/lib/x86_64-linux-gnu/libQt5Qml.so.5: version `Qt_5 'not found (required by ./MyApp)
-./MyApp: /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5: version `Qt_5 'not found (required by ./MyApp)
-./MyApp: /usr/lib/x86_64-linux-gnu/libQt5Core.so.5: version `Qt_5.11 'not found (required by ./MyApp)
-./MyApp: /usr/lib/x86_64-linux-gnu/libQt5Core.so.5: version `Qt_5 'not found (required by ./MyApp)
+cqtdeployer -bin myexecutable
 ```
 
-From similar texts, we see that the application depends on the GUI qt libraries and qml libraries. Search and build all resources (libraries and plugins) will take a lot of time.
-To save time and effort, we will use the CQtDeployer utility (you can download it [here](https://github.com/QuasarApp/CQtDeployer/releases))
-
-or install in Snap Store
-
-[![Download from the Snap Store](https://snapcraft.io/static/images/badges/ru/snap-store-black.svg)](https://snapcraft.io/cqtdeployer)
+* For Windows systems:
 ``` bash
-cqtdeployer -bin myApp -qmake /media/D/Qt/5.12.3/gcc_64/bin/qmake -qmlDir ./
+cqtdeployer -bin myexecutable.exe -qmake C:/Qt/5.15.0/min_gw/bin/qmake.exe
 ```
 
-After executing this command, you will receive a fully ready application for work with a ready launcher, which will set up all the necessary environments for your application to work on all machines running Linux.
-
-### Total
-After running the QtDeployer, the contents of the folder with your application should look like this:
+* For crossplatform build (Linux -> Windows)
 ``` bash
+cqtdeployer -bin myexecutable.exe -qmake ~/crossbuildet-Qt/5.15.0/min_gw/bin/qmake
+```
 
-drwxr-xr-x 7 andrei andrei 4096 May 24 12:22 ./
-drwxrwxr-x 3 andrei andrei 4096 May 24 12:22 ../
-drwxr-xr-x 2 andrei andrei 4096 May 24 12:22 bin/
-drwxr-xr-x 2 andrei andrei 4096 May 24 12:22 lib/
--rwx---rwx 1 andrei andrei  433 May 24 12:22 myApp.sh*
-drwxr-xr-x 6 andrei andrei 4096 May 24 12:22 plugins/
-drwxr-xr-x 5 andrei andrei 4096 May 24 12:22 qml/
-drwxr-xr-x 2 andrei andrei 4096 May 24 12:22 translations/
+## Extra options
 
+If you use extra libraries, just add path for cqtdeployer to used libs.
+``` bash
+cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs 
+```
+
+If you want find libraries recursively from libDir path, just add recursive Depth option.
+``` bash
+cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5
+```
+
+If you application use qml, just add qmlDir option
+``` bash
+cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources
+```
+
+If you want create simple installer for your application just add gif option.
+```
+cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qif
+```
+
+If cqtdeployer not found qmake then add the -qmake option to an invoke command.
 
 ```
-![cqtdeployer result](https://user-images.githubusercontent.com/12465465/58318590-bdcea300-7e20-11e9-8b45-37a13aeef222.png)
-* myApp.sh - your application launch script
-* bin - the folder with your binary
-* lib - the folder with all necessary dependencies of your application.
-* plugins - the qt plugins needed for an application to work
-* qml -  the folder with qml dependencies.
-* translations - the folder with standard qt translations.
+cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qif -qmake /path/to/my/qmake
 
-So, you can prepare your application for packaging in a deb or snap package, after which you can begin to distribute it. Note that after running cqtdeployer, your application must be launched using the sh script, which will set up the necessary environment for your application.
+```
