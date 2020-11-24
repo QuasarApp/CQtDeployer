@@ -47,8 +47,8 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |                             | Example: cqtdeployer deb" },                              |
 |                             | you can specify the path to your own DEBIAN template. |
 |                             | Examples: cqtdeployer -deb path/to/myCustom/DEBIAN. More details can be found [here](DEB) |
-|   deploySystem              | Deploys all libraries not recomendet because there may be conflicts with system libraries                                           |
-|   deploySystem-with-libc    | Deploy all libs include libc (only linux). Do not use this option for a gui application, for gu use the deploySystem option                             |
+|   deploySystem              | Deploys all libraries. It is not recommended to use, as there may be conflicts with system libraries                                        |
+|   deploySystem-with-libc    | Deploy all libs include libc (only linux). Do not use this option for a gui application, for gui use the deploySystem option                             |
 
 ### Deploy options
 
