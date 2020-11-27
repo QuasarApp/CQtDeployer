@@ -29,6 +29,7 @@ public:
 
     virtual QSet<QString> qtWithoutTr(const QString &distDir = DISTRO_DIR) const;
     virtual QSet<QString> qtWebEngine(const QString &distDir = DISTRO_DIR) const;
+    virtual QSet<QString> qtWebEngineWidgets(const QString &distDir = DISTRO_DIR) const;
     virtual QSet<QString> testEmptyParamsTree(const QString &distDir = DISTRO_DIR) const;
 
 

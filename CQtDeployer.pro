@@ -24,13 +24,16 @@ lessThan(QT_MAJOR_VERSION, 6):lessThan(QT_MINOR_VERSION, 14) {
                tests/TestQMLWidgets
 
     unix:SUBDIRS += tests/quicknanobrowser
+    unix:SUBDIRS += tests/webui
+
 
     contains(DEFINES, WITHOUT_TESTS) {
         SUBDIRS -= UnitTests \
                tests/TestOnlyC \
                tests/TestQtWidgets \
                tests/TestQMLWidgets \
-               tests/quicknanobrowser
+               tests/quicknanobrowser \
+               tests/webui
     }
 
     CQtDeployer.depends=QuasarAppLib

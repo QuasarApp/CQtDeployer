@@ -551,6 +551,16 @@ void deploytest::testWebEngine() {
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../quicknanobrowser"}, &comapareTree);
 
+
+    bin = TestBinDir + "webui";
+    qmake = TestQtDir + "bin/qmake";
+
+    comapareTree = TestModule.qtWebEngineWidgets();
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake}, &comapareTree);
+
+
 #endif
 }
 

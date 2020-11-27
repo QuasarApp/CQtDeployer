@@ -41,7 +41,8 @@ bool Extracter::deployMSVC() {
 bool Extracter::isWebEngine(const QString &package) const {
     auto qtModules = _packageDependencyes.value(package).qtModules();
 
-    return static_cast<quint64>(qtModules) & static_cast<quint64>(DeployCore::QtModule::QtWebEngineModule);
+    auto webEngine = DeployCore::QtModule::QtWebEngineCoreModule ;
+    return static_cast<quint64>(qtModules) & static_cast<quint64>(webEngine);
 }
 
 bool Extracter::extractWebEngine() {
