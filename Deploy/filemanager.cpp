@@ -193,49 +193,23 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
     QFile sourceFile(file);
     auto sourceFileAbsalutePath = QFileInfo(file).absoluteFilePath();
 
+    bool tarExits = QFileInfo(tergetFile).exists();
+    if (tarExits && !QuasarAppUtils::Params::isEndable("noOverwrite")) {
+        QuasarAppUtils::Params::log(tergetFile + " already exists!",
+                                    QuasarAppUtils::Info);
+        return true;
+    }
+
     if (!((isMove)?
           sourceFile.rename(tergetFile):
           sourceFile.copy(tergetFile))) {
 
-        QuasarAppUtils::Params::log("Qt Operation fail " + file + " >> " + tergetFile +
-                                    " Qt error: " + sourceFile.errorString(),
-                                    QuasarAppUtils::Warning);
+        QuasarAppUtils::Params::log("Operation fail " + file + " >> " + tergetFile,
+                                    QuasarAppUtils::Error);
 
-        bool tarExits = QFileInfo(tergetFile).exists();
-
-        if ((!tarExits) ||
-                (tarExits && !QuasarAppUtils::Params::isEndable("noOverwrite"))) {
-
-            std::ifstream  src(file.toStdString(),
-                               std::ios::binary);
-
-            std::ofstream  dst((tergetFile).toStdString(),
-                               std::ios::binary);
-
-            dst << src.rdbuf();
-
-            if (!QFileInfo::exists(tergetFile)) {
-                QuasarAppUtils::Params::log("std Operation fail file not copied. "
-                                            "Сheck if you have access to the target dir",
-                                            QuasarAppUtils::Error);
-                return false;
-
-            }
-
-            if (isMove && std::remove(file.toStdString().c_str())) {
-                return false;
-            }
-
-        } else {
-
-            if (QFileInfo(tergetFile).exists()) {
-                QuasarAppUtils::Params::log(tergetFile + " already exists!",
-                                            QuasarAppUtils::Info);
-                return true;
-            }
-
-            return false;
-        }
+        QuasarAppUtils::Params::log(sourceFile.errorString(),
+                                    QuasarAppUtils::Error);
+        return false;
     }
 
     if (isMove) {
