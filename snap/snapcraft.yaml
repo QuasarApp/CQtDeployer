@@ -37,6 +37,7 @@ parts:
     stage-packages:
       - libfreetype6
       - libpng16-16
+      - dpkg
 
 
   qif:
