@@ -512,30 +512,6 @@ void deploytest::testMSVC() {
 }
 
 void deploytest::testEmptyParamsString() {
-    //#ifdef QT_DEBUG
-    //    TestUtils utils;
-
-    //    QDir("./" + DISTRO_DIR).removeRecursively();
-
-    //    auto comapareTree = TestModule.testEmptyParamsTree();
-
-    //    runTestParams({}, &comapareTree);
-
-
-    //    auto emptyTree = utils.createTree({});
-
-    //    runTestParams({"clear"}, &emptyTree);
-
-    //    comapareTree = TestModule.testEmptyParamsTree("testDeployDir");
-
-    //    runTestParams({"-bin", "./UnitTests",
-    //                  "-targetDir", "./testDeployDir"}, &comapareTree);
-
-
-    //    comapareTree = utils.createTree({});
-
-    //    runTestParams({"clear", "-targetDir", "./testDeployDir"}, &comapareTree);
-    //#endif
 }
 
 void deploytest::testWebEngine() {

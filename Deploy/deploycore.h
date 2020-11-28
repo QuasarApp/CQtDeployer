@@ -213,6 +213,14 @@ public:
     static char getEnvSeparator();
 
     static LibPriority getLibPriority(const QString &lib);
+
+    /**
+     * @brief containsModule This method compare lib name and module of qt.
+     * @param muduleIndex this is name of module library
+     * @param lib This is library name
+     * @return true if library has some module that as muduleIndex
+     */
+    static bool containsModule(const QString &moduleLibrary, const QString &lib);
     static DeployCore::QtModule getQtModule(const QString& path);
     static void addQtModule(DeployCore::QtModule& module, const QString& path);
 

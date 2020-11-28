@@ -40,8 +40,8 @@ bool Extracter::deployMSVC() {
 
 bool Extracter::isWebEngine(const QString &package) const {
     auto qtModules = _packageDependencyes.value(package).qtModules();
+    auto webEngine = DeployCore::QtModule::QtWebEngineModule;
 
-    auto webEngine = DeployCore::QtModule::QtWebEngineCoreModule ;
     return static_cast<quint64>(qtModules) & static_cast<quint64>(webEngine);
 }
 
@@ -50,8 +50,8 @@ bool Extracter::extractWebEngine() {
     auto cnf = DeployCore::_config;
 
     for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
-
         const auto &package = i.key();
+
         if (isWebEngine(package)) {
             auto webEngeneBin = cnf->qtDir.getLibexecs();
 
@@ -66,7 +66,6 @@ bool Extracter::extractWebEngine() {
             auto libOut = cnf->getTargetDir() + "/" + package + cnf->packages()[package].getLibOutDir();
 
             auto res = cnf->qtDir.getResources();
-
             if (!_fileManager->copyFiles(angleGLLibs(), libOut)) {
                 return false;
             }
