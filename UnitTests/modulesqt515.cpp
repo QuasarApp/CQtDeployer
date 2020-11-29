@@ -252,3 +252,18 @@ QSet<QString> ModulesQt515::testOutLibs(const QString &distDir) const {
 #endif
     return res;
 }
+
+QSet<QString> ModulesQt515::qtWebEngineWidgets(const QString &distDir) const
+{
+    TestUtils utils;
+
+    auto res = ModulesQt514::qtWebEngineWidgets(distDir);
+
+#ifdef Q_OS_WIN
+#else
+    res -= utils.createTree({
+                                "./" + distDir + "/plugins/wayland-graphics-integration-server/libvulkan-server.so"
+    });
+#endif
+    return res;
+}

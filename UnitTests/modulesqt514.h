@@ -20,6 +20,8 @@ public:
 
     QSet<QString> qtWithoutTr(const QString &distDir = DISTRO_DIR) const override;
     QSet<QString> qtWebEngine(const QString &distDir = DISTRO_DIR) const override;
+
+    QSet<QString> qtWebEngineWidgets(const QString &distDir = DISTRO_DIR) const override;
 };
 
 #endif // MODULESQT514_H

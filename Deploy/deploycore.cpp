@@ -26,60 +26,60 @@
 const DeployConfig* DeployCore::_config = nullptr;
 
 QtModuleEntry DeployCore::qtModuleEntries[] = {
-    { QtBluetoothModule, "bluetooth", "Bluetooth", nullptr },
-    { QtConcurrentModule, "concurrent", "Concurrent", "qtbase" },
-    { QtCoreModule, "core", "Core", "qtbase" },
-    { QtDeclarativeModule, "declarative", "Declarative", "qtquick1" },
-    { QtDesignerModule, "designer", "Designer", nullptr },
-    { QtDesignerComponents, "designercomponents", "DesignerComponents", nullptr },
+    { QtBluetoothModule, "bluetooth", "QtXBluetooth", nullptr },
+    { QtConcurrentModule, "concurrent", "QtXConcurrent", "qtbase" },
+    { QtCoreModule, "core", "QtXCore", "qtbase" },
+    { QtDeclarativeModule, "declarative", "QtXDeclarative", "qtquick1" },
+    { QtDesignerModule, "designer", "QtXDesigner", nullptr },
+    { QtDesignerComponents, "designercomponents", "QtXDesignerComponents", nullptr },
     { QtEnginioModule, "enginio", "Enginio", nullptr },
-    { QtGamePadModule, "gamepad", "Gamepad", nullptr },
-    { QtGuiModule, "gui", "Gui", "qtbase" },
-    { QtHelpModule, "qthelp", "Help", "qt_help" },
-    { QtMultimediaModule, "multimedia", "Multimedia", "qtmultimedia" },
-    { QtMultimediaWidgetsModule, "multimediawidgets", "MultimediaWidgets", "qtmultimedia" },
-    { QtMultimediaQuickModule, "multimediaquick", "MultimediaQuick_p", "qtmultimedia" },
-    { QtNetworkModule, "network", "Network", "qtbase" },
-    { QtNfcModule, "nfc", "Nfc", nullptr },
-    { QtOpenGLModule, "opengl", "OpenGL", nullptr },
-    { QtOpenGLWidgetsModule, "openglwidgets", "OpenGLWidgets", nullptr },
-    { QtPositioningModule, "positioning", "Positioning", nullptr },
-    { QtPrintSupportModule, "printsupport", "PrintSupport", nullptr },
-    { QtQmlModule, "qml", "Qml", "qtdeclarative" },
+    { QtGamePadModule, "gamepad", "QtXGamepad", nullptr },
+    { QtGuiModule, "gui", "QtXGui", "qtbase" },
+    { QtHelpModule, "qthelp", "QtXHelp", "qt_help" },
+    { QtMultimediaModule, "multimedia", "QtXMultimedia", "qtmultimedia" },
+    { QtMultimediaWidgetsModule, "multimediawidgets", "QtXMultimediaWidgets", "qtmultimedia" },
+    { QtMultimediaQuickModule, "multimediaquick", "QtXMultimediaQuick_p", "qtmultimedia" },
+    { QtNetworkModule, "network", "QtXNetwork", "qtbase" },
+    { QtNfcModule, "nfc", "QtXNfc", nullptr },
+    { QtOpenGLModule, "opengl", "QtXOpenGL", nullptr },
+    { QtOpenGLWidgetsModule, "openglwidgets", "QtXOpenGLWidgets", nullptr },
+    { QtPositioningModule, "positioning", "QtXPositioning", nullptr },
+    { QtPrintSupportModule, "printsupport", "QtXPrintSupport", nullptr },
+    { QtQmlModule, "qml", "QtXQml", "qtdeclarative" },
     { QtQmlToolingModule, "qmltooling", "qmltooling", nullptr },
-    { QtQuickModule, "quick", "Quick", "qtdeclarative" },
-    { QtQuickParticlesModule, "quickparticles", "QuickParticles", nullptr },
-    { QtQuickWidgetsModule, "quickwidgets", "QuickWidgets", nullptr },
-    { QtScriptModule, "script", "Script", "qtscript" },
-    { QtScriptToolsModule, "scripttools", "ScriptTools", "qtscript" },
-    { QtSensorsModule, "sensors", "Sensors", nullptr },
-    { QtSerialPortModule, "serialport", "SerialPort", "qtserialport" },
-    { QtSqlModule, "sql", "Sql", "qtbase" },
-    { QtSvgWidgetsModule, "svgwidgets", "SvgWidgets", nullptr },
-    { QtSvgModule, "svg", "Svg", nullptr },
-    { QtTestModule, "test", "Test", "qtbase" },
-    { QtWebKitModule, "webkit", "WebKit", nullptr },
-    { QtWebKitWidgetsModule, "webkitwidgets", "WebKitWidgets", nullptr },
-    { QtWebSocketsModule, "websockets", "WebSockets", nullptr },
-    { QtWidgetsModule, "widgets", "Widgets", "qtbase" },
-    { QtWinExtrasModule, "winextras", "WinExtras", nullptr },
-    { QtXmlModule, "xml", "Xml", "qtbase" },
-    { QtXmlPatternsModule, "xmlpatterns", "XmlPatterns", "qtxmlpatterns" },
-    { QtWebEngineCoreModule, "webenginecore", "WebEngineCore", nullptr },
-    { QtWebEngineModule, "webengine", "WebEngine", "qtwebengine" },
-    { QtWebEngineWidgetsModule, "webenginewidgets", "WebEngineWidgets", nullptr },
-    { Qt3DCoreModule, "3dcore", "3DCore", nullptr },
-    { Qt3DRendererModule, "3drenderer", "3DRender", nullptr },
-    { Qt3DQuickModule, "3dquick", "3DQuick", nullptr },
-    { Qt3DQuickRendererModule, "3dquickrenderer", "3DQuickRender", nullptr },
-    { Qt3DInputModule, "3dinput", "3DInput", nullptr },
-    { Qt3DAnimationModule, "3danimation", "3DAnimation", nullptr },
-    { Qt3DExtrasModule, "3dextras", "3DExtras", nullptr },
-    { QtLocationModule, "geoservices", "Location", nullptr },
-    { QtWebChannelModule, "webchannel", "WebChannel", nullptr },
-    { QtTextToSpeechModule, "texttospeech", "TextToSpeech", nullptr },
-    { QtSerialBusModule, "serialbus", "SerialBus", nullptr },
-    { QtWebViewModule, "webview", "WebView", nullptr }
+    { QtQuickModule, "quick", "QtXQuick", "qtdeclarative" },
+    { QtQuickParticlesModule, "quickparticles", "QtXQuickParticles", nullptr },
+    { QtQuickWidgetsModule, "quickwidgets", "QtXQuickWidgets", nullptr },
+    { QtScriptModule, "script", "QtXScript", "qtscript" },
+    { QtScriptToolsModule, "scripttools", "QtXScriptTools", "qtscript" },
+    { QtSensorsModule, "sensors", "QtXSensors", nullptr },
+    { QtSerialPortModule, "serialport", "QtXSerialPort", "qtserialport" },
+    { QtSqlModule, "sql", "QtXSql", "qtbase" },
+    { QtSvgWidgetsModule, "svgwidgets", "QtXSvgWidgets", nullptr },
+    { QtSvgModule, "svg", "QtXSvg", nullptr },
+    { QtTestModule, "test", "QtXTest", "qtbase" },
+    { QtWebKitModule, "webkit", "QtXWebKit", nullptr },
+    { QtWebKitWidgetsModule, "webkitwidgets", "QtXWebKitWidgets", nullptr },
+    { QtWebSocketsModule, "websockets", "QtXWebSockets", nullptr },
+    { QtWidgetsModule, "widgets", "QtXWidgets", "qtbase" },
+    { QtWinExtrasModule, "winextras", "QtXWinExtras", nullptr },
+    { QtXmlModule, "xml", "QtXXml", "qtbase" },
+    { QtXmlPatternsModule, "xmlpatterns", "QtXXmlPatterns", "qtxmlpatterns" },
+    { QtWebEngineCoreModule, "webenginecore", "QtXWebEngineCore", nullptr },
+    { QtWebEngineModule, "webengine", "QtXWebEngine", "qtwebengine" },
+    { QtWebEngineWidgetsModule, "webenginewidgets", "QtXWebEngineWidgets", nullptr },
+    { Qt3DCoreModule, "3dcore", "QtX3DCore", nullptr },
+    { Qt3DRendererModule, "3drenderer", "QtX3DRender", nullptr },
+    { Qt3DQuickModule, "3dquick", "QtX3DQuick", nullptr },
+    { Qt3DQuickRendererModule, "3dquickrenderer", "QtX3DQuickRender", nullptr },
+    { Qt3DInputModule, "3dinput", "QtX3DInput", nullptr },
+    { Qt3DAnimationModule, "3danimation", "QtX3DAnimation", nullptr },
+    { Qt3DExtrasModule, "3dextras", "QtX3DExtras", nullptr },
+    { QtLocationModule, "geoservices", "QtXLocation", nullptr },
+    { QtWebChannelModule, "webchannel", "QtXWebChannel", nullptr },
+    { QtTextToSpeechModule, "texttospeech", "QtXTextToSpeech", nullptr },
+    { QtSerialBusModule, "serialbus", "QtXSerialBus", nullptr },
+    { QtWebViewModule, "webview", "QtXWebView", nullptr }
 };
 
 DeployCore::QtModule DeployCore::getQtModule(const QString& path) {
@@ -94,7 +94,7 @@ DeployCore::QtModule DeployCore::getQtModule(const QString& path) {
     auto lIbName = QFileInfo(path).fileName();
 
     for (int i = 0; i < modulesCount; ++i) {
-        if (lIbName.contains(qtModuleEntries[i].libraryName)) {
+        if (containsModule(qtModuleEntries[i].libraryName, lIbName)) {
             return static_cast<DeployCore::QtModule>(qtModuleEntries[i].module);
         }
     }
@@ -142,6 +142,11 @@ LibPriority DeployCore::getLibPriority(const QString &lib) {
     }
 
     return SystemLib;
+}
+
+bool DeployCore::containsModule(const QString& moduleLibrary, const QString& lib) {
+    QRegExp erfexp(QString(moduleLibrary).replace("QtX", "Qt[4,5,6]"));
+    return lib.contains(erfexp);
 }
 
 #define C(X) QuasarAppUtils::Params::isEndable(X)
@@ -348,8 +353,7 @@ QStringList DeployCore::extractTranslation(const QSet<QString> &libs) {
 
     for (const auto &lib: libs) {
         for (size_t i = 0; i < qtModulesCount; ++i) {
-            if (lib.contains(qtModuleEntries[i].libraryName) &&
-                    qtModuleEntries[i].translation) {
+            if (containsModule(qtModuleEntries[i].libraryName, lib) && qtModuleEntries[i].translation) {
                 res.insert(qtModuleEntries[i].translation);
             }
         }
