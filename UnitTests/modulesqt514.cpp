@@ -95,3 +95,18 @@ QSet<QString> ModulesQt514::qtWebEngine(const QString &distDir) const
     return res;
 }
 
+QSet<QString> ModulesQt514::qtWebEngineWidgets(const QString &distDir) const
+{
+    TestUtils utils;
+
+    auto res = ModulesQt513::qtWebEngineWidgets(distDir);
+
+#ifdef Q_OS_WIN
+#else
+    res += utils.createTree({
+        "./" + distDir + "/translations/qtwebengine_ca.qm"
+    });
+#endif
+    return res;
+}
+

@@ -538,30 +538,6 @@ void deploytest::testMSVC() {
 }
 
 void deploytest::testEmptyParamsString() {
-    //#ifdef QT_DEBUG
-    //    TestUtils utils;
-
-    //    QDir("./" + DISTRO_DIR).removeRecursively();
-
-    //    auto comapareTree = TestModule.testEmptyParamsTree();
-
-    //    runTestParams({}, &comapareTree);
-
-
-    //    auto emptyTree = utils.createTree({});
-
-    //    runTestParams({"clear"}, &emptyTree);
-
-    //    comapareTree = TestModule.testEmptyParamsTree("testDeployDir");
-
-    //    runTestParams({"-bin", "./UnitTests",
-    //                  "-targetDir", "./testDeployDir"}, &comapareTree);
-
-
-    //    comapareTree = utils.createTree({});
-
-    //    runTestParams({"clear", "-targetDir", "./testDeployDir"}, &comapareTree);
-    //#endif
 }
 
 void deploytest::testWebEngine() {
@@ -576,6 +552,16 @@ void deploytest::testWebEngine() {
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../quicknanobrowser"}, &comapareTree);
+
+
+    bin = TestBinDir + "webui";
+    qmake = TestQtDir + "bin/qmake";
+
+    comapareTree = TestModule.qtWebEngineWidgets();
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake}, &comapareTree);
+
 
 #endif
 }
@@ -1505,8 +1491,10 @@ void deploytest::testBinDir() {
 
 #ifdef Q_OS_UNIX
     comapareTree += utils.createTree(
-    {"./" + DISTRO_DIR + "/bin/quicknanobrowser",
-     "./" + DISTRO_DIR + "/quicknanobrowser.sh"});
+                {"./" + DISTRO_DIR + "/bin/quicknanobrowser",
+                 "./" + DISTRO_DIR + "/quicknanobrowser.sh",
+                 "./" + DISTRO_DIR + "/bin/webui",
+                 "./" + DISTRO_DIR + "/webui.sh"});
 #endif
 
 
@@ -1541,7 +1529,9 @@ void deploytest::testConfFile() {
 #ifdef Q_OS_UNIX
     comapareTree += utils.createTree(
     {"./" + DISTRO_DIR + "/bin/quicknanobrowser",
-     "./" + DISTRO_DIR + "/quicknanobrowser.sh"});
+     "./" + DISTRO_DIR + "/quicknanobrowser.sh",
+     "./" + DISTRO_DIR + "/bin/webui",
+     "./" + DISTRO_DIR + "/webui.sh"});
 #endif
 
     runTestParams({"-bin", TestBinDir, "clear" , "noCheckRPATH", "noCheckPATH", "noQt",
@@ -1552,8 +1542,10 @@ void deploytest::testConfFile() {
     QFile::remove(TestBinDir + "/TestConf.json");
 
     comapareTree -= utils.createTree(
-    {"./" + DISTRO_DIR + "/bin/quicknanobrowser",
-     "./" + DISTRO_DIR + "/quicknanobrowser.sh"});
+                {"./" + DISTRO_DIR + "/bin/quicknanobrowser",
+                 "./" + DISTRO_DIR + "/quicknanobrowser.sh",
+                 "./" + DISTRO_DIR + "/bin/webui",
+                 "./" + DISTRO_DIR + "/webui.sh"});
 
 #ifdef Q_OS_UNIX
     runTestParams({"-bin", TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject," + TestBinDir + "TestQMLWidgets",
@@ -1739,7 +1731,8 @@ void deploytest::testConfFile() {
     comapareTree = TestModule.onlyC(DISTRO_DIR + "/Dstro1") +
             TestModule.qtLibs(DISTRO_DIR + "/Dstro2") +
             TestModule.qmlLibs(DISTRO_DIR + "/Dstro2") +
-            TestModule.qtWebEngine(DISTRO_DIR + "/Dstro2");
+            TestModule.qtWebEngine(DISTRO_DIR + "/Dstro2") +
+            TestModule.qtWebEngineWidgets(DISTRO_DIR + "/Dstro2");
 
 #ifdef Q_OS_LINUX
     auto qmlDir = TestBinDir + "/../";
