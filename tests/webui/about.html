@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Qt WebEngine WebUI Example</title>
+        <style>
+         html {
+             background: #f0f0f0;
+             color: #303030;
+             font: 16px system-ui;
+             height: 100%;
+         }
+
+         body {
+             margin: 0;
+             padding: 0;
+             height: 100%;
+             display: flex;
+             flex-direction: column;
+             align-items: stretch;
+         }
+
+         body > * {
+             padding-left: 20px;
+             padding-right: 20px;
+         }
+
+         header {
+             flex: none;
+             display: flex;
+             align-items: center;
+             background: #f0fff0;
+             border-bottom: 1px solid #e0e0e0;
+             padding-top: 20px;
+             padding-bottom: 20px;
+         }
+
+         header > h1 {
+             font: bold 20px system-ui;
+             margin-left: 18px;
+         }
+
+         main {
+             flex: auto;
+         }
+
+         footer {
+             flex: none;
+             display: flex;
+             justify-content: center;
+             padding-bottom: 20px;
+         }
+
+         button {
+             background: #41cd52;
+             color: #f0f0f0;
+             font: 16px system-ui;
+             border: 0;
+             box-shadow: 0px 1px 3px rgb(0,0,0,0.5);
+             cursor: pointer;
+             margin: 0 0 1px;
+             padding: 10px 24px;
+         }
+
+         button:hover {
+             background: #50dc61;
+         }
+
+         button:active {
+             background: #50dc61;
+             box-shadow: 0px 1px 2px rgb(0,0,0,0.5);
+             margin: 1px 0 0;
+         }
+
+         button:focus {
+             outline: 0;
+         }
+
+        </style>
+    </head>
+    <body>
+        <header>
+            <img width="48px" height="48px"
+                 src="qrc:/qt-project.org/qmessagebox/images/qtlogo-64.png">
+            <h1>WebEngine Widgets<br>WebUI Example</h1>
+        </header>
+        <main>
+            <p>
+                Aside from the built-in schemes, such as <code>http</code> and
+                <code>qrc</code>, Qt WebEngine may be extended with <em>custom
+                schemes</em> by creating <em>custom scheme handlers</em>.
+            </p>
+
+            <p>
+                This is a simple HTML page loaded from a custom scheme and
+                displayed by a <code>QWebEngineView</code>. Even the Quit button
+                below is a standard HTML <code>&lt;button&gt;</code> element.
+            </p>
+
+            <p>
+                Read the documentation to find out
+            </p>
+            <ul>
+                <li>
+                    <p>
+                        How to create a custom scheme handler which serves HTML
+                        and handles HTML form submissions.
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        How to prevent ordinary web content from accessing the
+                        custom scheme.
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        How to prevent any other scheme from submitting HTML
+                        form data.
+                    </p>
+                </li>
+            </ul>
+        </main>
+        <footer>
+            <form action="" method="post">
+                <button name="quit">Quit</button>
+            </form>
+        </footer>
+    </body>
+</html>

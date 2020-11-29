@@ -17,7 +17,7 @@ public:
     QSet<QString> qtWebEngine(const QString &distDir = DISTRO_DIR) const override;
     QSet<QString> testDistroLibs(const QString &distDir = DISTRO_DIR) const override;
     QSet<QString> testOutLibs(const QString &distDir = DISTRO_DIR) const override;
-
+    QSet<QString> qtWebEngineWidgets(const QString &distDir = DISTRO_DIR) const override;
 };
 
 #endif // MODULESQT515_H
