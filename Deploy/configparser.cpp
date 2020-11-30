@@ -1264,7 +1264,14 @@ QString ConfigParser::findWindowsPath(const QString& path) const {
 QList<iDistribution *> ConfigParser::getDistribution() {
     QList<iDistribution *> distros;
     if (QuasarAppUtils::Params::isEndable("deb")) {
+#ifdef Q_OS_LINUX
         distros.push_back(new Deb(_fileManager));
+#else
+        QuasarAppUtils::Params::log("The deb option availabel only on Linux host palatforms,"
+                                    " please remove this options from your deploy command",
+                                    QuasarAppUtils::Warning);
+
+#endif
     }
 
     if (QuasarAppUtils::Params::isEndable("zip")) {

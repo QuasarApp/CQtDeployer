@@ -65,13 +65,8 @@ bool FileManager::addToDeployed(const QString& path) {
     if (info.isFile() || !info.exists()) {
         _deployedFiles += info.absoluteFilePath();
 
-        auto completeSufix = info.completeSuffix();
-        if (info.isFile() && (completeSufix.isEmpty() || completeSufix.toLower() == "run"
-                              || completeSufix.toLower() == "sh")) {
-
-            if (!QFile::setPermissions(path, static_cast<QFile::Permission>(0x7775))) {
-                QuasarAppUtils::Params::log("permishens set fail", QuasarAppUtils::Warning);
-            }
+        if (!QFile::setPermissions(path, static_cast<QFile::Permission>(0x7775))) {
+            QuasarAppUtils::Params::log("permishens set fail", QuasarAppUtils::Warning);
         }
 
 #ifdef Q_OS_WIN
@@ -162,8 +157,8 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
     }
 
     if (!copy) {
-        QuasarAppUtils::Params::log(((isMove)? "skip move :": "skip copy :" + file));
-        return false;
+        QuasarAppUtils::Params::log(((isMove)? "skip move :": "skip copy (by mask):" + file ));
+        return true;
     }
 
     auto name = info.fileName();
@@ -486,15 +481,15 @@ bool FileManager::removeFile(const QFileInfo &file) {
         return true;
     }
 
-    if (!QFile::remove(file.absoluteFilePath())) {
+    QFile f(file.absoluteFilePath());
+    if (!f.remove()) {
         QuasarAppUtils::Params::log("Qt Operation fail (remove file) " + file.absoluteFilePath(),
-                                    QuasarAppUtils::Warning);
+                                    QuasarAppUtils::Error);
 
-        if (remove(file.absoluteFilePath().toLatin1())) {
-            QuasarAppUtils::Params::log("std Operation fail file not removed." + file.absoluteFilePath(),
-                                        QuasarAppUtils::Error);
-            return false;
-        }
+        QuasarAppUtils::Params::log("Message: " + f.errorString(),
+                                    QuasarAppUtils::Error);
+
+        return false;
     }
 
     return true;
