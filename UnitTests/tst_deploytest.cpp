@@ -2477,7 +2477,7 @@ void deploytest::testSystemLib() {
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                    "deploySystem"
-                  }, &comapareTree, {}, true);
+                  }, &comapareTree);
 
 
 #endif
