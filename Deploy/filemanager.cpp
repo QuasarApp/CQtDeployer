@@ -65,13 +65,8 @@ bool FileManager::addToDeployed(const QString& path) {
     if (info.isFile() || !info.exists()) {
         _deployedFiles += info.absoluteFilePath();
 
-        auto completeSufix = info.completeSuffix();
-        if (info.isFile() && (completeSufix.isEmpty() || completeSufix.toLower() == "run"
-                              || completeSufix.toLower() == "sh")) {
-
-            if (!QFile::setPermissions(path, static_cast<QFile::Permission>(0x7775))) {
-                QuasarAppUtils::Params::log("permishens set fail", QuasarAppUtils::Warning);
-            }
+        if (!QFile::setPermissions(path, static_cast<QFile::Permission>(0x7775))) {
+            QuasarAppUtils::Params::log("permishens set fail", QuasarAppUtils::Warning);
         }
 
 #ifdef Q_OS_WIN
@@ -162,8 +157,8 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
     }
 
     if (!copy) {
-        QuasarAppUtils::Params::log(((isMove)? "skip move :": "skip copy :" + file));
-        return false;
+        QuasarAppUtils::Params::log(((isMove)? "skip move :": "skip copy (by mask):" + file ));
+        return true;
     }
 
     auto name = info.fileName();
@@ -193,49 +188,23 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
     QFile sourceFile(file);
     auto sourceFileAbsalutePath = QFileInfo(file).absoluteFilePath();
 
+    bool tarExits = QFileInfo(tergetFile).exists();
+    if (tarExits && !QuasarAppUtils::Params::isEndable("noOverwrite")) {
+        QuasarAppUtils::Params::log(tergetFile + " already exists!",
+                                    QuasarAppUtils::Info);
+        return true;
+    }
+
     if (!((isMove)?
           sourceFile.rename(tergetFile):
           sourceFile.copy(tergetFile))) {
 
-        QuasarAppUtils::Params::log("Qt Operation fail " + file + " >> " + tergetFile +
-                                    " Qt error: " + sourceFile.errorString(),
-                                    QuasarAppUtils::Warning);
+        QuasarAppUtils::Params::log("Operation fail " + file + " >> " + tergetFile,
+                                    QuasarAppUtils::Error);
 
-        bool tarExits = QFileInfo(tergetFile).exists();
-
-        if ((!tarExits) ||
-                (tarExits && !QuasarAppUtils::Params::isEndable("noOverwrite"))) {
-
-            std::ifstream  src(file.toStdString(),
-                               std::ios::binary);
-
-            std::ofstream  dst((tergetFile).toStdString(),
-                               std::ios::binary);
-
-            dst << src.rdbuf();
-
-            if (!QFileInfo::exists(tergetFile)) {
-                QuasarAppUtils::Params::log("std Operation fail file not copied. "
-                                            "Сheck if you have access to the target dir",
-                                            QuasarAppUtils::Error);
-                return false;
-
-            }
-
-            if (isMove && std::remove(file.toStdString().c_str())) {
-                return false;
-            }
-
-        } else {
-
-            if (QFileInfo(tergetFile).exists()) {
-                QuasarAppUtils::Params::log(tergetFile + " already exists!",
-                                            QuasarAppUtils::Info);
-                return true;
-            }
-
-            return false;
-        }
+        QuasarAppUtils::Params::log(sourceFile.errorString(),
+                                    QuasarAppUtils::Error);
+        return false;
     }
 
     if (isMove) {
@@ -512,15 +481,15 @@ bool FileManager::removeFile(const QFileInfo &file) {
         return true;
     }
 
-    if (!QFile::remove(file.absoluteFilePath())) {
+    QFile f(file.absoluteFilePath());
+    if (!f.remove()) {
         QuasarAppUtils::Params::log("Qt Operation fail (remove file) " + file.absoluteFilePath(),
-                                    QuasarAppUtils::Warning);
+                                    QuasarAppUtils::Error);
 
-        if (remove(file.absoluteFilePath().toLatin1())) {
-            QuasarAppUtils::Params::log("std Operation fail file not removed." + file.absoluteFilePath(),
-                                        QuasarAppUtils::Error);
-            return false;
-        }
+        QuasarAppUtils::Params::log("Message: " + f.errorString(),
+                                    QuasarAppUtils::Error);
+
+        return false;
     }
 
     return true;

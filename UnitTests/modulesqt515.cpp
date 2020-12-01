@@ -17,7 +17,7 @@ QSet<QString> ModulesQt515::qtLibs(const QString &distDir) const {
     auto res = ModulesQt514::qtLibs(distDir);
 
 #ifdef Q_OS_WIN
-    res -= utils.createTree({
+    res += utils.createTree({
                                 "./" + distDir + "/translations/qtbase_tr.qm",
     });
 #else

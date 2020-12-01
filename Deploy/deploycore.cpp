@@ -343,7 +343,8 @@ QStringList DeployCore::helpKeys() {
         "qifLogo",
         "zip",
         "noQt",
-        "homepage"
+        "homepage",
+        "deb"
     };
 }
 
