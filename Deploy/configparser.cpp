@@ -495,6 +495,8 @@ bool ConfigParser::initPackages() {
     if (fdefaultPackage) {
         _config.packagesEdit().insert(defaultPackage, {});
         _config.setDefaultPackage(defaultPackage);
+    } else {
+        _config.setDefaultPackage(_config.packages().begin().key());
     }
 
     return true;
