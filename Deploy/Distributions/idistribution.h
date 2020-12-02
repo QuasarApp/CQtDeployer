@@ -57,18 +57,46 @@ protected:
     void registerOutFiles() const;
 
     /**
-     * @brief collectInfo This method collect information about package.
-     * @param it This is iterator of package.
+     * @brief collectInfoWithDeployIcons This is wraper of the collectInfo and deployIcon methods.
+     * @param pkg This is package object.
+     * @param pkgKey This is package key value.
      * @param cfg This is pointer to config.
      * @param info This is return value (created template information)
      * @param fDefaultPakcage This is return value
      * (return true if package that collected information is a default package)
      * @return true if information collected successful.
      */
-    bool collectInfo(const QHash<QString, DistroModule>::const_iterator &it,
+    bool collectInfoWithDeployIcons(const DistroModule &pkg,
+                                    const QString& pkgKey,
+                                    const DeployConfig *cfg,
+                                    TemplateInfo& info,
+                                    bool &fDefaultPakcage);
+
+    /**
+     * @brief collectInfo This method collect information about package.
+     * @param pkg This is package object.
+     * @param pkgKey This is package key value.
+     * @param cfg This is pointer to config.
+     * @param info This is return value (created template information)
+     * @param fDefaultPakcage This is return value
+     * (return true if package that collected information is a default package)
+     * @return true if information collected successful.
+     */
+    bool collectInfo(const DistroModule &pkg,
+                     const QString& pkgKey,
                      const DeployConfig *cfg,
                      TemplateInfo& info,
                      bool &fDefaultPakcage);
+
+    /**
+     * @brief deployIcon This method copy default or custom icon to the package.
+     * @param info This is information about package.
+     * @note This method change the icon field of the info object.
+     * If packages support the icons then you need to invocke this method after the collectInfo method.
+     * @param pkg This is package info
+     * @return true if this method finished successful.
+     */
+    bool deployIcon(TemplateInfo &info, const DistroModule &pkg);
 
     /**
      * @brief dataLocation This method should be retrun location of application or package files.

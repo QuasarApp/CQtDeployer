@@ -13,6 +13,7 @@ QIF::QIF(FileManager *fileManager)
     :iDistribution(fileManager){
 
     setLocation("tmp QIF");
+
 };
 
 Envirement QIF::toolKitEnv() const {
@@ -82,6 +83,13 @@ QList<SystemCommandData> QIF::runCmd() {
 }
 
 bool QIF::deployTemplate(PackageControl &pkg) {
+    if (!initDefaultConfiguratuin()) {
+
+        QuasarAppUtils::Params::log("Fail to init rhe default configuration of the qif installer.",
+                                    QuasarAppUtils::Error);
+        return false;
+    }
+
     auto customTemplate = QuasarAppUtils::Params::getStrArg("qif", "");
     const DeployConfig *cfg = DeployCore::_config;
 
@@ -165,6 +173,9 @@ QStringList QIF::outPutFiles() const {
 }
 
 QString QIF::dataLocation(const QString &packageName) const {
+    if (packageName.isEmpty())
+        return "";
+
     const DeployConfig* cfg = DeployCore::_config;
 
     QString result = location(packageName) + "/data";
@@ -176,6 +187,10 @@ QString QIF::dataLocation(const QString &packageName) const {
 }
 
 QString QIF::location(const QString &packageName) const {
+
+    if (packageName.isEmpty())
+        return "";
+
     const DeployConfig* cfg = DeployCore::_config;
     return cfg->getTargetDir() + "/" + getLocation() + "/packages/" + packageName;
 }
@@ -221,7 +236,7 @@ bool QIF::deployPackage(const QHash<QString, DistroModule>::const_iterator& it,
 
     TemplateInfo info;
     bool fDefaultPakcage;
-    if (!collectInfo(it, cfg, info, fDefaultPakcage)) {
+    if (!collectInfoWithDeployIcons(it.value(), it.key(), cfg, info, fDefaultPakcage)) {
         return false;
     }
 
@@ -241,5 +256,13 @@ bool QIF::deployPackage(const QHash<QString, DistroModule>::const_iterator& it,
         generalInfo = info;
 
     return true;
+}
+
+bool QIF::initDefaultConfiguratuin() {
+    const DeployConfig *cfg = DeployCore::_config;
+
+    // init default configuration
+    bool fDefaultPakcage;
+    return collectInfo({}, cfg->getDefaultPackage(), cfg, generalInfo, fDefaultPakcage);
 }
 

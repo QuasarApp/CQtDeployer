@@ -990,7 +990,8 @@ void deploytest::testQmlScaner() {
 }
 
 void deploytest::customTest() {
-
+    runTestParams({"-confFile", "pass to tested configuration",
+                   "qifFromSystem"});
 }
 
 void deploytest::testQmlExtrct() {

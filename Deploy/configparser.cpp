@@ -483,21 +483,20 @@ bool ConfigParser::initPackages() {
     }
 
     // init default packages
-    bool fdefaultPackage = false;
+    bool fDefaultPackage = false;
     for (auto it = _config.targetsEdit().begin(); it != _config.targetsEdit().end(); ++it) {
         if (!configuredTargets.contains(it.key())) {
             configuredTargets.insert(it.key());
             it.value().setPackage(defaultPackage);
-            fdefaultPackage = true;
+            fDefaultPackage = true;
         }
     }
 
-    if (fdefaultPackage) {
+    if (fDefaultPackage) {
         _config.packagesEdit().insert(defaultPackage, {});
-        _config.setDefaultPackage(defaultPackage);
-    } else {
-        _config.setDefaultPackage(_config.packages().begin().key());
     }
+
+    _config.setDefaultPackage(defaultPackage);
 
     return true;
 }
