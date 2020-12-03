@@ -46,6 +46,12 @@ private:
                        const QString &defaultPackageTempalte,
                        PackageControl &pkg);
 
+    /**
+     * @brief initDefaultConfiguratuin This method initialise the default configuration of installer.
+     * @return true if functions finished successful.
+     */
+    bool initDefaultConfiguratuin();
+
     QString binarycreator;
     TemplateInfo generalInfo;
 

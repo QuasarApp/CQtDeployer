@@ -26,10 +26,10 @@ FileManager::FileManager() {
 bool FileManager::initDir(const QString &path) {
 
     if (!QFileInfo::exists(path)) {
-        addToDeployed(path);
         if (!QDir().mkpath(path)) {
             return false;
         }
+        addToDeployed(path);
     }
 
     return true;
@@ -62,9 +62,8 @@ void FileManager::loadDeployemendFiles(const QString &targetDir) {
 
 bool FileManager::addToDeployed(const QString& path) {
     auto info = QFileInfo(path);
-    if (info.isFile() || !info.exists()) {
+    if (info.exists()) {
         _deployedFiles += info.absoluteFilePath();
-
         if (!QFile::setPermissions(path, static_cast<QFile::Permission>(0x7775))) {
             QuasarAppUtils::Params::log("permishens set fail", QuasarAppUtils::Warning);
         }

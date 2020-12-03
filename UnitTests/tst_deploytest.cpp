@@ -162,6 +162,8 @@ private slots:
     void testDependencyMap();
 
     void testQmlScaner();
+
+    void customTest();
 };
 
 bool deploytest::runProcess(const QString &DistroPath,
@@ -985,6 +987,11 @@ void deploytest::testQmlScaner() {
         QVERIFY(results.contains(path));
     }
 
+}
+
+void deploytest::customTest() {
+    runTestParams({"-confFile", "pass to tested configuration",
+                   "qifFromSystem"});
 }
 
 void deploytest::testQmlExtrct() {

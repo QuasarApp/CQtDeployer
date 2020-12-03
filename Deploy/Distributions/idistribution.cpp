@@ -140,66 +140,71 @@ void iDistribution::registerOutFiles() const {
     }
 }
 
-bool iDistribution::collectInfo(
-        const QHash<QString, DistroModule>::const_iterator& it,
-        const DeployConfig * cfg,
-        TemplateInfo &info,
-        bool &fDefaultPakcage) {
+bool iDistribution::collectInfoWithDeployIcons(const DistroModule &pkg,
+                                               const QString &pkgKey,
+                                               const DeployConfig *cfg,
+                                               TemplateInfo &info,
+                                               bool &fDefaultPakcage) {
 
-    auto package = it.value();
+    if (!collectInfo(pkg, pkgKey, cfg, info, fDefaultPakcage)) {
+        return false;
+    }
 
-    info.Name = PathUtils::stripPath(it.key());
+    return deployIcon(info, pkg);
+
+}
+
+bool iDistribution::collectInfo(const DistroModule& pkg,
+                                const QString &pkgKey,
+                                const DeployConfig * cfg,
+                                TemplateInfo &info,
+                                bool &fDefaultPakcage) {
+
+    info.Name = PathUtils::stripPath(pkgKey);
     fDefaultPakcage = cfg->getDefaultPackage() == info.Name;
 
-    if (fDefaultPakcage) {
-        QFileInfo targetInfo(*package.targets().begin());
+    auto targets = pkg.targets();
+    if (fDefaultPakcage && targets.size()) {
+        QFileInfo targetInfo(*pkg.targets().begin());
         info.Name = targetInfo.baseName();
     }
 
-    if (!package.name().isEmpty()) {
-        info.Name = package.name();
+    if (!pkg.name().isEmpty()) {
+        info.Name = pkg.name();
     }
 
     auto localData = dataLocation(info.Name);
 
     info.Description = "This package contains the " + info.Name;
-    if (!package.description().isEmpty())
-        info.Description = package.description();
+    if (!pkg.description().isEmpty())
+        info.Description = pkg.description();
 
-    if (!package.homePage().isEmpty())
-        info.Homepage = package.homePage();
+    if (!pkg.homePage().isEmpty())
+        info.Homepage = pkg.homePage();
 
     info.Version = "1.0";
-    if (!package.version().isEmpty())
-        info.Version = package.version();
+    if (!pkg.version().isEmpty())
+        info.Version = pkg.version();
 
     info.ReleaseData = QDate::currentDate().toString("yyyy-MM-dd");
-    if (!package.releaseData().isEmpty())
-        info.ReleaseData = package.releaseData();
+    if (!pkg.releaseData().isEmpty())
+        info.ReleaseData = pkg.releaseData();
 
     info.Icon = "icons/Icon.png";
-    if (package.icon().isEmpty()) {
-        if (!copyFile(":/shared/Distributions/Templates/Icon.png",
-                      localData + "/icons/", false)) {
-            return false;
-        }
-    } else {
-        QFileInfo iconInfo(package.icon());
+    if (!pkg.icon().isEmpty()) {
+        QFileInfo iconInfo(pkg.icon());
         info.Icon = info.Name + "/icons/" + iconInfo.fileName();
-        if (!copyFile(package.icon(), localData + "/icons/", false)) {
-            return false;
-        }
     }
 
     info.Publisher = "Company";
-    if (!package.publisher().isEmpty())
-        info.Publisher = package.publisher();
+    if (!pkg.publisher().isEmpty())
+        info.Publisher = pkg.publisher();
 
     QString cmdArray = "[";
     QString bashArray = "";
 
     int initSize = cmdArray.size();
-    for (const auto &target :package.targets()) {
+    for (const auto &target :pkg.targets()) {
         auto fileinfo =  QFileInfo(target);
         if (fileinfo.suffix().compare("exe", ONLY_WIN_CASE_INSENSIATIVE) == 0 || fileinfo.suffix().isEmpty()) {
             if (cmdArray.size() > initSize) {
@@ -220,6 +225,26 @@ bool iDistribution::collectInfo(
 
     if (info.Name.isEmpty()) {
         info.Name = "Application";
+    }
+
+    return true;
+}
+
+bool iDistribution::deployIcon(TemplateInfo &info ,const DistroModule& pkg) {
+    auto localData = dataLocation(info.Name);
+
+    info.Icon = "icons/Icon.png";
+    if (pkg.icon().isEmpty()) {
+        if (!copyFile(":/shared/Distributions/Templates/Icon.png",
+                      localData + "/icons/", false)) {
+            return false;
+        }
+    } else {
+        QFileInfo iconInfo(pkg.icon());
+        info.Icon = info.Name + "/icons/" + iconInfo.fileName();
+        if (!copyFile(pkg.icon(), localData + "/icons/", false)) {
+            return false;
+        }
     }
 
     return true;

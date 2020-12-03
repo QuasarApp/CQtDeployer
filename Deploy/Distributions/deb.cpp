@@ -36,7 +36,7 @@ bool Deb::deployTemplate(PackageControl &pkg) {
 
         TemplateInfo info;
         bool fDefaultPakcage;
-        if (!collectInfo(it, cfg, info, fDefaultPakcage)) {
+        if (!collectInfoWithDeployIcons(package, it.key(), cfg, info, fDefaultPakcage)) {
             return false;
         }
 

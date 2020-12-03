@@ -16,6 +16,7 @@ struct DEPLOYSHARED_EXPORT TemplateInfo
     QString Homepage;
 
     QHash<QString, QString> Custom;
+
 };
 
 #endif // TEMPLATEINFO_H
