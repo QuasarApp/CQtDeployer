@@ -1,8 +1,9 @@
+#include "deployconfig.h"
 #include "deploycore.h"
 #include "distromodule.h"
 
-DistroModule::DistroModule() {
-
+DistroModule::DistroModule(const QString& key) {
+    setKey(key);
 }
 
 QSet<QString> DistroModule::targets() const {
@@ -29,73 +30,59 @@ void DistroModule::addQmlInput(const QString &target) {
     _qmlInput.insert(DeployCore::transportPathToSnapRoot(target));
 }
 
-QString DistroModule::name() const
-{
+QString DistroModule::name() const {
     return _name;
 }
 
-void DistroModule::setName(const QString &name)
-{
+void DistroModule::setName(const QString &name) {
     _name = name;
 }
 
-QString DistroModule::description() const
-{
+QString DistroModule::description() const {
     return _description;
 }
 
-void DistroModule::setDescription(const QString &description)
-{
+void DistroModule::setDescription(const QString &description) {
     _description = description;
 }
 
-QString DistroModule::version() const
-{
+QString DistroModule::version() const {
     return _version;
 }
 
-void DistroModule::setVersion(const QString &version)
-{
+void DistroModule::setVersion(const QString &version) {
     _version = version;
 }
 
-QString DistroModule::releaseData() const
-{
+QString DistroModule::releaseData() const {
     return _releaseData;
 }
 
-void DistroModule::setReleaseData(const QString &releaseData)
-{
+void DistroModule::setReleaseData(const QString &releaseData) {
     _releaseData = releaseData;
 }
 
-QString DistroModule::icon() const
-{
+QString DistroModule::icon() const {
     return _icon;
 }
 
-void DistroModule::setIcon(const QString &icon)
-{
+void DistroModule::setIcon(const QString &icon) {
     _icon = icon;
 }
 
-QString DistroModule::publisher() const
-{
+QString DistroModule::publisher() const {
     return _publisher;
 }
 
-void DistroModule::setPublisher(const QString &publisher)
-{
+void DistroModule::setPublisher(const QString &publisher) {
     _publisher = publisher;
 }
 
-QSet<QString> DistroModule::enabledPlugins() const
-{
+QSet<QString> DistroModule::enabledPlugins() const {
     return _enabled;
 }
 
-void DistroModule::setEnabledPlugins(const QSet<QString> &enabled)
-{
+void DistroModule::setEnabledPlugins(const QSet<QString> &enabled) {
     _enabled = enabled;
 }
 
@@ -103,13 +90,11 @@ void DistroModule::addEnabledPlugins(const QString &enabled) {
     _enabled += enabled;
 }
 
-QSet<QString> DistroModule::disabledPlugins() const
-{
+QSet<QString> DistroModule::disabledPlugins() const {
     return _disabled;
 }
 
-void DistroModule::setDisabledPlugins(const QSet<QString> &disabled)
-{
+void DistroModule::setDisabledPlugins(const QSet<QString> &disabled) {
     _disabled = disabled;
 }
 
@@ -117,13 +102,11 @@ void DistroModule::addDisabledPlugins(const QString &disabled) {
     _disabled += disabled;
 }
 
-QSet<QString> DistroModule::extraPlugins() const
-{
+QSet<QString> DistroModule::extraPlugins() const {
     return _extraPlugins;
 }
 
-void DistroModule::setExtraPlugins(const QSet<QString> &extraPlugins)
-{
+void DistroModule::setExtraPlugins(const QSet<QString> &extraPlugins) {
     _extraPlugins = extraPlugins;
 }
 
@@ -138,4 +121,30 @@ QString DistroModule::homePage() const {
 
 void DistroModule::setHomePage(const QString &homePage) {
     _homePage = homePage;
+}
+
+QString DistroModule::prefix() const {
+    return _prefix;
+}
+
+void DistroModule::setPrefix(const QString &location) {
+    _prefix = location;
+}
+
+QString DistroModule::key() const {
+    return _key;
+}
+
+bool DistroModule::isDefaultModule() const {
+    const DeployConfig *cfg = DeployCore::_config;
+
+    return key() == cfg->getDefaultPackage();
+}
+
+bool DistroModule::isValid() {
+    return _key.size();
+}
+
+void DistroModule::setKey(const QString &key) {
+    _key = key;
 }

@@ -17,13 +17,12 @@ bool DefaultDistro::deployTemplate(PackageControl & ctrl) {
     for (auto it = cfg->packages().begin();
          it != cfg->packages().end(); ++it) {
         auto package = it.value();
-        QString Name = PathUtils::stripPath(it.key());
 
         QString targetLocation;
-        if (cfg->getDefaultPackage() == Name) {
+        if (package.isDefaultModule()) {
             targetLocation = cfg->getTargetDir();
         } else {
-            targetLocation = cfg->getTargetDir() + "/" + it.key();
+            targetLocation = cfg->getTargetDir() + "/" + releativeLocation(package);
         }
 
         if (!ctrl.copyPackage(it.key(), targetLocation)) {
@@ -54,10 +53,19 @@ QStringList DefaultDistro::outPutFiles() const {
     return {};
 }
 
-QString DefaultDistro::dataLocation(const QString &) const {
+QString DefaultDistro::dataLocation(const DistroModule &) const {
     return "";
 }
 
-QString DefaultDistro::location(const QString &) const {
+QString DefaultDistro::location(const DistroModule &) const {
     return "";
+}
+
+QString DefaultDistro::releativeLocation(const DistroModule &module) const {
+
+    if (module.prefix().isEmpty()) {
+        return module.key();
+    }
+
+    return module.prefix();
 }

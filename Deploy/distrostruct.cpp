@@ -62,8 +62,7 @@ QString DistroStruct::getRootDir(const QString &basePath) const {
     return getRelativePath(basePath);
 }
 
-bool DistroStruct::isEmpty()
-{
+bool DistroStruct::isEmpty() {
     return (libOutDir.isEmpty() &&
             qmlOutDir.isEmpty() &&
             binOutDir.isEmpty() &&

@@ -59,9 +59,9 @@ bool Extracter::extractWebEngine() {
                 webEngeneBin += "/QtWebEngineProcess.exe";
             }
 
-            auto destWebEngine = cnf->getTargetDir() + "/" + package + cnf->packages()[package].getBinOutDir();
-            auto resOut = cnf->getTargetDir() + "/" + package + cnf->packages()[package].getResOutDir();
-            auto libOut = cnf->getTargetDir() + "/" + package + cnf->packages()[package].getLibOutDir();
+            auto destWebEngine = cnf->getTargetDir() + "/" + package + cnf->getDistroFromPackage(package).getBinOutDir();
+            auto resOut = cnf->getTargetDir() + "/" + package + cnf->getDistroFromPackage(package).getResOutDir();
+            auto libOut = cnf->getTargetDir() + "/" + package + cnf->getDistroFromPackage(package).getLibOutDir();
 
             auto res = cnf->qtDir.getResources();
             if (!_fileManager->copyFiles(angleGLLibs(), libOut)) {

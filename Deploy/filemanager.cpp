@@ -182,8 +182,15 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
         return false;
     }
 
-    QuasarAppUtils::Params::log(((isMove)? "move :": "copy :") + file,
-                                QuasarAppUtils::Info);
+    if (isMove) {
+        QuasarAppUtils::Params::log( "move :" + file,
+                                    QuasarAppUtils::Debug);
+    } else {
+        QuasarAppUtils::Params::log("copy :" + file,
+                                    QuasarAppUtils::Info);
+    }
+
+
     QFile sourceFile(file);
     auto sourceFileAbsalutePath = QFileInfo(file).absoluteFilePath();
 
@@ -314,6 +321,10 @@ bool FileManager::moveFolder(const QString &from, const QString &to, const QStri
 
     if (!info.exists())
         return false;
+
+    if (!initDir(to)) {
+        return false;
+    }
 
     if (info.isFile()) {
 

@@ -97,7 +97,8 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -releaseDate [package;val,val] | Sets release date for package                                 |
 |  -icon [package;val,val]     | Sets path to icon for package                                    |
 |  -publisher [package;val,val]| Sets publisher for package                                       |
-|  -homepage [package;val,val] | Sets the homepage url for a package                              |
+|  -homePage [package;val,val] | Sets the homepage url for a package                              |
+|  -prefix [package;val,val]   | Sets the prefix for the package relatively a target directory       |
 
 ### Plugins Controll Options
 

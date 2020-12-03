@@ -11,6 +11,8 @@ class PackageControl
 {
 public:
     PackageControl();
+    virtual ~PackageControl();
+
     virtual bool movePackage(const QString& package,
                              const QString& newLocation) = 0;
     virtual bool copyPackage(const QString& package,

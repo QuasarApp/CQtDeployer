@@ -253,7 +253,8 @@ void DeployCore::help() {
                 {"-releaseDate [package;val,val]", "Sets release date for a package"},
                 {"-icon [package;val,val]", "Sets path to icon for a package"},
                 {"-publisher [package;val,val]", "Sets publisher for a package"},
-                {"-homepage [package;val,val]", "Sets the homepage url for a package"},
+                {"-homePage [package;val,val]", "Sets the home page url for a package"},
+                {"-prefix [package;val,val]", "Sets the prefix for the package relatively a target directory "},
 
             }
         },
@@ -343,7 +344,8 @@ QStringList DeployCore::helpKeys() {
         "qifLogo",
         "zip",
         "noQt",
-        "homepage",
+        "homePage",
+        "prefix",
         "deb"
     };
 }

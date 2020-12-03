@@ -35,13 +35,12 @@ bool Deb::deployTemplate(PackageControl &pkg) {
         }
 
         TemplateInfo info;
-        bool fDefaultPakcage;
-        if (!collectInfoWithDeployIcons(package, it.key(), cfg, info, fDefaultPakcage)) {
+        if (!collectInfoWithDeployIcons(package, info)) {
             return false;
         }
 
-        auto local = location(info.Name);
-        auto localData = dataLocation(info.Name);
+        auto local = location(package);
+        auto localData = dataLocation(package);
 
         if (!pkg.movePackage(it.key(), localData)) {
             return false;
@@ -113,12 +112,27 @@ bool Deb::cb() const {
     return true;
 }
 
-QString Deb::dataLocation(const QString &packageName) const {
-    return location(packageName) + "/opt/" + packageName;
+QString Deb::dataLocation(const DistroModule &module) const {
+    return location(module) + "/opt/" + releativeLocation(module);
+
 }
 
-QString Deb::location(const QString &packageName) const {
+QString Deb::location(const DistroModule &module) const {
     const DeployConfig* cfg = DeployCore::_config;
 
-    return cfg->getTargetDir() + "/" + getLocation() + "/" + packageName;
+    auto name = getName(module);
+
+    if (name.isEmpty())
+        return cfg->getTargetDir() + "/" + getLocation() + "/" + module.key();
+
+    return cfg->getTargetDir() + "/" + getLocation() + "/" + name;
+}
+
+QString Deb::releativeLocation(const DistroModule &module) const {
+
+    if (module.prefix().isEmpty()) {
+        return module.key();
+    }
+
+    return module.prefix();
 }

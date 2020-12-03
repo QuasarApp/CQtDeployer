@@ -16,6 +16,7 @@ class ModulesQt513
 {
 public:
     ModulesQt513();
+    virtual ~ModulesQt513();
 
     virtual QSet<QString> ignoreFilter(const QSet<QString>& input, const QString& filter) const;
     virtual QSet<QString> replace(const QSet<QString> &data, const QMap<QString, QString>& replaceMap) const;

@@ -163,6 +163,8 @@ private slots:
 
     void testQmlScaner();
 
+    void testPrefix();
+
     void customTest();
 };
 
@@ -989,8 +991,38 @@ void deploytest::testQmlScaner() {
 
 }
 
+void deploytest::testPrefix() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QFile f("./" + DISTRO_DIR + "/bin/TestOnlyC");
+    auto comapareTree = utils.createTree(
+    {
+                    "./" + DISTRO_DIR + "/package/TestOnlyC.sh",
+                    "./" + DISTRO_DIR + "/package/bin/TestOnlyC",
+                    "./" + DISTRO_DIR + "/package/bin/qt.conf"
+                });
+    QString target1 = TestBinDir + "TestOnlyC";
+
+#else
+    QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
+    auto comapareTree = utils.createTree(
+    {"./" + DISTRO_DIR + "/package/TestOnlyC.exe",
+     "./" + DISTRO_DIR + "/package/qt.conf"});
+    QString target1 = TestBinDir + "TestOnlyC.exe";
+
+#endif
+    QString bin = target1;
+
+    comapareTree = TestModule.replace(comapareTree, {{"package","prefix"}});
+
+    runTestParams({"-bin", bin, "force-clear",
+                   "-targetPackage", "/package/;TestOn",
+                   "-prefix", "package;prefix"}, &comapareTree);
+}
+
 void deploytest::customTest() {
-    runTestParams({"-confFile", "pass to tested configuration",
+    runTestParams({"-confFile", "This is pass to custom configuretion",
                    "qifFromSystem"});
 }
 

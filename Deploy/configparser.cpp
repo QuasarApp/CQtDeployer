@@ -47,7 +47,8 @@ bool parsePackagesPrivate(Container& mainContainer,
         auto first = paramsList.value(0, "");
         auto second = paramsList.value(1, "");
         if (paramsList.size() == 1)
-            (mainContainer[defaultPackage].*adder)(first);
+            (valueLink(mainContainer, defaultPackage, DistroModule{defaultPackage}).*adder)(first);
+
         else {
             first = PathUtils::fullStripPath(first);
             if (!mainContainer.contains(first)) {
@@ -55,7 +56,7 @@ bool parsePackagesPrivate(Container& mainContainer,
             }
 
             for (int i = 1; i < paramsList.size(); ++i) {
-                (mainContainer[first].*adder)(paramsList[i]);
+                (valueLink(mainContainer, first, DistroModule{first}).*adder)(paramsList[i]);
             }
         }
     }
@@ -361,7 +362,10 @@ bool ConfigParser::initDistroStruct() {
     auto publisher = QuasarAppUtils::Params::getStrArg("publisher").
             split(DeployCore::getSeparator(0), splitbehavior);
 
-    auto homepage = QuasarAppUtils::Params::getStrArg("homepage").
+    auto homepage = QuasarAppUtils::Params::getStrArg("homePage").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
+    auto prefix = QuasarAppUtils::Params::getStrArg("prefix").
             split(DeployCore::getSeparator(0), splitbehavior);
 
     auto erroLog = [](const QString &flag){
@@ -431,8 +435,13 @@ bool ConfigParser::initDistroStruct() {
         return false;
     }
 
-    if (publisher.size() && !parsePackagesPrivate(mainDistro, homepage, &DistroModule::setHomePage)) {
-        erroLog("HomePage");
+    if (homepage.size() && !parsePackagesPrivate(mainDistro, homepage, &DistroModule::setHomePage)) {
+        erroLog("homePage");
+        return false;
+    }
+
+    if (prefix.size() && !parsePackagesPrivate(mainDistro, prefix, &DistroModule::setPrefix)) {
+        erroLog("prefix");
         return false;
     }
 
@@ -470,7 +479,7 @@ bool ConfigParser::initPackages() {
                 }
             }
 
-            _config.packagesEdit().insert(package, {});
+            _config.packagesEdit().insert(package, DistroModule{package});
 
             if (pair.size() != 2) {
                 defaultPackage = package;
@@ -493,7 +502,7 @@ bool ConfigParser::initPackages() {
     }
 
     if (fDefaultPackage) {
-        _config.packagesEdit().insert(defaultPackage, {});
+        _config.packagesEdit().insert(defaultPackage, DistroModule{defaultPackage});
     }
 
     _config.setDefaultPackage(defaultPackage);
@@ -1399,8 +1408,8 @@ bool ConfigParser::smartMoveTargets() {
         auto newTargetKey = targetPath + "/" + target.fileName();
         temp.unite(moveTarget(i.value(), newTargetKey));
 
-        _config.packagesEdit()[i.value().getPackage()].addTarget(newTargetKey);
-
+        auto pkgKey = i.value().getPackage();
+        valueLink(_config.packagesEdit(), pkgKey, DistroModule{pkgKey}).addTarget(newTargetKey);
     }
 
     _config.targetsEdit() = temp;

@@ -91,7 +91,9 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -releaseDate [package;val,val] | Установит дату выпуска префиксу                        |
 |  -icon [package;val,val]     | Установит путь к иконке или логотипу префиксу             |
 |  -publisher [package;val,val]| Установит Издательство (автора) префиксу                  |
-|  -homepage [package;val,val] | Установит URL-адрес домашней страницы для пакета          |
+|  -homePage [package;val,val] | Установит URL-адрес домашней страницы для пакета          |
+|  -prefix [package;val,val]   | Устанавливает префикс для пакета относительно целевого каталога
+          |
 
 ### Параметры управления плагинами:
 
