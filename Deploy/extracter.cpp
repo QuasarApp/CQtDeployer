@@ -99,10 +99,21 @@ QList<QString> Extracter::angleGLLibs() {
 void Extracter::extractAllTargets() {
     auto cfg = DeployCore::_config;
     for (auto i = cfg->packages().cbegin(); i != cfg->packages().cend(); ++i) {
-        _packageDependencyes[i.key()] = {};
+        auto &dep = _packageDependencyes[i.key()];
 
         for (const auto &target : i.value().targets()) {
-            extract(target, &_packageDependencyes[i.key()]);
+            extract(target, &dep);
+        }
+    }
+}
+
+void Extracter::extractExtraDataTargets() {
+    auto cfg = DeployCore::_config;
+    for (auto i = cfg->packages().cbegin(); i != cfg->packages().cend(); ++i) {
+        auto &dep = _packageDependencyes[i.key()];
+
+        for (const auto &target : i.value().extraData()) {
+            dep.addExtraData(target);
         }
     }
 }
@@ -200,6 +211,19 @@ void Extracter::copyLibs(const QSet<QString> &files, const QString& package) {
     }
 }
 
+void Extracter::copyExtraData(const QSet<QString> &files, const QString &package) {
+    auto cnf = DeployCore::_config;
+    auto targetPath = cnf->getTargetDir() + "/" + package;
+    auto distro = cnf->getDistroFromPackage(package);
+
+    for (const auto &file : files) {
+
+        if (!_fileManager->cp(file, targetPath + distro.getExtraDataOutDir())) {
+            QuasarAppUtils::Params::log(file + " not copied");
+        }
+    }
+}
+
 void Extracter::copyFiles() {
     auto cnf = DeployCore::_config;
 
@@ -211,9 +235,12 @@ void Extracter::copyFiles() {
             copyLibs(_packageDependencyes[i.key()].systemLibs(), i.key());
         }
 
+
         if (!QuasarAppUtils::Params::isEndable("noStrip") && !_fileManager->strip(cnf->getTargetDir())) {
             QuasarAppUtils::Params::log("strip failed!");
         }
+
+        copyExtraData(_packageDependencyes[i.key()].extraData(), i.key());
     }
 }
 
@@ -241,6 +268,7 @@ void Extracter::deploy() {
     _cqt->smartMoveTargets();
     _scaner->setEnvironment(DeployCore::_config->envirement.environmentList());
     extractAllTargets();
+    extractExtraDataTargets();
 
     if (DeployCore::_config->deployQml && !extractQml()) {
         QuasarAppUtils::Params::log("qml not extacted!",
@@ -359,97 +387,59 @@ void Extracter::extractPluginLib(const QString& item, const QString& package) {
 
 }
 
-bool Extracter::extractQmlAll() {
-    auto cnf = DeployCore::_config;
-
-    if (!QFileInfo::exists(cnf->qtDir.getQmls())) {
-        QuasarAppUtils::Params::log("qml dir wrong!",
-                                    QuasarAppUtils::Warning);
-        return false;
-    }
-
-    for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
-        auto targetPath = cnf->getTargetDir() + "/" + i.key();
-        auto distro = cnf->getDistroFromPackage(i.key());
-
-        QStringList listItems;
-
-        if (!_fileManager->copyFolder(cnf->qtDir.getQmls(), targetPath + distro.getQmlOutDir(),
-                                      DeployCore::debugExtensions(),
-                                      &listItems)) {
-            return false;
-        }
-
-        for (const auto &item : listItems) {
-            extractPluginLib(item, i.key());
-        }
-
-    }
-
-    return true;
-}
-
-bool Extracter::extractQmlFromSource() {
-
-    auto cnf = DeployCore::_config;
-
-    for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
-        auto targetPath = cnf->getTargetDir() + "/" + i.key();
-        auto distro = cnf->getDistroFromPackage(i.key());
-
-        QStringList plugins;
-        QStringList listItems;
-
-        for (const auto &qmlInput: distro.qmlInput()) {
-            QFileInfo info(qmlInput);
-
-            if (!info.isDir()) {
-                QuasarAppUtils::Params::log("extract qml fail! qml source dir not exits or is not dir " + qmlInput,
-                                            QuasarAppUtils::Error);
-                continue;
-            }
-            QuasarAppUtils::Params::log("extractQmlFromSource " + info.absoluteFilePath());
-
-            if (!QFileInfo::exists(cnf->qtDir.getQmls())) {
-                QuasarAppUtils::Params::log("qml dir wrong!",
-                                            QuasarAppUtils::Warning);
-                continue;
-            }
-
-            QML ownQmlScaner(cnf->qtDir.getQmls());
-
-            if (!ownQmlScaner.scan(plugins, info.absoluteFilePath())) {
-                QuasarAppUtils::Params::log("qml scaner run failed!",
-                                            QuasarAppUtils::Error);
-                continue;
-            }
-        }
-
-        if (!_fileManager->copyFolder(cnf->qtDir.getQmls(),
-                                      targetPath + distro.getQmlOutDir(),
-                                      DeployCore::debugExtensions() ,
-                                      &listItems, &plugins)) {
-            return false;
-        }
-
-        for (const auto &item : listItems) {
-            extractPluginLib(item, i.key());
-        }
-
-    }
-
-    return true;
-}
-
 bool Extracter::extractQml() {
 
     if (QuasarAppUtils::Params::isEndable("qmlDir")) {
-        return extractQmlFromSource();
+        auto cnf = DeployCore::_config;
 
-    } else if (QuasarAppUtils::Params::isEndable("allQmlDependes")) {
-        return extractQmlAll();
+        for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
+            auto targetPath = cnf->getTargetDir() + "/" + i.key();
+            auto distro = cnf->getDistroFromPackage(i.key());
 
+            QStringList plugins;
+            QStringList listItems;
+
+            for (const auto &qmlInput: distro.qmlInput()) {
+                QFileInfo info(qmlInput);
+
+                if (!info.isDir()) {
+                    QuasarAppUtils::Params::log("extract qml fail! qml source dir not exits or is not dir " + qmlInput,
+                                                QuasarAppUtils::Error);
+                    continue;
+                }
+                QuasarAppUtils::Params::log("extractQmlFromSource " + info.absoluteFilePath());
+
+                if (!QFileInfo::exists(cnf->qtDir.getQmls())) {
+                    QuasarAppUtils::Params::log("qml dir wrong!",
+                                                QuasarAppUtils::Warning);
+                    continue;
+                }
+
+                QML ownQmlScaner(cnf->qtDir.getQmls());
+
+                if (!ownQmlScaner.scan(plugins, info.absoluteFilePath())) {
+                    QuasarAppUtils::Params::log("qml scaner run failed!",
+                                                QuasarAppUtils::Error);
+                    continue;
+                }
+            }
+
+            if (!_fileManager->copyFolder(cnf->qtDir.getQmls(),
+                                          targetPath + distro.getQmlOutDir(),
+                                          DeployCore::debugExtensions() ,
+                                          &listItems, &plugins)) {
+                return false;
+            }
+
+            for (const auto &item : listItems) {
+                extractPluginLib(item, i.key());
+            }
+
+        }
+
+        return true;
     }
+
     return false;
 }
 

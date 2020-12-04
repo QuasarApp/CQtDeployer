@@ -148,3 +148,15 @@ bool DistroModule::isValid() {
 void DistroModule::setKey(const QString &key) {
     _key = key;
 }
+
+QSet<QString> DistroModule::extraData() const {
+    return _extraData;
+}
+
+void DistroModule::setExtraData(const QSet<QString> &extraFiles) {
+    _extraData = extraFiles;
+}
+
+void DistroModule::addExtraData(const QString &extraFile) {
+    _extraData += extraFile;
+}

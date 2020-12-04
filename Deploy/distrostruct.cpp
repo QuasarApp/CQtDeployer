@@ -72,6 +72,14 @@ bool DistroStruct::isEmpty() {
 
 }
 
+QString DistroStruct::getExtraDataOutDir(const QString& basePath) const {
+    return toFullPath(getRelativePath(basePath) + extraDataOutDir);
+}
+
+void DistroStruct::setExtraDataOutDir(const QString &value) {
+    extraDataOutDir = value;
+}
+
 QString DistroStruct::toFullPath(QString path) const {
     return PathUtils::toFullPath(path);
 }

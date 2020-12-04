@@ -159,7 +159,7 @@ RunMode DeployCore::getMode() {
         return RunMode::Init;
     }
 
-    if (C("bin") || C("binDir")) {
+    if (C("bin") || C("extraData")) {
         return RunMode::Deploy;
     }
 
@@ -196,7 +196,6 @@ void DeployCore::help() {
                 {"noCheckPATH", "Disables automatic search of paths to qmake in system PATH."},
                 {"noRecursiveiIgnoreEnv", "Disables recursive ignore for ignoreEnv option."},
                 {"v / version", "Shows compiled version"},
-                {"allQmlDependes", "Extracts all the qml libraries. (not recommended, as it takes great amount of computer memory)"},
                 {"qif", "Create the QIF installer for deployment programm"
                         " You can specify the path to your own installer template. Examples: cqtdeployer -qif path/to/myCustom/qif."},
                 {"qifFromSystem", "force use system binarycreator tool of qif from path or qt"},
@@ -217,7 +216,6 @@ void DeployCore::help() {
         {
             "Part 2 Deploy options", {
                 {"-bin [list, params]", "Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe"},
-                {"-binDir [params]", "A folder which includes deployable files (recursive search)"},
                 {"-confFile [params]", "The path to the json file with all deployment configurations. Using this file,"
                  " you can add the necessary options, thereby simplifying the command invocation in the console."
                  " However, the parameters in Kansol have a higher priority than in the file."
@@ -246,6 +244,7 @@ void DeployCore::help() {
                 {"-pluginOut [package;path,path]", "Sets path to plugins out directory"},
                 {"-binOut [package;path,path]", "Sets path to binary out directory"},
                 {"-recOut [package;path,path]", "Sets path to recurses out directory"},
+                {"-extraDataOut [package;path,path]", "Sets path to extra data files out directory"},
                 {"-name [package;val,val]", "Sets name for a package. "
                  "If this if you do not specify a package, the value will be assigned to the default package ("")"},
                 {"-description [package;val,val]", "Sets description for a package"},
@@ -255,6 +254,7 @@ void DeployCore::help() {
                 {"-publisher [package;val,val]", "Sets publisher for a package"},
                 {"-homePage [package;val,val]", "Sets the home page url for a package"},
                 {"-prefix [package;val,val]", "Sets the prefix for the package relatively a target directory "},
+                {"-extraData [package;val,val]", "Adds the extra files or directories like a target. The selected dirrectory will be copy to the binary location with save own structure."},
 
             }
         },
@@ -300,7 +300,7 @@ QStringList DeployCore::helpKeys() {
         "help",
         "noOverwrite",
         "bin",
-        "binDir",
+        "extraData",
         "qmlDir",
         "deploySystem",
         "deploySystem-with-libc",
@@ -309,7 +309,6 @@ QStringList DeployCore::helpKeys() {
         "ignoreEnv",
         "clear",
         "force-clear",
-        "allQmlDependes",
         "libDir",
         "extraLibs",
         "extraPlugin",
@@ -327,6 +326,7 @@ QStringList DeployCore::helpKeys() {
         "pluginOut",
         "binOut",
         "recOut",
+        "extraDataOut",
         "version",
         "verbose",
         "qif",

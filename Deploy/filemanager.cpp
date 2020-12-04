@@ -256,7 +256,9 @@ bool FileManager::moveFile(const QString &file, const QString &target, QStringLi
     return fileActionPrivate(file, target, masks, true, targetIsFile);
 }
 
-bool FileManager::copyFolder(const QString &from, const QString &to, const QStringList &filter,
+bool FileManager::copyFolder(const QString &from,
+                             const QString &to,
+                             const QStringList &filter,
                              QStringList *listOfCopiedItems, QStringList *mask, bool force) {
 
     QDir fromDir(from);
@@ -264,9 +266,12 @@ bool FileManager::copyFolder(const QString &from, const QString &to, const QStri
     auto list = fromDir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries);
 
     for (const auto &item : list) {
-        if (QFileInfo(item).isDir()) {
+        if (item.isDir()) {
 
-            copyFolder(item.absoluteFilePath(), to + "/" + item.fileName(), filter, listOfCopiedItems, mask, force);
+            if (!copyFolder(item.absoluteFilePath(), to + "/" + item.fileName(), filter, listOfCopiedItems, mask, force)) {
+                return false;
+            }
+
         } else {
 
             if (!force) {
@@ -314,6 +319,35 @@ bool FileManager::copyFolder(const QString &from, const QString &to, const QStri
     }
 
     return true;
+}
+
+bool FileManager::cp(const QString &from,
+                     const QString &to,
+                     const QStringList &filter,
+                     QStringList *listOfCopiedItems,
+                     QStringList *mask,
+                     bool force) {
+
+    QFileInfo info(from);
+    if (!info.exists())
+        return false;
+
+    if (info.isDir()) {
+        // This is qt bug, filename return emptu value if dir have the seporator on the end of path.
+        // Qt 5.15.2
+        auto last = from.right(1);
+        if (last == "/" || last == "\\") {
+            last = from.mid(0, from.size() -1 );
+        }
+
+        info.setFile(last);
+
+        return copyFolder(from, to + "/" + info.fileName(),
+                          filter, listOfCopiedItems, mask, force);
+    }
+
+
+    return copyFile(from, to, mask);
 }
 
 bool FileManager::moveFolder(const QString &from, const QString &to, const QString& ignore) {

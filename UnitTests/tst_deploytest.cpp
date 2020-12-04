@@ -100,7 +100,7 @@ private slots:
     void testOverwrite();
 
     // tested flags binDir
-    void testBinDir();
+    void testextraData();
 
     // tested flags qmlDir qmake
     void testQt();
@@ -1022,7 +1022,7 @@ void deploytest::testPrefix() {
 }
 
 void deploytest::customTest() {
-    runTestParams({"-confFile", "This is pass to custom configuretion",
+    runTestParams({"-confFile", "path",
                    "qifFromSystem"});
 }
 
@@ -1132,7 +1132,7 @@ void deploytest::testRelativeLink() {
 void deploytest::testCheckQt() {
 
     Deploy *deployer = new Deploy();
-    QuasarAppUtils::Params::parseParams({"-binDir", TestBinDir, "clear",
+    QuasarAppUtils::Params::parseParams({"-bin", TestBinDir, "clear",
                                          "noCheckRPATH", "noCheckPATH", "noQt"});
     QVERIFY(deployer->prepare());
 
@@ -1507,38 +1507,40 @@ void deploytest::testOverwrite() {
 
 }
 
-void deploytest::testBinDir() {
+void deploytest::testextraData() {
     TestUtils utils;
 
 
 #ifdef Q_OS_UNIX
     auto comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "/bin/TestOnlyC",
-     "./" + DISTRO_DIR + "/bin/qt.conf",
-     "./" + DISTRO_DIR + "/bin/QtWidgetsProject",
-     "./" + DISTRO_DIR + "/bin/TestQMLWidgets",
-     "./" + DISTRO_DIR + "/TestOnlyC.sh",
-     "./" + DISTRO_DIR + "/QtWidgetsProject.sh",
-     "./" + DISTRO_DIR + "/TestQMLWidgets.sh"});
+    {"./" + DISTRO_DIR + "/build/TestOnlyC",
+     "./" + DISTRO_DIR + "/build/QtWidgetsProject",
+     "./" + DISTRO_DIR + "/build/TestQMLWidgets"});
 #else
     auto comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "/TestOnlyC.exe",
-     "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
-     "./" + DISTRO_DIR + "/TestQMLWidgets.exe",
-     "./" + DISTRO_DIR + "/qt.conf"});
+    {"./" + DISTRO_DIR + "/build/TestOnlyC.exe",
+     "./" + DISTRO_DIR + "/build/QtWidgetsProject.exe",
+     "./" + DISTRO_DIR + "/build/TestQMLWidgets.exe"});
 #endif
 
 #ifdef Q_OS_UNIX
     comapareTree += utils.createTree(
-                {"./" + DISTRO_DIR + "/bin/quicknanobrowser",
-                 "./" + DISTRO_DIR + "/quicknanobrowser.sh",
-                 "./" + DISTRO_DIR + "/bin/webui",
-                 "./" + DISTRO_DIR + "/webui.sh"});
+                {"./" + DISTRO_DIR + "/build/quicknanobrowser",
+                 "./" + DISTRO_DIR + "/build/webui"});
 #endif
 
 
-    runTestParams({"-binDir", TestBinDir, "clear",
+    runTestParams({"-extraData", TestBinDir, "clear",
                    "noCheckRPATH", "noCheckPATH", "noQt"}, &comapareTree);
+
+
+    comapareTree = TestModule.replace(comapareTree, {
+                                          {"DistributionKit/build",
+                                           "DistributionKit/myExtraData/build"}});
+
+    runTestParams({"-extraData", TestBinDir, "clear",
+                   "noCheckRPATH", "noCheckPATH", "noQt",
+                  "-extraDataOut", "myExtraData"}, &comapareTree);
 }
 
 void deploytest::testConfFile() {

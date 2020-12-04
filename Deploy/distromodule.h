@@ -62,6 +62,10 @@ public:
 
     bool isValid();
 
+    QSet<QString> extraData() const;
+    void setExtraData(const QSet<QString> &extraFiles);
+    void addExtraData(const QString &extraFile);
+
 protected:
     void setKey(const QString &key);
 
@@ -83,6 +87,8 @@ private:
     QSet<QString> _enabled;
     QSet<QString> _disabled;
     QSet<QString> _extraPlugins;
+    QSet<QString> _extraData;
+
 };
 
 #endif // DISTROMODULE_H
