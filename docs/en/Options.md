@@ -56,7 +56,6 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |-----------------------------|-----------------------------------------------------------|
 |   -bin [list, params]       | Deployable file or folder.                | 
 |                             | For example -bin ~/my/project/bin/,~/my/project/bin.exe     |
-|   -binDir [params]          | A folder which includes deployable files (recursive search).    |
 |   -confFile [params]        | The path to the json file with all deployment configurations.|
 |                             | Using this file, you can add the necessary options, |
 |                             | thereby simplifying  in the command invocation the console. |
@@ -91,6 +90,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -pluginOut [package;path,path]| Sets path to plugins out directory                            |
 |  -binOut [package;path,path] | Sets path to binary out directory                               |
 |  -recOut [package;path,path] | Sets path to recurses out directory                             |
+|  -extraDataOut [package;path,path] | Sets path to extra data files out directory. By Default it is root dir of the distribution.         |
 |  -name [package;val,val]     | Sets name for package. If this if you do not specify a package, the value will be assigned to the default package ("")|
 |  -description [package;val,val] | Sets description for package                                  |
 |  -deployVersion [package;val,val] | Sets version for package                                    |
@@ -99,6 +99,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -publisher [package;val,val]| Sets publisher for package                                       |
 |  -homePage [package;val,val] | Sets the homepage url for a package                              |
 |  -prefix [package;val,val]   | Sets the prefix for the package relatively a target directory       |
+|  -extraData [package;val,val]| Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure.|
 
 ### Plugins Controll Options
 

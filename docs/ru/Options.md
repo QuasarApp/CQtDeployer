@@ -56,7 +56,6 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |  -bin    [list, params]     | Развертываемый файл или папка. пример -bin ~/my/project/bin/,~/my/project/bin.exe|
-|  -binDir [params]           | Папка с развертываемыми файлами (с рекурсивным поиском).  |
 |  -confFile [params]         | Путь к файлу json со всеми конфигурациями развертывания. С помощью этого файла можно добавить нужные опции, тем самым упрастить вызов комманды в консоле. Однако пораметры в кансоле имеют больший приоритет чем в файле. Для получения дополнительной информации об этом флаге см. [Вики](DeployConfigFile) |
 |  -qmlDir [params]           | Папка qml. пример -qmlDir ~/my/project/qml                |
 |  -qmake  [params]           | Путь к qmake. пример                                      |
@@ -85,6 +84,7 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -pluginOut [package;path,path]| Установит путь к папке с плагинами                      |
 |  -binOut [package;path,path] | Установит путь к папке с исполняемыми файлами             |
 |  -recOut [package;path,path] | Установит путь к папке с ресурсами                        |
+|  -extraDataOut [package;path,path] | Устанавливает путь к каталогу с дополнительными файлами данных. По умолчанию это корневой каталог дистрибутива.         |
 |  -name [package;val,val]     | Установит имя префиксу. Если указать значение без префикса, то значение будет установленно префиксу по умолчанию. |
 |  -description [package;val,val] | Установит описание префиксу                            |
 |  -deployVersion [package;val,val]| Установит версию префиксу                            |
@@ -92,8 +92,8 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -icon [package;val,val]     | Установит путь к иконке или логотипу префиксу             |
 |  -publisher [package;val,val]| Установит Издательство (автора) префиксу                  |
 |  -homePage [package;val,val] | Установит URL-адрес домашней страницы для пакета          |
-|  -prefix [package;val,val]   | Устанавливает префикс для пакета относительно целевого каталога
-          |
+|  -prefix [package;val,val]   | Устанавливает префикс для пакета относительно целевого каталога |
+|  -extraData [package;val,val]| Добавляет дополнительные файлы или каталоги как цель. Выбранный каталог будет скопирован в расположение extraDataOut с сохранением собственной структуры.|
 
 ### Параметры управления плагинами:
 

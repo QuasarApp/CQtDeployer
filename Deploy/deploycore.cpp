@@ -244,7 +244,7 @@ void DeployCore::help() {
                 {"-pluginOut [package;path,path]", "Sets path to plugins out directory"},
                 {"-binOut [package;path,path]", "Sets path to binary out directory"},
                 {"-recOut [package;path,path]", "Sets path to recurses out directory"},
-                {"-extraDataOut [package;path,path]", "Sets path to extra data files out directory"},
+                {"-extraDataOut [package;path,path]", "Sets path to extra data files out directory. By Default it is root dir of the distribution."},
                 {"-name [package;val,val]", "Sets name for a package. "
                  "If this if you do not specify a package, the value will be assigned to the default package ("")"},
                 {"-description [package;val,val]", "Sets description for a package"},
@@ -254,7 +254,7 @@ void DeployCore::help() {
                 {"-publisher [package;val,val]", "Sets publisher for a package"},
                 {"-homePage [package;val,val]", "Sets the home page url for a package"},
                 {"-prefix [package;val,val]", "Sets the prefix for the package relatively a target directory "},
-                {"-extraData [package;val,val]", "Adds the extra files or directories like a target. The selected dirrectory will be copy to the binary location with save own structure."},
+                {"-extraData [package;val,val]", "Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure."},
 
             }
         },
