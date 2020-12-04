@@ -23,8 +23,9 @@ public:
 
     // iDistribution interface
 protected:
-    QString dataLocation(const QString &packageName) const override;
-    QString location(const QString &packageName) const override;
+    QString dataLocation(const DistroModule &module) const override;
+    QString location(const DistroModule &module) const override;
+    QString releativeLocation(const DistroModule &module) const override;
 
 private:
     QStringList outFiles;

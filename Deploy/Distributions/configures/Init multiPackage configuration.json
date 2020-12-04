@@ -19,7 +19,6 @@
     "ignoreEnv": "/my/ignore/path",
     "clear": true,
     "force-clear": false,
-    "allQmlDependes": false,
     "libDir": "./",
     "recursiveDepth": "3",
     "extraLibs": "myExtraLib (libssl)",

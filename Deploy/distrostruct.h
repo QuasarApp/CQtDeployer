@@ -18,6 +18,7 @@
 class DEPLOYSHARED_EXPORT DistroStruct
 {
 private:
+    QString extraDataOutDir;
     QString libOutDir;
     QString binOutDir;
     QString qmlOutDir;
@@ -39,6 +40,7 @@ public:
     void setTrOutDir(const QString &value);
     void setResOutDir(const QString &value);
     void setPluginsOutDir(const QString &value);
+    void setExtraDataOutDir(const QString &value);
 
     QString getLibOutDir(const QString& basePath = "/") const;
     QString getBinOutDir(const QString& basePath = "/") const;
@@ -47,10 +49,12 @@ public:
     QString getResOutDir(const QString& basePath = "/") const;
     QString getPluginsOutDir(const QString& basePath = "/") const;
     QString getRootDir(const QString& basePath = "/") const;
+    QString getExtraDataOutDir(const QString& basePath = "/") const;
 
     bool isEmpty();
 
     friend class deploytest;
+
 };
 
 #endif // DISTROSTRUCT_H

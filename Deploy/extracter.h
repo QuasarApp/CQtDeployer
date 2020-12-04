@@ -38,13 +38,13 @@ private:
     MetaFileManager *_metaFileManager;
 
     void extract(const QString &file, DependencyMap* depMap, const QString& mask = "");
+    void extractExtraData(DependencyMap* depMap, const QString& mask = "");
+
     bool copyTranslations(const QStringList &list, const QString &package);
 
     bool extractQml();
 
     QFileInfoList findFilesInsideDir(const QString &name, const QString &dirpath);
-    bool extractQmlAll();
-    bool extractQmlFromSource();
     /**
    * @brief extractLib
    * @param file file of lib
@@ -67,11 +67,14 @@ private:
    */
     void compress();
     void extractAllTargets();
+    void extractExtraDataTargets();
+
     void extractPlugins();
 
     void copyFiles();
     void copyTr();
     void copyLibs(const QSet<QString> &files, const QString &package);
+    void copyExtraData(const QSet<QString> &files, const QString &package);
 
     bool isWebEngine(const QString& package) const;
     void extractPluginLib(const QString &item, const QString &package);

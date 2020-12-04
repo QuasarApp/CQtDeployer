@@ -8,7 +8,9 @@
 class DEPLOYSHARED_EXPORT DistroModule: public DistroStruct
 {
 public:
-    DistroModule();
+    explicit DistroModule(const QString& key );
+    DistroModule(const DistroModule& other ) = default;
+
     QSet<QString> targets() const;
     void setTargets(const QSet<QString> &targets);
     void addTarget(const QString& target);
@@ -51,8 +53,26 @@ public:
     QString homePage() const;
     void setHomePage(const QString &homePage);
 
+    QString prefix() const;
+    void setPrefix(const QString &location);
+
+    QString key() const;
+
+    bool isDefaultModule() const;
+
+    bool isValid();
+
+    QSet<QString> extraData() const;
+    void setExtraData(const QSet<QString> &extraFiles);
+    void addExtraData(const QString &extraFile);
+
+protected:
+    void setKey(const QString &key);
+
 private:
     QString _name;
+    QString _key;
+    QString _prefix;
     QString _description;
     QString _version;
     QString _releaseData;
@@ -67,6 +87,8 @@ private:
     QSet<QString> _enabled;
     QSet<QString> _disabled;
     QSet<QString> _extraPlugins;
+    QSet<QString> _extraData;
+
 };
 
 #endif // DISTROMODULE_H

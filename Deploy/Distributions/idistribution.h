@@ -59,34 +59,27 @@ protected:
     /**
      * @brief collectInfoWithDeployIcons This is wraper of the collectInfo and deployIcon methods.
      * @param pkg This is package object.
-     * @param pkgKey This is package key value.
-     * @param cfg This is pointer to config.
      * @param info This is return value (created template information)
-     * @param fDefaultPakcage This is return value
-     * (return true if package that collected information is a default package)
      * @return true if information collected successful.
      */
     bool collectInfoWithDeployIcons(const DistroModule &pkg,
-                                    const QString& pkgKey,
-                                    const DeployConfig *cfg,
-                                    TemplateInfo& info,
-                                    bool &fDefaultPakcage);
+                                    TemplateInfo& info);
 
     /**
      * @brief collectInfo This method collect information about package.
      * @param pkg This is package object.
-     * @param pkgKey This is package key value.
-     * @param cfg This is pointer to config.
      * @param info This is return value (created template information)
-     * @param fDefaultPakcage This is return value
-     * (return true if package that collected information is a default package)
      * @return true if information collected successful.
      */
     bool collectInfo(const DistroModule &pkg,
-                     const QString& pkgKey,
-                     const DeployConfig *cfg,
-                     TemplateInfo& info,
-                     bool &fDefaultPakcage);
+                     TemplateInfo& info);
+
+    /**
+     * @brief getName This method return name of package from pacakge key.
+     * @param pkgKey This is pacakge.
+     * @return package name.
+     */
+    QString getName(const DistroModule &pkgKey) const;
 
     /**
      * @brief deployIcon This method copy default or custom icon to the package.
@@ -100,17 +93,26 @@ protected:
 
     /**
      * @brief dataLocation This method should be retrun location of application or package files.
-     * @param packageName This is name of package that request data location.
+     * @param module This is module with information about package.
      *  @return return location of data files.
      */
-    virtual QString dataLocation(const QString& packageName) const = 0;
+    virtual QString dataLocation(const DistroModule &module) const = 0;
 
     /**
      * @brief location This method return main patho to files of package.
-     * @param packageName This is name of package that request data location.
+     * @param module This is module with information about package.
      * @return location of package.
      */
-    virtual QString location(const QString& packageName) const = 0;
+    virtual QString location(const DistroModule &module) const = 0;
+
+    /**
+     * @brief releativeLocation This method must be return releative path after install.
+     * Default implementation return prefix value. but for some packages types may need to change a prefix value.
+     * @param module This is module with information about package.
+     * @return releative prefix value.
+     */
+    virtual QString releativeLocation(const DistroModule &module) const;
+
 
 private:
 

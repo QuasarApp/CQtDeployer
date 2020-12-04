@@ -34,7 +34,7 @@ function generateShortCutCmd(cmd) {
                                 Terminal=false\n
                                 Exec=\"@TargetDir@/" + cmd + ".sh\"\n
                                 Name=" + name + "\n
-                                Icon=@TargetDir@/$LOCAL_ICON\n
+                                Icon=@TargetDir@/$ICON\n
                                 Name[en_US]=" + name);
 
         console.log("create icons!!! on LINUX done");

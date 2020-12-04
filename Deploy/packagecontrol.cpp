@@ -4,3 +4,7 @@ PackageControl::PackageControl()
 {
 
 }
+
+PackageControl::~PackageControl(){
+
+}

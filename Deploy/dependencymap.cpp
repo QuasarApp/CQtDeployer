@@ -17,6 +17,7 @@ DependencyMap &DependencyMap::operator +=(const DependencyMap &other) {
     this->_qtModules = this->_qtModules | other._qtModules;
     this->_neadedLibs = this->_neadedLibs + other._neadedLibs;
     this->_systemLibs = this->_systemLibs + other._systemLibs;
+    this->_extraData = this->_extraData + other._extraData;
 
     return *this;
 }
@@ -25,6 +26,7 @@ DependencyMap &DependencyMap::operator -=(const DependencyMap &other) {
     this->_qtModules = this->_qtModules & (~other._qtModules);
     this->_neadedLibs = this->_neadedLibs - other._neadedLibs;
     this->_systemLibs = this->_systemLibs - other._systemLibs;
+    this->_extraData = this->_extraData - other._extraData;
 
     return *this;
 }
@@ -55,6 +57,10 @@ void DependencyMap::addNeadedLib(const QString &lib) {
     DeployCore::addQtModule(_qtModules, lib);
 }
 
+void DependencyMap::addExtraData(const QString &data) {
+    _extraData += data;
+}
+
 void DependencyMap::removeModule(DeployCore::QtModule module) {
     _qtModules = _qtModules & (~module);
 }
@@ -65,6 +71,10 @@ void DependencyMap::removeSystemLib(const QString &lib) {
 
 void DependencyMap::removeNeadedLib(const QString &lib) {
     _neadedLibs.remove(lib);
+}
+
+void DependencyMap::removeExtraData(const QString &data) {
+    _extraData -= data;
 }
 
 bool DependencyMap::containsSysLib(const QString &lib) const {
@@ -79,13 +89,17 @@ bool DependencyMap::containsNeadedLib(const QString &lib) const {
     return _neadedLibs.contains(lib);
 }
 
-QSet<QString> DependencyMap::targets() const
-{
+bool DependencyMap::containsExtraData(const QString &data) const {
+    return _extraData.contains(data);
+}
+
+const QSet<QString> DependencyMap::targets() const {
     return _targets;
 }
 
-void DependencyMap::setTargets(const QSet<QString> &targets)
-{
-    _targets = targets;
+
+const QSet<QString> DependencyMap::extraData() const {
+    return _extraData;
 }
+
 

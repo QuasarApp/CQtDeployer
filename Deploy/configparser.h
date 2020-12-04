@@ -62,7 +62,7 @@ private:
     void setTargetDir(const QString &target = "");
     bool setTargets(const QStringList &value);
     bool setTargetsRecursive(const QString &dir);
-    bool setBinDir(const QString &dir, bool recursive = false);
+    bool setTargetsInDir(const QString &dir, bool recursive = false);
 
     void initIgnoreList();
     void initIgnoreEnvList();
