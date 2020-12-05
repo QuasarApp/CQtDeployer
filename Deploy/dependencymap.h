@@ -27,21 +27,23 @@ public:
     DeployCore::QtModule qtModules() const;
     const QSet<QString>& neadedLibs() const;
     const QSet<QString>& systemLibs() const;
+    const QSet<QString> extraData() const;
+    const QSet<QString> targets() const;
 
     void addModule(DeployCore::QtModule module);
     void addSystemLib(const QString& lib);
     void addNeadedLib(const QString& lib);
+    void addExtraData(const QString& data);
 
     void removeModule(DeployCore::QtModule module);
     void removeSystemLib(const QString& lib);
     void removeNeadedLib(const QString& lib);
+    void removeExtraData(const QString& data);
 
     bool containsSysLib(const QString& lib) const;
     bool containsModule(DeployCore::QtModule module) const;
     bool containsNeadedLib(const QString& lib) const;
-
-    QSet<QString> targets() const;
-    void setTargets(const QSet<QString> &targets);
+    bool containsExtraData(const QString& data) const;
 
 private:
     DeployCore::QtModule _qtModules = DeployCore::NONE;
@@ -49,6 +51,8 @@ private:
     QSet<QString> _neadedLibs;
     QSet<QString> _systemLibs;
     QSet<QString> _targets;
+    QSet<QString> _extraData;
+
 };
 
 #endif // DEPENDENCIESMAP_H

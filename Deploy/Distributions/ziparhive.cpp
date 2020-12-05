@@ -23,14 +23,14 @@ bool ZipArhive::deployTemplate(PackageControl &pkg) {
         auto package = it.value();
 
         TemplateInfo info;
-        bool fDefaultPakcage;
-        if (!collectInfo(package, it.key(), cfg, info, fDefaultPakcage)) {
+        if (!collectInfo(package, info)) {
             return false;
         }
 
-        auto local = location(info.Name);
+        auto local = location(it.value());
+        auto dataLoc = dataLocation(it.value());
 
-        if (!pkg.movePackage(it.key(), local)) {
+        if (!pkg.movePackage(it.key(), dataLoc)) {
             return false;
         }
 
@@ -69,12 +69,12 @@ QStringList ZipArhive::outPutFiles() const {
     return outFiles;
 }
 
-QString ZipArhive::dataLocation(const QString &packageName) const {
-    return location(packageName);
+QString ZipArhive::dataLocation(const DistroModule &module) const {
+    return location(module) + "/" + releativeLocation(module);
 }
 
-QString ZipArhive::location(const QString &packageName) const {
+QString ZipArhive::location(const DistroModule &module) const {
     const DeployConfig *cfg = DeployCore::_config;
 
-    return cfg->getTargetDir() + "/" + getLocation() + "/" + packageName;
+    return cfg->getTargetDir() + "/" + getLocation() + "/" + module.key();
 }

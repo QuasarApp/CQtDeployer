@@ -182,8 +182,15 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
         return false;
     }
 
-    QuasarAppUtils::Params::log(((isMove)? "move :": "copy :") + file,
-                                QuasarAppUtils::Info);
+    if (isMove) {
+        QuasarAppUtils::Params::log( "move :" + file,
+                                    QuasarAppUtils::Debug);
+    } else {
+        QuasarAppUtils::Params::log("copy :" + file,
+                                    QuasarAppUtils::Info);
+    }
+
+
     QFile sourceFile(file);
     auto sourceFileAbsalutePath = QFileInfo(file).absoluteFilePath();
 
@@ -249,7 +256,9 @@ bool FileManager::moveFile(const QString &file, const QString &target, QStringLi
     return fileActionPrivate(file, target, masks, true, targetIsFile);
 }
 
-bool FileManager::copyFolder(const QString &from, const QString &to, const QStringList &filter,
+bool FileManager::copyFolder(const QString &from,
+                             const QString &to,
+                             const QStringList &filter,
                              QStringList *listOfCopiedItems, QStringList *mask, bool force) {
 
     QDir fromDir(from);
@@ -257,9 +266,12 @@ bool FileManager::copyFolder(const QString &from, const QString &to, const QStri
     auto list = fromDir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries);
 
     for (const auto &item : list) {
-        if (QFileInfo(item).isDir()) {
+        if (item.isDir()) {
 
-            copyFolder(item.absoluteFilePath(), to + "/" + item.fileName(), filter, listOfCopiedItems, mask, force);
+            if (!copyFolder(item.absoluteFilePath(), to + "/" + item.fileName(), filter, listOfCopiedItems, mask, force)) {
+                return false;
+            }
+
         } else {
 
             if (!force) {
@@ -309,11 +321,44 @@ bool FileManager::copyFolder(const QString &from, const QString &to, const QStri
     return true;
 }
 
+bool FileManager::cp(const QString &from,
+                     const QString &to,
+                     const QStringList &filter,
+                     QStringList *listOfCopiedItems,
+                     QStringList *mask,
+                     bool force) {
+
+    QFileInfo info(from);
+    if (!info.exists())
+        return false;
+
+    if (info.isDir()) {
+        // This is qt bug, filename return emptu value if dir have the seporator on the end of path.
+        // Qt 5.15.2
+        auto last = from.right(1);
+        if (last == "/" || last == "\\") {
+            last = from.mid(0, from.size() -1 );
+        }
+
+        info.setFile(last);
+
+        return copyFolder(from, to + "/" + info.fileName(),
+                          filter, listOfCopiedItems, mask, force);
+    }
+
+
+    return copyFile(from, to, mask);
+}
+
 bool FileManager::moveFolder(const QString &from, const QString &to, const QString& ignore) {
     QFileInfo info(from);
 
     if (!info.exists())
         return false;
+
+    if (!initDir(to)) {
+        return false;
+    }
 
     if (info.isFile()) {
 

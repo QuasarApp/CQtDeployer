@@ -13,6 +13,10 @@ ModulesQt513::ModulesQt513()
 
 }
 
+ModulesQt513::~ModulesQt513() {
+
+}
+
 QSet<QString> ModulesQt513::ignoreFilter(const QSet<QString> &input, const QString &filter) const {
     QSet<QString> res;
     for (auto& val : input) {

@@ -133,7 +133,14 @@ bool Packing::collectPackages() {
     const DeployConfig *cfg = DeployCore::_config;
 
     for (auto it = cfg->packages().begin(); it != cfg->packages().end(); ++it) {
-        if (!moveData(cfg->getTargetDir() + "/" + it.key(), cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR + "/" + it.key()))
+
+        auto from = cfg->getTargetDir() + "/" + it.key();
+
+        if (!QFileInfo::exists(from)) {
+            _fileManager->initDir(from);
+        }
+
+        if (!moveData(from, cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR + "/" + it.key()))
             return false;
 
         _packagesLocations.insert(it.key(), cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR + "/" + it.key());

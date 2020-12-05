@@ -21,8 +21,8 @@ public:
     QStringList outPutFiles() const override;
 
 protected:
-    QString dataLocation(const QString &packageName) const override;
-    QString location(const QString &packageName) const override;
+    QString dataLocation(const DistroModule &module) const override;
+    QString location(const DistroModule &module) const override;
 
 private:
 
@@ -32,7 +32,6 @@ private:
     /**
      * @brief deployPackage - private method for deploy package of qt installer framework
      * @param it - this is const iterator of current DistroModule.
-     * @param cfg - this is config pointer
      * @param sufixes - this is sufixses of files for copy into package
      * @param pakcagesTemplates - this is list of pakcages and them tempalte patheses
      * @param defaultPackageTempalte this is path to default package template
@@ -40,7 +39,6 @@ private:
      * @return return true if package deployed successful
      */
     bool deployPackage(const QHash<QString, DistroModule>::const_iterator &it,
-                       const DeployConfig *cfg,
                        const QStringList sufixes,
                        const QHash<QString, QString> &pakcagesTemplates,
                        const QString &defaultPackageTempalte,

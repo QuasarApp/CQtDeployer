@@ -62,8 +62,7 @@ QString DistroStruct::getRootDir(const QString &basePath) const {
     return getRelativePath(basePath);
 }
 
-bool DistroStruct::isEmpty()
-{
+bool DistroStruct::isEmpty() {
     return (libOutDir.isEmpty() &&
             qmlOutDir.isEmpty() &&
             binOutDir.isEmpty() &&
@@ -71,6 +70,14 @@ bool DistroStruct::isEmpty()
             resOutDir.isEmpty() &&
             pluginsOutDir.isEmpty());
 
+}
+
+QString DistroStruct::getExtraDataOutDir(const QString& basePath) const {
+    return toFullPath(getRelativePath(basePath) + extraDataOutDir);
+}
+
+void DistroStruct::setExtraDataOutDir(const QString &value) {
+    extraDataOutDir = value;
 }
 
 QString DistroStruct::toFullPath(QString path) const {

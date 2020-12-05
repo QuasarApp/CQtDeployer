@@ -20,7 +20,6 @@ private:
     bool fileActionPrivate(const QString &file, const QString &target,
                            QStringList *mask, bool isMove, bool targetIsFile);
 
-    bool initDir(const QString &path);
     QSet<QString> _deployedFiles;
 
     /**
@@ -34,6 +33,7 @@ private:
     QString changeDistanation(const QString &absalutePath, QString basePath, int depch);
 public:
     FileManager();
+    bool initDir(const QString &path);
 
     bool copyFile(const QString &file, const QString &target,
                   QStringList *mask = nullptr, bool targetIsFile = false);
@@ -55,6 +55,15 @@ public:
                     QStringList *listOfCopiedItems = nullptr,
                     QStringList *mask = nullptr);
 
+    bool copyFolder(const QString &from, const QString &to,
+                    const QStringList &filter = QStringList(),
+                    QStringList *listOfCopiedItems = nullptr,
+                    QStringList *mask = nullptr, bool force = false);
+
+    bool cp(const QString &from, const QString &to,
+            const QStringList &filter = QStringList(),
+            QStringList *listOfCopiedItems = nullptr,
+            QStringList *mask = nullptr, bool force = false);
 
     bool removeFile(const QString &file);
     bool removeFile(const QFileInfo &file);
@@ -73,10 +82,7 @@ public:
     bool moveFile(const QString &file, const QString &target,
                   QStringList *mask = nullptr, bool targetIsFile = false);
 
-    bool copyFolder(const QString &from, const QString &to,
-                    const QStringList &filter = QStringList(),
-                    QStringList *listOfCopiedItems = nullptr,
-                    QStringList *mask = nullptr, bool force = false);
+
 
     bool moveFolder(const QString &from, const QString &to, const QString &ignore = "");
 

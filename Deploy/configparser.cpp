@@ -47,7 +47,8 @@ bool parsePackagesPrivate(Container& mainContainer,
         auto first = paramsList.value(0, "");
         auto second = paramsList.value(1, "");
         if (paramsList.size() == 1)
-            (mainContainer[defaultPackage].*adder)(first);
+            (valueLink(mainContainer, defaultPackage, DistroModule{defaultPackage}).*adder)(first);
+
         else {
             first = PathUtils::fullStripPath(first);
             if (!mainContainer.contains(first)) {
@@ -55,7 +56,7 @@ bool parsePackagesPrivate(Container& mainContainer,
             }
 
             for (int i = 1; i < paramsList.size(); ++i) {
-                (mainContainer[first].*adder)(paramsList[i]);
+                (valueLink(mainContainer, first, DistroModule{first}).*adder)(paramsList[i]);
             }
         }
     }
@@ -347,6 +348,8 @@ bool ConfigParser::initDistroStruct() {
             split(DeployCore::getSeparator(0), splitbehavior);
     auto recOut = QuasarAppUtils::Params::getStrArg("recOut").
             split(DeployCore::getSeparator(0), splitbehavior);
+    auto extraDataOut = QuasarAppUtils::Params::getStrArg("extraDataOut").
+            split(DeployCore::getSeparator(0), splitbehavior);
 
     auto name = QuasarAppUtils::Params::getStrArg("name").
             split(DeployCore::getSeparator(0), splitbehavior);
@@ -361,7 +364,13 @@ bool ConfigParser::initDistroStruct() {
     auto publisher = QuasarAppUtils::Params::getStrArg("publisher").
             split(DeployCore::getSeparator(0), splitbehavior);
 
-    auto homepage = QuasarAppUtils::Params::getStrArg("homepage").
+    auto homepage = QuasarAppUtils::Params::getStrArg("homePage").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
+    auto prefix = QuasarAppUtils::Params::getStrArg("prefix").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
+    auto extraData = QuasarAppUtils::Params::getStrArg("extraData").
             split(DeployCore::getSeparator(0), splitbehavior);
 
     auto erroLog = [](const QString &flag){
@@ -401,6 +410,11 @@ bool ConfigParser::initDistroStruct() {
         return false;
     }
 
+    if (extraDataOut.size() && !parsePackagesPrivate(mainDistro, extraDataOut, &DistroModule::setExtraDataOutDir)) {
+        erroLog("extraDataOut");
+        return false;
+    }
+
     if (name.size() && !parsePackagesPrivate(mainDistro, name, &DistroModule::setName)) {
         erroLog("name");
         return false;
@@ -431,8 +445,18 @@ bool ConfigParser::initDistroStruct() {
         return false;
     }
 
-    if (publisher.size() && !parsePackagesPrivate(mainDistro, homepage, &DistroModule::setHomePage)) {
-        erroLog("HomePage");
+    if (homepage.size() && !parsePackagesPrivate(mainDistro, homepage, &DistroModule::setHomePage)) {
+        erroLog("homePage");
+        return false;
+    }
+
+    if (prefix.size() && !parsePackagesPrivate(mainDistro, prefix, &DistroModule::setPrefix)) {
+        erroLog("prefix");
+        return false;
+    }
+
+    if (extraData.size() && !parsePackagesPrivate(mainDistro, extraData, &DistroModule::addExtraData)) {
+        erroLog("extraData");
         return false;
     }
 
@@ -470,7 +494,7 @@ bool ConfigParser::initPackages() {
                 }
             }
 
-            _config.packagesEdit().insert(package, {});
+            _config.packagesEdit().insert(package, DistroModule{package});
 
             if (pair.size() != 2) {
                 defaultPackage = package;
@@ -493,7 +517,7 @@ bool ConfigParser::initPackages() {
     }
 
     if (fDefaultPackage) {
-        _config.packagesEdit().insert(defaultPackage, {});
+        _config.packagesEdit().insert(defaultPackage, DistroModule{defaultPackage});
     }
 
     _config.setDefaultPackage(defaultPackage);
@@ -505,11 +529,6 @@ bool ConfigParser::initQmlInput() {
 
     auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir").
             split(DeployCore::getSeparator(0), splitbehavior);
-
-    if (QuasarAppUtils::Params::isEndable("allQmlDependes")) {
-        _config.deployQml = true;
-        return true;
-    }
 
     auto erroLog = [](const QString &flag){
             QuasarAppUtils::Params::log(QString("Set %0 fail, because you try set %0 for not inited package."
@@ -538,17 +557,28 @@ bool ConfigParser::parseDeployMode() {
         return false;
     }
 
+    setTargetDir();
+
     auto bin = QuasarAppUtils::Params::getStrArg("bin").
-            split(DeployCore::getSeparator(0));
+            split(DeployCore::getSeparator(0), splitbehavior);
 
-    if (!setTargets(bin)) {
+    if (bin.size() && !setTargets(bin)) {
 
-        auto binDir = QuasarAppUtils::Params::getStrArg("binDir");
-        if (!setTargetsRecursive(binDir)) {
-            QuasarAppUtils::Params::log("setTargetDir fail!",
-                                        QuasarAppUtils::Error);
-            return false;
-        }
+        QuasarAppUtils::Params::log("Sets input targets is failed!",
+                                    QuasarAppUtils::Warning);
+    }
+
+    auto xData = QuasarAppUtils::Params::getStrArg("extraData").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
+
+    if (!(_config.targets().count() || xData.count())) {
+        QuasarAppUtils::Params::log("The targets initialize is failed!",
+                                    QuasarAppUtils::Error);
+
+        QuasarAppUtils::Params::log("Use bin or extraData optins. And check input pathes.",
+                                    QuasarAppUtils::Info);
+        return false;
     }
 
     _config.depchLimit = 0;
@@ -696,7 +726,7 @@ bool ConfigParser::setTargets(const QStringList &value) {
             isfillList = true;
         }
         else if (targetInfo.isDir()) {
-            if (!setBinDir(i)) {
+            if (!setTargetsInDir(i)) {
                 QuasarAppUtils::Params::log(i + " du not contains executable binaries!",
                                             QuasarAppUtils::Debug);
                 continue;
@@ -712,31 +742,27 @@ bool ConfigParser::setTargets(const QStringList &value) {
     if (!isfillList)
         return false;
 
-    setTargetDir();
-
     return true;
 }
 
 bool ConfigParser::setTargetsRecursive(const QString &dir) {
-    if (!setBinDir(dir, true)) {
-        QuasarAppUtils::Params::log("setBinDir failed!",
+    if (!setTargetsInDir(dir, true)) {
+        QuasarAppUtils::Params::log("setTargetsInDir failed!",
                                      QuasarAppUtils::Warning);
         return false;
     }
 
-    setTargetDir();
-
     return true;
 }
 
-bool ConfigParser::setBinDir(const QString &dir, bool recursive) {
+bool ConfigParser::setTargetsInDir(const QString &dir, bool recursive) {
     QDir d(dir);
     if (dir.isEmpty() || !d.exists()) {
         QuasarAppUtils::Params::log(dir + " dir not exits!",
                                     QuasarAppUtils::Debug);
         return false;
     }
-    QuasarAppUtils::Params::log("setBinDir check path: " + dir,
+    QuasarAppUtils::Params::log("setTargetsInDir check path: " + dir,
                                 QuasarAppUtils::Debug);
     QFileInfoList list;
 
@@ -750,7 +776,7 @@ bool ConfigParser::setBinDir(const QString &dir, bool recursive) {
     for (const auto &file : list) {
 
         if (file.isDir()) {
-            result |= setBinDir(file.absoluteFilePath(), recursive);
+            result |= setTargetsInDir(file.absoluteFilePath(), recursive);
             continue;
         }
 
@@ -1386,21 +1412,17 @@ bool ConfigParser::smartMoveTargets() {
 
         QString targetPath = _config.getTargetDir() + "/" + i.value().getPackage();
 
-        if (DeployCore::isLib(target)) {
-            targetPath += _config.getDistro(i.key()).getLibOutDir();
-        } else {
-            targetPath += _config.getDistro(i.key()).getBinOutDir();
-        }
+        targetPath += _config.getDistro(i.key()).getBinOutDir();
 
-        if (!_fileManager->smartCopyFile(target.absoluteFilePath(), targetPath)) {
+        if (!_fileManager->cp(target.absoluteFilePath(), targetPath)) {
             result = false;
         }
 
         auto newTargetKey = targetPath + "/" + target.fileName();
         temp.unite(moveTarget(i.value(), newTargetKey));
 
-        _config.packagesEdit()[i.value().getPackage()].addTarget(newTargetKey);
-
+        auto pkgKey = i.value().getPackage();
+        valueLink(_config.packagesEdit(), pkgKey, DistroModule{pkgKey}).addTarget(newTargetKey);
     }
 
     _config.targetsEdit() = temp;

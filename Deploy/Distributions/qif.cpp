@@ -119,7 +119,7 @@ bool QIF::deployTemplate(PackageControl &pkg) {
     for (auto it = cfg->packages().begin();
          it != cfg->packages().end(); ++it) {
 
-        if (!deployPackage(it, cfg, sufixes, pakcagesTemplates, defaultPackageTempalte, pkg)) {
+        if (!deployPackage(it, sufixes, pakcagesTemplates, defaultPackageTempalte, pkg)) {
             return false;
         }
     }
@@ -172,27 +172,14 @@ QStringList QIF::outPutFiles() const {
     return {installerFile()};
 }
 
-QString QIF::dataLocation(const QString &packageName) const {
-    if (packageName.isEmpty())
-        return "";
-
-    const DeployConfig* cfg = DeployCore::_config;
-
-    QString result = location(packageName) + "/data";
-    if (cfg->getDefaultPackage() != packageName) {
-        result += "/" + packageName;
-    }
-
-    return result;
+QString QIF::dataLocation(const DistroModule &module) const {
+    return location(module) + "/data/" + releativeLocation(module);
 }
 
-QString QIF::location(const QString &packageName) const {
+QString QIF::location(const DistroModule &module) const {
 
-    if (packageName.isEmpty())
-        return "";
-
-    const DeployConfig* cfg = DeployCore::_config;
-    return cfg->getTargetDir() + "/" + getLocation() + "/packages/" + packageName;
+    const DeployConfig *cfg = DeployCore::_config;
+    return cfg->getTargetDir() + "/" + getLocation() + "/packages/" + module.key();
 }
 
 QString QIF::getStyle(const QString& input) const {
@@ -227,7 +214,6 @@ QString QIF::installerFile() const {
 }
 
 bool QIF::deployPackage(const QHash<QString, DistroModule>::const_iterator& it,
-                        const DeployConfig * cfg,
                         const QStringList sufixes,
                         const QHash<QString, QString>& pakcagesTemplates,
                         const QString& defaultPackageTempalte,
@@ -235,15 +221,14 @@ bool QIF::deployPackage(const QHash<QString, DistroModule>::const_iterator& it,
     auto package = it.value();
 
     TemplateInfo info;
-    bool fDefaultPakcage;
-    if (!collectInfoWithDeployIcons(it.value(), it.key(), cfg, info, fDefaultPakcage)) {
+    if (!collectInfoWithDeployIcons(package, info)) {
         return false;
     }
 
-    auto localData = dataLocation(info.Name);
-    auto local = location(info.Name);
+    auto localData = dataLocation(package);
+    auto local = location(package);
 
-    if (!unpackDir(pakcagesTemplates.value(package.name(), defaultPackageTempalte),
+    if (!unpackDir(pakcagesTemplates.value(package.key(), defaultPackageTempalte),
                    local, info, sufixes)) {
         return false;
     }
@@ -252,7 +237,7 @@ bool QIF::deployPackage(const QHash<QString, DistroModule>::const_iterator& it,
         return false;
     }
 
-    if (fDefaultPakcage)
+    if (package.isDefaultModule())
         generalInfo = info;
 
     return true;
@@ -262,7 +247,6 @@ bool QIF::initDefaultConfiguratuin() {
     const DeployConfig *cfg = DeployCore::_config;
 
     // init default configuration
-    bool fDefaultPakcage;
-    return collectInfo({}, cfg->getDefaultPackage(), cfg, generalInfo, fDefaultPakcage);
+    return collectInfo(DistroModule{cfg->getDefaultPackage()}, generalInfo);
 }
 

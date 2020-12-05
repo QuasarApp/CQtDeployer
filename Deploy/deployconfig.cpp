@@ -37,15 +37,12 @@ void DeployConfig::setTargetDir(const QString &target) {
 }
 
 DistroModule DeployConfig::getDistro(const QString &target) const {
-    return _packages.value(_targets.value(target).getPackage());
+    auto key = _targets.value(target).getPackage();
+    return _packages.value(key, DistroModule{key});
 }
 
 DistroModule DeployConfig::getDistroFromPackage(const QString &package) const {
-    if (_packages.contains(package)) {
-        return _packages[package];
-    }
-
-    return _packages.value("");
+    return _packages.value(package, DistroModule{package});
 }
 
 QMultiHash<QString, TargetInfo> &DeployConfig::targetsEdit() {
