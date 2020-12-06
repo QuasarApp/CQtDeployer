@@ -96,6 +96,15 @@ The Building or installation instructions see on wiki [page](https://github.com/
 ## Thanks
  * many thanks [Trail of Bits](https://github.com/trailofbits) for their library [pe-parser](https://github.com/trailofbits/pe-parse). Everything works perfectly.
 
+
+
+## Support us 
+### Support with bitcoin
+
+![support](https://user-images.githubusercontent.com/12465465/101282118-25222d00-37e4-11eb-9ffb-4ebd6a3a0bc7.png)
+
+bitcoin:bc1q4wnp58plhx4fwnfnzz3e4slulv2gzzts89w2f7
+
 ***************************
 ***************************
 ***************************
@@ -191,3 +200,12 @@ The Building or installation instructions see on wiki [page](https://github.com/
 
 ## Благодарность
  * Большое спасибо  [Trail of Bits](https://github.com/trailofbits) за их библиотеку [pe-parser](https://github.com/trailofbits/pe-parse). Все работает отлично.
+
+
+## Поддержкать нас
+### с помощью bitcoin
+
+
+![support](https://user-images.githubusercontent.com/12465465/101282118-25222d00-37e4-11eb-9ffb-4ebd6a3a0bc7.png)
+
+bitcoin:bc1q4wnp58plhx4fwnfnzz3e4slulv2gzzts89w2f7
