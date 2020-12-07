@@ -1,5 +1,4 @@
 # How to deploy C++ Application 
-Hi my name is Yankovich Andrei and i an maintainer of the [CQtDeployer tool](https://github.com/QuasarApp/CQtDeployer).
 
 In this article i describe deploy processes of c++/qt application with cqtdeployer.
 
