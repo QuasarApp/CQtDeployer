@@ -54,7 +54,8 @@ private:
                        QSet<QString> *tree = nullptr,
                        const QStringList &checkableKeys = {},
                        bool noWarnings = false,
-                       bool onlySize = false);
+                       bool onlySize = false,
+                       exitCodes exitCode = exitCodes::Good);
 
     void checkResults(const QSet<QString> &tree,
                       const QStringList &checkagbleKeys,
@@ -164,6 +165,7 @@ private slots:
     void testQmlScaner();
 
     void testPrefix();
+    void testallowEmptyPackages();
 
     void customTest();
 };
@@ -1021,6 +1023,23 @@ void deploytest::testPrefix() {
                    "-prefix", "package;prefix"}, &comapareTree);
 }
 
+void deploytest::testallowEmptyPackages() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC";
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+#endif
+    runTestParams({"-bin", bin, "force-clear",
+                   "-prefix", "package;prefix"}, nullptr, {}, false, false,
+                  exitCodes::PrepareError);
+
+    runTestParams({"-bin", bin, "force-clear",
+                   "-prefix", "package;prefix",
+                  "allowEmptyPackages"});
+}
+
 void deploytest::customTest() {
     runTestParams({"-confFile", "path",
                    "qifFromSystem"});
@@ -1278,12 +1297,13 @@ void deploytest::testZip() {
 void deploytest::runTestParams(QStringList list,
                                QSet<QString>* tree,
                                const QStringList &checkableKeys,
-                               bool noWarnings, bool onlySize) {
+                               bool noWarnings, bool onlySize,
+                               exitCodes exitCode) {
 
     QuasarAppUtils::Params::parseParams(list);
 
     Deploy deploy;
-    if (deploy.run() != Good)
+    if (deploy.run() != exitCode)
         QVERIFY(false);
 
     if (tree) {
