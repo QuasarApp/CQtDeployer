@@ -72,6 +72,8 @@ private:
     bool initQmake();
     bool initQmlInput();
 
+    void packagesErrorLog(const QString &flag);
+
     bool setQmake(const QString &value);
     bool setQtDir(const QString &value);
 

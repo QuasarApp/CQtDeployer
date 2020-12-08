@@ -50,10 +50,14 @@ bool parsePackagesPrivate(Container& mainContainer,
             (valueLink(mainContainer, defaultPackage, DistroModule{defaultPackage}).*adder)(first);
 
         else {
+
+
+            bool skipError = QuasarAppUtils::Params::isEndable("allowEmptyPackages");
             first = PathUtils::fullStripPath(first);
-            if (!mainContainer.contains(first)) {
+            if (!skipError && !mainContainer.contains(first)) {
                 return false;
             }
+
 
             for (int i = 1; i < paramsList.size(); ++i) {
                 (valueLink(mainContainer, first, DistroModule{first}).*adder)(paramsList[i]);
@@ -373,90 +377,85 @@ bool ConfigParser::initDistroStruct() {
     auto extraData = QuasarAppUtils::Params::getStrArg("extraData").
             split(DeployCore::getSeparator(0), splitbehavior);
 
-    auto erroLog = [](const QString &flag){
-            QuasarAppUtils::Params::log(QString("Set %0 fail, because you try set %0 for not inited package."
-                                               " Use 'targetPackage' flag for init the packages").arg(flag),
-                                               QuasarAppUtils::Error);
-        };
 
 // init distro stucts for all targets
     if (binOut.size() && !parsePackagesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir)) {
-        erroLog("binOut");
+        packagesErrorLog("binOut");
         return false;
     }
 
     if (libOut.size() && !parsePackagesPrivate(mainDistro, libOut, &DistroModule::setLibOutDir)) {
-        erroLog("libOut");
+        packagesErrorLog("libOut");
         return false;
     }
 
     if (qmlOut.size() && !parsePackagesPrivate(mainDistro, qmlOut, &DistroModule::setQmlOutDir)) {
-        erroLog("qmlOut");
+        packagesErrorLog("qmlOut");
         return false;
     }
 
     if (trOut.size() && !parsePackagesPrivate(mainDistro, trOut, &DistroModule::setTrOutDir)) {
-        erroLog("trOut");
+        packagesErrorLog("trOut");
         return false;
     }
 
     if (pluginOut.size() && !parsePackagesPrivate(mainDistro, pluginOut, &DistroModule::setPluginsOutDir)) {
-        erroLog("pluginOut");
+        packagesErrorLog("pluginOut");
         return false;
     }
 
     if (recOut.size() && !parsePackagesPrivate(mainDistro, recOut, &DistroModule::setResOutDir)) {
-        erroLog("recOut");
+        packagesErrorLog("recOut");
         return false;
     }
 
     if (extraDataOut.size() && !parsePackagesPrivate(mainDistro, extraDataOut, &DistroModule::setExtraDataOutDir)) {
-        erroLog("extraDataOut");
+        packagesErrorLog("extraDataOut");
         return false;
     }
 
     if (name.size() && !parsePackagesPrivate(mainDistro, name, &DistroModule::setName)) {
-        erroLog("name");
+        packagesErrorLog("name");
         return false;
     }
 
     if (description.size() && !parsePackagesPrivate(mainDistro, description, &DistroModule::setDescription)) {
-        erroLog("description");
+        packagesErrorLog("description");
         return false;
     }
 
     if (deployVersion.size() && !parsePackagesPrivate(mainDistro, deployVersion, &DistroModule::setVersion)) {
-        erroLog("deployVersion");
+        packagesErrorLog("deployVersion");
         return false;
     }
 
     if (releaseDate.size() && !parsePackagesPrivate(mainDistro, releaseDate, &DistroModule::setReleaseData)) {
-        erroLog("releaseDate");
+        packagesErrorLog("releaseDate");
         return false;
     }
 
     if (icon.size() && !parsePackagesPrivate(mainDistro, icon, &DistroModule::setIcon)) {
-        erroLog("icon");
+        packagesErrorLog("icon");
         return false;
     }
 
     if (publisher.size() && !parsePackagesPrivate(mainDistro, publisher, &DistroModule::setPublisher)) {
-        erroLog("Publisher");
+        packagesErrorLog("Publisher");
         return false;
     }
 
     if (homepage.size() && !parsePackagesPrivate(mainDistro, homepage, &DistroModule::setHomePage)) {
-        erroLog("homePage");
+        packagesErrorLog("homePage");
         return false;
     }
 
     if (prefix.size() && !parsePackagesPrivate(mainDistro, prefix, &DistroModule::setPrefix)) {
-        erroLog("prefix");
+        packagesErrorLog("prefix");
         return false;
     }
 
     if (extraData.size() && !parsePackagesPrivate(mainDistro, extraData, &DistroModule::addExtraData)) {
-        erroLog("extraData");
+        packagesErrorLog("extraData");
         return false;
     }
 
@@ -530,21 +529,23 @@ bool ConfigParser::initQmlInput() {
     auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir").
             split(DeployCore::getSeparator(0), splitbehavior);
 
-    auto erroLog = [](const QString &flag){
-            QuasarAppUtils::Params::log(QString("Set %0 fail, because you try set %0 for not inited package."
-                                               " Use 'targetPackage' flag for init the packages").arg(flag),
-                                               QuasarAppUtils::Error);
-        };
 
 // init distro stucts for all targets
     _config.deployQml = qmlDir.size();
 
     if (qmlDir.size() && !parsePackagesPrivate(_config.packagesEdit(), qmlDir, &DistroModule::addQmlInput)) {
-        erroLog("qmlDir");
+        packagesErrorLog("qmlDir");
         return false;
     }
 
     return true;
+}
+
+void ConfigParser::packagesErrorLog(const QString &flag) {
+    QuasarAppUtils::Params::log(QString("Set %0 fail, because you try set %0 for not inited package."
+                                       " Use 'targetPackage' flag for init the packages. "
+                                        "Or if you want to configure emty package use the allowEmptyPackages option for disable this error message.").arg(flag),
+                                       QuasarAppUtils::Error);
 }
 
 bool ConfigParser::parseDeployMode() {
@@ -1243,31 +1244,25 @@ bool ConfigParser::initPlugins() {
     auto listDisablePlugins = QuasarAppUtils::Params::getStrArg("disablePlugins").
             split(DeployCore::getSeparator(0), splitbehavior);
 
-    auto erroLog = [](const QString &flag){
-            QuasarAppUtils::Params::log(QString("Set %0 fail, because you try set %0 for not inited package."
-                                               " Use 'targetPackage' flag for init the packages").arg(flag),
-                                               QuasarAppUtils::Error);
-        };
-
 
     if (listExtraPlugin.size() && !parsePackagesPrivate(_config.packagesEdit(),
                                                         listExtraPlugin,
                                                         &DistroModule::addExtraPlugins)) {
-        erroLog("extra plugins");
+        packagesErrorLog("extra plugins");
         return false;
     }
 
     if (listEnablePlugins.size() && !parsePackagesPrivate(_config.packagesEdit(),
                                                           listEnablePlugins,
                                                           &DistroModule::addEnabledPlugins)) {
-        erroLog("enable plugins");
+        packagesErrorLog("enable plugins");
         return false;
     }
 
     if (listDisablePlugins.size() && !parsePackagesPrivate(_config.packagesEdit(),
                                                            listDisablePlugins,
                                                            &DistroModule::addDisabledPlugins)) {
-        erroLog("disable plugins");
+        packagesErrorLog("disable plugins");
         return false;
     }
 
