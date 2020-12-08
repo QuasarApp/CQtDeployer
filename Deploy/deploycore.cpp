@@ -348,7 +348,8 @@ QStringList DeployCore::helpKeys() {
         "noQt",
         "homePage",
         "prefix",
-        "deb"
+        "deb",
+        "allowEmptyPackages"
     };
 }
 
