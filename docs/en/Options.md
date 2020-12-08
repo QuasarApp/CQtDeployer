@@ -48,7 +48,9 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |                             | you can specify the path to your own DEBIAN template. |
 |                             | Examples: cqtdeployer -deb path/to/myCustom/DEBIAN. More details can be found [here](DEB) |
 |   deploySystem              | Deploys all libraries not recomendet because there may be conflicts with system libraries                                           |
-|   deploySystem-with-libc    | Deploy all libs include libc (only linux). Do not use this option for a gui application, for gu use the deploySystem option                             |
+|   deploySystem-with-libc    | Deploys all libs include libc (only linux). Do not use this option for a gui application, for gui use the deploySystem option. (on snap version you need to turn on permission)                             |
+|   noQt                      | Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework.                             |
+|   allowEmptyPackages        | Allows configure the empty packages.                            |
 
 ### Deploy options
 
