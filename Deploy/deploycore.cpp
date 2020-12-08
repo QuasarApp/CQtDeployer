@@ -205,12 +205,12 @@ void DeployCore::help() {
                 {"deploySystem", "Deploys all libraries."
                  " Not recomendet because there may be conflicts with system libraries"
                  " (on snap version you need to turn on permission)"},
-                {"deploySystem-with-libc", "deploy all libs include libc (only linux)."
+                {"deploySystem-with-libc", "deploys all libs include libc (only linux)."
                  " Do not use this option with gui application."
                  " For gui application sue the deploySystem option "
                  "(on snap version you need to turn on permission)"},
-                {"noQt", "Ignore the error of initialize of a qmake. Use only if your application does not use the qt framework."},
-                {"allowEmptyPackages", "Allow configure the empty packages."},
+                {"noQt", "Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework."},
+                {"allowEmptyPackages", "Allows configure the empty packages."},
 
             }
         },
