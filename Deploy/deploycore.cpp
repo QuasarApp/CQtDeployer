@@ -205,11 +205,12 @@ void DeployCore::help() {
                 {"deploySystem", "Deploys all libraries."
                  " Not recomendet because there may be conflicts with system libraries"
                  " (on snap version you need to turn on permission)"},
-                {"deploySystem-with-libc", "deploy all libs include libc (only linux)."
+                {"deploySystem-with-libc", "deploys all libs include libc (only linux)."
                  " Do not use this option with gui application."
                  " For gui application sue the deploySystem option "
                  "(on snap version you need to turn on permission)"},
-                {"noQt", "Ignore the error of initialize of a qmake. Use only if your application does not use the qt framework."},
+                {"noQt", "Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework."},
+                {"allowEmptyPackages", "Allows configure the empty packages."},
 
             }
         },
@@ -237,7 +238,8 @@ void DeployCore::help() {
         },
         {
             "Part 3 Controll of packages options", {
-                {"-targetPackage [package;tar1,package;tar2]", "Creates a new package and adds 'tar1 and tar2' to it"},
+                {"-targetPackage [package;tar1,package;tar2]", "Creates a new package and adds 'tar1 and tar2' to it."
+                 "If you want configure the package that do not have any targets use the allowEmptyPackages option."},
                 {"-qmlOut [package;path,path]", "Sets path to qml out directory"},
                 {"-libOut [package;path,path]", "Sets path to libraries out directory"},
                 {"-trOut [package;path,path]", "Sets path to translations out directory"},
@@ -346,7 +348,8 @@ QStringList DeployCore::helpKeys() {
         "noQt",
         "homePage",
         "prefix",
-        "deb"
+        "deb",
+        "allowEmptyPackages"
     };
 }
 
