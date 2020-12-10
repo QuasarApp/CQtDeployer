@@ -17,9 +17,13 @@ function generateShortCutCmd(cmd) {
     if (systemInfo.kernelType === "winnt") {
 
         console.log("create icons!!! on Windows");
-        component.addOperation("CreateShortcut",
-                               "@TargetDir@/" + cmd,
-                               "@DesktopDir@/" + extractFileName(cmd) + ".lnk");
+
+        component.addOperation(
+            "CreateShortcut",
+            "@TargetDir@/" + cmd,
+            "@DesktopDir@/" + extractFileName(cmd) + ".lnk");
+            "iconPath=@TargetDir@/$ICON",
+            "iconId=0");
 
     }
 
