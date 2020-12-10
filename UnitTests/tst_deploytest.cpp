@@ -1059,6 +1059,7 @@ void deploytest::testEmptyPackages() {
 
     runTestParams({"-bin", bin, "force-clear",
                    "-targetPackage", "/package/;NONE",
+                   "-libDir", TestQtDir + "bin",
                    "-prefix", "package;prefix",
                    "allowEmptyPackages"}, &comapareTree);
 
