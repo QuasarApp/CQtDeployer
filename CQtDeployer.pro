@@ -44,7 +44,6 @@ lessThan(QT_MAJOR_VERSION, 6):lessThan(QT_MINOR_VERSION, 14) {
     Pe.file = $$PWD/pe/pe-parser-library/pe-parser-library.pro
 
     include('$$PWD/QIFData/installerCQtDeployer.pri')
-    include($$PWD/doc/wiki.pri)
 
     DISTFILES += \
         snap/snapcraft.yaml \

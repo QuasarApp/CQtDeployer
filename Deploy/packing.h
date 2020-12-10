@@ -24,8 +24,9 @@ public:
     void setDistribution(const QList<iDistribution*> &pakages);
     bool create();
 
-    bool movePackage(const QString &package, const QString &newLocation);
-    bool copyPackage(const QString &package, const QString &newLocation);
+    bool movePackage(const QString &package, const QString &newLocation) override;
+    bool copyPackage(const QString &package, const QString &newLocation) override;
+    bool isEmpty(const QString &package) const override;
 
 private:
 
@@ -44,7 +45,6 @@ private:
 
 private slots:
     void handleOutputUpdate();
-
 
 };
 
