@@ -18,6 +18,10 @@ bool DefaultDistro::deployTemplate(PackageControl & ctrl) {
          it != cfg->packages().end(); ++it) {
         auto package = it.value();
 
+        if (ctrl.isEmpty(it.key())) {
+            continue;
+        }
+
         QString targetLocation;
         if (package.isDefaultModule()) {
             targetLocation = cfg->getTargetDir();

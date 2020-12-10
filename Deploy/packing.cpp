@@ -129,6 +129,10 @@ bool Packing::copyPackage(const QString &package, const QString &newLocation) {
     return _fileManager->copyFolder(_packagesLocations[package], newLocation, {}, nullptr, nullptr, true);
 }
 
+bool Packing::isEmpty(const QString &package) const {
+    return PackageControl::isEmpty(_packagesLocations[package]);
+}
+
 bool Packing::collectPackages() {
     const DeployConfig *cfg = DeployCore::_config;
 
@@ -136,8 +140,8 @@ bool Packing::collectPackages() {
 
         auto from = cfg->getTargetDir() + "/" + it.key();
 
-        if (!QFileInfo::exists(from)) {
-            _fileManager->initDir(from);
+        if (PackageControl::isEmpty(from)) {
+            continue;
         }
 
         if (!moveData(from, cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR + "/" + it.key()))

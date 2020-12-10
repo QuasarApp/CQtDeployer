@@ -20,6 +20,10 @@ bool ZipArhive::deployTemplate(PackageControl &pkg) {
     ZipCompresser zipWorker;
     for (auto it = cfg->packages().begin();
          it != cfg->packages().end(); ++it) {
+        if (pkg.isEmpty(it.key())) {
+            continue;
+        }
+
         auto package = it.value();
 
         TemplateInfo info;

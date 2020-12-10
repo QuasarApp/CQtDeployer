@@ -119,6 +119,10 @@ bool QIF::deployTemplate(PackageControl &pkg) {
     for (auto it = cfg->packages().begin();
          it != cfg->packages().end(); ++it) {
 
+        if (pkg.isEmpty(it.key())) {
+            continue;
+        }
+
         if (!deployPackage(it, sufixes, pakcagesTemplates, defaultPackageTempalte, pkg)) {
             return false;
         }
@@ -218,6 +222,7 @@ bool QIF::deployPackage(const QHash<QString, DistroModule>::const_iterator& it,
                         const QHash<QString, QString>& pakcagesTemplates,
                         const QString& defaultPackageTempalte,
                         PackageControl &pkg) {
+
     auto package = it.value();
 
     TemplateInfo info;
