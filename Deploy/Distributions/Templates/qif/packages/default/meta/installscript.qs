@@ -21,7 +21,7 @@ function generateShortCutCmd(cmd) {
         component.addOperation(
             "CreateShortcut",
             "@TargetDir@/" + cmd,
-            "@DesktopDir@/" + extractFileName(cmd) + ".lnk");
+            "@DesktopDir@/" + extractFileName(cmd) + ".lnk",
             "iconPath=@TargetDir@/$ICON",
             "iconId=0");
 
