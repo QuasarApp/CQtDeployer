@@ -165,7 +165,10 @@ private slots:
     void testQmlScaner();
 
     void testPrefix();
+    // test configure empty packages
     void testallowEmptyPackages();
+    // test skip empty packages
+    void testEmptyPackages();
 
     void customTest();
 };
@@ -1037,7 +1040,63 @@ void deploytest::testallowEmptyPackages() {
 
     runTestParams({"-bin", bin, "force-clear",
                    "-prefix", "package;prefix",
-                  "allowEmptyPackages"});
+                   "allowEmptyPackages"});
+}
+
+void deploytest::testEmptyPackages() {
+    TestUtils utils;
+    auto comapareTree = TestModule.onlyC();
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC";
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+#endif
+
+    runTestParams({"-bin", bin, "force-clear",
+                   "-prefix", "package;prefix"}, nullptr, {}, false, false,
+                  exitCodes::PrepareError);
+
+    runTestParams({"-bin", bin, "force-clear",
+                   "-targetPackage", "/package/;NONE",
+                   "-libDir", TestQtDir + "bin",
+                   "-prefix", "package;prefix",
+                   "allowEmptyPackages"}, &comapareTree);
+
+#ifdef Q_OS_UNIX
+    bin = TestBinDir + "QtWidgetsProject";
+
+    comapareTree = utils.createTree(
+                    {
+                        "./" + DISTRO_DIR + "/QtWidgetsProject.zip",
+                        "./" + DISTRO_DIR + "/QtWidgetsProject.deb",
+                        "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.run",
+                    });
+
+    runTestParams({"-bin", bin, "force-clear",
+                   "-targetPackage", "/package/;NONE",
+                   "-prefix", "package;prefix",
+                   "allowEmptyPackages",
+                   "qif", "qifFromSystem",
+                   "zip",
+                   "deb"}, &comapareTree);
+#else
+    bin = TestBinDir + "QtWidgetsProject.exe";
+
+    comapareTree = utils.createTree(
+                    {
+                        "./" + DISTRO_DIR + "/QtWidgetsProject.zip",
+                        "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.exe",
+                    });
+
+    runTestParams({"-bin", bin, "force-clear",
+                   "-targetPackage", "/package/;NONE",
+                   "-prefix", "package;prefix",
+                   "allowEmptyPackages",
+                   "qif", "qifFromSystem",
+                   "zip"
+                  }, &comapareTree);
+#endif
 }
 
 void deploytest::customTest() {

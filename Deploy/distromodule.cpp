@@ -160,3 +160,4 @@ void DistroModule::setExtraData(const QSet<QString> &extraFiles) {
 void DistroModule::addExtraData(const QString &extraFile) {
     _extraData += extraFile;
 }
+
