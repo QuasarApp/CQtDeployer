@@ -131,9 +131,12 @@ QString Deb::location(const DistroModule &module) const {
 
 QString Deb::releativeLocation(const DistroModule &module) const {
 
-    if (module.prefix().isEmpty()) {
-        return module.key();
-    }
+    if (!module.prefix().isEmpty())
+        return module.prefix();
 
-    return module.prefix();
+
+    if (!module.name().isEmpty())
+        return module.name();
+
+    return module.key();
 }
