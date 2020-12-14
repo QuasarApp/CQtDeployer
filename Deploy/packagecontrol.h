@@ -37,7 +37,15 @@ public:
      * @return true if the package is empty.
      * @note this method using for skiping empty packages on the packing step.
      */
-    virtual bool isEmpty(const QString& package) const;
+    bool isEmpty(const QString& package) const;
+
+    /**
+     * @brief availablePackages This method return list of prepared for packaing packages.
+     * @note This list maybe have a difference with the packages list from main config because some packages do not have any files.
+     * @return list of keys of available packages.
+     */
+    virtual QStringList availablePackages() const = 0;
+
 
 };
 
