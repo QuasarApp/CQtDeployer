@@ -338,9 +338,8 @@ bool FileManager::cp(const QString &from,
         auto last = from.right(1);
         if (last == "/" || last == "\\") {
             last = from.mid(0, from.size() -1 );
+            info.setFile(last);
         }
-
-        info.setFile(last);
 
         return copyFolder(from, to + "/" + info.fileName(),
                           filter, listOfCopiedItems, mask, force);

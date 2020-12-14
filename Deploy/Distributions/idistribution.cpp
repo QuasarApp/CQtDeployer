@@ -254,10 +254,15 @@ QString iDistribution::releativeLocation(const DistroModule &module) const {
         return module.prefix();
     }
 
-    if (module.prefix().isEmpty())
-        return module.key();
+    if (!module.prefix().isEmpty())
+        return module.prefix();
 
-    return module.prefix();
+
+    if (!module.name().isEmpty())
+        return module.name();
+
+    return module.key();
+
 }
 
 
