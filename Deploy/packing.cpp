@@ -129,8 +129,8 @@ bool Packing::copyPackage(const QString &package, const QString &newLocation) {
     return _fileManager->copyFolder(_packagesLocations[package], newLocation, {}, nullptr, nullptr, true);
 }
 
-bool Packing::isEmpty(const QString &package) const {
-    return PackageControl::isEmpty(_packagesLocations[package]);
+QStringList Packing::availablePackages() const {
+    return _packagesLocations.keys();
 }
 
 bool Packing::collectPackages() {

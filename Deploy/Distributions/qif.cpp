@@ -116,14 +116,11 @@ bool QIF::deployTemplate(PackageControl &pkg) {
         defaultConfig = customTemplate + "/config";
     }
 
-    for (auto it = cfg->packages().begin();
-         it != cfg->packages().end(); ++it) {
+    auto list = pkg.availablePackages();
+    for (auto it = list.begin();
+         it != list.end(); ++it) {
 
-        if (pkg.isEmpty(it.key())) {
-            continue;
-        }
-
-        if (!deployPackage(it, sufixes, pakcagesTemplates, defaultPackageTempalte, pkg)) {
+        if (!deployPackage(cfg->getDistroFromPackage(*it), sufixes, pakcagesTemplates, defaultPackageTempalte, pkg)) {
             return false;
         }
     }
@@ -217,13 +214,13 @@ QString QIF::installerFile() const {
     return DeployCore::_config->getTargetDir() + "/Installer" + generalInfo.Name + sufix;
 }
 
-bool QIF::deployPackage(const QHash<QString, DistroModule>::const_iterator& it,
+bool QIF::deployPackage(const DistroModule& dist,
                         const QStringList sufixes,
                         const QHash<QString, QString>& pakcagesTemplates,
                         const QString& defaultPackageTempalte,
                         PackageControl &pkg) {
 
-    auto package = it.value();
+    auto package = dist;
 
     TemplateInfo info;
     if (!collectInfoWithDeployIcons(package, info)) {
@@ -238,7 +235,7 @@ bool QIF::deployPackage(const QHash<QString, DistroModule>::const_iterator& it,
         return false;
     }
 
-    if (!pkg.movePackage(it.key(), localData)) {
+    if (!pkg.movePackage(dist.key(), localData)) {
         return false;
     }
 
