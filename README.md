@@ -2,6 +2,11 @@
 [![cqtdeployer](https://snapcraft.io//cqtdeployer/trending.svg?name=0)](https://snapcraft.io/cqtdeployer)
 # ![Logo](res/CQtDeployer_banner_web.png)
 
+
+# Attention
+### From December 18 to December 25, 2020, the repository with the latest version of CQtDeployer will be unavailable for technical reasons. To install, please use the offline installer or snap version of cqtdeployr.
+### We apologize for any inconvenience caused.
+
 ****************************
 ## Support the project
 If you like what we do and it benefits you, you can support the project on the official page [QuasarApp in Patreon](https://www.patreon.com/QuasarApp)
