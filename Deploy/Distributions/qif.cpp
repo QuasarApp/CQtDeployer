@@ -20,7 +20,6 @@ Envirement QIF::toolKitEnv() const {
     Envirement result;
 
     if (QuasarAppUtils::Params::isEndable("qifFromSystem")) {
-        result.addEnv(QProcessEnvironment::systemEnvironment().value("PATH"));
 
         // BASE
         const DeployConfig *cfg = DeployCore::_config;
@@ -37,6 +36,9 @@ Envirement QIF::toolKitEnv() const {
             basePATH += ("/" + sortedItems.last() + "/bin");
             result.addEnv(basePATH);
         }
+
+        result.addEnv(QProcessEnvironment::systemEnvironment().value("PATH"));
+
 
         return result;
     }
