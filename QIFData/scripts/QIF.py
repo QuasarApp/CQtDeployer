@@ -17,6 +17,7 @@ if os.path.isdir(PATHQIF + "/QIF"):
 print("PLATFORM=" + PLATFORM)
 print("VERSION=" + VERSION)
 
+# Command Example : aqt tool linux tools_ifw 4.0 qt.tools.ifw.40
 command = ["aqt",
            "tool",
            "--outputdir",
@@ -24,7 +25,7 @@ command = ["aqt",
            PLATFORM,
            "tools_ifw",
            VERSION,
-           " "]
+           "qt.tools.ifw." + VERSION.replace('.', '')]
 
 print("command=" + " ".join(command))
 
