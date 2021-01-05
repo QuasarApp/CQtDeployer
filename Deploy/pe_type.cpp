@@ -14,7 +14,7 @@
 #include <parser-library/parse.h>
 #include <quasarapp.h>
 
-#include <bits/stl_set.h>
+#include <set>
 
 namespace peparse {
 
