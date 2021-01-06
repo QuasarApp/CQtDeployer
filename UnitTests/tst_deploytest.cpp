@@ -1364,7 +1364,7 @@ void deploytest::checkResults(const QSet<QString> &tree,
     auto resultTree = utils.getTree(DeployCore::_config->getTargetDir());
 
 #ifdef Q_OS_WIN
-    // Remove all API-MS-Win libs. becouse each OS Windows have a own bandle of this api libs.
+    // Remove all API-MS-Win libs, because each OS Windows have a own bundle of this api libs.
     // See the https://github.com/QuasarApp/CQtDeployer/issues/481#issuecomment-755156875 post for more information.
     resultTree = TestModule.ignoreFilter(resultTree, "API-MS-Win");
 
@@ -2051,7 +2051,7 @@ void deploytest::testIgnore() {
                                            "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_thai.dll"
                                        });
 
-    // Ignore all posoble locations with libstdc++-6 see test log https://github.com/QuasarApp/CQtDeployer/issues/481#issuecomment-755156875
+    // Ignore all posoble locations with libstdc++-6. See tests log https://github.com/QuasarApp/CQtDeployer/issues/481#issuecomment-755156875 for more information.
     // On github actions all gcc libs locate in the program files. So we need to add this path to ignore for testing ignore option.
     QString winRoot = QStorageInfo::root().rootPath() ;
     QString programmFiles = winRoot + "/Program Files";
