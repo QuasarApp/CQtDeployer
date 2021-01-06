@@ -2057,7 +2057,7 @@ void deploytest::testIgnore() {
     QString programmFiles = winRoot + "/Program Files";
     QString programmFiles86 = winRoot + "/Program Files (x86)";
 
-    QString ignreLine = TestQtDir + "/lib," + TestQtDir + "/bin," + TestQtDir + "/../../Tools" + programmFiles + "," + programmFiles86;
+    QString ignreLine = TestQtDir + "/lib," + TestQtDir + "/bin," + TestQtDir + "/../../Tools," + programmFiles + "," + programmFiles86;
 #endif
 
     runTestParams({"-bin", bin, "clear" ,
