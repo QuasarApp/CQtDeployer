@@ -33,32 +33,28 @@
 // add necessary includes here
 
 
-const QString TestBinDir = TEST_BIN_DIR;
-const QString TestQtDir = QT_BASE_DIR;
+static const QString TestBinDir = TEST_BIN_DIR;
+static const QString TestQtDir = QT_BASE_DIR;
 
 class deploytest : public QObject
 {
     Q_OBJECT
 
 private:
-    QHash<QString, QSet<QString>> filesTree;
+    QSet<QString> filesTree;
 
     bool runProcess(const QString& DistroPath,
                     const QString& filename,
                     const QString &qt = "");
     QStringList getFilesFromDir(const QString& dir);
 
-    QSet<QString> getFilesTree(const QStringList& keys = {});
-
     void runTestParams(QStringList list,
                        QSet<QString> *tree = nullptr,
-                       const QStringList &checkableKeys = {},
                        bool noWarnings = false,
                        bool onlySize = false,
                        exitCodes exitCode = exitCodes::Good);
 
     void checkResults(const QSet<QString> &tree,
-                      const QStringList &checkagbleKeys,
                       bool noWarnings,
                       bool onlySize = false);
 public:
@@ -245,53 +241,19 @@ QStringList deploytest::getFilesFromDir(const QString &path) {
     return res;
 }
 
-QSet<QString> deploytest::getFilesTree(const QStringList &keys) {
-    QSet<QString> result;
-
-    if (keys.isEmpty()) {
-        return filesTree["all"];
-    }
-
-    for (const auto& i: keys) {
-        result += filesTree[i];
-    }
-
-    return result;
-}
-
 deploytest::deploytest() {
 
     qputenv("QTEST_FUNCTION_TIMEOUT", "1800000");
 
     TestUtils utils;
 
-    auto tempTree = utils.getTree(TestQtDir);
-    for (const QString &i: tempTree) {
-        filesTree["Qt"].insert(QFileInfo(i).fileName());
+    const QStringList pathList = QProcessEnvironment::systemEnvironment().
+            value("PATH").split(DeployCore::getEnvSeparator());
+
+
+    for (const auto& path: pathList) {
+        filesTree += utils.getTree(path, 1);
     }
-
-    tempTree = utils.getTree("/lib", 5);
-    for (const QString &i: tempTree) {
-        filesTree["/lib"].insert(QFileInfo(i).fileName());
-    }
-
-    tempTree = utils.getTree("/usr/lib", 5);
-    for (const QString &i: tempTree) {
-        filesTree["/usr/lib"].insert(QFileInfo(i).fileName());
-    }
-
-    tempTree = utils.getTree("C:/windows/system32", 2);
-    for (const QString &i: tempTree) {
-        filesTree["C:/windows/system32"].insert(QFileInfo(i).fileName());
-    }
-
-    QSet<QString> all;
-    for (const auto& i : filesTree) {
-        all.unite(i);
-    }
-    filesTree["all"] = all;
-
-
 }
 
 int deploytest::generateLib(const QString &paath)
@@ -603,7 +565,7 @@ void deploytest::testQIF() {
                    "qif", "qifFromSystem",
                    "-qifStyle", "quasar",
                    "-qifBanner", TestBinDir + "/../../res/CQtDeployer_banner_web.png",
-                   "-qifLogo", TestBinDir + "/../../res/CQtDeployer defaultIcon_web.png"}, &comapareTree, {}, true);
+                   "-qifLogo", TestBinDir + "/../../res/CQtDeployer defaultIcon_web.png"}, &comapareTree, true);
 
 
 
@@ -654,7 +616,7 @@ void deploytest::testQIFMulti() {
                    "-qmlOut", "/q",
                    "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
                    "-targetPackage", packageString,
-                   "qif", "qifFromSystem"}, &comapareTreeMulti, {}, true);
+                   "qif", "qifFromSystem"}, &comapareTreeMulti, true);
 }
 
 void deploytest::testQIFCustom() {
@@ -683,7 +645,7 @@ void deploytest::testQIFCustom() {
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
                    "-qif", TestBinDir + "/../../UnitTests/testRes/QIFCustomTemplate",
                    "-name", "org.qtproject.ifw.example.stylesheet",
-                   "qifFromSystem"}, &comapareTreeCustom, {}, true);
+                   "qifFromSystem"}, &comapareTreeCustom, true);
 }
 
 void deploytest::testZIP() {
@@ -713,11 +675,11 @@ void deploytest::testZIP() {
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
-                   "zip", "verbose"}, &comapareTree, {}, true);
+                   "zip", "verbose"}, &comapareTree, true);
 
 
     // test clear for zip
-    runTestParams({"clear", "verbose"}, {} , {}, true);
+    runTestParams({"clear", "verbose"}, nullptr, true);
 
 }
 
@@ -761,7 +723,7 @@ void deploytest::testZIPMulti() {
                    "-qmlOut", "/q",
                    "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
                    "-targetPackage", packageString,
-                   "zip"}, &comapareTreeMulti, {}, true);
+                   "zip"}, &comapareTreeMulti, true);
 }
 
 void deploytest::testDEB() {
@@ -782,10 +744,10 @@ void deploytest::testDEB() {
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
-                   "deb", "verbose"}, &comapareTree, {}, true);
+                   "deb", "verbose"}, &comapareTree, true);
 
     // test clear for deb
-    runTestParams({"clear", "verbose"}, {} , {}, true);
+    runTestParams({"clear", "verbose"}, nullptr, true);
 
 #endif
 
@@ -823,7 +785,7 @@ void deploytest::testDEBMulti() {
                    "-qmlOut", "/q",
                    "-qmlDir", "package2;" + TestBinDir + "/../TestQMLWidgets",
                    "-targetPackage", packageString,
-                   "deb"}, &comapareTreeMulti, {}, true);
+                   "deb"}, &comapareTreeMulti, true);
 #endif
 }
 
@@ -845,7 +807,7 @@ void deploytest::testDEBCustom() {
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
                    "-deb", TestBinDir + "/../../UnitTests/testRes/DEBCustomTemplate",
                    "-name", "chrome"},
-                  &comapareTreeCustom, {}, true);
+                  &comapareTreeCustom, true);
 #endif
 }
 
@@ -871,7 +833,7 @@ void deploytest::testMultiPacking() {
                    "zip",
                    "qif", "qifFromSystem",
                    "deb",
-                   "verbose"}, &comapareTree, {}, true);
+                   "verbose"}, &comapareTree, true);
 
 #else
     auto comapareTree = utils.createTree({
@@ -888,7 +850,7 @@ void deploytest::testMultiPacking() {
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets",
                    "zip",
                    "qif", "qifFromSystem",
-                   "verbose"}, &comapareTree, {}, true);
+                   "verbose"}, &comapareTree, true);
 
 #endif
 }
@@ -1035,7 +997,7 @@ void deploytest::testallowEmptyPackages() {
     QString bin = TestBinDir + "TestOnlyC.exe";
 #endif
     runTestParams({"-bin", bin, "force-clear",
-                   "-prefix", "package;prefix"}, nullptr, {}, false, false,
+                   "-prefix", "package;prefix"}, nullptr, false, false,
                   exitCodes::PrepareError);
 
     runTestParams({"-bin", bin, "force-clear",
@@ -1054,7 +1016,7 @@ void deploytest::testEmptyPackages() {
 #endif
 
     runTestParams({"-bin", bin, "force-clear",
-                   "-prefix", "package;prefix"}, nullptr, {}, false, false,
+                   "-prefix", "package;prefix"}, nullptr, false, false,
                   exitCodes::PrepareError);
 
     runTestParams({"-bin", bin, "force-clear",
@@ -1355,7 +1317,6 @@ void deploytest::testZip() {
 
 void deploytest::runTestParams(QStringList list,
                                QSet<QString>* tree,
-                               const QStringList &checkableKeys,
                                bool noWarnings, bool onlySize,
                                exitCodes exitCode) {
 
@@ -1366,7 +1327,7 @@ void deploytest::runTestParams(QStringList list,
         QVERIFY(false);
 
     if (tree) {
-        checkResults(*tree, checkableKeys, noWarnings, onlySize);
+        checkResults(*tree, noWarnings, onlySize);
     }
 
 #ifdef WITH_SNAP
@@ -1405,7 +1366,6 @@ void deploytest::runTestParams(QStringList list,
 }
 
 void deploytest::checkResults(const QSet<QString> &tree,
-                              const QStringList& checkagbleKeys,
                               bool noWarnings,
                               bool onlySize) {
     TestUtils utils;
@@ -1433,7 +1393,7 @@ void deploytest::checkResults(const QSet<QString> &tree,
                 comapreResult[ i.key()] = "Added unnecessary file";
                 qCritical() << "added unnecessary file : " + i.key();
                 bug = true;
-            } else if (getFilesTree(checkagbleKeys).contains(QFileInfo(i.key()).fileName())) {
+            } else if (filesTree.contains(QFileInfo(i.key()).fileName())) {
                 comapreResult[ i.key()] = "Missing";
                 qCritical() << "Missing file : " + i.key();
                 bug = true;
@@ -1453,7 +1413,7 @@ void deploytest::checkResults(const QSet<QString> &tree,
         }
 
         QJsonObject obj;
-        for (const auto &i : resultTree) {
+        for (const auto &i : qAsConst(resultTree)) {
             obj[i];
         }
 
@@ -2040,12 +2000,12 @@ void deploytest::testIgnore() {
     if (!TestQtDir.contains("Qt5")) {
 
 #ifdef Q_OS_UNIX
-        QString bin = TestBinDir + "QtWidgetsProject";
-        QString qmake = TestQtDir + "bin/qmake";
+        bin = TestBinDir + "QtWidgetsProject";
+        qmake = TestQtDir + "bin/qmake";
 
 #else
-        QString bin = TestBinDir + "QtWidgetsProject.exe";
-        QString qmake = TestQtDir + "bin/qmake.exe";
+        bin = TestBinDir + "QtWidgetsProject.exe";
+        qmake = TestQtDir + "bin/qmake.exe";
 
 #endif
     }
@@ -2194,12 +2154,12 @@ void deploytest::testLibDir() {
     runTestParams({"-bin", bin, "clear" ,
                    "-libDir", extraPath,
                    "-recursiveDepth", "5",
-                   "noCheckRPATH, noCheckPATH", "noQt"}, &comapareTree, {}, true);
+                   "noCheckRPATH, noCheckPATH", "noQt"}, &comapareTree, true);
 
     runTestParams({"-bin", bin, "clear" ,
                    "-targetDir", "./" + DISTRO_DIR + "2",
                    "-extraLibs", "stdc,gcc",
-                   "noCheckRPATH, noCheckPATH", "noQt"}, &comapareTreeExtraLib, {}, true);
+                   "noCheckRPATH, noCheckPATH", "noQt"}, &comapareTreeExtraLib, true);
 
     //task #258
     //https://github.com/QuasarApp/CQtDeployer/issues/258
@@ -2232,7 +2192,7 @@ void deploytest::testLibDir() {
 #endif
     runTestParams({"-bin", bin, "clear" ,
                    "-libDir", extraPath,
-                   "noCheckRPATH, noCheckPATH", "noQt"}, &comapareTreeExtraLib, {}, true);
+                   "noCheckRPATH, noCheckPATH", "noQt"}, &comapareTreeExtraLib, true);
 
     QDir(extraPath).removeRecursively();
 
@@ -2243,7 +2203,6 @@ void deploytest::testExtraPlugins() {
 
 #ifdef Q_OS_UNIX
     QString bin = TestBinDir + "QtWidgetsProject";
-    QString extraPath = "/usr/lib";
     QString qmake = TestQtDir + "bin/qmake";
 
     auto pluginTree = utils.createTree(
@@ -2257,7 +2216,6 @@ void deploytest::testExtraPlugins() {
                 });
 #else
     QString bin = TestBinDir + "QtWidgetsProject.exe";
-    QString extraPath = "/usr/lib";
     QString qmake = TestQtDir + "bin/qmake.exe";
 
     auto pluginTree = utils.createTree(
