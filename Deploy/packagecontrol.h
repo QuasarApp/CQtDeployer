@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2018-2021 QuasarApp.
+ * Distributed under the lgplv3 software license, see the accompanying
+ * Everyone is permitted to copy and distribute verbatim copies
+ * of this license document, but changing it is not allowed.
+ */
+
 #ifndef PACKAGECONTROL_H
 #define PACKAGECONTROL_H
 
@@ -37,7 +44,15 @@ public:
      * @return true if the package is empty.
      * @note this method using for skiping empty packages on the packing step.
      */
-    virtual bool isEmpty(const QString& package) const;
+    bool isEmpty(const QString& package) const;
+
+    /**
+     * @brief availablePackages This method return list of prepared for packaing packages.
+     * @note This list maybe have a difference with the packages list from main config because some packages do not have any files.
+     * @return list of keys of available packages.
+     */
+    virtual QStringList availablePackages() const = 0;
+
 
 };
 

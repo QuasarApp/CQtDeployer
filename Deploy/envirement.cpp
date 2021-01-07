@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2020 QuasarApp.
+//# Copyright (C) 2018-2021 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -98,7 +98,7 @@ bool Envirement::inThisEnvirement(const QString &file) const {
         return _dataEnvironment.contains(PathUtils::fixPath(info.absolutePath()));
     }
 
-    return _dataEnvironment.contains(PathUtils::fixPath(file));
+    return _dataEnvironment.contains(PathUtils::fixPath(info.absoluteFilePath()));
 
 }
 
@@ -113,7 +113,7 @@ QString Envirement::concatEnv() const {
     }
 
     QString result = *_dataEnvironment.begin();
-    for (auto i: _dataEnvironment) {
+    for (const auto &i: _dataEnvironment) {
         result += (DeployCore::getEnvSeparator() + i);
     }
 

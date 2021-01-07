@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 QuasarApp.
+ * Copyright (C) 2018-2021 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -338,9 +338,8 @@ bool FileManager::cp(const QString &from,
         auto last = from.right(1);
         if (last == "/" || last == "\\") {
             last = from.mid(0, from.size() -1 );
+            info.setFile(last);
         }
-
-        info.setFile(last);
 
         return copyFolder(from, to + "/" + info.fileName(),
                           filter, listOfCopiedItems, mask, force);

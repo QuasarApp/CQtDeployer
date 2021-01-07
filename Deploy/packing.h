@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2018-2021 QuasarApp.
+ * Distributed under the lgplv3 software license, see the accompanying
+ * Everyone is permitted to copy and distribute verbatim copies
+ * of this license document, but changing it is not allowed.
+ */
+
 #ifndef PACKING_H
 #define PACKING_H
 
@@ -20,13 +27,15 @@ class DEPLOYSHARED_EXPORT Packing : public QObject, public PackageControl
     Q_OBJECT
 public:
     Packing(FileManager *fileManager);
-    ~Packing();
+    ~Packing() override;
     void setDistribution(const QList<iDistribution*> &pakages);
     bool create();
 
     bool movePackage(const QString &package, const QString &newLocation) override;
     bool copyPackage(const QString &package, const QString &newLocation) override;
-    bool isEmpty(const QString &package) const override;
+
+protected:
+    QStringList availablePackages() const override;
 
 private:
 

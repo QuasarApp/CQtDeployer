@@ -15,13 +15,10 @@ bool Deb::deployTemplate(PackageControl &pkg) {
     // default template
     const DeployConfig *cfg = DeployCore::_config;
 
-    for (auto it = cfg->packages().begin();
-         it != cfg->packages().end(); ++it) {
-        auto package = it.value();
-
-        if (pkg.isEmpty(it.key())) {
-            continue;
-        }
+    auto list = pkg.availablePackages();
+    for (auto it = list.begin();
+         it != list.end(); ++it) {
+        auto package = cfg->getDistroFromPackage(*it);
 
         QString defaultPackageTempalte = ":/Templates/DEB/Distributions/Templates/deb";
         auto customTemplate = QuasarAppUtils::Params::getStrArg("deb", "");
@@ -46,7 +43,7 @@ bool Deb::deployTemplate(PackageControl &pkg) {
         auto local = location(package);
         auto localData = dataLocation(package);
 
-        if (!pkg.movePackage(it.key(), localData)) {
+        if (!pkg.movePackage(*it, localData)) {
             return false;
         }
 
@@ -134,9 +131,12 @@ QString Deb::location(const DistroModule &module) const {
 
 QString Deb::releativeLocation(const DistroModule &module) const {
 
-    if (module.prefix().isEmpty()) {
-        return module.key();
-    }
+    if (!module.prefix().isEmpty())
+        return module.prefix();
 
-    return module.prefix();
+
+    if (!module.name().isEmpty())
+        return module.name();
+
+    return module.key();
 }

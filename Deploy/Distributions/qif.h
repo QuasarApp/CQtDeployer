@@ -31,14 +31,14 @@ private:
 
     /**
      * @brief deployPackage - private method for deploy package of qt installer framework
-     * @param it - this is const iterator of current DistroModule.
+     * @param dist - this is  DistroModule.
      * @param sufixes - this is sufixses of files for copy into package
      * @param pakcagesTemplates - this is list of pakcages and them tempalte patheses
      * @param defaultPackageTempalte this is path to default package template
      * @param pkg this is PackageControl object for move a packge data.
      * @return return true if package deployed successful
      */
-    bool deployPackage(const QHash<QString, DistroModule>::const_iterator &it,
+    bool deployPackage(const DistroModule &dist,
                        const QStringList sufixes,
                        const QHash<QString, QString> &pakcagesTemplates,
                        const QString &defaultPackageTempalte,

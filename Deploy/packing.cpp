@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2018-2021 QuasarApp.
+ * Distributed under the lgplv3 software license, see the accompanying
+ * Everyone is permitted to copy and distribute verbatim copies
+ * of this license document, but changing it is not allowed.
+ */
+
 #include "Distributions/idistribution.h"
 #include "deployconfig.h"
 #include "filemanager.h"
@@ -129,8 +136,8 @@ bool Packing::copyPackage(const QString &package, const QString &newLocation) {
     return _fileManager->copyFolder(_packagesLocations[package], newLocation, {}, nullptr, nullptr, true);
 }
 
-bool Packing::isEmpty(const QString &package) const {
-    return PackageControl::isEmpty(_packagesLocations[package]);
+QStringList Packing::availablePackages() const {
+    return _packagesLocations.keys();
 }
 
 bool Packing::collectPackages() {

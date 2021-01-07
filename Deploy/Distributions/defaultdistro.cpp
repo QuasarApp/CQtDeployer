@@ -14,13 +14,11 @@ bool DefaultDistro::deployTemplate(PackageControl & ctrl) {
     // default template
     const DeployConfig *cfg = DeployCore::_config;
 
-    for (auto it = cfg->packages().begin();
-         it != cfg->packages().end(); ++it) {
-        auto package = it.value();
+    auto list = ctrl.availablePackages();
 
-        if (ctrl.isEmpty(it.key())) {
-            continue;
-        }
+    for (auto it = list.begin();
+         it != list.end(); ++it) {
+        auto package = cfg->getDistroFromPackage(*it);
 
         QString targetLocation;
         if (package.isDefaultModule()) {
@@ -29,7 +27,7 @@ bool DefaultDistro::deployTemplate(PackageControl & ctrl) {
             targetLocation = cfg->getTargetDir() + "/" + releativeLocation(package);
         }
 
-        if (!ctrl.copyPackage(it.key(), targetLocation)) {
+        if (!ctrl.copyPackage(*it, targetLocation)) {
             return false;
         }
     }

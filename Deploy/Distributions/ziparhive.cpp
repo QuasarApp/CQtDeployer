@@ -18,23 +18,22 @@ bool ZipArhive::deployTemplate(PackageControl &pkg) {
     const DeployConfig *cfg = DeployCore::_config;
 
     ZipCompresser zipWorker;
-    for (auto it = cfg->packages().begin();
-         it != cfg->packages().end(); ++it) {
-        if (pkg.isEmpty(it.key())) {
-            continue;
-        }
 
-        auto package = it.value();
+    auto list = pkg.availablePackages();
+    for (auto it = list.begin();
+         it != list.end(); ++it) {
+
+        auto package = cfg->getDistroFromPackage(*it);
 
         TemplateInfo info;
         if (!collectInfo(package, info)) {
             return false;
         }
 
-        auto local = location(it.value());
-        auto dataLoc = dataLocation(it.value());
+        auto local = location(package);
+        auto dataLoc = dataLocation(package);
 
-        if (!pkg.movePackage(it.key(), dataLoc)) {
+        if (!pkg.movePackage(*it, dataLoc)) {
             return false;
         }
 
