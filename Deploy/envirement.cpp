@@ -98,7 +98,7 @@ bool Envirement::inThisEnvirement(const QString &file) const {
         return _dataEnvironment.contains(PathUtils::fixPath(info.absolutePath()));
     }
 
-    return _dataEnvironment.contains(PathUtils::fixPath(file));
+    return _dataEnvironment.contains(PathUtils::fixPath(info.absoluteFilePath()));
 
 }
 
