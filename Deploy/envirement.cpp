@@ -113,7 +113,7 @@ QString Envirement::concatEnv() const {
     }
 
     QString result = *_dataEnvironment.begin();
-    for (auto i: _dataEnvironment) {
+    for (const auto &i: _dataEnvironment) {
         result += (DeployCore::getEnvSeparator() + i);
     }
 

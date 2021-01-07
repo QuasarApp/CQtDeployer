@@ -1050,8 +1050,8 @@ void deploytest::testEmptyPackages() {
 }
 
 void deploytest::customTest() {
-    runTestParams({"-confFile", "path",
-                   "qifFromSystem"});
+//    runTestParams({"-confFile", "path",
+//                   "qifFromSystem"});
 }
 
 void deploytest::testQmlExtrct() {
@@ -2031,9 +2031,12 @@ void deploytest::testIgnore() {
                                            "./" + DISTRO_DIR + "/lib/libQt5VirtualKeyboard.so",
 
                                        });
-    // ignore all posoble locations with libstdc++-6
-    QString ignreLine = TestQtDir + "/lib," + TestQtDir + "/bin," + TestQtDir + "/../../Tools";
 
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-recursiveDepth", "3",
+                   "-ignoreEnv",  TestQtDir + "/lib," + TestQtDir + "/bin," + TestQtDir + "/../../Tools"},
+                  &comapareTree);
 #else
     comapareTree = utils.createTree(
     {
@@ -2053,19 +2056,18 @@ void deploytest::testIgnore() {
 
     // Ignore all posoble locations with libstdc++-6. See tests log https://github.com/QuasarApp/CQtDeployer/issues/481#issuecomment-755156875 for more information.
     // On github actions all gcc libs locate in the program files. So we need to add this path to ignore for testing ignore option.
-    QString winRoot = QStorageInfo::root().rootPath() ;
+    QString winRoot = QStorageInfo::root().rootPath();
     QString programmFiles = winRoot + "/Program Files";
     QString programmFiles86 = winRoot + "/Program Files (x86)";
-
-    QString ignreLine = TestQtDir + "/lib," + TestQtDir + "/bin," + TestQtDir + "/../../Tools," + programmFiles + "," + programmFiles86;
-#endif
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
                    "-recursiveDepth", "3",
-                   "-ignoreEnv",  ignreLine},
+                   "-ignoreEnv",  TestQtDir + "/lib," + TestQtDir + "/bin," + TestQtDir + "/../../Tools",
+                   "-ignore", programmFiles + "," + programmFiles86},
                   &comapareTree);
 
+#endif
 
     comapareTree = TestModule.qtLibs() - removeTree;
 
