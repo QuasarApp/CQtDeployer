@@ -1069,6 +1069,7 @@ void deploytest::testRunScripts() {
     f.close();
 
     runTestParams({"-bin", bin,
+                   "force-clear",
                    "-libOut", "lib",
                    "-runScript", "TestOnlyC;:/testResurces/testRes/customRunScript.sh"}, &comapareTree);
 
@@ -1085,6 +1086,7 @@ void deploytest::testRunScripts() {
     f.close();
 
     runTestParams({"-bin", bin,
+                   "force-clear",
                    "-libOut", "lib",
                   "runScript", "TestOnlyC.exe;:/testResurces/testRes/customRunScript.sh"}, &comapareTree);
 
