@@ -18,7 +18,7 @@ public:
     explicit DistroModule(const QString& key );
     DistroModule(const DistroModule& other ) = default;
 
-    QSet<QString> targets() const;
+    const QSet<QString> &targets() const;
     void setTargets(const QSet<QString> &targets);
     void addTarget(const QString& target);
 

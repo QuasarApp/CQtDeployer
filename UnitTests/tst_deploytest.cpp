@@ -173,6 +173,8 @@ private slots:
     // test skip empty packages
     void testEmptyPackages();
 
+    void testRunScripts();
+
     void customTest();
 };
 
@@ -1053,6 +1055,46 @@ void deploytest::testEmptyPackages() {
                    "zip"
                   }, &comapareTree);
 #endif
+}
+
+void deploytest::testRunScripts() {
+    TestUtils utils;
+    auto comapareTree = TestModule.onlyC();
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC";
+    QFile f(":/testResurces/testRes/customRunScript.sh");
+    QVERIFY(f.open(QIODevice::ReadOnly));
+    auto etalonData = f.readAll();
+    f.close();
+
+    runTestParams({"-bin", bin,
+                   "-libOut", "lib",
+                   "-runScript", "TestOnlyC;:/testResurces/testRes/customRunScript.sh"}, &comapareTree);
+
+    f.setFileName(DISTRO_DIR + "/TestOnlyC.sh");
+    QVERIFY(f.open(QIODevice::ReadOnly));
+    auto deployData = f.readAll();
+
+    QVERIFY(deployData == etalonData);
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+    QFile f(":/testResurces/testRes/customRunScript.sh");
+    QVERIFY(f.open(QIODevice::ReadOnly));
+    auto etalonData = f.readAll();
+    f.close();
+
+    runTestParams({"-bin", bin,
+                   "-libOut", "lib",
+                  "runScript", "TestOnlyC.exe;:/testResurces/testRes/customRunScript.sh"}, &comapareTree);
+
+    f.setFileName(DISTRO_DIR + "/TestOnlyC.bat");
+    QVERIFY(f.open(QIODevice::ReadOnly));
+    auto deployData = f.readAll();
+
+    QVERIFY(deployData == etalonData);
+#endif
+
 }
 
 void deploytest::customTest() {

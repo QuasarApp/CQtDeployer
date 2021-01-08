@@ -524,6 +524,35 @@ bool ConfigParser::initPackages() {
     return true;
 }
 
+bool ConfigParser::initRunScripts() {
+    const auto list = QuasarAppUtils::Params::getStrArg("runScript").split(DeployCore::getSeparator(0), splitbehavior);
+
+    for (const auto& line: list) {
+        auto pair = line.split(DeployCore::getSeparator(1), splitbehavior);
+        if (pair.size() != 2) {
+            QuasarAppUtils::Params::log("Syntax error of the runScript option."
+                                        " Example of use :"
+                                        " -runScript \"myTarget;path/To/Target/RunScript.sh,"
+                                        "mySecondTarget;path/To/Target/SecondRunScript.sh\"",
+                                        QuasarAppUtils::Error);
+            return false;
+        }
+
+        QFileInfo script(pair.value(1));
+
+        if (!script.isFile()) {
+            QuasarAppUtils::Params::log(QString("The %0 is not exits.").arg(script.absoluteFilePath()),
+                                        QuasarAppUtils::Error);
+            return false;
+        }
+
+        _config.registerRunScript(pair.value(0),
+                                  script.absoluteFilePath());
+    }
+
+    return true;
+}
+
 bool ConfigParser::initQmlInput() {
 
     auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir").
@@ -594,6 +623,10 @@ bool ConfigParser::parseDeployMode() {
         }
     }
 
+
+    if (!initRunScripts()) {
+        return false;
+    }
 
     initIgnoreEnvList();
     initEnvirement();
