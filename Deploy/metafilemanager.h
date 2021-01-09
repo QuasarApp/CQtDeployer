@@ -15,6 +15,13 @@ class FileManager;
 class MetaFileManager
 {
 
+
+public:
+    MetaFileManager(FileManager* manager);
+
+    void createRunMetaFiles();
+
+
 private:
     bool createRunScriptWindows(const QString &target);
     bool createRunScriptLinux(const QString &target);
@@ -24,11 +31,6 @@ private:
     bool createQConf(const QString &target);
 
     FileManager* _fileManager = nullptr;
-
-public:
-    MetaFileManager(FileManager* manager);
-
-    void createRunMetaFiles();
 };
 
 #endif // METAFILEMANAGER_H

@@ -17,5 +17,6 @@
     <qresource prefix="/testResurces">
         <file>testRes/TestQMLWidgets.sh</file>
         <file>testRes/testMultiPackageConfig.json</file>
+        <file>testRes/customRunScript.sh</file>
     </qresource>
 </RCC>

@@ -13,7 +13,7 @@ DistroModule::DistroModule(const QString& key) {
     setKey(key);
 }
 
-QSet<QString> DistroModule::targets() const {
+const QSet<QString>& DistroModule::targets() const {
     return _targets;
 }
 

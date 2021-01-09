@@ -115,6 +115,9 @@ public:
     QString getDefaultPackage() const;
     void setDefaultPackage(const QString &value);
 
+    void registerRunScript(const QString& targetName, const QString& scriptPath);
+    QString getRunScript(const QString& targetName) const;
+
 private:
 
     /**
@@ -131,6 +134,12 @@ private:
      * default package is empty value
      */
     QHash<QString, DistroModule> _packages;
+
+    /**
+     * @brief _runScripts
+     * target - pathToScript
+     */
+    QHash<QString, QString> _runScripts;
 
     /**
      * @brief targetDir -  targe directory (this folder conteins all files of distrebution kit)

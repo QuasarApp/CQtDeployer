@@ -20,7 +20,7 @@ function generateShortCutCmd(cmd) {
 
         component.addOperation(
             "CreateShortcut",
-            "@TargetDir@/" + cmd,
+            "@TargetDir@/" + cmd + ".bat",
             "@DesktopDir@/" + extractFileName(cmd) + ".lnk",
             "iconPath=@TargetDir@/$ICON",
             "iconId=0");
