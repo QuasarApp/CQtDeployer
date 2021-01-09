@@ -26,11 +26,6 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
 
     QFileInfo targetInfo(target);
 
-
-    if (distro.getBinOutDir() ==
-           distro.getLibOutDir() ) {
-        return true;
-    }
     QString content;
     auto runScript = cnf->getRunScript(targetInfo.fileName());
     if (runScript.size()) {

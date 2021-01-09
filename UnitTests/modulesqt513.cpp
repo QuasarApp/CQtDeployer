@@ -51,6 +51,7 @@ QSet<QString> ModulesQt513::onlyC(const QString &distDir) const
     auto Tree = utils.createTree(
     {
                     "./" + distDir + "/TestOnlyC.exe",
+                    "./" + distDir + "/TestOnlyC.bat",
                     "./" + distDir + "/qt.conf",
                     "./" + distDir + "/libgcc_s_seh-1.dll",
                     "./" + distDir + "/libstdc++-6.dll",
@@ -87,6 +88,7 @@ QSet<QString> ModulesQt513::qtLibs(const QString &distDir) const {
                     "./" + distDir + "/Qt5Widgets.dll",
                     "./" + distDir + "/Qt5DBus.dll",
                     "./" + distDir + "/QtWidgetsProject.exe",
+                    "./" + distDir + "/QtWidgetsProject.bat",
                     "./" + distDir + "/plugins/iconengines/qsvgicon.dll",
                     "./" + distDir + "/plugins/imageformats/qgif.dll",
                     "./" + distDir + "/plugins/imageformats/qicns.dll",
@@ -231,6 +233,7 @@ QSet<QString> ModulesQt513::qmlLibs(const QString &distDir) const {
                     "./" + distDir + "/Qt5Svg.dll",
                     "./" + distDir + "/Qt5Widgets.dll",
                     "./" + distDir + "/TestQMLWidgets.exe",
+                    "./" + distDir + "/TestQMLWidgets.bat",
                     "./" + distDir + "/libgcc_s_seh-1.dll",
                     "./" + distDir + "/libstdc++-6.dll",
                     "./" + distDir + "/libwinpthread-1.dll",
