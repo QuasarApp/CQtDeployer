@@ -1558,6 +1558,7 @@ void deploytest::testOverwrite() {
     QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
     auto comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "/TestOnlyC.exe",
+     "./" + DISTRO_DIR + "/TestOnlyC.bat",
      "./" + DISTRO_DIR + "/qt.conf"});
     QString bin = TestBinDir + "TestOnlyC.exe";
 
@@ -1611,7 +1612,10 @@ void deploytest::testextraData() {
     auto comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "/build/TestOnlyC.exe",
      "./" + DISTRO_DIR + "/build/QtWidgetsProject.exe",
-     "./" + DISTRO_DIR + "/build/TestQMLWidgets.exe"});
+     "./" + DISTRO_DIR + "/build/TestQMLWidgets.exe"
+     "./" + DISTRO_DIR + "/build/TestOnlyC.bat",
+     "./" + DISTRO_DIR + "/build/QtWidgetsProject.bat",
+     "./" + DISTRO_DIR + "/build/TestQMLWidgets.bat"});
 #endif
 
 #ifdef Q_OS_UNIX
@@ -1653,7 +1657,7 @@ void deploytest::testConfFile() {
 #else
     auto comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "/TestOnlyC.exe",
-     "./" + DISTRO_DIR + "/TestOnlyC.bat"
+     "./" + DISTRO_DIR + "/TestOnlyC.bat",
      "./" + DISTRO_DIR + "/qt.conf",
      "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
      "./" + DISTRO_DIR + "/QtWidgetsProject.bat",
@@ -1846,7 +1850,7 @@ void deploytest::testConfFile() {
     QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
     comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "/package/TestOnlyC.exe",
-     "./" + DISTRO_DIR + "/package/TestOnlyC.bat"
+     "./" + DISTRO_DIR + "/package/TestOnlyC.bat",
      "./" + DISTRO_DIR + "/package/qt.conf"});
     QString target1 = TestBinDir + "TestOnlyC.exe";
 
@@ -1900,7 +1904,7 @@ void deploytest::testPackages() {
     QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
     auto comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "/package/TestOnlyC.exe",
-     "./" + DISTRO_DIR + "/package/TestOnlyC.bat"
+     "./" + DISTRO_DIR + "/package/TestOnlyC.bat",
      "./" + DISTRO_DIR + "/package/qt.conf"});
     QString target1 = TestBinDir + "TestOnlyC.exe";
 
@@ -2363,7 +2367,7 @@ void deploytest::testTargetDir() {
 
     auto comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "Z/TestOnlyC.exe",
-     "./" + DISTRO_DIR + "Z/TestOnlyC.bat"
+     "./" + DISTRO_DIR + "Z/TestOnlyC.bat",
      "./" + DISTRO_DIR + "Z/qt.conf"});
 #endif
 
