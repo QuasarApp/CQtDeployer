@@ -1089,7 +1089,7 @@ void deploytest::testRunScripts() {
     runTestParams({"-bin", bin,
                    "force-clear",
                    "-libOut", "lib",
-                  "runScript", "TestOnlyC.exe;:/testResurces/testRes/customRunScript.sh"}, &comapareTree);
+                  "-runScript", "TestOnlyC.exe;:/testResurces/testRes/customRunScript.sh"}, &comapareTree);
 
     f.setFileName(DISTRO_DIR + "/TestOnlyC.bat");
     QVERIFY(f.open(QIODevice::ReadOnly));
