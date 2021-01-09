@@ -1,5 +1,5 @@
 [Desktop Entry]
-Version=1.5.0.14
+Version=1.5.0.15
 Name=CQtDeployer
 Comment=CQtDeployer Help.
 Exec=cqtdeployer
@@ -10,6 +10,6 @@ Categories=Application;
 X-GNOME-Bugzilla-Bugzilla=GNOME
 X-GNOME-Bugzilla-Product=CQtDeployer
 X-GNOME-Bugzilla-Component=General
-X-GNOME-Bugzilla-Version=1.5.0.14
+X-GNOME-Bugzilla-Version=1.5.0.15
 StartupNotify=true
 Name[ru_RU]=CQtDeployer
