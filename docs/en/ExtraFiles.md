@@ -1,0 +1,104 @@
+# Adding extraData into distributive.
+
+CQtDeployer support work with extra data files. 
+
+For this use the -extraData and -extraDataOut options. 
+
+## Examples:
+
+### Add custom file into root directory of the your distribution.
+
+```
+cqtdeployer -extraData path/to/my/customFile
+```
+
+Or in configFile.json
+
+```json
+{
+    ...
+    "extraData": "./path/to/my/customFile"
+    ...
+}
+```
+
+This command support list of arrguments.
+
+
+``` bash
+cqtdeployer -extraData path/to/my/customFile,path/to/my/customFile2,path/to/my/customFile3
+```
+
+Or in configFile.json
+
+```json
+{
+    ...
+    "extraData": [
+        "./path/to/my/customFile",
+        "./path/to/my/customFile2",
+        "./path/to/my/customFile3"
+    ]
+    ...
+}
+```
+
+### Changing location of extra data files.
+
+For change location use the extraDataOut options. This option change destination path relative the root of the distributive.
+
+### Example. Add custom scripts into scripts folder in the Distribution.
+
+``` bash
+cqtdeployer -extraData /path/to/myScripts.sh,/another/path/to/myScripts.sh -extraDataOut scripts
+```
+
+Or in configFile.json
+
+```json
+{
+    ...
+    "extraData": [
+        "./path/to/myScripts.sh",
+        "./another/path/to/myScripts.sh"
+    ],
+    "extraDataOut": "scripts"
+    ...
+}
+```
+
+## Packages
+extraData and extraDataOut options sopport the work with packages. For get more information about packages see the packaging [page](Pacakges.md).
+
+Sometimes we need to create a multipackages application. For example create a installer for clinet-server application with the client and server applications. The client and server have a own default configuration files. We add cinfig files using the extraData option.
+
+For create a big distributon i recomends use the [confFile](DeployConfigFile.md).
+
+## Example multipacking application.
+
+
+```json
+{
+
+    "bin": [
+        "myClientExecutable",
+        "myServerExecutable"
+    ],
+
+    "targetPackage" : [
+        ["Client", "myClientExecutable"],
+        ["Server", "myServerExecutable"]
+    ],
+
+    "extraData": [
+        ["Client", "./path/to/clientConfig.conf"],
+        ["Server", "./path/to/serverConfig.conf"]
+    ],
+    "extraDataOut": [
+        ["Client", "defaultConfigurations"],
+        ["Server", "defaultConfigurations"]
+    ]
+}
+```
+
+This config create a distribution with two appications (client and server). Each application have a own configuration file in the defaultConfigurations folder.

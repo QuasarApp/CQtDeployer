@@ -93,3 +93,5 @@ If cqtdeployer not found qmake then add the -qmake option to an invoke command.
 cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qif -qmake /path/to/my/qmake
 
 ```
+
+
