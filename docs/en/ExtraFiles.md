@@ -1,8 +1,8 @@
 # Adding extraData into distributive.
 
-CQtDeployer support work with extra data files. 
+CQtDeployer has support to work with extra data files. 
 
-For this use the -extraData and -extraDataOut options. 
+For this you should use the -extraData and -extraDataOut options. 
 
 ## Examples:
 
@@ -45,7 +45,7 @@ Or in configFile.json
 
 ### Changing location of extra data files.
 
-For change location use the extraDataOut options. This option change destination path relative the root of the distributive.
+For change location you should use  the extraDataOut options. This option change destination path relative the root of the distributive.
 
 ### Example. Add custom scripts into scripts folder in the Distribution.
 
@@ -68,7 +68,7 @@ Or in configFile.json
 ```
 
 ## Packages
-extraData and extraDataOut options sopport the work with packages. For get more information about packages see the packaging [page](Pacakges.md).
+extraData and extraDataOut options have support to work with packages. See the packaging [page](Pacakges.md) to get more information about packages.
 
 Sometimes we need to create a multipackages application. For example create a installer for clinet-server application with the client and server applications. The client and server have a own default configuration files. We add cinfig files using the extraData option.
 
