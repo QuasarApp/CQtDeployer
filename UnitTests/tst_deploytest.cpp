@@ -1653,9 +1653,13 @@ void deploytest::testConfFile() {
 #else
     auto comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "/TestOnlyC.exe",
+     "./" + DISTRO_DIR + "/TestOnlyC.bat"
      "./" + DISTRO_DIR + "/qt.conf",
      "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
-     "./" + DISTRO_DIR + "/TestQMLWidgets.exe"});
+     "./" + DISTRO_DIR + "/QtWidgetsProject.bat",
+     "./" + DISTRO_DIR + "/TestQMLWidgets.exe",
+     "./" + DISTRO_DIR + "/TestQMLWidgets.bat"
+    });
 #endif
 
 #ifdef Q_OS_UNIX
@@ -1842,6 +1846,7 @@ void deploytest::testConfFile() {
     QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
     comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "/package/TestOnlyC.exe",
+     "./" + DISTRO_DIR + "/package/TestOnlyC.bat"
      "./" + DISTRO_DIR + "/package/qt.conf"});
     QString target1 = TestBinDir + "TestOnlyC.exe";
 
@@ -1895,6 +1900,7 @@ void deploytest::testPackages() {
     QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
     auto comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "/package/TestOnlyC.exe",
+     "./" + DISTRO_DIR + "/package/TestOnlyC.bat"
      "./" + DISTRO_DIR + "/package/qt.conf"});
     QString target1 = TestBinDir + "TestOnlyC.exe";
 
@@ -2040,6 +2046,7 @@ void deploytest::testIgnore() {
     {
                     "./" + DISTRO_DIR + "/qt.conf",
                     "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
+                    "./" + DISTRO_DIR + "/QtWidgetsProject.bat",
                     "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
                     "./" + DISTRO_DIR + "/libstdc++-6.dll",
                     "./" + DISTRO_DIR + "/libwinpthread-1.dll"
@@ -2167,6 +2174,7 @@ void deploytest::testLibDir() {
     {
                     "./" + DISTRO_DIR + "/qt.conf",
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
+                    "./" + DISTRO_DIR + "/TestOnlyC.bat",
 
                 });
 
@@ -2207,6 +2215,7 @@ void deploytest::testLibDir() {
     {
                     "./" + DISTRO_DIR + "/qt.conf",
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
+                    "./" + DISTRO_DIR + "/TestOnlyC.bat",
                     "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
                     "./" + DISTRO_DIR + "/libwinpthread-1.dll",
                     "./" + DISTRO_DIR + "/libstdc++-6.dll",
@@ -2217,6 +2226,7 @@ void deploytest::testLibDir() {
     {
                     "./" + DISTRO_DIR + "2/qt.conf",
                     "./" + DISTRO_DIR + "2/TestOnlyC.exe",
+                    "./" + DISTRO_DIR + "2/TestOnlyC.bat",
                     "./" + DISTRO_DIR + "2/libgcc_s_seh-1.dll",
                     "./" + DISTRO_DIR + "2/libstdc++-6.dll",
 
@@ -2257,6 +2267,7 @@ void deploytest::testLibDir() {
     {
                     "./" + DISTRO_DIR + "/qt.conf",
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
+                    "./" + DISTRO_DIR + "/TestOnlyC.bat",
                     "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
                     "./" + DISTRO_DIR + "/libstdc++-6.dll",
 
@@ -2352,6 +2363,7 @@ void deploytest::testTargetDir() {
 
     auto comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "Z/TestOnlyC.exe",
+     "./" + DISTRO_DIR + "Z/TestOnlyC.bat"
      "./" + DISTRO_DIR + "Z/qt.conf"});
 #endif
 
@@ -2379,6 +2391,7 @@ void deploytest::testSystemLib() {
     auto comapareTree = utils.createTree(
     {
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
+                    "./" + DISTRO_DIR + "/TestOnlyC.bat",
                     "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
                     "./" + DISTRO_DIR + "/libstdc++-6.dll",
                     "./" + DISTRO_DIR + "/libwinpthread-1.dll",
@@ -2429,7 +2442,7 @@ void deploytest::testSystemLib() {
 
     QVERIFY(runScript.contains("export LD_PRELOAD="));
 
-#else
+# else
     QString qmake = TestQtDir + "bin/qmake.exe";
     bin = TestBinDir + "QtWidgetsProject.exe";
 
@@ -2438,6 +2451,8 @@ void deploytest::testSystemLib() {
     comapareTree -= utils.createTree(
     {
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
+                    "./" + DISTRO_DIR + "/TestOnlyC.bat",
+
                 });
 
     comapareTree += utils.createTree(
@@ -2463,7 +2478,6 @@ void deploytest::testSystemLib() {
 
                 });
 
-    "./" + DISTRO_DIR + "/libwinpthread-1.dll";
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     comapareTree += utils.createTree(
