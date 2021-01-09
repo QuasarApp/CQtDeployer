@@ -971,6 +971,7 @@ void deploytest::testPrefix() {
     QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
     auto comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "/package/TestOnlyC.exe",
+     "./" + DISTRO_DIR + "/package/TestOnlyC.but",
      "./" + DISTRO_DIR + "/package/qt.conf"});
     QString target1 = TestBinDir + "TestOnlyC.exe";
 
@@ -1612,7 +1613,7 @@ void deploytest::testextraData() {
     auto comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "/build/TestOnlyC.exe",
      "./" + DISTRO_DIR + "/build/QtWidgetsProject.exe",
-     "./" + DISTRO_DIR + "/build/TestQMLWidgets.exe"
+     "./" + DISTRO_DIR + "/build/TestQMLWidgets.exe",
      "./" + DISTRO_DIR + "/build/TestOnlyC.bat",
      "./" + DISTRO_DIR + "/build/QtWidgetsProject.bat",
      "./" + DISTRO_DIR + "/build/TestQMLWidgets.bat"});
