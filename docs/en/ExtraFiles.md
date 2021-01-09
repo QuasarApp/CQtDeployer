@@ -22,7 +22,7 @@ Or in configFile.json
 }
 ```
 
-This command support list of arrguments.
+This command support list of arguments.
 
 
 ``` bash
@@ -45,7 +45,7 @@ Or in configFile.json
 
 ### Changing location of extra data files.
 
-For change location you should use  the extraDataOut options. This option change destination path relative the root of the distributive.
+For change location you should use  the extraDataOut options. This option change destination path based on the root of the distributive.
 
 ### Example. Add custom scripts into scripts folder in the Distribution.
 
@@ -70,9 +70,9 @@ Or in configFile.json
 ## Packages
 extraData and extraDataOut options have support to work with packages. See the packaging [page](Pacakges.md) to get more information about packages.
 
-Sometimes we need to create a multipackages application. For example create a installer for clinet-server application with the client and server applications. The client and server have a own default configuration files. We add cinfig files using the extraData option.
+Sometimes we need to create a multipackages application. For example create a installer for client-server application with the client and server applications. The client and server have a own default configuration files. We add config files using the extraData option.
 
-For create a big distributon i recomends use the [confFile](DeployConfigFile.md).
+For create a big distribution i recommend use the [confFile](DeployConfigFile.md).
 
 ## Example multipacking application.
 
