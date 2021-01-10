@@ -15,6 +15,7 @@
 * [Change log page](Changelog)
 * [Reviews](ReleaseReviews)
 * [Compare Features](CompareFeatures)
+* [Adding extra files](ExtraFiles.md)
 
 
 ## Support the project
