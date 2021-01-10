@@ -264,7 +264,6 @@ void Extracter::copyTr() {
 void Extracter::deploy() {
     QuasarAppUtils::Params::log("target deploy started!!",
                                 QuasarAppUtils::Info);
-    clear();
     _cqt->smartMoveTargets();
     _scaner->setEnvironment(DeployCore::_config->envirement.environmentList());
     extractAllTargets();

@@ -87,13 +87,11 @@ bool Deploy::prepare() {
 
 bool Deploy::deploy() {
 
+    _extracter->clear();
 
     switch (DeployCore::getMode() ) {
     case RunMode::Deploy:
         _extracter->deploy();
-        break;
-    case RunMode::Clear:
-        _extracter->clear();
         break;
     default:
         break;
