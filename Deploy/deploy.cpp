@@ -104,8 +104,17 @@ bool Deploy::deploy() {
 
 bool Deploy::packing() {
 
-    if (DeployCore::getMode() != RunMode::Deploy)
-        return true;
+    switch (DeployCore::getMode() ) {
 
-    return _packing->create();
+    case RunMode::Deploy:
+        return _packing->create();
+
+    case RunMode::Template:
+        return _packing->extractTemplates();
+
+    default:
+        break;
+    }
+
+    return true;
 }

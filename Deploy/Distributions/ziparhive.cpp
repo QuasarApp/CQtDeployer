@@ -10,10 +10,11 @@
 
 ZipArhive::ZipArhive(FileManager *fileManager)
     :iDistribution(fileManager) {
-    setLocation("tmp zip");
+    setLocation("defaultZIPTemplate");
 }
 
 bool ZipArhive::deployTemplate(PackageControl &pkg) {
+
     // default template
     const DeployConfig *cfg = DeployCore::_config;
 

@@ -137,6 +137,20 @@ bool ConfigParser::parseParams() {
         break;
     }
 
+    case RunMode::Template: {
+
+        QuasarAppUtils::Params::log("Extract defaults Templates ...",
+                                    QuasarAppUtils::Info);
+
+        if (!parseDeployMode()) {
+            QuasarAppUtils::Params::log("Extract defaults Templates is failed!",
+                                        QuasarAppUtils::Error);
+            return false;
+        }
+
+        break;
+    }
+
     }
 
     DeployCore::_config = &_config;
@@ -697,6 +711,10 @@ bool ConfigParser::parseInitMode() {
     }
 
     return true;
+}
+
+bool ConfigParser::parseGetTemplateMode() {
+
 }
 
 bool ConfigParser::parseClearMode() {

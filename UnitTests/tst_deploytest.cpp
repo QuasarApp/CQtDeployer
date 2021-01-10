@@ -174,6 +174,7 @@ private slots:
     void testEmptyPackages();
 
     void testRunScripts();
+    void testGetDefaultTemplate();
 
     void customTest();
 };
@@ -1098,6 +1099,33 @@ void deploytest::testRunScripts() {
     QVERIFY(deployData == etalonData);
 #endif
 
+}
+
+void deploytest::testGetDefaultTemplate() {
+    TestUtils utils;
+
+    QString bin = TestBinDir + "TestOnlyC";
+
+    auto comapareTree = utils.createTree(
+                {
+                    "./" + DISTRO_DIR + "/defaultDEBTemplate/Application/DEBIAN/control",
+                    "./" + DISTRO_DIR + "/defaultDEBTemplate/Application/DEBIAN/postinst",
+                    "./" + DISTRO_DIR + "/defaultDEBTemplate/Application/DEBIAN/prerm",
+                    "./" + DISTRO_DIR + "/defaultDEBTemplate/Application/opt/Application/icons/Icon.png",
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/config/config.xml",
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/config/controlScript.qs",
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/data/icons/Icon.png",
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/meta/installscript.qs",
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/meta/package.xml"
+                });
+
+    runTestParams(
+                {"-bin", bin,
+                 "force-clear",
+                 "getDefaultTemplate",
+                 "deb",
+                 "qif"
+                }, &comapareTree);
 }
 
 void deploytest::customTest() {
