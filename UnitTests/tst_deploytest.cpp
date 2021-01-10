@@ -1104,6 +1104,7 @@ void deploytest::testRunScripts() {
 void deploytest::testGetDefaultTemplate() {
     TestUtils utils;
 
+#ifdef Q_OS_UNIX
     QString bin = TestBinDir + "TestOnlyC";
 
     auto comapareTree = utils.createTree(
@@ -1118,7 +1119,6 @@ void deploytest::testGetDefaultTemplate() {
                     "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/meta/installscript.qs",
                     "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/meta/package.xml"
                 });
-
     runTestParams(
                 {"-bin", bin,
                  "force-clear",
@@ -1126,6 +1126,25 @@ void deploytest::testGetDefaultTemplate() {
                  "deb",
                  "qif"
                 }, &comapareTree);
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+
+    auto comapareTree = utils.createTree(
+                {
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/config/config.xml",
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/config/controlScript.qs",
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/data/icons/Icon.png",
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/meta/installscript.qs",
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/meta/package.xml"
+                });
+    runTestParams(
+                {"-bin", bin,
+                 "force-clear",
+                 "getDefaultTemplate",
+                 "qif"
+                }, &comapareTree);
+#endif
+
 }
 
 void deploytest::customTest() {
