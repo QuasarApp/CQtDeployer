@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>CQtDeployer 1.5 Alpha</DisplayName>
     <Description>CQtDeployer 1.5 Alpha. Do not use this version because it is unstable and may lead to unwanted bugs or consequences. Use this version exclusively for testing new functionality.</Description>
-    <Version>1.5.0.15</Version>
+    <Version>1.5.0.16</Version>
     <Default>true</Default>
     <ForcedInstallation>false</ForcedInstallation>
     <Script>installscript.js</Script>
