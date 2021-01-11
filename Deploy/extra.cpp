@@ -63,13 +63,13 @@ bool Extra::contains(const QString &path) const {
         return true;
     }
 
-    for (const auto &i: extraPathsMasks) {
+    for (auto i: extraPathsMasks) {
         if (PathUtils::fixPath(info.absoluteFilePath()).contains(i)) {
             return true;
         }
     }
 
-    for (const auto &i: extraNamesMasks) {
+    for (auto i: extraNamesMasks) {
         if (PathUtils::fixPath(info.fileName()).contains(i)) {
             return true;
         }
