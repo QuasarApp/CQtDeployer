@@ -46,7 +46,7 @@ bool Packing::create() {
         return false;
     }
 
-    for (auto package : _pakages) {
+    for (auto package : qAsConst(_pakages)) {
 
         if (!package)
             return false;
@@ -90,7 +90,6 @@ bool Packing::create() {
                 return false;
             }
 
-            auto exit = QString("exit code = %0").arg(_proc->exitCode());
             QString stdoutLog = _proc->readAllStandardOutput();
             QString erroutLog = _proc->readAllStandardError();
             auto message = QString("message = %0").arg(stdoutLog + " " + erroutLog);
