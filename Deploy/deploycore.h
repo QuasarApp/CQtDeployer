@@ -251,6 +251,13 @@ public:
     static QString snapRootFS();
     static QString transportPathToSnapRoot(const QString &path);
     static bool checkSystemBakupSnapInterface();
+
+    /**
+     * @brief systemLibsFolderName This method return name of the systems librares.
+     * @return Name of folder with system libraryes.
+     * @note see https://github.com/QuasarApp/CQtDeployer/issues/396
+     */
+    static QString systemLibsFolderName();
 };
 
 
