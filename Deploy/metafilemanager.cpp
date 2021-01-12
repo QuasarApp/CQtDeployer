@@ -100,7 +100,8 @@ bool MetaFileManager::createRunScriptLinux(const QString &target) {
                 "#!/bin/sh\n"
                 "BASE_DIR=$(dirname \"$(readlink -f \"$0\")\")\n"
                 "export "
-                "LD_LIBRARY_PATH=\"$BASE_DIR\"" + distro.getLibOutDir() + ":\"$BASE_DIR\":$LD_LIBRARY_PATH:" + systemLibsDir + "\n"
+                "LD_LIBRARY_PATH=\"$BASE_DIR\"" + distro.getLibOutDir() +
+                ":\"$BASE_DIR\":$LD_LIBRARY_PATH:\"$BASE_DIR\"" + systemLibsDir + "\n"
                 "export QML_IMPORT_PATH=\"$BASE_DIR\"" + distro.getQmlOutDir() + ":$QML_IMPORT_PATH\n"
                 "export QML2_IMPORT_PATH=\"$BASE_DIR\"" + distro.getQmlOutDir() + ":$QML2_IMPORT_PATH\n"
                 "export QT_PLUGIN_PATH=\"$BASE_DIR\"" + distro.getPluginsOutDir() + ":$QT_PLUGIN_PATH\n"
