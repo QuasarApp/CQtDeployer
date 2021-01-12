@@ -34,12 +34,20 @@ public:
     bool movePackage(const QString &package, const QString &newLocation) override;
     bool copyPackage(const QString &package, const QString &newLocation) override;
 
+    /**
+     * @brief extractTemplates This method extract all default temlates. See the getDefaultTemplate for get more information.
+     * @return true if function finished successful.
+     */
+    bool extractTemplates();
+
 protected:
     QStringList availablePackages() const override;
 
 private:
 
     bool collectPackages();
+    bool prepareTemplatesForExtract();
+
     bool moveData(const QString& from, const QString& to,
                   const QString &ignore = "") const;
 

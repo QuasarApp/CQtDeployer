@@ -8,7 +8,7 @@
 Deb::Deb(FileManager *fileManager):
     iDistribution(fileManager)
 {
-    setLocation("tmp DEB");
+    setLocation("defaultDEBTemplate");
 }
 
 bool Deb::deployTemplate(PackageControl &pkg) {
@@ -87,7 +87,7 @@ QProcessEnvironment Deb::processEnvirement() const {
 
 QList<SystemCommandData> Deb::runCmd() {
     QList<SystemCommandData> res;
-    for (const auto& dir: packageFolders) {
+    for (const auto& dir: qAsConst(packageFolders)) {
         res.push_back({"dpkg-deb", QStringList{"--build", "--verbose"} << dir});
     }
 

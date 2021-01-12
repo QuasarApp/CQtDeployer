@@ -51,6 +51,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   deploySystem-with-libc    | Deploys all libs include libc (only linux). Do not use this option for a gui application, for gui use the deploySystem option. (on snap version you need to turn on permission)                             |
 |   noQt                      | Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework.                             |
 |   allowEmptyPackages        | Allows configure the empty packages.                            |
+|   getDefaultTemplate        | Extracts defaults deb or qif templates. For more information see the  extracting default templates [page](ExtractDefaultsTemplates.md)       |
 
 ### Deploy options
 
