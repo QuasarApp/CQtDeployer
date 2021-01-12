@@ -12,7 +12,7 @@
 QIF::QIF(FileManager *fileManager)
     :iDistribution(fileManager){
 
-    setLocation("tmp QIF");
+    setLocation("defaultQIFWTemplate");
 
 };
 

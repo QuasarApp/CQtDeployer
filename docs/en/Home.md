@@ -16,6 +16,7 @@
 * [Reviews](ReleaseReviews)
 * [Compare Features](CompareFeatures)
 * [Adding extra files](ExtraFiles.md)
+* [Retrieving packaging templates](ExtractDefaultsTemplates.md)
 
 
 ## Support the project

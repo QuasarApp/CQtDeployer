@@ -137,6 +137,20 @@ bool ConfigParser::parseParams() {
         break;
     }
 
+    case RunMode::Template: {
+
+        QuasarAppUtils::Params::log("Extract defaults Templates ...",
+                                    QuasarAppUtils::Info);
+
+        if (!parseDeployMode()) {
+            QuasarAppUtils::Params::log("Extract defaults Templates is failed!",
+                                        QuasarAppUtils::Error);
+            return false;
+        }
+
+        break;
+    }
+
     }
 
     DeployCore::_config = &_config;
@@ -699,6 +713,10 @@ bool ConfigParser::parseInitMode() {
     return true;
 }
 
+bool ConfigParser::parseGetTemplateMode() {
+
+}
+
 bool ConfigParser::parseClearMode() {
     setTargetDir("./" + DISTRO_DIR);
 
@@ -884,6 +902,7 @@ void ConfigParser::initIgnoreList()
         };
 
         _config.ignoreList.addRule(addRuleUnix("libc"));
+        _config.ignoreList.addRule(addRuleUnix("libstdc++"));
         _config.ignoreList.addRule(addRuleUnix("ld-"));
         _config.ignoreList.addRule(addRuleUnix("libpthread"));
         _config.ignoreList.addRule(addRuleUnix("libm"));
@@ -897,7 +916,7 @@ void ConfigParser::initIgnoreList()
         _config.ignoreList.addRule(addRuleUnix("libBrokenLocale"));
         _config.ignoreList.addRule(addRuleUnix("libSegFault"));
         _config.ignoreList.addRule(addRuleUnix("libanl"));
-        _config.ignoreList.addRule(addRuleUnix("libcrypt"));
+        _config.ignoreList.addRule(addRuleUnix("libcrypt.so"));
         _config.ignoreList.addRule(addRuleUnix("/gconv/"));
         _config.ignoreList.addRule(addRuleUnix("libnss"));
     }

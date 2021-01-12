@@ -16,6 +16,7 @@
 * [Обзоры](ReleaseReviews)
 * [Сравнение возможностей](CompareFeatures)
 * [Добавление дополнительных файлов](ExtraFiles.md)
+* [Получение шаблонов упаковки](ExtractDefaultsTemplates.md)
 
 
 ## Поддержите проект
