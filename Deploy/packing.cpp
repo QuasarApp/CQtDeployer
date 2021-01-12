@@ -122,7 +122,7 @@ bool Packing::create() {
 bool Packing::movePackage(const QString &package,
                           const QString &newLocation) {
 
-    // Disable mooving data for extracting defaults templates.
+    // Disable moving data for extracting defaults templates.
     if (QuasarAppUtils::Params::isEndable("getDefaultTemplate")) {
         return true;
     }

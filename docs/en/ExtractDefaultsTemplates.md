@@ -18,7 +18,7 @@ cqtdeployer -bin myExecutable getDefaultTemplate qif -targetDir "/distanation/Di
 
 ## Work With multipackage distribution.
 
-This option sopport the configFile.json 
+This option support the configFile.json 
 
 ### Example :
 
