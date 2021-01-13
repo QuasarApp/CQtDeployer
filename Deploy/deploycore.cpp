@@ -478,12 +478,12 @@ MSVCVersion DeployCore::getMSVC(const QString &_qtBin) {
         return static_cast<MSVCVersion>(res);
     }
 
-    if (!msvcPath.contains("msvc")) {
+    if (!msvcPath.contains("MSVC")) {
         QuasarAppUtils::Params::log("vcredis not defined");
         return static_cast<MSVCVersion>(res);
     }
 
-    auto base = msvcPath.mid(msvcPath.indexOf("msvc"), 11);
+    auto base = msvcPath.mid(msvcPath.indexOf("MSVC"), 11);
     auto version = base.mid(4 , 4);
     auto type = base.right(2);
 
@@ -538,13 +538,13 @@ QString DeployCore::getVCredist(const QString &_qtbinDir) {
 }
 
 QString DeployCore::getMSVCName(MSVCVersion msvc) {
-    if (msvc | MSVCVersion::MSVC_13) {
+    if (msvc & MSVCVersion::MSVC_13) {
         return "msvc2013";
-    } else if (msvc | MSVCVersion::MSVC_15) {
+    } else if (msvc & MSVCVersion::MSVC_15) {
         return "msvc2015";
-    } else if (msvc | MSVCVersion::MSVC_17) {
+    } else if (msvc & MSVCVersion::MSVC_17) {
         return "msvc2017";
-    } else if (msvc | MSVCVersion::MSVC_19) {
+    } else if (msvc & MSVCVersion::MSVC_19) {
         return "msvc2019";
     }
 
@@ -552,9 +552,9 @@ QString DeployCore::getMSVCName(MSVCVersion msvc) {
 }
 
 QString DeployCore::getMSVCVersion(MSVCVersion msvc) {
-    if (msvc | MSVCVersion::MSVC_x32) {
+    if (msvc & MSVCVersion::MSVC_x32) {
         return "x86";
-    } else if (msvc | MSVCVersion::MSVC_x64) {
+    } else if (msvc & MSVCVersion::MSVC_x64) {
         return "x64";
     }
 
