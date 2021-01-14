@@ -515,6 +515,11 @@ MSVCVersion DeployCore::getMSVC(const QString &_qtBin) {
 QString DeployCore::getVCredist(const QString &_qtbinDir) {
     auto msvc = getMSVC(_qtbinDir);
 
+    if (msvc == MSVCVersion::MSVC_Unknown) {
+        QuasarAppUtils::Params::log("unknown msvc");
+        return "";
+    }
+
     QDir dir = _qtbinDir;
 
     if (!(dir.cdUp() && dir.cdUp() && dir.cdUp() && dir.cd("vcredist"))) {
@@ -526,6 +531,16 @@ QString DeployCore::getVCredist(const QString &_qtbinDir) {
 
     auto name = getMSVCName(msvc);
     auto version = getMSVCVersion(msvc);
+
+    if (name == "") {
+        QuasarAppUtils::Params::log("msvc name unrecognized");
+        return "";
+    }
+
+    if (version == "") {
+        QuasarAppUtils::Params::log("msvc version unrecognized");
+        return "";
+    }
 
     for (const auto &info: infoList) {
         auto file = info.fileName();
