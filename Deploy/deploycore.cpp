@@ -485,7 +485,7 @@ MSVCVersion DeployCore::getMSVC(const QString &_qtBin) {
 
     auto base = msvcPath.mid(msvcPath.indexOf("MSVC"), 11);
     auto version = base.mid(4 , 4);
-    auto type = base.right(2);
+    auto type = base.mid(8, 3);
 
     if (version == "2013") {
         res |= MSVC_13;
@@ -500,10 +500,12 @@ MSVCVersion DeployCore::getMSVC(const QString &_qtBin) {
         res |= MSVC_19;
     }
 
-    if (type == "32") {
+    if (type == "") {
+        // e.g., "MSVC2015", "MSVC2017" or "MSVC2019"
         res |= MSVC_x32;
     }
-    else if (type == "64") {
+    else if (type == "_64") {
+        // e.g., "MSVC2013_64", "MSVC2015_64", "MSVC2017_64" or "MSVC2019_64"
         res |= MSVC_x64;
     }
 
