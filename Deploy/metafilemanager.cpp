@@ -29,7 +29,7 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
     QString content;
     auto runScript = cnf->getRunScript(targetInfo.fileName());
     if (runScript.size()) {
-        auto script = QFile(runScript);
+        QFile script(runScript);
         if (!script.open(QIODevice::ReadOnly)) {
             return false;
         }
@@ -83,7 +83,7 @@ bool MetaFileManager::createRunScriptLinux(const QString &target) {
     QString content;
     auto runScript = cnf->getRunScript(targetInfo.fileName());
     if (runScript.size()) {
-        auto script = QFile(runScript);
+        QFile script(runScript);
         if (!script.open(QIODevice::ReadOnly)) {
             return false;
         }
