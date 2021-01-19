@@ -77,6 +77,7 @@ SOURCES += \
     qml.cpp \
     libinfo.cpp \
     qtdir.cpp \
+    targetdata.cpp \
     targetinfo.cpp \
     zipcompresser.cpp
 
@@ -114,6 +115,7 @@ HEADERS += \
     qml.h \
     libinfo.h \
     qtdir.h \
+    targetdata.h \
     targetinfo.h \
     zipcompresser.h
 
