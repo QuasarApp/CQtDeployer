@@ -352,6 +352,10 @@ bool FileManager::cp(const QString &from,
 bool FileManager::moveFolder(const QString &from, const QString &to, const QString& ignore) {
     QFileInfo info(from);
 
+    if (to.contains(from)) {
+        return false;
+    }
+
     if (!info.exists())
         return false;
 
