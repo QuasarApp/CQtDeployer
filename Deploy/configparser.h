@@ -56,7 +56,6 @@ private:
     bool parseDeployMode();
     bool parseInfoMode();
     bool parseInitMode();
-    bool parseGetTemplateMode();
 
     bool parseClearMode();
 
