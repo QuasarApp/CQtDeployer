@@ -45,19 +45,15 @@ bool parsePackagesPrivate(Container& mainContainer,
     for (const auto& str: inputParamsList) {
         auto paramsList = str.split(DeployCore::getSeparator(1));
         auto first = paramsList.value(0, "");
-        auto second = paramsList.value(1, "");
         if (paramsList.size() == 1)
             (valueLink(mainContainer, defaultPackage, DistroModule{defaultPackage}).*adder)(first);
 
         else {
-
-
             bool skipError = QuasarAppUtils::Params::isEndable("allowEmptyPackages");
             first = PathUtils::fullStripPath(first);
             if (!skipError && !mainContainer.contains(first)) {
                 return false;
             }
-
 
             for (int i = 1; i < paramsList.size(); ++i) {
                 (valueLink(mainContainer, first, DistroModule{first}).*adder)(paramsList[i]);
@@ -713,10 +709,6 @@ bool ConfigParser::parseInitMode() {
     return true;
 }
 
-bool ConfigParser::parseGetTemplateMode() {
-
-}
-
 bool ConfigParser::parseClearMode() {
     setTargetDir("./" + DISTRO_DIR);
 
@@ -825,7 +817,7 @@ bool ConfigParser::setTargetsInDir(const QString &dir, bool recursive) {
     }
 
     bool result = false;
-    for (const auto &file : list) {
+    for (const auto &file : qAsConst(list)) {
 
         if (file.isDir()) {
             result |= setTargetsInDir(file.absoluteFilePath(), recursive);
