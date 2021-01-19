@@ -53,6 +53,7 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |   noQt                      | Игнорирует ошибку инициализации qmake. Используйте только в том случае, если ваше приложение не использует платформу qt.                             |
 |   allowEmptyPackages        | Разрешите настраивать пустые пакеты.                            |
 |   getDefaultTemplate        | Извлекает deb или qif шаблоны по умолчанию. Для получения дополнительной информации см. [Страницу](ExtractDefaultsTemplates.md) извлечения шаблонов по умолчанию.       |
+
 ### Параметры развертывания:
 
 | Option                      | Descriptiion                                              |

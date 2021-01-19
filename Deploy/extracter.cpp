@@ -111,8 +111,8 @@ void Extracter::extractExtraDataTargets() {
     auto cfg = DeployCore::_config;
     for (auto i = cfg->packages().cbegin(); i != cfg->packages().cend(); ++i) {
         auto &dep = _packageDependencyes[i.key()];
-
-        for (const auto &target : i.value().extraData()) {
+        const auto extraData = i.value().extraData();
+        for (const auto &target : extraData) {
             dep.addExtraData(target);
         }
     }
@@ -136,8 +136,9 @@ void Extracter::copyExtraPlugins(const QString& package) {
     auto cnf = DeployCore::_config;
     auto targetPath = cnf->getTargetDir() + "/" + package;
     auto distro = cnf->getDistroFromPackage(package);
+    const auto plugins = distro.extraPlugins();
 
-    for (auto extraPlugin : distro.extraPlugins()) {
+    for (const auto &extraPlugin : plugins) {
 
         info.setFile(extraPlugin);
 
@@ -166,7 +167,7 @@ void Extracter::copyExtraPlugins(const QString& package) {
                                             QuasarAppUtils::Warning);
             }
 
-            for (const auto& plugin : plugins) {
+            for (const auto& plugin : qAsConst(plugins)) {
                 extractPluginLib(plugin, package);
             }
         }
@@ -190,7 +191,7 @@ void Extracter::extractPlugins() {
         _fileManager->copyFiles(plugins, targetPath + distro.getPluginsOutDir(), 1,
                                 DeployCore::debugExtensions(), &listItems);
 
-        for (const auto &item : listItems) {
+        for (const auto &item : qAsConst(listItems)) {
             extractPluginLib(item, i.key());
         }
 
@@ -397,8 +398,8 @@ bool Extracter::extractQml() {
 
             QStringList plugins;
             QStringList listItems;
-
-            for (const auto &qmlInput: distro.qmlInput()) {
+            const auto qmlInput = distro.qmlInput();
+            for (const auto &qmlInput: qmlInput) {
                 QFileInfo info(qmlInput);
 
                 if (!info.isDir()) {
@@ -430,7 +431,7 @@ bool Extracter::extractQml() {
                 return false;
             }
 
-            for (const auto &item : listItems) {
+            for (const auto &item : qAsConst(listItems)) {
                 extractPluginLib(item, i.key());
             }
 
