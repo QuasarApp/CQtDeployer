@@ -19,7 +19,7 @@ TEMPLATE = lib
 
 DEFINES += DEPLOY_LIBRARY
 
-VERSION = 1.5.0.17
+VERSION = 1.5.0.18
 
 DEFINES += APP_VERSION='\\"$$VERSION\\"'
 
@@ -77,6 +77,7 @@ SOURCES += \
     qml.cpp \
     libinfo.cpp \
     qtdir.cpp \
+    targetdata.cpp \
     targetinfo.cpp \
     zipcompresser.cpp
 
@@ -114,6 +115,7 @@ HEADERS += \
     qml.h \
     libinfo.h \
     qtdir.h \
+    targetdata.h \
     targetinfo.h \
     zipcompresser.h
 

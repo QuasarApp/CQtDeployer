@@ -95,7 +95,7 @@ public:
     const QHash<QString, TargetInfo>& targets() const;
     const QHash<QString, DistroModule>& packages() const;
 
-    QMultiHash<QString, TargetInfo> &targetsEdit();
+    QHash<QString, TargetInfo> &targetsEdit();
     QHash<QString, DistroModule>& packagesEdit();
 
     /**
@@ -125,7 +125,7 @@ private:
      * key - path
      * value - create wrapper
      */
-    QMultiHash<QString, TargetInfo> _targets;
+    QHash<QString, TargetInfo> _targets;
 
     /**
      * @brief packages

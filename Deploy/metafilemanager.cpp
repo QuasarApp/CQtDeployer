@@ -40,7 +40,9 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
         content =
                 "@echo off \n"
                 "SET BASE_DIR=%~dp0\n"
-                "SET PATH=%BASE_DIR%" + distro.getLibOutDir() + ";%PATH%\n"
+                "SET PATH=\"%BASE_DIR%\"" + distro.getLibOutDir() + ";%PATH%\n"
+                "SET CQT_PKG_ROOT=\"%BASE_DIR%\"\n"
+
                 "%2\n"
                 "call \"%BASE_DIR%" + distro.getBinOutDir() + "%0\" %1 \n";
 
@@ -101,6 +103,8 @@ bool MetaFileManager::createRunScriptLinux(const QString &target) {
                 "export QT_PLUGIN_PATH=\"$BASE_DIR\"" + distro.getPluginsOutDir() + ":$QT_PLUGIN_PATH\n"
                 "export QTWEBENGINEPROCESS_PATH=\"$BASE_DIR\"" + distro.getBinOutDir() + "QtWebEngineProcess\n"
                 "export QTDIR=\"$BASE_DIR\"\n"
+                "export CQT_PKG_ROOT=\"$BASE_DIR\"\n"
+
                 "export "
                 "QT_QPA_PLATFORM_PLUGIN_PATH=\"$BASE_DIR\"" + distro.getPluginsOutDir() +
                 "platforms:$QT_QPA_PLATFORM_PLUGIN_PATH\n"

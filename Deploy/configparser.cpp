@@ -45,19 +45,15 @@ bool parsePackagesPrivate(Container& mainContainer,
     for (const auto& str: inputParamsList) {
         auto paramsList = str.split(DeployCore::getSeparator(1));
         auto first = paramsList.value(0, "");
-        auto second = paramsList.value(1, "");
         if (paramsList.size() == 1)
             (valueLink(mainContainer, defaultPackage, DistroModule{defaultPackage}).*adder)(first);
 
         else {
-
-
             bool skipError = QuasarAppUtils::Params::isEndable("allowEmptyPackages");
             first = PathUtils::fullStripPath(first);
             if (!skipError && !mainContainer.contains(first)) {
                 return false;
             }
-
 
             for (int i = 1; i < paramsList.size(); ++i) {
                 (valueLink(mainContainer, first, DistroModule{first}).*adder)(paramsList[i]);
@@ -487,29 +483,32 @@ bool ConfigParser::initPackages() {
 
 
         for (auto& str: tar_packages_array) {
-            auto pair = str.split(DeployCore::getSeparator(1));
-            auto package = PathUtils::fullStripPath(pair.value(0, ""));
+            auto paramsList = str.split(DeployCore::getSeparator(1));
+            auto package = PathUtils::fullStripPath(paramsList.value(0, ""));
 
-            auto list = _config.getTargetsListByFilter(pair.value(1, ""));
+            for (int i = 1; i < paramsList.size(); ++i) {
+                auto targetPattern = paramsList.value(i);
+                auto list = _config.getTargetsListByFilter(targetPattern);
 
-            if (!list.size()) {
-                auto warning = QString("You create the %0 package with the %1 pattern, "
-                                       "but no matches were found for this pattern. ").
-                        arg(package, pair.value(1, ""));
-                QuasarAppUtils::Params::log(warning, QuasarAppUtils::Warning);
-                continue;
-            }
-
-            for (auto it = list.begin(); it != list.end(); ++it) {
-                if (!configuredTargets.contains(it.key())) {
-                    configuredTargets.insert(it.key());
-                    it.value()->setPackage(package);
+                if (!list.size()) {
+                    auto warning = QString("You create the %0 package with the %1 pattern, "
+                                           "but no matches were found for this pattern. ").
+                            arg(package, targetPattern);
+                    QuasarAppUtils::Params::log(warning, QuasarAppUtils::Warning);
+                    continue;
                 }
+
+                for (auto it = list.begin(); it != list.end(); ++it) {
+                    if (!configuredTargets.contains(it.key())) {
+                        configuredTargets.insert(it.key());
+                        it.value()->setPackage(package);
+                    }
+                }
+
+                _config.packagesEdit().insert(package, DistroModule{package});
             }
 
-            _config.packagesEdit().insert(package, DistroModule{package});
-
-            if (pair.size() != 2) {
+            if (paramsList.size() < 2) {
                 defaultPackage = package;
             }
         }
@@ -713,10 +712,6 @@ bool ConfigParser::parseInitMode() {
     return true;
 }
 
-bool ConfigParser::parseGetTemplateMode() {
-
-}
-
 bool ConfigParser::parseClearMode() {
     setTargetDir("./" + DISTRO_DIR);
 
@@ -773,7 +768,10 @@ bool ConfigParser::setTargets(const QStringList &value) {
 
         if (targetInfo.isFile()) {
 
-            _config.targetsEdit().unite(createTarget(QDir::fromNativeSeparators(i)));
+            auto target = createTarget(QDir::fromNativeSeparators(i));
+            if (!_config.targetsEdit().contains(target.target)) {
+                _config.targetsEdit().insert(target.target,  target.targetInfo);
+            }
 
             isfillList = true;
         }
@@ -825,7 +823,7 @@ bool ConfigParser::setTargetsInDir(const QString &dir, bool recursive) {
     }
 
     bool result = false;
-    for (const auto &file : list) {
+    for (const auto &file : qAsConst(list)) {
 
         if (file.isDir()) {
             result |= setTargetsInDir(file.absoluteFilePath(), recursive);
@@ -838,9 +836,13 @@ bool ConfigParser::setTargetsInDir(const QString &dir, bool recursive) {
         if (sufix.isEmpty() ||  name.contains(".dll", Qt::CaseInsensitive) ||
                 name.contains(".so", Qt::CaseInsensitive) || name.contains(".exe", Qt::CaseInsensitive)) {
 
-            result = true;
 
-            _config.targetsEdit().unite(createTarget(QDir::fromNativeSeparators(file.absoluteFilePath())));
+            auto target = createTarget(QDir::fromNativeSeparators(file.absoluteFilePath()));
+            if (!_config.targetsEdit().contains(target.target)) {
+                _config.targetsEdit().insert(target.target,  target.targetInfo);
+            }
+
+            result = true;
 
         }
 
@@ -849,13 +851,13 @@ bool ConfigParser::setTargetsInDir(const QString &dir, bool recursive) {
     return result;
 }
 
-QHash<QString, TargetInfo> ConfigParser::createTarget(const QString &target) {
+TargetData ConfigParser::createTarget(const QString &target) {
     TargetInfo libinfo;
     auto key = target;
     if (_scaner->fillLibInfo(libinfo, key)) {
-        return {{libinfo.fullPath(), libinfo}};
+        return {libinfo.fullPath(), libinfo};
     }
-    return {{key, {}}};
+    return {key, {}};
 }
 
 QHash<QString, TargetInfo>
@@ -1454,6 +1456,16 @@ bool ConfigParser::smartMoveTargets() {
     QMultiHash<QString, TargetInfo> temp;
     bool result = true;
     for (auto i = _config.targets().cbegin(); i != _config.targets().cend(); ++i) {
+
+        if (!i.value().isValid()) {
+            QuasarAppUtils::Params::log(QString("Interna error ocurred in %0. Target not inited.").arg(__FUNCTION__),
+                                        QuasarAppUtils::Error);
+            QuasarAppUtils::Params::log(QString("If you see this message please create a new issue"
+                                                " about this problem on the official github page"
+                                                " https://github.com/QuasarApp/CQtDeployer/issues/new/choose. "),
+                                        QuasarAppUtils::Error);
+            return false;
+        }
 
         QFileInfo target(i.key());
 

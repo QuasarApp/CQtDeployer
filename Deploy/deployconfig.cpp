@@ -52,7 +52,7 @@ DistroModule DeployConfig::getDistroFromPackage(const QString &package) const {
     return _packages.value(package, DistroModule{package});
 }
 
-QMultiHash<QString, TargetInfo> &DeployConfig::targetsEdit() {
+QHash<QString, TargetInfo> &DeployConfig::targetsEdit() {
     return _targets;
 }
 
