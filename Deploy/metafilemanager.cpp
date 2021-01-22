@@ -40,8 +40,8 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
         content =
                 "@echo off \n"
                 "SET BASE_DIR=%~dp0\n"
-                "SET PATH=\"%BASE_DIR%\"" + distro.getLibOutDir() + ";%PATH%\n"
-                "SET CQT_PKG_ROOT=\"%BASE_DIR%\"\n"
+                "SET PATH=%BASE_DIR%" + distro.getLibOutDir() + ";%PATH%\n"
+                "SET CQT_PKG_ROOT=%BASE_DIR%\n"
 
                 "%2\n"
                 "call \"%BASE_DIR%" + distro.getBinOutDir() + "%0\" %1 \n";
