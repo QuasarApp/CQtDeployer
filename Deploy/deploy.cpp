@@ -91,7 +91,9 @@ bool Deploy::deploy() {
 
     switch (DeployCore::getMode() ) {
     case RunMode::Deploy:
-        _extracter->deploy();
+        if (!_extracter->deploy())
+            return false;
+
         break;
     default:
         break;

@@ -262,10 +262,13 @@ void Extracter::copyTr() {
     }
 }
 
-void Extracter::deploy() {
+bool Extracter::deploy() {
     QuasarAppUtils::Params::log("target deploy started!!",
                                 QuasarAppUtils::Info);
-    _cqt->smartMoveTargets();
+    if (!_cqt->smartMoveTargets()) {
+        return false;
+    }
+
     _scaner->setEnvironment(DeployCore::_config->envirement.environmentList());
     extractAllTargets();
     extractExtraDataTargets();
@@ -283,6 +286,7 @@ void Extracter::deploy() {
 
     if (!extractWebEngine()) {
         QuasarAppUtils::Params::log("deploy webEngine failed", QuasarAppUtils::Error);
+        return false;
     }
 
     if (!deployMSVC()) {
@@ -292,6 +296,8 @@ void Extracter::deploy() {
     _metaFileManager->createRunMetaFiles();
     QuasarAppUtils::Params::log("deploy done!",
                                 QuasarAppUtils::Info);
+
+    return true;
 
 }
 
