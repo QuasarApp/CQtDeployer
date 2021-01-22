@@ -19,7 +19,7 @@ TEMPLATE = lib
 
 DEFINES += DEPLOY_LIBRARY
 
-VERSION = 1.5.0.18
+VERSION = 1.5.0.19
 
 DEFINES += APP_VERSION='\\"$$VERSION\\"'
 
@@ -63,6 +63,7 @@ SOURCES += \
     extracter.cpp \
     filemanager.cpp \
     Distributions/idistribution.cpp \
+    generalfiles_type.cpp \
     ignorerule.cpp \
     metafilemanager.cpp \
     packagecontrol.cpp \
@@ -101,6 +102,7 @@ HEADERS += \
     extracter.h \
     filemanager.h \
     Distributions/idistribution.h \
+    generalfiles_type.h \
     ignorerule.h \
     metafilemanager.h \
     packagecontrol.h \

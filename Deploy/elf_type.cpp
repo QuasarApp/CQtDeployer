@@ -18,7 +18,7 @@ ELF::ELF()
 QByteArrayList ELF::getDynamicString(ElfReader& reader) const {
     auto headers = reader.readHeaders();
 
-    for (const auto &sectionHeader : headers.sectionHeaders) {
+    for (const auto &sectionHeader : qAsConst(headers.sectionHeaders)) {
         if (sectionHeader.name == ".dynstr") {
             auto arr = reader.readSection(sectionHeader.name).split(0);
             return arr;

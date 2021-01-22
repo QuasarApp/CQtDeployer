@@ -175,6 +175,7 @@ private slots:
 
     void testRunScripts();
     void testGetDefaultTemplate();
+    void testDeployGeneralFiles();
 
     void customTest();
 };
@@ -1145,6 +1146,25 @@ void deploytest::testGetDefaultTemplate() {
                 }, &comapareTree);
 #endif
 
+}
+
+void deploytest::testDeployGeneralFiles() {
+    TestUtils utils;
+
+    QString bin = TestBinDir + "/../../CMakeLists.txt";
+
+    auto comapareTree = utils.createTree(
+                {
+                    "./" + DISTRO_DIR + "/bin/CMakeLists.txt",
+                    "./" + DISTRO_DIR + "/bin/qt.conf",
+
+                });
+
+    runTestParams(
+                {"-bin", bin,
+                 "-binOut", "bin",
+                 "force-clear"
+                }, &comapareTree);
 }
 
 void deploytest::customTest() {
