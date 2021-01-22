@@ -90,10 +90,13 @@ bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) const 
     case PrivateScaner::PE: {
         return _peScaner.getLibInfo(file, info);
     }
-    case PrivateScaner::ELF:
-        return _elfScaner.getLibInfo(file, info);
 
-    default: return false;
+    case PrivateScaner::ELF: {
+        return _elfScaner.getLibInfo(file, info);
+    }
+
+    default:
+        return _filesScaner.getLibInfo(file, info);
     }
 }
 
