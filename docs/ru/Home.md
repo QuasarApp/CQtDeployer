@@ -5,18 +5,19 @@
 
 # Основные разделы
 
-* [Описание CQtDeployer](Description)
-* [Параметры](Options)
-* [Руководство](Guide)
-* [Краткое Руководство](QuickGuide)
-* [Сборка и установка](Build-and-Install)
-* [Файл развертывания](DeployConfigFile)
-* [Упаковка](Packing)
-* [Список изменений](Changelog)
-* [Обзоры](ReleaseReviews)
-* [Сравнение возможностей](CompareFeatures)
+* [Описание CQtDeployer](Description.md)
+* [Параметры](Options.md)
+* [Руководство](Guide.md)
+* [Краткое Руководство](QuickGuide.md)
+* [Сборка и установка](Build-and-Install.md)
+* [Файл развертывания](DeployConfigFile.md)
+* [Упаковка](Packing.md)
+* [Список изменений](Changelog.md)
+* [Обзоры](ReleaseReviews.md)
+* [Сравнение возможностей](CompareFeatures.md)
 * [Добавление дополнительных файлов](ExtraFiles.md)
 * [Получение шаблонов упаковки](ExtractDefaultsTemplates.md)
+* [Стандартные переменные окружения](EnvironmentVariables.md)
 
 
 ## Поддержите проект
