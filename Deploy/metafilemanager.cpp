@@ -44,12 +44,14 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
                 "SET CQT_PKG_ROOT=%BASE_DIR%\n"
 
                 "%3\n"
-                "start \"%0\" /B \"%BASE_DIR%" + distro.getBinOutDir() + "%1\" %2 \n";
+                "start \"%0\" %4 \"%BASE_DIR%" + distro.getBinOutDir() + "%1\" %2 \n";
 
         content = content.arg(targetInfo.baseName(), targetInfo.fileName(), "%*");
         content = content.arg(generateCustoScriptBlok(true));
 
         content = QDir::toNativeSeparators(content);
+        content = content.arg("/B");
+
     }
 
     QString fname = DeployCore::_config->getTargetDir(target) + QDir::separator() + targetInfo.baseName()+ ".bat";
