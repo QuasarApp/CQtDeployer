@@ -43,10 +43,10 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
                 "SET PATH=%BASE_DIR%" + distro.getLibOutDir() + ";%PATH%\n"
                 "SET CQT_PKG_ROOT=%BASE_DIR%\n"
 
-                "%2\n"
-                "call \"%BASE_DIR%" + distro.getBinOutDir() + "%0\" %1 \n";
+                "%3\n"
+                "start \"%0\" /B \"%BASE_DIR%" + distro.getBinOutDir() + "%1\" %2 \n";
 
-        content = content.arg(targetInfo.fileName()).arg("%*");
+        content = content.arg(targetInfo.baseName(), targetInfo.fileName()).arg("%*");
         content = content.arg(generateCustoScriptBlok(true));
 
         content = QDir::toNativeSeparators(content);
