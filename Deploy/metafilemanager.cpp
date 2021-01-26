@@ -46,7 +46,7 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
                 "%3\n"
                 "start \"%0\" /B \"%BASE_DIR%" + distro.getBinOutDir() + "%1\" %2 \n";
 
-        content = content.arg(targetInfo.baseName(), targetInfo.fileName()).arg("%*");
+        content = content.arg(targetInfo.baseName(), targetInfo.fileName(), "%*");
         content = content.arg(generateCustoScriptBlok(true));
 
         content = QDir::toNativeSeparators(content);
