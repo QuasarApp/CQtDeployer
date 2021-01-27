@@ -5,18 +5,19 @@
 
 # Main sections
 
-* [Description CQtDeployer](Description)
-* [Options](Options)
-* [Guide](Guide)
-* [Quick guide](QuickGuide)
-* [Build and Install](Build-and-Install)
-* [Deploy file](DeployConfigFile)
-* [Packing](Packing)
-* [Change log page](Changelog)
-* [Reviews](ReleaseReviews)
-* [Compare Features](CompareFeatures)
+* [Description CQtDeployer](Description.md)
+* [Options](Options.md)
+* [Guide](Guide.md)
+* [Quick guide](QuickGuide.md)
+* [Build and Install](Build-and-Install.md)
+* [Deploy file](DeployConfigFile.md)
+* [Packing](Packing.md)
+* [Change log page](Changelog.md)
+* [Reviews](ReleaseReviews.md)
+* [Compare Features](CompareFeatures.md)
 * [Adding extra files](ExtraFiles.md)
 * [Retrieving packaging templates](ExtractDefaultsTemplates.md)
+* [Default Environment Variables](EnvironmentVariables.md)
 
 
 ## Support the project
