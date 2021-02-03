@@ -18,6 +18,7 @@ class DependenciesScanner;
 class PluginsParser;
 class Packing;
 
+
 enum exitCodes {
     Good =          0x0,
     PrepareError =  0x1,
