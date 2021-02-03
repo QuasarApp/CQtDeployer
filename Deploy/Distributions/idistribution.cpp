@@ -11,6 +11,7 @@
 #include <QMap>
 #include <deployconfig.h>
 #include <distromodule.h>
+#include <quasarapp.h>
 
 iDistribution::~iDistribution() = default;
 
@@ -46,11 +47,17 @@ bool iDistribution::unpackFile(const QFileInfo &resource,
 
     QByteArray inputData = file.readAll();
     file.close();
-    if (!QDir().mkpath(target))
+    if (!QDir().mkpath(target)) {
+        QuasarAppUtils::Params::log(QString("impossible to create path : %0 ").arg(target),
+                                    QuasarAppUtils::Error);
         return false;
+
+    }
 
     file.setFileName(target + "/" +  resource.fileName());
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        QuasarAppUtils::Params::log(QString("impossible to write in file: %0 ").arg(file.fileName()),
+                                    QuasarAppUtils::Error);
         return false;
     }
 
@@ -242,6 +249,10 @@ bool iDistribution::deployIcon(TemplateInfo &info ,const DistroModule& pkg) {
         QFileInfo iconInfo(pkg.icon());
         info.Icon = releativeLocation(pkg) + "/icons/" + iconInfo.fileName();
         if (!copyFile(pkg.icon(), localData + "/icons/", false)) {
+
+            QuasarAppUtils::Params::log(QString("fail to copy icon: %0 ").arg(pkg.icon()),
+                                        QuasarAppUtils::Error);
+
             return false;
         }
     }
