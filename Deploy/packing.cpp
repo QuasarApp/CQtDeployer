@@ -51,8 +51,12 @@ bool Packing::create() {
         if (!package)
             return false;
 
-        if (!package->deployTemplate(*this))
+        if (!package->deployTemplate(*this)) {
+            QuasarAppUtils::Params::log(QString("Deploy package template error ocured. Package: %0.").
+                                        arg(package->getClassName()),
+                                        QuasarAppUtils::Error);
             return false;
+        }
 
         auto commands = package->runCmd();
 

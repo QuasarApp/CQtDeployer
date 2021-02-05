@@ -42,15 +42,16 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
                 "SET BASE_DIR=%~dp0\n"
                 "SET PATH=%BASE_DIR%" + distro.getLibOutDir() + ";%PATH%\n"
                 "SET CQT_PKG_ROOT=%BASE_DIR%\n"
+                "SET CQT_RUN_FILE=%5\n"
 
                 "%3\n"
                 "start \"%0\" %4 \"%BASE_DIR%" + distro.getBinOutDir() + "%1\" %2 \n";
 
-        content = content.arg(targetInfo.baseName(), targetInfo.fileName(), "%*");
-        content = content.arg(generateCustoScriptBlok(true));
+        content = content.arg(targetInfo.baseName(), targetInfo.fileName(), "%*",
+                              generateCustoScriptBlok(true)); // %0 %1 %2 %3
 
         content = QDir::toNativeSeparators(content);
-        content = content.arg("/B");
+        content = content.arg("/B", "%0"); // %4 %5
 
     }
 
@@ -106,15 +107,16 @@ bool MetaFileManager::createRunScriptLinux(const QString &target) {
                 "export QTWEBENGINEPROCESS_PATH=\"$BASE_DIR\"" + distro.getBinOutDir() + "QtWebEngineProcess\n"
                 "export QTDIR=\"$BASE_DIR\"\n"
                 "export CQT_PKG_ROOT=\"$BASE_DIR\"\n"
+                "export CQT_RUN_FILE=\"$BASE_DIR/%3\"\n"
 
                 "export "
                 "QT_QPA_PLATFORM_PLUGIN_PATH=\"$BASE_DIR\"" + distro.getPluginsOutDir() +
                 "platforms:$QT_QPA_PLATFORM_PLUGIN_PATH\n"
-                "%2"
-                "%3\n"
-                "\"$BASE_DIR" + distro.getBinOutDir() + "%1\" \"$@\"\n";
+                "%1"
+                "%2\n"
+                "\"$BASE_DIR" + distro.getBinOutDir() + "%0\" \"$@\"\n";
 
-        content = content.arg(targetInfo.fileName());
+        content = content.arg(targetInfo.fileName()); // %0
         auto deployedFies = _fileManager->getDeployedFilesStringList();
         int ld_index = DeployCore::find("ld-linux", deployedFies);
 
@@ -124,9 +126,12 @@ bool MetaFileManager::createRunScriptLinux(const QString &target) {
                 arg(QFileInfo(deployedFies[ld_index]).fileName()));
         } else {
             content = content.arg("");
-        }
+        } // %1
 
-        content = content.arg(generateCustoScriptBlok(false));
+        content = content.arg(generateCustoScriptBlok(false),
+                              targetInfo.baseName()+ ".sh"); // %2 %3
+
+
 
     }
 
