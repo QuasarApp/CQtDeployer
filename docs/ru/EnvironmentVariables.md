@@ -10,6 +10,7 @@
 | Имя переменной | Описание |
 | --- | --- |
 | CQT_PKG_ROOT | Эта переменная содержит путь к корню текущего пакета. 
+| CQT_RUN_FILE | Эта переменная содержит путь к скрипту запуска используемого приложения. |
 
 
 ## Описания определений
@@ -21,17 +22,17 @@
 ``` bash
 .
 ├── pakcage1 << Это локальный корень пакета package1 
-│   ├── bin
-│   ├── lib
-│   ├── plugins
-│   ├── qml
-│   └── translations
+│   ├── bin
+│   ├── lib
+│   ├── plugins
+│   ├── qml
+│   └── translations
 ├── package2 << Это локальный корень пакета package2 
-│   ├── bin
-│   ├── lib
-│   ├── plugins
-│   ├── qml
-│   └── translations
+│   ├── bin
+│   ├── lib
+│   ├── plugins
+│   ├── qml
+│   └── translations
 └── pakcage3 << Это локальный корень пакета package3
     ├── bin
     ├── lib

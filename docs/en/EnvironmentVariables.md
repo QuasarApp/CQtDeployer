@@ -10,6 +10,7 @@ All environment variables initialized in the default launcher script. So if you 
 | Variable name  | Description  |
 |---|---|
 | CQT_PKG_ROOT  | This variable contains path to root of the current package.|
+| CQT_RUN_FILE  | This variable contains path to the run script of the using application.|
 
 ## Description of definitions
 
@@ -20,17 +21,17 @@ Example :
 ``` bash
 .
 ├── pakcage1 << This is local root of the package1 
-│   ├── bin
-│   ├── lib
-│   ├── plugins
-│   ├── qml
-│   └── translations
+│   ├── bin
+│   ├── lib
+│   ├── plugins
+│   ├── qml
+│   └── translations
 ├── package2 << This is local root of the package2 
-│   ├── bin
-│   ├── lib
-│   ├── plugins
-│   ├── qml
-│   └── translations
+│   ├── bin
+│   ├── lib
+│   ├── plugins
+│   ├── qml
+│   └── translations
 └── pakcage3 << This is local root of the package3
     ├── bin
     ├── lib
