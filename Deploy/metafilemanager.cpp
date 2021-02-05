@@ -42,7 +42,7 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
                 "SET BASE_DIR=%~dp0\n"
                 "SET PATH=%BASE_DIR%" + distro.getLibOutDir() + ";%PATH%\n"
                 "SET CQT_PKG_ROOT=%BASE_DIR%\n"
-                "SET CQT_RUN_FILE=%5\n"
+                "SET CQT_RUN_FILE=%BASE_DIR%%5\n"
 
                 "%3\n"
                 "start \"%0\" %4 \"%BASE_DIR%" + distro.getBinOutDir() + "%1\" %2 \n";
@@ -51,7 +51,7 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
                               generateCustoScriptBlok(true)); // %0 %1 %2 %3
 
         content = QDir::toNativeSeparators(content);
-        content = content.arg("/B", "%0"); // %4 %5
+        content = content.arg("/B", targetInfo.baseName()+ ".bat"); // %4 %5
 
     }
 
