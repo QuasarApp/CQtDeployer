@@ -57,8 +57,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
-|   -bin [list, params]       | Deployable file or folder.                | 
-|                             | For example -bin ~/my/project/bin/,~/my/project/bin.exe     |
+|   -bin [list,params]       | Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe. The bin option can also work with files of any format. Everything that will be listed as arguments to this option will be copied to the DestributionKit/bin folder and will be located next to the executable files.   |
 |   -confFile [params]        | The path to the json file with all deployment configurations.|
 |                             | Using this file, you can add the necessary options, |
 |                             | thereby simplifying  in the command invocation the console. |
@@ -75,7 +74,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |                             | For example -libDir ~/myLib,~/newLibs                           |
 |   -extraLibs [list,params]  | Sets the mask of the library name for forced copying.           |
 |                             | Example: "-extraLib mySql" - forces to copy all libraries whose |
-|                             |names contain mySql to the project folder. This option is case sensitive. |
+|                             |names contain mySql to the project folder. This option is case sensitive. This option will not copy libraries whose names are not mentioned in the list of dependencies (Example: plugins or libs loaded using **dlopen** or **LoadLibrary** functions).|
 |   -customScript [scriptCode]| Insert extra code inTo All run script.                          |
 |   -extraPlugin [list,params]| Sets an additional path to extraPlugin of an app                |
 |   -recursiveDepth [params]  | Sets the Depth of recursive search of libs and ignoreEnv (default 0)          |
