@@ -447,11 +447,7 @@ QString FileManager::changeDistanation(const QString& absalutePath,
                                        QString basePath,
                                        int depch) {
 
-#if QT_VERSION > QT_VERSION_CHECK(5, 13, 0)
-    auto prefixes = absalutePath.split(QRegExp("[\\/]"), Qt::SkipEmptyParts);
-#else
-    auto prefixes = absalutePath.split(QRegExp("[\\/]"), QString::SkipEmptyParts);
-#endif
+    auto prefixes = absalutePath.split(QRegExp("[\\/]"), splitbehavior);
     depch = std::min(depch, prefixes.size());
     while (depch) {
         auto index = prefixes.size() - depch;
