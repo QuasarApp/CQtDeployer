@@ -174,6 +174,8 @@ private slots:
     void testEmptyPackages();
 
     void testRunScripts();
+    void testGetDefaultTemplate();
+    void testDeployGeneralFiles();
 
     void customTest();
 };
@@ -1098,6 +1100,71 @@ void deploytest::testRunScripts() {
     QVERIFY(deployData == etalonData);
 #endif
 
+}
+
+void deploytest::testGetDefaultTemplate() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC";
+
+    auto comapareTree = utils.createTree(
+                {
+                    "./" + DISTRO_DIR + "/defaultDEBTemplate/Application/DEBIAN/control",
+                    "./" + DISTRO_DIR + "/defaultDEBTemplate/Application/DEBIAN/postinst",
+                    "./" + DISTRO_DIR + "/defaultDEBTemplate/Application/DEBIAN/prerm",
+                    "./" + DISTRO_DIR + "/defaultDEBTemplate/Application/opt/Application/icons/Icon.png",
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/config/config.xml",
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/config/controlScript.qs",
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/data/icons/Icon.png",
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/meta/installscript.qs",
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/meta/package.xml"
+                });
+    runTestParams(
+                {"-bin", bin,
+                 "force-clear",
+                 "getDefaultTemplate",
+                 "deb",
+                 "qif"
+                }, &comapareTree);
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+
+    auto comapareTree = utils.createTree(
+                {
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/config/config.xml",
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/config/controlScript.qs",
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/data/icons/Icon.png",
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/meta/installscript.qs",
+                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/meta/package.xml"
+                });
+    runTestParams(
+                {"-bin", bin,
+                 "force-clear",
+                 "getDefaultTemplate",
+                 "qif"
+                }, &comapareTree);
+#endif
+
+}
+
+void deploytest::testDeployGeneralFiles() {
+    TestUtils utils;
+
+    QString bin = TestBinDir + "/../../CMakeLists.txt";
+
+    auto comapareTree = utils.createTree(
+                {
+                    "./" + DISTRO_DIR + "/bin/CMakeLists.txt",
+                    "./" + DISTRO_DIR + "/bin/qt.conf",
+
+                });
+
+    runTestParams(
+                {"-bin", bin,
+                 "-binOut", "bin",
+                 "force-clear"
+                }, &comapareTree);
 }
 
 void deploytest::customTest() {
@@ -2567,9 +2634,11 @@ void deploytest::testOutDirs() {
     runScript = file.readAll();
     file.close();
 
+    qDebug() << "runScript =" << runScript;
+
     QVERIFY(runScript.contains("SET BASE_DIR=%~dp0"));
     QVERIFY(runScript.contains("SET PATH=%BASE_DIR%\\lolLib\\;%PATH%"));
-    QVERIFY(runScript.contains("call \"%BASE_DIR%\\lol\\TestQMLWidgets.exe\" %*"));
+    QVERIFY(runScript.contains("start \"TestQMLWidgets\" /B \"%BASE_DIR%\\lol\\TestQMLWidgets.exe\" %*"));
 
 
 #endif

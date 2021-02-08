@@ -14,6 +14,7 @@
 #include "pe_type.h"
 #include "elf_type.h"
 #include "libinfo.h"
+#include "generalfiles_type.h"
 
 
 enum class PrivateScaner: unsigned char {
@@ -32,6 +33,7 @@ private:
 
     PE _peScaner;
     ELF _elfScaner;
+    GeneralFiles _filesScaner;
 
     PrivateScaner getScaner(const QString& lib) const;
 

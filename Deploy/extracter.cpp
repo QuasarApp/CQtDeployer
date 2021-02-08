@@ -111,9 +111,8 @@ void Extracter::extractExtraDataTargets() {
     auto cfg = DeployCore::_config;
     for (auto i = cfg->packages().cbegin(); i != cfg->packages().cend(); ++i) {
         auto &dep = _packageDependencyes[i.key()];
-
-        const auto extraDataList = i.value().extraData();
-        for (const auto &target : extraDataList) {
+        const auto extraData = i.value().extraData();
+        for (const auto &target : extraData) {
             dep.addExtraData(target);
         }
     }
@@ -137,9 +136,9 @@ void Extracter::copyExtraPlugins(const QString& package) {
     auto cnf = DeployCore::_config;
     auto targetPath = cnf->getTargetDir() + "/" + package;
     auto distro = cnf->getDistroFromPackage(package);
+    const auto plugins = distro.extraPlugins();
 
-    auto extraPlugins = distro.extraPlugins();
-    for (const auto &extraPlugin : extraPlugins) {
+    for (const auto &extraPlugin : plugins) {
 
         info.setFile(extraPlugin);
 
@@ -268,11 +267,13 @@ void Extracter::copyTr() {
     }
 }
 
-void Extracter::deploy() {
+bool Extracter::deploy() {
     QuasarAppUtils::Params::log("target deploy started!!",
                                 QuasarAppUtils::Info);
-    clear();
-    _cqt->smartMoveTargets();
+    if (!_cqt->smartMoveTargets()) {
+        return false;
+    }
+
     _scaner->setEnvironment(DeployCore::_config->envirement.environmentList());
     extractAllTargets();
     extractExtraDataTargets();
@@ -290,6 +291,7 @@ void Extracter::deploy() {
 
     if (!extractWebEngine()) {
         QuasarAppUtils::Params::log("deploy webEngine failed", QuasarAppUtils::Error);
+        return false;
     }
 
     if (!deployMSVC()) {
@@ -299,6 +301,8 @@ void Extracter::deploy() {
     _metaFileManager->createRunMetaFiles();
     QuasarAppUtils::Params::log("deploy done!",
                                 QuasarAppUtils::Info);
+
+    return true;
 
 }
 
@@ -405,10 +409,8 @@ bool Extracter::extractQml() {
 
             QStringList plugins;
             QStringList listItems;
-
-            const auto qmlImports = distro.qmlInput();
-
-            for (const auto &qmlInput: qmlImports) {
+            const auto qmlInput = distro.qmlInput();
+            for (const auto &qmlInput: qmlInput) {
                 QFileInfo info(qmlInput);
 
                 if (!info.isDir()) {

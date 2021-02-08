@@ -24,7 +24,7 @@ class DEPLOYSHARED_EXPORT Extracter {
 
 public:
     explicit Extracter(FileManager *fileManager, PluginsParser* pluginsParser, ConfigParser * cqt, DependenciesScanner *_scaner);
-    void deploy();
+    bool deploy();
     void clear();
 
 private:

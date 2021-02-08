@@ -51,8 +51,12 @@ bool Packing::create() {
         if (!package)
             return false;
 
-        if (!package->deployTemplate(*this))
+        if (!package->deployTemplate(*this)) {
+            QuasarAppUtils::Params::log(QString("Deploy package template error ocured. Package: %0.").
+                                        arg(package->getClassName()),
+                                        QuasarAppUtils::Error);
             return false;
+        }
 
         auto commands = package->runCmd();
 
@@ -121,6 +125,11 @@ bool Packing::create() {
 bool Packing::movePackage(const QString &package,
                           const QString &newLocation) {
 
+    // Disable moving data for extracting defaults templates.
+    if (QuasarAppUtils::Params::isEndable("getDefaultTemplate")) {
+        return true;
+    }
+
     if (moveData(_packagesLocations.value(package),
                  newLocation)) {
 
@@ -133,6 +142,32 @@ bool Packing::movePackage(const QString &package,
 
 bool Packing::copyPackage(const QString &package, const QString &newLocation) {
     return _fileManager->copyFolder(_packagesLocations[package], newLocation, {}, nullptr, nullptr, true);
+}
+
+bool Packing::extractTemplates() {
+
+    const DeployConfig *cfg = DeployCore::_config;
+
+
+    QuasarAppUtils::Params::log("You use the getDefaultTemplate. All using templates will be extracted into " + cfg->getTargetDir(),
+                                QuasarAppUtils::Info);
+
+    if (!prepareTemplatesForExtract()) {
+        return false;
+    }
+
+    for (auto package : qAsConst(_pakages)) {
+
+        if (!package)
+            return false;
+
+        if (!package->deployTemplate(*this))
+            return false;
+
+        delete package;
+    }
+
+    return true;
 }
 
 QStringList Packing::availablePackages() const {
@@ -154,6 +189,19 @@ bool Packing::collectPackages() {
             return false;
 
         _packagesLocations.insert(it.key(), cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR + "/" + it.key());
+    }
+
+    _defaultPackagesLocations = _packagesLocations;
+    return true;
+}
+
+bool Packing::prepareTemplatesForExtract() {
+    const DeployConfig *cfg = DeployCore::_config;
+
+    for (auto it = cfg->packages().begin(); it != cfg->packages().end(); ++it) {
+
+        _packagesLocations.insert(it.key(),
+                                  cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR + "/" + it.key());
     }
 
     _defaultPackagesLocations = _packagesLocations;

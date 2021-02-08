@@ -11,6 +11,7 @@
 #include "distrostruct.h"
 #include "envirement.h"
 #include "ignorerule.h"
+#include "targetdata.h"
 #include "targetinfo.h"
 
 #include <QJsonObject>
@@ -99,7 +100,7 @@ private:
     void readKey(const QString &key, const QJsonObject &obj, const QString &confFileDir) const;
     void readString(const QString &key, const QString &val, const QString &confFileDir) const;
 
-    QHash<QString, TargetInfo> createTarget(const QString &target);
+    TargetData createTarget(const QString &target);
     QHash<QString, TargetInfo> moveTarget(TargetInfo target, const QString &newLocation);
 
 

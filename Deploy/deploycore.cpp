@@ -159,6 +159,10 @@ RunMode DeployCore::getMode() {
         return RunMode::Init;
     }
 
+    if (C("getDefaultTemplate")) {
+        return RunMode::Template;
+    }
+
     if (C("bin") || C("extraData")) {
         return RunMode::Deploy;
     }
@@ -211,6 +215,11 @@ void DeployCore::help() {
                  "(on snap version you need to turn on permission)"},
                 {"noQt", "Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework."},
                 {"allowEmptyPackages", "Allows configure the empty packages."},
+                {"getDefaultTemplate", "Extracts defaults deb or qif templates."
+                 " All templates extract into targetDirectory."
+                 " For change target directory use the targetDir option."
+                 " Example: cqtdeployer -bin myExecutable getDefaultTemplate qif deb."},
+
 
             }
         },
@@ -241,7 +250,7 @@ void DeployCore::help() {
             }
         },
         {
-            "Part 3 Controll of packages options", {
+            "Part 3 Control of packages options", {
                 {"-targetPackage [package;tar1,package;tar2]", "Creates a new package and adds 'tar1 and tar2' to it."
                  "If you want configure the package that do not have any targets use the allowEmptyPackages option."},
                 {"-qmlOut [package;path,path]", "Sets path to qml out directory"},
@@ -354,7 +363,8 @@ QStringList DeployCore::helpKeys() {
         "prefix",
         "deb",
         "allowEmptyPackages",
-        "runScript"
+        "runScript",
+        "getDefaultTemplate"
     };
 }
 

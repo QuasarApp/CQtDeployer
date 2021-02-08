@@ -108,7 +108,8 @@ enum class RunMode: int {
     Info,
     Deploy,
     Clear,
-    Init
+    Init,
+    Template
 };
 
 class Extracter;
