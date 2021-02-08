@@ -37,10 +37,12 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
         script.close();
 
     } else {
+        auto systemLibsDir = distro.getLibOutDir() + DeployCore::systemLibsFolderName();
+
         content =
                 "@echo off \n"
                 "SET BASE_DIR=%~dp0\n"
-                "SET PATH=%BASE_DIR%" + distro.getLibOutDir() + ";%PATH%\n"
+                "SET PATH=%BASE_DIR%" + distro.getLibOutDir() + ";%PATH%;" + systemLibsDir + "\n"
                 "SET CQT_PKG_ROOT=%BASE_DIR%\n"
                 "SET CQT_RUN_FILE=%BASE_DIR%%5\n"
 
@@ -96,11 +98,15 @@ bool MetaFileManager::createRunScriptLinux(const QString &target) {
         script.close();
 
     } else {
+
+        auto systemLibsDir = distro.getLibOutDir() + DeployCore::systemLibsFolderName();
+
         content =
                 "#!/bin/sh\n"
                 "BASE_DIR=$(dirname \"$(readlink -f \"$0\")\")\n"
                 "export "
-                "LD_LIBRARY_PATH=\"$BASE_DIR\"" + distro.getLibOutDir() + ":\"$BASE_DIR\":$LD_LIBRARY_PATH\n"
+                "LD_LIBRARY_PATH=\"$BASE_DIR\"" + distro.getLibOutDir() +
+                ":\"$BASE_DIR\":$LD_LIBRARY_PATH:\"$BASE_DIR\"" + systemLibsDir + "\n"
                 "export QML_IMPORT_PATH=\"$BASE_DIR\"" + distro.getQmlOutDir() + ":$QML_IMPORT_PATH\n"
                 "export QML2_IMPORT_PATH=\"$BASE_DIR\"" + distro.getQmlOutDir() + ":$QML2_IMPORT_PATH\n"
                 "export QT_PLUGIN_PATH=\"$BASE_DIR\"" + distro.getPluginsOutDir() + ":$QT_PLUGIN_PATH\n"

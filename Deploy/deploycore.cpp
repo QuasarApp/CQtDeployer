@@ -718,6 +718,10 @@ bool DeployCore::checkSystemBakupSnapInterface() {
     return QDir(DeployCore::snapRootFS()).entryList(QDir::AllEntries | QDir::NoDotAndDotDot).size();
 }
 
+QString DeployCore::systemLibsFolderName() {
+    return "systemLibs";
+}
+
 uint qHash(WinAPI i) {
     return static_cast<uint>(i);
 }

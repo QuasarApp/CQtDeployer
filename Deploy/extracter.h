@@ -73,7 +73,14 @@ private:
 
     void copyFiles();
     void copyTr();
-    void copyLibs(const QSet<QString> &files, const QString &package);
+
+    /**
+     * @brief copyLibs This method copy input libraryes into libOut dir.
+     * @param files This is set of input libs
+     * @param package This is package id of deployement pacakge.
+     * @param system This option set for systems libraryes. If This option will be set to true then libOut dir will be changed to libOut/systemLibs. see https://github.com/QuasarApp/CQtDeployer/issues/396.
+     */
+    void copyLibs(const QSet<QString> &files, const QString &package, bool system);
     void copyExtraData(const QSet<QString> &files, const QString &package);
 
     bool isWebEngine(const QString& package) const;

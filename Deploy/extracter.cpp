@@ -200,13 +200,18 @@ void Extracter::extractPlugins() {
 
 }
 
-void Extracter::copyLibs(const QSet<QString> &files, const QString& package) {
+void Extracter::copyLibs(const QSet<QString> &files, const QString& package, bool system) {
     auto cnf = DeployCore::_config;
     auto targetPath = cnf->getTargetDir() + "/" + package;
     auto distro = cnf->getDistroFromPackage(package);
 
+    auto libOutpath = targetPath + distro.getLibOutDir();
+    if (system) {
+        libOutpath += "/" + DeployCore::systemLibsFolderName();
+    }
+
     for (const auto &file : files) {
-        if (!_fileManager->smartCopyFile(file, targetPath + distro.getLibOutDir())) {
+        if (!_fileManager->smartCopyFile(file, libOutpath)) {
             QuasarAppUtils::Params::log(file + " not copied");
         }
     }
@@ -230,10 +235,10 @@ void Extracter::copyFiles() {
 
     for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
 
-        copyLibs(_packageDependencyes[i.key()].neadedLibs(), i.key());
+        copyLibs(_packageDependencyes[i.key()].neadedLibs(), i.key(), false);
 
         if (QuasarAppUtils::Params::isEndable("deploySystem")) {
-            copyLibs(_packageDependencyes[i.key()].systemLibs(), i.key());
+            copyLibs(_packageDependencyes[i.key()].systemLibs(), i.key(), true);
         }
 
 
