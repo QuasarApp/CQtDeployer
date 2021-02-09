@@ -10,12 +10,14 @@ contains(QMAKE_HOST.os, Linux):{
 DEPLOYER=cqtdeployer
 win32:DEPLOYER=$$(cqtdeployer)
 
+test.commands =
 deployTest.commands = $$DEPLOYER -bin $$exec clear -qmake $$QMAKE_BIN -targetDir $$PWD/deployTests -libDir $$PWD -recursiveDepth 4
 
-
-!android:test.depends = deployTest
-unix:!android:test.commands = $$PWD/deployTests/UnitTests.sh -maxwarnings 100000
-win32:test.commands = $$PWD/deployTests/UnitTests.exe -maxwarnings 100000 -o buildLog.log
+!android {
+    test.depends = deployTest
+    unix:test.commands = $$PWD/deployTests/UnitTests.sh -maxwarnings 100000
+    win32:test.commands = $$PWD/deployTests/UnitTests.exe -maxwarnings 100000 -o buildLog.log
+}
 
 contains(QMAKE_HOST.os, Linux):{
     win32:test.commands =
