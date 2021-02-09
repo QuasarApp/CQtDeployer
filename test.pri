@@ -13,7 +13,7 @@ win32:DEPLOYER=$$(cqtdeployer)
 test.commands =
 deployTest.commands = $$DEPLOYER -bin $$exec clear -qmake $$QMAKE_BIN -targetDir $$PWD/deployTests -libDir $$PWD -recursiveDepth 4
 
-!android {
+!contains(DEFINES, WITHOUT_TESTS) {
     test.depends = deployTest
     unix:test.commands = $$PWD/deployTests/UnitTests.sh -maxwarnings 100000
     win32:test.commands = $$PWD/deployTests/UnitTests.exe -maxwarnings 100000 -o buildLog.log
