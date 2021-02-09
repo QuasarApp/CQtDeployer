@@ -52,6 +52,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   noQt                      | Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework.                             |
 |   allowEmptyPackages        | Allows configure the empty packages.                            |
 |   getDefaultTemplate        | Extracts defaults deb or qif templates. For more information see the  extracting default templates [page](ExtractDefaultsTemplates.md)       |
+|  noBase | The **NoBase** option force cqtdeployer disable generate a base package. For more information about base packages see official documentation [page](BasePackages.md)|
 
 ### Deploy options
 
@@ -87,7 +88,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
-|   -targetPackage [package;tar1,package;tar2]| Creates a new package and adds 'tar1 and tar2' to it |
+|  -targetPackage [package;tar1,package;tar2]| Creates a new package and adds 'tar1 and tar2' to it |
 |  -qmlOut [package;path,path] | Sets path to qml out directory                                  |
 |  -libOut [package;path,path] | Sets path to libraries out directory                            |
 |  -trOut [package;path,path]  | Sets path to translations out directory                         |
@@ -104,6 +105,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -homePage [package;val,val] | Sets the homepage url for a package                              |
 |  -prefix [package;val,val]   | Sets the prefix for the package relatively a target directory       |
 |  -extraData [package;val,val]| Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure.|
+|  -basePackage [basePkg;pkg1;pkg2,...] | Forces the cqtdeployer create a base package for the tar1 and tar2. For more information about base packages see official documentation [page](BasePackages.md) |
 
 ### Plugins Controll Options
 

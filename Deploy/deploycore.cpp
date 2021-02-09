@@ -219,6 +219,7 @@ void DeployCore::help() {
                  " All templates extract into targetDirectory."
                  " For change target directory use the targetDir option."
                  " Example: cqtdeployer -bin myExecutable getDefaultTemplate qif deb."},
+                {"noBase", "The **NoBase** option force cqtdeployer disable generate a base package. For more information about base packages see official documentations"},
 
 
             }
@@ -270,6 +271,7 @@ void DeployCore::help() {
                 {"-homePage [package;val,val]", "Sets the home page url for a package"},
                 {"-prefix [package;val,val]", "Sets the prefix for the package relatively a target directory "},
                 {"-extraData [package;val,val]", "Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure."},
+                {"-basePackage [basePkg;pkg1;pkg2,...]", "Forces the cqtdeployer create a base package for the tar1 and tar2. For more information about base packages see official documentation."},
 
             }
         },
@@ -364,7 +366,9 @@ QStringList DeployCore::helpKeys() {
         "deb",
         "allowEmptyPackages",
         "runScript",
-        "getDefaultTemplate"
+        "getDefaultTemplate",
+        "noBase",
+        "basePackage"
     };
 }
 

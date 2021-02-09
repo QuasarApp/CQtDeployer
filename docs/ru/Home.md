@@ -18,6 +18,7 @@
 * [Добавление дополнительных файлов](ExtraFiles.md)
 * [Получение шаблонов упаковки](ExtractDefaultsTemplates.md)
 * [Стандартные переменные окружения](EnvironmentVariables.md)
+* [Создание базовых пакетов](BasePackages.md)
 
 
 ## Поддержите проект

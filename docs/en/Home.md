@@ -14,10 +14,11 @@
 * [Packing](Packing.md)
 * [Change log page](Changelog.md)
 * [Reviews](ReleaseReviews.md)
-* [Compare Features](CompareFeatures.md)
+* [Comparing Features](CompareFeatures.md)
 * [Adding extra files](ExtraFiles.md)
 * [Retrieving packaging templates](ExtractDefaultsTemplates.md)
 * [Default Environment Variables](EnvironmentVariables.md)
+* [Creating a base packages](BasePackages.md)
 
 
 ## Support the project
