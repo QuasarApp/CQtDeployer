@@ -35,6 +35,8 @@ lessThan(QT_MAJOR_VERSION, 6):lessThan(QT_MINOR_VERSION, 12) {
                tests/TestQMLWidgets \
                tests/quicknanobrowser \
                tests/webui
+    } else {
+        include($$PWD/test.pri)
     }
 
     CQtDeployer.depends=QuasarAppLib
@@ -52,5 +54,4 @@ lessThan(QT_MAJOR_VERSION, 6):lessThan(QT_MINOR_VERSION, 12) {
 
 
 }
-    include($$PWD/test.pri)
 
