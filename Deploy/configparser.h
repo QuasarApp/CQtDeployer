@@ -44,7 +44,7 @@ private:
     FileManager *_fileManager;
     PluginsParser *_pluginsParser;
     DependenciesScanner *_scaner;
-    Packing * _packing;
+    Packing *_packing;
 
     QHash<QString, QString> _Targetpackages;
 
@@ -52,6 +52,7 @@ private:
     bool loadFromFile(const QString& file);
     bool initDistroStruct();
     bool initPackages();
+    void initBasePackages();
     bool initRunScripts();
     bool parseDeployMode();
     bool parseInfoMode();
@@ -111,6 +112,14 @@ private:
     QList<iDistribution *> getDistribution();
 
     QtMajorVersion isNeededQt() const;
+
+    /**
+     * @brief newPackage This method create a new package for the distribution kit.
+     * @param pkgName This is name of the new pakcage.
+     * @param data This is list of an extra data. All data (files or folders) will be added into package as a extraData.
+     * @return true if the new package createdd succesfful.
+     */
+    bool newPackage(const QString& pkgName, const QStringList& data);
 };
 
 #endif // CQT_H

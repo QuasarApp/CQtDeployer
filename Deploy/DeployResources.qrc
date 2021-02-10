@@ -25,4 +25,8 @@
     <qresource prefix="/shared">
         <file>Distributions/Templates/Icon.png</file>
     </qresource>
+    <qresource prefix="/assets">
+        <file>assets/BaseEnvirement.bat</file>
+        <file>assets/BaseEnvirement.sh</file>
+    </qresource>
 </RCC>

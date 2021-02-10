@@ -102,7 +102,7 @@ bool MetaFileManager::createRunScriptLinux(const QString &target) {
         auto systemLibsDir = distro.getLibOutDir() + DeployCore::systemLibsFolderName();
 
         content =
-                "#!/bin/sh\n"
+                "#!/bin/bash\n"
                 "BASE_DIR=$(dirname \"$(readlink -f \"$0\")\")\n"
                 "export "
                 "LD_LIBRARY_PATH=\"$BASE_DIR\"" + distro.getLibOutDir() +
@@ -120,6 +120,7 @@ bool MetaFileManager::createRunScriptLinux(const QString &target) {
                 "platforms:$QT_QPA_PLATFORM_PLUGIN_PATH\n"
                 "%1"
                 "%2\n"
+                "source %4"
                 "\"$BASE_DIR" + distro.getBinOutDir() + "%0\" \"$@\"\n";
 
         content = content.arg(targetInfo.fileName()); // %0
@@ -137,6 +138,8 @@ bool MetaFileManager::createRunScriptLinux(const QString &target) {
         content = content.arg(generateCustoScriptBlok(false),
                               targetInfo.baseName()+ ".sh"); // %2 %3
 
+        content = content.arg(generateCustoScriptBlok(false),
+                              targetInfo.baseName()+ ".sh"); // %2 %3
 
 
     }

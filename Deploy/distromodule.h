@@ -77,6 +77,7 @@ protected:
     void setKey(const QString &key);
 
 private:
+    int _id = 0;
     QString _name;
     QString _key;
     QString _prefix;

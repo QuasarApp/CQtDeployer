@@ -154,6 +154,7 @@ bool DistroModule::isValid() {
 
 void DistroModule::setKey(const QString &key) {
     _key = key;
+    _id = qHash(_key);
 }
 
 QSet<QString> DistroModule::extraData() const {

@@ -283,7 +283,8 @@ bool ConfigParser::createFromDeploy(const QString& confFile) const {
 
     auto info = QFileInfo(confFile);
 
-    for (const auto &key :DeployCore::helpKeys()) {
+    const auto helpKeys = DeployCore::helpKeys();
+    for (const auto &key :helpKeys) {
         writeKey(key, obj, info.absolutePath());
     }
 
@@ -319,8 +320,9 @@ bool ConfigParser::loadFromFile(const QString& confFile) {
         }
 
         auto obj = doc.object();
+        const auto keys = obj.keys();
 
-        for (const auto &key: obj.keys()) {
+        for (const auto &key: keys) {
             readKey(key, obj, confFilePath);
         }
 
@@ -537,6 +539,17 @@ bool ConfigParser::initPackages() {
     return true;
 }
 
+void ConfigParser::initBasePackages() {
+    if (QuasarAppUtils::Params::isEndable("noBase")) {
+        return;
+    }
+
+    QString base = DeployCore::getBasePackageName(_config.packages().keys());
+
+    newPackage(base, {":/assets/assets/BaseEnvirement.bat",
+                      ":/assets/assets/BaseEnvirement.sh"});
+}
+
 bool ConfigParser::initRunScripts() {
     const auto list = QuasarAppUtils::Params::getStrArg("runScript").split(DeployCore::getSeparator(0), splitbehavior);
 
@@ -644,13 +657,11 @@ bool ConfigParser::parseDeployMode() {
     initIgnoreEnvList();
     initEnvirement();
     initIgnoreList();
-    if (!initDistroStruct()) {
-        return false;
-    }
 
     initExtraPath();
     initExtraNames();
     initPlugins();
+    initBasePackages();
 
     if (!initQmake()) {
 
@@ -663,6 +674,10 @@ bool ConfigParser::parseDeployMode() {
                                         "https://github.com/QuasarApp/CQtDeployer/releases");
         }
 
+        return false;
+    }
+
+    if (!initDistroStruct()) {
         return false;
     }
 
@@ -740,6 +755,19 @@ QtMajorVersion ConfigParser::isNeededQt() const {
     }
 
     return Qt;
+}
+
+bool ConfigParser::newPackage(const QString &pkgName, const QStringList &targets) {
+    auto &mainDistro = _config.packagesEdit();
+
+    for (const auto &data: targets) {
+        auto extraData = pkgName + DeployCore::getSeparator(1) + data;
+        if (!parsePackagesPrivate(mainDistro, {extraData}, &DistroModule::addExtraData)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 void ConfigParser::setTargetDir(const QString &target) {
