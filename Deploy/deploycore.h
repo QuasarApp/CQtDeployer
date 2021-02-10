@@ -259,6 +259,13 @@ public:
      * @note see https://github.com/QuasarApp/CQtDeployer/issues/396
      */
     static QString systemLibsFolderName();
+
+    /**
+     * @brief getBasePackageName This method create a baseName from the names list.
+     * @param list - This is list of the input names.
+     * @return return new name.
+     */
+    static QString getBasePackageName(const QStringList& list);
 };
 
 

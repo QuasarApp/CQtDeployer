@@ -176,6 +176,7 @@ private slots:
     void testRunScripts();
     void testGetDefaultTemplate();
     void testDeployGeneralFiles();
+    void testGetBasePackageName();
 
     void customTest();
 };
@@ -1165,6 +1166,25 @@ void deploytest::testDeployGeneralFiles() {
                  "-binOut", "bin",
                  "force-clear"
                 }, &comapareTree);
+}
+
+void deploytest::testGetBasePackageName() {
+
+    auto cases = QList<QPair<QString, QStringList>>{
+        {"", {}},
+        {"testBase", {"test"}},
+        {"testBase", {"test", "test2", "test3"}},
+        {"Base", {"test", "", "test3"}},
+        {"tBase", {"test", "t", "test3"}},
+        {"Base", {"test", "t", ""}},
+        {"woBase", {"work", "wolk", "wowowo"}},
+
+    };
+
+    for (const auto &i: qAsConst(cases)) {
+        if (DeployCore::getBasePackageName(i.second) != i.first)
+            QVERIFY(false);
+    }
 }
 
 void deploytest::customTest() {

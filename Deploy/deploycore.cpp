@@ -726,6 +726,29 @@ QString DeployCore::systemLibsFolderName() {
     return "systemLibs";
 }
 
+QString DeployCore::getBasePackageName(const QStringList &list) {
+    if (!list.size())
+        return "";
+
+    QString postfix = "Base";
+
+    if (list.size() == 1)
+        return list.first() + postfix;
+
+    const auto &first = list[0];
+    QString result;
+    for (int charInxex = 0; charInxex < first.size(); ++charInxex) {
+        for (int wordIndex = 1; wordIndex < list.size(); ++wordIndex) {
+            if (list[wordIndex].size() <= charInxex || list[wordIndex][charInxex] != first[charInxex]) {
+                return result + postfix;
+            }
+        }
+        result += first[charInxex];
+    }
+
+    return result + postfix;
+}
+
 uint qHash(WinAPI i) {
     return static_cast<uint>(i);
 }
