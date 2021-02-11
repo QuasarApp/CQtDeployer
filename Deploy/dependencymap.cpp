@@ -18,6 +18,8 @@ DependencyMap &DependencyMap::operator +=(const DependencyMap &other) {
     this->_neadedLibs = this->_neadedLibs + other._neadedLibs;
     this->_systemLibs = this->_systemLibs + other._systemLibs;
     this->_extraData = this->_extraData + other._extraData;
+    this->_plugins = this->_plugins + other._plugins;
+    this->_qml = this->_qml + other._qml;
 
     return *this;
 }
@@ -27,6 +29,8 @@ DependencyMap &DependencyMap::operator -=(const DependencyMap &other) {
     this->_neadedLibs = this->_neadedLibs - other._neadedLibs;
     this->_systemLibs = this->_systemLibs - other._systemLibs;
     this->_extraData = this->_extraData - other._extraData;
+    this->_plugins = this->_plugins - other._plugins;
+    this->_qml = this->_qml - other._qml;
 
     return *this;
 }
@@ -61,6 +65,15 @@ void DependencyMap::addExtraData(const QString &data) {
     _extraData += data;
 }
 
+void DependencyMap::addQml(const QString &data) {
+    _qml += data;
+
+}
+
+void DependencyMap::addPlugin(const QString &data) {
+    _plugins += data;
+}
+
 void DependencyMap::removeModule(DeployCore::QtModule module) {
     _qtModules = _qtModules & (~module);
 }
@@ -75,6 +88,14 @@ void DependencyMap::removeNeadedLib(const QString &lib) {
 
 void DependencyMap::removeExtraData(const QString &data) {
     _extraData -= data;
+}
+
+void DependencyMap::removeQml(const QString &data) {
+    _qml -= data;
+}
+
+void DependencyMap::removePlugin(const QString &data) {
+    _plugins -= data;
 }
 
 bool DependencyMap::containsSysLib(const QString &lib) const {
@@ -95,6 +116,14 @@ bool DependencyMap::containsExtraData(const QString &data) const {
 
 const QSet<QString> DependencyMap::targets() const {
     return _targets;
+}
+
+const QSet<QString> DependencyMap::plugins() const {
+    return _plugins;
+}
+
+const QSet<QString> DependencyMap::qml() const {
+    return _qml;
 }
 
 

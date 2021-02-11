@@ -41,3 +41,6 @@ SOURCES += \
 
 
 win32: RC_ICONS = $$PWD/../res/icon.ico
+
+DISTFILES += \
+    Concept/concept.qmodel
