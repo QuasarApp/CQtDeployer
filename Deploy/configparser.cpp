@@ -319,8 +319,8 @@ bool ConfigParser::loadFromFile(const QString& confFile) {
         }
 
         auto obj = doc.object();
-
-        for (const auto &key: obj.keys()) {
+        const auto keys = obj.keys();
+        for (const auto &key: keys) {
             readKey(key, obj, confFilePath);
         }
 
@@ -387,6 +387,8 @@ bool ConfigParser::initDistroStruct() {
     auto extraData = QuasarAppUtils::Params::getStrArg("extraData").
             split(DeployCore::getSeparator(0), splitbehavior);
 
+    auto trData = QuasarAppUtils::Params::getStrArg("tr").
+            split(DeployCore::getSeparator(0), splitbehavior);
 
 // init distro stucts for all targets
     if (binOut.size() && !parsePackagesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir)) {
@@ -466,6 +468,11 @@ bool ConfigParser::initDistroStruct() {
 
     if (extraData.size() && !parsePackagesPrivate(mainDistro, extraData, &DistroModule::addExtraData)) {
         packagesErrorLog("extraData");
+        return false;
+    }
+
+    if (trData.size() && !parsePackagesPrivate(mainDistro, trData, &DistroModule::addTr)) {
+        packagesErrorLog("tr");
         return false;
     }
 

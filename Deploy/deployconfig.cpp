@@ -31,6 +31,18 @@ QString DeployConfig::getTargetDir(const QString &target) const {
     return targetDir;
 }
 
+QString DeployConfig::getPackageTargetDir(const QString &package) const {
+    if (!_packages.contains(package)) {
+#ifdef QT_DEBUG
+        abort();
+#endif
+        return "";
+    }
+
+    return targetDir + "/" + package;
+
+}
+
 void DeployConfig::setTargetDir(const QString &target) {
     targetDir = target;
 

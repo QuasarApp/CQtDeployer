@@ -8,10 +8,11 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 
-lessThan(QT_MAJOR_VERSION, 6):lessThan(QT_MINOR_VERSION, 14) {
-    message(Tests is disabled!)
+lessThan(QT_MAJOR_VERSION, 6):lessThan(QT_MINOR_VERSION, 12) {
+    warning("Tests are only enabled on Qt 5.12.0 or later version. You are using $$[QT_VERSION].")
     DEFINES += WITHOUT_TESTS
 }
+android: DEFINES += WITHOUT_TESTS
 
 !android {
     SUBDIRS += QuasarAppLib \

@@ -176,6 +176,7 @@ private slots:
     void testRunScripts();
     void testGetDefaultTemplate();
     void testDeployGeneralFiles();
+    void testTr();
 
     void customTest();
 };
@@ -1165,6 +1166,26 @@ void deploytest::testDeployGeneralFiles() {
                  "-binOut", "bin",
                  "force-clear"
                 }, &comapareTree);
+}
+
+void deploytest::testTr() {
+    TestUtils utils;
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "QtWidgetsProject";
+    QString qmake = TestQtDir + "bin/qmake";
+
+#else
+    QString bin = TestBinDir + "QtWidgetsProject.exe";
+    QString qmake = TestQtDir + "bin/qmake.exe";
+
+#endif
+    auto comapareTree = TestModule.qtLibs();
+
+    comapareTree += utils.createTree({"./" + DISTRO_DIR + "/translations/TestTr.qm"});
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-tr", ":/testResurces/testRes/TestTr.qm",
+                   "-qmake", qmake}, &comapareTree);
 }
 
 void deploytest::customTest() {
@@ -2454,8 +2475,8 @@ void deploytest::testSystemLib() {
                     "./" + DISTRO_DIR + "/TestOnlyC.sh",
                     "./" + DISTRO_DIR + "/bin/qt.conf",
                     "./" + DISTRO_DIR + "/bin/TestOnlyC",
-                    "./" + DISTRO_DIR + "/lib/libgcc_s.so",
-                    "./" + DISTRO_DIR + "/lib/libstdc++.so"
+                    "./" + DISTRO_DIR + "/lib/systemLibs/libgcc_s.so",
+                    "./" + DISTRO_DIR + "/lib/systemLibs/libstdc++.so"
                 });
 
 #else
@@ -2464,10 +2485,10 @@ void deploytest::testSystemLib() {
     {
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
                     "./" + DISTRO_DIR + "/TestOnlyC.bat",
-                    "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
-                    "./" + DISTRO_DIR + "/libstdc++-6.dll",
-                    "./" + DISTRO_DIR + "/libwinpthread-1.dll",
-                    "./" + DISTRO_DIR + "/msvcrt.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/libgcc_s_seh-1.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/libstdc++-6.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/libwinpthread-1.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/msvcrt.dll",
                     "./" + DISTRO_DIR + "/qt.conf"
                 });
 
@@ -2493,12 +2514,12 @@ void deploytest::testSystemLib() {
                     "./" + DISTRO_DIR + "/TestOnlyC.sh",
                     "./" + DISTRO_DIR + "/bin/qt.conf",
                     "./" + DISTRO_DIR + "/bin/TestOnlyC",
-                    "./" + DISTRO_DIR + "/lib/libgcc_s.so",
-                    "./" + DISTRO_DIR + "/lib/ld-linux-x86-64.so",
-                    "./" + DISTRO_DIR + "/lib/libc.so",
-                    "./" + DISTRO_DIR + "/lib/libm.so",
+                    "./" + DISTRO_DIR + "/lib/systemLibs/libgcc_s.so",
+                    "./" + DISTRO_DIR + "/lib/systemLibs/ld-linux-x86-64.so",
+                    "./" + DISTRO_DIR + "/lib/systemLibs/libc.so",
+                    "./" + DISTRO_DIR + "/lib/systemLibs/libm.so",
 
-                    "./" + DISTRO_DIR + "/lib/libstdc++.so"
+                    "./" + DISTRO_DIR + "/lib/systemLibs/libstdc++.so"
                 });
 
     runTestParams({"-bin", bin, "clear" ,
@@ -2514,7 +2535,9 @@ void deploytest::testSystemLib() {
 
     QVERIFY(runScript.contains("export LD_PRELOAD="));
 
-# else
+#endif
+
+#ifdef Q_OS_WIN
     QString qmake = TestQtDir + "bin/qmake.exe";
     bin = TestBinDir + "QtWidgetsProject.exe";
 
@@ -2529,24 +2552,24 @@ void deploytest::testSystemLib() {
 
     comapareTree += utils.createTree(
     {
-                    "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
-                    "./" + DISTRO_DIR + "/libstdc++-6.dll",
-                    "./" + DISTRO_DIR + "/libwinpthread-1.dll",
-                    "./" + DISTRO_DIR + "/msvcrt.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/libgcc_s_seh-1.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/libstdc++-6.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/libwinpthread-1.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/msvcrt.dll",
                     "./" + DISTRO_DIR + "/qt.conf",
-                    "./" + DISTRO_DIR + "/mpr.dll",
-                    "./" + DISTRO_DIR + "/profapi.dll",
-                    "./" + DISTRO_DIR + "/rpcrt4.dll",
-                    "./" + DISTRO_DIR + "/shell32.dll",
-                    "./" + DISTRO_DIR + "/userenv.dll",
-                    "./" + DISTRO_DIR + "/uxtheme.dll",
-                    "./" + DISTRO_DIR + "/version.dll",
-                    "./" + DISTRO_DIR + "/ucrtbase.dll",
-                    "./" + DISTRO_DIR + "/oleaut32.dll",
-                    "./" + DISTRO_DIR + "/bcryptprimitives.dll",
-                    "./" + DISTRO_DIR + "/msvcp_win.dll",
-                    "./" + DISTRO_DIR + "/wtsapi32.dll",
-                    "./" + DISTRO_DIR + "/combase.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/mpr.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/profapi.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/rpcrt4.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/shell32.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/userenv.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/uxtheme.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/version.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/ucrtbase.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/oleaut32.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/bcryptprimitives.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/msvcp_win.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/wtsapi32.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/combase.dll",
 
                 });
 
@@ -2554,9 +2577,9 @@ void deploytest::testSystemLib() {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     comapareTree += utils.createTree(
     {
-                    "./" + DISTRO_DIR + "/d3d11.dll",
-                    "./" + DISTRO_DIR + "/dxgi.dll",
-                    "./" + DISTRO_DIR + "/win32u.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/d3d11.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/dxgi.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/win32u.dll",
                 });
 #endif
 

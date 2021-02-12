@@ -11,7 +11,7 @@
 #include <QFileInfo>
 #include <QSet>
 #include <QVector>
-#include <parser-library/parse.h>
+#include <pe-parse/parse.h>
 #include <quasarapp.h>
 
 #include <set>

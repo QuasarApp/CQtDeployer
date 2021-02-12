@@ -156,6 +156,18 @@ void DistroModule::setKey(const QString &key) {
     _key = key;
 }
 
+QSet<QString> DistroModule::tr() const {
+    return _tr;
+}
+
+void DistroModule::setTr(const QSet<QString> &tr) {
+    _tr = tr;
+}
+
+void DistroModule::addTr(const QString &tr) {
+    _tr += tr;
+}
+
 QSet<QString> DistroModule::extraData() const {
     return _extraData;
 }
