@@ -81,13 +81,14 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   -recursiveDepth [params]  | Sets the Depth of recursive search of libs and ignoreEnv (default 0)          |
 |   -targetDir [params]       | Sets target directory(by default it is the path to the first deployable file)|
 |   -runScript [list,parems]  | forces cqtdeployer swap default run script to new from the arguments of option. This option copy all content from input file and insert all code into runScript.sh or .bat. Example of use: cqtdeployer -runScript "myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh"|
+|   -tr [list,parems]         | Adds qm files into the translations folder.                     |
 |   -verbose [0-3]            | Shows debug log                                                 |
 
 ### Controll of packages options
 
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
-|   -targetPackage [package;tar1,package;tar2]| Creates a new package and adds 'tar1 and tar2' to it |
+|  -targetPackage [package;tar1,package;tar2]| Creates a new package and adds 'tar1 and tar2' to it |
 |  -qmlOut [package;path,path] | Sets path to qml out directory                                  |
 |  -libOut [package;path,path] | Sets path to libraries out directory                            |
 |  -trOut [package;path,path]  | Sets path to translations out directory                         |
@@ -104,6 +105,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -homePage [package;val,val] | Sets the homepage url for a package                              |
 |  -prefix [package;val,val]   | Sets the prefix for the package relatively a target directory       |
 |  -extraData [package;val,val]| Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure.|
+
 
 ### Plugins Controll Options
 

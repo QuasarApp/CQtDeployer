@@ -18,5 +18,6 @@
         <file>testRes/TestQMLWidgets.sh</file>
         <file>testRes/testMultiPackageConfig.json</file>
         <file>testRes/customRunScript.sh</file>
+        <file>testRes/TestTr.qm</file>
     </qresource>
 </RCC>

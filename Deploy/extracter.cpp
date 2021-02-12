@@ -250,21 +250,28 @@ void Extracter::copyFiles() {
     }
 }
 
-void Extracter::copyTr() {
+bool Extracter::copyTr() {
 
     if (!QuasarAppUtils::Params::isEndable("noTranslations")) {
 
         auto cnf = DeployCore::_config;
-
         for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
             if (!copyTranslations(DeployCore::extractTranslation(_packageDependencyes[i.key()].neadedLibs()),
                                   i.key())) {
                 QuasarAppUtils::Params::log("Failed to copy standard Qt translations",
                                             QuasarAppUtils::Warning);
             }
-        }
 
+            const auto trFiles =  i->tr();
+            for (const auto &tr: trFiles) {
+                if (!_fileManager->copyFile(tr, cnf->getPackageTargetDir(i.key()) + i->getTrOutDir())) {
+                    return false;
+                }
+            }
+        }
     }
+
+    return true;
 }
 
 bool Extracter::deploy() {
@@ -287,7 +294,11 @@ bool Extracter::deploy() {
 
     copyFiles();
 
-    copyTr();
+    if (!copyTr()) {
+        QuasarAppUtils::Params::log("Fail to copy translations", QuasarAppUtils::Error);
+
+        return false;
+    };
 
     if (!extractWebEngine()) {
         QuasarAppUtils::Params::log("deploy webEngine failed", QuasarAppUtils::Error);
