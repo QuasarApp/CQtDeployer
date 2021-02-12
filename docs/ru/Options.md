@@ -75,7 +75,6 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -recursiveDepth [params]   | Устанавливает глубину поиска библиотек и глубину игнорирования окружения для ignoreEnv (по умолчанию 0)   |
 |  -targetDir [params]        | Устанавливает целевой каталог (по умолчанию это путь к первому развертываемому файлу)|
 |   -runScript [list,parems]  | заставляет cqtdeployer заменить сценарий запуска по умолчанию на новый из аргументов параметра. Эта опция копирует все содержимое из входного файла и вставляет весь код в runScript.sh или .bat. Пример использования: cqtdeployer -runScript "myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh"|
-|   -tr [list,parems]         | Добавляет qm файлы в папку переводов.                      |
 |  -verbose [0-3]             | Показывает дебаг лога                                     |
 
 ### Параметры управлениями пакетами:
@@ -99,6 +98,7 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -homePage [package;val,val] | Установит URL-адрес домашней страницы для пакета          |
 |  -prefix [package;val,val]   | Устанавливает префикс для пакета относительно целевого каталога |
 |  -extraData [package;val,val]| Добавляет дополнительные файлы или каталоги как цель. Выбранный каталог будет скопирован в расположение extraDataOut с сохранением собственной структуры.|
+|  -tr [package;val,val]       | Добавляет qm файлы в папку переводов.                      |
 
 ### Параметры управления плагинами:
 
