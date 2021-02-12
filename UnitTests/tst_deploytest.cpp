@@ -2514,7 +2514,9 @@ void deploytest::testSystemLib() {
 
     QVERIFY(runScript.contains("export LD_PRELOAD="));
 
-# else
+#endif
+
+#ifdef Q_OS_WIN
     QString qmake = TestQtDir + "bin/qmake.exe";
     bin = TestBinDir + "QtWidgetsProject.exe";
 
