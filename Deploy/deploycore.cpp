@@ -244,7 +244,6 @@ void DeployCore::help() {
                 {"-runScript [list,parems]", "forces cqtdeployer swap default run script to new from the arguments of option."
                  " This option copy all content from input file and insert all code into runScript.sh or .bat"
                  " Example of use: cqtdeployer -runScript \"myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh\""},
-
                 {"-verbose [0-3]", "Shows debug log"},
 
             }
@@ -270,6 +269,8 @@ void DeployCore::help() {
                 {"-homePage [package;val,val]", "Sets the home page url for a package"},
                 {"-prefix [package;val,val]", "Sets the prefix for the package relatively a target directory "},
                 {"-extraData [package;val,val]", "Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure."},
+                {"-tr [package;val,val]", "Adds qm files into the translations folder."},
+
 
             }
         },
@@ -364,7 +365,8 @@ QStringList DeployCore::helpKeys() {
         "deb",
         "allowEmptyPackages",
         "runScript",
-        "getDefaultTemplate"
+        "getDefaultTemplate",
+        "tr"
     };
 }
 

@@ -87,7 +87,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
-|   -targetPackage [package;tar1,package;tar2]| Creates a new package and adds 'tar1 and tar2' to it |
+|  -targetPackage [package;tar1,package;tar2]| Creates a new package and adds 'tar1 and tar2' to it |
 |  -qmlOut [package;path,path] | Sets path to qml out directory                                  |
 |  -libOut [package;path,path] | Sets path to libraries out directory                            |
 |  -trOut [package;path,path]  | Sets path to translations out directory                         |
@@ -104,6 +104,8 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -homePage [package;val,val] | Sets the homepage url for a package                              |
 |  -prefix [package;val,val]   | Sets the prefix for the package relatively a target directory       |
 |  -extraData [package;val,val]| Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure.|
+|  -tr [package;val,val]       | Adds qm files into the translations folder.                     |
+
 
 ### Plugins Controll Options
 
