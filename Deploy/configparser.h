@@ -52,7 +52,6 @@ private:
     bool loadFromFile(const QString& file);
     bool initDistroStruct();
     bool initPackages();
-    void initBasePackages();
     bool initRunScripts();
     bool parseDeployMode();
     bool parseInfoMode();

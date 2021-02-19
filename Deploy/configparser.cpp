@@ -543,11 +543,6 @@ void ConfigParser::initBasePackages() {
     if (QuasarAppUtils::Params::isEndable("noBase")) {
         return;
     }
-
-    QString base = DeployCore::getBasePackageName(_config.packages().keys());
-
-    newPackage(base, {":/assets/assets/BaseEnvirement.bat",
-                      ":/assets/assets/BaseEnvirement.sh"});
 }
 
 bool ConfigParser::initRunScripts() {

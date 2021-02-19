@@ -75,7 +75,13 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -extraPlugin [list,params] | Устанавливает дополнительный путь для extraPlugin приложения|
 |  -recursiveDepth [params]   | Устанавливает глубину поиска библиотек и глубину игнорирования окружения для ignoreEnv (по умолчанию 0)   |
 |  -targetDir [params]        | Устанавливает целевой каталог (по умолчанию это путь к первому развертываемому файлу)|
-|   -runScript [list,parems]  | заставляет cqtdeployer заменить сценарий запуска по умолчанию на новый из аргументов параметра. Эта опция копирует все содержимое из входного файла и вставляет весь код в runScript.sh или .bat. Пример использования: cqtdeployer -runScript "myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh"|
+|  -runScript [list,parems]   | заставляет cqtdeployer заменить сценарий запуска по умолчанию на новый из аргументов параметра. Эта опция копирует все содержимое из входного файла и вставляет весь код в runScript.sh или .bat. Пример использования: cqtdeployer -runScript "myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh"|
+|  -qmlOut [path]             | Установит путь к папке с qml                              |
+|  -libOut [path]             | Установит путь к папке с зависимостями                    |
+|  -trOut [path]              | Установит путь к папке с файламми переводов               |
+|  -pluginOut [path]          | Установит путь к папке с плагинами                        |
+|  -binOut [path]             | Установит путь к папке с исполняемыми файлами             |
+|  -recOut [path]             | Установит путь к папке с ресурсами                        |
 |  -verbose [0-3]             | Показывает дебаг лога                                     |
 
 ### Параметры управлениями пакетами:
@@ -83,16 +89,10 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |  -targetPackage [package;tar1,package;tar2]| Создает новый пакет и добавляет в него 'tar1 и tar2'|
-|  -qmlOut [package;path,path] | Установит путь к папке с qml                              |
-|  -libOut [package;path,path] | Установит путь к папке с зависимостями                    |
-|  -trOut [package;path,path]  | Установит путь к папке с файламми переводов               |
-|  -pluginOut [package;path,path]| Установит путь к папке с плагинами                      |
-|  -binOut [package;path,path] | Установит путь к папке с исполняемыми файлами             |
-|  -recOut [package;path,path] | Установит путь к папке с ресурсами                        |
 |  -extraDataOut [package;path,path] | Устанавливает путь к каталогу с дополнительными файлами данных. По умолчанию это корневой каталог дистрибутива.         |
 |  -name [package;val,val]     | Установит имя префиксу. Если указать значение без префикса, то значение будет установленно префиксу по умолчанию. |
 |  -description [package;val,val] | Установит описание префиксу                            |
-|  -deployVersion [package;val,val]| Установит версию префиксу                            |
+|  -deployVersion [package;val,val]| Установит версию префиксу                             |
 |  -releaseDate [package;val,val] | Установит дату выпуска префиксу                        |
 |  -icon [package;val,val]     | Установит путь к иконке или логотипу префиксу             |
 |  -publisher [package;val,val]| Установит Издательство (автора) префиксу                  |

@@ -82,6 +82,12 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   -recursiveDepth [params]  | Sets the Depth of recursive search of libs and ignoreEnv (default 0)          |
 |   -targetDir [params]       | Sets target directory(by default it is the path to the first deployable file)|
 |   -runScript [list,parems]  | forces cqtdeployer swap default run script to new from the arguments of option. This option copy all content from input file and insert all code into runScript.sh or .bat. Example of use: cqtdeployer -runScript "myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh"|
+|   -qmlOut [path]            | Sets path to qml out directory                                  |
+|   -libOut [path]            | Sets path to libraries out directory                            |
+|   -trOut [path]             | Sets path to translations out directory                         |
+|   -pluginOut [path]         | Sets path to plugins out directory                              |
+|   -binOut [path]            | Sets path to binary out directory                               |
+|   -recOut [path]            | Sets path to recurses out directory                             |
 |   -verbose [0-3]            | Shows debug log                                                 |
 
 ### Controll of packages options
@@ -89,12 +95,6 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |  -targetPackage [package;tar1,package;tar2]| Creates a new package and adds 'tar1 and tar2' to it |
-|  -qmlOut [package;path,path] | Sets path to qml out directory                                  |
-|  -libOut [package;path,path] | Sets path to libraries out directory                            |
-|  -trOut [package;path,path]  | Sets path to translations out directory                         |
-|  -pluginOut [package;path,path]| Sets path to plugins out directory                            |
-|  -binOut [package;path,path] | Sets path to binary out directory                               |
-|  -recOut [package;path,path] | Sets path to recurses out directory                             |
 |  -extraDataOut [package;path,path] | Sets path to extra data files out directory. By Default it is root dir of the distribution.         |
 |  -name [package;val,val]     | Sets name for package. If this if you do not specify a package, the value will be assigned to the default package ("")|
 |  -description [package;val,val] | Sets description for package                                  |
