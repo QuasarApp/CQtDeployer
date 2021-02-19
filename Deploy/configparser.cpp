@@ -530,19 +530,10 @@ bool ConfigParser::initPackages() {
         }
     }
 
-    if (fDefaultPackage) {
-        _config.packagesEdit().insert(defaultPackage, DistroModule{defaultPackage});
-    }
-
+    _config.packagesEdit().insert(defaultPackage, DistroModule{defaultPackage});
     _config.setDefaultPackage(defaultPackage);
 
     return true;
-}
-
-void ConfigParser::initBasePackages() {
-    if (QuasarAppUtils::Params::isEndable("noBase")) {
-        return;
-    }
 }
 
 bool ConfigParser::initRunScripts() {
@@ -656,7 +647,6 @@ bool ConfigParser::parseDeployMode() {
     initExtraPath();
     initExtraNames();
     initPlugins();
-    initBasePackages();
 
     if (!initQmake()) {
 
