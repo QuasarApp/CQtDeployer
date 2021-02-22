@@ -97,7 +97,7 @@ cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlD
 # Using a live animation example from [Qt Examples](https://doc.qt.io/qt-5/qtquick-animation-example.html) 
 
 1. Build the project as a release
-    1. Run qmake with the -r option for release build.
+    1. Run qmake with the -r option for release build
 
         ```bash
         andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ ~/Qt/5.15.2/gcc_64/bin/qmake -r .
