@@ -561,7 +561,7 @@ QMAKE_EXTRA_TARGETS += deploy
 2. Open the project control panel 
     ![Снимок экрана от 2021-02-22 12-15-51](https://user-images.githubusercontent.com/12465465/108687472-d09b6d80-7507-11eb-9b56-8d09d42dac5e.png)
 
-3. Choose a release build.
+3. Choose a release build
     ![изображение](https://user-images.githubusercontent.com/12465465/108688147-a39b8a80-7508-11eb-81b9-9a24426a94a3.png)
 
 
