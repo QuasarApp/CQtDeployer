@@ -519,45 +519,47 @@ The **recursiveDepth** parameters are used to set the search depth for libDir an
 
 ## Integration example 
 Create a test project 
-    ``` qmake
-    QT += quick
 
-    CONFIG += c++11
+```qmake
 
-    # You can make your code fail to compile if it uses deprecated APIs.
-    # In order to do so, uncomment the following line.
-    #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+QT += quick
 
-    SOURCES += \
-            main.cpp
+CONFIG += c++11
 
-    RESOURCES += qml.qrc
+# You can make your code fail to compile if it uses deprecated APIs.
+# In order to do so, uncomment the following line.
+#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-    # Additional import path used to resolve QML modules in Qt Creator's code model
-    QML_IMPORT_PATH =
+SOURCES += \
+        main.cpp
 
-    # Additional import path used to resolve QML modules just for Qt Quick Designer
-    QML_DESIGNER_IMPORT_PATH =
+RESOURCES += qml.qrc
 
-    # Default rules for deployment.
-    qnx: target.path = /tmp/$${TARGET}/bin
-    else: unix:!android: target.path = /opt/$${TARGET}/bin
-    !isEmpty(target.path): INSTALLS += target
+# Additional import path used to resolve QML modules in Qt Creator's code model
+QML_IMPORT_PATH =
+
+# Additional import path used to resolve QML modules just for Qt Quick Designer
+QML_DESIGNER_IMPORT_PATH =
+
+# Default rules for deployment.
+qnx: target.path = /tmp/$${TARGET}/bin
+else: unix:!android: target.path = /opt/$${TARGET}/bin
+!isEmpty(target.path): INSTALLS += target
 
 
-    QT_DIR= $$[QT_HOST_BINS]
-    win32:QMAKE_BIN= $$QT_DIR/qmake.exe
-    contains(QMAKE_HOST.os, Linux):{
-        QMAKE_BIN= $$QT_DIR/qmake
-    }
+QT_DIR= $$[QT_HOST_BINS]
+win32:QMAKE_BIN= $$QT_DIR/qmake.exe
+contains(QMAKE_HOST.os, Linux):{
+    QMAKE_BIN= $$QT_DIR/qmake
+}
 
-    DESTDIR=$$PWD/Build
+DESTDIR=$$PWD/Build
 
-    deploy.commands= cqtdeployer -bin $$DESTDIR/$$TARGET -qmake $$QMAKE_BIN -libDir $$PWD -qmlDir $$PWD -recursiveDepth 5  qif
+deploy.commands= cqtdeployer -bin $$DESTDIR/$$TARGET -qmake $$QMAKE_BIN -libDir $$PWD -qmlDir $$PWD -recursiveDepth 5  qif
 
-    QMAKE_EXTRA_TARGETS += deploy
+QMAKE_EXTRA_TARGETS += deploy
 
-    ```
+```
 
 2. Open the project control panel 
     ![Снимок экрана от 2021-02-22 12-15-51](https://user-images.githubusercontent.com/12465465/108687472-d09b6d80-7507-11eb-9b56-8d09d42dac5e.png)
