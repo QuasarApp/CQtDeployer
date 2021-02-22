@@ -125,7 +125,7 @@ cqtdeployer -bin myexecutable -libDir / PathToMyExtraLibs -recursiveDepth 5 -qml
         g++ -Wl,-O1 -Wl,-rpath,/home/andrei/Qt/5.15.2/gcc_64/lib -o animation main.o qrc_shared.o qrc_animation.o   /home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Quick.so /home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Gui.so /home/andrei/Qt/5.15.2/gcc_64/lib/libQt5QmlModels.so /home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Qml.so /home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Network.so /home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Core.so -lGL -lpthread   
         ```
 3. Находим наш получившийся исполняемый файл 
-    Если вы собирали проект с помощью qtCreator ваш исполняемый файл будет находитья на уровень выше в папке **build-Animations-Desktop_Qt_5_15_2_GCC_64bit-Release**
+    Если вы собирали проект с помощью qtCreator ваш исполняемый файл будет находиться на уровень выше в папке **build-Animations-Desktop_Qt_5_15_2_GCC_64bit-Release**
     В моем случае исполняемый файл лежит в корневом катологе проекта.
     ``` bash
     andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ tree
@@ -465,7 +465,7 @@ andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ ./DistributionKit/
 ```
 ![Снимок экрана от 2021-02-22 11-25-34](https://user-images.githubusercontent.com/12465465/108681955-c629a580-7500-11eb-8087-cedfa8134aae.png)
 
-После установки буду созданы все небходимые ярлыки.
+После установки буду созданы все необходимые ярлыки.
 
 ![Снимок экрана от 2021-02-22 11-27-11](https://user-images.githubusercontent.com/12465465/108682148-012bd900-7501-11eb-9f0b-f46fd79aef25.png)
 
@@ -511,11 +511,11 @@ QMAKE_EXTRA_TARGETS += deploy
     )
 ```
 
-Параметры **libDir** используються для установки путей к зависимостям вашего приложения в примерах был выбран корень исходных кодов приложения.   
+Параметры **libDir** используются для установки путей к зависимостям вашего приложения в примерах был выбран корень исходных кодов приложения.   
 
-Параметры **qmlDir** используються для установки путей к файлам qml вашего приложения в примерах был выбран корень исходных кодов приложения.   
+Параметры **qmlDir** используются для установки путей к файлам qml вашего приложения в примерах был выбран корень исходных кодов приложения.   
 
-Параметры **recursiveDepth** используються для установки глубины поиска для libDir и qmlDir.   
+Параметры **recursiveDepth** используются для установки глубины поиска для libDir и qmlDir.   
 
 
 

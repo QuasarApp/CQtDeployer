@@ -47,7 +47,7 @@ Done!!!
 
 ## Deploy Qt GUI Application
 
-### Deploy yor executable file.
+### Deploy your executable file.
 
 * For Linux systems:
 ``` bash
