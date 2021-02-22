@@ -7,9 +7,10 @@
 
 #ifndef ELF_H
 #define ELF_H
-#include "../qtTools/src/shared/winutils/elfreader.h"
 
 #include "igetlibinfo.h"
+
+class ElfReader;
 
 class ELF : public IGetLibInfo
 {

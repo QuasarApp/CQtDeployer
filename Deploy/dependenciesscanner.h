@@ -11,11 +11,11 @@
 #include <QMultiMap>
 #include <QStringList>
 #include "deploy_global.h"
-#include "pe_type.h"
-#include "elf_type.h"
 #include "libinfo.h"
-#include "generalfiles_type.h"
 
+class PE;
+class ELF;
+class GeneralFiles;
 
 enum class PrivateScaner: unsigned char {
    UNKNOWN,
@@ -31,9 +31,9 @@ private:
     QMultiHash<QString, QString> _EnvLibs;
     QHash<QString, LibInfo> _scanedLibs;
 
-    PE _peScaner;
-    ELF _elfScaner;
-    GeneralFiles _filesScaner;
+    PE *_peScaner = nullptr;
+    ELF *_elfScaner = nullptr;
+    GeneralFiles *_filesScaner = nullptr;
 
     PrivateScaner getScaner(const QString& lib) const;
 
@@ -45,13 +45,13 @@ private:
 
 public:
     explicit DependenciesScanner();
+    ~DependenciesScanner();
 
     void setEnvironment(const QStringList &env);
 
     QSet<LibInfo> scan(const QString& path);
     bool fillLibInfo(LibInfo& info ,const QString& file) const;
 
-    ~DependenciesScanner();
 
     friend class deploytest;
     void clearScaned();

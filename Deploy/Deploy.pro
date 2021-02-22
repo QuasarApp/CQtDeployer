@@ -44,12 +44,15 @@ include('$$PWD/../QuasarAppLib/QuasarLib.pri')
 include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
 include('$$PWD/../zip/zip.pri')
 
+INCLUDEPATH += $$PWD/Parsers
+
 
 SOURCES += \
     Distributions/deb.cpp \
     Distributions/defaultdistro.cpp \
     Distributions/templateinfo.cpp \
     Distributions/ziparhive.cpp \
+    Parsers/macho_type.cpp \
     dependencymap.cpp \
     deployconfig.cpp \
     distromodule.cpp \
@@ -57,13 +60,13 @@ SOURCES += \
     configparser.cpp \
     deploy.cpp \
     deploycore.cpp \
-    elf_type.cpp \
+    Parsers/elf_type.cpp \
     envirement.cpp \
     extra.cpp \
     extracter.cpp \
     filemanager.cpp \
     Distributions/idistribution.cpp \
-    generalfiles_type.cpp \
+    Parsers/generalfiles_type.cpp \
     ignorerule.cpp \
     metafilemanager.cpp \
     packagecontrol.cpp \
@@ -72,7 +75,7 @@ SOURCES += \
     igetlibinfo.cpp \
     dependenciesscanner.cpp \
     ../qtTools/src/shared/winutils/elfreader.cpp \
-    pe_type.cpp \
+    Parsers/pe_type.cpp \
     pluginsparser.cpp \
     Distributions/qif.cpp \
     qml.cpp \
@@ -87,6 +90,7 @@ HEADERS += \
     Distributions/defaultdistro.h \
     Distributions/templateinfo.h \
     Distributions/ziparhive.h \
+    Parsers/macho_type.h \
     defines.h \
     dependencymap.h \
     deployconfig.h \
@@ -96,13 +100,13 @@ HEADERS += \
     deploy.h \
     deploy_global.h \
     deploycore.h \
-    elf_type.h \
+    Parsers/elf_type.h \
     envirement.h \
     extra.h \
     extracter.h \
     filemanager.h \
     Distributions/idistribution.h \
-    generalfiles_type.h \
+    Parsers/generalfiles_type.h \
     ignorerule.h \
     metafilemanager.h \
     packagecontrol.h \
@@ -111,7 +115,7 @@ HEADERS += \
     igetlibinfo.h \
     dependenciesscanner.h \
     ../qtTools/src/shared/winutils/elfreader.h \
-    pe_type.h \
+    Parsers/pe_type.h \
     pluginsparser.h \
     Distributions/qif.h \
     qml.h \
@@ -120,6 +124,7 @@ HEADERS += \
     targetdata.h \
     targetinfo.h \
     zipcompresser.h
+
 
 STATECHARTS +=
 

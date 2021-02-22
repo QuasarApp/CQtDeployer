@@ -13,9 +13,14 @@
 #include <QDir>
 #include <QDebug>
 #include "pathutils.h"
+#include "pe_type.h"
+#include "elf_type.h"
+#include "generalfiles_type.h"
 
 DependenciesScanner::DependenciesScanner() {
-
+    _peScaner = new PE();
+    _elfScaner = new ELF();
+    _filesScaner = new GeneralFiles();
 }
 
 void DependenciesScanner::clearScaned() {
@@ -88,15 +93,15 @@ bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) const 
 
     switch (scaner) {
     case PrivateScaner::PE: {
-        return _peScaner.getLibInfo(file, info);
+        return _peScaner->getLibInfo(file, info);
     }
 
     case PrivateScaner::ELF: {
-        return _elfScaner.getLibInfo(file, info);
+        return _elfScaner->getLibInfo(file, info);
     }
 
     default:
-        return _filesScaner.getLibInfo(file, info);
+        return _filesScaner->getLibInfo(file, info);
     }
 }
 
@@ -126,7 +131,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
 
     libStack.insert(lib.fullPath());
 
-    for (auto i : lib.dependncies) {
+    for (const auto &i : qAsConst(lib.dependncies)) {
 
         auto libs = getLibsFromEnvirement(i);
 
@@ -192,7 +197,7 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
     winAPI[WinAPI::Crt] += "UCRTBASE.DLL";
 #endif
 
-    for (auto i : env) {
+    for (const auto &i : env) {
 
         dir.setPath(i);
         if (!dir.exists()) {
@@ -203,7 +208,7 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
                                       << "*.SO*" << "*.so*",
                                       QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
 
-        for (auto i : list) {
+        for (const auto &i : list) {
             addToWinAPI(i.fileName().toUpper(), winAPI);
             _EnvLibs.insert(i.fileName().toUpper(), i.absoluteFilePath());
         }
@@ -211,7 +216,7 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
     }
 
 
-    _peScaner.setWinAPI(winAPI);
+    _peScaner->setWinAPI(winAPI);
 }
 
 QSet<LibInfo> DependenciesScanner::scan(const QString &path) {
@@ -230,5 +235,7 @@ QSet<LibInfo> DependenciesScanner::scan(const QString &path) {
 }
 
 DependenciesScanner::~DependenciesScanner() {
-
+    delete _elfScaner;
+    delete _peScaner;
+    delete _filesScaner;
 }

@@ -9,6 +9,7 @@
 #include <cmath>
 #include <QFileInfo>
 #include <quasarapp.h>
+#include "../qtTools/src/shared/winutils/elfreader.h"
 
 ELF::ELF()
 {
