@@ -16,6 +16,14 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 * **-libOut [package;path,path]** - parameter with support for selecting the package for which the flag value is set. As a separator, use ';'. Please note that the rule described above is used to enumerate parameter values. The last parameter does not have a package value, this means that this value will be set for all non-configured packages by default.
 * **clear** - boolean option
 
+## Definitions in description 
+**System environment** - is  pathes of the sstem libraryes.
+    Windows: C:\Windows\System32 and C:\Windows\SysWOW64. And any another pathes difined in the PATH variable.
+    Linux: /usr/lib and /lib. And any another pathes defined in the LD_LIBRARY_PATH or PATH variables.
+
+**Deployable files** - is all file that will be copy in to targer dirictory. (libraries, resources)
+**Targets** - is all files marked by bin option.
+
 ## Options:
 
 ### Boolean options
@@ -57,7 +65,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
-|   -bin [list,params]       | Files to deploy or folders that contain files to deploy. For example -bin ~/my/project/bin/,~/my/project/bin.exe,~/my/project/runtimeLinking/lib.dll. For files: These files will be unconditional copied to the destination directory, regardless of their format or suffix. For folders: CQtDeployer will enter these folders and non-recursively copy all deployable files to the destination directory. Then, the dependencies of all the deployable files in these files and found from these folders will be searched in system environments and the path specified in **libDir**, and copied to the destination directory, too.   |
+|   -bin [list,params]       | Files to deploy or folders that contain files to deploy. For example -bin ~/my/project/bin/,~/my/project/bin.exe,~/my/project/runtimeLinking/lib.dll. For files: These files will be unconditional copied to the destination directory, regardless of their format or suffix. For folders: CQtDeployer will enter these folders and non-recursively copy all deployable files to the destination directory. Then, CQtDeployer will be extract all dependencies of the copied files. The CQtDeployer will be search dependencies in a system environment and in libDir paths. |
 |   -confFile [params]        | The path to the json file with all deployment configurations.|
 |                             | Using this file, you can add the necessary options, |
 |                             | thereby simplifying  in the command invocation the console. |
@@ -73,8 +81,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   -libDir [list,params]     | Sets additional paths for extra libs of an app.                 |
 |                             | For example -libDir ~/myLib,~/newLibs                           |
 |   -extraLibs [list,params]  | Sets the mask of the library name for forced copying.           |
-|                             | Example: "-extraLib mySql" - forces to copy all libraries whose |
-|                             |names contain mySql to the project folder. This option is case-insensitive on Windows and case-sensitive on other platforms. This option will only search libraries in system environments similar to **deploySystem**.|
+|                             | Example: "-extraLib mySql" - forces to copy all libraries whose names contain mySql to the project folder. This option is case-insensitive on Windows and case-sensitive on other platforms. This option will only search libraries in system environments similar to **deploySystem**.|
 |   -customScript [scriptCode]| Insert extra code inTo All run script.                          |
 |   -extraPlugin [list,params]| Sets an additional path to extraPlugin of an app                |
 |   -recursiveDepth [params]  | Sets the Depth of recursive search of libs and ignoreEnv (default 0)          |
