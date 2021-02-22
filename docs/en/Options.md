@@ -57,7 +57,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
-|   -bin [list,params]       | Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe. The bin option can also work with files of any format. Everything that will be listed as arguments to this option will be copied to the DestributionKit/bin folder and will be located next to the executable files.   |
+|   -bin [list,params]       | Files to deploy or folders that contain files to deploy. For example -bin ~/my/project/bin/,~/my/project/bin.exe,~/my/project/runtimeLinking/lib.dll. For files: These files will be unconditional copied to the destination directory, regardless of their format or suffix. For folders: CQtDeployer will enter these folders and non-recursively copy all deployable files to the destination directory. Then, the dependencies of all the deployable files in these files and found from these folders will be searched in system environments and the path specified in **libDir**, and copied to the destination directory, too.   |
 |   -confFile [params]        | The path to the json file with all deployment configurations.|
 |                             | Using this file, you can add the necessary options, |
 |                             | thereby simplifying  in the command invocation the console. |
