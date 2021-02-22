@@ -245,7 +245,7 @@ void DeployCore::help() {
                 {"-extraLibs [list,params]", "Sets the mask of the library name for forced copying."
                  "  Example: \"-extraLib mySql\" - forces to copy all libraries whose names contain mySql to the project folder."
                  " This option is case-insensitive on Windows and case-sensitive on other platforms."
-                 " This option will only search libraries in system environments similar to **deploySystem**.",
+                 " This option will only search libraries in system environments similar to **deploySystem**."},
                 {"-customScript [scriptCode]", "Insert extra code inTo All run script."},
                 {"-recursiveDepth [params]", "Sets the Depth of recursive search of libs and depth for ignoreEnv option (default 0)"},
                 {"-targetDir [params]", "Sets target directory(by default it is the path to the first deployable file)"},
