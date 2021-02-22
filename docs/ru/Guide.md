@@ -33,7 +33,7 @@ chmod + x LinuxInstaller.run
 Если вы используете официальную сборку qt, вы можете использовать snap-версию cqtdeployer.
 
 ```
-sudo snap установить cqtdeployer
+sudo snap install cqtdeployer
 ```
 
 После установки добавьте необходимые разрешения.
