@@ -572,6 +572,6 @@ QMAKE_EXTRA_TARGETS += deploy
     ![изображение](https://user-images.githubusercontent.com/12465465/108687800-35ef5e80-7508-11eb-8f69-aec090d4baa0.png)
 
 5. Save
-6. Start the building.
+6. Start the building
 
 #### As a result, you will receive a DistributionKit folder with the installer of your application. 
