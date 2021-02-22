@@ -74,7 +74,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |                             | For example -libDir ~/myLib,~/newLibs                           |
 |   -extraLibs [list,params]  | Sets the mask of the library name for forced copying.           |
 |                             | Example: "-extraLib mySql" - forces to copy all libraries whose |
-|                             |names contain mySql to the project folder. This option is case sensitive. This option will not copy libraries whose names are not mentioned in the list of dependencies (Example: plugins or libs loaded using **dlopen** or **LoadLibrary** functions).|
+|                             |names contain mySql to the project folder. This option is case-insensitive on Windows and case-sensitive on other platforms. This option will only search libraries in system environments similar to **deploySystem**.|
 |   -customScript [scriptCode]| Insert extra code inTo All run script.                          |
 |   -extraPlugin [list,params]| Sets an additional path to extraPlugin of an app                |
 |   -recursiveDepth [params]  | Sets the Depth of recursive search of libs and ignoreEnv (default 0)          |
