@@ -98,7 +98,7 @@ cqtdeployer -bin myexecutable -libDir / PathToMyExtraLibs -recursiveDepth 5 -qml
 
 
 1. Собираем проект в релизную сборку 
-    1. Выполняем qamke с опцие -r для релизной сборки.
+    1. Выполняем qmake с опцие -r для релизной сборки.
 
         ```bash
         andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ ~/Qt/5.15.2/gcc_64/bin/qmake -r .
