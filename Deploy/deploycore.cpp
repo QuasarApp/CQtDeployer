@@ -230,9 +230,8 @@ void DeployCore::help() {
                  " For files: These files will be unconditional copied to the destination directory,"
                  " regardless of their format or suffix."
                  " For folders:"
-                 " CQtDeployer will enter these folders and non-recursively copy all deployable files to the destination directory."
-                 " Then, CQtDeployer will be extract all dependencies of the copied files."
-                 " The CQtDeployer will be search dependencies in a system environment and in libDir paths."},
+                 " CCQtDeployer will enter these folders and non-recursively copy all executable files to the destination directory."
+                 " Then, CQtDeployer will extract all dependencies of the copied files and search dependencies in system environments and libDir paths."},
                 {"-confFile [params]", "The path to the json file with all deployment configurations. Using this file,"
                  " you can add the necessary options, thereby simplifying the command invocation in the console."
                  " However, the parameters in Kansol have a higher priority than in the file."
