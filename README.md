@@ -93,17 +93,36 @@ The Building or installation instructions see on wiki [page](https://github.com/
 - [Tanks](https://github.com/anevero/tanks) - 2D game written in C++ & Qt for Windows, Linux and Android 
 - [stegano](https://github.com/taskmaster9001/stegano) - Bit-level Image Manipulation Software with Qt Framework - Steganography Pet Project 
 
-## Thanks
- * many thanks [Trail of Bits](https://github.com/trailofbits) for their library [pe-parser](https://github.com/trailofbits/pe-parse). Everything works perfectly.
+
+***
+
+## ![Credits](res/Credits.jpg) 
+
+Join the development fund and support QuasarApp to help with the development of our projects.
+
+<a href="https://www.patreon.com/bePatron?u=9304737"><img src="https://img.shields.io/badge/ become a patron-red?&style=for-the-badge&logo=patreon&logoColor=white" height=30 width=180></a>
 
 
 
-## Support us 
-### Support with bitcoin
+If you would like to use bitcoins to support us, you can transfer coins to these address. If you want to be included in the patron list, send an e-mail message - QuasarApp@yandex.by.
+
+**Note**: You must send a message signed with address of the bitcoin wallet from which the payment was made.
 
 ![support](https://user-images.githubusercontent.com/12465465/101282118-25222d00-37e4-11eb-9ffb-4ebd6a3a0bc7.png)
 
 bitcoin:bc1q4wnp58plhx4fwnfnzz3e4slulv2gzzts89w2f7
+
+## Our patrons list:
+
+### Silver Membership Patrons:
+
+- Rustem Husnutdinov
+
+***
+
+
+## Thanks
+ * many thanks [Trail of Bits](https://github.com/trailofbits) for their library [pe-parser](https://github.com/trailofbits/pe-parse). Everything works perfectly.
 
 ***************************
 ***************************
