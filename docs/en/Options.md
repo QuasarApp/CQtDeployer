@@ -17,12 +17,21 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 * **clear** - boolean option
 
 ## Definitions in description 
-**System environment** - is  pathes of the sstem libraryes.
-    Windows: C:\Windows\System32 and C:\Windows\SysWOW64. And any another pathes difined in the PATH variable.
-    Linux: /usr/lib and /lib. And any another pathes defined in the LD_LIBRARY_PATH or PATH variables.
+**System environment** - paths of the system libraries.
+ * Windows:
+   * Paths defined in the PATH variable.
+   * C:\Windows\System32
+   * C:\Windows\SysWOW64
+ * Linux:
+   * Paths defined in the LD_LIBRARY_PATH and PATH variables.
+   * /usr/lib
+   * /lib
 
-**Deployable files** - is all file that will be copy in to targer dirictory. (libraries, resources)
-**Targets** - is all files marked by bin option.
+**Deployable files** - all file that will be copied into distribution (include executable files)
+
+**Targets** - all executable files marked by bin option.
+
+**Executable files** - all files with PE, ELF and Mach-O formats.
 
 ## Options:
 
