@@ -97,13 +97,13 @@ cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlD
 # Using a live animation example from [Qt Examples](https://doc.qt.io/qt-5/qtquick-animation-example.html) 
 
 1. Build the project as a release
-    1. Run qamke with the -r option for release build. 
+    1. Run qmake with the -r option for release build
 
         ```bash
         andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ ~/Qt/5.15.2/gcc_64/bin/qmake -r .
         ```
 
-    2. Calling your make generator 
+    2. Call your make 
 
         * For Linux:
             ```bash
@@ -176,7 +176,7 @@ cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlD
     10 directories, 33 files
     ```
 
-4. Call cqtdeployer to form the Base Distribution 
+4. Call cqtdeployer to form the base distribution 
 
     For Linux:
     ``` bash 
@@ -458,7 +458,7 @@ cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlD
     Info: [12449] Cleaning up...
     ```
 
-5. Done The distribution has been saved to the **DistributionKit** folder 
+5. Done. The distribution has been saved to the **DistributionKit** folder 
 ```bash
 andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ ./DistributionKit/Installeranimation.run 
 ```
@@ -510,11 +510,8 @@ QMAKE_EXTRA_TARGETS += deploy
     )
 ```
 
-The **libDir** parameters are used to set the paths to the dependencies of your application in the examples, the application source code root was selected.
-
-The **qmlDir** parameters are used to set the paths to the qml files of your application in the examples, the application source code root was selected.
-
-The **recursiveDepth** parameters are used to set the search depth for libDir and qmlDir. 
+The **libDir** parameter is used to set the paths to the directory paths contain dependencies of your application, and the **qmlDir** parameter is used to set the directory paths contain the qml files required by your application. In this example, the application source code root is selected by these two options.
+The **recursiveDepth** parameter is used to set the search depth of **libDir** and **qmlDir**.
 
 
 ## Integration example 
@@ -564,7 +561,7 @@ QMAKE_EXTRA_TARGETS += deploy
 2. Open the project control panel 
     ![Снимок экрана от 2021-02-22 12-15-51](https://user-images.githubusercontent.com/12465465/108687472-d09b6d80-7507-11eb-9b56-8d09d42dac5e.png)
 
-3. Choosing a release build.
+3. Choose a release build
     ![изображение](https://user-images.githubusercontent.com/12465465/108688147-a39b8a80-7508-11eb-81b9-9a24426a94a3.png)
 
 
@@ -575,6 +572,6 @@ QMAKE_EXTRA_TARGETS += deploy
     ![изображение](https://user-images.githubusercontent.com/12465465/108687800-35ef5e80-7508-11eb-8f69-aec090d4baa0.png)
 
 5. Save
-6. Start the build. 
+6. Start the building
 
 #### As a result, you will receive a DistributionKit folder with the installer of your application. 
