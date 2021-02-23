@@ -93,10 +93,20 @@ The Building or installation instructions see on wiki [page](https://github.com/
 - [Tanks](https://github.com/anevero/tanks) - 2D game written in C++ & Qt for Windows, Linux and Android 
 - [stegano](https://github.com/taskmaster9001/stegano) - Bit-level Image Manipulation Software with Qt Framework - Steganography Pet Project 
 
-## Thanks
- * many thanks [Trail of Bits](https://github.com/trailofbits) for their library [pe-parser](https://github.com/trailofbits/pe-parse). Everything works perfectly.
 
+***
 
+## ![Credits](res/Credits.jpg) 
+
+Join the development fund and support QuasarApp to help with the development of our projects.
+
+Our patrons list
+
+### Silver Membership Patrons:
+
+- Rustem Husnutdinov
+
+***
 
 ## Support us 
 ### Support with bitcoin
@@ -104,6 +114,9 @@ The Building or installation instructions see on wiki [page](https://github.com/
 ![support](https://user-images.githubusercontent.com/12465465/101282118-25222d00-37e4-11eb-9ffb-4ebd6a3a0bc7.png)
 
 bitcoin:bc1q4wnp58plhx4fwnfnzz3e4slulv2gzzts89w2f7
+
+## Thanks
+ * many thanks [Trail of Bits](https://github.com/trailofbits) for their library [pe-parser](https://github.com/trailofbits/pe-parse). Everything works perfectly.
 
 ***************************
 ***************************
