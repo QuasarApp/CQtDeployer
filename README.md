@@ -96,6 +96,10 @@ The Building or installation instructions see on wiki [page](https://github.com/
 
 ***
 
+### If you want to get more information see our documentations [here](docs/index.md)
+
+***
+
 ## ![Credits](res/Credits.jpg) 
 
 Join the development fund and support QuasarApp to help with the development of our projects.
