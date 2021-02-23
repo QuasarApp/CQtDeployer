@@ -129,6 +129,19 @@ Or starting with ubuntu 20.04 in the ubuntu application settings manager.
 - [distbuilder](https://github.com/BuvinJT/distbuilder)
 - [Manager_v2](https://github.com/dimkatsi91/Manager_v2)
 
+***
+
+## Credits  
+
+Join the development fund and support QuasarApp to help with the development of our projects.
+
+Our patrons list
+
+### Silver Membership Patrons:
+
+- Rustem Husnutdinov
+
+***
 ## Donate
 If you want to support the project,you can donate into our bitcoin wallet.
 
