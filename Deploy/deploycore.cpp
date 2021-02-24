@@ -225,7 +225,13 @@ void DeployCore::help() {
         },
         {
             "Part 2 Deploy options", {
-                {"-bin [list, params]", "Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe"},
+                {"-bin [list, params]", "Files to deploy or folders that contain files to deploy."
+                 " For example -bin ~/my/project/bin/,~/my/project/bin.exe,~/my/project/runtimeLinking/lib.dll."
+                 " For files: These files will be unconditional copied to the destination directory,"
+                 " regardless of their format or suffix."
+                 " For folders:"
+                 " CCQtDeployer will enter these folders and non-recursively copy all executable files to the destination directory."
+                 " Then, CQtDeployer will extract all dependencies of the copied files and search dependencies in system environments and libDir paths."},
                 {"-confFile [params]", "The path to the json file with all deployment configurations. Using this file,"
                  " you can add the necessary options, thereby simplifying the command invocation in the console."
                  " However, the parameters in Kansol have a higher priority than in the file."
@@ -236,8 +242,9 @@ void DeployCore::help() {
                 {"-ignoreEnv [list,params]", "The list of the environment to ignore. For example -ignoreEnv /bad/dir,/my/bad/Dir"},
                 {"-libDir [list,params]", "Sets additional paths for extra libs of an app. For example -libDir ~/myLib,~/newLibs"},
                 {"-extraLibs [list,params]", "Sets the mask of the library name for forced copying."
-                 " Example: '-extraLibs mySql' - forces to copy all libraries whose names contain mySql to the project folder."
-                 " This option is case sensitive."},
+                 "  Example: \"-extraLib mySql\" - forces to copy all libraries whose names contain mySql to the project folder."
+                 " This option is case-insensitive on Windows and case-sensitive on other platforms."
+                 " This option will only search libraries in system environments similar to **deploySystem**."},
                 {"-customScript [scriptCode]", "Insert extra code inTo All run script."},
                 {"-recursiveDepth [params]", "Sets the Depth of recursive search of libs and depth for ignoreEnv option (default 0)"},
                 {"-targetDir [params]", "Sets target directory(by default it is the path to the first deployable file)"},
