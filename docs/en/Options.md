@@ -17,7 +17,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 * **clear** - boolean option
 
 ## Definitions in description 
-**System environment** - paths of the system libraries.
+**System environments** - paths of directories containing the system libraries.
  * Windows:
    * Paths defined in the PATH variable.
    * C:\Windows\System32
