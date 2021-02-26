@@ -24,5 +24,6 @@
     </qresource>
     <qresource prefix="/shared">
         <file>Distributions/Templates/Icon.png</file>
+        <file>Distributions/Templates/Icon.ico</file>
     </qresource>
 </RCC>

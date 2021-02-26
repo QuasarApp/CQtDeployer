@@ -56,6 +56,11 @@ private:
     bool parseDeployMode();
     bool parseInfoMode();
     bool parseInitMode();
+    /**
+     * @brief configureTargets Sets targets data from options.
+     * @return true if function finishe successfull
+     */
+    void configureTargets();
 
     bool parseClearMode();
 

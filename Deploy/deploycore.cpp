@@ -283,7 +283,13 @@ void DeployCore::help() {
         },
 
         {
-            "Part 4 Plugins Control Options", {
+            "Part 4 Control of packages options", {
+                {"-icon [target;val,val]", "Sets path to icon for a targets"}
+            }
+        },
+
+        {
+            "Part 5 Plugins Control Options", {
                 {"-extraPlugin [package;val1;val2,SingeleVal]", "Sets an additional path to third-party application plug-in"},
                 {"-enablePlugins [package;val1;val2,SingeleVal", "Enables additional plugins for distribution."
                  " By default disabled next plugins: " + PluginsParser::defaultForbidenPlugins().join(',') + " if you want enable"
@@ -296,7 +302,7 @@ void DeployCore::help() {
             }
         },
         {
-            "Part 5 QtInstallFramework options", {
+            "Part 6 QtInstallFramework options", {
                 {"-qifStyle [path/to/style.css]", "Sets the path to the CSS style file or sets the default style."
                  " Available styles: quasar, quasarDark"},
                 {"-qifBanner [path/to/banner.png]", "Sets path to the banner png file."},

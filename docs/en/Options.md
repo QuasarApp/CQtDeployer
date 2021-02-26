@@ -114,12 +114,18 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -description [package;val,val] | Sets description for package                                  |
 |  -deployVersion [package;val,val] | Sets version for package                                    |
 |  -releaseDate [package;val,val] | Sets release date for package                                 |
-|  -icon [package;val,val]     | Sets path to icon for package                                    |
 |  -publisher [package;val,val]| Sets publisher for package                                       |
 |  -homePage [package;val,val] | Sets the homepage url for a package                              |
 |  -prefix [package;val,val]   | Sets the prefix for the package relatively a target directory       |
 |  -extraData [package;val,val]| Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure.|
 |  -tr [package;val,val]       | Adds qm files into the translations folder.                     |
+
+### Controll of targets options
+
+| Option                      | Descriptiion                                              |
+|-----------------------------|-----------------------------------------------------------|
+|  -icon [package;val,val]    | Sets path to icon for a targets                           |
+
 
 
 ### Plugins Controll Options
