@@ -18,6 +18,7 @@ CONFIG(release, debug|release): {
 unix:LIBS += -L$$DEPLOY_LIB_OUTPUT_DIR -lDeploy
 win32:LIBS += -L$$DEPLOY_LIB_OUTPUT_DIR -lDeploy1
 
+include('$$PWD/../LIEF/includeLIEF.pri')
 
 INCLUDEPATH += "$$PWD/"
 

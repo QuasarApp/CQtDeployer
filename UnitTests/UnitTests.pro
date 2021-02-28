@@ -19,8 +19,6 @@ include('$$PWD/../QuasarAppLib/QuasarLib.pri')
 include('$$PWD/../Deploy/Deploy.pri')
 include('$$PWD/../zip/zip.pri')
 
-include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
-
 
 QT_DIR = $$[QT_HOST_BINS]/../
 DEFINES+=QT_BASE_DIR='\\"$$QT_DIR\\"'

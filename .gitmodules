@@ -7,3 +7,6 @@
 [submodule "zip"]
 	path = zip
 	url = https://github.com/QuasarApp/zip.git
+[submodule "LIEF"]
+	path = LIEF
+	url = https://github.com/QuasarApp/LIEF
