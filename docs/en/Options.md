@@ -124,8 +124,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
-|  -icon [package;val,val]    | Sets path to icon for a targets                           |
-
+|  -icon [target;val,val]    | Sets path to icon for a targets                           |
 
 
 ### Plugins Controll Options

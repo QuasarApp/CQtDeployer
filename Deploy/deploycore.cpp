@@ -271,7 +271,6 @@ void DeployCore::help() {
                 {"-description [package;val,val]", "Sets description for a package"},
                 {"-deployVersion [package;val,val]", "Sets version for a package"},
                 {"-releaseDate [package;val,val]", "Sets release date for a package"},
-                {"-icon [package;val,val]", "Sets path to icon for a package"},
                 {"-publisher [package;val,val]", "Sets publisher for a package"},
                 {"-homePage [package;val,val]", "Sets the home page url for a package"},
                 {"-prefix [package;val,val]", "Sets the prefix for the package relatively a target directory "},
