@@ -72,7 +72,7 @@ private:
     void extractPlugins();
 
     void copyFiles();
-    void copyTr();
+    bool copyTr();
 
     /**
      * @brief copyLibs This method copy input libraryes into libOut dir.

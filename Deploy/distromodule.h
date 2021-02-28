@@ -73,6 +73,10 @@ public:
     void setExtraData(const QSet<QString> &extraFiles);
     void addExtraData(const QString &extraFile);
 
+    QSet<QString> tr() const;
+    void setTr(const QSet<QString> &tr);
+    void addTr(const QString &tr);
+
 protected:
     void setKey(const QString &key);
 
@@ -94,7 +98,13 @@ private:
     QSet<QString> _enabled;
     QSet<QString> _disabled;
     QSet<QString> _extraPlugins;
+
+    // extra data
     QSet<QString> _extraData;
+
+    // extra translations
+    QSet<QString> _tr;
+
 
 };
 

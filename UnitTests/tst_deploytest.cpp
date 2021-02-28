@@ -176,6 +176,7 @@ private slots:
     void testRunScripts();
     void testGetDefaultTemplate();
     void testDeployGeneralFiles();
+    void testTr();
 
     void customTest();
 };
@@ -1165,6 +1166,26 @@ void deploytest::testDeployGeneralFiles() {
                  "-binOut", "bin",
                  "force-clear"
                 }, &comapareTree);
+}
+
+void deploytest::testTr() {
+    TestUtils utils;
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "QtWidgetsProject";
+    QString qmake = TestQtDir + "bin/qmake";
+
+#else
+    QString bin = TestBinDir + "QtWidgetsProject.exe";
+    QString qmake = TestQtDir + "bin/qmake.exe";
+
+#endif
+    auto comapareTree = TestModule.qtLibs();
+
+    comapareTree += utils.createTree({"./" + DISTRO_DIR + "/translations/TestTr.qm"});
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-tr", ":/testResurces/testRes/TestTr.qm",
+                   "-qmake", qmake}, &comapareTree);
 }
 
 void deploytest::customTest() {

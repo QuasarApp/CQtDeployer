@@ -73,6 +73,13 @@ public:
     QString getTargetDir(const QString& target = "") const;
 
     /**
+     * @brief getPackageTargetDir This method return the target dif of the package.
+     * @param package This is id of the package
+     * @return target diractory path
+     */
+    QString getPackageTargetDir(const QString& package) const;
+
+    /**
      * @brief setTargetDir
      * @param target
      */
