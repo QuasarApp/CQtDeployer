@@ -43,13 +43,16 @@ void Packing::setDistribution(const QList<iDistribution*> &pakages) {
 bool Packing::create() {
 
     if (!collectPackages()) {
+        QuasarAppUtils::Params::log("Fail to collect packages data.", QuasarAppUtils::Error);
         return false;
     }
 
     for (auto package : qAsConst(_pakages)) {
 
-        if (!package)
+        if (!package) {
+            internalError();
             return false;
+        }
 
         if (!package->deployTemplate(*this)) {
             QuasarAppUtils::Params::log(QString("Deploy package template error ocured. Package: %0.").
@@ -107,10 +110,12 @@ bool Packing::create() {
         }
 
         if (!package->cb()) {
+            internalError();
             return false;
         }
 
         if (!restorePackagesLocations()) {
+            internalError();
             return false;
         }
 
@@ -119,7 +124,13 @@ bool Packing::create() {
     }
 
     const DeployConfig *cfg = DeployCore::_config;
-    return QDir(cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR).removeRecursively();
+
+    if (!QDir(cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR).removeRecursively()) {
+        QuasarAppUtils::Params::log("Fail to remove " + cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR);
+        return false;
+    }
+
+    return true;
 }
 
 bool Packing::movePackage(const QString &package,
@@ -185,8 +196,10 @@ bool Packing::collectPackages() {
             continue;
         }
 
-        if (!moveData(from, cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR + "/" + it.key()))
+        if (!moveData(from, cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR + "/" + it.key())) {
+            QuasarAppUtils::Params::log("Fail to move " + from, QuasarAppUtils::Error);
             return false;
+        }
 
         _packagesLocations.insert(it.key(), cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR + "/" + it.key());
     }

@@ -732,6 +732,15 @@ bool DeployCore::checkSystemBakupSnapInterface() {
     return QDir(DeployCore::snapRootFS()).entryList(QDir::AllEntries | QDir::NoDotAndDotDot).size();
 }
 
+void DeployCore::printInternalError(const char * function, const char* file, int line ) {
+    QuasarAppUtils::Params::log(QString("Internal error ocurred in %0 (%1:%2).").arg(function, file).arg(line),
+                                QuasarAppUtils::Error);
+    QuasarAppUtils::Params::log(QString("If you see this message please create a new issue"
+                                        " about this problem on the official github page"
+                                        " https://github.com/QuasarApp/CQtDeployer/issues/new/choose. "),
+                                QuasarAppUtils::Error);
+};
+
 QString DeployCore::systemLibsFolderName() {
     return "systemLibs";
 }

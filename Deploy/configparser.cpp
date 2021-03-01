@@ -1503,12 +1503,7 @@ bool ConfigParser::smartMoveTargets() {
     for (auto i = _config.targets().cbegin(); i != _config.targets().cend(); ++i) {
 
         if (!i.value().isValid()) {
-            QuasarAppUtils::Params::log(QString("Internal error ocurred in %0. Target not inited.").arg(__FUNCTION__),
-                                        QuasarAppUtils::Error);
-            QuasarAppUtils::Params::log(QString("If you see this message please create a new issue"
-                                                " about this problem on the official github page"
-                                                " https://github.com/QuasarApp/CQtDeployer/issues/new/choose. "),
-                                        QuasarAppUtils::Error);
+            internalError();
             return false;
         }
 
