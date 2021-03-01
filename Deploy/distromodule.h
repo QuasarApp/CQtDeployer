@@ -39,9 +39,6 @@ public:
     QString releaseData() const;
     void setReleaseData(const QString &releaseData);
 
-    QString icon() const;
-    void setIcon(const QString &icon);
-
     QString publisher() const;
     void setPublisher(const QString &publisher);
 
@@ -87,7 +84,6 @@ private:
     QString _description;
     QString _version;
     QString _releaseData;
-    QString _icon;
     QString _publisher;
     QString _homePage;
 

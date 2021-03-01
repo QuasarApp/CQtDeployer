@@ -271,7 +271,6 @@ void DeployCore::help() {
                 {"-description [package;val,val]", "Sets description for a package"},
                 {"-deployVersion [package;val,val]", "Sets version for a package"},
                 {"-releaseDate [package;val,val]", "Sets release date for a package"},
-                {"-icon [package;val,val]", "Sets path to icon for a package"},
                 {"-publisher [package;val,val]", "Sets publisher for a package"},
                 {"-homePage [package;val,val]", "Sets the home page url for a package"},
                 {"-prefix [package;val,val]", "Sets the prefix for the package relatively a target directory "},
@@ -283,7 +282,13 @@ void DeployCore::help() {
         },
 
         {
-            "Part 4 Plugins Control Options", {
+            "Part 4 Control of packages options", {
+                {"-icon [target;val,val]", "Sets path to icon for a targets"}
+            }
+        },
+
+        {
+            "Part 5 Plugins Control Options", {
                 {"-extraPlugin [package;val1;val2,SingeleVal]", "Sets an additional path to third-party application plug-in"},
                 {"-enablePlugins [package;val1;val2,SingeleVal", "Enables additional plugins for distribution."
                  " By default disabled next plugins: " + PluginsParser::defaultForbidenPlugins().join(',') + " if you want enable"
@@ -296,7 +301,7 @@ void DeployCore::help() {
             }
         },
         {
-            "Part 5 QtInstallFramework options", {
+            "Part 6 QtInstallFramework options", {
                 {"-qifStyle [path/to/style.css]", "Sets the path to the CSS style file or sets the default style."
                  " Available styles: quasar, quasarDark"},
                 {"-qifBanner [path/to/banner.png]", "Sets path to the banner png file."},
@@ -726,6 +731,15 @@ QString DeployCore::transportPathToSnapRoot(const QString &path) {
 bool DeployCore::checkSystemBakupSnapInterface() {
     return QDir(DeployCore::snapRootFS()).entryList(QDir::AllEntries | QDir::NoDotAndDotDot).size();
 }
+
+void DeployCore::printInternalError(const char * function, const char* file, int line ) {
+    QuasarAppUtils::Params::log(QString("Internal error ocurred in %0 (%1:%2).").arg(function, file).arg(line),
+                                QuasarAppUtils::Error);
+    QuasarAppUtils::Params::log(QString("If you see this message please create a new issue"
+                                        " about this problem on the official github page"
+                                        " https://github.com/QuasarApp/CQtDeployer/issues/new/choose. "),
+                                QuasarAppUtils::Error);
+};
 
 QString DeployCore::systemLibsFolderName() {
     return "systemLibs";

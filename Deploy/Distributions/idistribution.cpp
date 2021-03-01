@@ -236,21 +236,20 @@ QString iDistribution::getName(const DistroModule& pkg) const {
     return name;
 }
 
-bool iDistribution::deployIcon(TemplateInfo &info ,const DistroModule& pkg) {
+bool iDistribution::deployIcon(TemplateInfo &info, const DistroModule& pkg) {
     auto localData = dataLocation(pkg);
+    const DeployConfig *cfg = DeployCore::_config;
 
     info.Icon = "icons/Icon.png";
-    if (pkg.icon().isEmpty()) {
-        if (!copyFile(":/shared/Distributions/Templates/Icon.png",
-                      localData + "/icons/", false)) {
-            return false;
-        }
-    } else {
-        QFileInfo iconInfo(pkg.icon());
-        info.Icon = releativeLocation(pkg) + "/icons/" + iconInfo.fileName();
-        if (!copyFile(pkg.icon(), localData + "/icons/", false)) {
 
-            QuasarAppUtils::Params::log(QString("fail to copy icon: %0 ").arg(pkg.icon()),
+    for (const auto& target: pkg.targets()) {
+        auto icon = cfg->targets().value(target).getIcon();
+
+        QFileInfo iconInfo(icon);
+        info.Icon = releativeLocation(pkg) + "/icons/" + iconInfo.fileName();
+        if (!copyFile(icon, localData + "/icons/", false)) {
+
+            QuasarAppUtils::Params::log(QString("fail to copy icon: %0 ").arg(icon),
                                         QuasarAppUtils::Error);
 
             return false;

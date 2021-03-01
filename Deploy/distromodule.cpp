@@ -69,14 +69,6 @@ void DistroModule::setReleaseData(const QString &releaseData) {
     _releaseData = releaseData;
 }
 
-QString DistroModule::icon() const {
-    return _icon;
-}
-
-void DistroModule::setIcon(const QString &icon) {
-    _icon = icon;
-}
-
 QString DistroModule::publisher() const {
     return _publisher;
 }
