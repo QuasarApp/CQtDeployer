@@ -64,6 +64,39 @@ bool parsePackagesPrivate(Container& mainContainer,
     return true;
 }
 
+template <typename Adder>
+void parseTargetPrivate(DeployConfig& conf,
+                        const QStringList &inputParams,
+                        Adder adder) {
+
+    auto &cointainer = conf.targetsEdit();
+
+    for (const auto &iconPair: inputParams) {
+        auto pair = iconPair.split(DeployCore::getSeparator(1), splitbehavior);
+
+        if (pair.size() == 1) {
+            for (auto& editableTarget: cointainer) {
+                (editableTarget.*adder)(pair.value(0));
+            }
+            continue;
+        }
+
+        auto targetsMap = conf.getTargetsListByFilter(pair.value(0));
+
+        if (pair.value(0).isEmpty() || targetsMap.isEmpty()) {
+
+            QuasarAppUtils::Params::log(QString("You try sets property for the not exits target."
+                                                " target: %0").arg(pair.value(0)),
+                                        QuasarAppUtils::Warning);
+
+            continue;
+        }
+
+        auto editableTarget = targetsMap.begin().value();
+        (editableTarget->*adder)(pair.value(1));
+    }
+}
+
 bool ConfigParser::parseParams() {
 
     auto path = QuasarAppUtils::Params::getStrArg("confFile");
@@ -283,7 +316,8 @@ bool ConfigParser::createFromDeploy(const QString& confFile) const {
 
     auto info = QFileInfo(confFile);
 
-    for (const auto &key :DeployCore::helpKeys()) {
+    const auto keys = DeployCore::helpKeys();
+    for (const auto &key :keys) {
         writeKey(key, obj, info.absolutePath());
     }
 
@@ -373,8 +407,6 @@ bool ConfigParser::initDistroStruct() {
             split(DeployCore::getSeparator(0), splitbehavior);
     auto releaseDate = QuasarAppUtils::Params::getStrArg("releaseDate").
             split(DeployCore::getSeparator(0), splitbehavior);
-    auto icon = QuasarAppUtils::Params::getStrArg("icon").
-            split(DeployCore::getSeparator(0), splitbehavior);
     auto publisher = QuasarAppUtils::Params::getStrArg("publisher").
             split(DeployCore::getSeparator(0), splitbehavior);
 
@@ -443,11 +475,6 @@ bool ConfigParser::initDistroStruct() {
 
     if (releaseDate.size() && !parsePackagesPrivate(mainDistro, releaseDate, &DistroModule::setReleaseData)) {
         packagesErrorLog("releaseDate");
-        return false;
-    }
-
-    if (icon.size() && !parsePackagesPrivate(mainDistro, icon, &DistroModule::setIcon)) {
-        packagesErrorLog("icon");
         return false;
     }
 
@@ -594,7 +621,7 @@ void ConfigParser::packagesErrorLog(const QString &flag) {
     QuasarAppUtils::Params::log(QString("Set %0 fail, because you try set %0 for not inited package."
                                        " Use 'targetPackage' flag for init the packages. "
                                         "Or if you want to configure emty package use the allowEmptyPackages option for disable this error message.").arg(flag),
-                                       QuasarAppUtils::Error);
+                                QuasarAppUtils::Error);
 }
 
 bool ConfigParser::parseDeployMode() {
@@ -717,6 +744,17 @@ bool ConfigParser::parseInitMode() {
     }
 
     return true;
+}
+
+void ConfigParser::configureTargets() {
+    const auto icons = QuasarAppUtils::Params::getStrArg("icon").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
+    if (icons.size()) {
+        parseTargetPrivate(_config, icons, &TargetInfo::setIcon);
+    }
+
+    return;
 }
 
 bool ConfigParser::parseClearMode() {
@@ -1465,12 +1503,7 @@ bool ConfigParser::smartMoveTargets() {
     for (auto i = _config.targets().cbegin(); i != _config.targets().cend(); ++i) {
 
         if (!i.value().isValid()) {
-            QuasarAppUtils::Params::log(QString("Internal error ocurred in %0. Target not inited.").arg(__FUNCTION__),
-                                        QuasarAppUtils::Error);
-            QuasarAppUtils::Params::log(QString("If you see this message please create a new issue"
-                                                " about this problem on the official github page"
-                                                " https://github.com/QuasarApp/CQtDeployer/issues/new/choose. "),
-                                        QuasarAppUtils::Error);
+            internalError();
             return false;
         }
 
@@ -1492,6 +1525,8 @@ bool ConfigParser::smartMoveTargets() {
     }
 
     _config.targetsEdit() = temp;
+
+    configureTargets();
 
     return result;
 }

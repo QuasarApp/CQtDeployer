@@ -278,6 +278,7 @@ bool Extracter::deploy() {
     QuasarAppUtils::Params::log("target deploy started!!",
                                 QuasarAppUtils::Info);
     if (!_cqt->smartMoveTargets()) {
+        QuasarAppUtils::Params::log("Fail to copy targets", QuasarAppUtils::Error);
         return false;
     }
 

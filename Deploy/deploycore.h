@@ -259,7 +259,16 @@ public:
      * @note see https://github.com/QuasarApp/CQtDeployer/issues/396
      */
     static QString systemLibsFolderName();
+
+    /**
+     * @brief printInternalError This function print message of the internal error.
+     * @param function This is function name.
+     * @param file This is file name of code.
+     * @param line This is line number of the code.
+     */
+    static void printInternalError(const char *function, const char* file, int line);
+
 };
 
-
+#define internalError() DeployCore::printInternalError(__FUNCTION__, __FILE__, __LINE__)
 #endif // DEPLOYUTILS_H

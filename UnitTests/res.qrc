@@ -19,5 +19,6 @@
         <file>testRes/testMultiPackageConfig.json</file>
         <file>testRes/customRunScript.sh</file>
         <file>testRes/TestTr.qm</file>
+        <file>testRes/TestIcon.png</file>
     </qresource>
 </RCC>

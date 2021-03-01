@@ -178,6 +178,9 @@ private slots:
     void testDeployGeneralFiles();
     void testTr();
 
+    // Attention! This test only covers 40% of icon functions
+    void testIcons();
+
     void customTest();
 };
 
@@ -1186,6 +1189,102 @@ void deploytest::testTr() {
     runTestParams({"-bin", bin, "clear" ,
                    "-tr", ":/testResurces/testRes/TestTr.qm",
                    "-qmake", qmake}, &comapareTree);
+}
+
+void deploytest::testIcons() {
+    TestUtils utils;
+
+    auto initTargets = [](ConfigParser * deploy, const QStringList& params) {
+        QVERIFY(QuasarAppUtils::Params::parseParams(params));
+
+        auto bin = QuasarAppUtils::Params::getStrArg("bin").
+                split(DeployCore::getSeparator(0), splitbehavior);
+
+
+        QVERIFY(deploy->setTargets(bin));
+
+        deploy->configureTargets();
+    };
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC";
+    QStringList binMulti = {TestBinDir + "TestOnlyC" , TestBinDir + "TestQMLWidgets",
+            TestBinDir + "QtWidgetsProject"};
+
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+    QStringList binMulti = {TestBinDir + "TestOnlyC.exe" , TestBinDir + "TestQMLWidgets.exe",
+            TestBinDir + "QtWidgetsProject.exe"};
+
+#endif
+
+    FileManager file;
+    DependenciesScanner scan;
+    Packing pac(&file);
+    PluginsParser _pluginParser;
+
+
+    // Test default icons
+    ConfigParser *deploy = new ConfigParser(&file, &_pluginParser, &scan, &pac);
+
+    initTargets(deploy, {"-bin", bin,
+                         "force-clear",
+                        });
+
+    auto targetsMap = deploy->_config.getTargetsListByFilter("TestOnlyC");
+    auto targetinfo = targetsMap.begin().value();
+    QVERIFY(targetinfo->getName().contains("TestOnlyC"));
+    auto icon = QFileInfo(targetinfo->getIcon());
+
+#ifdef Q_OS_UNIX
+    QVERIFY(icon.fileName() == "Icon.png");
+#else
+    QVERIFY(icon.fileName() == "Icon.ico");
+
+#endif
+    delete deploy;
+
+    // Test multiple targets icons (sets for all targets on icon)
+    deploy = new ConfigParser(&file, &_pluginParser, &scan, &pac);
+
+    initTargets(deploy, {"-bin", binMulti.join(","),
+                         "force-clear",
+                         "-icon", ":/testResurces/testRes/TestIcon.png",
+                });
+
+    for (const auto &target : qAsConst(binMulti)) {
+        QFileInfo tarInfo(target);
+
+        targetsMap = deploy->_config.getTargetsListByFilter(tarInfo.baseName());
+        targetinfo = targetsMap.begin().value();
+        QVERIFY(targetinfo->getName().contains(tarInfo.baseName()));
+        icon = QFileInfo(targetinfo->getIcon());
+
+        QVERIFY(icon.fileName() == "TestIcon.png");
+    }
+
+    delete deploy;
+
+
+    // Test multiple targets icons (sets only one icon)
+    deploy = new ConfigParser(&file, &_pluginParser, &scan, &pac);
+
+    initTargets(deploy, {"-bin", binMulti.join(","),
+                         "force-clear",
+                         "-icon", "TestOnlyC;:/testResurces/testRes/TestIcon.png",
+                });
+
+
+    targetsMap = deploy->_config.getTargetsListByFilter("TestOnlyC");
+    targetinfo = targetsMap.begin().value();
+    QVERIFY(targetinfo->getName().contains("TestOnlyC"));
+    icon = QFileInfo(targetinfo->getIcon());
+
+    QVERIFY(icon.fileName() == "TestIcon.png");
+
+
+    delete deploy;
+
 }
 
 void deploytest::customTest() {
