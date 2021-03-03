@@ -21,7 +21,8 @@ lessThan(QT_MAJOR_VERSION, 6):lessThan(QT_MINOR_VERSION, 14) {
                UnitTests \
                tests/TestOnlyC \
                tests/TestQtWidgets \
-               tests/TestQMLWidgets
+               tests/TestQMLWidgets \
+               tests/virtualkeyboard
 
     unix:SUBDIRS += tests/quicknanobrowser
     unix:SUBDIRS += tests/webui

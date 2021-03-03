@@ -51,7 +51,9 @@ private:
     QHash<QString, QSet<QString>> _disabledPlugins;
     QHash<QString, QSet<QString>> _enabledPlugins;
 
-    quint64 qtModuleForPlugin(const QString &subDirName) const;
+    quint64 qtModuleForPluginGroup(const QString &subDirName) const;
+    quint64 qtModuleForPlugin(const QString &plugin) const;
+
     Platform platformForPlugin(const QString &name) const;
 
     bool copyPlugin(const QString &plugin, const QString &package);
