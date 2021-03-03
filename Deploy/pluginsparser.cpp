@@ -14,6 +14,13 @@
 PluginsParser::PluginsParser(){
 }
 
+// This maping using for the plugins group. But not all plugins from group should be copyed.
+// For example the platforminputcontexts group plugins contains the qtvirtualkeyboardplugin. This plugin depends of the QtVirtualKeyboadr library.
+// But this plugin should be copied only when the deistribution has a QtVirtualKeyboard module.
+// If the qtvirtualkeyboardplugin plugin will be copied befor the adding QtVirtualKeyboard then in the  distribution will have a not used Qt module.
+// For fix this issue we need to add plugins into ditalsSluginModuleMappings list.
+// all plugins from array ditalsSluginModuleMappings will have their modules updated.
+
 static const PluginModuleMapping pluginModuleMappings[] =
 {
     {"qml1tooling", DeployCore::QtModule::QtDeclarativeModule},
@@ -24,7 +31,7 @@ static const PluginModuleMapping pluginModuleMappings[] =
     {"platforms", DeployCore::QtModule::QtGuiModule},
     {"platformthemes", DeployCore::QtModule::QtGuiModule},
     {"platforminputcontexts", DeployCore::QtModule::QtGuiModule},
-    {"virtualkeyboard", DeployCore::QtModule::QtGuiModule},
+    {"virtualkeyboard", DeployCore::QtModule::QtVirtualKeyboard},
     {"geoservices", DeployCore::QtModule::QtLocationModule},
     {"audio", DeployCore::QtModule::QtMultimediaModule},
     {"mediaservice", DeployCore::QtModule::QtMultimediaModule},
@@ -54,6 +61,12 @@ static const PluginModuleMapping pluginModuleMappings[] =
 
 
 };
+
+
+static const PluginModuleMapping ditalsSluginModuleMappings[] = {
+    {"qtvirtualkeyboardplugin", DeployCore::QtModule::QtVirtualKeyboard}
+};
+
 
 static const PlatformMapping platformMappings[] =
 {
@@ -85,7 +98,7 @@ static const PlatformMapping platformMappings[] =
 
 };
 
-quint64 PluginsParser::qtModuleForPlugin(const QString &subDirName) const {
+quint64 PluginsParser::qtModuleForPluginGroup(const QString &subDirName) const {
     const auto end = std::end(pluginModuleMappings);
 
     const auto result =
@@ -93,6 +106,19 @@ quint64 PluginsParser::qtModuleForPlugin(const QString &subDirName) const {
                          [&subDirName] (const PluginModuleMapping &m) {
 
         return subDirName == QLatin1String(m.directoryName);
+    });
+
+    return result != end ? result->module : 0; // "designer"
+}
+
+quint64 PluginsParser::qtModuleForPlugin(const QString &plugin) const {
+    const auto end = std::end(ditalsSluginModuleMappings);
+
+    const auto result =
+            std::find_if(std::begin(ditalsSluginModuleMappings), end,
+                         [&plugin] (const PluginModuleMapping &m) {
+
+        return plugin == QLatin1String(m.directoryName);
     });
 
     return result != end ? result->module : 0; // "designer"
@@ -132,7 +158,8 @@ bool PluginsParser::scan(const QString& pluginPath,
     return true;
 }
 
-void PluginsParser::addPlugins(const QStringList& list, const QString& package, QHash<QString, QSet<QString>>& container) {
+void PluginsParser::addPlugins(const QStringList& list, const QString& package,
+                               QHash<QString, QSet<QString>>& container) {
     const DeployConfig* cnf = DeployCore::_config;
 
     for (const auto plugin: list) {
@@ -140,12 +167,10 @@ void PluginsParser::addPlugins(const QStringList& list, const QString& package, 
              auto listPlugins = QDir(cnf->qtDir.getPlugins() + "/" + plugin).entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
 
              for (const auto &plugin: listPlugins) {
-                 QuasarAppUtils::Params::log("Disable plugin: " + plugin.baseName(), QuasarAppUtils::Debug);
                  container[package].insert(getPluginNameFromFile( plugin.baseName()));
              }
 
         } else {
-            QuasarAppUtils::Params::log("Disable plugin: " + plugin, QuasarAppUtils::Debug);
             container[package].insert(getPluginNameFromFile(plugin));
         }
     }
@@ -202,11 +227,16 @@ void PluginsParser::scanPluginGroup(const QFileInfo& plugin,
                                     DeployCore::QtModule qtModules) const {
 
     auto plugins = QDir(plugin.absoluteFilePath()).entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
-    auto module = qtModuleForPlugin(plugin.fileName());
+    auto groupModule = qtModuleForPluginGroup(plugin.fileName());
 
     for (const auto& info: plugins) {
-        if (isEnabledPlugin(getPluginNameFromFile(info.baseName()), package) ||
-                (!isDisabledPlugin(getPluginNameFromFile(info.baseName()), package) && (qtModules & module))) {
+        bool fEnabled = isEnabledPlugin(getPluginNameFromFile(info.baseName()), package);
+        bool fDisabled = isDisabledPlugin(getPluginNameFromFile(info.baseName()), package);
+
+        auto pluginModule = qtModuleForPlugin(DeployCore::getLibCoreName(info));
+        auto module = (pluginModule)? pluginModule : groupModule;
+
+        if (fEnabled || (!fDisabled && (qtModules & module))) {
             result += info.absoluteFilePath();
         }
     }
@@ -222,8 +252,6 @@ bool PluginsParser::isEnabledPlugin(const QString &plugin, const QString &packag
 
 QStringList PluginsParser::defaultForbidenPlugins() {
     return {
-        "qtvirtualkeyboardplugin",
-        "virtualkeyboard",
     };
 }
 
