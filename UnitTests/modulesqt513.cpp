@@ -1319,6 +1319,7 @@ QSet<QString> ModulesQt513::qmlVirtualKeyBoadrLibs(const QString &distDir) const
          "./" + distDir + "/Qt5RemoteObjects.dll",
          "./" + distDir + "/Qt5VirtualKeyboard.dll",
          "./" + distDir + "/basic.exe",
+         "./" + distDir + "/basic.bat",
          "./" + distDir + "/plugins/platforminputcontexts/qtvirtualkeyboardplugin.dll",
          "./" + distDir + "/plugins/styles/qwindowsvistastyle.dll",
          "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_hangul.dll",
