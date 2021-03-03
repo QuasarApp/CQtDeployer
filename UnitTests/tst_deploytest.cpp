@@ -1868,6 +1868,7 @@ void deploytest::testConfFile() {
      "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
      "./" + DISTRO_DIR + "/QtWidgetsProject.bat",
      "./" + DISTRO_DIR + "/TestQMLWidgets.exe",
+     "./" + DISTRO_DIR + "/TestQMLWidgets.bat",
      "./" + DISTRO_DIR + "/basic.exe",
      "./" + DISTRO_DIR + "/basic.bat",
      "./" + DISTRO_DIR + "/qt.conf"});
