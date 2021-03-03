@@ -1309,7 +1309,41 @@ QSet<QString> ModulesQt513::qmlVirtualKeyBoadrLibs(const QString &distDir) const
     });
 #else
     Tree += utils.createTree({
-    });
+         "./" + distDir + "/Qt5RemoteObjects.dll",
+         "./" + distDir + "/Qt5VirtualKeyboard.dll",
+         "./" + distDir + "/basic.exe",
+         "./" + distDir + "/plugins/platforminputcontexts/qtvirtualkeyboardplugin.dll",
+         "./" + distDir + "/plugins/styles/qwindowsvistastyle.dll",
+         "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_hangul.dll",
+         "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_openwnn.dll",
+         "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_pinyin.dll",
+         "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_tcime.dll",
+         "./" + distDir + "/plugins/virtualkeyboard/qtvirtualkeyboard_thai.dll",
+         "./" + distDir + "/qml/QtQml/Models.2/modelsplugin.dll",
+         "./" + distDir + "/qml/QtQml/Models.2/plugins.qmltypes",
+         "./" + distDir + "/qml/QtQml/Models.2/qmldir",
+         "./" + distDir + "/qml/QtQml/RemoteObjects/plugins.qmltypes",
+         "./" + distDir + "/qml/QtQml/RemoteObjects/qmldir",
+         "./" + distDir + "/qml/QtQml/RemoteObjects/qtqmlremoteobjects.dll",
+         "./" + distDir + "/qml/QtQml/StateMachine/plugins.qmltypes",
+         "./" + distDir + "/qml/QtQml/StateMachine/qmldir",
+         "./" + distDir + "/qml/QtQml/StateMachine/qtqmlstatemachine.dll",
+         "./" + distDir + "/qml/QtQml/WorkerScript.2/plugins.qmltypes",
+         "./" + distDir + "/qml/QtQml/WorkerScript.2/qmldir",
+         "./" + distDir + "/qml/QtQml/WorkerScript.2/workerscriptplugin.dll",
+         "./" + distDir + "/qml/QtQml/plugins.qmltypes",
+         "./" + distDir + "/qml/QtQml/qmldir",
+         "./" + distDir + "/qml/QtQml/qmlplugin.dll",
+         "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Settings/plugins.qmltypes",
+         "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Settings/qmldir",
+         "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Settings/qtquickvirtualkeyboardsettingsplugin.dll",
+         "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Styles/plugins.qmltypes",
+         "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Styles/qmldir",
+         "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Styles/qtquickvirtualkeyboardstylesplugin.dll",
+         "./" + distDir + "/qml/QtQuick/VirtualKeyboard/plugins.qmltypes",
+         "./" + distDir + "/qml/QtQuick/VirtualKeyboard/qmldir",
+         "./" + distDir + "/qml/QtQuick/VirtualKeyboard/qtquickvirtualkeyboardplugin.dll"
+     });
 #endif
     return Tree;
 
