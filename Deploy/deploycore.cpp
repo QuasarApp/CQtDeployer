@@ -79,7 +79,8 @@ QtModuleEntry DeployCore::qtModuleEntries[] = {
     { QtWebChannelModule, "webchannel", "QtXWebChannel", nullptr },
     { QtTextToSpeechModule, "texttospeech", "QtXTextToSpeech", nullptr },
     { QtSerialBusModule, "serialbus", "QtXSerialBus", nullptr },
-    { QtWebViewModule, "webview", "QtXWebView", nullptr }
+    { QtWebViewModule, "webview", "QtXWebView", nullptr },
+    { QtVirtualKeyboard, "virtualkeyboard", "QtXVirtualKeyboard", nullptr }
 };
 
 DeployCore::QtModule DeployCore::getQtModule(const QString& path) {
@@ -689,6 +690,17 @@ QString DeployCore::transportPathToSnapRoot(const QString &path) {
 
 bool DeployCore::checkSystemBakupSnapInterface() {
     return QDir(DeployCore::snapRootFS()).entryList(QDir::AllEntries | QDir::NoDotAndDotDot).size();
+}
+
+QString DeployCore::getLibCoreName(const QFileInfo &info) {
+    auto baseName = info.baseName();
+    QString result;    if (baseName.left(3) == "lib") {
+        result = baseName.mid(3);
+    } else {
+        result = baseName;
+    }
+
+    return result;
 }
 
 uint qHash(WinAPI i) {

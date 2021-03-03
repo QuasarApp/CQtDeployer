@@ -174,9 +174,10 @@ public:
         Qt3DAnimationModule       = 0x0002000000000000,
         QtWebViewModule           = 0x0004000000000000,
         Qt3DExtrasModule          = 0x0008000000000000,
+        QtVirtualKeyboard         = 0x0010000000000000,
         // Qt6
-        QtOpenGLWidgetsModule     = 0x0010000000000000,
-        QtSvgWidgetsModule        = 0x0020000000000000
+        QtOpenGLWidgetsModule     = 0x0020000000000000,
+        QtSvgWidgetsModule        = 0x0040000000000000
     };
 
     DeployCore() = delete;
@@ -248,6 +249,14 @@ public:
     static QString snapRootFS();
     static QString transportPathToSnapRoot(const QString &path);
     static bool checkSystemBakupSnapInterface();
+
+    /**
+     * @brief getLibCoreName This method remove platfomr specificly prefixes and sufixes of the librarry.
+     *  Example : getLibCoreName(libTest.so) return Test
+     * @param baseName This is information about checked library.
+     * @return return core name of the library.
+     */
+    static QString getLibCoreName(const QFileInfo& info);
 };
 
 #endif // DEPLOYUTILS_H

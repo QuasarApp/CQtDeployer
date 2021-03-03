@@ -145,6 +145,8 @@ private slots:
     void testDependencyMap();
 
     void testQmlScaner();
+
+    void testVirtualKeyBoard();
 };
 
 bool deploytest::runProcess(const QString &DistroPath,
@@ -716,6 +718,23 @@ void deploytest::testQmlScaner() {
 
 }
 
+void deploytest::testVirtualKeyBoard() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "basic";
+    QString qmake = TestQtDir + "bin/qmake";
+#else
+    QString bin = TestBinDir + "basic.exe";
+    QString qmake = TestQtDir + "bin/qmake.exe";
+#endif
+    auto comapareTree = TestModule.qmlVirtualKeyBoadrLibs();
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../virtualkeyboard"}, &comapareTree);
+}
+
 void deploytest::testQmlExtrct() {
     QmlCreator creator("./");
     auto imports = creator.getQmlImports();
@@ -1190,14 +1209,17 @@ void deploytest::testBinDir() {
      "./" + DISTRO_DIR + "/bin/qt.conf",
      "./" + DISTRO_DIR + "/bin/QtWidgetsProject",
      "./" + DISTRO_DIR + "/bin/TestQMLWidgets",
+     "./" + DISTRO_DIR + "/bin/basic",
      "./" + DISTRO_DIR + "/TestOnlyC.sh",
      "./" + DISTRO_DIR + "/QtWidgetsProject.sh",
-     "./" + DISTRO_DIR + "/TestQMLWidgets.sh"});
+     "./" + DISTRO_DIR + "/TestQMLWidgets.sh",
+     "./" + DISTRO_DIR + "/basic.sh"});
 #else
     auto comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "/TestOnlyC.exe",
      "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
      "./" + DISTRO_DIR + "/TestQMLWidgets.exe",
+     "./" + DISTRO_DIR + "/basic.exe",
      "./" + DISTRO_DIR + "/qt.conf"});
 #endif
 
@@ -1227,15 +1249,18 @@ void deploytest::testConfFile() {
      "./" + DISTRO_DIR + "/bin/qt.conf",
      "./" + DISTRO_DIR + "/bin/QtWidgetsProject",
      "./" + DISTRO_DIR + "/bin/TestQMLWidgets",
+     "./" + DISTRO_DIR + "/bin/basic",
      "./" + DISTRO_DIR + "/TestOnlyC.sh",
      "./" + DISTRO_DIR + "/QtWidgetsProject.sh",
-     "./" + DISTRO_DIR + "/TestQMLWidgets.sh"});
+     "./" + DISTRO_DIR + "/TestQMLWidgets.sh",
+     "./" + DISTRO_DIR + "/basic.sh"});
 #else
     auto comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "/TestOnlyC.exe",
-     "./" + DISTRO_DIR + "/qt.conf",
      "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
-     "./" + DISTRO_DIR + "/TestQMLWidgets.exe"});
+     "./" + DISTRO_DIR + "/TestQMLWidgets.exe",
+     "./" + DISTRO_DIR + "/basic.exe",
+     "./" + DISTRO_DIR + "/qt.conf"});
 #endif
 
 #ifdef Q_OS_UNIX
@@ -1437,14 +1462,16 @@ void deploytest::testConfFile() {
     QFile::remove(TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json");
 
     auto file = "testCase.json";
+#ifdef Q_OS_UNIX
+    bin =  TestBinDir + "QtWidgetsProject," + TestBinDir + "TestOnlyC";
+#else
+    bin =  TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestOnlyC.exe";
+#endif
     QVERIFY(utils.deployFile(":/testResurces/testRes/testMultiPackageConfig.json", file,
-    {{"$BIN_DIR", TestBinDir.toLatin1()}}));
+    {{"$BIN_DIR", bin.toLatin1()}}));
 
     comapareTree = TestModule.onlyC(DISTRO_DIR + "/Dstro1") +
-            TestModule.qtLibs(DISTRO_DIR + "/Dstro2") +
-            TestModule.qmlLibs(DISTRO_DIR + "/Dstro2") +
-            TestModule.qtWebEngine(DISTRO_DIR + "/Dstro2") +
-            TestModule.qtWebEngineWidgets(DISTRO_DIR + "/Dstro2");
+            TestModule.qtLibs(DISTRO_DIR + "/Dstro2");
 
 #ifdef Q_OS_LINUX
     auto qmlDir = TestBinDir + "/../";
@@ -1453,8 +1480,7 @@ void deploytest::testConfFile() {
 #endif
 
 
-    runTestParams({"-confFile", file,
-                   "-qmlDir", "Dstro2;" + qmlDir},
+    runTestParams({"-confFile", file},
                   &comapareTree);
 }
 

@@ -1,14 +1,11 @@
 {
-    "binDir": "$BIN_DIR",
+    "bin": "$BIN_DIR",
     "clear": true,
     "libDir": "./",
     "recursiveDepth": "5",
     "targetPackage": [
         ["Dstro1", "TestOnlyC"],
-        ["Dstro2", "QtWidgetsProject"],
-        ["Dstro2", "TestQMLWidgets"],
-        ["Dstro2", "quicknanobrowser"],
-        ["Dstro2", "webui"]
+        ["Dstro2", "QtWidgetsProject"]
 
     ]
 }
