@@ -511,7 +511,8 @@ QMAKE_EXTRA_TARGETS += deploy
 ```
 
 The **libDir** parameter is used to set the paths to the directory paths contain dependencies of your application, and the **qmlDir** parameter is used to set the directory paths contain the qml files required by your application. In this example, the application source code root is selected by these two options.
-The **recursiveDepth** parameter is used to set the search depth of **libDir** and **qmlDir**.
+The **recursiveDepth** parameter is used to set the search depth of **libDir** and **qmlDir**. 
+The **qif** parameter is used to create a installer using Qt Installer Framework.
 
 
 ## Integration example 

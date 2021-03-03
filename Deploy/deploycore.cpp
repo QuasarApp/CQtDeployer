@@ -79,7 +79,8 @@ QtModuleEntry DeployCore::qtModuleEntries[] = {
     { QtWebChannelModule, "webchannel", "QtXWebChannel", nullptr },
     { QtTextToSpeechModule, "texttospeech", "QtXTextToSpeech", nullptr },
     { QtSerialBusModule, "serialbus", "QtXSerialBus", nullptr },
-    { QtWebViewModule, "webview", "QtXWebView", nullptr }
+    { QtWebViewModule, "webview", "QtXWebView", nullptr },
+    { QtVirtualKeyboard, "virtualkeyboard", "QtXVirtualKeyboard", nullptr }
 };
 
 DeployCore::QtModule DeployCore::getQtModule(const QString& path) {
@@ -743,6 +744,17 @@ void DeployCore::printInternalError(const char * function, const char* file, int
 
 QString DeployCore::systemLibsFolderName() {
     return "systemLibs";
+}
+
+QString DeployCore::getLibCoreName(const QFileInfo &info) {
+    auto baseName = info.baseName();
+    QString result;    if (baseName.left(3) == "lib") {
+        result = baseName.mid(3);
+    } else {
+        result = baseName;
+    }
+
+    return result;
 }
 
 uint qHash(WinAPI i) {

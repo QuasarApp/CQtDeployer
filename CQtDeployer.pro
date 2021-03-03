@@ -23,7 +23,8 @@ android: DEFINES += WITHOUT_TESTS
                UnitTests \
                tests/TestOnlyC \
                tests/TestQtWidgets \
-               tests/TestQMLWidgets
+               tests/TestQMLWidgets \
+               tests/virtualkeyboard
 
     unix:SUBDIRS += tests/quicknanobrowser
     unix:SUBDIRS += tests/webui

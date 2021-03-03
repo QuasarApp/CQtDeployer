@@ -25,6 +25,8 @@ public:
     virtual QSet<QString> onlyC(const QString &distDir = DISTRO_DIR) const;
     virtual QSet<QString> qtLibs(const QString &distDir = DISTRO_DIR) const;
     virtual QSet<QString> qmlLibs(const QString &distDir = DISTRO_DIR) const;
+    virtual QSet<QString> qmlVirtualKeyBoadrLibs(const QString &distDir = DISTRO_DIR) const;
+
     virtual QSet<QString> testDistroLibs(const QString &distDir = DISTRO_DIR) const;
     virtual QSet<QString> testOutLibs(const QString &distDir = DISTRO_DIR) const;
 
