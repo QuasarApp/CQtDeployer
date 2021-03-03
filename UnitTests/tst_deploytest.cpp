@@ -1812,15 +1812,14 @@ void deploytest::testextraData() {
     auto comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "/build/TestOnlyC",
      "./" + DISTRO_DIR + "/build/QtWidgetsProject",
-     "./" + DISTRO_DIR + "/build/TestQMLWidgets"});
+     "./" + DISTRO_DIR + "/build/TestQMLWidgets",
+     "./" + DISTRO_DIR + "/build/basic"});
 #else
     auto comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "/build/TestOnlyC.exe",
      "./" + DISTRO_DIR + "/build/QtWidgetsProject.exe",
      "./" + DISTRO_DIR + "/build/TestQMLWidgets.exe",
-     "./" + DISTRO_DIR + "/build/TestOnlyC.bat",
-     "./" + DISTRO_DIR + "/build/QtWidgetsProject.bat",
-     "./" + DISTRO_DIR + "/build/TestQMLWidgets.bat"});
+     "./" + DISTRO_DIR + "/build/basic.exe"});
 #endif
 
 #ifdef Q_OS_UNIX
