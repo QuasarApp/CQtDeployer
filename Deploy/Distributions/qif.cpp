@@ -159,7 +159,6 @@ bool QIF::deployTemplate(PackageControl &pkg) {
 }
 
 bool QIF::removeTemplate() const {
-    auto customTemplate = QuasarAppUtils::Params::getStrArg("qif", "");
     const DeployConfig *cfg = DeployCore::_config;
 
     registerOutFiles();

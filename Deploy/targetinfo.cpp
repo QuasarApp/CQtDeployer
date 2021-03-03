@@ -19,4 +19,22 @@ void TargetInfo::setPackage(const QString &value) {
     package = value;
 }
 
+QString TargetInfo::getIcon() const {
+    if (icon.isEmpty()) {
+        QFileInfo info(getName());
+        if (info.suffix() == "exe") {
+            return ":/shared/Distributions/Templates/Icon.ico";
+        }
+
+        return ":/shared/Distributions/Templates/Icon.png";
+
+    }
+
+    return icon;
+}
+
+void TargetInfo::setIcon(const QString &value) {
+    icon = value;
+}
+
 

@@ -19,8 +19,12 @@ public:
     QString getPackage() const;
     void setPackage(const QString &value);
 
+    QString getIcon() const;
+    void setIcon(const QString &value);
+
 private:
     QString package = "";
+    QString icon = "";
 };
 
 #endif // TARGETINFO_H
