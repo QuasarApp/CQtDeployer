@@ -11,40 +11,10 @@
 #include <QFileInfo>
 #include <QSet>
 #include <QVector>
-#include <pe-parse/parse.h>
 #include <quasarapp.h>
+#include <LIEF/LIEF.hpp>
 
 #include <set>
-
-namespace peparse {
-
-class section;
-
-struct importent {
-  VA addr;
-  std::string symbolName;
-  std::string moduleName;
-};
-
-struct exportent {
-  VA addr;
-  std::string symbolName;
-  std::string moduleName;
-};
-
-class reloc;
-class symbol;
-
-struct parsed_pe_internal {
-  std::vector<section> secs;
-  std::vector<resource> rsrcs;
-  std::vector<importent> imports;
-  std::vector<reloc> relocs;
-  std::vector<exportent> exports;
-  std::vector<symbol> symbols;
-};
-
-}
 
 bool PE::getDep(peparse::parsed_pe_internal * internal, LibInfo &res) const {
     auto imports = internal->imports;
@@ -111,6 +81,13 @@ PE::PE(): IGetLibInfo () {
 
 bool PE::getLibInfo(const QString &lib, LibInfo &info) const {
     auto parsedPeLib = peparse::ParsePEFromFile(lib.toLatin1());
+
+    try {
+      std::unique_ptr<LIEF::PE::Binary> pe = LIEF::PE::Parser::parse("C:\\Windows\\explorer.exe");
+      std::cout << *pe << std::endl;
+    } catch (const LIEF::exception& err) {
+      std::cerr << err.what() << std::endl;
+    }
 
     if (!parsedPeLib)
         return false;
