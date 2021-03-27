@@ -210,6 +210,7 @@ QSet<QString> ModulesQt515::testOutLibs(const QString &distDir) const {
                                 "./" + distDir + "/lolTr/qtdeclarative_tr.qm",
                                 "./" + distDir + "/lolTr/qtbase_tr.qm",
 
+
     });
 #else
     res += utils.createTree({
@@ -235,6 +236,7 @@ QSet<QString> ModulesQt515::testOutLibs(const QString &distDir) const {
                                 "./" + distDir + "/q/QtQuick/Controls.2/designer/InsetSection.qml",
                                 "./" + distDir + "/lolTr/qtdeclarative_tr.qm",
                                 "./" + distDir + "/lolTr/qtbase_tr.qm",
+
                             });
 
     res -= utils.createTree({

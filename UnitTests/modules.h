@@ -12,7 +12,11 @@
 #include <configparser.h>
 #include <QSet>
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+    #include "modulesqt5152.h"
+    class Modules : public ModulesQt5152
+
+#elif QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     #include "modulesqt515.h"
     class Modules : public ModulesQt515
 

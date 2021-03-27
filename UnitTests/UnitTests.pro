@@ -36,6 +36,7 @@ SOURCES +=  tst_deploytest.cpp \
     modulesqt513.cpp \
     modulesqt514.cpp \
     modulesqt515.cpp \
+    modulesqt5152.cpp \
     qmlcreator.cpp \
     testutils.cpp
 
@@ -49,6 +50,7 @@ HEADERS += \
     modulesqt513.h \
     modulesqt514.h \
     modulesqt515.h \
+    modulesqt5152.h \
     qmlcreator.h \
     testutils.h
 
