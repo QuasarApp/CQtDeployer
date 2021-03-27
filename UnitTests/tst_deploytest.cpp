@@ -920,7 +920,7 @@ void deploytest::testQmlScaner() {
 
     // qt5
     auto qmlRoot = QFileInfo(TestQtDir + "/qml").absoluteFilePath();
-    QML *scaner = new QML(qmlRoot);
+    QML *scaner = new QML(qmlRoot, QtMajorVersion::Qt5);
     auto imports = scaner->extractImportsFromFile(":/qmlFile.qml");
 
     scaner->scanQmlTree(qmlRoot);
@@ -940,6 +940,8 @@ void deploytest::testQmlScaner() {
     }
 
 
+    scaner->setQtVersion(QtMajorVersion::Qt6);
+
     // qt6
 
     results = {
@@ -950,6 +952,57 @@ void deploytest::testQmlScaner() {
     };
 
     imports = scaner->extractImportsFromFile(":/qmlFileQt6.qml");
+
+    QVERIFY(results.size() == imports.size());
+
+    for (const auto &import: qAsConst(imports)) {
+        auto path = scaner->getPathFromImport(import);
+        QVERIFY(results.contains(path));
+    }
+
+    imports = scaner->extractImportsFromFile(":/qmlFile.qml");
+
+    QVERIFY(results.size() == imports.size());
+
+    for (const auto & import: qAsConst(imports)) {
+        auto path = scaner->getPathFromImport(import);
+        QVERIFY(results.contains(path));
+    }
+
+    // qt5
+    scaner->setQtVersion(QtMajorVersion::Qt5);
+
+    results = {
+        {qmlRoot + "/QtQuick.2/"},
+        {qmlRoot + "/QtQuick/Window.2/"},
+        {qmlRoot + "/QtQuick/Layouts/"},
+        {qmlRoot + "/Qt/labs/folderlistmodel/"},
+        {qmlRoot + "/QtQuick/VirtualKeyboard/Settings/"},
+        {qmlRoot + "/QtQuick/VirtualKeyboard/Styles/"},
+    };
+
+    imports = scaner->extractImportsFromQmlModule(":/qmlDir");
+
+    QVERIFY(results.size() == imports.size());
+
+    for (const auto &import: qAsConst(imports)) {
+        auto path = scaner->getPathFromImport(import);
+        QVERIFY(results.contains(path));
+    }
+
+    // qt6
+    scaner->setQtVersion(QtMajorVersion::Qt6);
+
+    results = {
+        {qmlRoot + "/QtQuick"},
+        {qmlRoot + "/QtQuick/Window"},
+        {qmlRoot + "/QtQuick/Layouts"},
+        {qmlRoot + "/Qt/labs/folderlistmodel"},
+        {qmlRoot + "/QtQuick/VirtualKeyboard/Settings"},
+        {qmlRoot + "/QtQuick/VirtualKeyboard/Styles"},
+    };
+
+    imports = scaner->extractImportsFromQmlModule(":/qmlDir");
 
     QVERIFY(results.size() == imports.size());
 
@@ -1316,7 +1369,7 @@ void deploytest::testQmlExtrct() {
     auto qmlFiles = creator.getCopyedQml();
 
 
-    QML scaner("./");
+    QML scaner("./", QtMajorVersion::Qt5);
 
 
     for (const auto &file : qAsConst(qmlFiles)) {

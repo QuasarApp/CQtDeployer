@@ -9,11 +9,31 @@
 
 #include <QDir>
 #include <QFile>
-#include <quasarapp.h>
-#include <deploycore.h>
+#include "quasarapp.h"
+#include "deploycore.h"
 #include "deployconfig.h"
 
-QStringList QML::extractImportsFromFile(const QString &filepath) {
+QStringList QML::extractImportLine(const QString& line) const {
+    QStringList result;
+    QStringList list = line.split(" ", QString::SkipEmptyParts);
+
+    if (list.count() == 3 || (list.count() == 5  && list[3] == "as")) {
+        if (list[2] == "auto" || (_qtVersion & QtMajorVersion::Qt6)) {
+            // qt6
+            result << (list[1].replace(".", "/"));
+            return result;
+        }
+        // qt5
+        result << (list[2][0] + "#" + list[1].replace(".", "/"));
+    } else if (list.count() == 2 || (list.count() == 4  && list[2] == "as")) {
+        // qt6
+        result << (list[1].replace(".", "/"));
+    }
+
+    return result;
+}
+
+QStringList QML::extractImportsFromFile(const QString &filepath) const {
     QStringList imports;
     QFile F(filepath);
     if (!F.open(QIODevice::ReadOnly)) return QStringList();
@@ -29,20 +49,7 @@ QStringList QML::extractImportsFromFile(const QString &filepath) {
             if (word.startsWith("//")) continue;
             if (!word.startsWith("import")) continue;
 
-            QStringList list = word.split(" ", splitbehavior);
-
-            if (list.count() == 3 || (list.count() == 5  && list[3] == "as")) {
-                if (list[2] == "auto") {
-                    // qt6
-                    imports << (list[1].replace(".", "/"));
-                    continue;
-                }
-                // qt5
-                imports << (list[2][0] + "#" + list[1].replace(".", "/"));
-            } else if (list.count() == 2 || (list.count() == 4  && list[2] == "as")) {
-                // qt6
-                imports << (list[1].replace(".", "/"));
-            }
+            imports += extractImportLine(word);
         }
 
     return imports;
@@ -56,10 +63,23 @@ bool QML::extractImportsFromDir(const QString &path, bool recursive) {
     }
 
     auto files = dir.entryInfoList(QStringList() << "*.qml" << "*.QML", QDir::Files);
+    auto qmlmodule = dir.entryInfoList(QStringList() << "qmldir", QDir::Files);
+
     auto dirs = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs);
 
     for (const auto &info: files) {
         auto imports = extractImportsFromFile(info.absoluteFilePath());
+        for (auto import : imports) {
+            if (!_imports.contains(import)) {
+                _imports.insert(import);
+                extractImportsFromDir(getPathFromImport(import), recursive);
+            }
+        }
+    }
+
+    for (const auto& module: qAsConst(qmlmodule)) {
+        QStringList imports = extractImportsFromQmlModule(module.absoluteFilePath());
+
         for (auto import : imports) {
             if (!_imports.contains(import)) {
                 _imports.insert(import);
@@ -156,12 +176,32 @@ bool QML::scanQmlTree(const QString &qmlTree) {
     return true;
 }
 
-void QML::addImport() {
+QStringList QML::extractImportsFromQmlModule(const QString &module) const {
+    QStringList imports;
+    QFile F(module);
+    if (!F.open(QIODevice::ReadOnly)) return QStringList();
 
+    QString content = F.readAll();
+
+    for (QString line : content.split("\n")) {
+        line = line.simplified();
+        if (line.startsWith("//") || line.startsWith("#")) continue;
+        if (!line.startsWith("depends")) continue;
+
+        QStringList list = line.split(" ", QString::SkipEmptyParts);
+        imports += extractImportLine(line);
+    }
+
+    return imports;
 }
 
-QML::QML(const QString &qmlRoot) {
+void QML::setQtVersion(const QtMajorVersion &qtVersion) {
+    _qtVersion = qtVersion;
+}
+
+QML::QML(const QString &qmlRoot, QtMajorVersion qtVersion) {
     _qmlRoot = qmlRoot;
+    setQtVersion(qtVersion);
 
 }
 

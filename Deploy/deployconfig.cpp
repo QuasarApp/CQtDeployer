@@ -113,6 +113,32 @@ QString DeployConfig::getRunScript(const QString &targetName) const {
     return _runScripts.value(targetName, "");
 }
 
+QtMajorVersion DeployConfig::isNeededQt() const {
+
+    auto Qt = QtMajorVersion::NoQt;
+    for (const auto &i: targets()) {
+        if (i.isValid()) {
+            Qt = Qt | i.isDependetOfQt();
+        }
+    }
+
+    return Qt;
+}
+
+QtMajorVersion DeployConfig::isNeededQt(const QString &pacakge) const {
+    const auto targetsKeys = packages().value(pacakge).targets();
+
+    auto Qt = QtMajorVersion::NoQt;
+    for (const auto &i: targetsKeys) {
+        auto target = targets().value(i);
+        if (target.isValid()) {
+            Qt = Qt | target.isDependetOfQt();
+        }
+    }
+
+    return Qt;
+}
+
 const QHash<QString, TargetInfo> &DeployConfig::targets() const {
     return _targets;
 }

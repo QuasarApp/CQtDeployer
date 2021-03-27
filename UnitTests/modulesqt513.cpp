@@ -1312,7 +1312,10 @@ QSet<QString> ModulesQt513::qmlVirtualKeyBoadrLibs(const QString &distDir) const
         "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Styles/qmldir",
         "./" + distDir + "/qml/QtQuick/VirtualKeyboard/libqtquickvirtualkeyboardplugin.so",
         "./" + distDir + "/qml/QtQuick/VirtualKeyboard/plugins.qmltypes",
-        "./" + distDir + "/qml/QtQuick/VirtualKeyboard/qmldir"
+        "./" + distDir + "/qml/QtQuick/VirtualKeyboard/qmldir",
+        "./" + distDir + "/qml/Qt/labs/folderlistmodel/libqmlfolderlistmodelplugin.so",
+        "./" + distDir + "/qml/Qt/labs/folderlistmodel/plugins.qmltypes",
+        "./" + distDir + "/qml/Qt/labs/folderlistmodel/qmldir"
     });
 #else
     Tree += utils.createTree({
@@ -1350,7 +1353,10 @@ QSet<QString> ModulesQt513::qmlVirtualKeyBoadrLibs(const QString &distDir) const
          "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Styles/qtquickvirtualkeyboardstylesplugin.dll",
          "./" + distDir + "/qml/QtQuick/VirtualKeyboard/plugins.qmltypes",
          "./" + distDir + "/qml/QtQuick/VirtualKeyboard/qmldir",
-         "./" + distDir + "/qml/QtQuick/VirtualKeyboard/qtquickvirtualkeyboardplugin.dll"
+         "./" + distDir + "/qml/QtQuick/VirtualKeyboard/qtquickvirtualkeyboardplugin.dll",
+         "./" + distDir + "/qml/Qt/labs/folderlistmodel/qmlfolderlistmodelplugin.dll",
+         "./" + distDir + "/qml/Qt/labs/folderlistmodel/plugins.qmltypes",
+         "./" + distDir + "/qml/Qt/labs/folderlistmodel/qmldir"
      });
 #endif
     return Tree;

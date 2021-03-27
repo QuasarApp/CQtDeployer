@@ -438,7 +438,7 @@ bool Extracter::extractQml() {
                     continue;
                 }
 
-                QML ownQmlScaner(cnf->qtDir.getQmls());
+                QML ownQmlScaner(cnf->qtDir.getQmls(), cnf->isNeededQt(i.key()));
 
                 if (!ownQmlScaner.scan(plugins, info.absoluteFilePath())) {
                     QuasarAppUtils::Params::log("qml scaner run failed!",
