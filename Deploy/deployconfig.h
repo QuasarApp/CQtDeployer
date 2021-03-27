@@ -125,6 +125,19 @@ public:
     void registerRunScript(const QString& targetName, const QString& scriptPath);
     QString getRunScript(const QString& targetName) const;
 
+     /**
+     * @brief isNeededQt This method return all needed qt major version for all targets.
+     * @return qt major version
+     */
+    QtMajorVersion isNeededQt() const;
+
+    /**
+     * @brief isNeededQt This method return all needed qt major versions for the @a pacakge.
+     * @param pacakge This is validation pacakge.
+     * @return qt major version
+     */
+    QtMajorVersion isNeededQt(const QString& pacakge) const;
+
 private:
 
     /**
