@@ -15,7 +15,7 @@
 
 QStringList QML::extractImportLine(const QString& line) const {
     QStringList result;
-    QStringList list = line.split(" ", QString::SkipEmptyParts);
+    QStringList list = line.split(" ", splitbehavior);
 
     if (list.count() == 3 || (list.count() == 5  && list[3] == "as")) {
         if (list[2] == "auto" || (_qtVersion & QtMajorVersion::Qt6)) {
@@ -41,8 +41,8 @@ QStringList QML::extractImportsFromFile(const QString &filepath) const {
     QString content = F.readAll();
     content.remove(QRegExp("\\{(.*)\\}"));
     content.remove(QRegExp("/\\*(.*)\\*/"));
-
-    for (const QString &line : content.split("\n"))
+    const auto list = content.split("\n");
+    for (const QString &line : list)
         for (QString &word : line.split(";", splitbehavior))
         {
             word = word.simplified();
@@ -69,7 +69,7 @@ bool QML::extractImportsFromDir(const QString &path, bool recursive) {
 
     for (const auto &info: files) {
         auto imports = extractImportsFromFile(info.absoluteFilePath());
-        for (auto import : imports) {
+        for (const auto &import : qAsConst(imports)) {
             if (!_imports.contains(import)) {
                 _imports.insert(import);
                 extractImportsFromDir(getPathFromImport(import), recursive);
@@ -80,7 +80,7 @@ bool QML::extractImportsFromDir(const QString &path, bool recursive) {
     for (const auto& module: qAsConst(qmlmodule)) {
         QStringList imports = extractImportsFromQmlModule(module.absoluteFilePath());
 
-        for (auto import : imports) {
+        for (const auto &import : qAsConst(imports)) {
             if (!_imports.contains(import)) {
                 _imports.insert(import);
                 extractImportsFromDir(getPathFromImport(import), recursive);
@@ -143,7 +143,7 @@ bool QML::deployPath(const QString &path, QStringList &res) {
     QDir dir(path);
     auto infoList = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs);
 
-    for (auto info : infoList) {
+    for (const auto &info : qAsConst(infoList)) {
         if (DeployCore::isDebugFile(info.fileName())) {
             QuasarAppUtils::Params::log("sciped debug lib " +
                                         info.absoluteFilePath());
@@ -182,13 +182,13 @@ QStringList QML::extractImportsFromQmlModule(const QString &module) const {
     if (!F.open(QIODevice::ReadOnly)) return QStringList();
 
     QString content = F.readAll();
-
-    for (QString line : content.split("\n")) {
+    const auto list = content.split("\n");
+    for (QString line : list) {
         line = line.simplified();
         if (line.startsWith("//") || line.startsWith("#")) continue;
         if (!line.startsWith("depends")) continue;
 
-        QStringList list = line.split(" ", QString::SkipEmptyParts);
+        QStringList list = line.split(" ", splitbehavior);
         imports += extractImportLine(line);
     }
 
@@ -215,7 +215,7 @@ bool QML::scan(QStringList &res, const QString& _qmlProjectDir) {
         return false;
     }
 
-    for (const auto &import : _imports) {
+    for (const auto &import : qAsConst(_imports)) {
         res.push_back(getPathFromImport(import));
     }
 
