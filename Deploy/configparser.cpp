@@ -617,18 +617,6 @@ QSet<QString> ConfigParser::getQtPathesFromTargets() {
     return res;
 }
 
-QtMajorVersion ConfigParser::isNeededQt() const {
-
-    auto Qt = QtMajorVersion::NoQt;
-    for (const auto &i: _config.targets()) {
-        if (i.isValid()) {
-            Qt = Qt | i.isDependetOfQt();
-        }
-    }
-
-    return Qt;
-}
-
 void ConfigParser::setTargetDir(const QString &target) {
 
     if (QuasarAppUtils::Params::isEndable("targetDir")) {
@@ -921,7 +909,7 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
 bool ConfigParser::initQmake() {
 
 
-    if (!isNeededQt()) {
+    if (!_config.isNeededQt()) {
         QuasarAppUtils::Params::log("deploy only C/C++ libraryes because a qmake is not needed"
                                     " for the distribution",
                                      QuasarAppUtils::Info);
@@ -1029,7 +1017,7 @@ bool ConfigParser::setQmake(const QString &value) {
         }
     }
 
-    _config.qtDir.setQtVersion(isNeededQt());
+    _config.qtDir.setQtVersion(_config.isNeededQt());
 
     _config.envirement.addEnv(_config.qtDir.getLibs());
     _config.envirement.addEnv(_config.qtDir.getBins());
@@ -1095,7 +1083,7 @@ bool ConfigParser::setQtDir(const QString &value) {
     _config.qtDir.setQtPlatform(Platform::Win);
 #endif
 
-    _config.qtDir.setQtVersion(isNeededQt());
+    _config.qtDir.setQtVersion(_config.isNeededQt());
 
     _config.envirement.addEnv(_config.qtDir.getLibs());
     _config.envirement.addEnv(_config.qtDir.getBins());
@@ -1164,7 +1152,7 @@ void ConfigParser::initExtraNames() {
  * We need to add to extra names libraries without which qt will not work,
  *
 */
-    if (isNeededQt()) {
+    if (_config.isNeededQt()) {
         auto libs = DeployCore::Qt3rdpartyLibs( _config.getPlatformOfAll());
         deployExtraNames(libs);
     }

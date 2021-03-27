@@ -106,7 +106,6 @@ private:
 
     iDistribution* getDistribution();
 
-    QtMajorVersion isNeededQt() const;
 };
 
 #endif // CQT_H

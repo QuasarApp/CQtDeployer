@@ -18,10 +18,10 @@ QStringList QML::extractImportLine(const QString& line) const {
     QStringList list = line.split(" ", QString::SkipEmptyParts);
 
     if (list.count() == 3 || (list.count() == 5  && list[3] == "as")) {
-        if (list[2] == "auto") {
+        if (list[2] == "auto" || (_qtVersion & QtMajorVersion::Qt6)) {
             // qt6
             result << (list[1].replace(".", "/"));
-            return {};
+            return result;
         }
         // qt5
         result << (list[2][0] + "#" + list[1].replace(".", "/"));
@@ -195,8 +195,13 @@ QStringList QML::extractImportsFromQmlModule(const QString &module) const {
     return imports;
 }
 
-QML::QML(const QString &qmlRoot) {
+void QML::setQtVersion(const QtMajorVersion &qtVersion) {
+    _qtVersion = qtVersion;
+}
+
+QML::QML(const QString &qmlRoot, QtMajorVersion qtVersion) {
     _qmlRoot = qmlRoot;
+    setQtVersion(qtVersion);
 
 }
 
