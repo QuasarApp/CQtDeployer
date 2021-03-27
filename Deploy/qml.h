@@ -15,7 +15,7 @@
 class DEPLOYSHARED_EXPORT QML {
 private:
 
-    QStringList extractImportsFromFile(const QString &filepath);
+    QStringList extractImportsFromFile(const QString &filepath) const;
 
     bool extractImportsFromDir(const QString &path, bool recursive = false);
 
@@ -23,11 +23,13 @@ private:
 
     bool deployPath( const QString& path, QStringList& res);
     bool scanQmlTree(const QString& qmlTree);
-    void addImport();
+    QStringList extractImportsFromQmlModule(const QString& module) const;
     QString _qmlRoot = "";
     QSet<QString> _imports;
     QSet<QString> secondVersions;
 
+    QStringList extractImportLine(const QString &line) const;
+    
 public:
     QML(const QString& qmlRoot);
 

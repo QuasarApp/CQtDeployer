@@ -692,7 +692,7 @@ void deploytest::testQmlScaner() {
 
     QVERIFY(results.size() == imports.size());
 
-    for (auto import: imports) {
+    for (auto import: qAsConst(imports)) {
         auto path = scaner->getPathFromImport(import);
         QVERIFY(results.contains(path));
     }
@@ -730,7 +730,7 @@ void deploytest::testVirtualKeyBoard() {
 #endif
     auto comapareTree = TestModule.qmlVirtualKeyBoadrLibs();
 
-    runTestParams({"-bin", bin, "clear" ,
+    runTestParams({"-bin", bin, "clear" , "noStrip",
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../virtualkeyboard"}, &comapareTree);
 }
