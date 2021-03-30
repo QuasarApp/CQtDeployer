@@ -627,6 +627,9 @@ void ConfigParser::packagesErrorLog(const QString &flag) {
 bool ConfigParser::parseDeployMode() {
 
     if (QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
+        QuasarAppUtils::Params::log("You use depcricated option \"deploySystem-with-libc\"."
+                                    " In this version this option is no different from \"deploySystem\"."
+                                    " Please use the deploySystem option.");
         QuasarAppUtils::Params::setEnable("deploySystem", true );
     }
 
@@ -916,45 +919,42 @@ void ConfigParser::initIgnoreList()
     IgnoreData ruleUnix, ruleWin;
     Envirement envUnix, envWin;
 
-    if (!QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
+    envUnix.addEnv(Envirement::recursiveInvairement("/lib", 3));
+    envUnix.addEnv(Envirement::recursiveInvairement("/usr/lib", 3));
 
-        envUnix.addEnv(Envirement::recursiveInvairement("/lib", 3));
-        envUnix.addEnv(Envirement::recursiveInvairement("/usr/lib", 3));
-
-        if (DeployCore::isSnap()) {
-            envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/lib"), 3));
-            envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/usr/lib"), 3));
-        }
-
-        ruleUnix.prority = SystemLib;
-        ruleUnix.platform = Unix;
-        ruleUnix.enfirement = envUnix;
-
-
-        auto addRuleUnix = [&ruleUnix](const QString & lib) {
-            ruleUnix.label = lib;
-            return ruleUnix;
-        };
-
-        _config.ignoreList.addRule(addRuleUnix("libc"));
-        _config.ignoreList.addRule(addRuleUnix("libstdc++"));
-        _config.ignoreList.addRule(addRuleUnix("ld-"));
-        _config.ignoreList.addRule(addRuleUnix("libpthread"));
-        _config.ignoreList.addRule(addRuleUnix("libm"));
-        _config.ignoreList.addRule(addRuleUnix("libz"));
-        _config.ignoreList.addRule(addRuleUnix("librt"));
-        _config.ignoreList.addRule(addRuleUnix("libnsl"));
-        _config.ignoreList.addRule(addRuleUnix("libdl"));
-        _config.ignoreList.addRule(addRuleUnix("libutil"));
-        _config.ignoreList.addRule(addRuleUnix("libresolv"));
-        _config.ignoreList.addRule(addRuleUnix("libBrokenLocale"));
-        _config.ignoreList.addRule(addRuleUnix("libBrokenLocale"));
-        _config.ignoreList.addRule(addRuleUnix("libSegFault"));
-        _config.ignoreList.addRule(addRuleUnix("libanl"));
-        _config.ignoreList.addRule(addRuleUnix("libcrypt.so"));
-        _config.ignoreList.addRule(addRuleUnix("/gconv/"));
-        _config.ignoreList.addRule(addRuleUnix("libnss"));
+    if (DeployCore::isSnap()) {
+        envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/lib"), 3));
+        envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/usr/lib"), 3));
     }
+
+    ruleUnix.prority = SystemLib;
+    ruleUnix.platform = Unix;
+    ruleUnix.enfirement = envUnix;
+
+
+    auto addRuleUnix = [&ruleUnix](const QString & lib) {
+        ruleUnix.label = lib;
+        return ruleUnix;
+    };
+
+    _config.ignoreList.addRule(addRuleUnix("libc"));
+    _config.ignoreList.addRule(addRuleUnix("libstdc++"));
+    _config.ignoreList.addRule(addRuleUnix("ld-"));
+    _config.ignoreList.addRule(addRuleUnix("libpthread"));
+    _config.ignoreList.addRule(addRuleUnix("libm"));
+    _config.ignoreList.addRule(addRuleUnix("libz"));
+    _config.ignoreList.addRule(addRuleUnix("librt"));
+    _config.ignoreList.addRule(addRuleUnix("libnsl"));
+    _config.ignoreList.addRule(addRuleUnix("libdl"));
+    _config.ignoreList.addRule(addRuleUnix("libutil"));
+    _config.ignoreList.addRule(addRuleUnix("libresolv"));
+    _config.ignoreList.addRule(addRuleUnix("libBrokenLocale"));
+    _config.ignoreList.addRule(addRuleUnix("libBrokenLocale"));
+    _config.ignoreList.addRule(addRuleUnix("libSegFault"));
+    _config.ignoreList.addRule(addRuleUnix("libanl"));
+    _config.ignoreList.addRule(addRuleUnix("libcrypt.so"));
+    _config.ignoreList.addRule(addRuleUnix("/gconv/"));
+    _config.ignoreList.addRule(addRuleUnix("libnss"));
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     auto path = env.value("PATH");

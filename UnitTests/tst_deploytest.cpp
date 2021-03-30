@@ -2671,45 +2671,6 @@ void deploytest::testSystemLib() {
                    "deploySystem"
                   }, &comapareTree);
 
-#ifdef Q_OS_UNIX
-
-    QFile file("./" + DISTRO_DIR + "/TestOnlyC.sh");
-
-    QVERIFY(file.open(QIODevice::ReadOnly));
-
-    auto runScript = file.readAll();
-    file.close();
-
-    QVERIFY(!runScript.contains("export LD_PRELOAD="));
-
-    comapareTree = utils.createTree(
-    {
-                    "./" + DISTRO_DIR + "/TestOnlyC.sh",
-                    "./" + DISTRO_DIR + "/bin/qt.conf",
-                    "./" + DISTRO_DIR + "/bin/TestOnlyC",
-                    "./" + DISTRO_DIR + "/lib/systemLibs/libgcc_s.so",
-                    "./" + DISTRO_DIR + "/lib/systemLibs/ld-linux-x86-64.so",
-                    "./" + DISTRO_DIR + "/lib/systemLibs/libc.so",
-                    "./" + DISTRO_DIR + "/lib/systemLibs/libm.so",
-
-                    "./" + DISTRO_DIR + "/lib/systemLibs/libstdc++.so"
-                });
-
-    runTestParams({"-bin", bin, "clear" ,
-                   "deploySystem-with-libc"
-                  }, &comapareTree);
-
-    file.setFileName("./" + DISTRO_DIR + "/TestOnlyC.sh");
-
-    QVERIFY(file.open(QIODevice::ReadOnly));
-
-    runScript = file.readAll();
-    file.close();
-
-    QVERIFY(runScript.contains("export LD_PRELOAD="));
-
-#endif
-
 #ifdef Q_OS_WIN
     QString qmake = TestQtDir + "bin/qmake.exe";
     bin = TestBinDir + "QtWidgetsProject.exe";

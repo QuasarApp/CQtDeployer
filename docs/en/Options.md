@@ -54,8 +54,6 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   noCheckPATH               | Disables automatic search of paths to qmake in system PATH.     |
 |   noRecursiveiIgnoreEnv     | Disables recursive ignore for ignoreEnv option.                 |
 |   v / version               | Shows compiled version                                          |
-|   allQmlDependes            | Extracts all the qml libraries.                                 |
-|                             | (not recommended, as it takes great amount of computer memory)  |
 |   qif                       | Create the QIF installer for deployment programm"              |
 |                             | Example: cqtdeployer qif" },                              |
 |                             | Starting with CQtDeployer 1.5 you can specify the path to your own installer template. |

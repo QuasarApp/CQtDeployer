@@ -210,10 +210,6 @@ void DeployCore::help() {
                 {"deploySystem", "Deploys all libraries."
                  " Not recomendet because there may be conflicts with system libraries"
                  " (on snap version you need to turn on permission)"},
-                {"deploySystem-with-libc", "deploys all libs include libc (only linux)."
-                 " Do not use this option with gui application."
-                 " For gui application sue the deploySystem option "
-                 "(on snap version you need to turn on permission)"},
                 {"noQt", "Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework."},
                 {"allowEmptyPackages", "Allows configure the empty packages."},
                 {"getDefaultTemplate", "Extracts defaults deb or qif templates."
@@ -332,7 +328,6 @@ QStringList DeployCore::helpKeys() {
         "extraData",
         "qmlDir",
         "deploySystem",
-        "deploySystem-with-libc",
         "qmake",
         "ignore",
         "ignoreEnv",

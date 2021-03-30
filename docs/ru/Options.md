@@ -55,7 +55,6 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |   noCheckPATH               | Отключает автоматический поиск путей к qmake в системном окружении.|
 |   noRecursiveiIgnoreEnv     | Отключает рекурсивное игнорирование переменной среды для флага ignoreEnv.  |
 |   v / version               | Показывает версию приложения                              |
-|   allQmlDependes            | Извлекает все библиотеки qml.                             |
 |   qif                       | Создаст установщик QIF для развертываемой программы"      |
 |                             | Примеры: cqtdeployer qif                                  |
 |                             | Начиная с версии CQtDeployer 1.5 вы можете указать путь к своему собственному шаблону установщика. |
