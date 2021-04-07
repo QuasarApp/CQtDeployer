@@ -28,5 +28,12 @@ int main(int argc, char *argv[]) {
     }
 
     Deploy deploy;
-    return deploy.run();
+
+    int code = deploy.run();
+
+    if (code) {
+        QuasarAppUtils::Params::log(Deploy::codeString(code), QuasarAppUtils::Error);
+    }
+
+    return code;
 }

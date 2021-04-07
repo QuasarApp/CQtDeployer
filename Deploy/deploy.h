@@ -50,6 +50,12 @@ public:
     int run();
     ~Deploy();
 
+    /**
+     * @brief codeString This method retun string message about input code.
+     * @param code This is error code;
+     * @return Message of code.
+     */
+    static QString codeString(int code);
     friend class deploytest;
 };
 
