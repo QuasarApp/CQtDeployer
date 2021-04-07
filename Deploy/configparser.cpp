@@ -99,7 +99,7 @@ void parseTargetPrivate(DeployConfig& conf,
 
 bool ConfigParser::parseParams() {
 
-    auto path = QuasarAppUtils::Params::getStrArg("confFile");
+    auto path = QuasarAppUtils::Params::getArg("confFile");
     bool createFile = !QFile::exists(path) &&
             QuasarAppUtils::Params::isEndable("confFile");
 
@@ -233,7 +233,7 @@ QJsonValue ConfigParser::writeKeyArray(int separatorLvl, const QString &paramete
 void ConfigParser::writeKey(const QString& key, QJsonObject& obj,
                             const QString& confFileDir) const {
     if (QuasarAppUtils::Params::isEndable(key)) {
-        obj[key] = writeKeyArray(0, QuasarAppUtils::Params::getStrArg(key), confFileDir);
+        obj[key] = writeKeyArray(0, QuasarAppUtils::Params::getArg(key), confFileDir);
     }
 }
 
@@ -376,50 +376,50 @@ bool ConfigParser::initDistroStruct() {
 
 #ifdef Q_OS_LINUX
 
-    auto binOut = QuasarAppUtils::Params::getStrArg("binOut").
+    auto binOut = QuasarAppUtils::Params::getArg("binOut").
             split(DeployCore::getSeparator(0), splitbehavior);
-    auto libOut = QuasarAppUtils::Params::getStrArg("libOut").
+    auto libOut = QuasarAppUtils::Params::getArg("libOut").
             split(DeployCore::getSeparator(0), splitbehavior);
 
 #else
-    auto binOut = QuasarAppUtils::Params::getStrArg("binOut").
+    auto binOut = QuasarAppUtils::Params::getArg("binOut").
             split(DeployCore::getSeparator(0), splitbehavior);
-    auto libOut = QuasarAppUtils::Params::getStrArg("libOut").
+    auto libOut = QuasarAppUtils::Params::getArg("libOut").
             split(DeployCore::getSeparator(0), splitbehavior);
 #endif
 
-    auto qmlOut = QuasarAppUtils::Params::getStrArg("qmlOut").
+    auto qmlOut = QuasarAppUtils::Params::getArg("qmlOut").
             split(DeployCore::getSeparator(0), splitbehavior);
-    auto trOut = QuasarAppUtils::Params::getStrArg("trOut").
+    auto trOut = QuasarAppUtils::Params::getArg("trOut").
             split(DeployCore::getSeparator(0), splitbehavior);
-    auto pluginOut = QuasarAppUtils::Params::getStrArg("pluginOut").
+    auto pluginOut = QuasarAppUtils::Params::getArg("pluginOut").
             split(DeployCore::getSeparator(0), splitbehavior);
-    auto recOut = QuasarAppUtils::Params::getStrArg("recOut").
+    auto recOut = QuasarAppUtils::Params::getArg("recOut").
             split(DeployCore::getSeparator(0), splitbehavior);
-    auto extraDataOut = QuasarAppUtils::Params::getStrArg("extraDataOut").
-            split(DeployCore::getSeparator(0), splitbehavior);
-
-    auto name = QuasarAppUtils::Params::getStrArg("name").
-            split(DeployCore::getSeparator(0), splitbehavior);
-    auto description = QuasarAppUtils::Params::getStrArg("description").
-            split(DeployCore::getSeparator(0), splitbehavior);
-    auto deployVersion = QuasarAppUtils::Params::getStrArg("deployVersion").
-            split(DeployCore::getSeparator(0), splitbehavior);
-    auto releaseDate = QuasarAppUtils::Params::getStrArg("releaseDate").
-            split(DeployCore::getSeparator(0), splitbehavior);
-    auto publisher = QuasarAppUtils::Params::getStrArg("publisher").
+    auto extraDataOut = QuasarAppUtils::Params::getArg("extraDataOut").
             split(DeployCore::getSeparator(0), splitbehavior);
 
-    auto homepage = QuasarAppUtils::Params::getStrArg("homePage").
+    auto name = QuasarAppUtils::Params::getArg("name").
+            split(DeployCore::getSeparator(0), splitbehavior);
+    auto description = QuasarAppUtils::Params::getArg("description").
+            split(DeployCore::getSeparator(0), splitbehavior);
+    auto deployVersion = QuasarAppUtils::Params::getArg("deployVersion").
+            split(DeployCore::getSeparator(0), splitbehavior);
+    auto releaseDate = QuasarAppUtils::Params::getArg("releaseDate").
+            split(DeployCore::getSeparator(0), splitbehavior);
+    auto publisher = QuasarAppUtils::Params::getArg("publisher").
             split(DeployCore::getSeparator(0), splitbehavior);
 
-    auto prefix = QuasarAppUtils::Params::getStrArg("prefix").
+    auto homepage = QuasarAppUtils::Params::getArg("homePage").
             split(DeployCore::getSeparator(0), splitbehavior);
 
-    auto extraData = QuasarAppUtils::Params::getStrArg("extraData").
+    auto prefix = QuasarAppUtils::Params::getArg("prefix").
             split(DeployCore::getSeparator(0), splitbehavior);
 
-    auto trData = QuasarAppUtils::Params::getStrArg("tr").
+    auto extraData = QuasarAppUtils::Params::getArg("extraData").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
+    auto trData = QuasarAppUtils::Params::getArg("tr").
             split(DeployCore::getSeparator(0), splitbehavior);
 
 // init distro stucts for all targets
@@ -512,7 +512,7 @@ bool ConfigParser::initPackages() {
     QSet<QString> configuredTargets;
 
     if (QuasarAppUtils::Params::isEndable("targetPackage")) {
-        auto tar_packages_array = QuasarAppUtils::Params::getStrArg("targetPackage", "").
+        auto tar_packages_array = QuasarAppUtils::Params::getArg("targetPackage", "").
                 split(DeployCore::getSeparator(0));
 
 
@@ -572,7 +572,7 @@ bool ConfigParser::initPackages() {
 }
 
 bool ConfigParser::initRunScripts() {
-    const auto list = QuasarAppUtils::Params::getStrArg("runScript").split(DeployCore::getSeparator(0), splitbehavior);
+    const auto list = QuasarAppUtils::Params::getArg("runScript").split(DeployCore::getSeparator(0), splitbehavior);
 
     for (const auto& line: list) {
         auto pair = line.split(DeployCore::getSeparator(1), splitbehavior);
@@ -602,7 +602,7 @@ bool ConfigParser::initRunScripts() {
 
 bool ConfigParser::initQmlInput() {
 
-    auto qmlDir = QuasarAppUtils::Params::getStrArg("qmlDir").
+    auto qmlDir = QuasarAppUtils::Params::getArg("qmlDir").
             split(DeployCore::getSeparator(0), splitbehavior);
 
 
@@ -639,7 +639,7 @@ bool ConfigParser::parseDeployMode() {
 
     setTargetDir();
 
-    auto bin = QuasarAppUtils::Params::getStrArg("bin").
+    auto bin = QuasarAppUtils::Params::getArg("bin").
             split(DeployCore::getSeparator(0), splitbehavior);
 
     if (bin.size() && !setTargets(bin)) {
@@ -648,7 +648,7 @@ bool ConfigParser::parseDeployMode() {
                                     QuasarAppUtils::Warning);
     }
 
-    auto xData = QuasarAppUtils::Params::getStrArg("extraData").
+    auto xData = QuasarAppUtils::Params::getArg("extraData").
             split(DeployCore::getSeparator(0), splitbehavior);
 
 
@@ -724,7 +724,7 @@ bool ConfigParser::parseInfoMode() {
 
 bool ConfigParser::parseInitMode() {
 
-    auto initLvl = QuasarAppUtils::Params::getStrArg("init");
+    auto initLvl = QuasarAppUtils::Params::getArg("init");
     QString sourceUrl(":/Distro/Distributions/configures/Init.json");
 
     if (initLvl == "multi") {
@@ -750,7 +750,7 @@ bool ConfigParser::parseInitMode() {
 }
 
 void ConfigParser::configureTargets() {
-    const auto icons = QuasarAppUtils::Params::getStrArg("icon").
+    const auto icons = QuasarAppUtils::Params::getArg("icon").
             split(DeployCore::getSeparator(0), splitbehavior);
 
     if (icons.size()) {
@@ -781,7 +781,7 @@ QSet<QString> ConfigParser::getQtPathesFromTargets() {
 void ConfigParser::setTargetDir(const QString &target) {
 
     if (QuasarAppUtils::Params::isEndable("targetDir")) {
-        _config.setTargetDir(QFileInfo(QuasarAppUtils::Params::getStrArg("targetDir")).absoluteFilePath());
+        _config.setTargetDir(QFileInfo(QuasarAppUtils::Params::getArg("targetDir")).absoluteFilePath());
     } else if (target.size()) {
         _config.setTargetDir(QFileInfo(target).absoluteFilePath());
     } else {
@@ -907,7 +907,7 @@ ConfigParser::moveTarget(TargetInfo target, const QString& newLocation) {
 void ConfigParser::initIgnoreList()
 {
     if (QuasarAppUtils::Params::isEndable("ignore")) {
-        auto list = QuasarAppUtils::Params::getStrArg("ignore").
+        auto list = QuasarAppUtils::Params::getArg("ignore").
                 split(DeployCore::getSeparator(0));
 
         for (const auto &i : list) {
@@ -997,7 +997,7 @@ void ConfigParser::initIgnoreEnvList() {
     QStringList ignoreEnvList;
 
     if (QuasarAppUtils::Params::isEndable("ignoreEnv")) {
-        auto ignoreList = QuasarAppUtils::Params::getStrArg("ignoreEnv").
+        auto ignoreList = QuasarAppUtils::Params::getArg("ignoreEnv").
                 split(DeployCore::getSeparator(0));
 
 
@@ -1078,7 +1078,7 @@ bool ConfigParser::initQmake() {
         return true;
     }
 
-    auto qmake = QuasarAppUtils::Params::getStrArg("qmake");
+    auto qmake = QuasarAppUtils::Params::getArg("qmake");
 
     QFileInfo info(qmake);
 
@@ -1254,7 +1254,7 @@ bool ConfigParser::setQtDir(const QString &value) {
 }
 
 void ConfigParser::initExtraPath() {
-    auto listLibDir = QuasarAppUtils::Params::getStrArg("libDir").
+    auto listLibDir = QuasarAppUtils::Params::getArg("libDir").
             split(DeployCore::getSeparator(0));
 
     QDir dir;
@@ -1304,7 +1304,7 @@ void ConfigParser::initExtraNames() {
         }
     };
 
-    auto listNamesMasks = QuasarAppUtils::Params::getStrArg("extraLibs").
+    auto listNamesMasks = QuasarAppUtils::Params::getArg("extraLibs").
             split(DeployCore::getSeparator(0));
 
     deployExtraNames(listNamesMasks);
@@ -1322,13 +1322,13 @@ void ConfigParser::initExtraNames() {
 
 bool ConfigParser::initPlugins() {
 
-    auto listExtraPlugin = QuasarAppUtils::Params::getStrArg("extraPlugin").
+    auto listExtraPlugin = QuasarAppUtils::Params::getArg("extraPlugin").
             split(DeployCore::getSeparator(0), splitbehavior);
 
-    auto listEnablePlugins = QuasarAppUtils::Params::getStrArg("enablePlugins").
+    auto listEnablePlugins = QuasarAppUtils::Params::getArg("enablePlugins").
             split(DeployCore::getSeparator(0), splitbehavior);
 
-    auto listDisablePlugins = QuasarAppUtils::Params::getStrArg("disablePlugins").
+    auto listDisablePlugins = QuasarAppUtils::Params::getArg("disablePlugins").
             split(DeployCore::getSeparator(0), splitbehavior);
 
 
@@ -1531,13 +1531,13 @@ ConfigParser::ConfigParser(FileManager *filemanager, PluginsParser *pluginsParse
     assert(_packing);
 
 #ifdef Q_OS_LINUX
-    _config.appDir = QuasarAppUtils::Params::getStrArg("appPath");
+    _config.appDir = QuasarAppUtils::Params::getArg("appPath");
 
     if (_config.appDir.right(4) == "/bin") {
         _config.appDir = _config.appDir.left(_config.appDir.size() - 4);
     }
 #else
-    _config.appDir = QuasarAppUtils::Params::getStrArg("appPath");
+    _config.appDir = QuasarAppUtils::Params::getArg("appPath");
 #endif
 
     QuasarAppUtils::Params::log("appDir = " + _config.appDir);

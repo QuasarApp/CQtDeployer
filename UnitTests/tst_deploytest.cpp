@@ -1267,7 +1267,7 @@ void deploytest::testIcons() {
     auto initTargets = [](ConfigParser * deploy, const QStringList& params) {
         QVERIFY(QuasarAppUtils::Params::parseParams(params));
 
-        auto bin = QuasarAppUtils::Params::getStrArg("bin").
+        auto bin = QuasarAppUtils::Params::getArg("bin").
                 split(DeployCore::getSeparator(0), splitbehavior);
 
 
@@ -2003,9 +2003,9 @@ void deploytest::testConfFile() {
     QVERIFY(QuasarAppUtils::Params::isEndable("bin"));
     QVERIFY(QuasarAppUtils::Params::isEndable("libDir"));
 #ifdef Q_OS_UNIX
-    QVERIFY(QuasarAppUtils::Params::getStrArg("libDir") == "/never/absalut/path/");
+    QVERIFY(QuasarAppUtils::Params::getArg("libDir") == "/never/absalut/path/");
 #else
-    QVERIFY(QuasarAppUtils::Params::getStrArg("libDir") == "L:/never/absalut/path");
+    QVERIFY(QuasarAppUtils::Params::getArg("libDir") == "L:/never/absalut/path");
 #endif
     QFile::remove(TestBinDir + "/TestConf.json");
 

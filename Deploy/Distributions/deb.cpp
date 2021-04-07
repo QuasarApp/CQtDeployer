@@ -21,7 +21,7 @@ bool Deb::deployTemplate(PackageControl &pkg) {
         auto package = cfg->getDistroFromPackage(*it);
 
         QString defaultPackageTempalte = ":/Templates/DEB/Distributions/Templates/deb";
-        auto customTemplate = QuasarAppUtils::Params::getStrArg("deb", "");
+        auto customTemplate = QuasarAppUtils::Params::getArg("deb", "");
         QHash<QString, QString> pakcagesTemplates;
 
         if (!customTemplate.isEmpty()) {
