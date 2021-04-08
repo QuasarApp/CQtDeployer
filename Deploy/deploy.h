@@ -18,11 +18,17 @@ class DependenciesScanner;
 class PluginsParser;
 class Packing;
 
-
+/**
+ * @brief The exitCodes enum contains all general erro codes of the CQtDeployer tool.
+ */
 enum exitCodes {
+    // CQtDeployer are  deployed project successful. (no error)
     Good =          0x0,
+    // CQtDeployer failed in the reading arguments. (fail to parse of input arguments)
     PrepareError =  0x1,
+    // CQtDeployer failed in the deploy step. Fail to copy deployed files.
     DeployError =   0x2,
+    // CQtDeployer failed in the prepare package step. Fail to create a result pacakge.
     PackingError =  0x3,
 
 
