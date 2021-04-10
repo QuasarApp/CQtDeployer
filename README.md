@@ -100,7 +100,7 @@ The Building or installation instructions see on wiki [page](https://github.com/
 
 ***
 
-## ![Credits](res/Credits.jpg) 
+<p align="center"><img src="res/Credits.jpg" alt="Credits"></p>
 
 Join the development fund and support QuasarApp to help with the development of our projects.
 
@@ -112,9 +112,9 @@ If you would like to use bitcoins to support us, you can transfer coins to these
 
 **Note**: You must send a message signed with address of the bitcoin wallet from which the payment was made.
 
-![support](https://user-images.githubusercontent.com/12465465/101282118-25222d00-37e4-11eb-9ffb-4ebd6a3a0bc7.png)
+<p align="center"><img src="res/qr.png" alt="qrcode"></p>
 
-bitcoin:bc1q4wnp58plhx4fwnfnzz3e4slulv2gzzts89w2f7
+<p align="center">bitcoin: bc1qzuymq7jc9q2x04wcwstr45tu8klm46zfl20wyp</p>
 
 ## Our patrons list:
 
