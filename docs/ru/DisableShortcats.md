@@ -12,6 +12,11 @@
 ``` bash
 cqtdeployer -bin myExecutableFile1,myExecutableFile2 -qmake /qmake/path qif
 ```
+### где:
+* **-bin myExecutableFile1, myExecutableFile2** - устанавливает исполняемые файлы.
+* **-qmake /qmake/path** - устанавливает путь к вашему qmake.
+* **qif** - опция для включения дистрибутивов Qt Installer FrameWork.
+* **-targetPackage MyDistribution** - устанавливает новое имя для пакета распространения. 
 
 Чтобы добавить myExecutableFile2 в список исключений создания ярлыка, вам необходимо проделать следующие шаги:
 
@@ -23,6 +28,10 @@ cqtdeployer -bin myExecutableFile1,myExecutableFile2 -qmake /qmake/path qif
     ``` bash
     cqtdeployer -bin myExecutableFile1,myExecutableFile2 -qmake /qmake/path qif getDefaultTemplate -targetDir qifTemplate
     ```
+
+    ### где:
+    * **- targetDir qifTemplate** - устанавливает целевой каталог для tempalte.
+    * **getDefaultTemplate** - опция для извлечения шаблона по умолчанию. 
 
     Итак, после этого вы получите шаблон qif по умолчанию в targetDir.
     ``` bash 
@@ -124,3 +133,4 @@ cqtdeployer -bin myExecutableFile1,myExecutableFile2 -qmake /qmake/path qif
 
 Все сделано. Теперь у вас есть дистрибутив с отключенным ярлыком для приложения myExecutableFile2. 
 
+## Примечание. Если вы используете файл конфигурации или другую команду развертывания, ваша конфигурация развертывания должна соответствовать конфигурации генерации шаблона. 
