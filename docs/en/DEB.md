@@ -19,7 +19,7 @@ Where:
 
 
 By default, cqtdeployer will create one deb package.
-If you want create multi package destribution, you should use [Controll of packages options](Options)
+If you want create multi package destribution, you should use [Controll of packages options](Options.md)
 To create a new package, use the -targetPackage [package; tar1] option
 
 cqtdeployer create deb package for each packages.
@@ -29,7 +29,7 @@ Where:
 * **package** - it is package name
 * **tar1** - it is name of the target that should be included in this package.
 
-Or you can describe packages in [configuration file](DeployConfigFile)
+Or you can describe packages in [configuration file](DeployConfigFile.md)
 
 
 ```json
