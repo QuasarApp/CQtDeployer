@@ -10,16 +10,27 @@ For this you need to extract default template for your case. You can get more in
 I have a distribution that deployed using next command:
 
 ``` bash
-cqtdeployer -bin myExecutableFile1,myExecutableFile2 -qmake /qmake/path qif
+cqtdeployer -bin myExecutableFile1,myExecutableFile2 -qmake /qmake/path qif -targetPackage MyDistribution
 ```
+### where:
+* **-bin myExecutableFile1,myExecutableFile2** - sets executable files.
+* **-qmake /qmake/path** - sets path to your qmake.
+* **qif** - option for enabling Qt Installer FrameWork Distributions.
+* **-targetPackage MyDistribution** - sets new name for distribution pacakge.
+
 To add myExecutableFile2 to the shortcut creation exception list you need to do the following steps:
 
 1. Extract default template.
     For extraction default template you need to add into your commnad the getDefaultTemplate option. Alsu you should add targetDir option to sets path of output files.
 
     ``` bash
-    cqtdeployer -bin myExecutableFile1,myExecutableFile2 -qmake /qmake/path qif getDefaultTemplate -targetDir qifTemplate
+    cqtdeployer -bin myExecutableFile1,myExecutableFile2 -qmake /qmake/path qif getDefaultTemplate -targetDir qifTemplate -targetPackage MyDistribution
     ```
+
+    ### where:
+    * **-targetDir qifTemplate** - sets target dir for tempalte.
+    * **getDefaultTemplate** - option for extract default template.
+
 
     So after this you get a default qif template in the targetDir.
 
@@ -122,3 +133,5 @@ To add myExecutableFile2 to the shortcut creation exception list you need to do 
 
 All done. Now you have a distribution with disabled shortcut for the myExecutableFile2 application.
 
+
+## Note If you use config File or another deploy command then your deploy configuration should be equals with generate template configuration.
