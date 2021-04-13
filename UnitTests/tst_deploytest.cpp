@@ -99,6 +99,7 @@ private slots:
 
     // tested flags clear noOvervrite
     void testOverwrite();
+    void testOverwriteWithPacking();
 
     // tested flags binDir
     void testextraData();
@@ -175,6 +176,8 @@ private slots:
 
     void testRunScripts();
     void testGetDefaultTemplate();
+    void testOverridingDefaultTemplate();
+
     void testDeployGeneralFiles();
     void testTr();
     void testVirtualKeyBoard();
@@ -634,7 +637,7 @@ void deploytest::testQIFCustom() {
     TestUtils utils;
 
 #ifdef Q_OS_UNIX
-    QString bin = TestBinDir + "TestQMLWidgets";
+    QString bin = TestBinDir + "QtWidgetsProject" + "," + TestBinDir + "TestOnlyC";
 
     QString qmake = TestQtDir + "bin/qmake";
 
@@ -642,7 +645,7 @@ void deploytest::testQIFCustom() {
                                                   "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.run",
                                               });
 #else
-    QString bin = TestBinDir + "TestQMLWidgets.exe";
+    QString bin = TestBinDir + "QtWidgetsProject.exe" + "," + TestBinDir + "TestOnlyC.exe";
 
     QString qmake = TestQtDir + "bin/qmake.exe";
     auto comapareTreeCustom = utils.createTree({
@@ -657,6 +660,7 @@ void deploytest::testQIFCustom() {
                    "-qif", TestBinDir + "/../../UnitTests/testRes/QIFCustomTemplate",
                    "-name", "org.qtproject.ifw.example.stylesheet",
                    "qifFromSystem"}, &comapareTreeCustom, true);
+
 }
 
 void deploytest::testZIP() {
@@ -1203,6 +1207,67 @@ void deploytest::testGetDefaultTemplate() {
                 }, &comapareTree);
 #endif
 
+
+}
+
+void deploytest::testOverridingDefaultTemplate() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC" + "," + TestBinDir + "QtWidgetsProject";
+    QString qmake = TestQtDir + "bin/qmake";
+
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe" + "," + TestBinDir + "QtWidgetsProject.exe";
+    QString qmake = TestQtDir + "bin/qmake.exe";
+
+#endif
+
+    auto comapareTree = utils.createTree(
+                {
+                    "temaplate/defaultQIFWTemplate/config/config.xml",
+                    "temaplate/defaultQIFWTemplate/config/controlScript.qs",
+                    "temaplate/defaultQIFWTemplate/packages/MyApp/meta/installscript.qs",
+                    "temaplate/defaultQIFWTemplate/packages/MyApp/meta/package.xml"
+                });
+    runTestParams(
+                {"-bin", bin,
+                 "force-clear",
+                 "getDefaultTemplate",
+                 "-name", "Test",
+                 "qif",
+                 "-targetDir", "temaplate",
+                 "-targetPackage", "MyApp"
+                }, &comapareTree);
+
+#ifdef Q_OS_UNIX
+    comapareTree = utils.createTree(
+                {
+                    "./" + DISTRO_DIR + "/InstallerTest.run",
+                });
+
+#else
+    comapareTree = utils.createTree(
+                {
+                    "./" + DISTRO_DIR + "/InstallerTest.exe",
+                });
+
+#endif
+
+    QFile appScript("temaplate/defaultQIFWTemplate/packages/MyApp/meta/installscript.qs");
+    QVERIFY(appScript.open(QIODevice::WriteOnly));
+    QVERIFY(appScript.write(QByteArray{"ERROR"}));
+    appScript.close();
+
+    runTestParams(
+                {"-bin", bin,
+                 "force-clear",
+                 "-qif", "temaplate/defaultQIFWTemplate",
+                 "-targetPackage", "MyApp",
+                 "-name", "Test",
+                 "-qmake", qmake,
+                 "qifFromSystem"
+                }, nullptr, false, false, exitCodes::PackingError);
 }
 
 void deploytest::testDeployGeneralFiles() {
@@ -1855,6 +1920,37 @@ void deploytest::testOverwrite() {
 
     QVERIFY(hashAfter == hashBefor);
 
+}
+
+void deploytest::testOverwriteWithPacking() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject";
+
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe";
+
+#endif
+#ifdef Q_OS_UNIX
+    auto comapareTreeqif = utils.createTree(
+                    {
+                        "./" + DISTRO_DIR + "/InstallerTest.run",
+                    });
+#else
+    auto comapareTreeqif = utils.createTree(
+                    {
+                        "./" + DISTRO_DIR + "/InstallerTest.exe",
+                    });
+
+#endif
+
+    runTestParams({"-bin", bin,
+                   "force-clear",
+                   "noOverwrite",
+                   "qif",
+                   "qifFromSystem",
+                   "-name", "Test"}, &comapareTreeqif);
 }
 
 void deploytest::testextraData() {

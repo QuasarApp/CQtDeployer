@@ -189,6 +189,8 @@ QString QIF::getStyle(const QString& input) const {
     auto list = resurces.entryInfoList(QDir::Files);
     for (const auto& style : list) {
         if (input == style.baseName()) {
+            QuasarAppUtils::Params::log(QString("Use the %0 installer style").arg(style.baseName()),
+                                        QuasarAppUtils::Info);
             return style.absoluteFilePath();
         }
     }
@@ -196,11 +198,18 @@ QString QIF::getStyle(const QString& input) const {
     QFileInfo f(input);
 
     if (f.isFile()) {
+        QuasarAppUtils::Params::log("Use custom installer style",
+                                    QuasarAppUtils::Info);
         return f.absoluteFilePath();
     }
 
-    QuasarAppUtils::Params::log(input +  " not exits",
-                                QuasarAppUtils::Error);
+    if (input.size()) {
+        QuasarAppUtils::Params::log(QString("The %0 style is not exits").arg(input),
+                                    QuasarAppUtils::Error);
+    }
+
+    QuasarAppUtils::Params::log("Use a default installer style",
+                                QuasarAppUtils::Info);
 
     return "";
 }
