@@ -1685,45 +1685,11 @@ void deploytest::runTestParams(QStringList list,
 
     Deploy deploy;
     if (deploy.run() != exitCode)
-        QVERIFY(false);
+        QVERIFY(false && "exit code not valid");
 
     if (tree) {
         checkResults(*tree, noWarnings, onlySize);
     }
-
-#ifdef WITH_SNAP
-#ifdef Q_OS_UNIX
-    if (QFileInfo::exists("/snap/cqtdeployer/current/cqtdeployer.sh") && tree) {
-
-        TestUtils utils;
-
-        auto targetDir = DeployCore::_config->targetDir;
-        QuasarAppUtils::Params::parseParams(QStringList{"clear",
-                                                        "-targetDir", targetDir,
-                                            });
-
-        Deploy deployClear;
-        QVERIFY(deployClear.run() == 0);
-
-
-        auto resultTree = utils.getTree(DeployCore::_config->targetDir);
-
-        QVERIFY(!resultTree.size());
-
-        QProcess cqtdeployerProcess;
-        cqtdeployerProcess.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-        cqtdeployerProcess.setProgram("cqtdeployer");
-        cqtdeployerProcess.setArguments(list);
-
-        cqtdeployerProcess.start();
-
-        QVERIFY(cqtdeployerProcess.waitForStarted());
-        QVERIFY(cqtdeployerProcess.waitForFinished(3000000));
-
-        checkResults(*tree, noWarnings);
-    }
-#endif
-#endif
 }
 
 void deploytest::checkResults(const QSet<QString> &tree,
