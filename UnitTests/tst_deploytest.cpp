@@ -1230,6 +1230,9 @@ void deploytest::testOverridingDefaultTemplate() {
                     "temaplate/defaultQIFWTemplate/packages/MyApp/meta/installscript.qs",
                     "temaplate/defaultQIFWTemplate/packages/MyApp/meta/package.xml"
                 });
+    QFile appScript("temaplate/defaultQIFWTemplate/packages/MyApp/meta/installscript.qs");
+    appScript.remove();
+
     runTestParams(
                 {"-bin", bin,
                  "force-clear",
@@ -1254,7 +1257,6 @@ void deploytest::testOverridingDefaultTemplate() {
 
 #endif
 
-    QFile appScript("temaplate/defaultQIFWTemplate/packages/MyApp/meta/installscript.qs");
     QVERIFY(appScript.open(QIODevice::WriteOnly));
     QVERIFY(appScript.write(QByteArray{"ERROR"}));
     appScript.close();
