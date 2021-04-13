@@ -1686,8 +1686,10 @@ void deploytest::runTestParams(QStringList list,
     QuasarAppUtils::Params::parseParams(list);
 
     Deploy deploy;
-    if (deploy.run() != exitCode)
+    if (deploy.run() != exitCode) {
+        qDebug() << "Exit Code = " << exitCode;
         QVERIFY(false && "exit code not valid");
+    }
 
     if (tree) {
         checkResults(*tree, noWarnings, onlySize);
