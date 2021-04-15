@@ -21,7 +21,7 @@ Where:
 
 
 By default, cqtdeployer will create an installation file with one package in which your entire distribution kit will lie.
-If you want to configure it, you should use [Controll of packages options](Options)
+If you want to configure it, you should use [Controll of packages options](Options.md)
 To create a new package, use the -targetPackage [package; tar1] option
 
 
@@ -30,7 +30,7 @@ Where:
 * **package** - it is package name
 * **tar1** - it is name of the target that should be included in this package.
 
-Or you can describe packages in [configuration file](DeployConfigFile)
+Or you can describe packages in [configuration file](DeployConfigFile.md)
 
 
 ```json
