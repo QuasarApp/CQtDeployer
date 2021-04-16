@@ -99,6 +99,7 @@ private slots:
 
     // tested flags clear noOvervrite
     void testOverwrite();
+    void testOverwriteWithPacking();
 
     // tested flags binDir
     void testextraData();
@@ -174,7 +175,9 @@ private slots:
     void testEmptyPackages();
 
     void testRunScripts();
-    void testGetDefaultTemplate();
+    void testOverridingDefaultTemplateQIF();
+    void testOverridingDefaultTemplateDEB();
+
     void testDeployGeneralFiles();
     void testTr();
     void testVirtualKeyBoard();
@@ -634,7 +637,7 @@ void deploytest::testQIFCustom() {
     TestUtils utils;
 
 #ifdef Q_OS_UNIX
-    QString bin = TestBinDir + "TestQMLWidgets";
+    QString bin = TestBinDir + "QtWidgetsProject" + "," + TestBinDir + "TestOnlyC";
 
     QString qmake = TestQtDir + "bin/qmake";
 
@@ -642,7 +645,7 @@ void deploytest::testQIFCustom() {
                                                   "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.run",
                                               });
 #else
-    QString bin = TestBinDir + "TestQMLWidgets.exe";
+    QString bin = TestBinDir + "QtWidgetsProject.exe" + "," + TestBinDir + "TestOnlyC.exe";
 
     QString qmake = TestQtDir + "bin/qmake.exe";
     auto comapareTreeCustom = utils.createTree({
@@ -657,6 +660,7 @@ void deploytest::testQIFCustom() {
                    "-qif", TestBinDir + "/../../UnitTests/testRes/QIFCustomTemplate",
                    "-name", "org.qtproject.ifw.example.stylesheet",
                    "qifFromSystem"}, &comapareTreeCustom, true);
+
 }
 
 void deploytest::testZIP() {
@@ -1159,49 +1163,150 @@ void deploytest::testRunScripts() {
 
 }
 
-void deploytest::testGetDefaultTemplate() {
+void deploytest::testOverridingDefaultTemplateDEB()
+{
     TestUtils utils;
 
+
 #ifdef Q_OS_UNIX
-    QString bin = TestBinDir + "TestOnlyC";
+    QString bin = TestBinDir + "TestOnlyC" + "," + TestBinDir + "QtWidgetsProject";
+    QString qmake = TestQtDir + "bin/qmake";
+
+    QDir tempalteDir("temaplate");
+    if (!tempalteDir.isEmpty()) {
+        tempalteDir.removeRecursively();
+    };
 
     auto comapareTree = utils.createTree(
                 {
-                    "./" + DISTRO_DIR + "/defaultDEBTemplate/Application/DEBIAN/control",
-                    "./" + DISTRO_DIR + "/defaultDEBTemplate/Application/DEBIAN/postinst",
-                    "./" + DISTRO_DIR + "/defaultDEBTemplate/Application/DEBIAN/prerm",
-                    "./" + DISTRO_DIR + "/defaultDEBTemplate/Application/opt/Application/icons/Icon.png",
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/config/config.xml",
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/config/controlScript.qs",
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/data/icons/Icon.png",
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/meta/installscript.qs",
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/meta/package.xml"
+                    "temaplate/defaultDEBTemplate/Test/DEBIAN/control",
+                    "temaplate/defaultDEBTemplate/Test/DEBIAN/postinst",
+                    "temaplate/defaultDEBTemplate/Test/DEBIAN/prerm"
                 });
+    QFile appScript("temaplate/defaultDEBTemplate/Test/DEBIAN/control");
+    appScript.remove();
+
     runTestParams(
                 {"-bin", bin,
                  "force-clear",
                  "getDefaultTemplate",
+                 "-name", "Test",
                  "deb",
-                 "qif"
+                 "-targetDir", "temaplate",
+                 "-targetPackage", "MyApp"
                 }, &comapareTree);
-#else
-    QString bin = TestBinDir + "TestOnlyC.exe";
 
+    comapareTree = utils.createTree(
+                {
+                    "./" + DISTRO_DIR + "/Test.deb",
+                });
+
+    runTestParams(
+                {"-bin", bin,
+                 "force-clear",
+                 "-deb", "temaplate/defaultDEBTemplate",
+                 "-targetPackage", "MyApp",
+                 "-name", "Test",
+                 "-qmake", qmake
+                }, &comapareTree, false, false);
+
+
+    QVERIFY(appScript.open(QIODevice::WriteOnly));
+    QVERIFY(appScript.write(QByteArray{"ERROR"}));
+    appScript.close();
+
+    runTestParams(
+                {"-bin", bin,
+                 "force-clear",
+                 "-deb", "temaplate/defaultDEBTemplate",
+                 "-targetPackage", "MyApp",
+                 "-name", "Test",
+                 "-qmake", qmake
+                }, nullptr, false, false, exitCodes::PackingError);
+#endif
+
+}
+
+void deploytest::testOverridingDefaultTemplateQIF() {
+    TestUtils utils;
+// Prepare bin and qmake values
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC" + "," + TestBinDir + "QtWidgetsProject";
+    QString qmake = TestQtDir + "bin/qmake";
+
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe" + "," + TestBinDir + "QtWidgetsProject.exe";
+    QString qmake = TestQtDir + "bin/qmake.exe";
+
+#endif
+    QDir tempalteDir("temaplate");
+    if (!tempalteDir.isEmpty()) {
+        tempalteDir.removeRecursively();
+    };
+
+    // QIF case. prepare default template.
     auto comapareTree = utils.createTree(
                 {
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/config/config.xml",
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/config/controlScript.qs",
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/data/icons/Icon.png",
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/meta/installscript.qs",
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/meta/package.xml"
+                    "temaplate/defaultQIFWTemplate/config/config.xml",
+                    "temaplate/defaultQIFWTemplate/config/controlScript.qs",
+                    "temaplate/defaultQIFWTemplate/packages/MyApp/meta/installscript.qs",
+                    "temaplate/defaultQIFWTemplate/packages/MyApp/meta/package.xml"
                 });
+    QFile appScript("temaplate/defaultQIFWTemplate/packages/MyApp/meta/installscript.qs");
+    appScript.remove();
+
+    // This command shold be deploy default template in the template folder
     runTestParams(
                 {"-bin", bin,
                  "force-clear",
                  "getDefaultTemplate",
-                 "qif"
+                 "-name", "Test",
+                 "qif",
+                 "-targetDir", "temaplate",
+                 "-targetPackage", "MyApp"
                 }, &comapareTree);
+
+#ifdef Q_OS_UNIX
+    comapareTree = utils.createTree(
+                {
+                    "./" + DISTRO_DIR + "/InstallerTest.run",
+                });
+
+#else
+    comapareTree = utils.createTree(
+                {
+                    "./" + DISTRO_DIR + "/InstallerTest.exe",
+                });
+
 #endif
+
+    // check deploy application with custom template
+    runTestParams(
+                {"-bin", bin,
+                 "force-clear",
+                 "-qif", "temaplate/defaultQIFWTemplate",
+                 "-targetPackage", "MyApp",
+                 "-name", "Test",
+                 "-qmake", qmake,
+                 "qifFromSystem"
+                }, &comapareTree, false, false);
+
+    QVERIFY(appScript.open(QIODevice::WriteOnly));
+    QVERIFY(appScript.write(QByteArray{"ERROR"}));
+    appScript.close();
+
+    // Shold be failde because we added error string into template files.
+    runTestParams(
+                {"-bin", bin,
+                 "force-clear",
+                 "-qif", "temaplate/defaultQIFWTemplate",
+                 "-targetPackage", "MyApp",
+                 "-name", "Test",
+                 "-qmake", qmake,
+                 "qifFromSystem"
+                }, nullptr, false, false, exitCodes::PackingError);
+
+
 
 }
 
@@ -1619,46 +1724,17 @@ void deploytest::runTestParams(QStringList list,
     QuasarAppUtils::Params::parseParams(list);
 
     Deploy deploy;
-    if (deploy.run() != exitCode)
-        QVERIFY(false);
+    int code = deploy.run();
+    if (code != exitCode) {
+        qDebug() << "Needed exit Code = " << exitCode;
+        qDebug() << "Exit Code = " << code;
+
+        QVERIFY(false && "exit code not valid");
+    }
 
     if (tree) {
         checkResults(*tree, noWarnings, onlySize);
     }
-
-#ifdef WITH_SNAP
-#ifdef Q_OS_UNIX
-    if (QFileInfo::exists("/snap/cqtdeployer/current/cqtdeployer.sh") && tree) {
-
-        TestUtils utils;
-
-        auto targetDir = DeployCore::_config->targetDir;
-        QuasarAppUtils::Params::parseParams(QStringList{"clear",
-                                                        "-targetDir", targetDir,
-                                            });
-
-        Deploy deployClear;
-        QVERIFY(deployClear.run() == 0);
-
-
-        auto resultTree = utils.getTree(DeployCore::_config->targetDir);
-
-        QVERIFY(!resultTree.size());
-
-        QProcess cqtdeployerProcess;
-        cqtdeployerProcess.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-        cqtdeployerProcess.setProgram("cqtdeployer");
-        cqtdeployerProcess.setArguments(list);
-
-        cqtdeployerProcess.start();
-
-        QVERIFY(cqtdeployerProcess.waitForStarted());
-        QVERIFY(cqtdeployerProcess.waitForFinished(3000000));
-
-        checkResults(*tree, noWarnings);
-    }
-#endif
-#endif
 }
 
 void deploytest::checkResults(const QSet<QString> &tree,
@@ -1855,6 +1931,37 @@ void deploytest::testOverwrite() {
 
     QVERIFY(hashAfter == hashBefor);
 
+}
+
+void deploytest::testOverwriteWithPacking() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC," + TestBinDir + "QtWidgetsProject";
+
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe," + TestBinDir + "QtWidgetsProject.exe";
+
+#endif
+#ifdef Q_OS_UNIX
+    auto comapareTreeqif = utils.createTree(
+                    {
+                        "./" + DISTRO_DIR + "/InstallerTest.run",
+                    });
+#else
+    auto comapareTreeqif = utils.createTree(
+                    {
+                        "./" + DISTRO_DIR + "/InstallerTest.exe",
+                    });
+
+#endif
+
+    runTestParams({"-bin", bin,
+                   "force-clear",
+                   "noOverwrite",
+                   "qif",
+                   "qifFromSystem",
+                   "-name", "Test"}, &comapareTreeqif);
 }
 
 void deploytest::testextraData() {

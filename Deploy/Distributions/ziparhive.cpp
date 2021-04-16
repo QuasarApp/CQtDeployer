@@ -49,6 +49,10 @@ bool ZipArhive::deployTemplate(PackageControl &pkg) {
     return true;
 }
 
+bool ZipArhive::deployRawTemplate(PackageControl &) {
+    return true;
+}
+
 bool ZipArhive::removeTemplate() const {
     const DeployConfig *cfg = DeployCore::_config;
 

@@ -121,6 +121,10 @@ Example:
 
 ```
 
+### Note
+You can also extract the standard package template in order to override it if for some reason you are not satisfied with the standard implementation. See this [page](ExtractDefaultsTemplates.md) for details on how to do this 
+
+
 ## Available packages
 * [Qt Install Framework](QIF.md)
 * [ZIP Arhive](ZIP.md)

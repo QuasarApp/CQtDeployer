@@ -35,6 +35,10 @@ bool DefaultDistro::deployTemplate(PackageControl & ctrl) {
     return true;
 }
 
+bool DefaultDistro::deployRawTemplate(PackageControl &) {
+    return true;
+}
+
 Envirement DefaultDistro::toolKitEnv() const {
     return {};
 }
