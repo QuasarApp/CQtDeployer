@@ -58,11 +58,11 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |   qif                       | Создаст установщик QIF для развертываемой программы"      |
 |                             | Примеры: cqtdeployer qif                                  |
 |                             | Начиная с версии CQtDeployer 1.5 вы можете указать путь к своему собственному шаблону установщика. |
-|                             | Примеры: cqtdeployer -qif path/to/myCustom/qif. Подробнее можно посмотреть [здесь](QIF)        |
+|                             | Примеры: cqtdeployer -qif path/to/myCustom/qif. Подробнее можно посмотреть [здесь](QIF.md)        |
 |   deb                       | Создаст deb пакет для развертываемой программы"      |
 |                             | Примеры: cqtdeployer deb                                  |
 |                             | Вы можете указать путь к своему собственному шаблону пакета. |
-|                             | Примеры: cqtdeployer -deb path/to/myCustom/DEBIAN. Подробнее можно посмотреть [здесь](DEB)        |
+|                             | Примеры: cqtdeployer -deb path/to/myCustom/DEBIAN. Подробнее можно посмотреть [здесь](DEB.md)        |
 |   deploySystem              | Копирует все библиотеки кроме libc                        |
 |                             | (не рекомендуется, так как занимает много памяти, возможны конфликты библиотек)         |
 |   deploySystem-with-libc    | Копирует все зависимости в том числе и libc, не рекомендуется использовать с gui приложения, в место этого используйте  опцию deploySystem              |
