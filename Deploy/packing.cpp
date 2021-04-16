@@ -170,7 +170,7 @@ bool Packing::extractTemplates() {
         if (!package)
             return false;
 
-        if (!package->deployTemplate(*this))
+        if (!package->deployRawTemplate(*this))
             return false;
 
         delete package;

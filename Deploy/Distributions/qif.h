@@ -16,6 +16,7 @@ public:
     Envirement toolKitEnv() const override;
     QList<SystemCommandData> runCmd() override;
     bool deployTemplate(PackageControl &pkg) override;
+    bool deployRawTemplate(PackageControl &pkgCtrl) override;
     bool removeTemplate() const override;
     QProcessEnvironment processEnvirement() const override;
     QStringList outPutFiles() const override;
@@ -52,8 +53,6 @@ private:
 
     QString binarycreator;
     TemplateInfo generalInfo;
-
-
 };
 
 #endif // QIF_H

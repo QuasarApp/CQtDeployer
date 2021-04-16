@@ -158,6 +158,36 @@ bool QIF::deployTemplate(PackageControl &pkg) {
     return true;
 }
 
+bool QIF::deployRawTemplate(PackageControl &pkg) {
+    const DeployConfig *cfg = DeployCore::_config;
+
+    QString defaultPackageTempalte = ":/Templates/QIF/Distributions/Templates/qif/packages/default";
+    QString defaultConfig = ":/Templates/QIF/Distributions/Templates/qif/config/";
+
+    auto configLocation = cfg->getTargetDir() + "/" + getLocation() + "/config/";
+
+
+    auto list = pkg.availablePackages();
+    for (auto it = list.begin();
+         it != list.end(); ++it) {
+
+        auto package = cfg->getDistroFromPackage(*it);
+        auto local = location(package);
+
+        if (!unpackDir(defaultPackageTempalte,
+                       local, {}, {})) {
+            return false;
+        }
+    }
+
+    if (!unpackDir(defaultConfig,
+                   configLocation, {}, {})) {
+        return false;
+    }
+
+    return true;
+}
+
 bool QIF::removeTemplate() const {
     const DeployConfig *cfg = DeployCore::_config;
 

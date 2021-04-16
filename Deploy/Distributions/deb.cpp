@@ -67,6 +67,36 @@ bool Deb::deployTemplate(PackageControl &pkg) {
     return true;
 }
 
+bool Deb::deployRawTemplate(PackageControl &pkg) {
+    const DeployConfig *cfg = DeployCore::_config;
+
+    QString defaultPackageTempalte = ":/Templates/DEB/Distributions/Templates/deb";
+
+    auto list = pkg.availablePackages();
+    for (auto it = list.begin();
+         it != list.end(); ++it) {
+
+        auto package = cfg->getDistroFromPackage(*it);
+        auto local = location(package);
+
+        TemplateInfo info;
+        if (!collectInfo(package, info)) {
+            return false;
+        }
+
+        QHash<QString, QString> replace = {
+            {"default", info.Name}
+        };
+
+        if (!unpackDir(defaultPackageTempalte,
+                       local, {}, {}, replace)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool Deb::removeTemplate() const {
     const DeployConfig *cfg = DeployCore::_config;
 
@@ -103,8 +133,8 @@ bool Deb::cb() const {
 
     QString from = cfg->getTargetDir() + "/" +  getLocation() + "/";
     QString to = cfg->getTargetDir() + "/" +  getLocation() + "/../";
-
-    for (const QString& file : outPutFiles()) {
+    auto const outputFiles = outPutFiles();
+    for (const QString& file : outputFiles) {
         if(!moveData(from + file, to, "")) {
             return false;
         }

@@ -175,8 +175,8 @@ private slots:
     void testEmptyPackages();
 
     void testRunScripts();
-    void testGetDefaultTemplate();
-    void testOverridingDefaultTemplate();
+    void testOverridingDefaultTemplateQIF();
+    void testOverridingDefaultTemplateDEB();
 
     void testDeployGeneralFiles();
     void testTr();
@@ -1163,56 +1163,73 @@ void deploytest::testRunScripts() {
 
 }
 
-void deploytest::testGetDefaultTemplate() {
+void deploytest::testOverridingDefaultTemplateDEB()
+{
     TestUtils utils;
 
+
 #ifdef Q_OS_UNIX
-    QString bin = TestBinDir + "TestOnlyC";
+    QString bin = TestBinDir + "TestOnlyC" + "," + TestBinDir + "QtWidgetsProject";
+    QString qmake = TestQtDir + "bin/qmake";
+
+    QDir tempalteDir("temaplate");
+    if (!tempalteDir.isEmpty()) {
+        tempalteDir.removeRecursively();
+    };
 
     auto comapareTree = utils.createTree(
                 {
-                    "./" + DISTRO_DIR + "/defaultDEBTemplate/Application/DEBIAN/control",
-                    "./" + DISTRO_DIR + "/defaultDEBTemplate/Application/DEBIAN/postinst",
-                    "./" + DISTRO_DIR + "/defaultDEBTemplate/Application/DEBIAN/prerm",
-                    "./" + DISTRO_DIR + "/defaultDEBTemplate/Application/opt/Application/icons/Icon.png",
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/config/config.xml",
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/config/controlScript.qs",
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/data/icons/Icon.png",
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/meta/installscript.qs",
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/meta/package.xml"
+                    "temaplate/defaultDEBTemplate/Test/DEBIAN/control",
+                    "temaplate/defaultDEBTemplate/Test/DEBIAN/postinst",
+                    "temaplate/defaultDEBTemplate/Test/DEBIAN/prerm"
                 });
+    QFile appScript("temaplate/defaultDEBTemplate/Test/DEBIAN/control");
+    appScript.remove();
+
     runTestParams(
                 {"-bin", bin,
                  "force-clear",
                  "getDefaultTemplate",
+                 "-name", "Test",
                  "deb",
-                 "qif"
+                 "-targetDir", "temaplate",
+                 "-targetPackage", "MyApp"
                 }, &comapareTree);
-#else
-    QString bin = TestBinDir + "TestOnlyC.exe";
 
-    auto comapareTree = utils.createTree(
+    comapareTree = utils.createTree(
                 {
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/config/config.xml",
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/config/controlScript.qs",
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/data/icons/Icon.png",
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/meta/installscript.qs",
-                    "./" + DISTRO_DIR + "/defaultQIFWTemplate/packages/Application/meta/package.xml"
+                    "./" + DISTRO_DIR + "/Test.deb",
                 });
+
     runTestParams(
                 {"-bin", bin,
                  "force-clear",
-                 "getDefaultTemplate",
-                 "qif"
-                }, &comapareTree);
-#endif
+                 "-deb", "temaplate/defaultDEBTemplate",
+                 "-targetPackage", "MyApp",
+                 "-name", "Test",
+                 "-qmake", qmake
+                }, &comapareTree, false, false);
 
+
+    QVERIFY(appScript.open(QIODevice::WriteOnly));
+    QVERIFY(appScript.write(QByteArray{"ERROR"}));
+    appScript.close();
+
+    runTestParams(
+                {"-bin", bin,
+                 "force-clear",
+                 "-deb", "temaplate/defaultDEBTemplate",
+                 "-targetPackage", "MyApp",
+                 "-name", "Test",
+                 "-qmake", qmake
+                }, nullptr, false, false, exitCodes::PackingError);
+#endif
 
 }
 
-void deploytest::testOverridingDefaultTemplate() {
+void deploytest::testOverridingDefaultTemplateQIF() {
     TestUtils utils;
-
+// Prepare bin and qmake values
 #ifdef Q_OS_UNIX
     QString bin = TestBinDir + "TestOnlyC" + "," + TestBinDir + "QtWidgetsProject";
     QString qmake = TestQtDir + "bin/qmake";
@@ -1222,7 +1239,12 @@ void deploytest::testOverridingDefaultTemplate() {
     QString qmake = TestQtDir + "bin/qmake.exe";
 
 #endif
+    QDir tempalteDir("temaplate");
+    if (!tempalteDir.isEmpty()) {
+        tempalteDir.removeRecursively();
+    };
 
+    // QIF case. prepare default template.
     auto comapareTree = utils.createTree(
                 {
                     "temaplate/defaultQIFWTemplate/config/config.xml",
@@ -1233,6 +1255,7 @@ void deploytest::testOverridingDefaultTemplate() {
     QFile appScript("temaplate/defaultQIFWTemplate/packages/MyApp/meta/installscript.qs");
     appScript.remove();
 
+    // This command shold be deploy default template in the template folder
     runTestParams(
                 {"-bin", bin,
                  "force-clear",
@@ -1257,10 +1280,22 @@ void deploytest::testOverridingDefaultTemplate() {
 
 #endif
 
+    // check deploy application with custom template
+    runTestParams(
+                {"-bin", bin,
+                 "force-clear",
+                 "-qif", "temaplate/defaultQIFWTemplate",
+                 "-targetPackage", "MyApp",
+                 "-name", "Test",
+                 "-qmake", qmake,
+                 "qifFromSystem"
+                }, &comapareTree, false, false);
+
     QVERIFY(appScript.open(QIODevice::WriteOnly));
     QVERIFY(appScript.write(QByteArray{"ERROR"}));
     appScript.close();
 
+    // Shold be failde because we added error string into template files.
     runTestParams(
                 {"-bin", bin,
                  "force-clear",
@@ -1270,6 +1305,9 @@ void deploytest::testOverridingDefaultTemplate() {
                  "-qmake", qmake,
                  "qifFromSystem"
                 }, nullptr, false, false, exitCodes::PackingError);
+
+
+
 }
 
 void deploytest::testDeployGeneralFiles() {
