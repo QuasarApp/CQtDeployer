@@ -121,6 +121,7 @@ If you would like to use bitcoins to support us, you can transfer coins to these
 ### Silver Membership Patrons:
 
 - Rustem Husnutdinov
+- Semih Ufuk Güler
 
 ***
 
