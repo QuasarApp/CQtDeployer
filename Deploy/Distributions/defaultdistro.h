@@ -10,6 +10,8 @@ public:
 
     QString getConfig() const ;
     bool deployTemplate(PackageControl &pkg) override;
+    bool deployRawTemplate(PackageControl &pkgCtrl) override;
+
     Envirement toolKitEnv() const override;
     QList<SystemCommandData> runCmd() override;
     bool removeTemplate() const override;

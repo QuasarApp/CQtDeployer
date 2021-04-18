@@ -241,9 +241,11 @@ bool iDistribution::deployIcon(TemplateInfo &info, const DistroModule& pkg) {
     const DeployConfig *cfg = DeployCore::_config;
 
     info.Icon = "icons/Icon.png";
-
+    QSet<QString> icons;
     for (const auto& target: pkg.targets()) {
         auto icon = cfg->targets().value(target).getIcon();
+        if (icons.contains(icon))
+            break;
 
         QFileInfo iconInfo(icon);
         info.Icon = releativeLocation(pkg) + "/icons/" + iconInfo.fileName();
@@ -254,6 +256,7 @@ bool iDistribution::deployIcon(TemplateInfo &info, const DistroModule& pkg) {
 
             return false;
         }
+        icons += icon;
     }
 
     return true;

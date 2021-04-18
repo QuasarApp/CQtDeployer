@@ -13,6 +13,7 @@ public:
     // iDistribution interface
 public:
     bool deployTemplate(PackageControl &pkg) override;
+    bool deployRawTemplate(PackageControl &pkgCtrl) override;
     bool removeTemplate() const override;
     Envirement toolKitEnv() const override;
     QProcessEnvironment processEnvirement() const override;
@@ -25,7 +26,6 @@ protected:
     QString location(const DistroModule &module) const override;
 private:
     QStringList outFiles;
-
 
 };
 

@@ -18,6 +18,7 @@
 * [Adding extra files](ExtraFiles.md)
 * [Retrieving packaging templates](ExtractDefaultsTemplates.md)
 * [Default Environment Variables](EnvironmentVariables.md)
+* [Disable standard shortcuts ](DisableShortcats.md)
 
 
 ## Support the project
