@@ -797,14 +797,14 @@ bool ConfigParser::setTargets(const QStringList &value) {
     bool isfillList = false;
 
     for (const auto &i : value) {
-        QFileInfo targetInfo(i);
+        QFileInfo targetInfo = getBinInfo(i);
 
         if (i.isEmpty())
             continue;
 
         if (targetInfo.isFile()) {
 
-            auto target = createTarget(QDir::fromNativeSeparators(i));
+            auto target = createTarget(targetInfo.absoluteFilePath());
             if (!_config.targetsEdit().contains(target.target)) {
                 _config.targetsEdit().insert(target.target,  target.targetInfo);
             }
@@ -812,7 +812,7 @@ bool ConfigParser::setTargets(const QStringList &value) {
             isfillList = true;
         }
         else if (targetInfo.isDir()) {
-            if (!setTargetsInDir(i)) {
+            if (!setTargetsInDir(targetInfo.absoluteFilePath())) {
                 QuasarAppUtils::Params::log(i + " du not contains executable binaries!",
                                             QuasarAppUtils::Debug);
                 continue;
@@ -829,6 +829,21 @@ bool ConfigParser::setTargets(const QStringList &value) {
         return false;
 
     return true;
+}
+
+QFileInfo ConfigParser::getBinInfo(const QString &bin) {
+    auto prefixes = QuasarAppUtils::Params::getArg("binPrefix").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
+    for (const QString& prefix :qAsConst(prefixes)) {
+        QFileInfo info(prefix + "/" + bin);
+
+        if (info.isFile()) {
+            return info;
+        }
+    }
+
+    return QFileInfo(bin);
 }
 
 bool ConfigParser::setTargetsRecursive(const QString &dir) {

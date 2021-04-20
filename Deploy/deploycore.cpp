@@ -229,6 +229,10 @@ void DeployCore::help() {
                  " For folders:"
                  " CCQtDeployer will enter these folders and non-recursively copy all executable files to the destination directory."
                  " Then, CQtDeployer will extract all dependencies of the copied files and search dependencies in system environments and libDir paths."},
+                {"-binPrefix [prefixPath]", "Sets prefix path for bin option."
+                                            " Example: "
+                                            "-bin path/MyExecutable is some as -bin MyExecutable -binPrefix path" },
+
                 {"-confFile [params]", "The path to the json file with all deployment configurations. Using this file,"
                  " you can add the necessary options, thereby simplifying the command invocation in the console."
                  " However, the parameters in Kansol have a higher priority than in the file."

@@ -184,6 +184,8 @@ private slots:
     // Attention! This test only covers 40% of icon functions
     void testIcons();
 
+    void testBinPrefix();
+
     void customTest();
 };
 
@@ -1459,6 +1461,37 @@ void deploytest::testIcons() {
 
 
     delete deploy;
+
+}
+
+void deploytest::testBinPrefix() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    auto comapareTree = utils.createTree(
+    {
+                    "./" + DISTRO_DIR + "/TestOnlyC.sh",
+                    "./" + DISTRO_DIR + "/bin/TestOnlyC",
+                    "./" + DISTRO_DIR + "/bin/qt.conf"
+                });
+    QString target = TestBinDir + "TestOnlyC";
+    QString targetWithoutPrefix = "TestOnlyC";
+
+#else
+    auto comapareTree = utils.createTree(
+    {"./" + DISTRO_DIR + "/TestOnlyC.exe",
+     "./" + DISTRO_DIR + "/TestOnlyC.bat",
+     "./" + DISTRO_DIR + "/qt.conf"});
+    QString target = TestBinDir + "TestOnlyC.exe";
+    QString targetWithoutPrefix = "TestOnlyC.exe";
+
+#endif
+
+    runTestParams({"-bin", target, "force-clear"}, &comapareTree);
+
+    runTestParams({"-bin", targetWithoutPrefix,
+                   "-binPrefix", TestBinDir,
+                   "force-clear"}, &comapareTree);
 
 }
 

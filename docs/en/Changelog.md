@@ -39,7 +39,7 @@
 - extraDataOut - Sets path to extra data files out directory.
 - prefix - Sets the prefix for the package relatively a target directory
 - homePage - Sets the homepage url for a package
-
+- binPrefix - Sets prefix for bin option.
 
 ### Deprecated and removed options
 - deploySystem-with-libc - instead of this option use the deploySystem option.
