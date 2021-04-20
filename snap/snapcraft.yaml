@@ -38,6 +38,7 @@ parts:
       - libfreetype6
       - libpng16-16
       - dpkg
+      - libwayland-cursor0
 
 
   qif:
