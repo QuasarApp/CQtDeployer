@@ -2937,13 +2937,7 @@ void deploytest::testOutDirs() {
     QVERIFY(runScript.contains("SET PATH=%BASE_DIR%\\lolLib\\;%PATH%"));
     QVERIFY(runScript.contains("start \"TestQMLWidgets\" /B \"%BASE_DIR%\\lol\\TestQMLWidgets.exe\" %*"));
 
-    runTestParams({"-bin", TestBinDir + "TestOnlyC.exe, "clear" ,
-                   "-binOut", "/lol",
-                   "-libOut", "/lolLib",
-                   "-trOut", "/lolTr",
-                   "-pluginOut", "/p",
-                   "-qmlOut", "/q",
-                   "-qmake", qmake
+    runTestParams({"-bin", TestBinDir + "TestOnlyC.exe", "clear",
                   }, nullptr);
 
     file.setFileName( "./" + DISTRO_DIR + "/TestOnlyC.bat");
