@@ -18,8 +18,8 @@
 bool MetaFileManager::createRunScriptWindows(const QString &target) {
 
     auto cnf = DeployCore::_config;
-
-    if (!cnf->targets().contains(target)) {
+    auto targetinfo = cnf->targets().value(target);
+    if (!targetinfo.isValid()) {
         return false;
     }
     auto distro = cnf->getDistro(target);
@@ -37,6 +37,7 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
         script.close();
 
     } else {
+
         auto systemLibsDir = distro.getLibOutDir() + DeployCore::systemLibsFolderName();
 
         content =
@@ -46,8 +47,15 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
                 "SET CQT_PKG_ROOT=%BASE_DIR%\n"
                 "SET CQT_RUN_FILE=%BASE_DIR%%5\n"
 
-                "%3\n"
-                "start \"%0\" %4 \"%BASE_DIR%" + distro.getBinOutDir() + "%1\" %2 \n";
+                "%3\n";
+
+        // Run application as invoke of the console for consle applications
+        // And run gui applciation in the detached mode.
+        if (targetinfo.isConsole()) {
+            content += "call \"%BASE_DIR%" + distro.getBinOutDir() + "%1\" %2 \n";
+        } else {
+            content += "start \"%0\" %4 \"%BASE_DIR%" + distro.getBinOutDir() + "%1\" %2 \n";
+        }
 
         content = content.arg(targetInfo.baseName(), targetInfo.fileName(), "%*",
                               generateCustoScriptBlok(true)); // %0 %1 %2 %3

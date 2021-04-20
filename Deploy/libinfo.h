@@ -58,6 +58,9 @@ public:
     WinAPI getWinApi() const;
     void setWinApi(WinAPI winApi);
     QtMajorVersion isDependetOfQt() const;
+
+    bool isConsole() const;
+
 };
 
 uint qHash(const LibInfo& info);

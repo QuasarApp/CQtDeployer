@@ -2937,6 +2937,25 @@ void deploytest::testOutDirs() {
     QVERIFY(runScript.contains("SET PATH=%BASE_DIR%\\lolLib\\;%PATH%"));
     QVERIFY(runScript.contains("start \"TestQMLWidgets\" /B \"%BASE_DIR%\\lol\\TestQMLWidgets.exe\" %*"));
 
+    runTestParams({"-bin", TestBinDir + "TestOnlyC.exe, "clear" ,
+                   "-binOut", "/lol",
+                   "-libOut", "/lolLib",
+                   "-trOut", "/lolTr",
+                   "-pluginOut", "/p",
+                   "-qmlOut", "/q",
+                   "-qmake", qmake
+                  }, nullptr);
+
+    file.setFileName( "./" + DISTRO_DIR + "/TestOnlyC.bat");
+
+    QVERIFY(file.open(QIODevice::ReadOnly));
+
+    runScript = file.readAll();
+    file.close();
+
+    qDebug() << "runScript =" << runScript;
+
+    QVERIFY(runScript.contains("call \"%BASE_DIR%\\lol\\TestOnlyC.exe\" %*"));
 
 #endif
 

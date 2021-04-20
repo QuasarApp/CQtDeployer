@@ -112,6 +112,23 @@ QtMajorVersion LibInfo::isDependetOfQt() const {
     return QtMajorVersion::NoQt;
 }
 
+bool LibInfo::isConsole() const {
+    for (const auto& i : dependncies) {
+
+        QFileInfo info(i);
+
+        QString fileName = info.fileName();
+        if (fileName.contains("Qt4Gui", ONLY_WIN_CASE_INSENSIATIVE) ||
+            fileName.contains("Qt5Gui", ONLY_WIN_CASE_INSENSIATIVE) ||
+            fileName.contains("Qt6Gui", ONLY_WIN_CASE_INSENSIATIVE)) {
+
+            return false;
+        }
+    }
+
+    return true;
+}
+
 QString LibInfo::fullPath() const {
     return path + "/" + name;
 }
