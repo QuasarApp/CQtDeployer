@@ -45,14 +45,14 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
                 "SET BASE_DIR=%~dp0\n"
                 "SET PATH=%BASE_DIR%" + distro.getLibOutDir() + ";%PATH%;" + systemLibsDir + "\n"
                 "SET CQT_PKG_ROOT=%BASE_DIR%\n"
-                "SET CQT_RUN_FILE=%BASE_DIR%%5\n"
+                "SET CQT_RUN_FILE=%BASE_DIR%%4\n"
 
                 "%3\n";
 
         // Run application as invoke of the console for consle applications
         // And run gui applciation in the detached mode.
         if (targetinfo.isGui()) {
-            content += "start \"%0\" %4 \"%BASE_DIR%" + distro.getBinOutDir() + "%1\" %2 \n";
+            content += "start \"%0\" %5 \"%BASE_DIR%" + distro.getBinOutDir() + "%1\" %2 \n";
         } else {
             content += "call \"%BASE_DIR%" + distro.getBinOutDir() + "%1\" %2 \n";
         }
@@ -61,8 +61,11 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
                               generateCustoScriptBlok(true)); // %0 %1 %2 %3
 
         content = QDir::toNativeSeparators(content);
-        content = content.arg("/B", targetInfo.baseName()+ ".bat"); // %4 %5
+        content = content.arg(targetInfo.baseName()+ ".bat", "/B"); // %4
 
+        if (targetinfo.isGui()) {
+            content = content.arg("/B"); // %5
+        }
     }
 
     QString fname = DeployCore::_config->getTargetDir(target) + QDir::separator() + targetInfo.baseName()+ ".bat";
