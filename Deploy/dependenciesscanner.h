@@ -48,7 +48,7 @@ public:
 
     void setEnvironment(const QStringList &env);
 
-    QSet<LibInfo> scan(const QString& path);
+    LibInfo scan(const QString& path);
     bool fillLibInfo(LibInfo& info ,const QString& file) const;
 
     ~DependenciesScanner();

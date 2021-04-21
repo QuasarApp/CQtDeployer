@@ -51,10 +51,10 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
 
         // Run application as invoke of the console for consle applications
         // And run gui applciation in the detached mode.
-        if (targetinfo.isConsole()) {
-            content += "call \"%BASE_DIR%" + distro.getBinOutDir() + "%1\" %2 \n";
-        } else {
+        if (targetinfo.isGui()) {
             content += "start \"%0\" %4 \"%BASE_DIR%" + distro.getBinOutDir() + "%1\" %2 \n";
+        } else {
+            content += "call \"%BASE_DIR%" + distro.getBinOutDir() + "%1\" %2 \n";
         }
 
         content = content.arg(targetInfo.baseName(), targetInfo.fileName(), "%*",

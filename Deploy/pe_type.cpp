@@ -140,9 +140,12 @@ bool PE::getLibInfo(const QString &lib, LibInfo &info) const {
         info.setPlatform(UnknownPlatform);
         return false;
     }
+    QFileInfo infolib(lib);
+    info.setName(infolib.fileName());
+    info.setPath(infolib.absolutePath());
 
-    info.setName(QFileInfo(lib).fileName());
-    info.setPath(QFileInfo(lib).absolutePath());
+    info.setModule(DeployCore::getQtModule(infolib.absoluteFilePath()));
+
     info.setWinApi(getAPIModule(info.getName()));
 
     if (!getDep(parsedPeLib->internal, info)) {

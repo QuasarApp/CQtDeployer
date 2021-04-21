@@ -383,7 +383,7 @@ void Extracter::extractLib(const QString &file,
 
     auto data = _scaner->scan(file);
 
-    for (const auto &line : data) {
+    for (const auto &line : data.getAllDep()) {
 
         if (mask.size() && !line.getName().contains(mask, ONLY_WIN_CASE_INSENSIATIVE)) {
             continue;

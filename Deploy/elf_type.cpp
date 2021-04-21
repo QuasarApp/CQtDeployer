@@ -95,8 +95,10 @@ bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
         }
     }
 
-    info.setName(QFileInfo(lib).fileName());
-    info.setPath(QFileInfo(lib).absolutePath());
+    QFileInfo infolib(lib);
+    info.setName(infolib.fileName());
+    info.setPath(infolib.absolutePath());
+    info.setModule(DeployCore::getQtModule(infolib.absoluteFilePath()));
 
     auto dep = reader.dependencies();
     for (const auto &i : dep) {

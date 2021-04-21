@@ -19,6 +19,8 @@ bool GeneralFiles::getLibInfo(const QString &lib, LibInfo &info) const {
     info.setPlatform(GeneralFile);
     info.setName(fileInfo.fileName());
     info.setPath(fileInfo.absolutePath());
+    info.setModule(DeployCore::getQtModule(fileInfo.absoluteFilePath()));
+
 
     return true;
 }

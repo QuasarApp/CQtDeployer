@@ -15,6 +15,8 @@ class TestUtils
 public:
     TestUtils();
     QSet<QString> getTree(const QString& path, int limit = -1, int depch = 0);
+    QSet<QString> getFilesSet(const QString& path, int limit = -1, int depch = 0);
+
     QSet<QString> createTree( const QStringList& tree);
 
     /**
