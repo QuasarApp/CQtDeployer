@@ -61,7 +61,7 @@ bool MetaFileManager::createRunScriptWindows(const QString &target) {
                               generateCustoScriptBlok(true)); // %0 %1 %2 %3
 
         content = QDir::toNativeSeparators(content);
-        content = content.arg(targetInfo.baseName()+ ".bat", "/B"); // %4
+        content = content.arg(targetInfo.baseName()+ ".bat"); // %4
 
         if (targetinfo.isGui()) {
             content = content.arg("/B"); // %5
