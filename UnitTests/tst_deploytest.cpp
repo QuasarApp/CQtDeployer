@@ -139,7 +139,6 @@ private slots:
 
     // tested flag qmlOut libOut trOut pluginOut binOut
     void testOutDirs();
-    void testIsGuiMethod();
 
     void testMSVC();
 
@@ -2952,46 +2951,9 @@ void deploytest::testOutDirs() {
 
     qDebug() << "runScript =" << runScript;
 
-    QVERIFY(runScript.contains("call \"%BASE_DIR%\\lol\\TestOnlyC.exe\" %*"));
+    QVERIFY(runScript.contains("call \"%BASE_DIR%\\TestOnlyC.exe\" %*"));
 
 #endif
-
-}
-
-void deploytest::testIsGuiMethod() {
-    LibInfo info;
-
-
-#ifdef Q_OS_UNIX
-    QString binGui = TestBinDir + "QtWidgetsProject";
-    QString binConsole = TestBinDir + "TestOnlyC";
-    QString qmake = TestQtDir + "bin/qmake";
-
-#else
-    QString binGui = TestBinDir + "QtWidgetsProject.exe";
-    QString binConsole = TestBinDir + "TestOnlyC.exe";
-    QString qmake = TestQtDir + "bin/qmake.exe";
-
-
-#endif
-
-    QuasarAppUtils::Params::parseParams({"-bin", binGui, "clear",
-                                         "-qmake", qmake
-                                        });
-
-    Deploy deploy;
-    deploy.prepare();
-    DependenciesScanner scaner;
-    scaner.setEnvironment(DeployCore::_config->envirement.environmentList());
-
-    info = scaner.scan(binGui);
-    QVERIFY(info.isGui());
-
-    info.clear();
-
-    info = scaner.scan(binConsole);
-    QVERIFY(!info.isGui());
-
 
 }
 

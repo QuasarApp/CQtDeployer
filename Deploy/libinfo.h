@@ -48,16 +48,7 @@ public:
     void setWinApi(WinAPI winApi);
     QtMajorVersion isDependetOfQt() const;
 
-    /**
-     * @brief isConsole This method return true if the librarye depends of the gui libraryes.
-     * @return true if the librarye is gui application.
-     */
-    bool isGui() const;
-
     friend class DependenciesScanner;
-
-    DeployCore::QtModule getModule() const;
-    void setModule(const DeployCore::QtModule &module);
 
 private:
     QSet<LibInfo> _allDep;
@@ -70,7 +61,6 @@ private:
     QString _qtPath;
     LibPriority _priority = NotFile;
     WinAPI _winApi = WinAPI::NoWinAPI;
-    DeployCore::QtModule _module;
 
 };
 

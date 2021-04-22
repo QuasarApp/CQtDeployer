@@ -310,7 +310,7 @@ bool Extracter::deploy() {
         QuasarAppUtils::Params::log("deploy msvc failed", QuasarAppUtils::Warning);
     }
 
-    _metaFileManager->createRunMetaFiles();
+    _metaFileManager->createRunMetaFiles(_targetModules);
     QuasarAppUtils::Params::log("deploy done!",
                                 QuasarAppUtils::Info);
 
@@ -392,6 +392,8 @@ void Extracter::extractLib(const QString &file,
         if (DeployCore::_config->ignoreList.isIgnore(line)) {
             continue;
         }
+
+        _targetModules[file] = _targetModules.value(file, DeployCore::NONE) | DeployCore::getQtModule(line.fullPath());
 
         if (line.getPriority() < LibPriority::SystemLib && !depMap->containsNeadedLib(line.fullPath())) {
             depMap->addNeadedLib(line.fullPath());

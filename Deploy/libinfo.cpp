@@ -112,30 +112,6 @@ QtMajorVersion LibInfo::isDependetOfQt() const {
     return QtMajorVersion::NoQt;
 }
 
-bool LibInfo::isGui() const {
-    DeployCore::QtModule guiModules =
-            static_cast<DeployCore::QtModule>(DeployCore::QtGuiModule |
-                                              DeployCore::QtOpenGLModule |
-                                              DeployCore::QtQmlModule |
-                                              DeployCore::QtQuickModule);
-
-    for (const auto& dep: _allDep) {
-        if (dep.getModule() & guiModules) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-DeployCore::QtModule LibInfo::getModule() const {
-    return _module;
-}
-
-void LibInfo::setModule(const DeployCore::QtModule &module) {
-    _module = module;
-}
-
 QString LibInfo::fullPath() const {
     return _path + "/" + _name;
 }
@@ -147,7 +123,6 @@ void LibInfo::clear() {
     _platform = Platform::UnknownPlatform;
     _dependncies.clear();
     _allDep.clear();
-    _module = DeployCore::QtModule::NONE;
 }
 
 bool LibInfo::isValid() const {

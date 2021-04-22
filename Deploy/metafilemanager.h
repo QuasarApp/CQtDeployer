@@ -9,6 +9,7 @@
 #define METAFILEMANAGER_H
 
 #include <QString>
+#include <deploycore.h>
 
 class FileManager;
 
@@ -19,7 +20,7 @@ class MetaFileManager
 public:
     MetaFileManager(FileManager* manager);
 
-    void createRunMetaFiles();
+    void createRunMetaFiles(const QHash<QString, DeployCore::QtModule> &modulesMap);
 
 
 private:
@@ -28,9 +29,11 @@ private:
     QString generateCustoScriptBlok(bool bat) const;
 
     bool createRunScript(const QString &target);
+
     bool createQConf(const QString &target);
 
     FileManager* _fileManager = nullptr;
+    QHash<QString, DeployCore::QtModule> _mudulesMap;
 };
 
 #endif // METAFILEMANAGER_H
