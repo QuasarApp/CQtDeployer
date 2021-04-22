@@ -1131,6 +1131,7 @@ void deploytest::testRunScripts() {
 
 #ifdef Q_OS_UNIX
     QString bin = TestBinDir + "TestOnlyC";
+
     QFile f(":/testResurces/testRes/customRunScript.sh");
     QVERIFY(f.open(QIODevice::ReadOnly));
     auto etalonData = f.readAll();
@@ -1148,6 +1149,7 @@ void deploytest::testRunScripts() {
     QVERIFY(deployData == etalonData);
 #else
     QString bin = TestBinDir + "TestOnlyC.exe";
+
     QFile f(":/testResurces/testRes/customRunScript.sh");
     QVERIFY(f.open(QIODevice::ReadOnly));
     auto etalonData = f.readAll();
@@ -1156,7 +1158,7 @@ void deploytest::testRunScripts() {
     runTestParams({"-bin", bin,
                    "force-clear",
                    "-libOut", "lib",
-                  "-runScript", "TestOnlyC.exe;:/testResurces/testRes/customRunScript.sh"}, &comapareTree);
+                   "-runScript", "TestOnlyC.exe;:/testResurces/testRes/customRunScript.sh"}, nullptr);
 
     f.setFileName(DISTRO_DIR + "/TestOnlyC.bat");
     QVERIFY(f.open(QIODevice::ReadOnly));
@@ -2796,6 +2798,8 @@ void deploytest::testSystemLib() {
 
 #else
     QString bin = TestBinDir + "TestOnlyC.exe";
+    QString qmake = TestQtDir + "bin/qmake.exe";
+
     auto comapareTree = utils.createTree(
     {
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
@@ -2810,11 +2814,11 @@ void deploytest::testSystemLib() {
 #endif
 
     runTestParams({"-bin", bin, "clear" ,
-                   "deploySystem"
+                   "deploySystem",
+                   "-qmake", qmake
                   }, &comapareTree);
 
 #ifdef Q_OS_WIN
-    QString qmake = TestQtDir + "bin/qmake.exe";
     bin = TestBinDir + "QtWidgetsProject.exe";
 
     comapareTree += TestModule.qtLibs();
@@ -2823,14 +2827,14 @@ void deploytest::testSystemLib() {
     {
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
                     "./" + DISTRO_DIR + "/TestOnlyC.bat",
+                    "./" + DISTRO_DIR + "/systemLibs/libgcc_s_seh-1.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/libstdc++-6.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/libwinpthread-1.dll",
 
                 });
 
     comapareTree += utils.createTree(
     {
-                    "./" + DISTRO_DIR + "/systemLibs/libgcc_s_seh-1.dll",
-                    "./" + DISTRO_DIR + "/systemLibs/libstdc++-6.dll",
-                    "./" + DISTRO_DIR + "/systemLibs/libwinpthread-1.dll",
                     "./" + DISTRO_DIR + "/systemLibs/msvcrt.dll",
                     "./" + DISTRO_DIR + "/qt.conf",
                     "./" + DISTRO_DIR + "/systemLibs/mpr.dll",
