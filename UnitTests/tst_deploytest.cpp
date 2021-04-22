@@ -2787,6 +2787,8 @@ void deploytest::testSystemLib() {
 
 #ifdef Q_OS_UNIX
     QString bin = TestBinDir + "TestOnlyC";
+    QString qmake = TestQtDir + "bin/qmake";
+
     auto comapareTree = utils.createTree(
     {
                     "./" + DISTRO_DIR + "/TestOnlyC.sh",
@@ -2815,7 +2817,7 @@ void deploytest::testSystemLib() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "deploySystem",
-                   "-qmake", qmake
+                   "-qmake", qmake,
                   }, &comapareTree);
 
 #ifdef Q_OS_WIN
