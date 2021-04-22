@@ -11,16 +11,6 @@
 
 
 class DEPLOYSHARED_EXPORT LibInfo {
-private:
-    QSet<LibInfo> allDep;
-
-    Platform platform = Platform::UnknownPlatform;
-    QString name;
-    QString path;
-    QSet<QString> dependncies;
-    QString qtPath;
-    LibPriority priority = NotFile;
-    WinAPI _winApi = WinAPI::NoWinAPI;
 
 public:
 
@@ -37,7 +27,6 @@ public:
     bool isValid() const;
     bool isScaned() const;
 
-    friend class DependenciesScanner;
     const QSet<LibInfo>& getAllDep() const;
     Platform getPlatform() const;
     void setPlatform(const Platform &value);
@@ -58,6 +47,21 @@ public:
     WinAPI getWinApi() const;
     void setWinApi(WinAPI winApi);
     QtMajorVersion isDependetOfQt() const;
+
+    friend class DependenciesScanner;
+
+private:
+    QSet<LibInfo> _allDep;
+
+    Platform _platform = Platform::UnknownPlatform;
+    QString _name;
+    QString _path;
+    QSet<QString> _dependncies;
+    bool _dependsOfGui;
+    QString _qtPath;
+    LibPriority _priority = NotFile;
+    WinAPI _winApi = WinAPI::NoWinAPI;
+
 };
 
 uint qHash(const LibInfo& info);

@@ -267,13 +267,15 @@ deploytest::deploytest() {
 
     TestUtils utils;
 
-    const QStringList pathList = QProcessEnvironment::systemEnvironment().
+    QStringList pathList = QProcessEnvironment::systemEnvironment().
             value("PATH").split(DeployCore::getEnvSeparator());
 
-
-    for (const auto& path: pathList) {
-        filesTree += utils.getTree(path, 1);
+    for (const auto& path: qAsConst(pathList)) {
+        filesTree += utils.getFilesSet(path, 1);
     }
+
+    filesTree += utils.getFilesSet(TestQtDir);
+
 }
 
 int deploytest::generateLib(const QString &paath)
@@ -1129,6 +1131,7 @@ void deploytest::testRunScripts() {
 
 #ifdef Q_OS_UNIX
     QString bin = TestBinDir + "TestOnlyC";
+
     QFile f(":/testResurces/testRes/customRunScript.sh");
     QVERIFY(f.open(QIODevice::ReadOnly));
     auto etalonData = f.readAll();
@@ -1146,6 +1149,7 @@ void deploytest::testRunScripts() {
     QVERIFY(deployData == etalonData);
 #else
     QString bin = TestBinDir + "TestOnlyC.exe";
+
     QFile f(":/testResurces/testRes/customRunScript.sh");
     QVERIFY(f.open(QIODevice::ReadOnly));
     auto etalonData = f.readAll();
@@ -1154,7 +1158,7 @@ void deploytest::testRunScripts() {
     runTestParams({"-bin", bin,
                    "force-clear",
                    "-libOut", "lib",
-                  "-runScript", "TestOnlyC.exe;:/testResurces/testRes/customRunScript.sh"}, &comapareTree);
+                   "-runScript", "TestOnlyC.exe;:/testResurces/testRes/customRunScript.sh"}, nullptr);
 
     f.setFileName(DISTRO_DIR + "/TestOnlyC.bat");
     QVERIFY(f.open(QIODevice::ReadOnly));
@@ -2783,6 +2787,8 @@ void deploytest::testSystemLib() {
 
 #ifdef Q_OS_UNIX
     QString bin = TestBinDir + "TestOnlyC";
+    QString qmake = TestQtDir + "bin/qmake";
+
     auto comapareTree = utils.createTree(
     {
                     "./" + DISTRO_DIR + "/TestOnlyC.sh",
@@ -2794,6 +2800,8 @@ void deploytest::testSystemLib() {
 
 #else
     QString bin = TestBinDir + "TestOnlyC.exe";
+    QString qmake = TestQtDir + "bin/qmake.exe";
+
     auto comapareTree = utils.createTree(
     {
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
@@ -2808,11 +2816,11 @@ void deploytest::testSystemLib() {
 #endif
 
     runTestParams({"-bin", bin, "clear" ,
-                   "deploySystem"
+                   "deploySystem",
+                   "-qmake", qmake,
                   }, &comapareTree);
 
 #ifdef Q_OS_WIN
-    QString qmake = TestQtDir + "bin/qmake.exe";
     bin = TestBinDir + "QtWidgetsProject.exe";
 
     comapareTree += TestModule.qtLibs();
@@ -2821,14 +2829,14 @@ void deploytest::testSystemLib() {
     {
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
                     "./" + DISTRO_DIR + "/TestOnlyC.bat",
+                    "./" + DISTRO_DIR + "/systemLibs/libgcc_s_seh-1.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/libstdc++-6.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/libwinpthread-1.dll",
 
                 });
 
     comapareTree += utils.createTree(
     {
-                    "./" + DISTRO_DIR + "/systemLibs/libgcc_s_seh-1.dll",
-                    "./" + DISTRO_DIR + "/systemLibs/libstdc++-6.dll",
-                    "./" + DISTRO_DIR + "/systemLibs/libwinpthread-1.dll",
                     "./" + DISTRO_DIR + "/systemLibs/msvcrt.dll",
                     "./" + DISTRO_DIR + "/qt.conf",
                     "./" + DISTRO_DIR + "/systemLibs/mpr.dll",
@@ -2937,6 +2945,19 @@ void deploytest::testOutDirs() {
     QVERIFY(runScript.contains("SET PATH=%BASE_DIR%\\lolLib\\;%PATH%"));
     QVERIFY(runScript.contains("start \"TestQMLWidgets\" /B \"%BASE_DIR%\\lol\\TestQMLWidgets.exe\" %*"));
 
+    runTestParams({"-bin", TestBinDir + "TestOnlyC.exe", "clear",
+                  }, nullptr);
+
+    file.setFileName( "./" + DISTRO_DIR + "/TestOnlyC.bat");
+
+    QVERIFY(file.open(QIODevice::ReadOnly));
+
+    runScript = file.readAll();
+    file.close();
+
+    qDebug() << "runScript =" << runScript;
+
+    QVERIFY(runScript.contains("call \"%BASE_DIR%\\TestOnlyC.exe\" %*"));
 
 #endif
 
