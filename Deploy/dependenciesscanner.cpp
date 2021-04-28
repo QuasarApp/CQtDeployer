@@ -108,7 +108,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
         auto scanedLib = _scanedLibs.value(lib.fullPath());
 
         if (!scanedLib.isValid()) {
-            QuasarAppUtils::Params::log( "no valid lib in scaned libs list!",
+            QuasarAppUtils::Params::log( "no valid lib in scanned libs list!",
                                                QuasarAppUtils::Error);
             return;
         }
@@ -131,7 +131,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
         auto libs = getLibsFromEnvirement(i);
 
         if (!libs.size()) {
-            QuasarAppUtils::Params::log("lib for dependese " + i + " not findet!!",
+            QuasarAppUtils::Params::log("lib for dependency " + i + " not found!!",
                                                QuasarAppUtils::Warning);
             continue;
         }

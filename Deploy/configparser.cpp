@@ -1092,7 +1092,7 @@ bool ConfigParser::initQmake() {
                 auto env = QProcessEnvironment::systemEnvironment();
                 auto proc = DeployCore::findProcess(env.value("PATH"), "qmake");
                 if (proc.isEmpty()) {
-                    QuasarAppUtils::Params::log("The deployment target requir Qt libs, but init qmake is failed."
+                    QuasarAppUtils::Params::log("The deployment target requires Qt libs, but init qmake is failed."
                                                 "Use the qmake option for set a path to qmake.",
                                                 QuasarAppUtils::Error);
                     return false;
@@ -1101,7 +1101,7 @@ bool ConfigParser::initQmake() {
                 return initQmakePrivate(proc);
             }
 
-            QuasarAppUtils::Params::log("You Application requeriment Qt libs but the qmake not findet by option 'qmake' and RPATH."
+            QuasarAppUtils::Params::log("You Application requires Qt libs but qmake cannot be found in option 'qmake' or PATH."
                                         "You use option noCheckPATH. Disable the option noCheckPATH from your deploy command for search qmake from PATH",
                                          QuasarAppUtils::Error);
 

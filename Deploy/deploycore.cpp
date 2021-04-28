@@ -531,7 +531,7 @@ QString DeployCore::getVCredist(const QString &_qtbinDir) {
     QDir dir = _qtbinDir;
 
     if (!(dir.cdUp() && dir.cdUp() && dir.cdUp() && dir.cd("vcredist"))) {
-        QuasarAppUtils::Params::log("redist not findet!");
+        QuasarAppUtils::Params::log("redist not found!");
         return "";
     }
 
