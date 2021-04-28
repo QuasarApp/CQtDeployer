@@ -229,6 +229,11 @@ public:
     static DeployCore::QtModule getQtModule(const QString& path);
     static void addQtModule(DeployCore::QtModule& module, const QString& path);
 
+    /**
+     * @brief isConsole This method return true if the librarye depends of the gui libraryes.
+     * @return true if the librarye is gui application.
+     */
+    static bool isGui(DeployCore::QtModule module);
     static RunMode getMode();
     static void help();
     static QStringList helpKeys();

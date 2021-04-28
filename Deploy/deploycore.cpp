@@ -120,6 +120,16 @@ void DeployCore::addQtModule(DeployCore::QtModule &module, const QString &path) 
 
 }
 
+bool DeployCore::isGui(DeployCore::QtModule module) {
+    DeployCore::QtModule guiModules =
+            static_cast<DeployCore::QtModule>(DeployCore::QtGuiModule |
+                                              DeployCore::QtOpenGLModule |
+                                              DeployCore::QtQmlModule |
+                                              DeployCore::QtQuickModule);
+
+    return guiModules & module;
+}
+
 LibPriority DeployCore::getLibPriority(const QString &lib) {
 
     if (!QFileInfo(lib).isFile()) {

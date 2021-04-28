@@ -30,6 +30,7 @@ public:
 private:
 
     QHash<QString, DependencyMap> _packageDependencyes;
+    QHash<QString, DeployCore::QtModule> _targetModules;
 
     DependenciesScanner *_scaner;
     FileManager *_fileManager;

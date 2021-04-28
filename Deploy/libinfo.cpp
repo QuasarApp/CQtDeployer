@@ -21,77 +21,77 @@ bool operator >=(const LibInfo &left, const LibInfo &right) {
 }
 
 bool operator <(const LibInfo &left, const LibInfo &right){
-    return left.priority < right.priority;
+    return left._priority < right._priority;
 }
 
 bool operator >(const LibInfo &left, const LibInfo &right) {
-    return left.priority > right.priority;
+    return left._priority > right._priority;
 }
 
 const QSet<LibInfo> &LibInfo::getAllDep() const {
-    return allDep;
+    return _allDep;
 }
 
 Platform LibInfo::getPlatform() const {
-    return platform;
+    return _platform;
 }
 
 void LibInfo::setPlatform(const Platform &value) {
-    platform = value;
+    _platform = value;
 }
 
 QString LibInfo::getName() const {
-    return name;
+    return _name;
 }
 
 void LibInfo::setName(const QString &value) {
-    name = value;
+    _name = value;
 }
 
 QString LibInfo::getPath() const {
-    return path;
+    return _path;
 }
 
 void LibInfo::setPath(const QString &value) {
-    path = value;
+    _path = value;
 }
 
 void LibInfo::addDependncies(const QString &value) {
-    dependncies.insert(value);
+    _dependncies.insert(value);
 }
 
 void LibInfo::addDependncies(const QSet<QString> &value) {
-    dependncies += value;
+    _dependncies += value;
 }
 
 void LibInfo::removeDependncies(const QString &value) {
-    dependncies.remove(value);
+    _dependncies.remove(value);
 }
 
 QSet<QString> LibInfo::getDependncies() const {
-    return dependncies;
+    return _dependncies;
 }
 
 void LibInfo::setDependncies(const QSet<QString> &value) {
-    dependncies = value;
+    _dependncies = value;
 }
 
 LibPriority LibInfo::getPriority() const {
-    return priority;
+    return _priority;
 }
 
 void LibInfo::setPriority(const LibPriority &value) {
-    priority = value;
+    _priority = value;
 }
 
 QString LibInfo::getQtPath() const
 {
-    return qtPath;
+    return _qtPath;
 }
 
 void LibInfo::setQtPath(const QString &value)
 {
-    qtPath = value;
+    _qtPath = value;
 }
 
 WinAPI LibInfo::getWinApi() const {
@@ -103,7 +103,7 @@ void LibInfo::setWinApi(WinAPI winApi) {
 }
 
 QtMajorVersion LibInfo::isDependetOfQt() const {
-    for (const auto& i : dependncies) {
+    for (const auto& i : _dependncies) {
         if (QtMajorVersion result = DeployCore::isQtLib(i)) {
             return result;
         }
@@ -113,25 +113,25 @@ QtMajorVersion LibInfo::isDependetOfQt() const {
 }
 
 QString LibInfo::fullPath() const {
-    return path + "/" + name;
+    return _path + "/" + _name;
 }
 
 void LibInfo::clear() {
-    path = "";
-    name = "";
-    qtPath = "";
-    platform = Platform::UnknownPlatform;
-    dependncies.clear();
-    allDep.clear();
+    _path = "";
+    _name = "";
+    _qtPath = "";
+    _platform = Platform::UnknownPlatform;
+    _dependncies.clear();
+    _allDep.clear();
 }
 
 bool LibInfo::isValid() const {
-    return platform != Platform::UnknownPlatform &&
-            name.size() && path.size();
+    return _platform != Platform::UnknownPlatform &&
+            _name.size() && _path.size();
 }
 
 bool LibInfo::isScaned() const {
-    return allDep.size();
+    return _allDep.size();
 }
 
 uint qHash(const LibInfo &info) {
