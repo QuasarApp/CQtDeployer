@@ -20,5 +20,6 @@ bool GeneralFiles::getLibInfo(const QString &lib, LibInfo &info) const {
     info.setName(fileInfo.fileName());
     info.setPath(fileInfo.absolutePath());
 
+
     return true;
 }

@@ -6,7 +6,7 @@
 
 ## Automatic Packages
 Packages with this type creates automaticly.
-By default the distribution have a one main package. You can configure it using [Controll of packages options](Options).
+By default the distribution have a one main package. You can configure it using [Controll of packages options](Options.md).
 
 #### Example (Set new name for pacakge)
 ```
@@ -121,7 +121,11 @@ Example:
 
 ```
 
+### Note
+You can also extract the standard package template in order to override it if for some reason you are not satisfied with the standard implementation. See this [page](ExtractDefaultsTemplates.md) for details on how to do this 
+
+
 ## Available packages
-* [Qt Install Framework](QIF)
-* [ZIP Arhive](ZIP)
-* [DEB Package](DEB)
+* [Qt Install Framework](QIF.md)
+* [ZIP Arhive](ZIP.md)
+* [DEB Package](DEB.md)

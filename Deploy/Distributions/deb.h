@@ -14,6 +14,8 @@ public:
     // iDistribution interface
 public:
     bool deployTemplate(PackageControl &pkgCtrl) override;
+    bool deployRawTemplate(PackageControl &pkgCtrl) override;
+
     bool removeTemplate() const override;
     Envirement toolKitEnv() const override;
     QProcessEnvironment processEnvirement() const override;
@@ -30,7 +32,6 @@ protected:
 private:
     QStringList outFiles;
     QStringList packageFolders;
-
 };
 
 #endif // DEB_H

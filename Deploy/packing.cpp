@@ -103,9 +103,7 @@ bool Packing::create() {
 
             if (_proc->exitCode() != 0) {
                 QuasarAppUtils::Params::log(message, QuasarAppUtils::Error);
-
-                if (QuasarAppUtils::Params::isDebug())
-                    return false;
+                return false;
             }
         }
 
@@ -172,7 +170,7 @@ bool Packing::extractTemplates() {
         if (!package)
             return false;
 
-        if (!package->deployTemplate(*this))
+        if (!package->deployRawTemplate(*this))
             return false;
 
         delete package;

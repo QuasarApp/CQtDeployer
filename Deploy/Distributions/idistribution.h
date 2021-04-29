@@ -18,13 +18,29 @@ struct SystemCommandData {
     QStringList arguments;
 };
 
+/**
+ * @brief The iDistribution class
+ */
 class DEPLOYSHARED_EXPORT iDistribution
 {
 public:
     iDistribution(FileManager * fileManager);
     virtual ~iDistribution();
 
+    /**
+     * @brief deployTemplate This method deploy tempate on the target dir and replace all variables.
+     * @param pkgCtrl This is object for control data of the pacakages.
+     * @return true if pacakge deployed successfull
+     */
     virtual bool deployTemplate(PackageControl& pkgCtrl) = 0;
+
+    /**
+     * @brief deployRawTemplate This method will copy tempate in to target dir withot changes.
+     * @param pkgCtrl This is object for control data of the pacakages.
+     * @return true if pacakge deployed successfull
+     */
+    virtual bool deployRawTemplate(PackageControl& pkgCtrl) = 0;
+
     virtual bool removeTemplate() const = 0;
     virtual Envirement toolKitEnv() const = 0;
     virtual QProcessEnvironment processEnvirement() const = 0;

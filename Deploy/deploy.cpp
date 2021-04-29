@@ -73,6 +73,25 @@ Deploy::~Deploy() {
     DeployCore::_config = nullptr;
 }
 
+QString Deploy::codeString(int code) {
+    switch (code) {
+    case exitCodes::DeployError: {
+        return "The CQtDeployer fail to deploy application.";
+    }
+    case exitCodes::PackingError: {
+        return "The CQtDeployer fail to Pack application.";
+    }
+    case exitCodes::PrepareError: {
+        return "The CQtDeployer fail to read configuration.";
+    }
+
+    default: return "";
+
+    }
+
+    return "";
+}
+
 bool Deploy::prepare() {
 
 

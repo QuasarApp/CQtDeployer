@@ -68,6 +68,7 @@ private:
 
     void setTargetDir(const QString &target = "");
     bool setTargets(const QStringList &value);
+    QFileInfo getBinInfo(const QString& bin);
     bool setTargetsRecursive(const QString &dir);
     bool setTargetsInDir(const QString &dir, bool recursive = false);
 

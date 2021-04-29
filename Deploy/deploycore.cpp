@@ -120,6 +120,16 @@ void DeployCore::addQtModule(DeployCore::QtModule &module, const QString &path) 
 
 }
 
+bool DeployCore::isGui(DeployCore::QtModule module) {
+    DeployCore::QtModule guiModules =
+            static_cast<DeployCore::QtModule>(DeployCore::QtGuiModule |
+                                              DeployCore::QtOpenGLModule |
+                                              DeployCore::QtQmlModule |
+                                              DeployCore::QtQuickModule);
+
+    return guiModules & module;
+}
+
 LibPriority DeployCore::getLibPriority(const QString &lib) {
 
     if (!QFileInfo(lib).isFile()) {
@@ -210,10 +220,6 @@ void DeployCore::help() {
                 {"deploySystem", "Deploys all libraries."
                  " Not recomendet because there may be conflicts with system libraries"
                  " (on snap version you need to turn on permission)"},
-                {"deploySystem-with-libc", "deploys all libs include libc (only linux)."
-                 " Do not use this option with gui application."
-                 " For gui application sue the deploySystem option "
-                 "(on snap version you need to turn on permission)"},
                 {"noQt", "Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework."},
                 {"allowEmptyPackages", "Allows configure the empty packages."},
                 {"getDefaultTemplate", "Extracts defaults deb or qif templates."
@@ -233,6 +239,10 @@ void DeployCore::help() {
                  " For folders:"
                  " CCQtDeployer will enter these folders and non-recursively copy all executable files to the destination directory."
                  " Then, CQtDeployer will extract all dependencies of the copied files and search dependencies in system environments and libDir paths."},
+                {"-binPrefix [prefixPath]", "Sets prefix path for bin option."
+                                            " Example: "
+                                            "-bin path/MyExecutable is some as -bin MyExecutable -binPrefix path" },
+
                 {"-confFile [params]", "The path to the json file with all deployment configurations. Using this file,"
                  " you can add the necessary options, thereby simplifying the command invocation in the console."
                  " However, the parameters in Kansol have a higher priority than in the file."
@@ -332,7 +342,6 @@ QStringList DeployCore::helpKeys() {
         "extraData",
         "qmlDir",
         "deploySystem",
-        "deploySystem-with-libc",
         "qmake",
         "ignore",
         "ignoreEnv",
@@ -531,7 +540,7 @@ QString DeployCore::getVCredist(const QString &_qtbinDir) {
     QDir dir = _qtbinDir;
 
     if (!(dir.cdUp() && dir.cdUp() && dir.cdUp() && dir.cd("vcredist"))) {
-        QuasarAppUtils::Params::log("redist not findet!");
+        QuasarAppUtils::Params::log("redist not found!");
         return "";
     }
 

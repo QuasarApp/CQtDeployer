@@ -50,7 +50,7 @@ QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
         if (_scanedLibs.contains(lib)) {
             info = _scanedLibs.value(lib);
 
-            if ((info.priority >= SystemLib) && !QuasarAppUtils::Params::isEndable("deploySystem")) {
+            if ((info._priority >= SystemLib) && !QuasarAppUtils::Params::isEndable("deploySystem")) {
                 continue;
             }
 
@@ -108,12 +108,12 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
         auto scanedLib = _scanedLibs.value(lib.fullPath());
 
         if (!scanedLib.isValid()) {
-            QuasarAppUtils::Params::log( "no valid lib in scaned libs list!",
+            QuasarAppUtils::Params::log( "no valid lib in scanned libs list!",
                                                QuasarAppUtils::Error);
             return;
         }
 
-        res.unite(scanedLib.allDep);
+        res.unite(scanedLib._allDep);
 
         return;
     }
@@ -126,12 +126,12 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
 
     libStack.insert(lib.fullPath());
 
-    for (const auto &i : qAsConst(lib.dependncies)) {
+    for (const auto &i : qAsConst(lib._dependncies)) {
 
         auto libs = getLibsFromEnvirement(i);
 
         if (!libs.size()) {
-            QuasarAppUtils::Params::log("lib for dependese " + i + " not findet!!",
+            QuasarAppUtils::Params::log("lib for dependency " + i + " not found!!",
                                                QuasarAppUtils::Warning);
             continue;
         }
@@ -139,7 +139,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
         auto dep = libs.begin();
 
         while (dep != libs.end() &&
-               dep.value().platform != lib.platform) dep++;
+               dep.value()._platform != lib._platform) dep++;
 
         if (dep != libs.end() && !res.contains(*dep)) {
             res.insert(*dep);
@@ -149,19 +149,19 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
             if (!scanedLib.isValid()) {
                 QSet<LibInfo> listDep =  {};
 
-                if (!lib.name.compare(dep.value().name, ONLY_WIN_CASE_INSENSIATIVE))
+                if (!lib._name.compare(dep.value()._name, ONLY_WIN_CASE_INSENSIATIVE))
                     continue;
 
                 recursiveDep(*dep, listDep, libStack);
 
-                dep->allDep = listDep;
+                dep->_allDep = listDep;
                 lib.setWinApi(lib.getWinApi() | dep->getWinApi());
                 _scanedLibs.insert(dep->fullPath(), *dep);
 
                 res.unite(listDep);
             } else {
                 lib.setWinApi(lib.getWinApi() | scanedLib.getWinApi());
-                res.unite(scanedLib.allDep);
+                res.unite(scanedLib._allDep);
             }
         }
     }
@@ -213,19 +213,17 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
     _peScaner.setWinAPI(winAPI);
 }
 
-QSet<LibInfo> DependenciesScanner::scan(const QString &path) {
-    QSet<LibInfo> result;
-
+LibInfo DependenciesScanner::scan(const QString &path) {
     LibInfo info;
 
     if (!fillLibInfo(info, path)) {
-        return result;
+        return info;
     }
 
     QSet<QString> stack;
-    recursiveDep(info, result, stack);
+    recursiveDep(info, info._allDep , stack);
 
-    return result;
+    return info;
 }
 
 DependenciesScanner::~DependenciesScanner() {
