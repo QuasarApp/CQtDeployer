@@ -13,7 +13,6 @@
     ],
 
     "deploySystem": false,
-    "deploySystem-with-libc": false,
     "qmake": "this parameter should contain the path to your qmake, for Windows this field is required. On Linux, you can remove it, then qmake will be found by rpath.",
     "ignore": "ignoreLib.dll",
     "ignoreEnv": "/my/ignore/path",

@@ -1,5 +1,50 @@
 # Chnage log for all versions of the CQtDeployer.
 
+## CQtDeployer 1.5.0
+### New features
+- Added new theme of qif installer "quasarDark".
+- Added support of work with custom template for qif option.
+- Added support of debian packages with.
+- Added support icons for targets. now the icon option work with targets but not packages.
+- Added support of the control custom translation files. 
+- Added support the deploy nonexecutable data. (extraData option)
+- Added envirement variables for deployed applications.
+- Added support of the generate deb packages.
+- Added support of the generate zip arrhives.
+- Added support create a qif installer using custom template
+- Added command of init default qif of deb template (getDefaulttemplate)
+- Added support of import custom launch scripts
+
+### Fixes
+- Fixed stability for the deploySystem option on windows
+- Fixed verbose log.
+- Fixed general output log.
+- Fixed crossdeploy of the arm distributions. 
+- bug fixes and improvements.
+
+
+### New Envirement Variables
+- CQT_RUN_FILE - This variable contains path to the run script of the using application.
+- CQT_PKG_ROOT - This variable contains path to root of the current package.
+
+### New parameters
+- zip - create a ZIP archive for deployable programs
+- deb - Create the deb package for deployment programm
+- homepage - Sets the homepage url for a package
+- noQt - Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework
+- allowEmptyPackages -  Allows configure the empty packages.  
+- getDefaultTemplate - Extracts defaults deb or qif templates.
+- tr -  Adds qm files into the translations folder.
+- extraData - Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure.
+- extraDataOut - Sets path to extra data files out directory.
+- prefix - Sets the prefix for the package relatively a target directory
+- homePage - Sets the homepage url for a package
+- binPrefix - Sets prefix for bin option.
+
+### Deprecated and removed options
+- deploySystem-with-libc - instead of this option use the deploySystem option.
+- allQmlDependes - instead of this option use the qmlDir option.
+
 ## CQtDeployer 1.5.0 Alpha
 ### Corrections
 - bug fixes and improvements.

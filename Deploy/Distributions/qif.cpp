@@ -47,7 +47,7 @@ Envirement QIF::toolKitEnv() const {
 
     // SNAP
 
-    QString AppPath = QuasarAppUtils::Params::getStrArg("appPath", "");
+    QString AppPath = QuasarAppUtils::Params::getArg("appPath", "");
     result.addEnv(AppPath + "/../QIF/");
 
     //Installer
@@ -92,7 +92,7 @@ bool QIF::deployTemplate(PackageControl &pkg) {
         return false;
     }
 
-    auto customTemplate = QuasarAppUtils::Params::getStrArg("qif", "");
+    auto customTemplate = QuasarAppUtils::Params::getArg("qif", "");
     const DeployConfig *cfg = DeployCore::_config;
 
     QStringList sufixes = {
@@ -129,9 +129,9 @@ bool QIF::deployTemplate(PackageControl &pkg) {
 
     auto configLocation = cfg->getTargetDir() + "/" + getLocation() + "/config/";
 
-    auto qifStyle = getStyle(QuasarAppUtils::Params::getStrArg("qifStyle", ""));
-    auto qifBanner = QuasarAppUtils::Params::getStrArg("qifBanner", "");
-    auto qifLogo = QuasarAppUtils::Params::getStrArg("qifLogo", "");
+    auto qifStyle = getStyle(QuasarAppUtils::Params::getArg("qifStyle", ""));
+    auto qifBanner = QuasarAppUtils::Params::getArg("qifBanner", "");
+    auto qifLogo = QuasarAppUtils::Params::getArg("qifLogo", "");
 
     auto configTemplate = defaultConfig;
     if (qifStyle.size() || qifBanner.size() || qifLogo.size()) {
@@ -152,6 +152,36 @@ bool QIF::deployTemplate(PackageControl &pkg) {
     }
 
     if (qifLogo.size() && !copyFile(qifLogo, configLocation + "/logo.png", true)) {
+        return false;
+    }
+
+    return true;
+}
+
+bool QIF::deployRawTemplate(PackageControl &pkg) {
+    const DeployConfig *cfg = DeployCore::_config;
+
+    QString defaultPackageTempalte = ":/Templates/QIF/Distributions/Templates/qif/packages/default";
+    QString defaultConfig = ":/Templates/QIF/Distributions/Templates/qif/config/";
+
+    auto configLocation = cfg->getTargetDir() + "/" + getLocation() + "/config/";
+
+
+    auto list = pkg.availablePackages();
+    for (auto it = list.begin();
+         it != list.end(); ++it) {
+
+        auto package = cfg->getDistroFromPackage(*it);
+        auto local = location(package);
+
+        if (!unpackDir(defaultPackageTempalte,
+                       local, {}, {})) {
+            return false;
+        }
+    }
+
+    if (!unpackDir(defaultConfig,
+                   configLocation, {}, {})) {
         return false;
     }
 
@@ -189,6 +219,8 @@ QString QIF::getStyle(const QString& input) const {
     auto list = resurces.entryInfoList(QDir::Files);
     for (const auto& style : list) {
         if (input == style.baseName()) {
+            QuasarAppUtils::Params::log(QString("Use the %0 installer style").arg(style.baseName()),
+                                        QuasarAppUtils::Info);
             return style.absoluteFilePath();
         }
     }
@@ -196,11 +228,18 @@ QString QIF::getStyle(const QString& input) const {
     QFileInfo f(input);
 
     if (f.isFile()) {
+        QuasarAppUtils::Params::log("Use custom installer style",
+                                    QuasarAppUtils::Info);
         return f.absoluteFilePath();
     }
 
-    QuasarAppUtils::Params::log(input +  " not exits",
-                                QuasarAppUtils::Error);
+    if (input.size()) {
+        QuasarAppUtils::Params::log(QString("The %0 style is not exits").arg(input),
+                                    QuasarAppUtils::Error);
+    }
+
+    QuasarAppUtils::Params::log("Use a default installer style",
+                                QuasarAppUtils::Info);
 
     return "";
 }

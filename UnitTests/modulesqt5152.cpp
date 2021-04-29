@@ -18,7 +18,7 @@ QSet<QString> ModulesQt5152::qmlLibs(const QString &distDir) const {
                                 "./" + distDir + "/qml/QtQml/RemoteObjects/qtqmlremoteobjects.dll",
                                 "./" + distDir + "/qml/QtQml/StateMachine/qtqmlstatemachine.dll",
                                 "./" + distDir + "/qml/QtQml/Models.2/modelsplugin.dll",
-                                "./" + distDir + "/lib/Qt5RemoteObjects.dll",
+                                "./" + distDir + "/Qt5RemoteObjects.dll",
                                 "./" + distDir + "/qml/QtQml/Models.2/qmldir",
                                 "./" + distDir + "/qml/QtQml/WorkerScript.2/plugins.qmltypes",
                                 "./" + distDir + "/qml/QtQml/RemoteObjects/qmldir",

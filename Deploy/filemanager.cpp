@@ -147,7 +147,7 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
     
     bool copy = !masks;
     if (masks) {
-        for (auto mask : *masks) {
+        for (const auto &mask : qAsConst(*masks)) {
             if (info.absoluteFilePath().contains(mask, ONLY_WIN_CASE_INSENSIATIVE)) {
                 copy = true;
                 break;
