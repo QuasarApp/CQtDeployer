@@ -45,7 +45,7 @@ QStringList FileManager::getDeployedFilesStringList() const {
 }
 
 void FileManager::loadDeployemendFiles(const QString &targetDir) {
-    auto settings = QuasarAppUtils::Settings::get();
+    auto settings = QuasarAppUtils::Settings::instance();
 
     if (targetDir.isEmpty())
         return;
@@ -90,7 +90,7 @@ void FileManager::removeFromDeployed(const QString &path) {
 }
 
 void FileManager::saveDeploymendFiles(const QString& targetDir) {
-    auto settings = QuasarAppUtils::Settings::get();
+    auto settings = QuasarAppUtils::Settings::instance();
     settings->setValue(targetDir, getDeployedFilesStringList());
 }
 

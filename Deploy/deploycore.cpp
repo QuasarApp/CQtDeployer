@@ -327,9 +327,9 @@ void DeployCore::help() {
         }
     };
 
-    help.unite(QuasarAppUtils::Params::getparamsHelp());
+    help.unite(QuasarAppUtils::Params::getParamsHelp());
 
-    QuasarAppUtils::Params::showHelp(help);
+    QuasarAppUtils::Help::print(help);
 
     return;
 }

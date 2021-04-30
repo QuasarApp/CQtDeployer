@@ -104,7 +104,7 @@ bool ConfigParser::parseParams() {
             QuasarAppUtils::Params::isEndable("confFile");
 
     if (path.isEmpty() &&
-            QuasarAppUtils::Params::customParamasSize() <= 0) {
+            QuasarAppUtils::Params::size() <= 0) {
         path = DEFAULT_COFIGURATION_FILE;
     }
 
