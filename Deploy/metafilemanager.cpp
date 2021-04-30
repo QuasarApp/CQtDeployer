@@ -254,12 +254,12 @@ void MetaFileManager::createRunMetaFiles(const QHash<QString, DeployCore::QtModu
     for (auto i = DeployCore::_config->targets().cbegin(); i != DeployCore::_config->targets().cend(); ++i) {
 
         if (!createRunScript(i.key())) {
-            QuasarAppUtils::Params::log("run script not created!",
-                                               QuasarAppUtils::Error);
+            QuasarAppUtils::Params::log("Fail to created the run script!",
+                                         QuasarAppUtils::Error);
         }
 
         if (!createQConf(i.key())) {
-            QuasarAppUtils::Params::log("create qt.conf failr", QuasarAppUtils::Warning);
+            QuasarAppUtils::Params::log("Failt to create qt.conf file", QuasarAppUtils::Warning);
         }
     }
 }

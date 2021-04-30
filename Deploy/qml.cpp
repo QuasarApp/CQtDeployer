@@ -145,7 +145,7 @@ bool QML::deployPath(const QString &path, QStringList &res) {
 
     for (const auto &info : qAsConst(infoList)) {
         if (DeployCore::isDebugFile(info.fileName())) {
-            QuasarAppUtils::Params::log("sciped debug lib " +
+            QuasarAppUtils::Params::log("Skip debug library " +
                                         info.absoluteFilePath());
             continue;
         }

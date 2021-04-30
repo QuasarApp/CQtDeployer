@@ -66,7 +66,7 @@ QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
 
             if (!fillLibInfo(info, lib)) {
                 QuasarAppUtils::Params::log(
-                            "error extract lib info from " + lib + "(" + libName + ")",
+                            "Fail to extract lib info from " + lib + "(" + libName + ")",
                             QuasarAppUtils::VerboseLvl::Warning);
                 continue;
             }
@@ -101,14 +101,14 @@ bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) const 
 }
 
 void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QString>& libStack) {
-    QuasarAppUtils::Params::log("get recursive dependencies of " + lib.fullPath(),
+    QuasarAppUtils::Params::log("Get recursive dependencies of the" + lib.fullPath(),
                                        QuasarAppUtils::Debug);
 
     if (_scanedLibs.contains(lib.fullPath())) {
         auto scanedLib = _scanedLibs.value(lib.fullPath());
 
         if (!scanedLib.isValid()) {
-            QuasarAppUtils::Params::log( "no valid lib in scanned libs list!",
+            QuasarAppUtils::Params::log( "Invalid library detected in scaned library cache!!",
                                                QuasarAppUtils::Error);
             return;
         }
@@ -120,7 +120,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
 
     if (libStack.contains(lib.fullPath())) {
         QuasarAppUtils::Params::log("A recursive dependency was found in library " + lib.fullPath(),
-                                           QuasarAppUtils::Warning);
+                                    QuasarAppUtils::Warning);
         return;
     }
 
@@ -131,8 +131,8 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
         auto libs = getLibsFromEnvirement(i);
 
         if (!libs.size()) {
-            QuasarAppUtils::Params::log("lib for dependency " + i + " not found!!",
-                                               QuasarAppUtils::Warning);
+            QuasarAppUtils::Params::log("Not found library for dependency " + i,
+                                        QuasarAppUtils::Debug);
             continue;
         }
 

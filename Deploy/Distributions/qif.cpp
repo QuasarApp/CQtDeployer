@@ -87,7 +87,7 @@ QList<SystemCommandData> QIF::runCmd() {
 bool QIF::deployTemplate(PackageControl &pkg) {
     if (!initDefaultConfiguratuin()) {
 
-        QuasarAppUtils::Params::log("Fail to init rhe default configuration of the qif installer.",
+        QuasarAppUtils::Params::log("Fail to init the default configuration of the qif installer.",
                                     QuasarAppUtils::Error);
         return false;
     }

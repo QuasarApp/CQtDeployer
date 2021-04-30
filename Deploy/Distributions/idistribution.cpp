@@ -48,7 +48,7 @@ bool iDistribution::unpackFile(const QFileInfo &resource,
     QByteArray inputData = file.readAll();
     file.close();
     if (!QDir().mkpath(target)) {
-        QuasarAppUtils::Params::log(QString("impossible to create path : %0 ").arg(target),
+        QuasarAppUtils::Params::log(QString("Impossible to create path : %0 ").arg(target),
                                     QuasarAppUtils::Error);
         return false;
 
@@ -56,7 +56,8 @@ bool iDistribution::unpackFile(const QFileInfo &resource,
 
     file.setFileName(target + "/" +  resource.fileName());
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        QuasarAppUtils::Params::log(QString("impossible to write in file: %0 ").arg(file.fileName()),
+        QuasarAppUtils::Params::log(QString("Impossible to write in file: %0. %1").arg(file.fileName(),
+                                                                                       file.errorString()),
                                     QuasarAppUtils::Error);
         return false;
     }
@@ -251,7 +252,7 @@ bool iDistribution::deployIcon(TemplateInfo &info, const DistroModule& pkg) {
         info.Icon = releativeLocation(pkg) + "/icons/" + iconInfo.fileName();
         if (!copyFile(icon, localData + "/icons/", false)) {
 
-            QuasarAppUtils::Params::log(QString("fail to copy icon: %0 ").arg(icon),
+            QuasarAppUtils::Params::log(QString("Fail to copy icon: %0. %1").arg(icon),
                                         QuasarAppUtils::Error);
 
             return false;
