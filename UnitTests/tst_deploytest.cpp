@@ -2457,7 +2457,11 @@ void deploytest::testIgnore() {
                     "./" + DISTRO_DIR + "/qt.conf",
                     "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
                     "./" + DISTRO_DIR + "/QtWidgetsProject.bat",
+#if defined(Q_OS_WIN64)
                     "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
+#else
+                    "./" + DISTRO_DIR + "/libgcc_s_dw2-1.dll",
+#endif
                     "./" + DISTRO_DIR + "/libstdc++-6.dll",
                     "./" + DISTRO_DIR + "/libwinpthread-1.dll"
 
@@ -2626,7 +2630,11 @@ void deploytest::testLibDir() {
                     "./" + DISTRO_DIR + "/qt.conf",
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
                     "./" + DISTRO_DIR + "/TestOnlyC.bat",
+#if defined(Q_OS_WIN64)
                     "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
+#else
+                    "./" + DISTRO_DIR + "/libgcc_s_dw2-1.dll",
+#endif
                     "./" + DISTRO_DIR + "/libwinpthread-1.dll",
                     "./" + DISTRO_DIR + "/libstdc++-6.dll",
 
@@ -2637,7 +2645,11 @@ void deploytest::testLibDir() {
                     "./" + DISTRO_DIR + "2/qt.conf",
                     "./" + DISTRO_DIR + "2/TestOnlyC.exe",
                     "./" + DISTRO_DIR + "2/TestOnlyC.bat",
+#if defined(Q_OS_WIN64)
                     "./" + DISTRO_DIR + "2/libgcc_s_seh-1.dll",
+#else
+                    "./" + DISTRO_DIR + "2/libgcc_s_dw2-1.dll",
+#endif
                     "./" + DISTRO_DIR + "2/libstdc++-6.dll",
 
                 });
@@ -2678,7 +2690,11 @@ void deploytest::testLibDir() {
                     "./" + DISTRO_DIR + "/qt.conf",
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
                     "./" + DISTRO_DIR + "/TestOnlyC.bat",
+#if defined(Q_OS_WIN64)
                     "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
+#else
+                    "./" + DISTRO_DIR + "/libgcc_s_dw2-1.dll",
+#endif
                     "./" + DISTRO_DIR + "/libstdc++-6.dll",
 
                 });
@@ -2806,7 +2822,11 @@ void deploytest::testSystemLib() {
     {
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
                     "./" + DISTRO_DIR + "/TestOnlyC.bat",
+#if defined(Q_OS_WIN64)
                     "./" + DISTRO_DIR + "/systemLibs/libgcc_s_seh-1.dll",
+#else
+                    "./" + DISTRO_DIR + "/systemLibs/libgcc_s_dw2-1.dll",
+#endif
                     "./" + DISTRO_DIR + "/systemLibs/libstdc++-6.dll",
                     "./" + DISTRO_DIR + "/systemLibs/libwinpthread-1.dll",
                     "./" + DISTRO_DIR + "/systemLibs/msvcrt.dll",
@@ -2829,7 +2849,11 @@ void deploytest::testSystemLib() {
     {
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
                     "./" + DISTRO_DIR + "/TestOnlyC.bat",
+#if defined(Q_OS_WIN64)
                     "./" + DISTRO_DIR + "/systemLibs/libgcc_s_seh-1.dll",
+#else
+                    "./" + DISTRO_DIR + "/systemLibs/libgcc_s_dw2-1.dll",
+#endif
                     "./" + DISTRO_DIR + "/systemLibs/libstdc++-6.dll",
                     "./" + DISTRO_DIR + "/systemLibs/libwinpthread-1.dll",
 
@@ -2852,6 +2876,10 @@ void deploytest::testSystemLib() {
                     "./" + DISTRO_DIR + "/systemLibs/msvcp_win.dll",
                     "./" + DISTRO_DIR + "/systemLibs/wtsapi32.dll",
                     "./" + DISTRO_DIR + "/systemLibs/combase.dll",
+#if !defined(Q_OS_WIN64)
+                    "./" + DISTRO_DIR + "/systemLibs/sspicli.dll",
+                    "./" + DISTRO_DIR + "/systemLibs/cryptbase.dll",
+#endif
 
                 });
 
