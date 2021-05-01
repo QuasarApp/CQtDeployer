@@ -1289,7 +1289,7 @@ void ConfigParser::initExtraPath() {
         if (info.isDir()) {
             if (_config.targets().contains(info.absoluteFilePath())) {
                 QuasarAppUtils::Params::log("Skip the extra library path because it is target!",
-                                            QuasarAppUtils::Info);
+                                            QuasarAppUtils::Debug);
                 continue;
             }
 
@@ -1303,11 +1303,11 @@ void ConfigParser::initExtraPath() {
             _config.extraPaths.addExtraPathsMasks({i});
 
             QuasarAppUtils::Params::log(i + " added as a path mask",
-                                        QuasarAppUtils::Info);
+                                        QuasarAppUtils::Debug);
         } else {
             QuasarAppUtils::Params::log(i + " not added in path mask because"
                                             " the path mask must be large 2 characters",
-                                        QuasarAppUtils::Warning);
+                                        QuasarAppUtils::Debug);
         }
     }
 }
@@ -1324,7 +1324,7 @@ void ConfigParser::initExtraNames() {
             } else {
                 QuasarAppUtils::Params::log(i + " not added in file mask because"
                                                 " the file mask must be large 2 characters",
-                                            QuasarAppUtils::Warning);
+                                            QuasarAppUtils::Debug);
             }
         }
     };
