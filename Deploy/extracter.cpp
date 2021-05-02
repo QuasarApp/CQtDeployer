@@ -27,7 +27,7 @@
 #include <fstream>
 
 bool Extracter::deployMSVC() {
-    QuasarAppUtils::Params::log("try deploy msvc", QuasarAppUtils::Debug);
+    QuasarAppUtils::Params::log("Trying to deploy msvc", QuasarAppUtils::Debug);
     auto msvcInstaller = DeployCore::getVCredist(DeployCore::_config->qtDir.getBins());
 
     if (msvcInstaller.isEmpty()) {
@@ -145,7 +145,7 @@ void Extracter::copyExtraPlugins(const QString& package) {
             if (!_fileManager->copyFile(info.absoluteFilePath(),
                                         targetPath + distro.getPluginsOutDir())) {
 
-                QuasarAppUtils::Params::log("Fail to copy extra plugin from:" + info.absoluteFilePath() +
+                QuasarAppUtils::Params::log("Failed to copy extra plugin from:" + info.absoluteFilePath() +
                                             " to: " + targetPath + distro.getPluginsOutDir(),
                                             QuasarAppUtils::Warning);
             }
@@ -161,7 +161,7 @@ void Extracter::copyExtraPlugins(const QString& package) {
                                           DeployCore::debugExtensions(),
                                           &plugins)) {
 
-                QuasarAppUtils::Params::log("Fail to copy extra plugin from:" + info.absoluteFilePath() +
+                QuasarAppUtils::Params::log("Failed to copy extra plugin from:" + info.absoluteFilePath() +
                                             " to: " + targetPath + distro.getPluginsOutDir(),
                                             QuasarAppUtils::Warning);
             }
@@ -222,7 +222,7 @@ void Extracter::copyExtraData(const QSet<QString> &files, const QString &package
     for (const auto &file : files) {
 
         if (!_fileManager->cp(file, targetPath + distro.getExtraDataOutDir())) {
-            QuasarAppUtils::Params::log("Fail to copy " + file);
+            QuasarAppUtils::Params::log("Failed to copy " + file);
         }
     }
 }
@@ -284,7 +284,7 @@ bool Extracter::deploy() {
     extractExtraDataTargets();
 
     if (DeployCore::_config->deployQml && !extractQml()) {
-        QuasarAppUtils::Params::log("Fail to extact qml!",
+        QuasarAppUtils::Params::log("Failed to extract qml!",
                                     QuasarAppUtils::Error);
     }
 
@@ -304,7 +304,7 @@ bool Extracter::deploy() {
     }
 
     if (!deployMSVC()) {
-        QuasarAppUtils::Params::log("Fail to deploy msvc", QuasarAppUtils::Debug);
+        QuasarAppUtils::Params::log("Failed to deploy msvc", QuasarAppUtils::Debug);
     }
 
     _metaFileManager->createRunMetaFiles(_targetModules);
@@ -425,14 +425,14 @@ bool Extracter::extractQml() {
                 QFileInfo info(qmlInput);
 
                 if (!info.isDir()) {
-                    QuasarAppUtils::Params::log("Fail to extract qml! The qml source dir is not exists :" + qmlInput,
+                    QuasarAppUtils::Params::log("Failed to extract qml! The qml source dir does not exist :" + qmlInput,
                                                 QuasarAppUtils::Error);
                     continue;
                 }
                 QuasarAppUtils::Params::log("extractQmlFromSource " + info.absoluteFilePath());
 
                 if (!QFileInfo::exists(cnf->qtDir.getQmls())) {
-                    QuasarAppUtils::Params::log("Fail to extract qml! The qt qml dir is not initialized!",
+                    QuasarAppUtils::Params::log("Failed to extract qml! The qt qml dir is not initialized!",
                                                 QuasarAppUtils::Warning);
                     continue;
                 }
@@ -440,7 +440,7 @@ bool Extracter::extractQml() {
                 QML ownQmlScaner(cnf->qtDir.getQmls(), cnf->isNeededQt(i.key()));
 
                 if (!ownQmlScaner.scan(plugins, info.absoluteFilePath())) {
-                    QuasarAppUtils::Params::log("Fail to run qml scaner",
+                    QuasarAppUtils::Params::log("Failed to run qml scanner",
                                                 QuasarAppUtils::Error);
                     continue;
                 }
@@ -501,4 +501,3 @@ Extracter::Extracter(FileManager *fileManager, PluginsParser *pluginsParser, Con
 
     _metaFileManager = new MetaFileManager(_fileManager);
 }
-

@@ -491,19 +491,19 @@ MSVCVersion DeployCore::getMSVC(const QString &_qtBin) {
     QDir dir = QFileInfo(_qtBin).absoluteFilePath();
 
     if (!dir.cdUp()) {
-        QuasarAppUtils::Params::log("is not standart qt repo", QuasarAppUtils::Debug);
+        QuasarAppUtils::Params::log("is not a standard qt repo", QuasarAppUtils::Debug);
         return static_cast<MSVCVersion>(res);
     }
 
     auto msvcPath = dir.absolutePath();
 
     if (!(dir.cdUp() && dir.cdUp())) {
-        QuasarAppUtils::Params::log("is not standart qt repo", QuasarAppUtils::Debug);
+        QuasarAppUtils::Params::log("is not a standard qt repo", QuasarAppUtils::Debug);
         return static_cast<MSVCVersion>(res);
     }
 
     if (!msvcPath.contains("msvc")) {
-        QuasarAppUtils::Params::log("vcredis not defined", QuasarAppUtils::Debug);
+        QuasarAppUtils::Params::log("vcredist not defined", QuasarAppUtils::Debug);
         return static_cast<MSVCVersion>(res);
     }
 

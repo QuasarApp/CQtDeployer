@@ -70,13 +70,13 @@ void Envirement::addEnv(const QStringList &listDirs) {
         }
 
         if (!QFileInfo(path).isDir()) {
-            QuasarAppUtils::Params::log(QString("The %0 is not directory!! ").arg(path),
+            QuasarAppUtils::Params::log(QString("%0 is not a directory!! ").arg(path),
                                         QuasarAppUtils::Debug);
             continue;
         }
 
         if (_dataEnvironment.contains(path)) {
-            QuasarAppUtils::Params::log (QString("The %0 path alredy added").arg(path),
+            QuasarAppUtils::Params::log (QString("Path %0 is already added").arg(path),
                                          QuasarAppUtils::Debug);
             continue;
         }

@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 
 
     if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
-        QuasarAppUtils::Params::log("Wrong parametrs", QuasarAppUtils::Warning);
+        QuasarAppUtils::Params::log("Wrong parameters", QuasarAppUtils::Warning);
         DeployCore::help();
         exit(0);
     }
