@@ -240,7 +240,7 @@ void Extracter::copyFiles() {
 
 
         if (!QuasarAppUtils::Params::isEndable("noStrip") && !_fileManager->strip(cnf->getTargetDir())) {
-            QuasarAppUtils::Params::log("Fail to strip libraries!");
+            QuasarAppUtils::Params::log("Failed to strip libraries!");
         }
 
         copyExtraData(_packageDependencyes[i.key()].extraData(), i.key());

@@ -259,7 +259,7 @@ void MetaFileManager::createRunMetaFiles(const QHash<QString, DeployCore::QtModu
         }
 
         if (!createQConf(i.key())) {
-            QuasarAppUtils::Params::log("Failt to create qt.conf file", QuasarAppUtils::Warning);
+            QuasarAppUtils::Params::log("Failed to create the qt.conf file", QuasarAppUtils::Warning);
         }
     }
 }
