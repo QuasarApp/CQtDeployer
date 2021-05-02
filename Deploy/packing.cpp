@@ -124,7 +124,7 @@ bool Packing::create() {
     const DeployConfig *cfg = DeployCore::_config;
 
     if (!QDir(cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR).removeRecursively()) {
-        QuasarAppUtils::Params::log("Fail to remove " + cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR,
+        QuasarAppUtils::Params::log("Failed to remove " + cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR,
                                     QuasarAppUtils::Error);
         return false;
     }
@@ -255,5 +255,4 @@ void Packing::handleOutputUpdate() {
         QuasarAppUtils::Params::log(erroutLog,
                                     QuasarAppUtils::Info);
 }
-
 
