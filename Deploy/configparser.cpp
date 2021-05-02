@@ -696,10 +696,10 @@ bool ConfigParser::parseDeployMode() {
 
         if (DeployCore::isSnap()) {
             QuasarAppUtils::Params::log("If you are using qmake from the system repository,"
-                                        " then you must use the classic version of the CQtDeployer instead of the snap version."
+                                        " then you must use the classic version of CQtDeployer instead of the snap version."
                                         " This is due to the fact that the snap version"
                                         " runs in an isolated container and has limited access"
-                                        " to system utilities and an environment. "
+                                        " to system utilities and the environment. "
                                         "For get the classic version of cqtdeployer use the cqtdeployer installer "
                                         "https://github.com/QuasarApp/CQtDeployer/releases", QuasarAppUtils::Info);
         }
@@ -792,7 +792,7 @@ void ConfigParser::setTargetDir(const QString &target) {
 
         _config.setTargetDir(QFileInfo("./" + DISTRO_DIR).absoluteFilePath());
         QuasarAppUtils::Params::log("The targetDir option is not used."
-                                    " The CQtDeployer will use default target dir :" + _config.getTargetDir(),
+                                    " CQtDeployer will use default target dir :" + _config.getTargetDir(),
                                     QuasarAppUtils::Info);
     }
 }
