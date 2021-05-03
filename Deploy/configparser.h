@@ -80,7 +80,7 @@ private:
     bool initQmake();
     bool initQmlInput();
 
-    void packagesErrorLog(const QString &flag);
+    void packagesErrorLog(const QString &option);
 
     bool setQmake(const QString &value);
     bool setQtDir(const QString &value);

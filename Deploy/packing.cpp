@@ -55,7 +55,7 @@ bool Packing::create() {
         }
 
         if (!package->deployTemplate(*this)) {
-            QuasarAppUtils::Params::log(QString("Deploy package template error ocured. Package: %0.").
+            QuasarAppUtils::Params::log(QString("Failed to deploy a package template. Package: %0.").
                                         arg(package->getClassName()),
                                         QuasarAppUtils::Error);
             return false;
@@ -124,7 +124,8 @@ bool Packing::create() {
     const DeployConfig *cfg = DeployCore::_config;
 
     if (!QDir(cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR).removeRecursively()) {
-        QuasarAppUtils::Params::log("Fail to remove " + cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR);
+        QuasarAppUtils::Params::log("Failed to remove " + cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR,
+                                    QuasarAppUtils::Error);
         return false;
     }
 
@@ -254,5 +255,3 @@ void Packing::handleOutputUpdate() {
         QuasarAppUtils::Params::log(erroutLog,
                                     QuasarAppUtils::Info);
 }
-
-
