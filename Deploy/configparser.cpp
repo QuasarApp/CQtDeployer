@@ -1124,7 +1124,7 @@ bool ConfigParser::initQmake() {
             }
 
             QuasarAppUtils::Params::log("Your distribution required Qt libraries "
-                                        "but qmake executable cannot be found in the 'qmake' option or PATH. "
+                                        "but qmake executable cannot be found in the 'qmake' option or RPATH. "
                                         "You are using the option noCheckPATH, "
                                         "please remove this option from your deploy command to search qmake in PATH",
                                          QuasarAppUtils::Error);
