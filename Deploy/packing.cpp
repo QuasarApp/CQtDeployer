@@ -55,7 +55,7 @@ bool Packing::create() {
         }
 
         if (!package->deployTemplate(*this)) {
-            QuasarAppUtils::Params::log(QString("Deploy package template error occured. Package: %0.").
+            QuasarAppUtils::Params::log(QString("Failed to deploy a package template. Package: %0.").
                                         arg(package->getClassName()),
                                         QuasarAppUtils::Error);
             return false;
@@ -255,4 +255,3 @@ void Packing::handleOutputUpdate() {
         QuasarAppUtils::Params::log(erroutLog,
                                     QuasarAppUtils::Info);
 }
-

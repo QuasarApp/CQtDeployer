@@ -254,7 +254,7 @@ void MetaFileManager::createRunMetaFiles(const QHash<QString, DeployCore::QtModu
     for (auto i = DeployCore::_config->targets().cbegin(); i != DeployCore::_config->targets().cend(); ++i) {
 
         if (!createRunScript(i.key())) {
-            QuasarAppUtils::Params::log("Fail to created the run script!",
+            QuasarAppUtils::Params::log("Failed to create a run script: " + i.key(),
                                          QuasarAppUtils::Error);
         }
 

@@ -629,7 +629,7 @@ void ConfigParser::packagesErrorLog(const QString &option) {
 bool ConfigParser::parseDeployMode() {
 
     if (QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
-        QuasarAppUtils::Params::log("You use a deprecated option \"deploySystem-with-libc\"."
+        QuasarAppUtils::Params::log("You are using a deprecated option \"deploySystem-with-libc\"."
                                     " In this version this option is no different from \"deploySystem\"."
                                     " Please use the deploySystem option.", QuasarAppUtils::Warning);
         QuasarAppUtils::Params::setEnable("deploySystem", true );

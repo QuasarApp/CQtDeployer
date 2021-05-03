@@ -252,7 +252,7 @@ bool iDistribution::deployIcon(TemplateInfo &info, const DistroModule& pkg) {
         info.Icon = releativeLocation(pkg) + "/icons/" + iconInfo.fileName();
         if (!copyFile(icon, localData + "/icons/", false)) {
 
-            QuasarAppUtils::Params::log(QString("Failed to copy icon: %0. %1").arg(icon),
+            QuasarAppUtils::Params::log(QString("Failed to copy icon: %0.").arg(icon),
                                         QuasarAppUtils::Error);
 
             return false;
@@ -278,5 +278,4 @@ QString iDistribution::releativeLocation(const DistroModule &module) const {
     return module.key();
 
 }
-
 
