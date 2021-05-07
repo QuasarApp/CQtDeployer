@@ -3,7 +3,6 @@ const VERSION = "1.5"
 function Component()
 {
     generateTr();
-    component.addDependency("QIF");
 }
 
 function generateTr() {
