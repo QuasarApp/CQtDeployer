@@ -75,13 +75,16 @@ void parseTargetPrivate(DeployConfig& conf,
         auto pair = iconPair.split(DeployCore::getSeparator(1), splitbehavior);
 
         if (pair.size() == 1) {
+            QuasarAppUtils::Params::log(QString("Set new default icon for all tagets: " + pair.value(0)),
+                                        QuasarAppUtils::Debug);
             for (auto& editableTarget: cointainer) {
                 (editableTarget.*adder)(pair.value(0));
             }
+
             continue;
         }
 
-        auto targetsMap = conf.getTargetsListByFilter(pair.value(0));
+        const auto targetsMap = conf.getTargetsListByFilter(pair.value(0));
 
         if (pair.value(0).isEmpty() || targetsMap.isEmpty()) {
 
@@ -92,8 +95,12 @@ void parseTargetPrivate(DeployConfig& conf,
             continue;
         }
 
-        auto editableTarget = targetsMap.begin().value();
-        (editableTarget->*adder)(pair.value(1));
+        for (const auto &target: targetsMap) {
+            QuasarAppUtils::Params::log(QString("Set new icon for %0 taget. Icon: %1").
+                                        arg(pair.value(0), pair.value(1)),
+                                        QuasarAppUtils::Debug);
+            (target->*adder)(pair.value(1));
+        }
     }
 }
 
@@ -1513,6 +1520,9 @@ bool ConfigParser::smartMoveTargets() {
 
     QMultiHash<QString, TargetInfo> temp;
     bool result = true;
+
+    QuasarAppUtils::Params::log(QString("Available Targets: "),
+                                QuasarAppUtils::Debug);
     for (auto i = _config.targets().cbegin(); i != _config.targets().cend(); ++i) {
 
         if (!i.value().isValid()) {
@@ -1531,10 +1541,16 @@ bool ConfigParser::smartMoveTargets() {
         }
 
         auto newTargetKey = targetPath + "/" + target.fileName();
-        temp.unite(moveTarget(i.value(), newTargetKey));
+
+        const auto newTarget = moveTarget(i.value(), newTargetKey);
+        temp.unite(newTarget);
+        QuasarAppUtils::Params::log(QString("Target: " + newTarget.begin().key()),
+                                    QuasarAppUtils::Debug);
 
         auto pkgKey = i.value().getPackage();
         valueLink(_config.packagesEdit(), pkgKey, DistroModule{pkgKey}).addTarget(newTargetKey);
+
+
     }
 
     _config.targetsEdit() = temp;
