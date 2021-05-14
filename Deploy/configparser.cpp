@@ -1550,8 +1550,8 @@ bool ConfigParser::smartMoveTargets() {
         auto pkgKey = i.value().getPackage();
         if (!_config.packagesEdit().contains(pkgKey)) {
 
-            QuasarAppUtils::Params::log(QString("The target %0 belongs to a %1 package"
-                                                " but the %1 not inited!").
+            QuasarAppUtils::Params::log(QString("The target %0 belongs to package %1"
+                                                " but this package is not initialized!").
                                         arg(i.key(), pkgKey));
 
             internalError();
