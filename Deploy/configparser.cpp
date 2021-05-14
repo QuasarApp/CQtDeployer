@@ -1548,7 +1548,18 @@ bool ConfigParser::smartMoveTargets() {
                                     QuasarAppUtils::Debug);
 
         auto pkgKey = i.value().getPackage();
-        valueLink(_config.packagesEdit(), pkgKey, DistroModule{pkgKey}).addTarget(newTargetKey);
+        if (!_config.packagesEdit().contains(pkgKey)) {
+
+            QuasarAppUtils::Params::log(QString("The target %0 belongs to a %1 package"
+                                                " but the %1 not inited!").
+                                        arg(i.key(), pkgKey));
+
+            internalError();
+            return false;
+        }
+
+        valueLink(_config.packagesEdit(), pkgKey,
+                  DistroModule{pkgKey}).addTarget(newTargetKey);
 
 
     }
