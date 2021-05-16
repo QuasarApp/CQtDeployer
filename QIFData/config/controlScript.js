@@ -15,6 +15,8 @@ Controller.prototype.ComponentSelectionPageCallback = function()
     if (widget !== null && installer.isInstaller()) {
         widget.deselectAll();
         widget.selectComponent('cqtdeployer.1_5');
+        widget.selectComponent('QIF');
+
     }
 }
 

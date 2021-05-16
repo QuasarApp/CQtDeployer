@@ -81,6 +81,9 @@ bool Packing::create() {
 
             _proc->start();
 
+            QuasarAppUtils::Params::log(cmd.command + " " + cmd.arguments.join(' '),
+                                        QuasarAppUtils::Debug);
+
             if (!_proc->waitForStarted()) {
                 QuasarAppUtils::Params::log(_proc->errorString(), QuasarAppUtils::Error);
                 QuasarAppUtils::Params::log(QString("Process error code: %0").arg(_proc->error()),
