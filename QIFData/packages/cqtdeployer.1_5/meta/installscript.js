@@ -91,14 +91,14 @@ function systemIntegration() {
         component.addOperation('EnvironmentVariable',
                                [
                                    "cqtdeployer",
-                                   "\"" + targetDir + "\\" + VERSION + "\\cqtdeployer.bat\""
+                                   targetDir + "\\" + VERSION + "\\cqtdeployer.bat"
                                ]
                               )
 
         component.addOperation('EnvironmentVariable',
                                [
                                    "cqtDir",
-                                   "\"" + targetDir + "\\" + VERSION + "\\\""
+                                   targetDir + "\\" + VERSION + "\\"
                                ]
                               )
 
