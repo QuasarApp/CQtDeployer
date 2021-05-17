@@ -1,6 +1,5 @@
 .QWidget {
     background-color: rgb(255, 255, 255);
-    min-width: 640px;
 }
 
 .QLabel {
