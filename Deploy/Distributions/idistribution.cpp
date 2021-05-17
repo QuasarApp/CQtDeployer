@@ -245,6 +245,10 @@ bool iDistribution::deployIcon(TemplateInfo &info, const DistroModule& pkg) {
     QSet<QString> icons;
     for (const auto& target: pkg.targets()) {
         auto icon = cfg->targets().value(target).getIcon();
+
+        QuasarAppUtils::Params::log(QString("%0: %1").arg(target, icon),
+                                    QuasarAppUtils::Debug);
+
         if (icons.contains(icon))
             break;
 
