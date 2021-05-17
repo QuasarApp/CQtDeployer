@@ -2010,19 +2010,15 @@ void deploytest::testextraData() {
     {"./" + DISTRO_DIR + "/build/TestOnlyC",
      "./" + DISTRO_DIR + "/build/QtWidgetsProject",
      "./" + DISTRO_DIR + "/build/TestQMLWidgets",
-     "./" + DISTRO_DIR + "/build/basic"});
+     "./" + DISTRO_DIR + "/build/basic",
+     "./" + DISTRO_DIR + "/build/quicknanobrowser",
+     "./" + DISTRO_DIR + "/build/webui"});
 #else
     auto comapareTree = utils.createTree(
     {"./" + DISTRO_DIR + "/build/TestOnlyC.exe",
      "./" + DISTRO_DIR + "/build/QtWidgetsProject.exe",
      "./" + DISTRO_DIR + "/build/TestQMLWidgets.exe",
      "./" + DISTRO_DIR + "/build/basic.exe"});
-#endif
-
-#ifdef Q_OS_UNIX
-    comapareTree += utils.createTree(
-                {"./" + DISTRO_DIR + "/build/quicknanobrowser",
-                 "./" + DISTRO_DIR + "/build/webui"});
 #endif
 
 
@@ -2291,6 +2287,10 @@ void deploytest::testConfFile() {
 
     runTestParams({"-confFile", file},
                   &comapareTree);
+
+    QFile::remove(TestBinDir + "/TestConf.json");
+    QFile::remove(TestBinDir + "/../folder/For/Testing/Deploy/File/TestConf.json");
+
 }
 
 void deploytest::testPackages() {
