@@ -335,6 +335,7 @@ bool FileManager::cp(const QString &from,
         return false;
 
     if (info.isDir()) {
+#if QT_VERSION > QT_VERSION_CHECK(5, 15, 0)
         // This is qt bug, filename return emptu value if dir have the seporator on the end of path.
         // Qt 5.15.2
         auto last = from.right(1);
@@ -342,7 +343,7 @@ bool FileManager::cp(const QString &from,
             last = from.mid(0, from.size() -1 );
             info.setFile(last);
         }
-
+#endif
         return copyFolder(from, to + "/" + info.fileName(),
                           filter, listOfCopiedItems, mask, force);
     }
