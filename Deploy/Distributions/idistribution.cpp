@@ -9,6 +9,7 @@
 #include "pathutils.h"
 #include <QDate>
 #include <QMap>
+#include <QTextCodec>
 #include <deployconfig.h>
 #include <distromodule.h>
 #include <quasarapp.h>
@@ -80,6 +81,7 @@ bool iDistribution::unpackFile(const QFileInfo &resource,
         }
 
         QTextStream stream(&file);
+        stream.setCodec(QTextCodec::codecForName("UTF-8"));
         stream << inputText;
     } else {
         file.write(inputData);
