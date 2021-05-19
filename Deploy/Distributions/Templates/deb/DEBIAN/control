@@ -4,6 +4,5 @@ Maintainer: $PUBLISHER
 Version: $VERSION
 Homepage: $HOMEPAGE
 Architecture: all
-Depends: libgl1-mesa-dev
 Description: $DESCRIPTION
 
