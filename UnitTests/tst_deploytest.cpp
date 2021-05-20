@@ -1242,6 +1242,8 @@ void deploytest::testOverridingDefaultTemplateDEB()
     comapareTree = utils.createTree(
                 {
                     "./" + DISTRO_DIR + "/Test.deb",
+                    "./" + DISTRO_DIR + "/Test.deb.md5",
+
                 });
 
     runTestParams(
