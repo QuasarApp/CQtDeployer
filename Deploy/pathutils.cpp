@@ -9,6 +9,7 @@
 
 #include <QDir>
 #include <QFileInfo>
+#include <QRegularExpression>
 
 PathUtils::PathUtils()
 {
@@ -104,6 +105,21 @@ QString PathUtils::fixPath(const QString &path) {
 #else
     return stripPath(path);
 #endif
+}
+
+QString PathUtils::getName(const QString &path) {
+    short beginIndex = path.size();
+    short endIndex;
+
+    QString name;
+    do {
+        endIndex = beginIndex;
+        beginIndex = path.lastIndexOf(QRegularExpression("[/\\\\]"), beginIndex - 1);
+
+        name = path.mid(beginIndex + 1, endIndex - beginIndex - 1);
+    } while (name.isEmpty() && beginIndex > 0);
+
+    return name;
 }
 
 QString PathUtils::getReleativePath(QString path) {
