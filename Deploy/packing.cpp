@@ -15,6 +15,7 @@
 #include <QProcess>
 #include <QThread>
 #include <cassert>
+#include <QCryptographicHash>
 
 #define TMP_PACKAGE_DIR "tmp_data"
 
@@ -38,6 +39,41 @@ Packing::~Packing() {
 
 void Packing::setDistribution(const QList<iDistribution*> &pakages) {
     _pakages = pakages;
+}
+
+void Packing::calcDistributiveHash(const iDistribution* distro) {
+
+    if (QuasarAppUtils::Params::isEndable("noHashSum")) {
+        return;
+    }
+
+    if (!distro) {
+        internalError();
+        return;
+    }
+
+    auto files = distro->outPutFiles();
+
+    for (const auto &file: files) {
+
+        QFileInfo info(file);
+
+        QuasarAppUtils::Params::log("Computing hash of " + info.absoluteFilePath(),
+                                    QuasarAppUtils::Info);
+
+        QFile out(info.absoluteFilePath() + ".md5");
+        if (!out.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+            QuasarAppUtils::Params::log("Failed to open " + info.absoluteFilePath(),
+                                        QuasarAppUtils::Error);
+            continue;
+        }
+
+        out.write(calcHash(info.absoluteFilePath()));
+
+        out.close();
+
+        _fileManager->addToDeployed(out.fileName());
+    }
 }
 
 bool Packing::create() {
@@ -119,6 +155,8 @@ bool Packing::create() {
             internalError();
             return false;
         }
+
+        calcDistributiveHash(package);
 
         package->removeTemplate();
         delete package;
@@ -243,6 +281,18 @@ bool Packing::restorePackagesLocations() {
     _packagesLocations = _defaultPackagesLocations;
 
     return true;
+}
+
+QByteArray Packing::calcHash(const QString &file) {
+    QFile f(file);
+    if (!f.open(QIODevice::ReadOnly)) {
+        return "";
+    }
+
+    QByteArray hash = QCryptographicHash::hash(f.readAll(), QCryptographicHash::Md5).toHex();
+    f.close();
+
+    return hash;
 }
 
 void Packing::handleOutputUpdate() {

@@ -226,6 +226,7 @@ void DeployCore::help() {
                  " All templates extract into targetDirectory."
                  " For change target directory use the targetDir option."
                  " Example: cqtdeployer -bin myExecutable getDefaultTemplate qif deb."},
+                {"noHashSum", "This option disable computation of a packages hash sum"}
 
 
             }

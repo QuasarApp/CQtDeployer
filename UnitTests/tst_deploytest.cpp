@@ -186,6 +186,8 @@ private slots:
     void testPathUtils();
     void testBinPrefix();
 
+    void testMd5();
+
     void customTest();
 };
 
@@ -264,7 +266,10 @@ QStringList deploytest::getFilesFromDir(const QString &path) {
 deploytest::deploytest() {
 
     qputenv("QTEST_FUNCTION_TIMEOUT", "1800000");
+    QString qifwPath = qgetenv("PATH") + DeployCore::getEnvSeparator() + TestQtDir + "../../Tools/QtInstallerFramework/4.0/bin/";
+    qifwPath += qifwPath + DeployCore::getEnvSeparator() + TestQtDir + "../../Tools/QtInstallerFramework/4.1/bin/";
 
+    qputenv("PATH", qifwPath.toLatin1().data());
     TestUtils utils;
 
     QStringList pathList = QProcessEnvironment::systemEnvironment().
@@ -567,6 +572,7 @@ void deploytest::testQIF() {
     QString qmake = TestQtDir + "bin/qmake";
     auto comapareTree = utils.createTree({
                                              "./" + DISTRO_DIR + "/InstallerTestQMLWidgets.run",
+                                             "./" + DISTRO_DIR + "/InstallerTestQMLWidgets.run.md5",
                                          });
 
 #else
@@ -575,6 +581,8 @@ void deploytest::testQIF() {
     QString qmake = TestQtDir + "bin/qmake.exe";
     auto comapareTree = utils.createTree({
                                              "./" + DISTRO_DIR + "/InstallerTestQMLWidgets.exe",
+                                             "./" + DISTRO_DIR + "/InstallerTestQMLWidgets.exe.md5",
+
                                          });
 
 #endif
@@ -600,6 +608,8 @@ void deploytest::testQIFMulti() {
 
     auto comapareTreeMulti = utils.createTree({
                                                   "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.run",
+                                                  "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.run.md5",
+
                                               });
 
 #else
@@ -608,6 +618,8 @@ void deploytest::testQIFMulti() {
 
     auto comapareTreeMulti = utils.createTree({
                                                   "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.exe",
+                                                  "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.exe.md5",
+
                                               });
 
 #endif
@@ -647,6 +659,8 @@ void deploytest::testQIFCustom() {
 
     auto comapareTreeCustom = utils.createTree({
                                                   "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.run",
+                                                  "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.run.md5",
+
                                               });
 #else
     QString bin = TestBinDir + "QtWidgetsProject.exe" + "," + TestBinDir + "TestOnlyC.exe";
@@ -654,6 +668,7 @@ void deploytest::testQIFCustom() {
     QString qmake = TestQtDir + "bin/qmake.exe";
     auto comapareTreeCustom = utils.createTree({
                                                   "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.exe",
+                                                  "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.exe.md5",
                                               });
 
 #endif
@@ -673,6 +688,7 @@ void deploytest::testZIP() {
 
     auto comapareTree = utils.createTree({
                                              "./" + DISTRO_DIR + "/TestQMLWidgets.zip",
+                                             "./" + DISTRO_DIR + "/TestQMLWidgets.zip.md5",
                                          });
 
 
@@ -707,6 +723,9 @@ void deploytest::testZIPMulti() {
                                                   "./" + DISTRO_DIR + "/QtWidgetsProject.zip",
                                                   "./" + DISTRO_DIR + "/package1.zip",
                                                   "./" + DISTRO_DIR + "/package2.zip",
+                                                  "./" + DISTRO_DIR + "/QtWidgetsProject.zip.md5",
+                                                  "./" + DISTRO_DIR + "/package1.zip.md5",
+                                                  "./" + DISTRO_DIR + "/package2.zip.md5",
 
                                               });
 
@@ -748,6 +767,8 @@ void deploytest::testDEB() {
 
     auto comapareTree = utils.createTree({
                                              "./" + DISTRO_DIR + "/TestQMLWidgets.deb",
+                                             "./" + DISTRO_DIR + "/TestQMLWidgets.deb.md5",
+
                                          });
 
 
@@ -775,6 +796,9 @@ void deploytest::testDEBMulti() {
                                                   "./" + DISTRO_DIR + "/QtWidgetsProject.deb",
                                                   "./" + DISTRO_DIR + "/package1.deb",
                                                   "./" + DISTRO_DIR + "/package2.deb",
+                                                  "./" + DISTRO_DIR + "/QtWidgetsProject.deb.md5",
+                                                  "./" + DISTRO_DIR + "/package1.deb.md5",
+                                                  "./" + DISTRO_DIR + "/package2.deb.md5",
 
                                               });
 
@@ -812,6 +836,8 @@ void deploytest::testDEBCustom() {
 
     auto comapareTreeCustom = utils.createTree({
                                                   "./" + DISTRO_DIR + "/chrome.deb",
+                                                  "./" + DISTRO_DIR + "/chrome.deb.md5",
+
                                               });
 
     runTestParams({"-bin", bin, "clear" ,
@@ -832,6 +858,10 @@ void deploytest::testMultiPacking() {
                                              "./" + DISTRO_DIR + "/TestQMLWidgets.zip",
                                              "./" + DISTRO_DIR + "/TestQMLWidgets.deb",
                                              "./" + DISTRO_DIR + "/InstallerTestQMLWidgets.run",
+                                             "./" + DISTRO_DIR + "/InstallerTestQMLWidgets.run.md5",
+                                             "./" + DISTRO_DIR + "/TestQMLWidgets.zip.md5",
+                                             "./" + DISTRO_DIR + "/TestQMLWidgets.deb.md5",
+
                                          });
 
     QString bin = TestBinDir + "TestQMLWidgets";
@@ -850,6 +880,8 @@ void deploytest::testMultiPacking() {
     auto comapareTree = utils.createTree({
                                              "./" + DISTRO_DIR + "/TestQMLWidgets.zip",
                                              "./" + DISTRO_DIR + "/InstallerTestQMLWidgets.exe",
+                                             "./" + DISTRO_DIR + "/TestQMLWidgets.zip.md5",
+                                             "./" + DISTRO_DIR + "/InstallerTestQMLWidgets.exe.md5",
                                          });
     QString bin = TestBinDir + "TestQMLWidgets.exe";
 
@@ -1097,6 +1129,9 @@ void deploytest::testEmptyPackages() {
                         "./" + DISTRO_DIR + "/QtWidgetsProject.zip",
                         "./" + DISTRO_DIR + "/QtWidgetsProject.deb",
                         "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.run",
+                        "./" + DISTRO_DIR + "/QtWidgetsProject.zip.md5",
+                        "./" + DISTRO_DIR + "/QtWidgetsProject.deb.md5",
+                        "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.run.md5",
                     });
 
     runTestParams({"-bin", bin, "force-clear",
@@ -1113,6 +1148,8 @@ void deploytest::testEmptyPackages() {
                     {
                         "./" + DISTRO_DIR + "/QtWidgetsProject.zip",
                         "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.exe",
+                        "./" + DISTRO_DIR + "/QtWidgetsProject.zip.md5",
+                        "./" + DISTRO_DIR + "/InstallerQtWidgetsProject.exe.md5",
                     });
 
     runTestParams({"-bin", bin, "force-clear",
@@ -1205,6 +1242,8 @@ void deploytest::testOverridingDefaultTemplateDEB()
     comapareTree = utils.createTree(
                 {
                     "./" + DISTRO_DIR + "/Test.deb",
+                    "./" + DISTRO_DIR + "/Test.deb.md5",
+
                 });
 
     runTestParams(
@@ -1276,12 +1315,14 @@ void deploytest::testOverridingDefaultTemplateQIF() {
     comapareTree = utils.createTree(
                 {
                     "./" + DISTRO_DIR + "/InstallerTest.run",
+                    "./" + DISTRO_DIR + "/InstallerTest.run.md5",
                 });
 
 #else
     comapareTree = utils.createTree(
                 {
                     "./" + DISTRO_DIR + "/InstallerTest.exe",
+                    "./" + DISTRO_DIR + "/InstallerTest.exe.md5",
                 });
 
 #endif
@@ -1528,6 +1569,60 @@ void deploytest::testBinPrefix() {
                    "-binPrefix", TestBinDir,
                    "force-clear"}, &comapareTree);
 
+}
+
+void deploytest::testMd5() {
+    // This test will check hashes
+
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC";
+    auto outFile = "./" + DISTRO_DIR + "/InstallerTestOnlyC.run";
+
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+    auto outFile = "./" + DISTRO_DIR + "/InstallerTestOnlyC.exe";
+
+#endif
+
+    auto comapareTreeqif = utils.createTree(
+                    {
+                        outFile,
+                        outFile + ".md5"
+                    });
+
+    // Run deploy installer
+    runTestParams({"-bin", bin,
+                   "force-clear",
+                   "qif",
+                   "qifFromSystem"}, &comapareTreeqif);
+
+    QFile file(outFile);
+    QVERIFY(file.open(QIODevice::ReadOnly));
+    auto binaryData = file.readAll();
+    file.close();
+
+    file.setFileName(outFile + ".md5");
+    QVERIFY(file.open(QIODevice::ReadOnly));
+    auto hash = file.readAll();
+    file.close();
+
+    // Compare hash sum of the installer with realy hash sum of the object.
+    QVERIFY(QCryptographicHash::hash(binaryData, QCryptographicHash::Md5).toHex() == hash);
+
+
+    comapareTreeqif = utils.createTree(
+                    {
+                        outFile,
+                    });
+
+    // Check noHashSum option. CQtDeployer must be skip calculating  a hash sum of an installer.
+    runTestParams({"-bin", bin,
+                   "force-clear",
+                   "noHashSum",
+                   "qif",
+                   "qifFromSystem"}, &comapareTreeqif);
 }
 
 void deploytest::customTest() {
@@ -2015,11 +2110,14 @@ void deploytest::testOverwriteWithPacking() {
     auto comapareTreeqif = utils.createTree(
                     {
                         "./" + DISTRO_DIR + "/InstallerTest.run",
+                        "./" + DISTRO_DIR + "/InstallerTest.run.md5",
                     });
 #else
     auto comapareTreeqif = utils.createTree(
                     {
                         "./" + DISTRO_DIR + "/InstallerTest.exe",
+                        "./" + DISTRO_DIR + "/InstallerTest.exe.md5",
+
                     });
 
 #endif

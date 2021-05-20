@@ -53,6 +53,19 @@ private:
 
     bool restorePackagesLocations();
 
+    /**
+     * @brief calcDistributiveHash This method calc md hashes for all pacakges of the @a distro distributive
+     * @param distro This is pointer to the distributive object.
+     */
+    void calcDistributiveHash(const iDistribution* distro);
+
+    /**
+     * @brief calcHash This method calc md5 hash of the file.
+     * @param file This is a file path
+     * @return string value of the file hash. Using the hex.
+     */
+    QByteArray calcHash(const QString& file);
+
     QList<iDistribution*> _pakages;
     QProcess *_proc = nullptr;
     QHash<QString, QString> _packagesLocations;

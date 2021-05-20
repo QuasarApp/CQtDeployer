@@ -39,11 +39,8 @@ Envirement QIF::toolKitEnv() const {
 
         result.addEnv(QProcessEnvironment::systemEnvironment().value("PATH"));
 
-
         return result;
     }
-
-
 
     // SNAP
 
