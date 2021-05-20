@@ -2,26 +2,18 @@ function Component() {
 
 }
 
-function extractFileName(path) {
-    var fullName = path.substring(path.lastIndexOf('/') + 1);
-
-    var index = fullName.lastIndexOf('.');
-    if (index >= 0) {
-        return fullName.substring(0, index)
-    }
-
-    return fullName;
-}
-
 function generateShortCutCmd(cmd) {
+
+    var prefix = "$PREFIX";
+
     if (systemInfo.kernelType === "winnt") {
 
         console.log("create icons!!! on Windows");
 
         component.addOperation(
             "CreateShortcut",
-            "@TargetDir@/" + cmd + ".bat",
-            "@DesktopDir@/" + extractFileName(cmd) + ".lnk",
+            "@TargetDir@/" + prefix + "/" + cmd + ".bat",
+            "@DesktopDir@/" + cmd + ".lnk",
             "iconPath=@TargetDir@/$ICON",
             "iconId=0");
 
@@ -30,16 +22,15 @@ function generateShortCutCmd(cmd) {
 
     if (systemInfo.kernelType === "linux") {
         console.log("create icons!!! on LINUX");
-        var name = extractFileName(cmd);
         component.addOperation("CreateDesktopEntry",
-                               "@HomeDir@/.local/share/applications/" + name + ".desktop",
+                               "@HomeDir@/.local/share/applications/" + cmd + ".desktop",
                                "Version=@Version@\n
                                 Type=Application\n
                                 Terminal=false\n
-                                Exec=\"@TargetDir@/" + cmd + ".sh\"\n
-                                Name=" + name + "\n
+                                Exec=\"@TargetDir@/" + prefix + "/" + cmd + ".sh\"\n
+                                Name=" + cmd + "\n
                                 Icon=@TargetDir@/$ICON\n
-                                Name[en_US]=" + name);
+                                Name[en_US]=" + cmd);
 
         console.log("create icons!!! on LINUX done");
     }

@@ -9,6 +9,7 @@
 #include "pathutils.h"
 #include <QDate>
 #include <QMap>
+#include <QTextCodec>
 #include <deployconfig.h>
 #include <distromodule.h>
 #include <quasarapp.h>
@@ -80,6 +81,7 @@ bool iDistribution::unpackFile(const QFileInfo &resource,
         }
 
         QTextStream stream(&file);
+        stream.setCodec(QTextCodec::codecForName("UTF-8"));
         stream << inputText;
     } else {
         file.write(inputData);
@@ -203,8 +205,8 @@ bool iDistribution::collectInfo(const DistroModule& pkg,
                 cmdArray += ",";
                 bashArray += " ";
             }
-            cmdArray += "\"" + releativeLocation(pkg) + "/" + fileinfo.baseName() + "\"";
-            bashArray += fileinfo.baseName();
+            cmdArray += "\"/" + fileinfo.baseName() + "\"";
+            bashArray += "\"" + fileinfo.baseName() + "\"";
         }
     }
     cmdArray += "]";
@@ -245,6 +247,10 @@ bool iDistribution::deployIcon(TemplateInfo &info, const DistroModule& pkg) {
     QSet<QString> icons;
     for (const auto& target: pkg.targets()) {
         auto icon = cfg->targets().value(target).getIcon();
+
+        QuasarAppUtils::Params::log(QString("%0: %1").arg(target, icon),
+                                    QuasarAppUtils::Debug);
+
         if (icons.contains(icon))
             break;
 
