@@ -92,6 +92,12 @@ public:
      */
     static QString fixPath(const QString & path);
 
+    /**
+     * @brief getName This method is altarnatve of the QFileInfo::fileName() method.
+     * @return name of the object in path.
+     */
+    static QString getName(const QString &path);
+
 };
 
 #endif // PATHUTILS_H

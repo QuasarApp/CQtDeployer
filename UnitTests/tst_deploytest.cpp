@@ -183,7 +183,7 @@ private slots:
     void testVirtualKeyBoard();
     // Attention! This test only covers 40% of icon functions
     void testIcons();
-
+    void testPathUtils();
     void testBinPrefix();
 
     void customTest();
@@ -1466,6 +1466,37 @@ void deploytest::testIcons() {
 
     delete deploy;
 
+}
+
+void deploytest::testPathUtils() {
+    const QMap<QString, QString> cases = {
+        {"",""},
+        {"test","test"},
+        {"t","t"},
+        {"/",""},
+        {"/test","test"},
+        {"/t","t"},
+        {"/test/","test"},
+        {"/t/","t"},
+
+        {"/check/test","test"},
+        {"/check/t","t"},
+        {"/check/test/","test"},
+        {"/check/t/","t"},
+
+        {"C:\\","C:"},
+        {"\\",""},
+        {"\\test","test"},
+        {"\\t","t"},
+        {"\\test\\","test"},
+        {"\\t\\","t"},
+
+    };
+
+    for (auto it = cases.begin(); it != cases.end(); ++it) {
+        if (PathUtils::getName(it.key()) != it.value())
+            QVERIFY(false);
+    }
 }
 
 void deploytest::testBinPrefix() {
