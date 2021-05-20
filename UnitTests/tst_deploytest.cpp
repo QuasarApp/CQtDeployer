@@ -186,6 +186,8 @@ private slots:
 
     void testBinPrefix();
 
+    void testMd5();
+
     void customTest();
 };
 
@@ -1497,6 +1499,30 @@ void deploytest::testBinPrefix() {
                    "-binPrefix", TestBinDir,
                    "force-clear"}, &comapareTree);
 
+}
+
+void deploytest::testMd5() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC";
+    auto outFile = "./" + DISTRO_DIR + "/InstallerTestOnlyC.run";
+
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+    auto outFile = "./" + DISTRO_DIR + "/InstallerTestOnlyC.exe";
+
+#endif
+
+    auto comapareTreeqif = utils.createTree(
+                    {
+                        outFile,
+                    });
+
+    runTestParams({"-bin", bin,
+                   "force-clear",
+                   "qif",
+                   "qifFromSystem"}, &comapareTreeqif);
 }
 
 void deploytest::customTest() {
