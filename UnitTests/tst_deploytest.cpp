@@ -1531,8 +1531,8 @@ void deploytest::testBinPrefix() {
 }
 
 void deploytest::customTest() {
-//    runTestParams({"-confFile", "path",
-//                   "qifFromSystem"});
+    runTestParams({"-confFile", "/home/andrei/Qt/Examples/Qt-6.1.0/quick3d/build-particles3d-Desktop_Qt_6_1_0_GCC_64bit-Release/CQtDeployer.json",
+                   "qifFromSystem"});
 }
 
 void deploytest::testQmlExtrct() {
