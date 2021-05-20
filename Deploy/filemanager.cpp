@@ -335,10 +335,9 @@ bool FileManager::cp(const QString &from,
         return false;
 
     if (info.isDir()) {
-        return copyFolder(from, to + "/" + info.dir().dirName(),
+        return copyFolder(from, to + "/" + PathUtils::getName(info.absoluteFilePath()),
                           filter, listOfCopiedItems, mask, force);
     }
-
 
     return copyFile(from, to, mask);
 }
