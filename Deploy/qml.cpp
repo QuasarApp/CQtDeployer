@@ -88,6 +88,16 @@ bool QML::extractImportsFromDir(const QString &path, bool recursive) {
         }
     }
 
+    // task https://github.com/QuasarApp/CQtDeployer/issues/600
+    // There are no import lines for the qt models module in Qt 6.1, but this module is required for all qml applications.
+    if (_qtVersion & QtMajorVersion::Qt6) {
+        auto importQtQml = "QtQml";
+        if (!_imports.contains(importQtQml)) {
+            _imports.insert(importQtQml);
+            extractImportsFromDir(getPathFromImport(importQtQml), recursive);
+        }
+    }
+
     if (recursive) {
         for (const auto &info: dirs) {
             extractImportsFromDir(info.absoluteFilePath(), recursive);
