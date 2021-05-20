@@ -60,7 +60,7 @@ bool Deb::deployTemplate(PackageControl &pkg) {
             QuasarAppUtils::Params::log("Failed to set permissions", QuasarAppUtils::Warning);
         }
 
-        outFiles.push_back(info.Name + ".deb");
+        outFiles.push_back(DeployCore::_config->getTargetDir() + "/" + info.Name + ".deb");
         packageFolders.push_back(local);
     }
 
@@ -135,7 +135,7 @@ bool Deb::cb() const {
     QString to = cfg->getTargetDir() + "/" +  getLocation() + "/../";
     auto const outputFiles = outPutFiles();
     for (const QString& file : outputFiles) {
-        if(!moveData(from + file, to, "")) {
+        if(!moveData(from + PathUtils::getName(file), to, "")) {
             return false;
         }
     }

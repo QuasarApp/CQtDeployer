@@ -71,6 +71,8 @@ void Packing::calcDistributiveHash(const iDistribution* distro) {
         out.write(calcHash(info.absoluteFilePath()));
 
         out.close();
+
+        _fileManager->addToDeployed(out.fileName());
     }
 }
 
