@@ -2006,7 +2006,7 @@ void deploytest::testConfFile() {
                  "./" + DISTRO_DIR + "/TestCPPOnly.sh"});
 #else
     comapareTree += utils.createTree(
-                {"./" + DISTRO_DIR + "/bin/TestCPPOnly.exe",
+                {"./" + DISTRO_DIR + "/TestCPPOnly.exe",
                  "./" + DISTRO_DIR + "/TestCPPOnly.bat"});
 #endif
 
