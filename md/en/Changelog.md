@@ -1,10 +1,12 @@
 # Chnage log for all versions of the CQtDeployer.
 
 ## CQtDeployer 1.5.0
+
 ### New features
+
 - Added new theme of qif installer "quasarDark".
 - Added support of work with custom template for qif option.
-- Added support of debian packages with.
+- Added support of debian packages.
 - Added support icons for targets. now the icon option work with targets but not packages.
 - Added support of the control custom translation files. 
 - Added support the deploy nonexecutable data. (extraData option)
@@ -14,20 +16,28 @@
 - Added support create a qif installer using custom template
 - Added command of init default qif of deb template (getDefaulttemplate)
 - Added support of import custom launch scripts
+- Added support of md5 packages hashes
+- Added support of Qt6.1 
 
 ### Fixes
+
 - Fixed stability for the deploySystem option on windows
 - Fixed verbose log.
 - Fixed general output log.
+- Fixed typo errors in log.
 - Fixed crossdeploy of the arm distributions. 
+- Fixed deploy Qt6 qml 
+- Fixed powershell commands on Windows
 - bug fixes and improvements.
 
 
 ### New Envirement Variables
+
 - CQT_RUN_FILE - This variable contains path to the run script of the using application.
 - CQT_PKG_ROOT - This variable contains path to root of the current package.
 
 ### New parameters
+
 - zip - create a ZIP archive for deployable programs
 - deb - Create the deb package for deployment programm
 - homepage - Sets the homepage url for a package
@@ -40,33 +50,44 @@
 - prefix - Sets the prefix for the package relatively a target directory
 - homePage - Sets the homepage url for a package
 - binPrefix - Sets prefix for bin option.
+- noHashSum - Disables campute hashes of packages
 
 ### Deprecated and removed options
+
 - deploySystem-with-libc - instead of this option use the deploySystem option.
 - allQmlDependes - instead of this option use the qmlDir option.
 
 ## CQtDeployer 1.5.0 Alpha
+
 ### Corrections
+
 - bug fixes and improvements.
 
 ### New Features
+
 - Added a new Theme for qif installer "quasarDark".
 
 ### New options
+
 - zip - create the ZIP arhive for deployement programm
 
 
 ## CQtDeployer 1.4.7
+
 ### Corrections
+
 - Fixed deploy the qxcb plugin. #438
 - Fixed deploy the qtGui module. #446
 
 ### New Features
+
 - Added support of Qt6 #437
 - Added support of Qt installer Framework 4 (with improved command line interface experience) #436
 
 ## CQtDeployer 1.4.6
+
 ### Corrections
+
 - Fixed deploy sql drivers #367
 - Fixed algorithm of deploy libraryes. #423 #371
 - Fixed working with a qt from the linux system repository. (classic instaler only) #422
@@ -76,10 +97,13 @@
 - Removed deprecated option extractPlugins. #371
 
 ### New options
+
 - noQt - Ignore the error of initialize of a qmake. Use only if your application does not use the qt framework.
 
 ## CQtDeployer 1.4.5
+
 ### Corrections
+
 - Optimized project deployment performance. 60% faster.
 - Optimized output size of distributions. Size reduced by 25%.
 - Fixed display of shortcuts after installing deployed applications.
@@ -88,6 +112,7 @@
 - Minor bug fixes and improvements.
 
 ### New Features
+
 - Added a new deployment plugin management system.
 
 ### New options
