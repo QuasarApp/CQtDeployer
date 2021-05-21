@@ -1582,15 +1582,10 @@ ConfigParser::ConfigParser(FileManager *filemanager, PluginsParser *pluginsParse
     assert(_scaner);
     assert(_packing);
 
-#ifdef Q_OS_LINUX
-    _config.appDir = QuasarAppUtils::Params::getArg("appPath");
-
+    _config.appDir = QuasarAppUtils::Params::getCurrentExecutableDir();
     if (_config.appDir.right(4) == "/bin") {
         _config.appDir = _config.appDir.left(_config.appDir.size() - 4);
     }
-#else
-    _config.appDir = QuasarAppUtils::Params::getArg("appPath");
-#endif
 
     QuasarAppUtils::Params::log("appDir = " + _config.appDir);
 }

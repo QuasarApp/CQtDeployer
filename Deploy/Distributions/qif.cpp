@@ -42,7 +42,7 @@ Envirement QIF::toolKitEnv() const {
         return result;
     }
 
-    QString AppPath = QuasarAppUtils::Params::getArg("appPath", "");
+    QString AppPath = QuasarAppUtils::Params::getCurrentExecutableDir();
     result.addEnv(AppPath);
 
     // SNAP
