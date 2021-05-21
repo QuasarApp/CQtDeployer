@@ -20,7 +20,7 @@ BASE_DEPLOY_FLAGS_CQT = $$BASE_DEPLOY_FLAGS -targetDir $$DATA_DIR $$OUT_LIB $$OU
 
 win32:CQT_ICON = -icon $$PWD/config/icon.ico
 unix:CQT_ICON = -icon $$PWD/config/logo.png
-BASE_DEPLOY_FLAGS_DEB = $$BASE_DEPLOY_FLAGS -targetDir $$PWD/../Distro $$OUT_LIB $$OUT_BIN deb zip -publisher QuasarApp $$CQT_ICON -deployVersion $$VERSION
+BASE_DEPLOY_FLAGS_DEB = $$BASE_DEPLOY_FLAGS -targetDir $$PWD/../Distro $$OUT_LIB $$OUT_BIN deb zip -publisher QuasarApp $$CQT_ICON -deployVersion 1.5.0.31
 
 deploy_dep.commands += $$DEPLOYER -bin $$DEPLOY_TARGET $$BASE_DEPLOY_FLAGS_CQT
 deploy_deb.commands += $$DEPLOYER -bin $$DEPLOY_TARGET $$BASE_DEPLOY_FLAGS_DEB
@@ -35,7 +35,7 @@ deployOffline.commands = $$EXEC \
                        $$PWD/../Distro/$$OUT_FILE_OFF
 
 deploy.depends = deploy_dep
-deploy.depends = deploy_deb
+deploy.depends += deploy_deb
 
 deploy.depends += deployOffline
 
