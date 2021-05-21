@@ -22,6 +22,7 @@ android: DEFINES += WITHOUT_TESTS
                CQtDeployer \
                UnitTests \
                tests/TestOnlyC \
+               tests/TestCPPOnly \
                tests/TestQtWidgets \
                tests/TestQMLWidgets \
                tests/virtualkeyboard
@@ -33,6 +34,7 @@ android: DEFINES += WITHOUT_TESTS
     contains(DEFINES, WITHOUT_TESTS) {
         SUBDIRS -= UnitTests \
                tests/TestOnlyC \
+               tests/TestCPPOnly \
                tests/TestQtWidgets \
                tests/TestQMLWidgets \
                tests/quicknanobrowser \
