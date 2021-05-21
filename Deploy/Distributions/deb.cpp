@@ -25,7 +25,7 @@ bool Deb::deployTemplate(PackageControl &pkg) {
         QHash<QString, QString> pakcagesTemplates;
 
         if (!customTemplate.isEmpty()) {
-            QuasarAppUtils::Params::log("Using custom template for installer: " + customTemplate,
+            QuasarAppUtils::Params::log("Using custom template for debian pacakge: " + customTemplate,
                                         QuasarAppUtils::Info);
 
             auto availablePacakages = QDir(customTemplate).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
