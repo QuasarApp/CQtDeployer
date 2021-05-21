@@ -1986,8 +1986,13 @@ void deploytest::testConfFile() {
      "./" + DISTRO_DIR + "/qt.conf"});
 #endif
 
+#ifdef Q_OS_UNIX
     runTestParams({"-bin", TestBinDir + "TestOnlyC", "clear" , "noCheckRPATH", "noCheckPATH", "noQt",
                    "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
+#else
+    runTestParams({"-bin", TestBinDir + "TestOnlyC.exe", "clear" , "noCheckRPATH", "noCheckPATH", "noQt",
+                   "-confFile", TestBinDir + "/TestConf.json"}, &comapareTree);
+#endif
 
 
     QVERIFY(QFile::exists(TestBinDir + "/TestConf.json"));
