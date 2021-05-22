@@ -4,7 +4,7 @@ QT_DIR= $$[QT_HOST_BINS]
 win32:QMAKE_BIN= $$QT_DIR/qmake.exe
 win32:LUPDATE = $$QT_DIR/lupdate.exe
 win32:LRELEASE = $$QT_DIR/lrelease.exe
-win32:DEPLOYER="$$(cqtdeployer)"
+win32:DEPLOYER=cqtdeployer
 
 
 contains(QMAKE_HOST.os, Linux):{
