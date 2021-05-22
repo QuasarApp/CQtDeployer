@@ -48,7 +48,7 @@ bool iDistribution::unpackFile(const QFileInfo &resource,
 
     QByteArray inputData = file.readAll();
     file.close();
-    if (!QDir().mkpath(target)) {
+    if (!_fileManager->initDir(target)) {
         QuasarAppUtils::Params::log(QString("Failed to create path : %0 ").arg(target),
                                     QuasarAppUtils::Error);
         return false;

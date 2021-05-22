@@ -98,6 +98,14 @@ public:
      */
     static QString getName(const QString &path);
 
+    /**
+     * @brief popItem This method remove last item from path.
+     * @param path This is path of the file of directoey.
+     * @return return mame pf the poped item.
+     * @note This method do not check items to exits.
+     */
+    static QString popItem(QString& path);
+
 };
 
 #endif // PATHUTILS_H
