@@ -96,17 +96,16 @@ private slots:
     void testOverwrite();
     void testOverwriteWithPacking();
 
+    // tested flags confFile
+    void testConfFile();
+
     // tested flags binDir
     void testextraData();
 
     // tested flags qmlDir qmake
     void testQt();
 
-
     void testWebEngine();
-
-    // tested flags confFile
-    void testConfFile();
 
     // tested flags targetPackage
     void testPackages();
@@ -2844,12 +2843,11 @@ void deploytest::testOutDirs() {
     auto runScript = file.readAll();
     file.close();
 
-    QVERIFY(runScript.contains("Prefix= ./../"));
-    QVERIFY(runScript.contains("Libraries= ./lolLib/"));
-    QVERIFY(runScript.contains("Plugins= ./p/"));
-    QVERIFY(runScript.contains("Imports= ./q/"));
-    QVERIFY(runScript.contains("Translations= ./lolTr/"));
-    QVERIFY(runScript.contains("Qml2Imports= ./q/"));
+    QVERIFY(runScript.contains("Libraries= ./../lolLib/"));
+    QVERIFY(runScript.contains("Plugins= ./../p/"));
+    QVERIFY(runScript.contains("Imports= ./../q/"));
+    QVERIFY(runScript.contains("Translations= ./../lolTr/"));
+    QVERIFY(runScript.contains("Qml2Imports= ./../q/"));
 
 #ifdef Q_OS_WIN
 
