@@ -640,7 +640,6 @@ void deploytest::testDEB() {
 
                                          });
 
-
     QString bin = TestBinDir + "TestOnlyC";
 
     runTestParams({"-bin", bin, "clear" ,
@@ -1310,11 +1309,13 @@ void deploytest::testIcons() {
 }
 
 void deploytest::testPathUtils() {
-    const QMap<QString, QString> cases = {
+
+    // test getName
+    QMap<QString, QString> cases = {
         {"",""},
         {"test","test"},
         {"t","t"},
-        {"/",""},
+        {"/","/"},
         {"/test","test"},
         {"/t","t"},
         {"/test/","test"},
@@ -1326,7 +1327,7 @@ void deploytest::testPathUtils() {
         {"/check/t/","t"},
 
         {"C:\\","C:"},
-        {"\\",""},
+        {"\\","/"},
         {"\\test","test"},
         {"\\t","t"},
         {"\\test\\","test"},
@@ -1336,6 +1337,43 @@ void deploytest::testPathUtils() {
 
     for (auto it = cases.begin(); it != cases.end(); ++it) {
         if (PathUtils::getName(it.key()) != it.value())
+            QVERIFY(false);
+    }
+
+    struct Result {
+        QString result;
+        QString newPath;
+    };
+
+    // test popItem
+    QMap<QString, Result> popItemCases = {
+        {"", {"", ""}},
+        {"test", {"test", ""}},
+        {"t", {"t", ""}},
+        {"/", {"/", ""}},
+        {"/test", {"test", "/"}},
+        {"/t", {"t", "/"}},
+        {"/test/", {"test", "/"}},
+        {"/t/", {"t", "/"} },
+
+        {"/check/test", {"test", "/check/"}},
+        {"/check/t", {"t", "/check/"}},
+        {"/check/test/", {"test", "/check/"}},
+        {"/check/t/", {"t", "/check/"}},
+
+        {"C:\\", {"C:", ""}},
+        {"\\", {"/", ""}},
+        {"\\test", {"test", "/"}},
+        {"\\t", {"t", "/"}},
+        {"\\test\\", {"test", "/"}},
+        {"\\t\\", {"t", "/"}},
+
+    };
+
+    for (auto it = popItemCases.begin(); it != popItemCases.end(); ++it) {
+        QString path = it.key();
+        QString result = PathUtils::popItem(path);
+        if (path != it.value().newPath || result != it.value().result)
             QVERIFY(false);
     }
 }
@@ -2182,12 +2220,6 @@ void deploytest::testConfFile() {
 
     comapareTree = TestModule.onlyC(DISTRO_DIR + "/Dstro1") +
             TestModule.qtLibs(DISTRO_DIR + "/Dstro2");
-
-#ifdef Q_OS_LINUX
-    auto qmlDir = TestBinDir + "/../";
-#else
-    auto qmlDir = TestBinDir + "/../TestQMLWidgets";
-#endif
 
 
     runTestParams({"-confFile", file},

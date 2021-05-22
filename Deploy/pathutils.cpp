@@ -22,7 +22,8 @@ QString PathUtils::toFullPath(QString path) {
     int index = -1;
     do {
         path.replace("//", "/");
-    } while ((index = path.indexOf("//")) >= 0);
+        index = path.indexOf("//");
+    } while (index >= 0);
 
     if (path.right(1) != '/') {
         path.insert(path.size(), '/');
@@ -108,19 +109,40 @@ QString PathUtils::fixPath(const QString &path) {
 }
 
 QString PathUtils::getName(const QString &path) {
-    short beginIndex = path.size();
-    short endIndex;
+    if (path.isEmpty())
+        return "";
 
-    QString name;
-    do {
-        endIndex = beginIndex;
-        beginIndex = path.lastIndexOf(QRegularExpression("[/\\\\]"), beginIndex - 1);
+    QString fixedPath = toFullPath(path);
 
-        name = path.mid(beginIndex + 1, endIndex - beginIndex - 1);
-    } while (name.isEmpty() && beginIndex > 0);
+    if (fixedPath == "/") {
+        return fixedPath;
+    }
 
-    return name;
+    short endIndex = fixedPath.lastIndexOf(QRegularExpression("[/\\\\]"));
+    short beginIndex = fixedPath.lastIndexOf(QRegularExpression("[/\\\\]"), endIndex - 1) + 1;
+
+    return fixedPath.mid(beginIndex, endIndex - beginIndex);
 }
+
+QString PathUtils::popItem(QString &path) {
+    if (path.isEmpty())
+        return "";
+
+    QString fixedPath = toFullPath(path);
+
+    if (fixedPath == "/") {
+        path = "";
+        return fixedPath;
+    }
+
+    short endIndex = fixedPath.lastIndexOf(QRegularExpression("[/\\\\]"));
+    short beginIndex = fixedPath.lastIndexOf(QRegularExpression("[/\\\\]"), endIndex - 1) + 1;
+
+    path = fixedPath.left(beginIndex);
+
+    return fixedPath.mid(beginIndex, endIndex - beginIndex);
+}
+
 
 QString PathUtils::getReleativePath(QString path) {
     path = toFullPath(path);
@@ -152,7 +174,10 @@ QString PathUtils::stripPath(QString path) {
 QString PathUtils::fullStripPath(QString path) {
     path = stripPath(path);
 
-    if (path.left(1) == '/') {
+    if (path.isEmpty())
+        return path;
+
+    if (path.at(0) == '/') {
         return path.remove(0, 1);
     }
 

@@ -13,6 +13,7 @@
 #include "configparser.h"
 #include "deploycore.h"
 #include <QProcess>
+#include <QStack>
 #include <fstream>
 #include "pathutils.h"
 
@@ -25,11 +26,37 @@ FileManager::FileManager() {
 
 bool FileManager::initDir(const QString &path) {
 
-    if (!QFileInfo::exists(path)) {
-        if (!QDir().mkpath(path)) {
+    QString workPath = path;
+
+    if (!QFileInfo::exists(workPath)) {
+
+        QStack<QString> toInitDirs;
+        while (!QFile::exists(workPath)) {
+            QString dirName = PathUtils::popItem(workPath);
+            toInitDirs.push(dirName);
+
+        };
+
+        if (toInitDirs.isEmpty())
             return false;
+
+        QDir dir(workPath);
+
+        while (toInitDirs.size()) {
+            QString dirName = toInitDirs.pop();
+
+            if (!dir.mkdir(dirName)) {
+                return false;
+            }
+
+            if (!dir.cd(dirName)) {
+                return false;
+            }
+
+            if (!addToDeployed(dir.absolutePath())) {
+                return false;
+            }
         }
-        addToDeployed(path);
     }
 
     return true;
