@@ -205,7 +205,7 @@ bool iDistribution::collectInfo(const DistroModule& pkg,
                 cmdArray += ",";
                 bashArray += " ";
             }
-            cmdArray += "\"/" + fileinfo.baseName() + "\"";
+            cmdArray += "\"" + fileinfo.baseName() + "\"";
             bashArray += "\"" + fileinfo.baseName() + "\"";
         }
     }
