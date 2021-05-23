@@ -6,12 +6,11 @@ function Component()
 }
 
 function generateTr() {
-    component.setValue("DisplayName", qsTr("CQtDeployer " + VERSION + " Candidate"));
+    component.setValue("DisplayName", qsTr("CQtDeployer " + VERSION ));
     component.setValue("Description", qsTr("This package contains CQtDeployer version " + VERSION));
 }
 
-Component.prototype.createOperations = function()
-{
+Component.prototype.createOperations = function() {
 //    // call default implementation to actually install README.txt!
     component.createOperations();
     systemIntegration();
