@@ -96,7 +96,7 @@ The Building or installation instructions see on wiki [page](md/en/Build-and-Ins
 
 ***
 
-### If you want to get more information see our documentations [here](docs/index.md)
+### If you want to get more information see our documentations [here](md/index.md)
 
 ***
 
