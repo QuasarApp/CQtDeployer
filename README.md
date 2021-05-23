@@ -30,7 +30,7 @@ Key differences of this program:
 
 #### Example: cqtdeployer <-bin    [params]> [options]
 
-See list of all options [here](https://github.com/QuasarApp/CQtDeployer/wiki/Options)
+See list of all options [here](md/en/Options.md)
 
 
 #### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.12.4/gcc_64/bin/qmake clear
@@ -80,7 +80,7 @@ See list of all options [here](https://github.com/QuasarApp/CQtDeployer/wiki/Opt
 <img src="https://user-images.githubusercontent.com/12465465/78639716-17b04e00-78b7-11ea-9002-a8b45a43807f.png"  height="400">
 
 ## Build and install
-The Building or installation instructions see on wiki [page](https://github.com/QuasarApp/CQtDeployer/wiki/Build-and-Install)
+The Building or installation instructions see on wiki [page](md/en/Build-and-Install.md)
 
 ## Projects using CQtDeployer:
 
