@@ -4,36 +4,36 @@
 <context>
     <name>controlScript</name>
     <message>
-        <location filename="controlScript.js" line="24"/>
+        <location filename="controlScript.js" line="26"/>
         <source>CQtDeployer</source>
         <translation>CQtDeployer</translation>
     </message>
     <message>
-        <location filename="controlScript.js" line="25"/>
+        <location filename="controlScript.js" line="27"/>
         <source>Install CQtDeployer</source>
         <oldsource>Install Snake</oldsource>
         <translation>Установка CQtDeployer</translation>
     </message>
     <message>
-        <location filename="controlScript.js" line="39"/>
-        <location filename="controlScript.js" line="45"/>
+        <location filename="controlScript.js" line="41"/>
+        <location filename="controlScript.js" line="47"/>
         <source>install in system</source>
         <translation>Установка в систему</translation>
     </message>
     <message>
-        <location filename="controlScript.js" line="39"/>
-        <location filename="controlScript.js" line="45"/>
+        <location filename="controlScript.js" line="41"/>
+        <location filename="controlScript.js" line="47"/>
         <source>Installer</source>
         <translation>Установщик</translation>
     </message>
     <message>
-        <location filename="controlScript.js" line="40"/>
+        <location filename="controlScript.js" line="42"/>
         <source>CQtDeployer successfully installed on your computer to use the call &quot;cqtdeployer&quot;.</source>
         <oldsource>To uninstall cqtdeployer on your system, you need administrator rights!. </oldsource>
         <translation type="unfinished">Чтобы удалить cqtdeployer в вашей системе, вам нужны права администратора !. </translation>
     </message>
     <message>
-        <location filename="controlScript.js" line="46"/>
+        <location filename="controlScript.js" line="48"/>
         <source>CQtDeployer successfully installed on your computer to use the call &quot;cqtdeployer&quot;, cqt or cqtdeployer.cqt.</source>
         <translation type="unfinished"></translation>
     </message>

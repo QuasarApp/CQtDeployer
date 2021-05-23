@@ -25,7 +25,7 @@ bool Deb::deployTemplate(PackageControl &pkg) {
         QHash<QString, QString> pakcagesTemplates;
 
         if (!customTemplate.isEmpty()) {
-            QuasarAppUtils::Params::log("Using custom template for installer: " + customTemplate,
+            QuasarAppUtils::Params::log("Using custom template for debian pacakge: " + customTemplate,
                                         QuasarAppUtils::Info);
 
             auto availablePacakages = QDir(customTemplate).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -57,10 +57,10 @@ bool Deb::deployTemplate(PackageControl &pkg) {
         }
 
         if (!QFile::setPermissions(local +  "/DEBIAN",  static_cast<QFile::Permission>(0x7775))) {
-            QuasarAppUtils::Params::log("permishens set fail", QuasarAppUtils::Warning);
+            QuasarAppUtils::Params::log("Failed to set permissions", QuasarAppUtils::Warning);
         }
 
-        outFiles.push_back(info.Name + ".deb");
+        outFiles.push_back(DeployCore::_config->getTargetDir() + "/" + info.Name + ".deb");
         packageFolders.push_back(local);
     }
 
@@ -135,7 +135,7 @@ bool Deb::cb() const {
     QString to = cfg->getTargetDir() + "/" +  getLocation() + "/../";
     auto const outputFiles = outPutFiles();
     for (const QString& file : outputFiles) {
-        if(!moveData(from + file, to, "")) {
+        if(!moveData(from + PathUtils::getName(file), to, "")) {
             return false;
         }
     }
@@ -164,9 +164,9 @@ QString Deb::releativeLocation(const DistroModule &module) const {
     if (!module.prefix().isEmpty())
         return module.prefix();
 
-
-    if (!module.name().isEmpty())
-        return module.name();
+    auto name = getName(module);
+    if (!name.isEmpty())
+        return name;
 
     return module.key();
 }

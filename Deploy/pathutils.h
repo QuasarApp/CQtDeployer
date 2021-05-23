@@ -92,6 +92,20 @@ public:
      */
     static QString fixPath(const QString & path);
 
+    /**
+     * @brief getName This method is altarnatve of the QFileInfo::fileName() method.
+     * @return name of the object in path.
+     */
+    static QString getName(const QString &path);
+
+    /**
+     * @brief popItem This method remove last item from path.
+     * @param path This is path of the file of directoey.
+     * @return return mame pf the poped item.
+     * @note This method do not check items to exits.
+     */
+    static QString popItem(QString& path);
+
 };
 
 #endif // PATHUTILS_H

@@ -3,12 +3,11 @@ const VERSION = "1.5"
 function Component()
 {
     generateTr();
-    component.addDependency("QIF");
 }
 
 function generateTr() {
-    component.setValue("DisplayName", qsTr("CQtDeployer " + VERSION + " Alpha"));
-    component.setValue("Description", qsTr("This package contains CQtDeployer version " + VERSION + " Do not use this version because it is unstable and may lead to unwanted bugs or consequences. Use this version exclusively for testing new functionality."));
+    component.setValue("DisplayName", qsTr("CQtDeployer " + VERSION + " Candidate"));
+    component.setValue("Description", qsTr("This package contains CQtDeployer version " + VERSION));
 }
 
 Component.prototype.createOperations = function()
@@ -92,14 +91,14 @@ function systemIntegration() {
         component.addOperation('EnvironmentVariable',
                                [
                                    "cqtdeployer",
-                                   "\"" + targetDir + "\\" + VERSION + "\\cqtdeployer.bat\""
+                                   targetDir + "\\" + VERSION + "\\cqtdeployer.bat"
                                ]
                               )
 
         component.addOperation('EnvironmentVariable',
                                [
                                    "cqtDir",
-                                   "\"" + targetDir + "\\" + VERSION + "\\\""
+                                   targetDir + "\\" + VERSION + "\\"
                                ]
                               )
 

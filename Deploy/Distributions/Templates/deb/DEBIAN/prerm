@@ -8,7 +8,8 @@ do
     SRC_FILE="$TARGET_DIR/$app.sh"
     rm "/usr/share/applications/$app.desktop"
 
-    rm /usr/bin/"${app,,}"
-
-    echo "Remove ${app,,}"
+    if [ -e /usr/bin/"${app,,}" ]; then
+        rm /usr/bin/"${app,,}"
+        echo "Remove ${app,,}"
+    fi
 done

@@ -214,15 +214,14 @@ bool MetaFileManager::createQConf(const QString &target) {
         return false;
     }
     auto distro = cnf->getDistro(target);
-
+    QString prefix = distro.getRootDir(distro.getBinOutDir());
     QString content =
             "[Paths]\n"
-            "Prefix= ." + distro.getRootDir(distro.getBinOutDir()) + "\n"
-            "Libraries= ." + distro.getLibOutDir() + "\n"
-            "Plugins= ." + distro.getPluginsOutDir() + "\n"
-            "Imports= ." + distro.getQmlOutDir() + "\n"
-            "Translations= ." + distro.getTrOutDir() + "\n"
-            "Qml2Imports= ." + distro.getQmlOutDir() + "\n";
+            "Libraries= ." + prefix + distro.getLibOutDir() + "\n"
+            "Plugins= ." + prefix + distro.getPluginsOutDir() + "\n"
+            "Imports= ." + prefix + distro.getQmlOutDir() + "\n"
+            "Translations= ." + prefix + distro.getTrOutDir() + "\n"
+            "Qml2Imports= ." + prefix + distro.getQmlOutDir() + "\n";
 
 
     content.replace("//", "/");
@@ -254,12 +253,12 @@ void MetaFileManager::createRunMetaFiles(const QHash<QString, DeployCore::QtModu
     for (auto i = DeployCore::_config->targets().cbegin(); i != DeployCore::_config->targets().cend(); ++i) {
 
         if (!createRunScript(i.key())) {
-            QuasarAppUtils::Params::log("run script not created!",
-                                               QuasarAppUtils::Error);
+            QuasarAppUtils::Params::log("Failed to create a run script: " + i.key(),
+                                         QuasarAppUtils::Error);
         }
 
         if (!createQConf(i.key())) {
-            QuasarAppUtils::Params::log("create qt.conf failr", QuasarAppUtils::Warning);
+            QuasarAppUtils::Params::log("Failed to create the qt.conf file", QuasarAppUtils::Warning);
         }
     }
 }

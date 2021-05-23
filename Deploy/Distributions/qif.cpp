@@ -39,15 +39,13 @@ Envirement QIF::toolKitEnv() const {
 
         result.addEnv(QProcessEnvironment::systemEnvironment().value("PATH"));
 
-
         return result;
     }
 
-
+    QString AppPath = QuasarAppUtils::Params::getCurrentExecutableDir();
+    result.addEnv(AppPath);
 
     // SNAP
-
-    QString AppPath = QuasarAppUtils::Params::getArg("appPath", "");
     result.addEnv(AppPath + "/../QIF/");
 
     //Installer
@@ -87,7 +85,7 @@ QList<SystemCommandData> QIF::runCmd() {
 bool QIF::deployTemplate(PackageControl &pkg) {
     if (!initDefaultConfiguratuin()) {
 
-        QuasarAppUtils::Params::log("Fail to init rhe default configuration of the qif installer.",
+        QuasarAppUtils::Params::log("Failed to init the default configuration of qif installer.",
                                     QuasarAppUtils::Error);
         return false;
     }
@@ -291,4 +289,3 @@ bool QIF::initDefaultConfiguratuin() {
     // init default configuration
     return collectInfo(DistroModule{cfg->getDefaultPackage()}, generalInfo);
 }
-

@@ -15,6 +15,7 @@
 #include <QProcess>
 #include <QThread>
 #include <cassert>
+#include <QCryptographicHash>
 
 #define TMP_PACKAGE_DIR "tmp_data"
 
@@ -40,6 +41,41 @@ void Packing::setDistribution(const QList<iDistribution*> &pakages) {
     _pakages = pakages;
 }
 
+void Packing::calcDistributiveHash(const iDistribution* distro) {
+
+    if (QuasarAppUtils::Params::isEndable("noHashSum")) {
+        return;
+    }
+
+    if (!distro) {
+        internalError();
+        return;
+    }
+
+    auto files = distro->outPutFiles();
+
+    for (const auto &file: files) {
+
+        QFileInfo info(file);
+
+        QuasarAppUtils::Params::log("Computing hash of " + info.absoluteFilePath(),
+                                    QuasarAppUtils::Info);
+
+        QFile out(info.absoluteFilePath() + ".md5");
+        if (!out.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+            QuasarAppUtils::Params::log("Failed to open " + info.absoluteFilePath(),
+                                        QuasarAppUtils::Error);
+            continue;
+        }
+
+        out.write(calcHash(info.absoluteFilePath()));
+
+        out.close();
+
+        _fileManager->addToDeployed(out.fileName());
+    }
+}
+
 bool Packing::create() {
 
     if (!collectPackages()) {
@@ -55,7 +91,7 @@ bool Packing::create() {
         }
 
         if (!package->deployTemplate(*this)) {
-            QuasarAppUtils::Params::log(QString("Deploy package template error ocured. Package: %0.").
+            QuasarAppUtils::Params::log(QString("Failed to deploy a package template. Package: %0.").
                                         arg(package->getClassName()),
                                         QuasarAppUtils::Error);
             return false;
@@ -80,6 +116,9 @@ bool Packing::create() {
             _proc->setWorkingDirectory(cfg->getTargetDir());
 
             _proc->start();
+
+            QuasarAppUtils::Params::log(cmd.command + " " + cmd.arguments.join(' '),
+                                        QuasarAppUtils::Debug);
 
             if (!_proc->waitForStarted()) {
                 QuasarAppUtils::Params::log(_proc->errorString(), QuasarAppUtils::Error);
@@ -117,6 +156,8 @@ bool Packing::create() {
             return false;
         }
 
+        calcDistributiveHash(package);
+
         package->removeTemplate();
         delete package;
     }
@@ -124,7 +165,8 @@ bool Packing::create() {
     const DeployConfig *cfg = DeployCore::_config;
 
     if (!QDir(cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR).removeRecursively()) {
-        QuasarAppUtils::Params::log("Fail to remove " + cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR);
+        QuasarAppUtils::Params::log("Failed to remove " + cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR,
+                                    QuasarAppUtils::Error);
         return false;
     }
 
@@ -241,6 +283,18 @@ bool Packing::restorePackagesLocations() {
     return true;
 }
 
+QByteArray Packing::calcHash(const QString &file) {
+    QFile f(file);
+    if (!f.open(QIODevice::ReadOnly)) {
+        return "";
+    }
+
+    QByteArray hash = QCryptographicHash::hash(f.readAll(), QCryptographicHash::Md5).toHex();
+    f.close();
+
+    return hash;
+}
+
 void Packing::handleOutputUpdate() {
 
     QByteArray stdoutLog = _proc->readAllStandardOutput();
@@ -254,5 +308,3 @@ void Packing::handleOutputUpdate() {
         QuasarAppUtils::Params::log(erroutLog,
                                     QuasarAppUtils::Info);
 }
-
-

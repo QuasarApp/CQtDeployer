@@ -67,6 +67,8 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   noQt                      | Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework.                             |
 |   allowEmptyPackages        | Allows configure the empty packages.                            |
 |   getDefaultTemplate        | Extracts defaults deb or qif templates. For more information see the  extracting default templates [page](ExtractDefaultsTemplates.md)       |
+|   noHashSum        | Disable computation of a packages hash sum               |
+
 
 ### Deploy options
 

@@ -105,11 +105,11 @@ DeployCore::QtModule DeployCore::getQtModule(const QString& path) {
 
 void DeployCore::addQtModule(DeployCore::QtModule &module, const QString &path) {
 
-    QuasarAppUtils::Params::log("current module " + QString::number(module),
+    QuasarAppUtils::Params::log("Current module " + QString::number(module),
                                        QuasarAppUtils::Debug);
 
     auto mod = getQtModule(path);
-    QuasarAppUtils::Params::log("add new module from path " + path  +
+    QuasarAppUtils::Params::log("Add new module from path " + path  +
                                        " module value " + QString::number(mod),
                                        QuasarAppUtils::Debug);
 
@@ -226,6 +226,7 @@ void DeployCore::help() {
                  " All templates extract into targetDirectory."
                  " For change target directory use the targetDir option."
                  " Example: cqtdeployer -bin myExecutable getDefaultTemplate qif deb."},
+                {"noHashSum", "This option disable computation of a packages hash sum"}
 
 
             }
@@ -327,9 +328,9 @@ void DeployCore::help() {
         }
     };
 
-    help.unite(QuasarAppUtils::Params::getparamsHelp());
+    help.unite(QuasarAppUtils::Params::getParamsHelp());
 
-    QuasarAppUtils::Params::showHelp(help);
+    QuasarAppUtils::Help::print(help);
 
     return;
 }
@@ -491,19 +492,19 @@ MSVCVersion DeployCore::getMSVC(const QString &_qtBin) {
     QDir dir = QFileInfo(_qtBin).absoluteFilePath();
 
     if (!dir.cdUp()) {
-        QuasarAppUtils::Params::log("is not standart qt repo");
+        QuasarAppUtils::Params::log("is not a standard qt repo", QuasarAppUtils::Debug);
         return static_cast<MSVCVersion>(res);
     }
 
     auto msvcPath = dir.absolutePath();
 
     if (!(dir.cdUp() && dir.cdUp())) {
-        QuasarAppUtils::Params::log("is not standart qt repo");
+        QuasarAppUtils::Params::log("is not a standard qt repo", QuasarAppUtils::Debug);
         return static_cast<MSVCVersion>(res);
     }
 
     if (!msvcPath.contains("msvc")) {
-        QuasarAppUtils::Params::log("vcredis not defined");
+        QuasarAppUtils::Params::log("vcredist not defined", QuasarAppUtils::Debug);
         return static_cast<MSVCVersion>(res);
     }
 
@@ -540,7 +541,7 @@ QString DeployCore::getVCredist(const QString &_qtbinDir) {
     QDir dir = _qtbinDir;
 
     if (!(dir.cdUp() && dir.cdUp() && dir.cdUp() && dir.cd("vcredist"))) {
-        QuasarAppUtils::Params::log("redist not found!");
+        QuasarAppUtils::Params::log("vcredist not found!");
         return "";
     }
 

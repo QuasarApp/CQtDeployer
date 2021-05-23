@@ -39,9 +39,10 @@ do
     DEST_FILE="/usr/share/applications/$app.desktop"
     createShortCut
 
-    ln -s "$TARGET_DIR/$app.sh" /usr/bin/"${app,,}"
-
-    echo "${app,,}"
+    if [ ! -e /usr/bin/"${app,,}" ]; then
+        ln -s "$TARGET_DIR/$app.sh" /usr/bin/"${app,,}"
+        echo "${app,,}"
+    fi
 done
 
 
