@@ -1465,8 +1465,8 @@ void deploytest::testMd5() {
 }
 
 void deploytest::customTest() {
-//    runTestParams({"-confFile", "path",
-//                   "qifFromSystem"});
+    //runTestParams({"-confFile", "",
+    //               "qifFromSystem"});
 }
 
 void deploytest::testQmlExtrct() {

@@ -194,7 +194,20 @@ public:
     static MSVCVersion getMSVC(const QString & _qtBin);
     static QString getVCredist(const QString & _qtBin);
 
+    /**
+     * @brief isQtLib This method check full path of the library. If the @a @lib contains only name then this method retun QtMajorVersion::NoQt enum. For validate @a lib by name only use the DeployCore::isQtLibName method.
+     * @param lib This is library full path..
+     * @return major version of the Qt.
+     */
     static QtMajorVersion isQtLib(const QString &lib);
+
+    /**
+     * @brief isQtLib This method check name of the library.
+     * @param lib This is library full path..
+     * @return major version of the Qt.
+     */
+    static QtMajorVersion isQtLibName(const QString &lib);
+
     static bool isExtraLib(const QString &lib);
     static QChar getSeparator(int lvl);
     static bool isAlienLib(const QString &lib);
