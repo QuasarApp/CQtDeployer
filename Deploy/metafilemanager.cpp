@@ -214,14 +214,15 @@ bool MetaFileManager::createQConf(const QString &target) {
         return false;
     }
     auto distro = cnf->getDistro(target);
-    QString prefix = distro.getRootDir(distro.getBinOutDir());
+
     QString content =
             "[Paths]\n"
-            "Libraries= ." + prefix + distro.getLibOutDir() + "\n"
-            "Plugins= ." + prefix + distro.getPluginsOutDir() + "\n"
-            "Imports= ." + prefix + distro.getQmlOutDir() + "\n"
-            "Translations= ." + prefix + distro.getTrOutDir() + "\n"
-            "Qml2Imports= ." + prefix + distro.getQmlOutDir() + "\n";
+            "Prefix= ." + distro.getRootDir(distro.getBinOutDir()) + "\n"
+            "Libraries= ." + distro.getLibOutDir() + "\n"
+            "Plugins= ." + distro.getPluginsOutDir() + "\n"
+            "Imports= ." + distro.getQmlOutDir() + "\n"
+            "Translations= ." + distro.getTrOutDir() + "\n"
+            "Qml2Imports= ." + distro.getQmlOutDir() + "\n";
 
 
     content.replace("//", "/");
