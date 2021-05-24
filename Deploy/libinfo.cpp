@@ -104,7 +104,7 @@ void LibInfo::setWinApi(WinAPI winApi) {
 
 QtMajorVersion LibInfo::isDependetOfQt() const {
     for (const auto& i : _dependncies) {
-        if (QtMajorVersion result = DeployCore::isQtLib(i)) {
+        if (QtMajorVersion result = DeployCore::isQtLibName(i)) {
             return result;
         }
     }

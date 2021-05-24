@@ -588,10 +588,23 @@ QString DeployCore::getMSVCVersion(MSVCVersion msvc) {
 
 QtMajorVersion DeployCore::isQtLib(const QString &lib) {
     QFileInfo info(lib);
-/*
- * Task https://github.com/QuasarApp/CQtDeployer/issues/422
- * All qt libs need to contains the Qt label.
-*/
+
+    QtMajorVersion isQt = isQtLibName(lib);
+
+    if (_config && !_config->qtDir.isQt(info.absoluteFilePath())) {
+        return QtMajorVersion::NoQt;
+    }
+
+    return isQt;
+}
+
+QtMajorVersion DeployCore::isQtLibName(const QString &lib) {
+    QFileInfo info(lib);
+
+    /*
+     * Task https://github.com/QuasarApp/CQtDeployer/issues/422
+     * All qt libs need to contains the Qt label.
+    */
     QtMajorVersion isQt = QtMajorVersion::NoQt;
 
     if (!isLib(info)) {
@@ -605,10 +618,6 @@ QtMajorVersion DeployCore::isQtLib(const QString &lib) {
         isQt = QtMajorVersion::Qt5;
     } else if (fileName.contains("Qt6", ONLY_WIN_CASE_INSENSIATIVE)) {
         isQt = QtMajorVersion::Qt6;
-    }
-
-    if (_config && !_config->qtDir.isQt(info.absoluteFilePath())) {
-        return QtMajorVersion::NoQt;
     }
 
     if (isQt && QuasarAppUtils::Params::isEndable("noQt") &&
