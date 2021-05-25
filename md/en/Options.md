@@ -20,8 +20,8 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 **System environments** - paths of directories containing the system libraries.
  * Windows:
    * Paths defined in the PATH variable.
-   * C:\Windows\System32
-   * C:\Windows\SysWOW64
+   * C:/Windows/System32
+   * C:/Windows/SysWOW64
  * Linux:
    * Paths defined in the LD_LIBRARY_PATH and PATH variables.
    * /usr/lib
