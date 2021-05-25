@@ -68,7 +68,7 @@ Or in configFile.json
 ```
 
 ## Packages
-extraData and extraDataOut options have support to work with packages. See the packaging [page](Pacakges.md) to get more information about packages.
+extraData and extraDataOut options have support to work with packages. See the packaging [page](Packing.md) to get more information about packages.
 
 Sometimes we need to create a multipackages application. For example create a installer for client-server application with the client and server applications. The client and server have a own default configuration files. We add config files using the extraData option.
 

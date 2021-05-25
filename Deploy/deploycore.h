@@ -195,7 +195,7 @@ public:
     static QString getVCredist(const QString & _qtBin);
 
     /**
-     * @brief isQtLib This method check full path of the library. If the @a @lib contains only name then this method retun QtMajorVersion::NoQt enum. For validate @a lib by name only use the DeployCore::isQtLibName method.
+     * @brief isQtLib This method check full path of the library. If the @a lib contains only name then this method retun QtMajorVersion::NoQt enum. For validate @a lib by name only use the DeployCore::isQtLibName method.
      * @param lib This is library full path..
      * @return major version of the Qt.
      */
