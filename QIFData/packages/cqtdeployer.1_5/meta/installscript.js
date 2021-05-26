@@ -106,7 +106,7 @@ function systemIntegration() {
 
         console.log("path befor strip : " + PATH);
 
-        if (!PATH.includes(cqtDir) || !cqtDir.length) {
+        if (!PATH.includes(cqtDir) && cqtDir.length) {
             PATH = stripWinPath(PATH);
             console.log("path after strip : " + PATH);
 
