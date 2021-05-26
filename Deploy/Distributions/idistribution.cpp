@@ -195,7 +195,7 @@ bool iDistribution::collectInfo(const DistroModule& pkg,
     info.Prefix = releativeLocation(pkg);
 
     QString cmdArray = "[";
-    QString bashArray = "";
+    QString bashArray = "(";
 
     int initSize = cmdArray.size();
     for (const auto &target :pkg.targets()) {
@@ -210,6 +210,7 @@ bool iDistribution::collectInfo(const DistroModule& pkg,
         }
     }
     cmdArray += "]";
+    bashArray += ")";
 
     info.Custom = {{"[\"array\", \"of\", \"cmds\"]", cmdArray}};
 
