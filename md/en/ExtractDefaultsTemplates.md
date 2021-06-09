@@ -45,4 +45,4 @@ cqtdeployer getDefaultTemplate qif -confFile "path/to/configFile.json"
 
 ## Note 
 This option support work with all packages except of zip.
-If you want get more information about available packages see the packing [page](Package.md).
+If you want get more information about available packages see the packing [page](Packing.md).

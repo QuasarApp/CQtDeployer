@@ -22,8 +22,9 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 **Системное окружение** - пути к системным библиотекам.
   * Windows:
     * Пути, определенные в переменной PATH.
-    * C:\Windows\System32
-    * C:\Windows\SysWOW64
+    * C:/Windows/System32
+    * C:/Windows/SysWOW64
+    
   * Linux:
     * Пути, определенные в переменных LD_LIBRARY_PATH и PATH.
     * /usr/lib
