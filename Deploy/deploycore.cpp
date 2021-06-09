@@ -295,7 +295,10 @@ void DeployCore::help() {
 
         {
             "Part 4 Control of packages options", {
-                {"-icon [target;val,val]", "Sets path to icon for a targets"}
+                {"-icon [target;val,val]", "Sets path to icon for a targets"},
+                {"-disableRunScript [target;val,val]", "Disables a generation of run script for selected targets"},
+                {"-disableShortCut [target;val,val]", "Disables a generation of shortcut for selected targets"}
+
             }
         },
 

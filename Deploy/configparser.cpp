@@ -75,7 +75,7 @@ void parseTargetPrivate(DeployConfig& conf,
         auto pair = iconPair.split(DeployCore::getSeparator(1), splitbehavior);
 
         if (pair.size() == 1) {
-            QuasarAppUtils::Params::log(QString("Set new default icon for all tagets: " + pair.value(0)),
+            QuasarAppUtils::Params::log(QString("Set new default property for all tagets: " + pair.value(0)),
                                         QuasarAppUtils::Debug);
             for (auto& editableTarget: cointainer) {
                 (editableTarget.*adder)(pair.value(0));
@@ -96,12 +96,40 @@ void parseTargetPrivate(DeployConfig& conf,
         }
 
         for (const auto &target: targetsMap) {
-            QuasarAppUtils::Params::log(QString("Set new icon for %0 taget. Icon: %1").
+            QuasarAppUtils::Params::log(QString("Set new property for %0 taget.").
                                         arg(pair.value(0), pair.value(1)),
                                         QuasarAppUtils::Debug);
             (target->*adder)(pair.value(1));
         }
     }
+}
+
+template <typename Enabler>
+bool enableOptionFotTargetPrivate(DeployConfig& conf,
+                        const QStringList &inputParams,
+                        Enabler enabler) {
+
+    for (const auto &iconPair: inputParams) {
+        auto pair = iconPair.split(DeployCore::getSeparator(1), splitbehavior);
+
+        if (pair.size() != 1) {
+            QuasarAppUtils::Params::log(QString("Failed parese list of option values, This option support only single leve list. "
+                                                " Example: use -Option val1,val2,val3 "),
+                                        QuasarAppUtils::Error);
+            return false;
+        }
+
+        const auto targetsMap = conf.getTargetsListByFilter(pair.value(0));
+
+        for (const auto &target: targetsMap) {
+            QuasarAppUtils::Params::log(QString("Set new property for %0 taget.").
+                                        arg(pair.value(0)),
+                                        QuasarAppUtils::Debug);
+            (target->*enabler)();
+        }
+    }
+
+    return true;
 }
 
 bool ConfigParser::parseParams() {
@@ -578,35 +606,6 @@ bool ConfigParser::initPackages() {
     return true;
 }
 
-bool ConfigParser::initRunScripts() {
-    const auto list = QuasarAppUtils::Params::getArg("runScript").split(DeployCore::getSeparator(0), splitbehavior);
-
-    for (const auto& line: list) {
-        auto pair = line.split(DeployCore::getSeparator(1), splitbehavior);
-        if (pair.size() != 2) {
-            QuasarAppUtils::Params::log("Syntax error of the runScript option."
-                                        " Example of use :"
-                                        " -runScript \"myTarget;path/To/Target/RunScript.sh,"
-                                        "mySecondTarget;path/To/Target/SecondRunScript.sh\"",
-                                        QuasarAppUtils::Error);
-            return false;
-        }
-
-        QFileInfo script(pair.value(1));
-
-        if (!script.isFile()) {
-            QuasarAppUtils::Params::log(QString("The %0 file does not exist.").arg(script.absoluteFilePath()),
-                                        QuasarAppUtils::Error);
-            return false;
-        }
-
-        _config.registerRunScript(pair.value(0),
-                                  script.absoluteFilePath());
-    }
-
-    return true;
-}
-
 bool ConfigParser::initQmlInput() {
 
     auto qmlDir = QuasarAppUtils::Params::getArg("qmlDir").
@@ -683,11 +682,6 @@ bool ConfigParser::parseDeployMode() {
         }
     }
 
-
-    if (!initRunScripts()) {
-        return false;
-    }
-
     initIgnoreEnvList();
     initEnvirement();
     initIgnoreList();
@@ -706,9 +700,9 @@ bool ConfigParser::parseDeployMode() {
                                         " then you must use the classic version of CQtDeployer instead of the snap version."
                                         " This is due to the fact that the snap version"
                                         " runs in an isolated container and has limited access"
-                                        " to system utilities and the environment. "
-                                        "For get the classic version of cqtdeployer use the cqtdeployer installer "
-                                        "https://github.com/QuasarApp/CQtDeployer/releases", QuasarAppUtils::Info);
+                                        " to system utilities and the environment."
+                                        " For get the classic version of cqtdeployer use the cqtdeployer installer"
+                                        " https://github.com/QuasarApp/CQtDeployer/releases", QuasarAppUtils::Info);
         }
 
         return false;
@@ -760,15 +754,39 @@ bool ConfigParser::parseInitMode() {
     return true;
 }
 
-void ConfigParser::configureTargets() {
+bool ConfigParser::configureTargets() {
     const auto icons = QuasarAppUtils::Params::getArg("icon").
             split(DeployCore::getSeparator(0), splitbehavior);
+
+    const auto runScripts = QuasarAppUtils::Params::getArg("runScript").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
+    const auto disableShortcuts = QuasarAppUtils::Params::getArg("disableRunScript").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
+    const auto disableRunScripts = QuasarAppUtils::Params::getArg("disableShortCut").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
 
     if (icons.size()) {
         parseTargetPrivate(_config, icons, &TargetInfo::setIcon);
     }
 
-    return;
+    if (runScripts.size()) {
+        parseTargetPrivate(_config, runScripts, &TargetInfo::setRunScript);
+    }
+
+    if (disableShortcuts.size() && !enableOptionFotTargetPrivate(_config, disableShortcuts, &TargetInfo::disableShortCut)) {
+        packagesErrorLog("disableShortCut");
+        return false;
+    }
+
+    if (disableRunScripts.size() && !enableOptionFotTargetPrivate(_config, disableRunScripts, &TargetInfo::disableRunScript)) {
+        packagesErrorLog("disableRunScript");
+        return false;
+    }
+
+    return true;
 }
 
 bool ConfigParser::parseClearMode() {
@@ -1150,7 +1168,7 @@ bool ConfigParser::initQmake() {
 
         auto qt = *qtList.begin();
 
-        if (qt.right(3).compare("lib", Qt::CaseInsensitive)) {
+        if (qt.rightRef(3).compare(QString("lib"), Qt::CaseInsensitive)) {
             return initQmakePrivate(QFileInfo(qt + "/../bin/qmake").absoluteFilePath());
         }
 
@@ -1566,9 +1584,7 @@ bool ConfigParser::smartMoveTargets() {
 
     _config.targetsEdit() = temp;
 
-    configureTargets();
-
-    return result;
+    return result && configureTargets();
 }
 
 ConfigParser::ConfigParser(FileManager *filemanager, PluginsParser *pluginsParser, DependenciesScanner* scaner, Packing *pac):

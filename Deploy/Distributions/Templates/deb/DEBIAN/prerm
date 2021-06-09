@@ -1,15 +1,18 @@
 #!/bin/bash
 
 APPS=$BASH_ARRAY_APPLICATIONS
+APPS_SHORTCUTS=$BASH_ARRAY_SHORTCUTS_APPLICATIONS
 
 for app in "${APPS[@]}"
 do
-
-    SRC_FILE="$TARGET_DIR/$app.sh"
-    rm "/usr/share/applications/$app.desktop"
 
     if [ -e /usr/bin/"${app,,}" ]; then
         rm /usr/bin/"${app,,}"
         echo "Remove ${app,,}"
     fi
+done
+
+for app in "${APPS_SHORTCUTS[@]}"
+do
+    rm "/usr/share/applications/${app%.*}.desktop"
 done
