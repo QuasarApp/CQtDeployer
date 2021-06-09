@@ -52,6 +52,7 @@ private:
     bool loadFromFile(const QString& file);
     bool initDistroStruct();
     bool initPackages();
+    bool initRunScripts();
     bool parseDeployMode();
     bool parseInfoMode();
     bool parseInitMode();
@@ -59,7 +60,7 @@ private:
      * @brief configureTargets Sets targets data from options.
      * @return true if function finishe successfull
      */
-    bool configureTargets();
+    void configureTargets();
 
     bool parseClearMode();
 

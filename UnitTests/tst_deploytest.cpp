@@ -181,9 +181,6 @@ private slots:
 
     void testMd5();
 
-    void testDisableShortcuts();
-    void testDisableRunScripts();
-
     void customTest();
 };
 
@@ -1465,15 +1462,6 @@ void deploytest::testMd5() {
                    "noHashSum",
                    "qif",
                    "qifFromSystem"}, &comapareTreeqif);
-}
-
-void deploytest::testDisableShortcuts() {
-    QVERIFY(false);
-}
-
-void deploytest::testDisableRunScripts() {
-    QVERIFY(false);
-
 }
 
 void deploytest::customTest() {

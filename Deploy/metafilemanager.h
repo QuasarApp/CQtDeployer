@@ -12,8 +12,6 @@
 #include <deploycore.h>
 
 class FileManager;
-class DistroModule;
-class TargetInfo;
 
 class MetaFileManager
 {
@@ -33,11 +31,6 @@ private:
     bool createRunScript(const QString &target);
 
     bool createQConf(const QString &target);
-
-    QHash<QString, QString> toReplace(const QString &target,
-                                      const DistroModule &distro) const;
-
-    void replace(const QHash<QString, QString>& map, QString& content);
 
     FileManager* _fileManager = nullptr;
     QHash<QString, DeployCore::QtModule> _mudulesMap;

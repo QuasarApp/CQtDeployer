@@ -6,28 +6,21 @@
 //#
 
 #include "targetinfo.h"
-#include "deploycore.h"
-#include "deployconfig.h"
 
 TargetInfo::TargetInfo() {
 
 }
 
-TargetInfo::~TargetInfo() {
-    if (_fEnableRunScript)
-        delete _fEnableRunScript;
-}
-
-const QString & TargetInfo::getPackage() const {
-    return _package;
+QString TargetInfo::getPackage() const {
+    return package;
 }
 
 void TargetInfo::setPackage(const QString &value) {
-    _package = value;
+    package = value;
 }
 
 QString TargetInfo::getIcon() const {
-    if (_icon.isEmpty()) {
+    if (icon.isEmpty()) {
         QFileInfo info(getName());
         if (info.suffix() == "exe") {
             return ":/shared/Distributions/Templates/Icon.ico";
@@ -37,74 +30,11 @@ QString TargetInfo::getIcon() const {
 
     }
 
-    return _icon;
+    return icon;
 }
 
 void TargetInfo::setIcon(const QString &value) {
-    _icon = value;
-}
-
-bool TargetInfo::getShortCut() const {
-    return _fEnableShortCut;
-}
-
-void TargetInfo::setShortCut(bool shortcut) {
-    _fEnableShortCut = shortcut;
-}
-
-void TargetInfo::disableShortCut() {
-    setShortCut(false);
-}
-
-QString TargetInfo::getRunScript() const {
-    if (_runScript.isEmpty()) {
-        QFileInfo info(getName());
-        if (info.suffix() == "exe") {
-            return ":/Scripts/ScriptsTemplates/windows.bat";
-        }
-
-        return ":/Scripts/ScriptsTemplates/linux.sh";
-    }
-
-    return _runScript;
-}
-
-void TargetInfo::setRunScript(const QString &newRunScript) {
-    _runScript = newRunScript;
-}
-
-QString TargetInfo::getRunScriptFile() const {
-
-    if (_fEnableRunScript) {
-        QFileInfo runscriptInfo(_runScript);
-        QFileInfo info(getName());
-
-        return info.baseName() + "." + runscriptInfo.completeSuffix();
-    }
-
-    return getName();
-}
-
-bool TargetInfo::fEnableRunScript() const {
-
-    if (!_fEnableRunScript) {
-        QFileInfo info(fullPath());
-        QString compleSufix = info.completeSuffix();
-        return compleSufix.compare(".exe", Qt::CaseInsensitive) == 0 || compleSufix.isEmpty();
-    }
-
-    return _fEnableRunScript;
-}
-
-void TargetInfo::setFEnableRunScript(bool newFEnableRunScript) {
-    if (!_fEnableRunScript)
-        _fEnableRunScript = new bool;
-
-    *_fEnableRunScript = newFEnableRunScript;
-}
-
-void TargetInfo::disableRunScript() {
-    setFEnableRunScript(false);
+    icon = value;
 }
 
 

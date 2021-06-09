@@ -26,8 +26,4 @@
         <file>Distributions/Templates/Icon.png</file>
         <file>Distributions/Templates/Icon.ico</file>
     </qresource>
-    <qresource prefix="/Scripts">
-        <file>ScriptsTemplates/windows.bat</file>
-        <file>ScriptsTemplates/linux.sh</file>
-    </qresource>
 </RCC>

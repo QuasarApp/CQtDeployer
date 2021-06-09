@@ -104,6 +104,15 @@ void DeployConfig::setDefaultPackage(const QString &value) {
     defaultPackage = value;
 }
 
+void DeployConfig::registerRunScript(const QString &targetName,
+                                     const QString &scriptPath) {
+    _runScripts.insert(targetName, scriptPath);
+}
+
+QString DeployConfig::getRunScript(const QString &targetName) const {
+    return _runScripts.value(targetName, "");
+}
+
 QtMajorVersion DeployConfig::isNeededQt() const {
 
     auto Qt = QtMajorVersion::NoQt;

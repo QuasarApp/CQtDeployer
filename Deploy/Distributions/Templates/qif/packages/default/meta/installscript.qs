@@ -2,13 +2,6 @@ function Component() {
 
 }
 
-function getBasename(file) {
-    if (!file.length)
-        return ""
-
-    return file.split('.')[0];
-}
-
 function generateShortCutCmd(cmd) {
 
     var prefix = "$PREFIX";
@@ -19,8 +12,8 @@ function generateShortCutCmd(cmd) {
 
         component.addOperation(
             "CreateShortcut",
-            "@TargetDir@/" + prefix + "/" + cmd,
-            "@DesktopDir@/" + getBasename(cmd) + ".lnk",
+            "@TargetDir@/" + prefix + "/" + cmd + ".bat",
+            "@DesktopDir@/" + cmd + ".lnk",
             "iconPath=@TargetDir@/$ICON",
             "iconId=0");
 
@@ -30,14 +23,14 @@ function generateShortCutCmd(cmd) {
     if (systemInfo.kernelType === "linux") {
         console.log("create icons!!! on LINUX");
         component.addOperation("CreateDesktopEntry",
-                               "@HomeDir@/.local/share/applications/" + getBasename(cmd) + ".desktop",
+                               "@HomeDir@/.local/share/applications/" + cmd + ".desktop",
                                "Version=@Version@\n
                                 Type=Application\n
                                 Terminal=false\n
-                                Exec=\"@TargetDir@/" + prefix + "/" + cmd + "\"\n
-                                Name=" + getBasename(cmd) + "\n
+                                Exec=\"@TargetDir@/" + prefix + "/" + cmd + ".sh\"\n
+                                Name=" + cmd + "\n
                                 Icon=@TargetDir@/$ICON\n
-                                Name[en_US]=" + getBasename(cmd));
+                                Name[en_US]=" + cmd);
 
         console.log("create icons!!! on LINUX done");
     }
@@ -48,9 +41,8 @@ Component.prototype.createOperations = function() {
     component.createOperations();
 
     var cmdArray = ["array", "of", "cmds"]; // will be changed in cqtdeployer
-    var shortcutsCmdArray = ["array", "of", "shortcut", "cmds"]; // will be changed in cqtdeployer
 
-    shortcutsCmdArray.forEach( function (item){
+    cmdArray.forEach( function (item){
         generateShortCutCmd(item);
     });
 
