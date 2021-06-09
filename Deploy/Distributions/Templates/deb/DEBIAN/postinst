@@ -1,6 +1,7 @@
 #!/bin/bash
 
 APPS=$BASH_ARRAY_APPLICATIONS
+APPS_SHORTCUTS=$BASH_ARRAY_SHORTCUTS_APPLICATIONS
 
 TARGET_DIR=/opt/$PREFIX/
 
@@ -35,14 +36,20 @@ do
     
     DEST_NAME=$app
 
-    SRC_FILE="$TARGET_DIR/$app.sh"
-    DEST_FILE="/usr/share/applications/$app.desktop"
-    createShortCut
-
     if [ ! -e /usr/bin/"${app,,}" ]; then
         ln -s "$TARGET_DIR/$app.sh" /usr/bin/"${app,,}"
         echo "${app,,}"
     fi
+done
+
+for app in "${APPS_SHORTCUTS[@]}"
+do
+
+    DEST_NAME=$app
+
+    SRC_FILE="$TARGET_DIR/$app"
+    DEST_FILE="/usr/share/applications/${app%.*}.desktop"
+    createShortCut
 done
 
 

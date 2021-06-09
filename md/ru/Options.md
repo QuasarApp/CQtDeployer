@@ -123,6 +123,8 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |  -icon [target;val,val]     | Установит путь к иконке или логотипу для целе             |
+|  -disableRunScript [target; val, val]| Отключает создание сценария выполнения для выбранных целей |
+|  -disableShortCut [target; val, val] | Отключает создание ярлыков для выбранных целей | 
 
 ### Параметры управления плагинами:
 

@@ -196,10 +196,25 @@ bool iDistribution::collectInfo(const DistroModule& pkg,
 
     QString cmdArray = "[";
     QString bashArray = "(";
+    QString cmdShortCutsArray = "[";
+    QString bashShortCutsArray = "(";
 
     int initSize = cmdArray.size();
     for (const auto &target :pkg.targets()) {
-        auto fileinfo =  QFileInfo(target);
+        const DeployConfig *cfg = DeployCore::_config;
+        auto fileinfo = QFileInfo(target);
+        auto targetInfo =  cfg->targets().value(target);
+
+        if (targetInfo.getShortCut()) {
+            if (cmdArray.size() > initSize) {
+                cmdShortCutsArray += ",";
+                bashShortCutsArray += " ";
+            }
+
+            cmdShortCutsArray += "\"" + targetInfo.getRunScriptFile() + "\"";
+            bashShortCutsArray += "\"" + targetInfo.getRunScriptFile() + "\"";
+        }
+
         if (fileinfo.suffix().compare("exe", ONLY_WIN_CASE_INSENSIATIVE) == 0 || fileinfo.suffix().isEmpty()) {
             if (cmdArray.size() > initSize) {
                 cmdArray += ",";
@@ -211,9 +226,13 @@ bool iDistribution::collectInfo(const DistroModule& pkg,
     }
     cmdArray += "]";
     bashArray += ")";
+    cmdShortCutsArray += "]";
+    bashShortCutsArray += ")";
 
     info.Custom = {{"[\"array\", \"of\", \"cmds\"]", cmdArray}};
+    info.Custom["[\"array\", \"of\", \"shortcut\", \"cmds\"]"] = cmdShortCutsArray;
 
+    info.Custom["$BASH_ARRAY_APPLICATIONS"] = bashArray;
     info.Custom["$BASH_ARRAY_APPLICATIONS"] = bashArray;
 
     if (info.Name.isEmpty()) {

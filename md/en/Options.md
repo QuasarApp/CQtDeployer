@@ -126,7 +126,8 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |  -icon [target;val,val]    | Sets path to icon for a targets                           |
-
+|  -disableRunScript [target;val,val] | Disables a generation of run script for selected targets|
+|  -disableShortCut [target;val,val]  | Disables a generation of shortcut for selected targets |
 
 ### Plugins Controll Options
 
