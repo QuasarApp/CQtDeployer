@@ -14,7 +14,7 @@
 ## Установить CQtDeployer
 Если вы хотите использовать системный qt из своей ОС, установите [классическую](https://github.com/QuasarApp/CQtDeployer/releases/download/1.4.7/LinuxInstaller.run) версию cqtdeployer.
 
-``` bash
+```bash
 wget https://github.com/QuasarApp/CQtDeployer/releases/download/1.4.7/LinuxInstaller.run
 ```
 
@@ -56,29 +56,29 @@ cqtdeployer -bin myexecutable
 ```
 
 * Для систем Windows:
-``` bash
+```bash
 cqtdeployer -bin myexecutable.exe -qmake C: /Qt/5.15.0/min_gw/bin/qmake.exe
 ```
 
 * Для кроссплатформенной сборки (Linux -> Windows)
-``` bash
+```bash
 cqtdeployer -bin myexecutable.exe -qmake ~/crossbuildet-Qt/5.15.0/min_gw/ bin / qmake
 ```
 
 ## Дополнительные параметры
 
 Если вы используете дополнительные библиотеки, просто добавьте путь для cqtdeployer к используемым библиотекам.
-``` bash
+```bash
 cqtdeployer -bin myexecutable -libDir/PathToMyExtraLibs
 ```
 
 Если вы хотите найти библиотеки рекурсивно из пути libDir, просто добавьте параметр рекурсивной глубины.
-``` bash
+```bash
 cqtdeployer -bin myexecutable -libDir/PathToMyExtraLibs -recursiveDepth 5
 ```
 
 Если ваше приложение использует qml, просто добавьте опцию qmlDir
-``` bash
+```bash
 cqtdeployer -bin myexecutable -libDir/PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources
 ```
 
@@ -115,7 +115,7 @@ cqtdeployer -bin myexecutable -libDir / PathToMyExtraLibs -recursiveDepth 5 -qml
                 Qt/Tools/QtCreator/bin/jom.exe
             ```
 
-        ``` bash
+        ```bash
         andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ make -j${nproc}
         g++ -c -pipe -O2 -Wall -Wextra -D_REENTRANT -fPIC -DQT_NO_DEBUG -DQT_QUICK_LIB -DQT_GUI_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -I. -I../../../../5.15.2/gcc_64/include -I../../../../5.15.2/gcc_64/include/QtQuick -I../../../../5.15.2/gcc_64/include/QtGui -I../../../../5.15.2/gcc_64/include/QtQmlModels -I../../../../5.15.2/gcc_64/include/QtQml -I../../../../5.15.2/gcc_64/include/QtNetwork -I../../../../5.15.2/gcc_64/include/QtCore -I. -I/usr/include/libdrm -I../../../../5.15.2/gcc_64/mkspecs/linux-g++ -o main.o main.cpp
         /home/andrei/Qt/5.15.2/gcc_64/bin/rcc -name shared ../shared/shared.qrc -o qrc_shared.cpp
@@ -127,7 +127,7 @@ cqtdeployer -bin myexecutable -libDir / PathToMyExtraLibs -recursiveDepth 5 -qml
 3. Находим наш получившийся исполняемый файл 
     Если вы собирали проект с помощью qtCreator ваш исполняемый файл будет находиться на уровень выше в папке **build-Animations-Desktop_Qt_5_15_2_GCC_64bit-Release**
     В моем случае исполняемый файл лежит в корневом катологе проекта.
-    ``` bash
+    ```bash
     andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ tree
     .
     ├── animation # Вот он.
@@ -180,15 +180,15 @@ cqtdeployer -bin myexecutable -libDir / PathToMyExtraLibs -recursiveDepth 5 -qml
 4. Вызываем cqtdeployer для формирования Базового Дистрибутива
 
     Для Linux:
-    ``` bash 
+    ```bash 
     cqtdeployer -bin animation -qmlDir . qif -qmake ~/Qt/5.15.2/gcc_64/bin/qmake
     ```
     Для Windows:
-    ``` bash 
+    ```bash 
     cqtdeployer -bin animation -qmlDir . qif -qmake ~/Qt/5.15.2/mingw_810_64/bin/qmake.exe
     ```
 
-    ``` bash
+    ```bash
     andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ cqtdeployer -bin animation -qmlDir . qif -qmake ~/Qt/5.15.2/gcc_64/bin/qmake
     Info: Deploy ...
     Info: flag targetDir not  used. use default target dir :/home/andrei/Qt/Examples/Qt-5.15.2/quick/animation/DistributionKit
