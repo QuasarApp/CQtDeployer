@@ -10,7 +10,7 @@
      - Example: ~/Qt/5.15.0/gcc_64/bin/qmake -r
 - make -j$(nproc)
 - make deploy
-     - #this command requires installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
+     - this command requires installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
 - ./Distro/CQtDeployerInstaller.run
 
 ## Build for Windows (CMD)
@@ -25,7 +25,7 @@
      - Example: C:/Qt/5.15.0/mingw81_64/bin/qmake.exe -r
 - migw32-make -j8
 - migw32-make deploy
-     - #this command requires installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
+     - this command requires installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
 - ./Distro/CQtDeployerInstaller.exe
 ---
 

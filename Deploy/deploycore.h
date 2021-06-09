@@ -195,7 +195,7 @@ public:
     static QString getVCredist(const QString & _qtBin);
 
     /**
-     * @brief isQtLib This method check full path of the library. If the @a @lib contains only name then this method retun QtMajorVersion::NoQt enum. For validate @a lib by name only use the DeployCore::isQtLibName method.
+     * @brief isQtLib This method check full path of the library. If the @a lib contains only name then this method retun QtMajorVersion::NoQt enum. For validate @a lib by name only use the DeployCore::isQtLibName method.
      * @param lib This is library full path..
      * @return major version of the Qt.
      */
@@ -234,7 +234,7 @@ public:
 
     /**
      * @brief containsModule This method compare lib name and module of qt.
-     * @param muduleIndex this is name of module library
+     * @param moduleLibrary this is name of module library
      * @param lib This is library name
      * @return true if library has some module that as muduleIndex
      */
@@ -275,7 +275,7 @@ public:
     /**
      * @brief getLibCoreName This method remove platfomr specificly prefixes and sufixes of the librarry.
      *  Example : getLibCoreName(libTest.so) return Test
-     * @param baseName This is information about checked library.
+     * @param info This is information about checked library.
      * @return return core name of the library.
      */
     static QString getLibCoreName(const QFileInfo& info);

@@ -9,7 +9,7 @@
 
 У меня есть дистрибутив, развернутый с помощью следующей команды:
 
-``` bash
+```bash
 cqtdeployer -bin myExecutableFile1,myExecutableFile2 -qmake /qmake/path qif
 ```
 ### где:
@@ -25,7 +25,7 @@ cqtdeployer -bin myExecutableFile1,myExecutableFile2 -qmake /qmake/path qif
 1. Извлеките шаблон по умолчанию.
     Для извлечения шаблона по умолчанию вам необходимо добавить в свою команду параметр getDefaultTemplate. Также вам следует добавить опцию targetDir для установки пути к выходным файлам.
 
-    ``` bash
+    ```bash
     cqtdeployer -bin myExecutableFile1,myExecutableFile2 -qmake /qmake/path qif getDefaultTemplate -targetDir qifTemplate
     ```
 
@@ -34,7 +34,7 @@ cqtdeployer -bin myExecutableFile1,myExecutableFile2 -qmake /qmake/path qif
     * **getDefaultTemplate** - опция для извлечения шаблона по умолчанию. 
 
     Итак, после этого вы получите шаблон qif по умолчанию в targetDir.
-    ``` bash 
+    ```bash 
     ~/qifTemplate$ tree
     .
     └── defaultQIFWTemplate
@@ -127,7 +127,7 @@ cqtdeployer -bin myExecutableFile1,myExecutableFile2 -qmake /qmake/path qif
     ```
 
 3. Добавьте измененный шаблон в команду развертывания.
-    ``` bash
+    ```bash
     cqtdeployer -bin myExecutableFile1,myExecutableFile2 -qmake /qmake/path qif qifTemplate/defaultQIFWTemplate
     ```
 

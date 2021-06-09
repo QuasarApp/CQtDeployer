@@ -107,7 +107,7 @@
 - Optimized project deployment performance. 60% faster.
 - Optimized output size of distributions. Size reduced by 25%.
 - Fixed display of shortcuts after installing deployed applications.
-- Fixed launching applications with spaces in the name. Thanks @ahndee (#384)
+- Fixed launching applications with spaces in the name. Thanks ahndee (#384)
 - Fixed deployment of the Renderer plugin.
 - Minor bug fixes and improvements.
 

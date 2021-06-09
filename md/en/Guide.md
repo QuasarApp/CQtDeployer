@@ -50,34 +50,34 @@ Done!!!
 ### Deploy your executable file.
 
 * For Linux systems:
-``` bash
+```bash
 cqtdeployer -bin myexecutable
 ```
 
 * For Windows systems:
-``` bash
+```bash
 cqtdeployer -bin myexecutable.exe -qmake C:/Qt/5.15.0/min_gw/bin/qmake.exe
 ```
 
 * For crossplatform build (Linux -> Windows)
-``` bash
+```bash
 cqtdeployer -bin myexecutable.exe -qmake ~/crossbuildet-Qt/5.15.0/min_gw/bin/qmake
 ```
 
 ## Extra options
 
 If you use extra libraries, just add path for cqtdeployer to used libs.
-``` bash
+```bash
 cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs 
 ```
 
 If you want find libraries recursively from libDir path, just add recursive Depth option.
-``` bash
+```bash
 cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5
 ```
 
 If you application use qml, just add qmlDir option
-``` bash
+```bash
 cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources
 ```
 
@@ -98,23 +98,21 @@ cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlD
 
 1. Build the project as a release
     1. Run qmake with the -r option for release build
-
         ```bash
-        andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ ~/Qt/5.15.2/gcc_64/bin/qmake -r .
+            andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ ~/Qt/5.15.2/gcc_64/bin/qmake -r .
         ```
 
     2. Call your make 
 
         * For Linux:
             ```bash
-            make -j${nproc}
+                make -j${nproc}
             ```
         * For Windows 
             ```bash
                 Qt/Tools/QtCreator/bin/jom.exe
             ```
-
-        ``` bash
+        ```bash
         andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ make -j${nproc}
         g++ -c -pipe -O2 -Wall -Wextra -D_REENTRANT -fPIC -DQT_NO_DEBUG -DQT_QUICK_LIB -DQT_GUI_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -I. -I../../../../5.15.2/gcc_64/include -I../../../../5.15.2/gcc_64/include/QtQuick -I../../../../5.15.2/gcc_64/include/QtGui -I../../../../5.15.2/gcc_64/include/QtQmlModels -I../../../../5.15.2/gcc_64/include/QtQml -I../../../../5.15.2/gcc_64/include/QtNetwork -I../../../../5.15.2/gcc_64/include/QtCore -I. -I/usr/include/libdrm -I../../../../5.15.2/gcc_64/mkspecs/linux-g++ -o main.o main.cpp
         /home/andrei/Qt/5.15.2/gcc_64/bin/rcc -name shared ../shared/shared.qrc -o qrc_shared.cpp
@@ -126,8 +124,8 @@ cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlD
 3. Find our resulting executable file  
     If you built the project using qtCreator, your executable file will be found one level higher in the **build-animations-Desktop_Qt_5_15_2_GCC_64bit-Release** folder
     In my case, the executable file is located in the root directory of the project. 
-    ``` bash
-    andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ tree
+    ```bash
+        andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ tree
     .
     ├── animation # Here it is.
     ├── animation.pro
@@ -179,15 +177,15 @@ cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlD
 4. Call cqtdeployer to form the base distribution 
 
     For Linux:
-    ``` bash 
+    ```bash 
     cqtdeployer -bin animation -qmlDir . qif -qmake ~/Qt/5.15.2/gcc_64/bin/qmake
     ```
     For Windows:
-    ``` bash 
+    ```bash 
     cqtdeployer -bin animation -qmlDir . qif -qmake ~/Qt/5.15.2/mingw_810_64/bin/qmake.exe
     ```
 
-    ``` bash
+    ```bash
     andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ cqtdeployer -bin animation -qmlDir . qif -qmake ~/Qt/5.15.2/gcc_64/bin/qmake
     Info: Deploy ...
     Info: flag targetDir not  used. use default target dir :/home/andrei/Qt/Examples/Qt-5.15.2/quick/animation/DistributionKit
@@ -334,127 +332,75 @@ cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlD
     Info: copy ::/shared/Distributions/Templates/Icon.png
     Error:  not exits
     Info: [0] Parsed arguments, ok.
-
     Info: [2] Collecting information about available packages...
-
     Info: [4] Found subdirectory "Application"
-
     Info: [4] - it provides the package "Application"  -  "1.0"
-
     Info: [4] Copying component data for "Application"
-
     Info: [5] Compressing data directory "bin"
-
     Info: [21] Compressing data directory "icons"
-
     Info: [31] Compressing data directory "lib"
-
     Info: [11111] Compressing data directory "plugins"
-
     Info: [11740] Compressing data directory "qml"
-
     Info: [11786] Compressing data directory "translations"
-
     Info: [12321] Compressing files found in data directory: ("/home/andrei/Qt/Examples/Qt-5.15.2/quick/animation/DistributionKit/defaultQIFWTemplate/packages/Application/data/animation.sh")
-
     Info: [12321] Hash is stored in "/tmp/binarycreator-yOPMPa/Application/1.0bin.7z.sha1"
     [12321] Creating hash of archive "/tmp/binarycreator-yOPMPa/Application/1.0bin.7z"
-
     Info: [12321] Generated sha1 hash: "0af6cb9dc074407a8857403f07d13aa7d1b3c9cb"
-
     Info: [12322] Hash is stored in "/tmp/binarycreator-yOPMPa/Application/1.0icons.7z.sha1"
     [12322] Creating hash of archive "/tmp/binarycreator-yOPMPa/Application/1.0icons.7z"
-
     Info: [12322] Generated sha1 hash: "aa938cb332bfb427a6d0280c07c204c1bb48da22"
-
     Info: [12322] Hash is stored in "/tmp/binarycreator-yOPMPa/Application/1.0lib.7z.sha1"
     [12322] Creating hash of archive "/tmp/binarycreator-yOPMPa/Application/1.0lib.7z"
-
     Info: [12347] Generated sha1 hash: "7c3a43111e694bc82a0ab0d19a6e4d0025f17313"
-
     Info: [12347] Hash is stored in "/tmp/binarycreator-yOPMPa/Application/1.0plugins.7z.sha1"
     [12347] Creating hash of archive "/tmp/binarycreator-yOPMPa/Application/1.0plugins.7z"
-
     Info: [12349] Generated sha1 hash: "4ed23c36835a9b62701478ab6897737dfe9dfc9a"
-
     Info: [12349] Hash is stored in "/tmp/binarycreator-yOPMPa/Application/1.0qml.7z.sha1"
-
     Info: [12349] Creating hash of archive "/tmp/binarycreator-yOPMPa/Application/1.0qml.7z"
-
     Info: [12349] Generated sha1 hash: "bd44e15d2c26c8f6cb50760032eadf0241eedf43"
-
     Info: [12349] Hash is stored in "/tmp/binarycreator-yOPMPa/Application/1.0translations.7z.sha1"
     [12349] Creating hash of archive "/tmp/binarycreator-yOPMPa/Application/1.0translations.7z"
-
     Info: [12350] Generated sha1 hash: "030e0ede0c0e058a5d5a3b6c43c6a4767119d3f1"
-
     Info: [12350] Hash is stored in "/tmp/binarycreator-yOPMPa/Application/1.0content.7z.sha1"
-
     Info: [12350] Creating hash of archive "/tmp/binarycreator-yOPMPa/Application/1.0content.7z"
-
     Info: [12350] Generated sha1 hash: "acd2cd63e77971acedbcda2a65f93b2cc036025f"
-
     Info: [12350] Copy meta data for package "Application" using "/home/andrei/Qt/Examples/Qt-5.15.2/quick/animation/DistributionKit/defaultQIFWTemplate/packages/Application/meta/package.xml"
-
     Info: [12350] calculate size of directory "/tmp/binarycreator-yOPMPa/Application/data"
-
     Info: [12359] Copying associated "script" file "/home/andrei/Qt/Examples/Qt-5.15.2/quick/animation/DistributionKit/defaultQIFWTemplate/packages/Application/meta/installscript.qs"
-
     Info: [12360] done.
-
     Info: [12360] Begin to copy configuration file and data.
-
     Info: [12360] Copying associated "configuration" file "/home/andrei/Qt/Examples/Qt-5.15.2/quick/animation/DistributionKit/defaultQIFWTemplate/config/config.xml"
-
     Info: [12360] done.
-
     Info: [12360] Read dom element: <Name>animation</Name>.
-
     Info: [12360] Read dom element: <Version>1.0</Version>.
-
     Info: [12360] Read dom element: <Title>animation</Title>.
-
     Info: [12360] Read dom element: <Publisher>Company</Publisher>.
     [12360] Read dom element: <StartMenuDir>animation</StartMenuDir>.
     [12360] Read dom element: <TargetDir>@HomeDir@/animation</TargetDir>.
-
     Info: [12360] Read dom element: <InstallActionColumnVisible>true</InstallActionColumnVisible>.
     [12360] Read dom element: <RemoveTargetDir>true</RemoveTargetDir>.
-
     Info: [12360] Read dom element: <ControlScript>controlScript.qs</ControlScript>.
-
     Info: [12360] Copying associated "ControlScript" file "/home/andrei/Qt/Examples/Qt-5.15.2/quick/animation/DistributionKit/defaultQIFWTemplate/config/controlScript.qs"
-
     Info: [12360] done.
-
     Info: [12360] Read dom element: <MaintenanceToolName>animationTool</MaintenanceToolName>.
     [12360] Read dom element: <ProductUrl></ProductUrl>.
-
     Info: [12360] done.
-
-
     Info: [12362] Creating the binary
-
     Info: [12407] Creating resource archive for "Application"
-
     Info: [12407] Appending "/tmp/binarycreator-yOPMPa/Application/1.0bin.7z" ("61.58 KB")
     [12407] Appending "/tmp/binarycreator-yOPMPa/Application/1.0bin.7z.sha1" ("40.00 bytes")
     [12407] Appending "/tmp/binarycreator-yOPMPa/Application/1.0icons.7z" ("108.00 KB")
     [12407] Appending "/tmp/binarycreator-yOPMPa/Application/1.0icons.7z.sha1" ("40.00 bytes")
     [12407] Appending "/tmp/binarycreator-yOPMPa/Application/1.0lib.7z" ("18.08 MB")
-
     Info: [12407] Appending "/tmp/binarycreator-yOPMPa/Application/1.0lib.7z.sha1" ("40.00 bytes")
     [12407] Appending "/tmp/binarycreator-yOPMPa/Application/1.0plugins.7z" ("1.08 MB")
     [12407] Appending "/tmp/binarycreator-yOPMPa/Application/1.0plugins.7z.sha1" ("40.00 bytes")
     [12407] Appending "/tmp/binarycreator-yOPMPa/Application/1.0qml.7z" ("53.29 KB")
     [12407] Appending "/tmp/binarycreator-yOPMPa/Application/1.0qml.7z.sha1" ("40.00 bytes")
-
     Info: [12407] Appending "/tmp/binarycreator-yOPMPa/Application/1.0translations.7z" ("595.71 KB")
     [12407] Appending "/tmp/binarycreator-yOPMPa/Application/1.0translations.7z.sha1" ("40.00 bytes")
     [12407] Appending "/tmp/binarycreator-yOPMPa/Application/1.0content.7z" ("439.00 bytes")
-
     Info: [12407] Appending "/tmp/binarycreator-yOPMPa/Application/1.0content.7z.sha1" ("40.00 bytes")
-
     Info: [12449] Cleaning up...
     ```
 
