@@ -50,16 +50,19 @@ Done!!!
 ### Deploy your executable file.
 
 * For Linux systems:
+
 ```bash
 cqtdeployer -bin myexecutable
 ```
 
 * For Windows systems:
+
 ```bash
 cqtdeployer -bin myexecutable.exe -qmake C:/Qt/5.15.0/min_gw/bin/qmake.exe
 ```
 
 * For crossplatform build (Linux -> Windows)
+
 ```bash
 cqtdeployer -bin myexecutable.exe -qmake ~/crossbuildet-Qt/5.15.0/min_gw/bin/qmake
 ```
@@ -67,16 +70,19 @@ cqtdeployer -bin myexecutable.exe -qmake ~/crossbuildet-Qt/5.15.0/min_gw/bin/qma
 ## Extra options
 
 If you use extra libraries, just add path for cqtdeployer to used libs.
+
 ```bash
 cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs 
 ```
 
 If you want find libraries recursively from libDir path, just add recursive Depth option.
+
 ```bash
 cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5
 ```
 
 If you application use qml, just add qmlDir option
+
 ```bash
 cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources
 ```
@@ -97,21 +103,27 @@ cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlD
 # Using a live animation example from [Qt Examples](https://doc.qt.io/qt-5/qtquick-animation-example.html) 
 
 1. Build the project as a release
+
     1. Run qmake with the -r option for release build
+
         ```bash
-            andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ ~/Qt/5.15.2/gcc_64/bin/qmake -r .
+        andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.152/quick/animation$ ~/Qt/5.15.2/gcc_64/binqmake -r .
         ```
 
     2. Call your make 
 
         * For Linux:
+
             ```bash
-                make -j${nproc}
+            make -j${nproc}
             ```
-        * For Windows 
+            
+        * For Windows
+
             ```bash
-                Qt/Tools/QtCreator/bin/jom.exe
+            Qt/Tools/QtCreator/bin/jom.exe
             ```
+
         ```bash
         andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ make -j${nproc}
         g++ -c -pipe -O2 -Wall -Wextra -D_REENTRANT -fPIC -DQT_NO_DEBUG -DQT_QUICK_LIB -DQT_GUI_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -I. -I../../../../5.15.2/gcc_64/include -I../../../../5.15.2/gcc_64/include/QtQuick -I../../../../5.15.2/gcc_64/include/QtGui -I../../../../5.15.2/gcc_64/include/QtQmlModels -I../../../../5.15.2/gcc_64/include/QtQml -I../../../../5.15.2/gcc_64/include/QtNetwork -I../../../../5.15.2/gcc_64/include/QtCore -I. -I/usr/include/libdrm -I../../../../5.15.2/gcc_64/mkspecs/linux-g++ -o main.o main.cpp
@@ -124,6 +136,7 @@ cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlD
 3. Find our resulting executable file  
     If you built the project using qtCreator, your executable file will be found one level higher in the **build-animations-Desktop_Qt_5_15_2_GCC_64bit-Release** folder
     In my case, the executable file is located in the root directory of the project. 
+
     ```bash
         andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ tree
     .
@@ -177,10 +190,12 @@ cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlD
 4. Call cqtdeployer to form the base distribution 
 
     For Linux:
+
     ```bash 
     cqtdeployer -bin animation -qmlDir . qif -qmake ~/Qt/5.15.2/gcc_64/bin/qmake
     ```
     For Windows:
+
     ```bash 
     cqtdeployer -bin animation -qmlDir . qif -qmake ~/Qt/5.15.2/mingw_810_64/bin/qmake.exe
     ```
@@ -438,6 +453,7 @@ QMAKE_EXTRA_TARGETS += deploy
 ```
 
 ### cmake 
+
 ```cmake
     find_program(Q_MAKE_EXE qmake)
 

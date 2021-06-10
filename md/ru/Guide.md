@@ -51,16 +51,19 @@ sudo snap connect cqtdeployer:system-backup
 ### Разверните исполняемый файл.
 
 * Для систем Linux:
+
 ```bash
 cqtdeployer -bin myexecutable
 ```
 
 * Для систем Windows:
+
 ```bash
 cqtdeployer -bin myexecutable.exe -qmake C: /Qt/5.15.0/min_gw/bin/qmake.exe
 ```
 
 * Для кроссплатформенной сборки (Linux -> Windows)
+
 ```bash
 cqtdeployer -bin myexecutable.exe -qmake ~/crossbuildet-Qt/5.15.0/min_gw/ bin / qmake
 ```
@@ -68,16 +71,19 @@ cqtdeployer -bin myexecutable.exe -qmake ~/crossbuildet-Qt/5.15.0/min_gw/ bin / 
 ## Дополнительные параметры
 
 Если вы используете дополнительные библиотеки, просто добавьте путь для cqtdeployer к используемым библиотекам.
+
 ```bash
 cqtdeployer -bin myexecutable -libDir/PathToMyExtraLibs
 ```
 
 Если вы хотите найти библиотеки рекурсивно из пути libDir, просто добавьте параметр рекурсивной глубины.
+
 ```bash
 cqtdeployer -bin myexecutable -libDir/PathToMyExtraLibs -recursiveDepth 5
 ```
 
 Если ваше приложение использует qml, просто добавьте опцию qmlDir
+
 ```bash
 cqtdeployer -bin myexecutable -libDir/PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources
 ```
@@ -107,10 +113,13 @@ cqtdeployer -bin myexecutable -libDir / PathToMyExtraLibs -recursiveDepth 5 -qml
     2. Вызываем ваш make generator
 
         * Для Linux:
+
             ```bash
             make -j${nproc}
             ```
+
         * Для Windows 
+
             ```bash
                 Qt/Tools/QtCreator/bin/jom.exe
             ```
@@ -124,9 +133,11 @@ cqtdeployer -bin myexecutable -libDir / PathToMyExtraLibs -recursiveDepth 5 -qml
         g++ -c -pipe -O2 -Wall -Wextra -D_REENTRANT -fPIC -DQT_NO_DEBUG -DQT_QUICK_LIB -DQT_GUI_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -I. -I../../../../5.15.2/gcc_64/include -I../../../../5.15.2/gcc_64/include/QtQuick -I../../../../5.15.2/gcc_64/include/QtGui -I../../../../5.15.2/gcc_64/include/QtQmlModels -I../../../../5.15.2/gcc_64/include/QtQml -I../../../../5.15.2/gcc_64/include/QtNetwork -I../../../../5.15.2/gcc_64/include/QtCore -I. -I/usr/include/libdrm -I../../../../5.15.2/gcc_64/mkspecs/linux-g++ -o qrc_shared.o qrc_shared.cpp
         g++ -Wl,-O1 -Wl,-rpath,/home/andrei/Qt/5.15.2/gcc_64/lib -o animation main.o qrc_shared.o qrc_animation.o   /home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Quick.so /home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Gui.so /home/andrei/Qt/5.15.2/gcc_64/lib/libQt5QmlModels.so /home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Qml.so /home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Network.so /home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Core.so -lGL -lpthread   
         ```
+
 3. Находим наш получившийся исполняемый файл 
     Если вы собирали проект с помощью qtCreator ваш исполняемый файл будет находиться на уровень выше в папке **build-Animations-Desktop_Qt_5_15_2_GCC_64bit-Release**
     В моем случае исполняемый файл лежит в корневом катологе проекта.
+
     ```bash
     andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ tree
     .
@@ -180,10 +191,13 @@ cqtdeployer -bin myexecutable -libDir / PathToMyExtraLibs -recursiveDepth 5 -qml
 4. Вызываем cqtdeployer для формирования Базового Дистрибутива
 
     Для Linux:
+
     ```bash 
     cqtdeployer -bin animation -qmlDir . qif -qmake ~/Qt/5.15.2/gcc_64/bin/qmake
     ```
+
     Для Windows:
+
     ```bash 
     cqtdeployer -bin animation -qmlDir . qif -qmake ~/Qt/5.15.2/mingw_810_64/bin/qmake.exe
     ```
@@ -459,10 +473,14 @@ cqtdeployer -bin myexecutable -libDir / PathToMyExtraLibs -recursiveDepth 5 -qml
     Info: [12449] Cleaning up...
     ```
 
-5. Готово Дистрибутив был сохранен в папку **DistributionKit** 
+5. Готово Дистрибутив был сохранен в папку 
+
+**DistributionKit** 
+
 ```bash
 andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ ./DistributionKit/Installeranimation.run 
 ```
+
 ![Снимок экрана от 2021-02-22 11-25-34](https://user-images.githubusercontent.com/12465465/108681955-c629a580-7500-11eb-8087-cedfa8134aae.png)
 
 После установки буду созданы все необходимые ярлыки.
@@ -493,6 +511,7 @@ QMAKE_EXTRA_TARGETS += deploy
 ```
 
 ### cmake 
+
 ```cmake
     find_program(Q_MAKE_EXE qmake)
 
@@ -521,7 +540,8 @@ QMAKE_EXTRA_TARGETS += deploy
 
 ## Пример интеграции 
 1. Создаем тестовый проект
-    ``` qmake
+
+    ```qmake
     QT += quick
 
     CONFIG += c++11
