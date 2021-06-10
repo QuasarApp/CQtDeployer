@@ -62,9 +62,8 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |                             | Example: cqtdeployer deb" },                              |
 |                             | you can specify the path to your own DEBIAN template. |
 |                             | Examples: cqtdeployer -deb path/to/myCustom/DEBIAN. More details can be found [here](DEB.md) |
-|   deploySystem              | Deploys all libraries not recomendet because there may be conflicts with system libraries                                           |
-|   deploySystem-with-libc    | Deploys all libs include libc (only linux). Do not use this option for a gui application, for gui use the deploySystem option. (on snap version you need to turn on permission)                             |
-|   noQt                      | Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework.                             |
+|   deploySystem              | Deploys all libraries not recomendet because there may be conflicts with system libraries  |
+|   noQt                      | Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework. |
 |   allowEmptyPackages        | Allows configure the empty packages.                            |
 |   getDefaultTemplate        | Extracts defaults deb or qif templates. For more information see the  extracting default templates [page](ExtractDefaultsTemplates.md)       |
 |   noHashSum        | Disable computation of a packages hash sum               |
@@ -96,7 +95,6 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   -extraPlugin [list,params]| Sets an additional path to extraPlugin of an app                |
 |   -recursiveDepth [params]  | Sets the Depth of recursive search of libs and ignoreEnv (default 0)          |
 |   -targetDir [params]       | Sets target directory(by default it is the path to the first deployable file)|
-|   -runScript [list,parems]  | forces cqtdeployer swap default run script to new from the arguments of option. This option copy all content from input file and insert all code into runScript.sh or .bat. Example of use: cqtdeployer -runScript "myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh"|
 |   -verbose [0-3]            | Shows debug log                                                 |
 
 ### Controll of packages options
@@ -128,6 +126,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -icon [target;val,val]    | Sets path to icon for a targets                           |
 |  -disableRunScript [target;val,val] | Disables a generation of run script for selected targets|
 |  -disableShortCut [target;val,val]  | Disables a generation of shortcut for selected targets |
+|  -runScript [target;val,val]  | forces cqtdeployer swap default run script to new from the arguments of option. This option copy all content from input file and insert all code into runScript.sh or .bat. Example of use: cqtdeployer -runScript "myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh" For get more information about customScript see the documentation [page](CustomScripts.md)|
 
 ### Plugins Controll Options
 

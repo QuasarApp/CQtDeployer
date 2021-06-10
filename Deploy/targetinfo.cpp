@@ -13,11 +13,6 @@ TargetInfo::TargetInfo() {
 
 }
 
-TargetInfo::~TargetInfo() {
-    if (_fEnableRunScript)
-        delete _fEnableRunScript;
-}
-
 const QString & TargetInfo::getPackage() const {
     return _package;
 }
@@ -86,21 +81,16 @@ QString TargetInfo::getRunScriptFile() const {
 }
 
 bool TargetInfo::fEnableRunScript() const {
+    QFileInfo info(fullPath());
+    QString compleSufix = info.completeSuffix();
 
-    if (!_fEnableRunScript) {
-        QFileInfo info(fullPath());
-        QString compleSufix = info.completeSuffix();
-        return compleSufix.compare(".exe", Qt::CaseInsensitive) == 0 || compleSufix.isEmpty();
-    }
+    bool defaultRule = compleSufix.compare(".exe", Qt::CaseInsensitive) == 0 || compleSufix.isEmpty();
 
-    return _fEnableRunScript;
+    return _fEnableRunScript && defaultRule;
 }
 
 void TargetInfo::setFEnableRunScript(bool newFEnableRunScript) {
-    if (!_fEnableRunScript)
-        _fEnableRunScript = new bool;
-
-    *_fEnableRunScript = newFEnableRunScript;
+    _fEnableRunScript = newFEnableRunScript;
 }
 
 void TargetInfo::disableRunScript() {

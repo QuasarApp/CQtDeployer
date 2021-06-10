@@ -19,6 +19,7 @@
 * [Получение шаблонов упаковки](ExtractDefaultsTemplates.md)
 * [Стандартные переменные окружения](EnvironmentVariables.md)
 * [Отключение стандартных ярлыков](DisableShortcats.md)
+* [Пользовательские скрипты](CustomScripts.md)
 
 
 ## Поддержите проект

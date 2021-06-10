@@ -121,6 +121,12 @@ bool enableOptionFotTargetPrivate(DeployConfig& conf,
 
         const auto targetsMap = conf.getTargetsListByFilter(pair.value(0));
 
+        if (!targetsMap.size()) {
+            QuasarAppUtils::Params::log(QString("Not found any targets for the %0 selector").
+                                        arg(pair.value(0)),
+                                        QuasarAppUtils::Warning);
+        }
+
         for (const auto &target: targetsMap) {
             QuasarAppUtils::Params::log(QString("Set new property for %0 taget.").
                                         arg(pair.value(0)),
@@ -761,10 +767,10 @@ bool ConfigParser::configureTargets() {
     const auto runScripts = QuasarAppUtils::Params::getArg("runScript").
             split(DeployCore::getSeparator(0), splitbehavior);
 
-    const auto disableShortcuts = QuasarAppUtils::Params::getArg("disableRunScript").
+    const auto disableRunScripts = QuasarAppUtils::Params::getArg("disableRunScript").
             split(DeployCore::getSeparator(0), splitbehavior);
 
-    const auto disableRunScripts = QuasarAppUtils::Params::getArg("disableShortCut").
+    const auto disableShortcuts = QuasarAppUtils::Params::getArg("disableShortCut").
             split(DeployCore::getSeparator(0), splitbehavior);
 
 

@@ -392,7 +392,9 @@ QStringList DeployCore::helpKeys() {
         "allowEmptyPackages",
         "runScript",
         "getDefaultTemplate",
-        "tr"
+        "tr",
+        "disableRunScript",
+        "disableShortCut"
     };
 }
 

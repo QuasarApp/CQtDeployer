@@ -18,7 +18,6 @@ class DEPLOYSHARED_EXPORT TargetInfo: public LibInfo
 {
 public:
     TargetInfo();
-    ~TargetInfo();
 
     /**
      * @brief getPackage This method return name of the package in that contains this target.
@@ -103,7 +102,7 @@ private:
     QString _package = "";
     QString _icon = "";
     bool _fEnableShortCut = true;
-    bool *_fEnableRunScript = nullptr;
+    bool _fEnableRunScript = true;
 
     QString _runScript = "";
 

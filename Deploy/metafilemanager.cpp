@@ -100,6 +100,12 @@ bool MetaFileManager::createRunScriptLinux(const QString &target) {
 }
 
 QString MetaFileManager::generateCustoScriptBlok(bool bat) const {
+
+    QuasarAppUtils::Params::log("The customScript option are depricated!."
+                                " This option will be removed into next release cqtdeployer."
+                                " Please use the runScript option",
+                                QuasarAppUtils::Warning);
+
     QString res = "";
 
     QString commentMarker = "# ";

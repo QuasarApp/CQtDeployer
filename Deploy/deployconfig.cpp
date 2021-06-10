@@ -25,6 +25,19 @@ DeployConfig::getTargetsListByFilter(const QString &filter) {
     return result;
 }
 
+QHash<QString, const TargetInfo *>
+DeployConfig::getTargetsListByFilter(const QString &filter) const {
+    QHash<QString, const TargetInfo*> result;
+
+    for( auto it = _targets.cbegin(); it != _targets.cend(); ++it) {
+        if (it.key().contains(filter, Qt::CaseInsensitive)) {
+            result.insert(it.key(), &(*it));
+        }
+    }
+
+    return result;
+}
+
 QString DeployConfig::getTargetDir(const QString &target) const {
     if (_targets.contains(target))
         return targetDir + "/" + _targets.value(target).getPackage();

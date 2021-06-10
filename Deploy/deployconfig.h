@@ -63,6 +63,7 @@ public:
      */
     void reset();
     QHash<QString, TargetInfo *> getTargetsListByFilter(const QString& filter);
+    QHash<QString, const TargetInfo *> getTargetsListByFilter(const QString& filter) const;
 
     /**
      * @brief targetPath
