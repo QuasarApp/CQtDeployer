@@ -196,12 +196,12 @@ QHash<QString, QString> MetaFileManager::toReplace(const QString& target,
     QFileInfo targetInfo(target);
 
     QHash<QString, QString> result = {
-        {"CQT_BIN_PATH", distro.getBinOutDir()},
-        {"CQT_LIB_PATH", distro.getLibOutDir()},
-        {"CQT_QML_PATH", distro.getQmlOutDir()},
-        {"CQT_PLUGIN_PATH", distro.getPluginsOutDir()},
-        {"CQT_SYSTEM_LIB_PATH", distro.getLibOutDir() + DeployCore::systemLibsFolderName()},
-        {"CQT_BASE_NAME", targetInfo.baseName()}
+        {"CQT_BIN_PATH", QDir::toNativeSeparators(distro.getBinOutDir())},
+        {"CQT_LIB_PATH", QDir::toNativeSeparators(distro.getLibOutDir())},
+        {"CQT_QML_PATH", QDir::toNativeSeparators(distro.getQmlOutDir())},
+        {"CQT_PLUGIN_PATH", QDir::toNativeSeparators(distro.getPluginsOutDir())},
+        {"CQT_SYSTEM_LIB_PATH", QDir::toNativeSeparators(distro.getLibOutDir() + DeployCore::systemLibsFolderName())},
+        {"CQT_BASE_NAME", QDir::toNativeSeparators(targetInfo.baseName())}
     };
 
     bool fGui = DeployCore::isGui(_mudulesMap.value(target));
@@ -214,10 +214,13 @@ QHash<QString, QString> MetaFileManager::toReplace(const QString& target,
         // And run gui applciation in the detached mode.
         QString runCmd;
         if (fGui) {
-            runCmd = "start \"" + targetInfo.baseName() + "\" /B " +
+            runCmd = "start \"" + targetInfo.baseName() + "\" %0 " +
                     "\"%BASE_DIR%" + distro.getBinOutDir() + targetInfo.fileName() + "\" %*";
+            runCmd = QDir::toNativeSeparators(runCmd).arg("/B");
+
         } else {
             runCmd = "call \"%BASE_DIR%" + distro.getBinOutDir() + targetInfo.fileName() + "\" %*";
+            runCmd = QDir::toNativeSeparators(runCmd);
         }
 
         result.insert("CQT_RUN_COMMAND", runCmd);
@@ -227,7 +230,7 @@ QHash<QString, QString> MetaFileManager::toReplace(const QString& target,
 
         QString runCmd = "\"$BASE_DIR" + distro.getBinOutDir() + targetInfo.fileName() + "\" \"$@\" ";
 
-        result.insert("CQT_RUN_COMMAND", runCmd);
+        result.insert("CQT_RUN_COMMAND", QDir::toNativeSeparators(runCmd));
     }
 
     return result;
