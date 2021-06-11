@@ -115,7 +115,7 @@ cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlD
         * For Linux:
 
             ```bash
-            make -j${nproc}
+                make -j${nproc}
             ```
             
         * For Windows
