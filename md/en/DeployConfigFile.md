@@ -1,7 +1,9 @@
-## Deployment file
+# Deployment file
+
 **Deployment file** - it's a json file containing the parameters for cqtdeployer. This file supports all parameters except confFile, since this parameter is responsible for connecting and initializing the file itself.
 
 ### Configuration file structure
+
 ```json
 {
     "Bool option": true/false,
@@ -29,7 +31,7 @@
 }
 ```
 
-Read more about cqtdeployer options in the [options](Options) section.
+Read more about cqtdeployer options in the [options](Options.md) section.
 
 Examples of the contents of this file:
 
@@ -194,6 +196,7 @@ The purpose of file is to simplify the cqtdeployer's call and move some of the p
 ### Creating of the file
 
 #### The first method
+
 1. Call `cqtdeployer init` to initialize the file for a single-package application.
     Or `cqtdeployer -init multi` to initialize the file for a project with multiple packages.
 2. Open CQtDeployer.json and edit it to fit your needs.
@@ -216,8 +219,10 @@ Where:
 
 
 ### Using of the deployment file.
+
  Use the flag -confFile [path to the file] to make cqtdeployer start reading the parameters from the file
 
 #### Example:
+
 cqtdeployer -qmake ~/Qt/bin/qmake -confFile ./deploy.json
 

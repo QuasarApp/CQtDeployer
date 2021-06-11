@@ -1,6 +1,7 @@
 # Build from sources
 
 ## Build for Linux
+
 - install qt and qt QtInstallFrameWork from [qt installer](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f9bb77-7bb77-4bb77-4)
 - git clone https://github.com/QuasarApp/CQtDeployer.git
 - cd CQtDeployer
@@ -14,6 +15,7 @@
 - ./Distro/CQtDeployerInstaller.run
 
 ## Build for Windows (CMD)
+
 - install qt and qt QtInstallFrameWork from [qt installer](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f9bb77-7bb77-4bb77-4)
 - git clone https://github.com/QuasarApp/CQtDeployer.git
 - cd CQtDeployer
@@ -30,9 +32,11 @@
 ---
 
 # Installation without building
+
 You can download the latest version of the application [here](https://github.com/QuasarApp/CQtDeployer/releases).
 
 ### Snap 
+
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/cqtdeployer)
 
 #### Features of the snap version

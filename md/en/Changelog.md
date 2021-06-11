@@ -1,4 +1,6 @@
-# Chnage log for all versions of the CQtDeployer.
+# Change log 
+
+Change log for all versions of the CQtDeployer.
 
 ## CQtDeployer 1.5.0
 

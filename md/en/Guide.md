@@ -1,4 +1,7 @@
-# How to deploy C++ Application 
+# How to deploy 
+
+How to deploy C++ Application 
+
 
 In this article i describe deploy processes of c++/qt application with cqtdeployer.
 

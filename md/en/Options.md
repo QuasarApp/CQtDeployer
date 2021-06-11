@@ -1,4 +1,7 @@
-## General rules for using options
+# Options general rules 
+
+General rules for using options
+
 ```
 cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 ```
@@ -16,7 +19,8 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 * **-libOut [package;path,path]** - parameter with support for selecting the package for which the flag value is set. As a separator, use ';'. Please note that the rule described above is used to enumerate parameter values. The last parameter does not have a package value, this means that this value will be set for all non-configured packages by default.
 * **clear** - boolean option
 
-## Definitions in description 
+## Definitions in description
+
 **System environments** - paths of directories containing the system libraries.
  * Windows:
    * Paths defined in the PATH variable.

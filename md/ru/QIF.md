@@ -1,4 +1,6 @@
-## Общие правила использования Qt Installer Framwork
+# Использование Qt Installer Framwork
+
+Общие правила использования Qt Installer Framwork
 
 ### Что такое Qt Installer Framwork
 
@@ -43,7 +45,8 @@
 }
 ```
 
-# Пользовательский Шаблон для QIF 
+# Пользовательский Шаблон для QIF
+
 Начиная с Версии CQtDeployer 1.5 вы можете использовать свой собственный шаблон установщика. Для этого вы должны передать в параметр qif путь к вашему шаблону.
 
 ```
@@ -51,14 +54,18 @@ cqtdeployer ... -qif /path/to/my/custom/qif/template
 ```
 
 ### Шаблон 
+
 Шаблон qif долже содержать 2 папки:
 * packages 
 * config
 
-### Внимание 
+### Внимание
+
 Название пакетов в папке packages должны совподать с названием пакетов при развертывание.
-Например: 
-``` json
+
+Например:
+
+```json
 "targetPackage": [
     [
         "myCustomInstaller",
@@ -67,7 +74,7 @@ cqtdeployer ... -qif /path/to/my/custom/qif/template
 ],
 ```
 
-``` bash
+```bash
 .
 ├── config
 │   ├── config.xml
@@ -93,7 +100,7 @@ cqtdeployer ... -qif /path/to/my/custom/qif/template -name myCustomInstaller
 #### Не забудьте переименовать папку вашего пакета в имя пакета из опции имени.
 
 
-``` bash
+```bash
 .
 ├── config
 │   ├── config.xml
