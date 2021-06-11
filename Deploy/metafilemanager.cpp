@@ -207,7 +207,7 @@ QHash<QString, QString> MetaFileManager::toReplace(const QString& target,
     bool fGui = DeployCore::isGui(_mudulesMap.value(target));
 
 
-    if (targetInfo.completeSuffix().compare(".exe", Qt::CaseInsensitive) == 0) {
+    if (targetInfo.completeSuffix().compare("exe", Qt::CaseInsensitive) == 0) {
         result.insert("CQT_CUSTOM_SCRIPT_BLOCK", generateCustoScriptBlok(true));
 
         // Run application as invoke of the console for consle applications
