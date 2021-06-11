@@ -84,7 +84,7 @@ bool TargetInfo::fEnableRunScript() const {
     QFileInfo info(fullPath());
     QString compleSufix = info.completeSuffix();
 
-    bool defaultRule = compleSufix.compare(".exe", Qt::CaseInsensitive) == 0 || compleSufix.isEmpty();
+    bool defaultRule = compleSufix.compare("exe", Qt::CaseInsensitive) == 0 || compleSufix.isEmpty();
 
     return _fEnableRunScript && defaultRule;
 }
