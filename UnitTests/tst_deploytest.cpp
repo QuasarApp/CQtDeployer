@@ -1513,7 +1513,7 @@ void deploytest::testDisableRunScripts() {
     comapareTreeqif -= utils.createTree({DISTRO_DIR + "/TestOnlyC.sh",
                                          DISTRO_DIR + "/TestOnlyC.bat"});
     // Run deploy installer
-    runTestParams({"-bin", bin, "clear",
+    runTestParams({"-bin", bin, "clear", "-libDir", TestQtDir + "/bin",
                    "-disableRunScript", "TestOnlyC"}, &comapareTreeqif);
 }
 
