@@ -25,6 +25,19 @@ DeployConfig::getTargetsListByFilter(const QString &filter) {
     return result;
 }
 
+QHash<QString, const TargetInfo *>
+DeployConfig::getTargetsListByFilter(const QString &filter) const {
+    QHash<QString, const TargetInfo*> result;
+
+    for( auto it = _targets.cbegin(); it != _targets.cend(); ++it) {
+        if (it.key().contains(filter, Qt::CaseInsensitive)) {
+            result.insert(it.key(), &(*it));
+        }
+    }
+
+    return result;
+}
+
 QString DeployConfig::getTargetDir(const QString &target) const {
     if (_targets.contains(target))
         return targetDir + "/" + _targets.value(target).getPackage();
@@ -102,15 +115,6 @@ QString DeployConfig::getDefaultPackage() const {
 
 void DeployConfig::setDefaultPackage(const QString &value) {
     defaultPackage = value;
-}
-
-void DeployConfig::registerRunScript(const QString &targetName,
-                                     const QString &scriptPath) {
-    _runScripts.insert(targetName, scriptPath);
-}
-
-QString DeployConfig::getRunScript(const QString &targetName) const {
-    return _runScripts.value(targetName, "");
 }
 
 QtMajorVersion DeployConfig::isNeededQt() const {

@@ -63,6 +63,7 @@ public:
      */
     void reset();
     QHash<QString, TargetInfo *> getTargetsListByFilter(const QString& filter);
+    QHash<QString, const TargetInfo *> getTargetsListByFilter(const QString& filter) const;
 
     /**
      * @brief targetPath
@@ -122,9 +123,6 @@ public:
     QString getDefaultPackage() const;
     void setDefaultPackage(const QString &value);
 
-    void registerRunScript(const QString& targetName, const QString& scriptPath);
-    QString getRunScript(const QString& targetName) const;
-
      /**
      * @brief isNeededQt This method return all needed qt major version for all targets.
      * @return qt major version
@@ -154,12 +152,6 @@ private:
      * default package is empty value
      */
     QHash<QString, DistroModule> _packages;
-
-    /**
-     * @brief _runScripts
-     * target - pathToScript
-     */
-    QHash<QString, QString> _runScripts;
 
     /**
      * @brief targetDir -  targe directory (this folder conteins all files of distrebution kit)

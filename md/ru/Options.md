@@ -68,7 +68,6 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |                             | Примеры: cqtdeployer -deb path/to/myCustom/DEBIAN. Подробнее можно посмотреть [здесь](DEB.md)        |
 |   deploySystem              | Копирует все библиотеки кроме libc                        |
 |                             | (не рекомендуется, так как занимает много памяти, возможны конфликты библиотек)         |
-|   deploySystem-with-libc    | Копирует все зависимости в том числе и libc, не рекомендуется использовать с gui приложения, в место этого используйте  опцию deploySystem              |
 |   noQt                      | Игнорирует ошибку инициализации qmake. Используйте только в том случае, если ваше приложение не использует платформу qt.                             |
 |   allowEmptyPackages        | Разрешите настраивать пустые пакеты.                            |
 |   getDefaultTemplate        | Извлекает deb или qif шаблоны по умолчанию. Для получения дополнительной информации см. [Страницу](ExtractDefaultsTemplates.md) извлечения шаблонов по умолчанию.       |
@@ -95,7 +94,6 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -extraPlugin [list,params] | Устанавливает дополнительный путь для extraPlugin приложения|
 |  -recursiveDepth [params]   | Устанавливает глубину поиска библиотек и глубину игнорирования окружения для ignoreEnv (по умолчанию 0)   |
 |  -targetDir [params]        | Устанавливает целевой каталог (по умолчанию это путь к первому развертываемому файлу)|
-|   -runScript [list,parems]  | заставляет cqtdeployer заменить сценарий запуска по умолчанию на новый из аргументов параметра. Эта опция копирует все содержимое из входного файла и вставляет весь код в runScript.sh или .bat. Пример использования: cqtdeployer -runScript "myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh"|
 |  -verbose [0-3]             | Показывает дебаг лога                                     |
 
 ### Параметры управлениями пакетами:
@@ -126,6 +124,9 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |  -icon [target;val,val]     | Установит путь к иконке или логотипу для целе             |
+|  -disableRunScript [target; val, val]| Отключает создание сценария выполнения для выбранных целей |
+|  -disableShortCut [target; val, val] | Отключает создание ярлыков для выбранных целей | 
+|  -runScript [target; val, val]  | заставляет cqtdeployer заменить сценарий запуска по умолчанию на новый из аргументов параметра. Эта опция копирует все содержимое из входного файла и вставляет весь код в runScript.sh или .bat. Пример использования: cqtdeployer -runScript "myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh". Для получения дополнительной информации смотрите статью [Кастомные скрипты](CustomScripts.md)|
 
 ### Параметры управления плагинами:
 

@@ -48,7 +48,8 @@ private:
                        QSet<QString> *tree = nullptr,
                        bool noWarnings = false,
                        bool onlySize = false,
-                       exitCodes exitCode = exitCodes::Good);
+                       exitCodes exitCode = exitCodes::Good,
+                       const std::function<void (const DeployConfig *)> &cb = {});
 
     void checkResults(const QSet<QString> &tree,
                       bool noWarnings,
@@ -180,6 +181,9 @@ private slots:
     void testBinPrefix();
 
     void testMd5();
+
+    void testDisableShortcuts();
+    void testDisableRunScripts();
 
     void customTest();
 };
@@ -1464,6 +1468,55 @@ void deploytest::testMd5() {
                    "qifFromSystem"}, &comapareTreeqif);
 }
 
+void deploytest::testDisableShortcuts() {
+
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC";
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+#endif
+
+    auto cb = [](const DeployConfig * config){
+        const auto list = config->getTargetsListByFilter("TestOnlyC");
+        // Check shrtcut option. all targets should be return false.
+        for (auto target: list) {
+            QVERIFY(!target->getShortCut());
+        }
+    };
+
+    // Run deploy installer
+    runTestParams({"-bin", bin, "clear",
+                   "-disableShortCut", "TestOnlyC",
+                  "qif", "qifFromSystem"},
+                  nullptr,
+                  false,
+                  false,
+                  exitCodes::Good,
+                  cb);
+
+
+
+}
+
+void deploytest::testDisableRunScripts() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC";
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+#endif
+
+    auto comapareTreeqif = TestModule.onlyC();
+    comapareTreeqif -= utils.createTree({DISTRO_DIR + "/TestOnlyC.sh",
+                                         DISTRO_DIR + "/TestOnlyC.bat"});
+    // Run deploy installer
+    runTestParams({"-bin", bin, "clear", "-libDir", TestQtDir + "/bin",
+                   "-disableRunScript", "TestOnlyC"}, &comapareTreeqif);
+}
+
 void deploytest::customTest() {
     //runTestParams({"-confFile", "",
     //               "qifFromSystem"});
@@ -1721,7 +1774,8 @@ void deploytest::testZip() {
 void deploytest::runTestParams(QStringList list,
                                QSet<QString>* tree,
                                bool noWarnings, bool onlySize,
-                               exitCodes exitCode) {
+                               exitCodes exitCode,
+                               const std::function<void (const DeployConfig *)> &cb) {
 
     QuasarAppUtils::Params::parseParams(list);
 
@@ -1737,6 +1791,9 @@ void deploytest::runTestParams(QStringList list,
     if (tree) {
         checkResults(*tree, noWarnings, onlySize);
     }
+
+    if (cb)
+        cb(DeployCore::_config);
 }
 
 void deploytest::checkResults(const QSet<QString> &tree,
