@@ -1,7 +1,11 @@
-# Environment variables of the CQtDeployer
+# Environment variables
+
+Environment variables of the CQtDeployer
+
 This page contains information about environment variables of the default launcher script.
 
-## Initialization 
+## Initialization
+
 All environment variables initialized in the default launcher script. So if you use the runScript option then you must be reunited all needed variables manually.
 
 
@@ -18,7 +22,8 @@ All environment variables initialized in the default launcher script. So if you 
 
 
 Example :
-``` bash
+
+```bash
 .
 ├── pakcage1 << This is local root of the package1 
 │   ├── bin

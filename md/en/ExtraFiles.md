@@ -1,4 +1,6 @@
-# Adding extraData into distributive.
+# Adding extraData 
+
+Adding extraData into distributive.
 
 CQtDeployer has support to work with extra data files. 
 
@@ -25,7 +27,7 @@ Or in configFile.json
 This command support list of arguments.
 
 
-``` bash
+```bash
 cqtdeployer -extraData path/to/my/customFile,path/to/my/customFile2,path/to/my/customFile3
 ```
 
@@ -49,7 +51,7 @@ For change location you should use  the extraDataOut options. This option change
 
 ### Example. Add custom scripts into scripts folder in the Distribution.
 
-``` bash
+```bash
 cqtdeployer -extraData /path/to/myScripts.sh,/another/path/to/myScripts.sh -extraDataOut scripts
 ```
 
@@ -68,6 +70,7 @@ Or in configFile.json
 ```
 
 ## Packages
+
 extraData and extraDataOut options have support to work with packages. See the packaging [page](Packing.md) to get more information about packages.
 
 Sometimes we need to create a multipackages application. For example create a installer for client-server application with the client and server applications. The client and server have a own default configuration files. We add config files using the extraData option.

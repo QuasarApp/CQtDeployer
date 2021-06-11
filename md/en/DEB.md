@@ -1,5 +1,6 @@
-## General rules for using DEB
+# DEB using
 
+General rules for using DEB
 
 #### Available from version CQtDeployer 1.5
 

@@ -1,6 +1,7 @@
-# Building from source
+# Сборка и установка
 
 ## Build для Linux
+
 - установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
 - git clone https://github.com/QuasarApp/CQtDeployer.git
 - cd CQtDeployer
@@ -13,6 +14,7 @@
      - эта команда требует установленный [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
 
 ## Build для Windows (CMD)
+
 - установите qt и qt QtInstallFrameWork из [Установщик qt](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5)
 - git clone https://github.com/QuasarApp/CQtDeployer.git
 - cd CQtDeployer
@@ -28,9 +30,11 @@
 - ./Distro/CQtDeployerInstaller.exe
 
 ---
+
 # Установка без сборки
 
 ## Snap
+
 [![Загрузите из Snap Store](https://snapcraft.io/static/images/badges/ru/snap-store-black.svg)](https://snapcraft.io/cqtdeployer)
 
 #### Особенности snap версии
@@ -47,4 +51,5 @@ sudo snap connect cqtdeployer:system-backup
 ```
 
 ## Установщик
+
 Вы можете загрузить последнюю версию приложения [здесь](https://github.com/QuasarApp/CQtDeployer/releases).

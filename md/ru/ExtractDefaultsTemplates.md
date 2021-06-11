@@ -1,4 +1,6 @@
-# Извлечение шаблонов по умолчанию
+# Извлечение шаблонов
+
+Извлечение шаблонов по умолчанию
 
 Иногда вам нужно создать свои собственные шаблоны для установщиков или пакетов deb.
 Для этого вы можете использовать опцию getDefaultTemplate.
@@ -27,7 +29,8 @@ cqtdeployer -bin myExecutable getDefaultTemplate qif -targetDir "/distanation/Di
 ### Пример:
 
 #### configFile.json
-`` json
+
+```json
 {
 
     "корзина": [
@@ -40,7 +43,7 @@ cqtdeployer -bin myExecutable getDefaultTemplate qif -targetDir "/distanation/Di
         ["Сервер", "myServerExecutable"]
     ],
 }
-``
+```
 
 ```bash
 cqtdeployer getDefaultTemplate qif -confFile "path/to/configFile.json"
@@ -48,5 +51,6 @@ cqtdeployer getDefaultTemplate qif -confFile "path/to/configFile.json"
 
 
 ## Запись
+
 Эта опция поддерживает работу со всеми пакетами, кроме zip.
 Если вы хотите получить больше информации о доступных пакетах, смотрите упаковку [страница](Packing.md).

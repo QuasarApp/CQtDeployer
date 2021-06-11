@@ -1,14 +1,19 @@
-# General information on packaging your distributions in packages.
+# Packaging distributions
+
+General information on packaging your distributions in packages.
 
 ## Packaging Types
+
 * Automatic
 * Manual
 
 ## Automatic Packages
+
 Packages with this type creates automaticly.
 By default the distribution have a one main package. You can configure it using [Controll of packages options](Options.md).
 
 #### Example (Set new name for pacakge)
+
 ```
 ctdeployer ... -name "MyPackage"
 ```
@@ -72,6 +77,7 @@ You can also do the same in the config file
 
 
 ## Manual Packages
+
 Manual packages is packages created by user template.
 For example you have a aplication that must be execute a complex script on the debian package or the installer.
 So you need to create your template and add tehe path to you template for a package option.
@@ -122,10 +128,12 @@ Example:
 ```
 
 ### Note
+
 You can also extract the standard package template in order to override it if for some reason you are not satisfied with the standard implementation. See this [page](ExtractDefaultsTemplates.md) for details on how to do this 
 
 
 ## Available packages
+
 * [Qt Install Framework](QIF.md)
 * [ZIP Arhive](ZIP.md)
 * [DEB Package](DEB.md)

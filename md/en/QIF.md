@@ -1,4 +1,6 @@
-## General rules for using Qt Installer Framwork
+# Qt Installer Framwork
+
+General rules for using Qt Installer Framwork
 
 ### What is Qt Installer Framwork
 
@@ -45,6 +47,7 @@ Or you can describe packages in [configuration file](DeployConfigFile.md)
 ```
 
 # Custom Template for QIF
+
 Starting with CQtDeployer Version 1.5 you can use your own installer template. To do this, you must pass the path to your template to the qif parameter.
 
 ```bash
@@ -52,14 +55,17 @@ cqtdeployer ... -qif /path/to/my/custom/qif/template
 ```
 
 ### Template
+
 The qif template should contain 2 folders:
 * packages
 * config
 
 ### Attention
+
 The name of the packages in the packages folder must match the names of the packages during deployment.
 
 For example:
+
 ```json
 "targetPackage": [
     [

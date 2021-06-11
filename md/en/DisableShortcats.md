@@ -1,4 +1,6 @@
-# Disabling shortcuts for multi targets distribution Kit in the Qt Installer framework.
+# Disabling shortcuts
+
+Disabling shortcuts for multi targets distribution Kit in the Qt Installer framework.
 
 Some times we need to disable creating automaticly shortcuts for some applications.
 For solve this problem i recomendet override the default qt installer framework template.
@@ -13,6 +15,7 @@ I have a distribution that deployed using next command:
 cqtdeployer -bin myExecutableFile1,myExecutableFile2 -qmake /qmake/path qif -targetPackage MyDistribution
 ```
 ### where:
+
 * **-bin myExecutableFile1,myExecutableFile2** - sets executable files.
 * **-qmake /qmake/path** - sets path to your qmake.
 * **qif** - option for enabling Qt Installer FrameWork Distributions.

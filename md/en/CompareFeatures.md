@@ -1,4 +1,6 @@
-# Compare Features of Distributions of the CQtDeployer
+# Compare Features
+
+Compare Features of Distributions of the CQtDeployer
 
 ### snap vs installer vs windows installer
 
