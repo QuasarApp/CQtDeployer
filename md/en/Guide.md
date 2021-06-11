@@ -105,24 +105,15 @@ cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlD
 1. Build the project as a release
 
     1. Run qmake with the -r option for release build
-
-```bash
-andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.152/quick/animation$ ~/Qt/5.15.2/gcc_64/binqmake -r .
-```
+        >> andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.152/quick/animation$ ~/Qt/5.15.2/gcc_64/binqmake -r .
 
     2. Call your make 
-
         * For Linux:
-
-```bash
-make -j${nproc}
-```
+            >> make -j${nproc}
             
         * For Windows
-
-```bash
-Qt/Tools/QtCreator/bin/jom.exe
-```
+            >> Qt/Tools/QtCreator/bin/jom.exe
+            
 
 ```bash
 andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ make -j${nproc}
@@ -133,7 +124,8 @@ g++ -c -pipe -O2 -Wall -Wextra -D_REENTRANT -fPIC -DQT_NO_DEBUG -DQT_QUICK_LIB -
 g++ -c -pipe -O2 -Wall -Wextra -D_REENTRANT -fPIC -DQT_NO_DEBUG -DQT_QUICK_LIB -DQT_GUI_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -I. -I../../../../5.15.2/gcc_64/include -I../../../../5.15.2/gcc_64/include/QtQuick -I../../../../5.15.2/gcc_64/include/QtGui -I../../../../5.15.2/gcc_64/include/QtQmlModels -I../../../../5.15.2/gcc_64/include/QtQml -I../../../../5.15.2/gcc_64/include/QtNetwork -I../../../../5.15.2/gcc_64/include/QtCore -I. -I/usr/include/libdrm -I../../../../5.15.2/gcc_64/mkspecs/linux-g++ -o qrc_shared.o qrc_shared.cpp
 g++ -Wl,-O1 -Wl,-rpath,/home/andrei/Qt/5.15.2/gcc_64/lib -o animation main.o qrc_shared.o qrc_animation.o   /home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Quick.so /home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Gui.so /home/andrei/Qt/5.15.2/gcc_64/lib/libQt5QmlModels.so /home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Qml.so /home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Network.so /home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Core.so -lGL -lpthread   
 ```
-3. Find our resulting executable file  
+
+2. Find our resulting executable file  
     If you built the project using qtCreator, your executable file will be found one level higher in the **build-animations-Desktop_Qt_5_15_2_GCC_64bit-Release** folder
     In my case, the executable file is located in the root directory of the project. 
 
@@ -187,13 +179,14 @@ g++ -Wl,-O1 -Wl,-rpath,/home/andrei/Qt/5.15.2/gcc_64/lib -o animation main.o qrc
 10 directories, 33 files
 ```
 
-4. Call cqtdeployer to form the base distribution 
+3. Call cqtdeployer to form the base distribution 
 
     For Linux:
 
 ```bash 
 cqtdeployer -bin animation -qmlDir . qif -qmake ~/Qt/5.15.2/gcc_64/bin/qmake
 ```
+
     For Windows:
 
 ```bash 
@@ -419,7 +412,7 @@ Info: [12407] Appending "/tmp/binarycreator-yOPMPa/Application/1.0content.7z.sha
 Info: [12449] Cleaning up...
 ```
 
-5. Done. The distribution has been saved to the **DistributionKit** folder 
+4. Done. The distribution has been saved to the **DistributionKit** folder 
 ```bash
 andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ ./DistributionKit/Installeranimation.run 
 ```
