@@ -653,13 +653,18 @@ QStringList DeployCore::Qt3rdpartyLibs(Platform platform) {
     QStringList result;
 
     result << QStringList {
-              // Begin SQL LIBS
+              // SQL LIBS
               // See task https://github.com/QuasarApp/CQtDeployer/issues/367
-
               "libpq",
-              "mysqlclient"
+              "mysqlclient",
 
-              // End SQL LIBS
+              // SLL Libs
+              // See task https://github.com/QuasarApp/CQtDeployer/issues/620
+              "libcrypto",
+              "libssl",
+              "libeay32",
+              "ssleay32",
+
 };
 
     if (platform & Platform::Win) {
