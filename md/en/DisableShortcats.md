@@ -6,7 +6,7 @@ Some times we need to disable creating automaticly shortcuts for some applicatio
 For solve this problem i recomendet override the default qt installer framework template.
 
 # Note 
-From CQtDeployer 1.5.1 you can add option -disableShortcuts for disable automation create shortcuts.
+Starting from CQtDeployer 1.5.1, you can use the -disableShortcuts option to disable the automatic creation of shortcuts.
 
 ### Example: 
 
