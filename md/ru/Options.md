@@ -145,7 +145,7 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -qifStyle [path/to/style.css]| Устанавливает путь к CSS файлу стиля или устанавливает стиль по умолчанию. Доступные стили: quasar |
 |  -qifBanner [path/to/banner.png]| Устанавливает путь к png-файлу баннера.                                      |
 |  -qifLogo [path/to/logo.png]| Устанавливает путь к файлу логотипа png.                            |
-|  -qifOut [nameOfOutputInstallerFile.run] | Устанавливает имя выходного установщика qifw. Предупреждение: для установщика Windows автоматически добавляется суффикс exe.  |
+|  -qifOut [nameOfOutputInstallerFile.run] | Устанавливает имя выходного установщика qifw. Примечание: для установщика Windows автоматически добавляется суффикс exe.  |
 
 
 
