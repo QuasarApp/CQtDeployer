@@ -184,6 +184,7 @@ private slots:
 
     void testDisableShortcuts();
     void testDisableRunScripts();
+    void testQifOut();
 
     void customTest();
 };
@@ -1515,6 +1516,23 @@ void deploytest::testDisableRunScripts() {
     // Run deploy installer
     runTestParams({"-bin", bin, "clear", "-libDir", TestQtDir + "/bin",
                    "-disableRunScript", "TestOnlyC"}, &comapareTreeqif);
+}
+
+void deploytest::testQifOut() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC";
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+#endif
+
+    auto result = utils.createTree({{DISTRO_DIR + "/QIF_OUT"},
+                                   {DISTRO_DIR + "/QIF_OUT.md5"}});
+
+    // Run deploy installer
+    runTestParams({"-bin", bin, "clear",
+                   "qif", "-qifOut", "QIF_OUT"}, &result);
 }
 
 void deploytest::customTest() {

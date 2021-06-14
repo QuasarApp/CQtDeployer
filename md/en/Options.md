@@ -149,6 +149,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -qifStyle [path/to/style.css]| Sets the path to the CSS style file or sets the default style. Available styles: quasar |
 |  -qifBanner [path/to/banner.png]| Sets path to the banner png file.                                      |
 |  -qifLogo [path/to/logo.png]| Sets path to the logo png file.                                |
+|  -qifOut [nameOfOutputInstallerFile.run] | Sets name of output qifw installer.                 |
 
 
 #### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.15.4/gcc_64/bin/qmake clear

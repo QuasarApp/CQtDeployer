@@ -248,6 +248,10 @@ QString QIF::installerFile() const {
 #else
     QString sufix = ".exe";
 #endif
+    QString qifOut = QuasarAppUtils::Params::getArg("qifOut");
+    if (qifOut.size()) {
+        return DeployCore::_config->getTargetDir() + "/" + qifOut;
+    }
 
     return DeployCore::_config->getTargetDir() + "/Installer" + generalInfo.Name + sufix;
 }
