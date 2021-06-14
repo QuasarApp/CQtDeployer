@@ -1527,12 +1527,12 @@ void deploytest::testQifOut() {
     QString bin = TestBinDir + "TestOnlyC.exe";
 #endif
 
-    auto result = utils.createTree({{DISTRO_DIR + "/QIF_OUT"},
-                                   {DISTRO_DIR + "/QIF_OUT.md5"}});
+    auto result = utils.createTree({{DISTRO_DIR + "/QIF_OUT.exe"},
+                                   {DISTRO_DIR + "/QIF_OUT.exe.md5"}});
 
     // Run deploy installer
     runTestParams({"-bin", bin, "clear",
-                   "qif", "-qifOut", "QIF_OUT"}, &result);
+                   "qif", "-qifOut", "QIF_OUT.exe"}, &result);
 }
 
 void deploytest::customTest() {
