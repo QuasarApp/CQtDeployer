@@ -5,10 +5,10 @@ Disabling shortcuts for multi targets distribution Kit in the Qt Installer frame
 Some times we need to disable creating automaticly shortcuts for some applications.
 For solve this problem i recomendet override the default qt installer framework template.
 
-# Примечание
-В CQtDeployer 1.5.1 вы можете добавить опцию -disableShortcuts для отключения автоматизации создания ярлыков. 
+# Note 
+From CQtDeployer 1.5.1 you can add option -disableShortcuts for disable automation create shortcuts.
 
-### Пример: 
+### Example: 
 
 ```bash 
 cqtdeployer -disableShortCut targetName,target2Name

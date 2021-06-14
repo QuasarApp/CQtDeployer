@@ -5,10 +5,10 @@
 Иногда нам нужно отключить автоматическое создание ярлыков для некоторых приложений.
 Для решения этой проблемы я рекомендую переопределить шаблон фреймворка установщика qt по умолчанию.
 
-# Note 
-From CQtDeployer 1.5.1 you can add option -disableShortcuts for disable automation create shortcuts.
+# Примечание
+В CQtDeployer 1.5.1 вы можете добавить опцию -disableShortcuts для отключения автоматизации создания ярлыков. 
 
-### Example: 
+### Пример: 
 
 ```bash 
 cqtdeployer -disableShortCut targetName,target2Name
