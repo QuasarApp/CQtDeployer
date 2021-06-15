@@ -321,6 +321,7 @@ void DeployCore::help() {
                  " Available styles: quasar, quasarDark"},
                 {"-qifBanner [path/to/banner.png]", "Sets path to the banner png file."},
                 {"-qifLogo [path/to/logo.png]", "Sets path to the logo png file."},
+                {"-qifOut [nameOfOutputInstallerFile", "Sets name of output qifw installer. Note: on Windows, the exe suffix will be added to the installer automatically."},
             }
         },
         {
