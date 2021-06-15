@@ -2,11 +2,11 @@
 <Package>
     <DisplayName>CQtDeployer 1.5</DisplayName>
     <Description>CQtDeployer 1.5</Description>
-    <Version>1.5.1.1</Version>
+    <Version>1.5.2.0</Version>
     <Default>true</Default>
     <ForcedInstallation>false</ForcedInstallation>
     <Script>installscript.js</Script>
-    <ReleaseDate>2021-05-23</ReleaseDate>
+    <ReleaseDate>2021-06-15</ReleaseDate>
     <SortingPriority>201</SortingPriority>
     <Translations>
         <Translation>ru.qm</Translation>

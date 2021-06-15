@@ -1,5 +1,26 @@
 # Change log 
 
+## CQtDeployer 1.5.2
+
+### New parameters
+
+* Added **qifOut** option for set name of the output installer
+* Added **disableRunScript** option for disabling the generation of run script for selected targets
+* Added **disableShortCut** option for disabling the generation of shortcut for selected targets
+
+### Fixes
+
+* Fix documentation
+* Fix deploy openssl libraries
+
+## CQtDeployer 1.5.1 
+
+### Fixes
+
+* Fix deploy multi target Debian packages
+* Fix deploy qt6 qml applications
+
+
 Change log for all versions of the CQtDeployer.
 
 ## CQtDeployer 1.5.0
