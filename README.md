@@ -62,6 +62,7 @@ See list of all options [here](md/en/Options.md)
 <img src="https://user-images.githubusercontent.com/12465465/78639719-197a1180-78b7-11ea-9e82-a03dd43f4bd2.png"  height="400">
 
 #### Project installer after deploy with the qif and qifStyle option.
+
 ``` bash
  #linux
  cqtdeployer -bin Application qif -qifStyle quasar
@@ -70,6 +71,7 @@ See list of all options [here](md/en/Options.md)
  cqtdeployer -bin Application.exe -qmake /path/to/qmake.exe qif -qifStyle quasar
 
 ```
+
 <img src="https://user-images.githubusercontent.com/12465465/78639720-1aab3e80-78b7-11ea-9604-3dcdd7c78482.png"  height="400">
 
 ``` bash
@@ -80,6 +82,7 @@ See list of all options [here](md/en/Options.md)
  cqtdeployer -bin Application.exe -qmake /path/to/qmake.exe qif -qifStyle path/to/myStyle.css
 
 ```
+
 <img src="https://user-images.githubusercontent.com/12465465/78639716-17b04e00-78b7-11ea-9002-a8b45a43807f.png"  height="400">
 
 ## Build and install
