@@ -71,7 +71,7 @@ void TargetInfo::setRunScript(const QString &newRunScript) {
 QString TargetInfo::getRunScriptFile() const {
 
     if (_fEnableRunScript) {
-        QFileInfo runscriptInfo(_runScript);
+        QFileInfo runscriptInfo(getRunScript());
         QFileInfo info(getName());
 
         return info.baseName() + "." + runscriptInfo.completeSuffix();
