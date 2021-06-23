@@ -20,8 +20,8 @@ print("VERSION=" + VERSION)
 # Command Example : aqt tool linux tools_ifw 4.0 qt.tools.ifw.40
 command = ["aqt",
            "tool",
-           "-b",
-           "https://mirrors.ocf.berkeley.edu/qt/",
+#           "-b",
+#           "https://mirrors.ocf.berkeley.edu/qt/",
            "--outputdir",
            PATHQIF,
            PLATFORM,
