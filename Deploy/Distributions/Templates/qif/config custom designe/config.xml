@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Installer>
-    <WizardDefaultWidth>800px</WizardDefaultWidth>
-    <WizardDefaultHeight>500px</WizardDefaultHeight>
     <Name>$NAME</Name>
     <Version>$VERSION</Version>
     <Title>$NAME</Title>
