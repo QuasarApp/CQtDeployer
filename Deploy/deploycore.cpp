@@ -771,6 +771,21 @@ void DeployCore::printInternalError(const char * function, const char* file, int
                                         " about this problem on the official github page"
                                         " https://github.com/QuasarApp/CQtDeployer/issues/new/choose. "),
                                 QuasarAppUtils::Error);
+}
+
+QFileInfo DeployCore::findFile(const QString &bin) {
+    auto prefixes = QuasarAppUtils::Params::getArg("binPrefix").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
+    for (const QString& prefix :qAsConst(prefixes)) {
+        QFileInfo info(prefix + "/" + bin);
+
+        if (info.isFile()) {
+            return info;
+        }
+    }
+
+    return QFileInfo(bin);
 };
 
 QString DeployCore::systemLibsFolderName() {

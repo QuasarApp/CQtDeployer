@@ -833,7 +833,7 @@ bool ConfigParser::setTargets(const QStringList &value) {
     bool isfillList = false;
 
     for (const auto &i : value) {
-        QFileInfo targetInfo = getBinInfo(i);
+        QFileInfo targetInfo = DeployCore::findFile(i);
 
         if (i.isEmpty())
             continue;
@@ -865,21 +865,6 @@ bool ConfigParser::setTargets(const QStringList &value) {
         return false;
 
     return true;
-}
-
-QFileInfo ConfigParser::getBinInfo(const QString &bin) {
-    auto prefixes = QuasarAppUtils::Params::getArg("binPrefix").
-            split(DeployCore::getSeparator(0), splitbehavior);
-
-    for (const QString& prefix :qAsConst(prefixes)) {
-        QFileInfo info(prefix + "/" + bin);
-
-        if (info.isFile()) {
-            return info;
-        }
-    }
-
-    return QFileInfo(bin);
 }
 
 bool ConfigParser::setTargetsRecursive(const QString &dir) {
