@@ -833,7 +833,7 @@ bool ConfigParser::setTargets(const QStringList &value) {
     bool isfillList = false;
 
     for (const auto &i : value) {
-        QFileInfo targetInfo = DeployCore::findFile(i);
+        QFileInfo targetInfo = DeployCore::findItem(i);
 
         if (i.isEmpty())
             continue;

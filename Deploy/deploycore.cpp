@@ -773,14 +773,14 @@ void DeployCore::printInternalError(const char * function, const char* file, int
                                 QuasarAppUtils::Error);
 }
 
-QFileInfo DeployCore::findFile(const QString &bin) {
+QFileInfo DeployCore::findItem(const QString &bin) {
     auto prefixes = QuasarAppUtils::Params::getArg("binPrefix").
             split(DeployCore::getSeparator(0), splitbehavior);
 
     for (const QString& prefix :qAsConst(prefixes)) {
         QFileInfo info(prefix + "/" + bin);
 
-        if (info.isFile()) {
+        if (info.exists()) {
             return info;
         }
     }

@@ -296,11 +296,11 @@ public:
     static void printInternalError(const char *function, const char* file, int line);
 
     /**
-     * @brief findFile This method search input file in prefixes and return absolute path to the found file. If file is not exists the return empty string.
+     * @brief findItem This method search input file in prefixes and return absolute path to the found file. If file is not exists the return empty string.
      * @param file This is file path. If the file path si absalute path then return @a file value.
      * @return file info of the found file.
      */
-    static QFileInfo findFile(const QString &file);
+    static QFileInfo findItem(const QString &file);
 
 };
 

@@ -113,7 +113,7 @@ void Extracter::extractExtraDataTargets() {
         const auto extraData = i.value().extraData();
         for (const auto &target : extraData) {
 
-            QFileInfo info = DeployCore::findFile(target);
+            QFileInfo info = DeployCore::findItem(target);
             if (!info.exists()) {
                 QuasarAppUtils::Params::log("Failed to copy extra data from: " + target +
                                             " Error: target not exists!.", QuasarAppUtils::Warning);
