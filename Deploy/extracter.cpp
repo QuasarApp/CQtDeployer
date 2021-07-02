@@ -120,7 +120,7 @@ void Extracter::extractExtraDataTargets() {
                 continue;
             }
 
-            dep.addExtraData(target);
+            dep.addExtraData(info.absoluteFilePath());
         }
     }
 }
