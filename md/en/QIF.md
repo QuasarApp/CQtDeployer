@@ -115,3 +115,19 @@ cqtdeployer ... -qif /path/to/my/custom/qif/template -name myCustomInstaller
 4 directories, 4 files
 
 ```
+
+## Initialization of the qifw template
+
+For initialize default templates you can use the getDefaultTemplate option.
+The getDefaultTemplate option extract default template of the cqtdeployer. This is can be very convinion if you want override default behavior of the installer or anothe distribution package.
+
+### Example
+
+### Getting default qt installer framwork template. 
+
+```bash
+cqtdeployer getDefaultTemplate qif
+```
+
+
+
