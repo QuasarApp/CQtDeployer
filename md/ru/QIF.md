@@ -114,3 +114,17 @@ cqtdeployer ... -qif /path/to/my/custom/qif/template -name myCustomInstaller
 4 directories, 4 files
 
 ```
+
+
+## Инициализация шаблона qifw
+
+Для инициализации шаблонов по умолчанию вы можете использовать параметр getDefaultTemplate.
+Параметр getDefaultTemplate извлекает шаблон по умолчанию для cqtdeployer. Это может быть очень удобно, если вы хотите переопределить поведение установщика или другого пакета распространения по умолчанию.
+
+### Пример
+
+### Получение шаблона фреймворка установщика qt по умолчанию.
+
+```bash
+cqtdeployer getDefaultTemplate qif
+```

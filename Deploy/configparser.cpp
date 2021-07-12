@@ -199,7 +199,7 @@ bool ConfigParser::parseParams() {
         QuasarAppUtils::Params::log("Deploy ...",
                                     QuasarAppUtils::Info);
 
-        if (!parseDeployMode()) {
+        if (!parseDeployMode(true)) {
             QuasarAppUtils::Params::log("Deploy failed!",
                                         QuasarAppUtils::Error);
             return false;
@@ -212,7 +212,7 @@ bool ConfigParser::parseParams() {
         QuasarAppUtils::Params::log("Extract defaults Templates ...",
                                     QuasarAppUtils::Info);
 
-        if (!parseDeployMode()) {
+        if (!parseDeployMode(false)) {
             QuasarAppUtils::Params::log("Extract defaults Templates is failed!",
                                         QuasarAppUtils::Error);
             return false;
@@ -638,7 +638,7 @@ void ConfigParser::packagesErrorLog(const QString &option) {
                                 QuasarAppUtils::Error);
 }
 
-bool ConfigParser::parseDeployMode() {
+bool ConfigParser::parseDeployMode(bool checkBin) {
 
     if (QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
         QuasarAppUtils::Params::log("You are using a deprecated option \"deploySystem-with-libc\"."
@@ -666,7 +666,7 @@ bool ConfigParser::parseDeployMode() {
             split(DeployCore::getSeparator(0), splitbehavior);
 
 
-    if (!(_config.targets().count() || xData.count())) {
+    if (checkBin && !(_config.targets().count() || xData.count())) {
         QuasarAppUtils::Params::log("Failed to initialize targets or extra data!",
                                     QuasarAppUtils::Error);
 

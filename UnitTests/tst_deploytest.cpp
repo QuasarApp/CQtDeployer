@@ -1037,8 +1037,7 @@ void deploytest::testOverridingDefaultTemplateDEB()
     appScript.remove();
 
     runTestParams(
-                {"-bin", bin,
-                 "force-clear",
+                {"force-clear",
                  "getDefaultTemplate",
                  "-name", "Test",
                  "deb",
@@ -1054,8 +1053,7 @@ void deploytest::testOverridingDefaultTemplateDEB()
                 });
 
     runTestParams(
-                {"-bin", bin,
-                 "force-clear",
+                {"force-clear",
                  "-deb", "temaplate/defaultDEBTemplate",
                  "-targetPackage", "MyApp",
                  "-name", "Test",
