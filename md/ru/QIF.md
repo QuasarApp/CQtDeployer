@@ -128,3 +128,48 @@ cqtdeployer ... -qif /path/to/my/custom/qif/template -name myCustomInstaller
 ```bash
 cqtdeployer getDefaultTemplate qif
 ```
+
+### Примечание
+
+CQtDeployer пропустит создание каталога пакетов для шаблона, поскольку эта команда не содержит данных для развертывания.
+Если вы хотите подготовить шаблон с конфигурациями пакетов, вам следует добавить развернутые данные в свою команду или в файл config.json, используя параметры bin или extraData.
+Если вы создаете дистрибутив с несколькими пакетами, вам необходимо настроить свои пакеты в развертываемой команде.
+
+
+#### Пример:
+
+Извлечение шаблона с пакетами:
+
+```bash
+cqtdeployer getDefaultTemplate qif -bin myExecutable
+```
+
+Извлечение шаблона для распространения нескольких пакетов
+
+```bash
+cqtdeployer getDefaultTemplate qif -bin myExecutable1,myExecutable2 -targetPackage p1;myExecutable1,p2;myExecutable2
+```
+
+Вы также можете использовать файл конфигурации для настройки шаблонов.
+
+Config.json
+
+```json
+{
+    "qif": true,
+    "bin": [
+        "myExecutable1",
+        "myExecutable2"
+    ],
+    "targetPackage": [
+        ["p1", "myExecutable1"],
+        ["p2", "myExecutable2"]
+    ]
+}
+```
+
+Запустите CQtDeployer для создания шаблона:
+
+```bash
+cqtdeployer -confFile Config.json getDefaultTemplate
+```
