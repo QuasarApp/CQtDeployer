@@ -87,19 +87,12 @@ function systemIntegration() {
     console.log("hometDir "  + homeDir)
 
     if (systemInfo.kernelType === "winnt") {
-        component.addElevatedOperation('EnvironmentVariable',
-                               [
-                                   "cqtdeployer",
-                                   targetDir + "\\" + VERSION + "\\cqtdeployer.bat"
-                               ]
-                              )
 
-        component.addElevatedOperation('EnvironmentVariable',
-                               [
-                                   "cqtDir",
-                                   targetDir + "\\" + VERSION + "\\"
-                               ]
-                              )
+        component.addOperation('Execute', ["SETX", "cqtdeployer", targetDir + "\\" + VERSION + "\\cqtdeployer.bat"],
+                               "UNDOEXECUTE", ["SETX", "cqtdeployer="])
+        component.addOperation('Execute', ["SETX", "cqtDir", targetDir + "\\" + VERSION + "\\"],
+                               "UNDOEXECUTE", ["SETX", "cqtDir="])
+
 
         let PATH = installer.environmentVariable("PATH");
         const cqtDir = installer.environmentVariable("cqtDir");
