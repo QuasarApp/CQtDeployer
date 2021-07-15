@@ -87,14 +87,14 @@ function systemIntegration() {
     console.log("hometDir "  + homeDir)
 
     if (systemInfo.kernelType === "winnt") {
-        component.addOperation('EnvironmentVariable',
+        component.addElevatedOperation('EnvironmentVariable',
                                [
                                    "cqtdeployer",
                                    targetDir + "\\" + VERSION + "\\cqtdeployer.bat"
                                ]
                               )
 
-        component.addOperation('EnvironmentVariable',
+        component.addElevatedOperation('EnvironmentVariable',
                                [
                                    "cqtDir",
                                    targetDir + "\\" + VERSION + "\\"
