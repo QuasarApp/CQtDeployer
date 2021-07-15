@@ -89,9 +89,9 @@ function systemIntegration() {
     if (systemInfo.kernelType === "winnt") {
 
         component.addOperation('Execute', ["SETX", "cqtdeployer", targetDir + "\\" + VERSION + "\\cqtdeployer.bat"],
-                               "UNDOEXECUTE", ["SETX", "cqtdeployer="])
+                               "UNDOEXECUTE", ["SETX", "cqtdeployer", ""])
         component.addOperation('Execute', ["SETX", "cqtDir", targetDir + "\\" + VERSION + "\\"],
-                               "UNDOEXECUTE", ["SETX", "cqtDir="])
+                               "UNDOEXECUTE", ["SETX", "cqtDir", ""])
 
 
         let PATH = installer.environmentVariable("PATH");
