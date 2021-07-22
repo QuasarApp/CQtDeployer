@@ -92,7 +92,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   -ignoreEnv [list,params]  | The list of the environment to ignore.                          |
 |                             | For example -ignoreEnv /bad/dir,/my/bad/Dir                     |
 |   -libDir [list,params]     | Sets additional paths for extra libs of an app.                 |
-|                             | For example -libDir ~/myLib,~/newLibs                           |
+|                             | For example -libDir ~/myLib,~/newLibs.  **Attention** the libDir option should not be children of the targetDir directory. The targetDir option is forbidden for library searches, as it may contain outdated project libraries, which in turn may lead to unwanted crashes.                         |
 |   -extraLibs [list,params]  | Sets the mask of the library name for forced copying.           |
 |                             | Example: "-extraLib mySql" - forces to copy all libraries whose names contain mySql to the project folder. This option is case-insensitive on Windows and case-sensitive on other platforms. This option will only search libraries in system environments similar to **deploySystem**.|
 |   -customScript [scriptCode]| Insert extra code inTo All run script.                          |
