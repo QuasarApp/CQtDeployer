@@ -695,7 +695,9 @@ bool ConfigParser::parseDeployMode(bool checkBin) {
         return false;
     }
 
-    initExtraPath();
+    if (!initExtraPath()) {
+        return false;
+    }
     initExtraNames();
     initPlugins();
 
@@ -1294,7 +1296,7 @@ bool ConfigParser::setQtDir(const QString &value) {
     return true;
 }
 
-void ConfigParser::initExtraPath() {
+bool ConfigParser::initExtraPath() {
     auto listLibDir = QuasarAppUtils::Params::getArg("libDir").
             split(DeployCore::getSeparator(0));
 
@@ -1307,6 +1309,16 @@ void ConfigParser::initExtraPath() {
                 QuasarAppUtils::Params::log("Skip the extra library path because it is target!",
                                             QuasarAppUtils::Debug);
                 continue;
+            }
+
+            if (_config.envirement.isIgnore(info.absoluteFilePath())) {
+                QuasarAppUtils::Params::log(QString("Failed to set libDir path!"
+                                                    " The %0 path will be ignored because"
+                                                    " this path is child path of the targetDir path"
+                                                    " or manually added into ignore environment.").
+                                            arg(info.absoluteFilePath()),
+                                            QuasarAppUtils::Error);
+                return false;
             }
 
             dir.setPath(info.absoluteFilePath());
@@ -1326,6 +1338,8 @@ void ConfigParser::initExtraPath() {
                                         QuasarAppUtils::Debug);
         }
     }
+
+    return true;
 }
 
 void ConfigParser::initExtraNames() {

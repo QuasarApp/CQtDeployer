@@ -34,6 +34,13 @@ public:
     void addEnv(const QString &dir);
     void addEnv(const QStringList &listDirs);
 
+    /**
+     * @brief isIgnore This method return true if the @a path is contains in ignore list else return false.
+     * @brief path This is path to of the system enviroment that will be checked to ignore.
+     * @return true if the @a path is contains in ignore list else return false.
+     */
+    bool isIgnore(const QString& path) const;
+
     void clear();
 
     // return true if file exits in this envirement
