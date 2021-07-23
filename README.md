@@ -20,6 +20,7 @@ Key differences of this program:
 * Fast create installers : Upon completion of the deployment, you will receive a self-contained installer of your distribution.
 
 ## Supported platforms:
+
 * <img src="https://user-images.githubusercontent.com/12465465/67766480-929b5000-fa5f-11e9-8ae7-377d9ddb7c65.png"  height="100">
 * <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Windows_darkblue_2012.svg"  height="100">
 
