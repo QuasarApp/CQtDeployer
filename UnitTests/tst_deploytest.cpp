@@ -185,6 +185,7 @@ private slots:
     void testDisableShortcuts();
     void testDisableRunScripts();
     void testQifOut();
+    void testIgnoreEnvWithLibDir();
 
     // note: this test checking in manual mode only.
     void testInstallDirsOptions();
@@ -1534,6 +1535,24 @@ void deploytest::testQifOut() {
     // Run deploy installer
     runTestParams({"-bin", bin, "clear",
                    "qif", "-qifOut", "QIF_OUT.exe"}, &result);
+}
+
+void deploytest::testIgnoreEnvWithLibDir() {
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC";
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+#endif
+
+    QVERIFY(QDir().mkdir("libDirtest"));
+
+    // Run deploy installer
+    runTestParams({"-bin", bin, "clear",
+                   "-targetDir", "./libDirtest",
+                  "-libDir", "./libDirtest"}, nullptr, false, false,
+                  exitCodes::PrepareError);
+
+    QVERIFY(QDir().rmdir("libDirtest"));
 }
 
 void deploytest::testInstallDirsOptions() {
