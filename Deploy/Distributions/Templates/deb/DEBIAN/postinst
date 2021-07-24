@@ -3,7 +3,7 @@
 APPS=$BASH_ARRAY_APPLICATIONS
 APPS_SHORTCUTS=$BASH_ARRAY_SHORTCUTS_APPLICATIONS
 
-TARGET_DIR=/opt/$PREFIX/
+TARGET_DIR=$CQT_INSTALL_DEB_DIR/$PREFIX/
 
 #creating shortcut
 DEST_FILE=
@@ -21,7 +21,7 @@ function createShortCut {
         echo "Encoding=UTF-8" >> $DEST_FILE
         echo "Name=$DEST_NAME" >> $DEST_FILE
         echo "Type=Application" >> $DEST_FILE
-        echo "Icon=/opt/$ICON" >> $DEST_FILE
+        echo "Icon=$CQT_INSTALL_DEB_DIR/$ICON" >> $DEST_FILE
         echo "Terminal=false" >> $DEST_FILE
         echo "Exec=$SRC_FILE" >> $DEST_FILE
 

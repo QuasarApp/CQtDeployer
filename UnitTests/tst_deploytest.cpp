@@ -187,6 +187,9 @@ private slots:
     void testQifOut();
     void testIgnoreEnvWithLibDir();
 
+    // note: this test checking in manual mode only.
+    void testInstallDirsOptions();
+
     void customTest();
 };
 
@@ -1550,6 +1553,26 @@ void deploytest::testIgnoreEnvWithLibDir() {
                   exitCodes::PrepareError);
 
     QVERIFY(QDir().rmdir("libDirtest"));
+}
+
+void deploytest::testInstallDirsOptions() {
+#ifdef QT_DEBUG
+#ifdef Q_OS_UNIX
+    QStringList binMulti = {TestBinDir + "TestOnlyC" , TestBinDir + "TestCPPOnly"};
+
+#else
+    QStringList binMulti = {TestBinDir + "TestOnlyC.exe" , TestBinDir + "TestCPPOnly.exe"};
+
+#endif
+
+
+    runTestParams({"-bin", binMulti.join(","), "clear",
+                   "qif", "deb",
+                   "-targetPackage", "pkg;TestCPPOnly",
+                   "-installDirDeb", "pkg;/var",
+                   "-installDirQIFW", "/opt"});
+
+#endif
 }
 
 void deploytest::customTest() {

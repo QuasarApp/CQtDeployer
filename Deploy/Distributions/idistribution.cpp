@@ -74,6 +74,8 @@ bool iDistribution::unpackFile(const QFileInfo &resource,
         inputText.replace("$PUBLISHER", info.Publisher);
         inputText.replace("$HOMEPAGE", info.Homepage);
         inputText.replace("$PREFIX", info.Prefix);
+        inputText.replace("$CQT_INSTALL_DIR", info.InstallDeirQIFW());
+        inputText.replace("$CQT_INSTALL_DEB_DIR", info.InstallDirDEB);
 
 
         for (auto it = info.Custom.cbegin(); it != info.Custom.cend(); ++it) {
@@ -191,6 +193,10 @@ bool iDistribution::collectInfo(const DistroModule& pkg,
     info.Homepage = "";
     if (!pkg.homePage().isEmpty())
         info.Homepage = pkg.homePage();
+
+    info.InstallDirDEB = "/opt";
+    if (!pkg.installDirDEB().isEmpty())
+        info.InstallDirDEB = pkg.installDirDEB();
 
     info.Prefix = releativeLocation(pkg);
 
