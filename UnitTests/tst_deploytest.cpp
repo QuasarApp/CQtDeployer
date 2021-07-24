@@ -186,6 +186,9 @@ private slots:
     void testDisableRunScripts();
     void testQifOut();
 
+    // note: this test checking in manual mode only.
+    void testInstallDirsOptions();
+
     void customTest();
 };
 
@@ -1531,6 +1534,26 @@ void deploytest::testQifOut() {
     // Run deploy installer
     runTestParams({"-bin", bin, "clear",
                    "qif", "-qifOut", "QIF_OUT.exe"}, &result);
+}
+
+void deploytest::testInstallDirsOptions() {
+#ifdef QT_DEBUG
+#ifdef Q_OS_UNIX
+    QStringList binMulti = {TestBinDir + "TestOnlyC" , TestBinDir + "TestCPPOnly"};
+
+#else
+    QStringList binMulti = {TestBinDir + "TestOnlyC.exe" , TestBinDir + "TestCPPOnly.exe"};
+
+#endif
+
+
+    runTestParams({"-bin", binMulti.join(","), "clear",
+                   "qif", "deb",
+                   "-targetPackage", "pkg;TestCPPOnly",
+                   "-installDirDeb", "pkg;/var",
+                   "-installDirQIFW", "/opt"});
+
+#endif
 }
 
 void deploytest::customTest() {

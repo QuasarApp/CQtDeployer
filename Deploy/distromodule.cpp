@@ -148,6 +148,17 @@ void DistroModule::setKey(const QString &key) {
     _key = key;
 }
 
+QString DistroModule::installDirDEB() const {
+    if (_installDirDEB.isEmpty())
+        return "/opt";
+
+    return _installDirDEB;
+}
+
+void DistroModule::setInstallDirDEB(const QString &newInstallDir) {
+    _installDirDEB = newInstallDir;
+}
+
 QSet<QString> DistroModule::tr() const {
     return _tr;
 }
