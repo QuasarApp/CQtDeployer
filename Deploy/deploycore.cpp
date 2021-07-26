@@ -187,6 +187,15 @@ RunMode DeployCore::getMode() {
 
 void DeployCore::help() {
 
+    QuasarAppUtils::OptionsDataList _help = {
+        {"Part 1 Boolean options", {QuasarAppUtils::OptionData{
+                                        "init",
+                                        "will initialize cqtdeployer.json file (configuration file).",
+                                        "'cqtdeployer init' - for initialize base package configuration. "
+                                        "'cqtdeployer -init multi' - for initialize multi package configuration "
+                                        "'cqtdeployer -init single' - for initialize singel package configuration"
+                                    }}}
+    }
 
     QuasarAppUtils::Help::Charters help = {
         {
