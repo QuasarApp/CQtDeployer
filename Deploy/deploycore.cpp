@@ -187,15 +187,177 @@ RunMode DeployCore::getMode() {
 
 void DeployCore::help() {
 
-    QuasarAppUtils::OptionsDataList _help = {
-        {"Part 1 Boolean options", {QuasarAppUtils::OptionData{
-                                        "init",
-                                        "will initialize cqtdeployer.json file (configuration file).",
-                                        "'cqtdeployer init' - for initialize base package configuration. "
-                                        "'cqtdeployer -init multi' - for initialize multi package configuration "
-                                        "'cqtdeployer -init single' - for initialize singel package configuration"
-                                    }}}
-    }
+    QString group = "Part 1 Boolean options";
+    QuasarAppUtils::OptionsDataList _help = {};
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"init"},
+                            "will initialize cqtdeployer.json file (configuration file).",
+                            "'cqtdeployer init' - for initialize base package configuration. "
+                            "'cqtdeployer -init multi' - for initialize multi package configuration "
+                            "'cqtdeployer -init single' - for initialize singel package configuration"
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"clear"}, "",
+                            "Deletes deployable files of the previous session."
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"force-clear"}, "",
+                            "Deletes the destination directory before deployment."
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"noStrip"}, "",
+                            "Skips strip step"
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"noTranslations"}, "",
+                            "Skips the translations files. It doesn't work without qmake."
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"noOverwrite"}, "",
+                            "Prevents replacing existing files."
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"noCheckRPATH"}, "",
+                            "Disables automatic search of paths to qmake in executable files."
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"noCheckPATH"}, "",
+                            "Disables automatic search of paths to qmake in system PATH."
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"noRecursiveiIgnoreEnv"}, "",
+                            "Disables recursive ignore for ignoreEnv option."
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"v", "version"},
+                            "Shows compiled version"
+                        }});
+
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"qif","-qif"}, "",
+                            "Create the QIF installer for deployment programm"
+                            " You can specify the path to your own installer template.",
+                            "Examples: cqtdeployer -qif path/to/myCustom/qif."
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"qifFromSystem"}, "",
+                            "force use system binarycreator tool of qif from path or qt"
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"zip"}, "",
+                            "Create the ZIP arhive for deployment programm"
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"deb", "-deb"}, "",
+                             "Create the deb package for deployment programm"
+                             " You can specify the path to your own debian template.",
+                             "cqtdeployer -deb path/to/myCustom/DEBIAN."
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"deploySystem"}, "",
+                             "Deploys all libraries."
+                             " Not recomendet because there may be conflicts with system libraries"
+                             " (on snap version you need to turn on permission)"
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"noQt"}, "",
+                            "Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework."
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"allowEmptyPackages"}, "",
+                            "Allows configure the empty packages."
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"getDefaultTemplate"}, "",
+                             "Extracts defaults deb or qif templates."
+                             " All templates extract into targetDirectory."
+                             " For change target directory use the targetDir option.",
+                             "cqtdeployer -bin myExecutable getDefaultTemplate qif deb."
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"noHashSum"}, "",
+                            "This option disable computation of a packages hash sum"
+                        }});
+
+    group = "Part 2 Deploy options";
+
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-bin"}, "{list,params}",
+                            "Files to deploy or folders that contain files to deploy.",
+                            "-bin ~/my/project/bin/,~/my/project/bin.exe,~/my/project/runtimeLinking/lib.dll."
+                            " For files: These files will be unconditional copied to the destination directory,"
+                            " regardless of their format or suffix."
+                            " For folders:"
+                            " CCQtDeployer will enter these folders and non-recursively copy all executable files to the destination directory."
+                            " Then, CQtDeployer will extract all dependencies of the copied files and search dependencies in system environments and libDir paths."
+                        }});
+
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-binPrefix"}, "{prefixPath}",
+                            "Sets prefix path for bin option.",
+                            "-bin path/MyExecutable is some as -bin MyExecutable -binPrefix path"
+                        }});
+
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-confFile"}, "{params}",
+                             "The path to the json file with all deployment configurations. Using this file,"
+                             " you can add the necessary options, thereby simplifying the command invocation in the console."
+                             " However, the parameters in Kansol have a higher priority than in the file."
+                             " For more info about this flag see https://github.com/QuasarApp/CQtDeployer/wiki/DeployConfigFileEn"
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-qmlDir"}, "{params}",
+                            "Sets path to Qml data dir",
+                            "-qmlDir ~/my/project/qml"
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-qmake"}, "{params}",
+                            "Sets path to the qmake executable.",
+                            "-qmake ~/Qt/bin/qmake or -qmake ~/Qt/bin/qmake.exe"
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-ignore"}, "{list,params}",
+                            "Sets the list of libs to ignore.",
+                            "-ignore libicudata.so.56,libicudata2.so.56"
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-ignoreEnv"}, "{list,params}",
+                            "Sets the list of the environment to ignore.",
+                            "-ignoreEnv /bad/dir,/my/bad/Dir"
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-libDir"}, "{list,params}",
+                            "Sets additional paths for extra libs of an app.",
+                            "-libDir ~/myLib,~/newLibs"
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-extraLibs"}, "{list,params}",
+                            "Sets the mask of the library name for forced copying.",
+                            "\"-extraLib mySql\" - forces to copy all libraries whose names contain mySql to the project folder."
+                             " This option is case-insensitive on Windows and case-sensitive on other platforms."
+                             " This option will only search libraries in system environments similar to **deploySystem**."
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-customScript"}, "{scriptCode}",
+                            "Insert extra code inTo All run script.",
+                            "",
+                            " This option will be removed into next release cqtdeployer."
+                            " Please use the runScript option"
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-recursiveDepth"}, "{params}",
+                            "Sets the Depth of recursive search of libs and depth for ignoreEnv option (default 0)"
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-targetDir"}, "{params}",
+                            "Sets target directory(by default it is the path to the first deployable file)"
+                        }});
+    _help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-runScript"}, "{list,parems}",
+                             "forces cqtdeployer swap default run script to new from the arguments of option."
+                             " This option copy all content from input file and insert all code into runScript.sh or .bat",
+                             "cqtdeployer -runScript \"myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh\""
+                        }});
 
     QuasarAppUtils::Help::Charters help = {
         {
@@ -204,78 +366,78 @@ void DeployCore::help() {
                 {"Usage", "cqtdeployer <-bin [params]> [options]"},
             }
         },
-        {
-            "Part 1 Boolean options", {
-                {"init", "will initialize cqtdeployer.json file (configuration file)."
-                 " For example: 'cqtdeployer init' - for initialize base package configuration."
-                 " 'cqtdeployer -init multi' - for initialize multi package configuration"
-                 " 'cqtdeployer -init single' - for initialize singel package configuration"},
-                {"help / h", "Shows help"},
-                {"clear", "Deletes deployable files of the previous session."},
-                {"force-clear", "Deletes the destination directory before deployment."},
-                {"noStrip", "Skips strip step"},
-                {"noTranslations", "Skips the translations files. It doesn't work without qmake."},
-                {"noOverwrite", "Prevents replacing existing files."},
-                {"noCheckRPATH", "Disables automatic search of paths to qmake in executable files."},
-                {"noCheckPATH", "Disables automatic search of paths to qmake in system PATH."},
-                {"noRecursiveiIgnoreEnv", "Disables recursive ignore for ignoreEnv option."},
-                {"v / version", "Shows compiled version"},
-                {"qif", "Create the QIF installer for deployment programm"
-                        " You can specify the path to your own installer template. Examples: cqtdeployer -qif path/to/myCustom/qif."},
-                {"qifFromSystem", "force use system binarycreator tool of qif from path or qt"},
-                {"zip", "Create the ZIP arhive for deployment programm"},
-                {"deb", "Create the deb package for deployment programm"
-                        " You can specify the path to your own debian template. Examples: cqtdeployer -deb path/to/myCustom/DEBIAN."},
-                {"deploySystem", "Deploys all libraries."
-                 " Not recomendet because there may be conflicts with system libraries"
-                 " (on snap version you need to turn on permission)"},
-                {"noQt", "Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework."},
-                {"allowEmptyPackages", "Allows configure the empty packages."},
-                {"getDefaultTemplate", "Extracts defaults deb or qif templates."
-                 " All templates extract into targetDirectory."
-                 " For change target directory use the targetDir option."
-                 " Example: cqtdeployer -bin myExecutable getDefaultTemplate qif deb."},
-                {"noHashSum", "This option disable computation of a packages hash sum"}
+//        {
+//            "Part 1 Boolean options", {
+//                {"init", "will initialize cqtdeployer.json file (configuration file)."
+//                 " For example: 'cqtdeployer init' - for initialize base package configuration."
+//                 " 'cqtdeployer -init multi' - for initialize multi package configuration"
+//                 " 'cqtdeployer -init single' - for initialize singel package configuration"},
+//                {"help / h", "Shows help"},
+//                {"clear", "Deletes deployable files of the previous session."},
+//                {"force-clear", "Deletes the destination directory before deployment."},
+//                {"noStrip", "Skips strip step"},
+//                {"noTranslations", "Skips the translations files. It doesn't work without qmake."},
+//                {"noOverwrite", "Prevents replacing existing files."},
+//                {"noCheckRPATH", "Disables automatic search of paths to qmake in executable files."},
+//                {"noCheckPATH", "Disables automatic search of paths to qmake in system PATH."},
+//                {"noRecursiveiIgnoreEnv", "Disables recursive ignore for ignoreEnv option."},
+//                {"v / version", "Shows compiled version"},
+//                {"qif", "Create the QIF installer for deployment programm"
+//                        " You can specify the path to your own installer template. Examples: cqtdeployer -qif path/to/myCustom/qif."},
+//                {"qifFromSystem", "force use system binarycreator tool of qif from path or qt"},
+//                {"zip", "Create the ZIP arhive for deployment programm"},
+//                {"deb", "Create the deb package for deployment programm"
+//                        " You can specify the path to your own debian template. Examples: cqtdeployer -deb path/to/myCustom/DEBIAN."},
+//                {"deploySystem", "Deploys all libraries."
+//                 " Not recomendet because there may be conflicts with system libraries"
+//                 " (on snap version you need to turn on permission)"},
+//                {"noQt", "Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework."},
+//                {"allowEmptyPackages", "Allows configure the empty packages."},
+//                {"getDefaultTemplate", "Extracts defaults deb or qif templates."
+//                 " All templates extract into targetDirectory."
+//                 " For change target directory use the targetDir option."
+//                 " Example: cqtdeployer -bin myExecutable getDefaultTemplate qif deb."},
+//                {"noHashSum", "This option disable computation of a packages hash sum"}
 
 
-            }
-        },
-        {
-            "Part 2 Deploy options", {
-                {"-bin [list, params]", "Files to deploy or folders that contain files to deploy."
-                 " For example -bin ~/my/project/bin/,~/my/project/bin.exe,~/my/project/runtimeLinking/lib.dll."
-                 " For files: These files will be unconditional copied to the destination directory,"
-                 " regardless of their format or suffix."
-                 " For folders:"
-                 " CCQtDeployer will enter these folders and non-recursively copy all executable files to the destination directory."
-                 " Then, CQtDeployer will extract all dependencies of the copied files and search dependencies in system environments and libDir paths."},
-                {"-binPrefix [prefixPath]", "Sets prefix path for bin option."
-                                            " Example: "
-                                            "-bin path/MyExecutable is some as -bin MyExecutable -binPrefix path" },
+//            }
+//        },
+//        {
+//            "Part 2 Deploy options", {
+//                {"-bin [list, params]", "Files to deploy or folders that contain files to deploy."
+//                 " For example -bin ~/my/project/bin/,~/my/project/bin.exe,~/my/project/runtimeLinking/lib.dll."
+//                 " For files: These files will be unconditional copied to the destination directory,"
+//                 " regardless of their format or suffix."
+//                 " For folders:"
+//                 " CCQtDeployer will enter these folders and non-recursively copy all executable files to the destination directory."
+//                 " Then, CQtDeployer will extract all dependencies of the copied files and search dependencies in system environments and libDir paths."},
+//                {"-binPrefix [prefixPath]", "Sets prefix path for bin option."
+//                                            " Example: "
+//                                            "" },
 
-                {"-confFile [params]", "The path to the json file with all deployment configurations. Using this file,"
-                 " you can add the necessary options, thereby simplifying the command invocation in the console."
-                 " However, the parameters in Kansol have a higher priority than in the file."
-                 " For more info about this flag see https://github.com/QuasarApp/CQtDeployer/wiki/DeployConfigFileEn"},
-                {"-qmlDir [params]", "Qml data dir. For example -qmlDir ~/my/project/qml"},
-                {"-qmake [params]", "Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe"},
-                {"-ignore [list,params]", "The list of libs to ignore. For example -ignore libicudata.so.56,libicudata2.so.56"},
-                {"-ignoreEnv [list,params]", "The list of the environment to ignore. For example -ignoreEnv /bad/dir,/my/bad/Dir"},
-                {"-libDir [list,params]", "Sets additional paths for extra libs of an app. For example -libDir ~/myLib,~/newLibs"},
-                {"-extraLibs [list,params]", "Sets the mask of the library name for forced copying."
-                 "  Example: \"-extraLib mySql\" - forces to copy all libraries whose names contain mySql to the project folder."
-                 " This option is case-insensitive on Windows and case-sensitive on other platforms."
-                 " This option will only search libraries in system environments similar to **deploySystem**."},
-                {"-customScript [scriptCode]", "Insert extra code inTo All run script."},
-                {"-recursiveDepth [params]", "Sets the Depth of recursive search of libs and depth for ignoreEnv option (default 0)"},
-                {"-targetDir [params]", "Sets target directory(by default it is the path to the first deployable file)"},
-                {"-runScript [list,parems]", "forces cqtdeployer swap default run script to new from the arguments of option."
-                 " This option copy all content from input file and insert all code into runScript.sh or .bat"
-                 " Example of use: cqtdeployer -runScript \"myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh\""},
-                {"-verbose [0-3]", "Shows debug log"},
+//                {"-confFile [params]", "The path to the json file with all deployment configurations. Using this file,"
+//                 " you can add the necessary options, thereby simplifying the command invocation in the console."
+//                 " However, the parameters in Kansol have a higher priority than in the file."
+//                 " For more info about this flag see https://github.com/QuasarApp/CQtDeployer/wiki/DeployConfigFileEn"},
+//                {"-qmlDir [params]", "Qml data dir. For example -qmlDir ~/my/project/qml"},
+//                {"-qmake [params]", "Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe"},
+//                {"-ignore [list,params]", "The list of libs to ignore. For example -ignore libicudata.so.56,libicudata2.so.56"},
+//                {"-ignoreEnv [list,params]", "The list of the environment to ignore. For example -ignoreEnv /bad/dir,/my/bad/Dir"},
+//                {"-libDir [list,params]", "Sets additional paths for extra libs of an app. For example -libDir ~/myLib,~/newLibs"},
+//                {"-extraLibs [list,params]", "Sets the mask of the library name for forced copying."
+//                 "  Example: \"-extraLib mySql\" - forces to copy all libraries whose names contain mySql to the project folder."
+//                 " This option is case-insensitive on Windows and case-sensitive on other platforms."
+//                 " This option will only search libraries in system environments similar to **deploySystem**."},
+//                {"-customScript [scriptCode]", "Insert extra code inTo All run script."},
+//                {"-recursiveDepth [params]", "Sets the Depth of recursive search of libs and depth for ignoreEnv option (default 0)"},
+//                {"-targetDir [params]", "Sets target directory(by default it is the path to the first deployable file)"},
+//                {"-runScript [list,parems]", "forces cqtdeployer swap default run script to new from the arguments of option."
+//                 " This option copy all content from input file and insert all code into runScript.sh or .bat"
+//                 " Example of use: cqtdeployer -runScript \"myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh\""},
+//                {"-verbose [0-3]", "Shows debug log"},
 
-            }
-        },
+//            }
+//        },
         {
             "Part 3 Control of packages options", {
                 {"-targetPackage [package;tar1,package;tar2]", "Creates a new package and adds 'tar1 and tar2' to it."
