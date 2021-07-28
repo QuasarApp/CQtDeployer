@@ -355,6 +355,14 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             "Sets target directory(by default it is the path to the first deployable file)"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-installDirDeb"}, "{params}",
+                            "Sets install target directory fordebian package (by default it is /opt path)"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-installDirQIFW"}, "{params}",
+                            "Sets install target directory for installers (by default it is /home path)"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
                             {"-runScript"}, "{list,parems}",
                              "forces cqtdeployer swap default run script to new from the arguments of option."
                              " This option copy all content from input file and insert all code into runScript.sh or .bat",
