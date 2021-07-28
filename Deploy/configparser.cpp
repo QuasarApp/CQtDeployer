@@ -273,9 +273,7 @@ QJsonValue ConfigParser::writeKeyArray(int separatorLvl, const QString &paramete
 
 void ConfigParser::writeKey(const QString& key, QJsonObject& obj,
                             const QString& confFileDir) const {
-    if (QuasarAppUtils::Params::isEndable(key)) {
-        obj[key] = writeKeyArray(0, QuasarAppUtils::Params::getArg(key), confFileDir);
-    }
+    obj[key] = writeKeyArray(0, QuasarAppUtils::Params::getArg(key), confFileDir);
 }
 
 QString ConfigParser::readKeyArray(int separatorLvl, const QJsonArray &array,
@@ -357,9 +355,10 @@ bool ConfigParser::createFromDeploy(const QString& confFile) const {
 
     auto info = QFileInfo(confFile);
 
-    const auto keys = DeployCore::helpKeys();
+    const auto keys = QuasarAppUtils::Params::getUserParamsMap().keys();
     for (const auto &key :keys) {
-        writeKey(key, obj, info.absolutePath());
+        if (key != "confFile")
+            writeKey(key, obj, info.absolutePath());
     }
 
     if (!QFile::exists(info.absolutePath()) &&
