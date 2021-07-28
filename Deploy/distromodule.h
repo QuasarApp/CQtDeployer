@@ -74,6 +74,9 @@ public:
     void setTr(const QSet<QString> &tr);
     void addTr(const QString &tr);
 
+    QString installDirDEB() const;
+    void setInstallDirDEB(const QString &newInstallDir);
+
 protected:
     void setKey(const QString &key);
 
@@ -100,6 +103,8 @@ private:
 
     // extra translations
     QSet<QString> _tr;
+
+    QString _installDirDEB;
 
 
 };

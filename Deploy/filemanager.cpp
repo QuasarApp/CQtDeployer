@@ -117,6 +117,9 @@ void FileManager::removeFromDeployed(const QString &path) {
 }
 
 void FileManager::saveDeploymendFiles(const QString& targetDir) {
+    if (targetDir.isEmpty())
+        return;
+
     auto settings = QuasarAppUtils::Settings::instance();
     settings->setValue(targetDir, getDeployedFilesStringList());
 }

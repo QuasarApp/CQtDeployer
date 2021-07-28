@@ -273,9 +273,7 @@ QJsonValue ConfigParser::writeKeyArray(int separatorLvl, const QString &paramete
 
 void ConfigParser::writeKey(const QString& key, QJsonObject& obj,
                             const QString& confFileDir) const {
-    if (QuasarAppUtils::Params::isEndable(key)) {
-        obj[key] = writeKeyArray(0, QuasarAppUtils::Params::getArg(key), confFileDir);
-    }
+    obj[key] = writeKeyArray(0, QuasarAppUtils::Params::getArg(key), confFileDir);
 }
 
 QString ConfigParser::readKeyArray(int separatorLvl, const QJsonArray &array,
@@ -357,9 +355,10 @@ bool ConfigParser::createFromDeploy(const QString& confFile) const {
 
     auto info = QFileInfo(confFile);
 
-    const auto keys = DeployCore::helpKeys();
+    const auto keys = QuasarAppUtils::Params::getUserParamsMap().keys();
     for (const auto &key :keys) {
-        writeKey(key, obj, info.absolutePath());
+        if (key != "confFile")
+            writeKey(key, obj, info.absolutePath());
     }
 
     if (!QFile::exists(info.absolutePath()) &&
@@ -463,6 +462,9 @@ bool ConfigParser::initDistroStruct() {
     auto trData = QuasarAppUtils::Params::getArg("tr").
             split(DeployCore::getSeparator(0), splitbehavior);
 
+    auto installDirDeb = QuasarAppUtils::Params::getArg("installDirDeb").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
 // init distro stucts for all targets
     if (binOut.size() && !parsePackagesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir)) {
         packagesErrorLog("binOut");
@@ -541,6 +543,11 @@ bool ConfigParser::initDistroStruct() {
 
     if (trData.size() && !parsePackagesPrivate(mainDistro, trData, &DistroModule::addTr)) {
         packagesErrorLog("tr");
+        return false;
+    }
+
+    if (installDirDeb.size() && !parsePackagesPrivate(mainDistro, installDirDeb, &DistroModule::setInstallDirDEB)) {
+        packagesErrorLog("installDirDeb");
         return false;
     }
 
@@ -695,7 +702,9 @@ bool ConfigParser::parseDeployMode(bool checkBin) {
         return false;
     }
 
-    initExtraPath();
+    if (!initExtraPath()) {
+        return false;
+    }
     initExtraNames();
     initPlugins();
 
@@ -1294,7 +1303,7 @@ bool ConfigParser::setQtDir(const QString &value) {
     return true;
 }
 
-void ConfigParser::initExtraPath() {
+bool ConfigParser::initExtraPath() {
     auto listLibDir = QuasarAppUtils::Params::getArg("libDir").
             split(DeployCore::getSeparator(0));
 
@@ -1307,6 +1316,16 @@ void ConfigParser::initExtraPath() {
                 QuasarAppUtils::Params::log("Skip the extra library path because it is target!",
                                             QuasarAppUtils::Debug);
                 continue;
+            }
+
+            if (_config.envirement.isIgnore(info.absoluteFilePath())) {
+                QuasarAppUtils::Params::log(QString("Failed to set libDir path!"
+                                                    " The %0 path will be ignored because"
+                                                    " this path is child path of the targetDir path"
+                                                    " or manually added into ignore environment.").
+                                            arg(info.absoluteFilePath()),
+                                            QuasarAppUtils::Error);
+                return false;
             }
 
             dir.setPath(info.absoluteFilePath());
@@ -1326,6 +1345,8 @@ void ConfigParser::initExtraPath() {
                                         QuasarAppUtils::Debug);
         }
     }
+
+    return true;
 }
 
 void ConfigParser::initExtraNames() {

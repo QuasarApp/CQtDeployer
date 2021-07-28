@@ -21,10 +21,9 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setApplicationName("CQtDeployer");
 
 
-    if (!QuasarAppUtils::Params::parseParams(argc, argv)) {
-        QuasarAppUtils::Params::log("Wrong parameters", QuasarAppUtils::Warning);
-        DeployCore::help();
-        exit(0);
+    if (!QuasarAppUtils::Params::parseParams(argc, argv, DeployCore::avilableOptions())) {
+        QuasarAppUtils::Params::log("Wrong parameters. Please use the 'help' of 'h' option for show help page.", QuasarAppUtils::Warning);
+        exit(4);
     }
 
     Deploy deploy;

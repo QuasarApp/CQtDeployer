@@ -5,6 +5,9 @@
 #include <QHash>
 #include <deploy_global.h>
 
+/**
+ * @brief The TemplateInfo struct This structure contains information about distribution packages.
+ */
 struct DEPLOYSHARED_EXPORT TemplateInfo
 {
     QString Name;
@@ -15,6 +18,8 @@ struct DEPLOYSHARED_EXPORT TemplateInfo
     QString Publisher;
     QString Homepage;
     QString Prefix;
+    QString InstallDirDEB;
+    QString InstallDeirQIFW() const;
 
     QHash<QString, QString> Custom;
 

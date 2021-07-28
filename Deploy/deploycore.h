@@ -13,6 +13,7 @@
 #include <QFileInfo>
 #include "deploy_global.h"
 #include "defines.h"
+#include "quasarapp.h"
 
 enum MSVCVersion: int {
     MSVC_Unknown = 0x0,
@@ -249,7 +250,7 @@ public:
     static bool isGui(DeployCore::QtModule module);
     static RunMode getMode();
     static void help();
-    static QStringList helpKeys();
+    static QuasarAppUtils::OptionsDataList avilableOptions();
 
     static QStringList extractTranslation(const QSet<QString> &libs);
     static QString getAppVersion();
