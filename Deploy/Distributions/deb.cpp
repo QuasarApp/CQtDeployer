@@ -144,8 +144,7 @@ bool Deb::cb() const {
 }
 
 QString Deb::dataLocation(const DistroModule &module) const {
-    return location(module) + "/opt/" + releativeLocation(module);
-
+    return location(module) + module.installDirDEB() + "/" + releativeLocation(module);
 }
 
 QString Deb::location(const DistroModule &module) const {

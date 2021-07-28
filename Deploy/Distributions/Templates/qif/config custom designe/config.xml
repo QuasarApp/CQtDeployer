@@ -5,7 +5,7 @@
     <Title>$NAME</Title>
     <Publisher>$PUBLISHER</Publisher>
     <StartMenuDir>$NAME</StartMenuDir>
-    <TargetDir>@HomeDir@/$NAME</TargetDir>
+    <TargetDir>$CQT_INSTALL_DIR/$NAME</TargetDir>
     <InstallActionColumnVisible>true</InstallActionColumnVisible>
     <RemoveTargetDir>true</RemoveTargetDir>
     <ControlScript>controlScript.qs</ControlScript>

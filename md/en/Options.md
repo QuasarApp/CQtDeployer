@@ -99,7 +99,9 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   -extraPlugin [list,params]| Sets an additional path to extraPlugin of an app                |
 |   -recursiveDepth [params]  | Sets the Depth of recursive search of libs and ignoreEnv (default 0)          |
 |   -targetDir [params]       | Sets target directory(by default it is the path to the first deployable file)|
-|   -verbose [0-3]            | Shows debug log                                                 |
+|   -installDirDeb [params]   | Sets install target directory fordebian package (by default it is /opt path) |
+|   -installDirQIFW [params]  | Sets install target directory for installers (by default it is /home path) |
+|   -verbose [0-3]            | Shows debug log. By default it is 2                             |
 
 ### Controll of packages options
 
