@@ -7,7 +7,6 @@
 
 #include "extracter.h"
 #include "deploycore.h"
-#include "quasarapp.h"
 #include "pathutils.h"
 #include "pluginsparser.h"
 
@@ -185,143 +184,338 @@ RunMode DeployCore::getMode() {
     return RunMode::Info;
 }
 
+QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
+    QString group = "Part 1 Boolean options";
+    QuasarAppUtils::OptionsDataList help = {};
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"init"}, "",
+                            "will initialize cqtdeployer.json file (configuration file).",
+                            "'cqtdeployer init' - for initialize base package configuration. "
+                            "'cqtdeployer -init multi' - for initialize multi package configuration "
+                            "'cqtdeployer -init single' - for initialize singel package configuration"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"clear"}, "",
+                            "Deletes deployable files of the previous session."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"force-clear"}, "",
+                            "Deletes the destination directory before deployment."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"noStrip"}, "",
+                            "Skips strip step"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"noTranslations"}, "",
+                            "Skips the translations files. It doesn't work without qmake."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"noOverwrite"}, "",
+                            "Prevents replacing existing files."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"noCheckRPATH"}, "",
+                            "Disables automatic search of paths to qmake in executable files."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"noCheckPATH"}, "",
+                            "Disables automatic search of paths to qmake in system PATH."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"noRecursiveiIgnoreEnv"}, "",
+                            "Disables recursive ignore for ignoreEnv option."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"v", "version"}, "",
+                            "Shows compiled version"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"h", "help"}, "",
+                            "Show all help or help of the selected options."
+                            " You can add any another option to a command line for show help about using options"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"qif","-qif"}, "",
+                            "Create the QIF installer for deployment programm"
+                            " You can specify the path to your own installer template.",
+                            "Examples: cqtdeployer -qif path/to/myCustom/qif."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"qifFromSystem"}, "",
+                            "force use system binarycreator tool of qif from path or qt"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"zip"}, "",
+                            "Create the ZIP arhive for deployment programm"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"deb", "-deb"}, "",
+                             "Create the deb package for deployment programm"
+                             " You can specify the path to your own debian template.",
+                             "cqtdeployer -deb path/to/myCustom/DEBIAN."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"deploySystem"}, "",
+                             "Deploys all libraries."
+                             " Not recomendet because there may be conflicts with system libraries"
+                             " (on snap version you need to turn on permission)"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"noQt"}, "",
+                            "Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"allowEmptyPackages"}, "",
+                            "Allows configure the empty packages."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"getDefaultTemplate"}, "",
+                             "Extracts defaults deb or qif templates."
+                             " All templates extract into targetDirectory."
+                             " For change target directory use the targetDir option.",
+                             "cqtdeployer -bin myExecutable getDefaultTemplate qif deb."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"noHashSum"}, "",
+                            "This option disable computation of a packages hash sum"
+                        }});
+
+    group = "Part 2 Deploy options";
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-bin"}, "{list,params}",
+                            "Files to deploy or folders that contain files to deploy.",
+                            "-bin ~/my/project/bin/,~/my/project/bin.exe,~/my/project/runtimeLinking/lib.dll."
+                            " For files: These files will be unconditional copied to the destination directory,"
+                            " regardless of their format or suffix."
+                            " For folders:"
+                            " CCQtDeployer will enter these folders and non-recursively copy all executable files to the destination directory."
+                            " Then, CQtDeployer will extract all dependencies of the copied files and search dependencies in system environments and libDir paths."
+                        }});
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-binPrefix"}, "{prefixPath}",
+                            "Sets prefix path for bin option.",
+                            "-bin path/MyExecutable is some as -bin MyExecutable -binPrefix path"
+                        }});
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-confFile"}, "{params}",
+                             "The path to the json file with all deployment configurations. Using this file,"
+                             " you can add the necessary options, thereby simplifying the command invocation in the console."
+                             " However, the parameters in Kansol have a higher priority than in the file."
+                             " For more info about this flag see https://github.com/QuasarApp/CQtDeployer/wiki/DeployConfigFileEn"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-qmlDir"}, "{params}",
+                            "Sets path to Qml data dir",
+                            "-qmlDir ~/my/project/qml"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-qmake"}, "{params}",
+                            "Sets path to the qmake executable.",
+                            "-qmake ~/Qt/bin/qmake or -qmake ~/Qt/bin/qmake.exe"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-ignore"}, "{list,params}",
+                            "Sets the list of libs to ignore.",
+                            "-ignore libicudata.so.56,libicudata2.so.56"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-ignoreEnv"}, "{list,params}",
+                            "Sets the list of the environment to ignore.",
+                            "-ignoreEnv /bad/dir,/my/bad/Dir"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-libDir"}, "{list,params}",
+                            "Sets additional paths for extra libs of an app.",
+                            "-libDir ~/myLib,~/newLibs"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-extraLibs"}, "{list,params}",
+                            "Sets the mask of the library name for forced copying.",
+                            "\"-extraLib mySql\" - forces to copy all libraries whose names contain mySql to the project folder."
+                             " This option is case-insensitive on Windows and case-sensitive on other platforms."
+                             " This option will only search libraries in system environments similar to **deploySystem**."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-customScript"}, "{scriptCode}",
+                            "Insert extra code inTo All run script.",
+                            "",
+                            " This option will be removed into next release cqtdeployer."
+                            " Please use the runScript option"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-recursiveDepth"}, "{params}",
+                            "Sets the Depth of recursive search of libs and depth for ignoreEnv option (default 0)"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-targetDir"}, "{params}",
+                            "Sets target directory(by default it is the path to the first deployable file)"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-installDirDeb"}, "{params}",
+                            "Sets install target directory fordebian package (by default it is /opt path)"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-installDirQIFW"}, "{params}",
+                            "Sets install target directory for installers (by default it is /home path)"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-runScript"}, "{list,parems}",
+                             "forces cqtdeployer swap default run script to new from the arguments of option."
+                             " This option copy all content from input file and insert all code into runScript.sh or .bat",
+                             "cqtdeployer -runScript \"myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh\""
+                        }});
+
+    group = "Part 3 Control of packages options";
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-targetPackage"}, "{package;tar1,package;tar2}",
+                            "Creates a new package and adds 'tar1 and tar2' to it. "
+                             "If you want configure the package that do not have any targets use the allowEmptyPackages option."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-qmlOut"}, "{package;path,path}",
+                            "Sets path to qml out directory"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-libOut"}, "{package;path,path}",
+                            "Sets path to libraries out directory"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-trOut"}, "{package;path,path}",
+                            "Sets path to Sets path to translations out directory"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-pluginOut"}, "{package;path,path}",
+                            "Sets path to plugins out directory"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-binOut"}, "{package;path,path}",
+                            "Sets path to binary out directory"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-recOut"}, "{package;path,path}",
+                            "Sets path to recurses out directory"
+                        }});
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-extraDataOut"}, "{package;path,path}",
+                            "Sets path to extra data files out directory. By Default it is root dir of the distribution."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-name"}, "{package;val,val}",
+                            "Sets name for a package."
+                             "If this if you do not specify a package, the value will be assigned to the default package ("")"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-description"}, "{package;val,val}",
+                            "Sets description for a package"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-deployVersion"}, "{package;val,val}",
+                            "Sets version for a package"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-releaseDate"}, "{package;val,val}",
+                            "Sets release date for a package"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-publisher"}, "{package;val,val}",
+                            "Sets publisher for a package"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-homePage"}, "{package;val,val}",
+                            "Sets the home page url for a package"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-prefix"}, "{package;val,val}",
+                            "Sets the prefix for the package relatively a target directory "
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-extraData"}, "{package;val,val}",
+                            "Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-tr"}, "{package;val,val}",
+                            "Adds qm files into the translations folder."
+                        }});
+
+    group = "Part 4 Control of packages options";
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-icon"}, "{target;val,val}",
+                            "Sets path to icon for a targets"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-disableRunScript"}, "{package;val,val}",
+                            "Disables a generation of run script for selected targets"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-disableShortCut"}, "{package;val,val}",
+                            "Disables a generation of shortcut for selected targets"
+                        }});
+
+    group = "Part 5 Plugins Control Options";
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-extraPlugin"}, "{package;val1;val2,SingeleVal}",
+                            "Sets an additional path to third-party application plug-in"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-enablePlugins"}, "{package;val1;val2,SingeleVa}",
+                             "Enables additional plugins for distribution."
+                             " By default disabled next plugins: " + PluginsParser::defaultForbidenPlugins().join(',') + " if you want enable"
+                             " it then use '-enablePlugins " + PluginsParser::defaultForbidenPlugins().join(',') + "' option"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-disablePlugins"}, "{package;val1;val2,SingeleVal}",
+                             "Disables plugins for distribution. "
+                             "You can disable any plugin of your Qt build, just see the yourQtFolder/plugins forlder for available plugins."
+                             " Example if you want disable qxcb plugin: -disablePlugins qxcb."
+                             " Note that the name of the plugin is indicated without its extension"
+                        }});
+
+    group = "Part 6 QtInstallFramework options";
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-qifStyle"}, "{path/to/style.css}",
+                            "Sets the path to the CSS style file or sets the default style."
+                            " Available styles: quasar, quasarDark"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-qifBanner"}, "{path/to/banner.png}",
+                            "Sets path to the banner png file."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-qifLogo"}, "{path/to/logo.png}",
+                            "Sets path to the logo png file."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-qifOut"}, "{nameOfOutputInstallerFile}",
+                            "Sets name of output qifw installer. Note: on Windows, the exe suffix will be added to the installer automatically."
+                        }});
+
+    return help;
+}
+
 void DeployCore::help() {
 
+    auto localHelp = QuasarAppUtils::Params::getHelpOfInputOptions();
 
+    if(!localHelp.isEmpty()) {
+        QuasarAppUtils::Help::print(localHelp);
+        return;
+    }
+
+    // help extra data;
     QuasarAppUtils::Help::Charters help = {
         {
             "Part 0 General", {
                 {"CQtDeployer version", getAppVersion()},
                 {"Usage", "cqtdeployer <-bin [params]> [options]"},
-            }
-        },
-        {
-            "Part 1 Boolean options", {
-                {"init", "will initialize cqtdeployer.json file (configuration file)."
-                 " For example: 'cqtdeployer init' - for initialize base package configuration."
-                 " 'cqtdeployer -init multi' - for initialize multi package configuration"
-                 " 'cqtdeployer -init single' - for initialize singel package configuration"},
-                {"help / h", "Shows help"},
-                {"clear", "Deletes deployable files of the previous session."},
-                {"force-clear", "Deletes the destination directory before deployment."},
-                {"noStrip", "Skips strip step"},
-                {"noTranslations", "Skips the translations files. It doesn't work without qmake."},
-                {"noOverwrite", "Prevents replacing existing files."},
-                {"noCheckRPATH", "Disables automatic search of paths to qmake in executable files."},
-                {"noCheckPATH", "Disables automatic search of paths to qmake in system PATH."},
-                {"noRecursiveiIgnoreEnv", "Disables recursive ignore for ignoreEnv option."},
-                {"v / version", "Shows compiled version"},
-                {"qif", "Create the QIF installer for deployment programm"
-                        " You can specify the path to your own installer template. Examples: cqtdeployer -qif path/to/myCustom/qif."},
-                {"qifFromSystem", "force use system binarycreator tool of qif from path or qt"},
-                {"zip", "Create the ZIP arhive for deployment programm"},
-                {"deb", "Create the deb package for deployment programm"
-                        " You can specify the path to your own debian template. Examples: cqtdeployer -deb path/to/myCustom/DEBIAN."},
-                {"deploySystem", "Deploys all libraries."
-                 " Not recomendet because there may be conflicts with system libraries"
-                 " (on snap version you need to turn on permission)"},
-                {"noQt", "Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework."},
-                {"allowEmptyPackages", "Allows configure the empty packages."},
-                {"getDefaultTemplate", "Extracts defaults deb or qif templates."
-                 " All templates extract into targetDirectory."
-                 " For change target directory use the targetDir option."
-                 " Example: cqtdeployer -bin myExecutable getDefaultTemplate qif deb."},
-                {"noHashSum", "This option disable computation of a packages hash sum"}
-
-
-            }
-        },
-        {
-            "Part 2 Deploy options", {
-                {"-bin [list, params]", "Files to deploy or folders that contain files to deploy."
-                 " For example -bin ~/my/project/bin/,~/my/project/bin.exe,~/my/project/runtimeLinking/lib.dll."
-                 " For files: These files will be unconditional copied to the destination directory,"
-                 " regardless of their format or suffix."
-                 " For folders:"
-                 " CCQtDeployer will enter these folders and non-recursively copy all executable files to the destination directory."
-                 " Then, CQtDeployer will extract all dependencies of the copied files and search dependencies in system environments and libDir paths."},
-                {"-binPrefix [prefixPath]", "Sets prefix path for bin option."
-                                            " Example: "
-                                            "-bin path/MyExecutable is some as -bin MyExecutable -binPrefix path" },
-
-                {"-confFile [params]", "The path to the json file with all deployment configurations. Using this file,"
-                 " you can add the necessary options, thereby simplifying the command invocation in the console."
-                 " However, the parameters in Kansol have a higher priority than in the file."
-                 " For more info about this flag see https://github.com/QuasarApp/CQtDeployer/wiki/DeployConfigFileEn"},
-                {"-qmlDir [params]", "Qml data dir. For example -qmlDir ~/my/project/qml"},
-                {"-qmake [params]", "Deployable file or folder. For example -bin ~/my/project/bin/,~/my/project/bin.exe"},
-                {"-ignore [list,params]", "The list of libs to ignore. For example -ignore libicudata.so.56,libicudata2.so.56"},
-                {"-ignoreEnv [list,params]", "The list of the environment to ignore. For example -ignoreEnv /bad/dir,/my/bad/Dir"},
-                {"-libDir [list,params]", "Sets additional paths for extra libs of an app. For example -libDir ~/myLib,~/newLibs"},
-                {"-extraLibs [list,params]", "Sets the mask of the library name for forced copying."
-                 "  Example: \"-extraLib mySql\" - forces to copy all libraries whose names contain mySql to the project folder."
-                 " This option is case-insensitive on Windows and case-sensitive on other platforms."
-                 " This option will only search libraries in system environments similar to **deploySystem**."},
-                {"-customScript [scriptCode]", "Insert extra code inTo All run script."},
-                {"-recursiveDepth [params]", "Sets the Depth of recursive search of libs and depth for ignoreEnv option (default 0)"},
-                {"-targetDir [params]", "Sets target directory(by default it is the path to the first deployable file)"},
-                {"-runScript [list,parems]", "forces cqtdeployer swap default run script to new from the arguments of option."
-                 " This option copy all content from input file and insert all code into runScript.sh or .bat"
-                 " Example of use: cqtdeployer -runScript \"myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh\""},
-                {"-verbose [0-3]", "Shows debug log"},
-
-            }
-        },
-        {
-            "Part 3 Control of packages options", {
-                {"-targetPackage [package;tar1,package;tar2]", "Creates a new package and adds 'tar1 and tar2' to it."
-                 "If you want configure the package that do not have any targets use the allowEmptyPackages option."},
-                {"-qmlOut [package;path,path]", "Sets path to qml out directory"},
-                {"-libOut [package;path,path]", "Sets path to libraries out directory"},
-                {"-trOut [package;path,path]", "Sets path to translations out directory"},
-                {"-pluginOut [package;path,path]", "Sets path to plugins out directory"},
-                {"-binOut [package;path,path]", "Sets path to binary out directory"},
-                {"-recOut [package;path,path]", "Sets path to recurses out directory"},
-                {"-extraDataOut [package;path,path]", "Sets path to extra data files out directory. By Default it is root dir of the distribution."},
-                {"-name [package;val,val]", "Sets name for a package. "
-                 "If this if you do not specify a package, the value will be assigned to the default package ("")"},
-                {"-description [package;val,val]", "Sets description for a package"},
-                {"-deployVersion [package;val,val]", "Sets version for a package"},
-                {"-releaseDate [package;val,val]", "Sets release date for a package"},
-                {"-publisher [package;val,val]", "Sets publisher for a package"},
-                {"-homePage [package;val,val]", "Sets the home page url for a package"},
-                {"-prefix [package;val,val]", "Sets the prefix for the package relatively a target directory "},
-                {"-extraData [package;val,val]", "Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure."},
-                {"-tr [package;val,val]", "Adds qm files into the translations folder."},
-
-
-            }
-        },
-
-        {
-            "Part 4 Control of packages options", {
-                {"-icon [target;val,val]", "Sets path to icon for a targets"},
-                {"-disableRunScript [target;val,val]", "Disables a generation of run script for selected targets"},
-                {"-disableShortCut [target;val,val]", "Disables a generation of shortcut for selected targets"}
-
-            }
-        },
-
-        {
-            "Part 5 Plugins Control Options", {
-                {"-extraPlugin [package;val1;val2,SingeleVal]", "Sets an additional path to third-party application plug-in"},
-                {"-enablePlugins [package;val1;val2,SingeleVal", "Enables additional plugins for distribution."
-                 " By default disabled next plugins: " + PluginsParser::defaultForbidenPlugins().join(',') + " if you want enable"
-                 " it then use '-enablePlugins " + PluginsParser::defaultForbidenPlugins().join(',') + "' option"},
-                {"-disablePlugins [package;val1;val2,SingeleVal]", "Disables plugins for distribution. "
-                 "You can disable any plugin of your Qt build, just see the yourQtFolder/plugins forlder for available plugins."
-                 " Example if you want disable qxcb plugin: -disablePlugins qxcb."
-                 " Note that the name of the plugin is indicated without its extension"},
-
-            }
-        },
-        {
-            "Part 6 QtInstallFramework options", {
-                {"-qifStyle [path/to/style.css]", "Sets the path to the CSS style file or sets the default style."
-                 " Available styles: quasar, quasarDark"},
-                {"-qifBanner [path/to/banner.png]", "Sets path to the banner png file."},
-                {"-qifLogo [path/to/logo.png]", "Sets path to the logo png file."},
-                {"-qifOut [nameOfOutputInstallerFile", "Sets name of output qifw installer. Note: on Windows, the exe suffix will be added to the installer automatically."},
             }
         },
         {
@@ -332,71 +526,11 @@ void DeployCore::help() {
         }
     };
 
-    help.unite(QuasarAppUtils::Params::getParamsHelp());
+    help += QuasarAppUtils::Params::getHelp();
 
     QuasarAppUtils::Help::print(help);
 
     return;
-}
-
-QStringList DeployCore::helpKeys() {
-    return {
-        "help",
-        "noOverwrite",
-        "bin",
-        "extraData",
-        "qmlDir",
-        "deploySystem",
-        "qmake",
-        "ignore",
-        "ignoreEnv",
-        "clear",
-        "force-clear",
-        "libDir",
-        "extraLibs",
-        "extraPlugin",
-        "recursiveDepth",
-        "targetDir",
-        "targetPackage",
-        "noStrip",
-        "extractPlugins",
-        "noTranslations",
-        "noRecursiveiIgnoreEnv",
-        "qifFromSystem",
-        "qmlOut",
-        "libOut",
-        "trOut",
-        "pluginOut",
-        "binOut",
-        "recOut",
-        "extraDataOut",
-        "version",
-        "verbose",
-        "qif",
-        "noCheckRPATH",
-        "noCheckPATH",
-        "name",
-        "description",
-        "deployVersion",
-        "releaseDate",
-        "icon",
-        "publisher",
-        "customScript",
-        "qifStyle",
-        "qifBanner",
-        "qifLogo",
-        "zip",
-        "noQt",
-        "homePage",
-        "prefix",
-        "deb",
-        "allowEmptyPackages",
-        "runScript",
-        "getDefaultTemplate",
-        "tr",
-        "disableRunScript",
-        "disableShortCut"
-    };
 }
 
 QStringList DeployCore::extractTranslation(const QSet<QString> &libs) {
