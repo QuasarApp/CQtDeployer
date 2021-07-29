@@ -1,5 +1,16 @@
 # Change log 
 
+## CQtDeployer 1.5.3
+
+## New options 
+* installDirDeb - Sets install target directory for debian  package (by default it is /opt path) #640 
+* installDirQIFW - Sets install target directory for installers (by default it is /home path) #640 
+
+## Bug fixes :
+* Fix warning on installer fix #628
+* Added support validation input options of the command line fix #421 
+* Added Error message for conflict between libDir and targetDir options #629 
+
 ## CQtDeployer 1.5.2
 
 ### New parameters
