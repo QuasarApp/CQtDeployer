@@ -443,7 +443,7 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             "Adds qm files into the translations folder."
                         }});
 
-    group = "Part 4 Control of packages options";
+    group = "Part 4 Control of target options";
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-icon"}, "{target;val,val}",
@@ -496,6 +496,18 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-qifOut"}, "{nameOfOutputInstallerFile}",
                             "Sets name of output qifw installer. Note: on Windows, the exe suffix will be added to the installer automatically."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-qifConfig"}, "{path/to/config.xml}",
+                            "Sets a custom path to the configure file of the qt ifw installer. By default it is qif/config/config.xml"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-qifPackages"}, "{path/to/packagesFodoler}",
+                            "Sets a custom path to the packages directories. By default it is qif/packages"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-qifResources"}, "{path/to/resources1.qrc,path/to/resources2.qrc}",
+                            "Sets a custom path to the resources files. By default this option is skipped"
                         }});
 
     return help;
