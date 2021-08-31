@@ -27,7 +27,7 @@ void IgnoreRule::addRule(const IgnoreData &rule) {
 }
 
 bool IgnoreRule::check(const LibInfo &info, const QString& ignoreLabel) const {
-    if (info.fullPath().contains(ignoreLabel, ONLY_WIN_CASE_INSENSIATIVE)) {
+    if (info.fullPath().contains(ignoreLabel, DeployCore::getCaseSensitivity())) {
         QuasarAppUtils::Params::log(info.fullPath() + " ignored by filter" + ignoreLabel);
         return true;
     }

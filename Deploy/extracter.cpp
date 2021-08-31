@@ -390,7 +390,7 @@ void Extracter::extractLib(const QString &file,
 
     for (const auto &line : data.getAllDep()) {
 
-        if (mask.size() && !line.getName().contains(mask, ONLY_WIN_CASE_INSENSIATIVE)) {
+        if (mask.size() && !line.getName().contains(mask, DeployCore::getCaseSensitivity())) {
             continue;
         }
 

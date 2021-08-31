@@ -221,7 +221,7 @@ bool iDistribution::collectInfo(const DistroModule& pkg,
             bashShortCutsArray += "\"" + targetInfo.getRunScriptFile() + "\"";
         }
 
-        if (fileinfo.suffix().compare("exe", ONLY_WIN_CASE_INSENSIATIVE) == 0 || fileinfo.suffix().isEmpty()) {
+        if (fileinfo.suffix().compare("exe", Qt::CaseInsensitive) == 0 || fileinfo.suffix().isEmpty()) {
             if (cmdArray.size() > initSize) {
                 cmdArray += ",";
                 bashArray += " ";

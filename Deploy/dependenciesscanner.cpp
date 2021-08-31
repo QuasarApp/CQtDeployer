@@ -149,7 +149,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
             if (!scanedLib.isValid()) {
                 QSet<LibInfo> listDep =  {};
 
-                if (!lib._name.compare(dep.value()._name, ONLY_WIN_CASE_INSENSIATIVE))
+                if (!lib._name.compare(dep.value()._name, DeployCore::getCaseSensitivity(lib._name)))
                     continue;
 
                 recursiveDep(*dep, listDep, libStack);
