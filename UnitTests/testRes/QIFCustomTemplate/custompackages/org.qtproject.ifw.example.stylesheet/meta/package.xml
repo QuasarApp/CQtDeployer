@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>Dummy</DisplayName>
+    <ReleaseDate>2015-09-09</ReleaseDate>
+    <Version>1.0.1</Version>
+    <Default>true</Default>
+    <Script>installscript.qs</Script>
+</Package>

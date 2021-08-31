@@ -148,6 +148,9 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -qifBanner [path/to/banner.png]| Устанавливает путь к png-файлу баннера.                                      |
 |  -qifLogo [path/to/logo.png]| Устанавливает путь к файлу логотипа png.                            |
 |  -qifOut [nameOfOutputInstallerFile] | Устанавливает имя выходного установщика qifw. Примечание: для установщика Windows автоматически добавляется суффикс exe.  |
+|  -qifConfig [path/to/config.xml] | Устанавливает пользовательский путь к файлу конфигурации установщика qt ifw. По умолчанию это qif/config/config.xml  |
+|  -qifPackages [path/to/packagesFodoler] | Устанавливает пользовательский путь к каталогам пакетов. По умолчанию это qif/packages   |
+|  -qifResources [path/to/resources1.qrc,path/to/resources2.qrc] | Устанавливает пользовательский путь к файлам ресурсов. По умолчанию эта опция пропущена  |
 
 
 

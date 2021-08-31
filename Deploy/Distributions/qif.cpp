@@ -72,12 +72,19 @@ QList<SystemCommandData> QIF::runCmd() {
 
     cmd.arguments = QStringList{
         "-c",
-        location + "/config/config.xml",
+        QuasarAppUtils::Params::getArg("qifConfig", location + "/config/config.xml"),
         "-p",
-        location + "/packages/",
-        "-v",
-        installerFile()
+        QuasarAppUtils::Params::getArg("qifPackages", location + "/packages/"),
+        "-v"
     };
+
+    QString resources = QuasarAppUtils::Params::getArg("qifResources");
+    if (resources.size()) {
+        cmd.arguments.push_back("-r");
+        cmd.arguments.push_back(resources);
+    }
+
+    cmd.arguments.push_back(installerFile());
 
     return {cmd};
 }
