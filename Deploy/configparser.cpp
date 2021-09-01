@@ -465,6 +465,12 @@ bool ConfigParser::initDistroStruct() {
     auto installDirDeb = QuasarAppUtils::Params::getArg("installDirDeb").
             split(DeployCore::getSeparator(0), splitbehavior);
 
+    auto debOut = QuasarAppUtils::Params::getArg("debOut").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
+    auto zipOut = QuasarAppUtils::Params::getArg("zipOut").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
 // init distro stucts for all targets
     if (binOut.size() && !parsePackagesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir)) {
         packagesErrorLog("binOut");
@@ -548,6 +554,16 @@ bool ConfigParser::initDistroStruct() {
 
     if (installDirDeb.size() && !parsePackagesPrivate(mainDistro, installDirDeb, &DistroModule::setInstallDirDEB)) {
         packagesErrorLog("installDirDeb");
+        return false;
+    }
+
+    if (debOut.size() && !parsePackagesPrivate(mainDistro, debOut, &DistroModule::setDebOut)) {
+        packagesErrorLog("debOut");
+        return false;
+    }
+
+    if (zipOut.size() && !parsePackagesPrivate(mainDistro, zipOut, &DistroModule::setZipOut)) {
+        packagesErrorLog("zipOut");
         return false;
     }
 

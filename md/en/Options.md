@@ -156,4 +156,16 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -qifPackages [path/to/packagesFodoler] | Sets a custom path to the packages directories. By default it is qif/packages  |
 |  -qifResources [path/to/resources1.qrc,path/to/resources2.qrc] | Sets a custom path to the resources files. By default this option is skipped |
 
+### Deb package options
+
+| Option                      | Descriptiion                                              |
+|-----------------------------|-----------------------------------------------------------|
+|  -debOut [package;nameOfOutputDebFile,nameOfOutputDebFile]| Sets name of the output debian file. This option can be work with multiple packages |
+
+### Zip pacakge options
+
+| Option                      | Descriptiion                                              |
+|-----------------------------|-----------------------------------------------------------|
+|  -debOut [package;nameOfOutputZipFile,nameOfOutputZipFile]| Sets name of the output zip arrhive. This option can be work with multiple packages |
+
 #### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.15.4/gcc_64/bin/qmake clear

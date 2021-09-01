@@ -198,6 +198,14 @@ bool iDistribution::collectInfo(const DistroModule& pkg,
     if (!pkg.installDirDEB().isEmpty())
         info.InstallDirDEB = pkg.installDirDEB();
 
+    info.debOut = info.Name + ".deb";
+    if (!pkg.debOut().isEmpty())
+        info.debOut = pkg.debOut();
+
+    info.zipOut = info.Name + ".zip";
+    if (!pkg.zipOut().isEmpty())
+        info.zipOut = pkg.zipOut();
+
     info.Prefix = releativeLocation(pkg);
 
     QString cmdArray = "[";

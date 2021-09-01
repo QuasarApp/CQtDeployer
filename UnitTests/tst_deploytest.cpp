@@ -1531,12 +1531,25 @@ void deploytest::testQifOut() {
     QString bin = TestBinDir + "TestOnlyC.exe";
 #endif
 
-    auto result = utils.createTree({{DISTRO_DIR + "/QIF_OUT.exe"},
-                                   {DISTRO_DIR + "/QIF_OUT.exe.md5"}});
+#ifdef Q_OS_UNIX
+    auto result = utils.createTree({{DISTRO_DIR + "/QIF_OUT.exe"}, {DISTRO_DIR + "/QIF_OUT.exe.md5"},
+                                    {DISTRO_DIR + "/DEB_OUT.deb"}, {DISTRO_DIR + "/DEB_OUT.deb.md5"},
+                                    {DISTRO_DIR + "/ZIP_OUT.zip"}, {DISTRO_DIR + "/ZIP_OUT.zip.md5"}});
 
     // Run deploy installer
     runTestParams({"-bin", bin, "clear",
-                   "qif", "-qifOut", "QIF_OUT.exe"}, &result);
+                   "qif", "-qifOut", "QIF_OUT.exe",
+                   "deb", "-debOut", "DEB_OUT.deb",
+                   "zip", "-zipOut", "ZIP_OUT.zip"}, &result);
+#else
+    auto result = utils.createTree({{DISTRO_DIR + "/QIF_OUT.exe"}, {DISTRO_DIR + "/QIF_OUT.exe.md5"},
+                                    {DISTRO_DIR + "/ZIP_OUT.zip"}, {DISTRO_DIR + "/ZIP_OUT.zip.md5"}});
+
+    // Run deploy installer
+    runTestParams({"-bin", bin, "clear",
+                   "qif", "-qifOut", "QIF_OUT.exe",
+                   "zip", "-zipOut", "ZIP_OUT.zip"}, &result);
+#endif
 }
 
 void deploytest::testIgnoreEnvWithLibDir() {

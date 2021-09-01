@@ -19,6 +19,9 @@ struct DEPLOYSHARED_EXPORT TemplateInfo
     QString Homepage;
     QString Prefix;
     QString InstallDirDEB;
+    QString zipOut;
+    QString debOut;
+
     QString InstallDeirQIFW() const;
 
     QHash<QString, QString> Custom;
