@@ -168,8 +168,6 @@ bool iDistribution::collectInfoWithDeployIcons(const DistroModule &pkg,
 
 bool iDistribution::collectInfo(const DistroModule& pkg,
                                 TemplateInfo &info) {
-    const DeployConfig *cfg = DeployCore::_config;
-
 
     info.Name = getName(pkg);
 
