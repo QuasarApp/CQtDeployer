@@ -77,6 +77,30 @@ public:
     QString installDirDEB() const;
     void setInstallDirDEB(const QString &newInstallDir);
 
+    /**
+     * @brief debOut This method return output filePath to debian pacakge
+     * @return output filePath to debian pacakge
+     */
+    const QString &debOut() const;
+
+    /**
+     * @brief setDebOut This method sets new value of debian outpup path.
+     * @param newDebOut This is new value of the debian output
+     */
+    void setDebOut(const QString &newDebOut);
+
+    /**
+     * @brief debOut This method return output filePath to zip pacakge
+     * @return output filePath to zip pacakge
+     */
+    const QString &zipOut() const;
+
+    /**
+     * @brief setDebOut This method sets new value of zip outpup path.
+     * @param newDebOut This is new value of the zip output
+     */
+    void setZipOut(const QString &newZipOut);
+
 protected:
     void setKey(const QString &key);
 
@@ -105,7 +129,8 @@ private:
     QSet<QString> _tr;
 
     QString _installDirDEB;
-
+    QString _debOut;
+    QString _zipOut;
 
 };
 

@@ -38,7 +38,7 @@ bool ZipArhive::deployTemplate(PackageControl &pkg) {
             return false;
         }
 
-        auto arr = cfg->getTargetDir() + "/" + info.Name + ".zip";
+        auto arr = cfg->getTargetDir() + "/" + info.zipOut;
         if (!zipWorker.compress(local, arr)) {
                 return false;
         }

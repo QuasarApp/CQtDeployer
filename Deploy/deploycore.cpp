@@ -351,14 +351,6 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             "Sets the Depth of recursive search of libs and depth for ignoreEnv option (default 0)"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
-                            {"-targetDir"}, "{params}",
-                            "Sets target directory(by default it is the path to the first deployable file)"
-                        }});
-    help.insert(group, {QuasarAppUtils::OptionData{
-                            {"-installDirDeb"}, "{params}",
-                            "Sets install target directory fordebian package (by default it is /opt path)"
-                        }});
-    help.insert(group, {QuasarAppUtils::OptionData{
                             {"-installDirQIFW"}, "{params}",
                             "Sets install target directory for installers (by default it is /home path)"
                         }});
@@ -508,6 +500,31 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-qifResources"}, "{path/to/resources1.qrc,path/to/resources2.qrc}",
                             "Sets a custom path to the resources files. By default this option is skipped"
+                        }});
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-targetDir"}, "{params}",
+                            "Sets target directory(by default it is the path to the first deployable file)"
+                        }});
+
+    group = "Part 7 Deb package options";
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-debOut"}, "{package;nameOfOutputDebFile,nameOfOutputDebFile}",
+                            "Sets name of the output debian file. This option can be work with multiple packages"
+                        }});
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-installDirDeb"}, "{params}",
+                            "Sets install target directory fordebian package (by default it is /opt path)"
+                        }});
+
+
+    group = "Part 8 zip package options";
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-zipOut"}, "{package;nameOfOutputZipFile,nameOfOutputZipFile}",
+                            "Sets name of the output zip arrhive. This option can be work with multiple packages"
                         }});
 
     return help;

@@ -148,6 +148,22 @@ void DistroModule::setKey(const QString &key) {
     _key = key;
 }
 
+const QString &DistroModule::zipOut() const {
+    return _zipOut;
+}
+
+void DistroModule::setZipOut(const QString &newZipOut) {
+    _zipOut = newZipOut;
+}
+
+const QString &DistroModule::debOut() const {
+    return _debOut;
+}
+
+void DistroModule::setDebOut(const QString &newDebOut) {
+    _debOut = newDebOut;
+}
+
 QString DistroModule::installDirDEB() const {
     if (_installDirDEB.isEmpty())
         return "/opt";

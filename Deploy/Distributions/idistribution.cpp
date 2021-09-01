@@ -168,6 +168,8 @@ bool iDistribution::collectInfoWithDeployIcons(const DistroModule &pkg,
 
 bool iDistribution::collectInfo(const DistroModule& pkg,
                                 TemplateInfo &info) {
+    const DeployConfig *cfg = DeployCore::_config;
+
 
     info.Name = getName(pkg);
 
@@ -197,6 +199,14 @@ bool iDistribution::collectInfo(const DistroModule& pkg,
     info.InstallDirDEB = "/opt";
     if (!pkg.installDirDEB().isEmpty())
         info.InstallDirDEB = pkg.installDirDEB();
+
+    info.debOut = cfg->getTargetDir() + "/" + info.Name + ".deb";
+    if (!pkg.debOut().isEmpty())
+        info.debOut = pkg.debOut();
+
+    info.zipOut = cfg->getTargetDir() + "/" + info.Name + ".zip";
+    if (!pkg.zipOut().isEmpty())
+        info.zipOut = pkg.zipOut();
 
     info.Prefix = releativeLocation(pkg);
 
