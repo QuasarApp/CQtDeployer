@@ -304,7 +304,7 @@ public:
     static QFileInfo findItem(const QString &file);
 
     /**
-     * @brief getCaseSensitivity This method return case sensitivity for a @a checkedFile. Usualy return Qt::CaseSensiativy exept windows binaryes files like a dll and exe.
+     * @brief getCaseSensitivity This method return case sensitivity for a @a checkedFile. Usually return Qt::CaseSensiativy exept windows binaryes files like a dll and exe.
      * @param checkedFile This is checked file. By default empty value.
      * @return Qt CaseSensitivity value
      */
