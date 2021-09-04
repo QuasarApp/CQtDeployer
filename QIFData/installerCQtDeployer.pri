@@ -23,7 +23,7 @@ BASE_DEPLOY_FLAGS_CQT = $$BASE_DEPLOY_FLAGS -targetDir $$DATA_DIR $$OUT_LIB $$OU
 
 win32:CQT_ICON = -icon $$PWD/config/icon.ico
 unix:CQT_ICON = -icon $$PWD/config/logo.png
-BASE_DEPLOY_FLAGS_DEB = $$BASE_DEPLOY_FLAGS -targetDir $$PWD/../Distro $$OUT_LIB $$OUT_BIN deb zip -name CQtDeployer -publisher QuasarApp $$CQT_ICON -deployVersion 1.5.4.0 -debOut CQtDeployer_'$$VERSION'_Linux64.deb -zipOut CQtDeployer_'$$VERSION'_Linux64.zip
+BASE_DEPLOY_FLAGS_DEB = $$BASE_DEPLOY_FLAGS -targetDir $$PWD/../Distro $$OUT_LIB $$OUT_BIN deb zip -name CQtDeployer -publisher QuasarApp $$CQT_ICON -deployVersion 1.5.4.0 #-debOut CQtDeployer_'$$VERSION'_Linux64.deb -zipOut CQtDeployer_'$$VERSION'_Linux64.zip
 
 DEPLOY_TARGET_DEB = $$DEPLOY_TARGET,$$PWD/packages/QIF/data/QIF
 deploy_dep.commands += $$DEPLOYER -bin $$DEPLOY_TARGET $$BASE_DEPLOY_FLAGS_CQT
