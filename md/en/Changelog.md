@@ -3,7 +3,7 @@
 ## CQtDeployer 1.5.4
 
 
-## New options 
+### New options 
 
 * qifConfig - Sets a custom path to the configure file of the qt ifw installer. By default it is qif/config/config.xml  #653
 * qifPackages - Sets a custom path to the packages directories. By default it is qif/packages #653
@@ -11,19 +11,19 @@
 * debOut -  Sets name of the output debian file. This option can be work with multiple packages
 * zipOut - Sets name of the output zip arrhive. This option can be work with multiple packages
 
-## Bug fixes :
+### Bug fixes :
 
 * fixed crossdeploy linux -> windows #652 
 
 
 ## CQtDeployer 1.5.3
 
-## New options 
+### New options 
 
 * installDirDeb - Sets install target directory for debian  package (by default it is /opt path) #640 
 * installDirQIFW - Sets install target directory for installers (by default it is /home path) #640 
 
-## Bug fixes 
+### Bug fixes 
 
 * Fix warning on installer fix #628
 * Added support validation input options of the command line fix #421 
