@@ -105,12 +105,12 @@ DeployCore::QtModule DeployCore::getQtModule(const QString& path) {
 void DeployCore::addQtModule(DeployCore::QtModule &module, const QString &path) {
 
     QuasarAppUtils::Params::log("Current module " + QString::number(module),
-                                       QuasarAppUtils::Debug);
+                                QuasarAppUtils::Debug);
 
     auto mod = getQtModule(path);
     QuasarAppUtils::Params::log("Add new module from path " + path  +
-                                       " module value " + QString::number(mod),
-                                       QuasarAppUtils::Debug);
+                                " module value " + QString::number(mod),
+                                QuasarAppUtils::Debug);
 
 
     module = static_cast<DeployCore::QtModule>(
@@ -251,15 +251,15 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"deb", "-deb"}, "",
-                             "Create the deb package for deployment programm"
-                             " You can specify the path to your own debian template.",
-                             "cqtdeployer -deb path/to/myCustom/DEBIAN."
+                            "Create the deb package for deployment programm"
+                            " You can specify the path to your own debian template.",
+                            "cqtdeployer -deb path/to/myCustom/DEBIAN."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"deploySystem"}, "",
-                             "Deploys all libraries."
-                             " Not recomendet because there may be conflicts with system libraries"
-                             " (on snap version you need to turn on permission)"
+                            "Deploys all libraries."
+                            " Not recomendet because there may be conflicts with system libraries"
+                            " (on snap version you need to turn on permission)"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"noQt"}, "",
@@ -271,10 +271,10 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"getDefaultTemplate"}, "",
-                             "Extracts defaults deb or qif templates."
-                             " All templates extract into targetDirectory."
-                             " For change target directory use the targetDir option.",
-                             "cqtdeployer -bin myExecutable getDefaultTemplate qif deb."
+                            "Extracts defaults deb or qif templates."
+                            " All templates extract into targetDirectory."
+                            " For change target directory use the targetDir option.",
+                            "cqtdeployer -bin myExecutable getDefaultTemplate qif deb."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"noHashSum"}, "",
@@ -302,10 +302,10 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-confFile"}, "{params}",
-                             "The path to the json file with all deployment configurations. Using this file,"
-                             " you can add the necessary options, thereby simplifying the command invocation in the console."
-                             " However, the parameters in Kansol have a higher priority than in the file."
-                             " For more info about this flag see https://github.com/QuasarApp/CQtDeployer/wiki/DeployConfigFileEn"
+                            "The path to the json file with all deployment configurations. Using this file,"
+                            " you can add the necessary options, thereby simplifying the command invocation in the console."
+                            " However, the parameters in Kansol have a higher priority than in the file."
+                            " For more info about this flag see https://github.com/QuasarApp/CQtDeployer/wiki/DeployConfigFileEn"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-qmlDir"}, "{params}",
@@ -336,8 +336,8 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             {"-extraLibs"}, "{list,params}",
                             "Sets the mask of the library name for forced copying.",
                             "\"-extraLib mySql\" - forces to copy all libraries whose names contain mySql to the project folder."
-                             " This option is case-insensitive on Windows and case-sensitive on other platforms."
-                             " This option will only search libraries in system environments similar to **deploySystem**."
+                            " This option is case-insensitive on Windows and case-sensitive on other platforms."
+                            " This option will only search libraries in system environments similar to **deploySystem**."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-customScript"}, "{scriptCode}",
@@ -351,22 +351,14 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             "Sets the Depth of recursive search of libs and depth for ignoreEnv option (default 0)"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
-                            {"-targetDir"}, "{params}",
-                            "Sets target directory(by default it is the path to the first deployable file)"
-                        }});
-    help.insert(group, {QuasarAppUtils::OptionData{
-                            {"-installDirDeb"}, "{params}",
-                            "Sets install target directory fordebian package (by default it is /opt path)"
-                        }});
-    help.insert(group, {QuasarAppUtils::OptionData{
                             {"-installDirQIFW"}, "{params}",
                             "Sets install target directory for installers (by default it is /home path)"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-runScript"}, "{list,parems}",
-                             "forces cqtdeployer swap default run script to new from the arguments of option."
-                             " This option copy all content from input file and insert all code into runScript.sh or .bat",
-                             "cqtdeployer -runScript \"myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh\""
+                            "forces cqtdeployer swap default run script to new from the arguments of option."
+                            " This option copy all content from input file and insert all code into runScript.sh or .bat",
+                            "cqtdeployer -runScript \"myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh\""
                         }});
 
     group = "Part 3 Control of packages options";
@@ -374,7 +366,7 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-targetPackage"}, "{package;tar1,package;tar2}",
                             "Creates a new package and adds 'tar1 and tar2' to it. "
-                             "If you want configure the package that do not have any targets use the allowEmptyPackages option."
+                            "If you want configure the package that do not have any targets use the allowEmptyPackages option."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-qmlOut"}, "{package;path,path}",
@@ -408,7 +400,7 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-name"}, "{package;val,val}",
                             "Sets name for a package."
-                             "If this if you do not specify a package, the value will be assigned to the default package ("")"
+                            "If this if you do not specify a package, the value will be assigned to the default package ("")"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-description"}, "{package;val,val}",
@@ -443,7 +435,7 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             "Adds qm files into the translations folder."
                         }});
 
-    group = "Part 4 Control of packages options";
+    group = "Part 4 Control of target options";
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-icon"}, "{target;val,val}",
@@ -466,16 +458,16 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-enablePlugins"}, "{package;val1;val2,SingeleVa}",
-                             "Enables additional plugins for distribution."
-                             " By default disabled next plugins: " + PluginsParser::defaultForbidenPlugins().join(',') + " if you want enable"
-                             " it then use '-enablePlugins " + PluginsParser::defaultForbidenPlugins().join(',') + "' option"
+                            "Enables additional plugins for distribution."
+                            " By default disabled next plugins: " + PluginsParser::defaultForbidenPlugins().join(',') + " if you want enable"
+                            " it then use '-enablePlugins " + PluginsParser::defaultForbidenPlugins().join(',') + "' option"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-disablePlugins"}, "{package;val1;val2,SingeleVal}",
-                             "Disables plugins for distribution. "
-                             "You can disable any plugin of your Qt build, just see the yourQtFolder/plugins forlder for available plugins."
-                             " Example if you want disable qxcb plugin: -disablePlugins qxcb."
-                             " Note that the name of the plugin is indicated without its extension"
+                            "Disables plugins for distribution. "
+                            "You can disable any plugin of your Qt build, just see the yourQtFolder/plugins forlder for available plugins."
+                            " Example if you want disable qxcb plugin: -disablePlugins qxcb."
+                            " Note that the name of the plugin is indicated without its extension"
                         }});
 
     group = "Part 6 QtInstallFramework options";
@@ -496,6 +488,43 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-qifOut"}, "{nameOfOutputInstallerFile}",
                             "Sets name of output qifw installer. Note: on Windows, the exe suffix will be added to the installer automatically."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-qifConfig"}, "{path/to/config.xml}",
+                            "Sets a custom path to the configure file of the qt ifw installer. By default it is qif/config/config.xml"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-qifPackages"}, "{path/to/packagesFodoler}",
+                            "Sets a custom path to the packages directories. By default it is qif/packages"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-qifResources"}, "{path/to/resources1.qrc,path/to/resources2.qrc}",
+                            "Sets a custom path to the resources files. By default this option is skipped"
+                        }});
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-targetDir"}, "{params}",
+                            "Sets target directory(by default it is the path to the first deployable file)"
+                        }});
+
+    group = "Part 7 Deb package options";
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-debOut"}, "{package;nameOfOutputDebFile,nameOfOutputDebFile}",
+                            "Sets name of the output debian file. This option can be work with multiple packages"
+                        }});
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-installDirDeb"}, "{params}",
+                            "Sets install target directory fordebian package (by default it is /opt path)"
+                        }});
+
+
+    group = "Part 8 zip package options";
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-zipOut"}, "{package;nameOfOutputZipFile,nameOfOutputZipFile}",
+                            "Sets name of the output zip arrhive. This option can be work with multiple packages"
                         }});
 
     return help;
@@ -589,7 +618,7 @@ QString DeployCore::findProcess(const QString &env, const QString& proc) {
         auto files = QDir(path).entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
 
         for (const auto& bin : files) {
-            if (bin.baseName().compare(proc, ONLY_WIN_CASE_INSENSIATIVE) == 0) {
+            if (bin.baseName().compare(proc, DeployCore::getCaseSensitivity()) == 0) {
                 return bin.absoluteFilePath();
             }
         }
@@ -605,7 +634,7 @@ QStringList DeployCore::debugExtensions() {
 bool DeployCore::isDebugFile(const QString &file) {
     auto debug = debugExtensions();
     for (const auto& debugEx: debug) {
-        if (file.contains(debugEx, ONLY_WIN_CASE_INSENSIATIVE)) {
+        if (file.contains(debugEx, Qt::CaseInsensitive)) {
             return true;
         }
     }
@@ -752,11 +781,11 @@ QtMajorVersion DeployCore::isQtLibName(const QString &lib) {
     }
 
     QString fileName = info.fileName();
-    if (fileName.contains("Qt4", ONLY_WIN_CASE_INSENSIATIVE)) {
+    if (fileName.contains("Qt4", getCaseSensitivity(fileName))) {
         isQt = QtMajorVersion::Qt4;
-    } else if (fileName.contains("Qt5", ONLY_WIN_CASE_INSENSIATIVE)) {
+    } else if (fileName.contains("Qt5", getCaseSensitivity(fileName))) {
         isQt = QtMajorVersion::Qt5;
-    } else if (fileName.contains("Qt6", ONLY_WIN_CASE_INSENSIATIVE)) {
+    } else if (fileName.contains("Qt6", getCaseSensitivity(fileName))) {
         isQt = QtMajorVersion::Qt6;
     }
 
@@ -774,8 +803,8 @@ bool DeployCore::isExtraLib(const QString &lib) {
 }
 
 bool DeployCore::isAlienLib(const QString &lib) {
-    return lib.contains("/opt/", ONLY_WIN_CASE_INSENSIATIVE) ||
-            lib.contains("/PROGRAM FILES", ONLY_WIN_CASE_INSENSIATIVE);
+    return lib.contains("/opt/", Qt::CaseSensitive) ||
+            lib.contains("/PROGRAM FILES", Qt::CaseInsensitive);
 }
 
 bool DeployCore::isAllowedLib(const QString &lib) {
@@ -920,6 +949,25 @@ QFileInfo DeployCore::findItem(const QString &bin) {
     }
 
     return QFileInfo(bin);
+}
+
+Qt::CaseSensitivity DeployCore::getCaseSensitivity(const QString &checkedFile) {
+
+    if (checkedFile.isEmpty()) {
+#ifdef Q_OS_WIN
+        return Qt::CaseInsensitive;
+#else
+        return Qt::CaseSensitive;
+#endif
+    }
+
+    QString sufix = QFileInfo(checkedFile).completeSuffix();
+    if (sufix.compare("dll", Qt::CaseInsensitive) == 0 ||
+            sufix.compare("exe", Qt::CaseInsensitive)) {
+        return Qt::CaseInsensitive;
+    }
+
+    return Qt::CaseSensitive;
 };
 
 QString DeployCore::systemLibsFolderName() {

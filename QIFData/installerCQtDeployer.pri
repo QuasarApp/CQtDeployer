@@ -1,10 +1,10 @@
 include($$PWD/InstallerBase.pri);
 mkpath( $$PWD/../Distro)
-win32:OUT_FILE = CQtDeployerInstaller.exe
-unix:OUT_FILE = CQtDeployerInstaller.run
+win32:OUT_FILE = CQtDeployer_$$VERSION_Installer_Win64.exe
+unix:OUT_FILE = CQtDeployer_$$VERSION_Installer_Linux64.run
 
-win32:OUT_FILE_OFF = CQtDeployerOfflineInstaller.exe
-unix:OUT_FILE_OFF = CQtDeployerOfflineInstaller.run
+win32:OUT_FILE_OFF = CQtDeployer_$$VERSION_OfflineInstaller_Win64.exe
+unix:OUT_FILE_OFF = CQtDeployer_$$VERSION_OfflineInstaller_Linux64.run
 
 DEPLOY_TARGET = $$PWD/../CQtDeployer/build/release
 

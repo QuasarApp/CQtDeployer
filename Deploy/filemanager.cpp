@@ -178,7 +178,7 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
     bool copy = !masks;
     if (masks) {
         for (const auto &mask : qAsConst(*masks)) {
-            if (info.absoluteFilePath().contains(mask, ONLY_WIN_CASE_INSENSIATIVE)) {
+            if (info.absoluteFilePath().contains(mask, DeployCore::getCaseSensitivity())) {
                 copy = true;
                 break;
             }
@@ -263,7 +263,7 @@ bool FileManager::smartCopyFile(const QString &file,
                                 bool ifFileTarget) {
     auto config = DeployCore::_config;
 
-    if (file.contains(config->getTargetDir(), ONLY_WIN_CASE_INSENSIATIVE)) {
+    if (file.contains(config->getTargetDir(), DeployCore::getCaseSensitivity())) {
         if (!moveFile(file, target, mask)) {
             QuasarAppUtils::Params::log("Failed to move the file. Trying to copy it");
 
@@ -309,7 +309,7 @@ bool FileManager::copyFolder(const QString &from,
             if (!force) {
                 QString skipFilter = "";
                 for (const auto &i: filter) {
-                    if (item.fileName().contains(i, ONLY_WIN_CASE_INSENSIATIVE)) {
+                    if (item.fileName().contains(i, DeployCore::getCaseSensitivity())) {
                         skipFilter = i;
                         break;
                     }
@@ -496,7 +496,7 @@ bool FileManager::copyFiles(const QStringList &source,
 
         QString skipFilter = "";
         for (const auto &i: filter) {
-            if (info.fileName().contains(i, ONLY_WIN_CASE_INSENSIATIVE)) {
+            if (info.fileName().contains(i, DeployCore::getCaseSensitivity())) {
                 skipFilter = i;
                 break;
             }

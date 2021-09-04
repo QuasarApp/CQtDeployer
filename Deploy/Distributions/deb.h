@@ -4,6 +4,14 @@
 #include "idistribution.h"
 
 /**
+ * @brief The DebInOut struct contains input and output value of the debian packages.
+ */
+struct DebInOut {
+    QString input;
+    QString output;
+};
+
+/**
  * @brief The deb class contains methods for create a debian pacakge.
  */
 class DEPLOYSHARED_EXPORT Deb: public iDistribution
@@ -21,7 +29,6 @@ public:
     QProcessEnvironment processEnvirement() const override;
     QList<SystemCommandData> runCmd() override;
     QStringList outPutFiles() const override;
-    bool cb() const override;
 
     // iDistribution interface
 protected:
@@ -30,8 +37,7 @@ protected:
     QString releativeLocation(const DistroModule &module) const override;
 
 private:
-    QStringList outFiles;
-    QStringList packageFolders;
+    QList<DebInOut> inouts;
 };
 
 #endif // DEB_H

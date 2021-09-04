@@ -152,6 +152,20 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -qifBanner [path/to/banner.png]| Sets path to the banner png file.                                      |
 |  -qifLogo [path/to/logo.png]| Sets path to the logo png file.                                |
 |  -qifOut [nameOfOutputInstallerFile] | Sets name of output qifw installer. Note: on Windows, the exe suffix will be added to the installer automatically.                |
+|  -qifConfig [path/to/config.xml] | Sets a custom path to the configure file of the qt ifw installer. By default it is qif/config/config.xml |
+|  -qifPackages [path/to/packagesFodoler] | Sets a custom path to the packages directories. By default it is qif/packages  |
+|  -qifResources [path/to/resources1.qrc,path/to/resources2.qrc] | Sets a custom path to the resources files. By default this option is skipped |
 
+### Deb package options
+
+| Option                      | Descriptiion                                              |
+|-----------------------------|-----------------------------------------------------------|
+|  -debOut [package;nameOfOutputDebFile,nameOfOutputDebFile]| Sets name of the output debian file. This option can be work with multiple packages |
+
+### Zip pacakge options
+
+| Option                      | Descriptiion                                              |
+|-----------------------------|-----------------------------------------------------------|
+|  -debOut [package;nameOfOutputZipFile,nameOfOutputZipFile]| Sets name of the output zip arrhive. This option can be work with multiple packages |
 
 #### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.15.4/gcc_64/bin/qmake clear

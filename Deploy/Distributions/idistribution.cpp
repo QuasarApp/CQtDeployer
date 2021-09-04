@@ -198,6 +198,14 @@ bool iDistribution::collectInfo(const DistroModule& pkg,
     if (!pkg.installDirDEB().isEmpty())
         info.InstallDirDEB = pkg.installDirDEB();
 
+    info.debOut = info.Name + ".deb";
+    if (!pkg.debOut().isEmpty())
+        info.debOut = pkg.debOut();
+
+    info.zipOut = info.Name + ".zip";
+    if (!pkg.zipOut().isEmpty())
+        info.zipOut = pkg.zipOut();
+
     info.Prefix = releativeLocation(pkg);
 
     QString cmdArray = "[";
@@ -221,7 +229,7 @@ bool iDistribution::collectInfo(const DistroModule& pkg,
             bashShortCutsArray += "\"" + targetInfo.getRunScriptFile() + "\"";
         }
 
-        if (fileinfo.suffix().compare("exe", ONLY_WIN_CASE_INSENSIATIVE) == 0 || fileinfo.suffix().isEmpty()) {
+        if (fileinfo.suffix().compare("exe", Qt::CaseInsensitive) == 0 || fileinfo.suffix().isEmpty()) {
             if (cmdArray.size() > initSize) {
                 cmdArray += ",";
                 bashArray += " ";

@@ -190,6 +190,8 @@ private slots:
     // note: this test checking in manual mode only.
     void testInstallDirsOptions();
 
+    void testQIFResources();
+
     void customTest();
 };
 
@@ -1529,12 +1531,25 @@ void deploytest::testQifOut() {
     QString bin = TestBinDir + "TestOnlyC.exe";
 #endif
 
-    auto result = utils.createTree({{DISTRO_DIR + "/QIF_OUT.exe"},
-                                   {DISTRO_DIR + "/QIF_OUT.exe.md5"}});
+#ifdef Q_OS_UNIX
+    auto result = utils.createTree({{DISTRO_DIR + "/QIF_OUT.exe"}, {DISTRO_DIR + "/QIF_OUT.exe.md5"},
+                                    {DISTRO_DIR + "/DEB_OUT.deb"}, {DISTRO_DIR + "/DEB_OUT.deb.md5"},
+                                    {DISTRO_DIR + "/ZIP_OUT.zip"}, {DISTRO_DIR + "/ZIP_OUT.zip.md5"}});
 
     // Run deploy installer
     runTestParams({"-bin", bin, "clear",
-                   "qif", "-qifOut", "QIF_OUT.exe"}, &result);
+                   "qif", "-qifOut", "QIF_OUT.exe",
+                   "deb", "-debOut", "DEB_OUT.deb",
+                   "zip", "-zipOut", "ZIP_OUT.zip"}, &result);
+#else
+    auto result = utils.createTree({{DISTRO_DIR + "/QIF_OUT.exe"}, {DISTRO_DIR + "/QIF_OUT.exe.md5"},
+                                    {DISTRO_DIR + "/ZIP_OUT.zip"}, {DISTRO_DIR + "/ZIP_OUT.zip.md5"}});
+
+    // Run deploy installer
+    runTestParams({"-bin", bin, "clear",
+                   "qif", "-qifOut", "QIF_OUT.exe",
+                   "zip", "-zipOut", "ZIP_OUT.zip"}, &result);
+#endif
 }
 
 void deploytest::testIgnoreEnvWithLibDir() {
@@ -1573,6 +1588,35 @@ void deploytest::testInstallDirsOptions() {
                    "-installDirQIFW", "/opt"});
 
 #endif
+}
+
+void deploytest::testQIFResources() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = {TestBinDir + "TestOnlyC"};
+
+    auto result = utils.createTree({{DISTRO_DIR + "/InstallerTestOnlyC.run"},
+                                   {DISTRO_DIR + "/InstallerTestOnlyC.run.md5"}});
+#else
+    QString bin = {TestBinDir + "TestOnlyC.exe"};
+
+    auto result = utils.createTree({{DISTRO_DIR + "/InstallerTestOnlyC.exe"},
+                                   {DISTRO_DIR + "/InstallerTestOnlyC.exe.md5"}});
+#endif
+
+
+    auto templateDir = TestBinDir + "/../../UnitTests/testRes/QIFCustomTemplate";
+    runTestParams({
+                      "-bin", bin,
+                      "clear",
+                      "qif",
+                      "-qifConfig", templateDir + "/customconfig.xml",
+                      "-qifPackages", templateDir + "/custompackages",
+                      "-qifResources", templateDir + "customRes.qrc"
+                  }, &result
+                  );
+
 }
 
 void deploytest::customTest() {
