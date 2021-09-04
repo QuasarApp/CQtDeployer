@@ -29,6 +29,7 @@
 - migw32-make deploy
      - this command requires installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
 - ./Distro/CQtDeployerInstaller.exe
+
 ---
 
 # Installation without building
@@ -46,6 +47,7 @@ this can be done in the snap-store
 Or starting with ubuntu 20.04 in the ubuntu application settings manager.
 
 If you do not have the GUI then you can enable all permissions using next commands:
+
 ``` bash
 sudo snap connect cqtdeployer:process-control
 sudo snap connect cqtdeployer:removable-media

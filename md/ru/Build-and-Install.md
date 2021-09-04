@@ -44,6 +44,7 @@
 Или начиная с ubuntu 20.04 в менеджере настроек приложений ubuntu. 
 
 Если у вас нет графического интерфейса, вы можете включить все разрешения, используя следующие команды:
+
 ``` bash
 sudo snap connect cqtdeployer:process-control
 sudo snap connect cqtdeployer:removable-media
