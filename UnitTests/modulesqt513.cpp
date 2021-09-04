@@ -20,7 +20,7 @@ ModulesQt513::~ModulesQt513() {
 QSet<QString> ModulesQt513::ignoreFilter(const QSet<QString> &input, const QString &filter) const {
     QSet<QString> res;
     for (auto& val : input) {
-        if (!val.contains(filter, ONLY_WIN_CASE_INSENSIATIVE)) {
+        if (!val.contains(filter, DeployCore::getCaseSensitivity())) {
             res.insert(val);
         }
     }
