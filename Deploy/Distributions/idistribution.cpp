@@ -220,24 +220,23 @@ bool iDistribution::collectInfo(const DistroModule& pkg,
         auto targetInfo =  cfg->targets().value(target);
 
         if (targetInfo.getShortCut()) {
+
             if (cmdArray.size() > initSize) {
+                cmdArray += ",";
+                bashArray += " ";
                 cmdShortCutsArray += ",";
                 bashShortCutsArray += " ";
             }
 
+            cmdArray += "\"" + fileinfo.baseName() + "\"";
+            bashArray += "\"" + fileinfo.baseName() + "\"";
+
+
             cmdShortCutsArray += "\"" + targetInfo.getRunScriptFile() + "\"";
             bashShortCutsArray += "\"" + targetInfo.getRunScriptFile() + "\"";
         }
-
-        if (fileinfo.suffix().compare("exe", Qt::CaseInsensitive) == 0 || fileinfo.suffix().isEmpty()) {
-            if (cmdArray.size() > initSize) {
-                cmdArray += ",";
-                bashArray += " ";
-            }
-            cmdArray += "\"" + fileinfo.baseName() + "\"";
-            bashArray += "\"" + fileinfo.baseName() + "\"";
-        }
     }
+
     cmdArray += "]";
     bashArray += ")";
     cmdShortCutsArray += "]";

@@ -40,7 +40,12 @@ void TargetInfo::setIcon(const QString &value) {
 }
 
 bool TargetInfo::getShortCut() const {
-    return _fEnableShortCut;
+    QFileInfo info(fullPath());
+    QString compleSufix = info.completeSuffix();
+
+    bool defaultRule = compleSufix.compare("exe", Qt::CaseInsensitive) == 0 || compleSufix.isEmpty();
+
+    return _fEnableShortCut && defaultRule;
 }
 
 void TargetInfo::setShortCut(bool shortcut) {
@@ -70,7 +75,7 @@ void TargetInfo::setRunScript(const QString &newRunScript) {
 
 QString TargetInfo::getRunScriptFile() const {
 
-    if (_fEnableRunScript) {
+    if (fEnableRunScript()) {
         QFileInfo runscriptInfo(getRunScript());
         QFileInfo info(getName());
 
