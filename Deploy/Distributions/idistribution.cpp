@@ -279,7 +279,17 @@ bool iDistribution::deployIcon(TemplateInfo &info, const DistroModule& pkg) {
     info.Icon = "icons/Icon.png";
     QSet<QString> icons;
     for (const auto& target: pkg.targets()) {
-        auto icon = cfg->targets().value(target).getIcon();
+        auto targetObject = cfg->targets().value(target);
+
+        if (!targetObject.isValid()) {
+            QuasarAppUtils::Params::log(QString("The target '%0' is not detected in the target list."
+                                                " Available Target List : %1"
+                                                " So icon will be copy by Default.").
+                                        arg(target, cfg->targets().keys().join(',')),
+                                        QuasarAppUtils::Warning);
+        }
+
+        auto icon = targetObject.getIcon();
 
         QuasarAppUtils::Params::log(QString("%0: %1").arg(target, icon),
                                     QuasarAppUtils::Debug);
