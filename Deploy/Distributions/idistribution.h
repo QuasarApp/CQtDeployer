@@ -105,7 +105,7 @@ protected:
      * @param pkg This is package info
      * @return true if this method finished successful.
      */
-    bool deployIcon(TemplateInfo &info, const DistroModule &pkg);
+    bool deployIcon(const DistroModule &pkg);
 
     /**
      * @brief dataLocation This method should be retrun location of application or package files.

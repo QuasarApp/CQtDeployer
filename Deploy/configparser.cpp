@@ -71,8 +71,8 @@ void parseTargetPrivate(DeployConfig& conf,
 
     auto &cointainer = conf.targetsEdit();
 
-    for (const auto &iconPair: inputParams) {
-        auto pair = iconPair.split(DeployCore::getSeparator(1), splitbehavior);
+    for (const auto &targetPair: inputParams) {
+        auto pair = targetPair.split(DeployCore::getSeparator(1), splitbehavior);
 
         if (pair.size() == 1) {
             QuasarAppUtils::Params::log(QString("Set new default property for all tagets: " + pair.value(0)),

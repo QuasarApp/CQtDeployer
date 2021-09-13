@@ -21,7 +21,7 @@ function generateShortCutCmd(cmd) {
             "CreateShortcut",
             "@TargetDir@/" + prefix + "/" + cmd,
             "@DesktopDir@/" + getBasename(cmd) + ".lnk",
-            "iconPath=@TargetDir@/$ICON",
+            "iconPath=@TargetDir@/" + prefix + "/icons/" + getBasename(cmd) + ".ico",
             "iconId=0");
 
     }
@@ -36,7 +36,7 @@ function generateShortCutCmd(cmd) {
                                 Terminal=false\n
                                 Exec=\"@TargetDir@/" + prefix + "/" + cmd + "\"\n
                                 Name=" + getBasename(cmd) + "\n
-                                Icon=@TargetDir@/$ICON\n
+                                Icon=@TargetDir@/" + prefix + "/icons/" + getBasename(cmd) + ".png\n
                                 Name[en_US]=" + getBasename(cmd));
 
         console.log("create icons!!! on LINUX done");
