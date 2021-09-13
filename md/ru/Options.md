@@ -125,7 +125,7 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
-|  -icon [target;val,val]     | Установит путь к иконке или логотипу для целе             |
+|  -icon [target;val,val]     | Установит путь к иконке или логотипу для целе. Эта комманда поддерживает только png файлы для Linux и ico файлы для Windows  |
 |  -disableRunScript [target; val, val]| Отключает создание сценария выполнения для выбранных целей |
 |  -disableShortCut [target; val, val] | Отключает создание ярлыков для выбранных целей | 
 |  -runScript [target; val, val]  | заставляет cqtdeployer заменить сценарий запуска по умолчанию на новый из аргументов параметра. Эта опция копирует все содержимое из входного файла и вставляет весь код в runScript.sh или .bat. Пример использования: cqtdeployer -runScript "myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh". Для получения дополнительной информации смотрите статью [Кастомные скрипты](CustomScripts.md)|
