@@ -1315,7 +1315,6 @@ void deploytest::testIcons() {
 
 
     delete deploy;
-
 }
 
 void deploytest::testPathUtils() {

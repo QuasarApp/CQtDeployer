@@ -298,7 +298,7 @@ bool iDistribution::deployIcon(const DistroModule& pkg) {
         QFileInfo iconInfo(icon);
         QFileInfo runScript(targetObject.getRunScriptFile());
 
-        QString dist = localData + "/icons/" + runScript.baseName() + "/" + iconInfo.suffix();
+        QString dist = localData + "/icons/" + runScript.baseName() + "." + iconInfo.suffix();
 
         if (!copyFile(icon, dist, true)) {
 
