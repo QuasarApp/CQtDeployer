@@ -70,7 +70,6 @@ bool iDistribution::unpackFile(const QFileInfo &resource,
         inputText.replace("$DESCRIPTION", info.Description);
         inputText.replace("$VERSION", info.Version);
         inputText.replace("$RELEASEDATA", info.ReleaseData);
-        inputText.replace("$ICON", info.Icon);
         inputText.replace("$PUBLISHER", info.Publisher);
         inputText.replace("$HOMEPAGE", info.Homepage);
         inputText.replace("$PREFIX", info.Prefix);
@@ -162,7 +161,7 @@ bool iDistribution::collectInfoWithDeployIcons(const DistroModule &pkg,
         return false;
     }
 
-    return deployIcon(info, pkg);
+    return deployIcon(pkg);
 
 }
 
@@ -272,11 +271,10 @@ QString iDistribution::getName(const DistroModule& pkg) const {
     return name;
 }
 
-bool iDistribution::deployIcon(TemplateInfo &info, const DistroModule& pkg) {
+bool iDistribution::deployIcon(const DistroModule& pkg) {
     auto localData = dataLocation(pkg);
     const DeployConfig *cfg = DeployCore::_config;
 
-    info.Icon = "icons/Icon.png";
     QSet<QString> icons;
     for (const auto& target: pkg.targets()) {
         auto targetObject = cfg->targets().value(target);
@@ -298,14 +296,18 @@ bool iDistribution::deployIcon(TemplateInfo &info, const DistroModule& pkg) {
             break;
 
         QFileInfo iconInfo(icon);
-        info.Icon = releativeLocation(pkg) + "/icons/" + iconInfo.fileName();
-        if (!copyFile(icon, localData + "/icons/", false)) {
+        QFileInfo runScript(targetObject.getRunScriptFile());
+
+        QString dist = localData + "/icons/" + runScript.baseName() + "." + iconInfo.suffix();
+
+        if (!copyFile(icon, dist, true)) {
 
             QuasarAppUtils::Params::log(QString("Failed to copy icon: %0.").arg(icon),
                                         QuasarAppUtils::Error);
 
             return false;
         }
+
         icons += icon;
     }
 

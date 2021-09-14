@@ -21,7 +21,7 @@ function createShortCut {
         echo "Encoding=UTF-8" >> $DEST_FILE
         echo "Name=$DEST_NAME" >> $DEST_FILE
         echo "Type=Application" >> $DEST_FILE
-        echo "Icon=$CQT_INSTALL_DEB_DIR/$ICON" >> $DEST_FILE
+        echo "Icon=$CQT_INSTALL_DEB_DIR/icons/${SRC_FILE%%.*}.png" >> $DEST_FILE
         echo "Terminal=false" >> $DEST_FILE
         echo "Exec=$SRC_FILE" >> $DEST_FILE
 

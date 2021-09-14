@@ -14,7 +14,6 @@ struct DEPLOYSHARED_EXPORT TemplateInfo
     QString Description;
     QString Version;
     QString ReleaseData;
-    QString Icon;
     QString Publisher;
     QString Homepage;
     QString Prefix;
