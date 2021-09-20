@@ -275,7 +275,6 @@ bool iDistribution::deployIcon(const DistroModule& pkg) {
     auto localData = dataLocation(pkg);
     const DeployConfig *cfg = DeployCore::_config;
 
-    QSet<QString> icons;
     for (const auto& target: pkg.targets()) {
         auto targetObject = cfg->targets().value(target);
 
@@ -292,8 +291,11 @@ bool iDistribution::deployIcon(const DistroModule& pkg) {
         QuasarAppUtils::Params::log(QString("%0: %1").arg(target, icon),
                                     QuasarAppUtils::Debug);
 
-        if (icons.contains(icon))
-            break;
+        if (!targetObject.fEnableRunScript()) {
+            QuasarAppUtils::Params::log(QString("%0: %1 Ignored").arg(target, icon),
+                                        QuasarAppUtils::Debug);
+            continue;
+        }
 
         QFileInfo iconInfo(icon);
         QFileInfo runScript(targetObject.getRunScriptFile());
@@ -307,8 +309,6 @@ bool iDistribution::deployIcon(const DistroModule& pkg) {
 
             return false;
         }
-
-        icons += icon;
     }
 
     return true;
