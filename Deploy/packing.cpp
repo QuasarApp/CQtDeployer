@@ -306,5 +306,5 @@ void Packing::handleOutputUpdate() {
 
     if (erroutLog.size())
         QuasarAppUtils::Params::log(erroutLog,
-                                    QuasarAppUtils::Info);
+                                    QuasarAppUtils::Error);
 }
