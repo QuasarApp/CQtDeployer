@@ -148,9 +148,9 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -qifBanner [path/to/banner.png]| Устанавливает путь к png-файлу баннера.                                      |
 |  -qifLogo [path/to/logo.png]| Устанавливает путь к файлу логотипа png.                            |
 |  -qifOut [nameOfOutputInstallerFile] | Устанавливает имя выходного установщика qifw. Примечание: для установщика Windows автоматически добавляется суффикс exe.  |
-|  -qifConfig [path/to/config.xml] | Устанавливает пользовательский путь к файлу конфигурации установщика qt ifw. По умолчанию это qif/config/config.xml  |
-|  -qifPackages [path/to/packagesFodoler] | Устанавливает пользовательский путь к каталогам пакетов. По умолчанию это qif/packages   |
-|  -qifResources [path/to/resources1.qrc,path/to/resources2.qrc] | Устанавливает пользовательский путь к файлам ресурсов. По умолчанию эта опция пропущена  |
+|  -qifConfig [path/to/config.xml] | Устанавливает пользовательский путь к файлу конфигурации установщика qt ifw. По умолчанию это qif/config/config.xml. Важно путь считаеться относительным целевого католога (установленным опцией targetDir).  |
+|  -qifPackages [path/to/packagesFodoler] | Устанавливает пользовательский путь к каталогам пакетов. По умолчанию это qif/packages. Важно путь считаеться относительным целевого католога (установленным опцией targetDir).   |
+|  -qifResources [path/to/resources1.qrc,path/to/resources2.qrc] | Устанавливает пользовательский путь к файлам ресурсов. По умолчанию эта опция пропущена. Важно путь считаеться относительным целевого католога (установленным опцией targetDir).  |
 
 ### Deb package options:
 
@@ -162,7 +162,7 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
-|  -debOut [package;nameOfOutputZipFile,nameOfOutputZipFile]| Устанавливает имя выходного zip архива. Эта опция может работать с несколькими пакетами  |
+|  -zipOut [package;nameOfOutputZipFile,nameOfOutputZipFile]| Устанавливает имя выходного zip архива. Эта опция может работать с несколькими пакетами  |
 
 
 #### Пример: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.15.0/gcc_64/bin/qmake clear

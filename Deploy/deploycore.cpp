@@ -491,15 +491,15 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-qifConfig"}, "{path/to/config.xml}",
-                            "Sets a custom path to the configure file of the qt ifw installer. By default it is qif/config/config.xml"
+                            "Sets a custom path to the configure file of the qt ifw installer. By default it is qif/config/config.xml. Note This path sets releative target folder (sets by TargetDir option)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-qifPackages"}, "{path/to/packagesFodoler}",
-                            "Sets a custom path to the packages directories. By default it is qif/packages"
+                            "Sets a custom path to the packages directories. By default it is qif/packages. Note This path sets releative target folder (sets by TargetDir option)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-qifResources"}, "{path/to/resources1.qrc,path/to/resources2.qrc}",
-                            "Sets a custom path to the resources files. By default this option is skipped"
+                            "Sets a custom path to the resources files. By default this option is skipped. Note This path sets releative target folder (sets by TargetDir option)."
                         }});
 
     help.insert(group, {QuasarAppUtils::OptionData{
