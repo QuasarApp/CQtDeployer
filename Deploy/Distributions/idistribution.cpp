@@ -275,6 +275,10 @@ bool iDistribution::deployIcon(const DistroModule& pkg) {
     auto localData = dataLocation(pkg);
     const DeployConfig *cfg = DeployCore::_config;
 
+    QuasarAppUtils::Params::log(QString("Deploy icons for package %0. count targets: %1").
+                                arg(pkg.name()).arg(pkg.targets().count()),
+                                QuasarAppUtils::Debug);
+
     for (const auto& target: pkg.targets()) {
         auto targetObject = cfg->targets().value(target);
 

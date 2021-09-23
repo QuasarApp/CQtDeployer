@@ -1315,6 +1315,34 @@ void deploytest::testIcons() {
 
 
     delete deploy;
+
+    // manual tests
+#ifdef QT_DEBUG
+#ifdef Q_OS_UNIX
+    bin = TestBinDir + "TestOnlyC," + TestBinDir + "TestCPPOnly";
+
+    auto comapareTree = utils.createTree({
+                                             "./" + DISTRO_DIR + "/InstallerTest.run",
+                                             "./" + DISTRO_DIR + "/InstallerTest.run.md5",
+                                         });
+
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+
+    auto comapareTree = utils.createTree({
+                                             "./" + DISTRO_DIR + "/InstallerTest.exe",
+                                             "./" + DISTRO_DIR + "/InstallerTest.exe.md5",
+
+                                         });
+
+#endif
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "qif", "qifFromSystem", "-name", "Test",
+                   "-targetPackage", "testPackage;TestOnlyC;TestCPPOnly",
+                   "-icon", "TestOnlyC;:/testResurces/testRes/TestIcon.png,TestCPPOnly;:/testResurces/testRes/TestTr.qm"}, &comapareTree, true);
+
+#endif
 }
 
 void deploytest::testPathUtils() {

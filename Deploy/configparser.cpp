@@ -572,7 +572,6 @@ bool ConfigParser::initDistroStruct() {
 
 bool ConfigParser::initPackages() {
     defaultPackage = "Application";
-
     QSet<QString> configuredTargets;
 
     if (QuasarAppUtils::Params::isEndable("targetPackage")) {
