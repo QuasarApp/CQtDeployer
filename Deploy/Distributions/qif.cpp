@@ -298,5 +298,5 @@ bool QIF::initDefaultConfiguratuin() {
     const DeployConfig *cfg = DeployCore::_config;
 
     // init default configuration
-    return collectInfo(DistroModule{cfg->getDefaultPackage()}, generalInfo);
+    return collectInfo(cfg->getDistroFromPackage(cfg->getDefaultPackage()), generalInfo);
 }
