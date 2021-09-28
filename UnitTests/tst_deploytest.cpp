@@ -1327,7 +1327,7 @@ void deploytest::testIcons() {
                                          });
 
 #else
-    QString bin = TestBinDir + "TestOnlyC.exe";
+    bin = TestBinDir + "TestOnlyC.exe,"  + TestBinDir + "TestCPPOnly.exe";
 
     auto comapareTree = utils.createTree({
                                              "./" + DISTRO_DIR + "/InstallerTest.exe",
