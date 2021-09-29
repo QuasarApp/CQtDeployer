@@ -295,7 +295,7 @@ bool iDistribution::deployIcon(const DistroModule& pkg) {
         QuasarAppUtils::Params::log(QString("%0: %1").arg(target, icon),
                                     QuasarAppUtils::Debug);
 
-        if (!targetObject.fEnableRunScript()) {
+        if (!targetObject.getShortCut()) {
             QuasarAppUtils::Params::log(QString("%0: %1 Ignored").arg(target, icon),
                                         QuasarAppUtils::Debug);
             continue;
