@@ -113,8 +113,7 @@ See building and installation instructions on wiki [page](md/en/Build-and-Instal
 
 Join the development fund and support QuasarApp to help us develop of our projects.
 
-<img src="https://img.shields.io/badge/ become a patron-red?&style=for-the-badge&logo=patreon&logoColor=white" height=30 width=180>
-
+<a href="https://www.patreon.com/bePatron?u=9304737"><img src="https://img.shields.io/badge/ become a patron-red?&style=for-the-badge&logo=patreon&logoColor=white" height=30 width=180></a>
 
 
 If you would like to use bitcoins to support us, you can transfer coins to this address. If you want to be included in the Patrons list, e-mail me at QuasarApp@yandex.by.
