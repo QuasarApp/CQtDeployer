@@ -41,18 +41,23 @@ for(val, sopprted_versions) {
 }
 
 isEmpty (BINARY_LIST) {
-      error( "QtInstallerFramework not found!" )
+      warning( "QtInstallerFramework not found! use binaries from PATH" )
+      EXEC=binarycreator
+      REPOGEN=repogen
+
+} else: {
+    win32:EXEC=$$first(BINARY_LIST).exe
+    win32:REPOGEN=$$first(REPO_LIST).exe
+
+    contains(QMAKE_HOST.os, Linux):{
+        unix:EXEC=$$first(BINARY_LIST)
+        win32:EXEC=wine $$first(BINARY_LIST).exe
+
+        REPOGEN=$$first(REPO_LIST)
+    }
 }
 
-win32:EXEC=$$first(BINARY_LIST).exe
-win32:REPOGEN=$$first(REPO_LIST).exe
 
-contains(QMAKE_HOST.os, Linux):{
-    unix:EXEC=$$first(BINARY_LIST)
-    win32:EXEC=wine $$first(BINARY_LIST).exe
-
-    REPOGEN=$$first(REPO_LIST)
-}
 
 message( selected $$EXEC and $$REPOGEN)
 
