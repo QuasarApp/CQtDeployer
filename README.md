@@ -10,8 +10,8 @@
 If you like what we do and it benefits you, you can support the project on the official page [QuasarApp on Patreon](https://www.patreon.com/QuasarApp)
 
 ## What is CQtDeployer
-The CQtDeployer is application for extract all depends library of executable and create launch script for your application.
 
+CQtDeployer helps you to extract all libraries your executable depends on and to create a launch script for your application.
 
 Key differences of this program:
 * Performance: this program deploys the application several times faster (up to 10 seconds)
