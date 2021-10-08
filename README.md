@@ -49,7 +49,7 @@ See the list of all options [here](md/en/Options.md)
  cqtdeployer -bin Guitar.exe -qmake /path/to/qmake.exe
 
 ```
-<img src="https://user-images.githubusercontent.com/12465465/81007195-7ab2e780-8e59-11ea-9793-1eeeb0025b96.png"  height="400">
+<p align="center"><img src="https://user-images.githubusercontent.com/12465465/81007195-7ab2e780-8e59-11ea-9793-1eeeb0025b96.png"  height="400"></p>
 
 #### Project installer after deployment with the `qif` option.
 ``` bash
@@ -60,7 +60,7 @@ See the list of all options [here](md/en/Options.md)
  cqtdeployer -bin Application.exe -qmake /path/to/qmake.exe qif
 
 ```
-<img src="https://user-images.githubusercontent.com/12465465/78639719-197a1180-78b7-11ea-9e82-a03dd43f4bd2.png"  height="400">
+<p align="center"><img src="https://user-images.githubusercontent.com/12465465/78639719-197a1180-78b7-11ea-9e82-a03dd43f4bd2.png"  height="400"></p>
 
 #### Project installer after deployment with the `qif` and `qifStyle` options.
 
@@ -73,7 +73,7 @@ See the list of all options [here](md/en/Options.md)
 
 ```
 
-<img src="https://user-images.githubusercontent.com/12465465/78639720-1aab3e80-78b7-11ea-9604-3dcdd7c78482.png"  height="400">
+<p align="center"><img src="https://user-images.githubusercontent.com/12465465/78639720-1aab3e80-78b7-11ea-9604-3dcdd7c78482.png"  height="400"></p>
 
 ``` bash
  #linux
@@ -84,7 +84,7 @@ See the list of all options [here](md/en/Options.md)
 
 ```
 
-<img src="https://user-images.githubusercontent.com/12465465/78639716-17b04e00-78b7-11ea-9002-a8b45a43807f.png"  height="400">
+<p align="center"><img src="https://user-images.githubusercontent.com/12465465/78639716-17b04e00-78b7-11ea-9002-a8b45a43807f.png"  height="400"></p>
 
 ## Build and install
 See building and installation instructions on wiki [page](md/en/Build-and-Install.md)
@@ -108,7 +108,7 @@ See building and installation instructions on wiki [page](md/en/Build-and-Instal
 
 ***
 
-<img src="res/Credits.jpg" alt="Credits">
+<p align="center"><img src="res/Credits.jpg" alt="Credits"></p>
 
 
 Join the development fund and support QuasarApp to help us develop of our projects.
@@ -122,7 +122,7 @@ If you would like to use bitcoins to support us, you can transfer coins to this 
 
 <p align="center"><img src="res/qr.png" alt="qrcode"></p>
 
-bitcoin: bc1qzuymq7jc9q2x04wcwstr45tu8klm46zfl20wyp
+<p align="center">bitcoin: bc1qzuymq7jc9q2x04wcwstr45tu8klm46zfl20wyp</p>
 
 
 ## Our patrons list:
