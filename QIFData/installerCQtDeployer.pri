@@ -1,8 +1,8 @@
 VERSION = 1.5.4.7
 
-
 include($$PWD/InstallerBase.pri);
 mkpath( $$PWD/../Distro)
+
 win32:OUT_FILE = CQtDeployer_'$$VERSION'_Installer_Win64.exe
 unix:OUT_FILE = CQtDeployer_'$$VERSION'_Installer_Linux64.run
 
@@ -38,9 +38,13 @@ deployOffline.commands = $$EXEC \
                        -p $$PWD/packages \
                        $$PWD/../Distro/$$OUT_FILE_OFF
 
-deploy.depends = deploy_dep
 
-deploy.depends += deployOffline
+!contains(QMAKE_HOST.arch, arm.*):{
+    deploy.depends = deploy_dep
+    deploy.depends += deployOffline
+
+}
+
 unix:deploy.depends += deploy_deb
 
 win32:ONLINE_REPO_DIR = $$ONLINE/CQtDeployer/Windows
@@ -80,12 +84,15 @@ releaseSnap.commands = snapcraft push *.snap # bad patern
 
 !isEmpty( ONLINE ) {
 
-    message(Snap)
-    unix:deploy.depends += clearSnap
-    unix:deploy.depends += buildSnap
-    unix:deploy.depends += deploySnap
-    unix:deploy.depends += clearSnap2
-    unix:release.depends += releaseSnap
+    !contains(QMAKE_HOST.arch, arm.*):{
+
+        message(Snap)
+        unix:deploy.depends += clearSnap
+        unix:deploy.depends += buildSnap
+        unix:deploy.depends += deploySnap
+        unix:deploy.depends += clearSnap2
+        unix:release.depends += releaseSnap
+    }
 }
 
 OTHER_FILES += \
