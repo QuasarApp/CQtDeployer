@@ -19,7 +19,7 @@ META_DIR = $$PWD/packages/cqtdeployer.1_5/meta/
 win32:OUT_LIB= -libOut lib
 win32:OUT_BIN= -binOut bin
 
-BASE_DEPLOY_FLAGS = clear -qmake $$QMAKE_BIN -libDir $$PWD/../ -recursiveDepth 4 -ignoreEnv $$DEPLOY_TARGET
+BASE_DEPLOY_FLAGS = clear -qmake $$QMAKE_BIN -libDir $$PWD/../ -recursiveDepth 4 -ignoreEnv $$DEPLOY_TARGET -extraLibs icu
 BASE_DEPLOY_FLAGS_CQT = $$BASE_DEPLOY_FLAGS -targetDir $$DATA_DIR $$OUT_LIB $$OUT_BIN
 
 
