@@ -116,43 +116,46 @@ QMAKE_EXTRA_TARGETS += \
     chmodSnap
 
 
-# Translations
-SUPPORT_LANGS = ru
+!lessThan(QT_MAJOR_VERSION, 6):lessThan(QT_MINOR_VERSION, 12) {
 
-defineReplace(findFiles) {
-    patern = $$1
-    path = $$2
+    # Translations
+    SUPPORT_LANGS = ru
 
-    all_files = $$files(*$${patern}, true)
-    win32:all_files ~= s|\\\\|/|g
-    win32:path ~= s|\\\\|/|g
+    defineReplace(findFiles) {
+        patern = $$1
+        path = $$2
 
-    for(file, all_files) {
-        result += $$find(file, $$path)
+        all_files = $$files(*$${patern}, true)
+        win32:all_files ~= s|\\\\|/|g
+        win32:path ~= s|\\\\|/|g
+
+        for(file, all_files) {
+            result += $$find(file, $$path)
+        }
+
+        return($$result)
     }
 
-    return($$result)
-}
+    XML_FILES = $$files(*.xml, true)
 
-XML_FILES = $$files(*.xml, true)
+    for(LANG, SUPPORT_LANGS) {
+        for(XML, XML_FILES) {
+            FILE_PATH = $$dirname(XML)
 
-for(LANG, SUPPORT_LANGS) {
-    for(XML, XML_FILES) {
-        FILE_PATH = $$dirname(XML)
+            JS_FILES = $$findFiles(".js", $$FILE_PATH)
+            UI_FILES = $$findFiles(".ui", $$FILE_PATH)
 
-        JS_FILES = $$findFiles(".js", $$FILE_PATH)
-        UI_FILES = $$findFiles(".ui", $$FILE_PATH)
+            commands += "$$LUPDATE $$JS_FILES $$UI_FILES -ts $$FILE_PATH/$${LANG}.ts"
+            TS_FILES += $$FILE_PATH/$${LANG}.ts
 
-        commands += "$$LUPDATE $$JS_FILES $$UI_FILES -ts $$FILE_PATH/$${LANG}.ts"
-        TS_FILES += $$FILE_PATH/$${LANG}.ts
+        }
 
+        for(TS, TS_FILES) {
+            commands += "$$LRELEASE $$TS"
+        }
     }
 
-    for(TS, TS_FILES) {
-        commands += "$$LRELEASE $$TS"
+    for(command, commands) {
+        system($$command)|error("Failed to run: $$command")
     }
-}
-
-for(command, commands) {
-    system($$command)|error("Failed to run: $$command")
 }
