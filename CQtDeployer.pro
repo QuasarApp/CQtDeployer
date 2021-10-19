@@ -48,6 +48,9 @@ android: DEFINES += WITHOUT_TESTS
     Pe.file = $$PWD/pe/pe-parser-library/pe-parser-library.pro
 
     include('$$PWD/QIFData/installerCQtDeployer.pri')
+    !contains(QMAKE_HOST.arch, arm.*):{
+        include($$PWD/test.pri)
+    }
 
     DISTFILES += \
         snap/snapcraft.yaml \
@@ -56,5 +59,4 @@ android: DEFINES += WITHOUT_TESTS
 
 
 }
-    include($$PWD/test.pri)
 
