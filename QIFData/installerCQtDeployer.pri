@@ -5,11 +5,11 @@ mkpath( $$PWD/../Distro)
 
 message(QMAKE_HOST.arch = $$QMAKE_HOST.arch)
 
-win32:OUT_FILE = CQtDeployer_'$$VERSION'_Installer_Win$$QMAKE_HOST.arch.exe
-unix:OUT_FILE = CQtDeployer_'$$VERSION'_Installer_Linux$$QMAKE_HOST.arch.run
+win32:OUT_FILE = CQtDeployer_'$$VERSION'_Installer_Win'$$QMAKE_HOST.arch'.exe
+unix:OUT_FILE = CQtDeployer_'$$VERSION'_Installer_Linux'$$QMAKE_HOST.arch'.run
 
-win32:OUT_FILE_OFF = CQtDeployer_'$$VERSION'_OfflineInstaller_Win$$QMAKE_HOST.arch.exe
-unix:OUT_FILE_OFF = CQtDeployer_'$$VERSION'_OfflineInstaller_Linux$$QMAKE_HOST.arch.run
+win32:OUT_FILE_OFF = CQtDeployer_'$$VERSION'_OfflineInstaller_Win'$$QMAKE_HOST.arch'.exe
+unix:OUT_FILE_OFF = CQtDeployer_'$$VERSION'_OfflineInstaller_Linux'$$QMAKE_HOST.arch'.run
 
 DEPLOY_TARGET = $$PWD/../CQtDeployer/build/release
 
@@ -25,7 +25,7 @@ BASE_DEPLOY_FLAGS_CQT = $$BASE_DEPLOY_FLAGS -targetDir $$DATA_DIR $$OUT_LIB $$OU
 
 win32:CQT_ICON = -icon $$PWD/config/icon.ico
 unix:CQT_ICON = -icon $$PWD/config/logo.png
-BASE_DEPLOY_FLAGS_DEB = $$BASE_DEPLOY_FLAGS -targetDir $$PWD/../Distro $$OUT_LIB $$OUT_BIN deb zip -name CQtDeployer -publisher QuasarApp $$CQT_ICON -deployVersion 1.5.4.7 -debOut CQtDeployer_'$$VERSION'_Linux$$QMAKE_HOST.arch.deb -zipOut CQtDeployer_'$$VERSION'_Linux$$QMAKE_HOST.arch.zip
+BASE_DEPLOY_FLAGS_DEB = $$BASE_DEPLOY_FLAGS -targetDir $$PWD/../Distro $$OUT_LIB $$OUT_BIN deb zip -name CQtDeployer -publisher QuasarApp $$CQT_ICON -deployVersion 1.5.4.7 -debOut CQtDeployer_'$$VERSION'_Linux'$$QMAKE_HOST.arch'.deb -zipOut CQtDeployer_'$$VERSION'_Linux'$$QMAKE_HOST.arch'.zip
 
 DEPLOY_TARGET_DEB = $$DEPLOY_TARGET,$$PWD/packages/QIF/data/QIF
 deploy_dep.commands += $$DEPLOYER -bin $$DEPLOY_TARGET $$BASE_DEPLOY_FLAGS_CQT
