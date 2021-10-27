@@ -118,7 +118,7 @@ QMAKE_EXTRA_TARGETS += \
     chmodSnap
 
 
-!lessThan(QT_MAJOR_VERSION, 6):lessThan(QT_MINOR_VERSION, 12) {
+contains(DEFINES, WITHOUT_TR) {
 
     # Translations
     SUPPORT_LANGS = ru
