@@ -118,7 +118,7 @@ QMAKE_EXTRA_TARGETS += \
     chmodSnap
 
 
-contains(DEFINES, WITHOUT_TR) {
+!contains(DEFINES, WITHOUT_TR) {
 
     # Translations
     SUPPORT_LANGS = ru
