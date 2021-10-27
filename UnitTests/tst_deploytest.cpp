@@ -1196,18 +1196,16 @@ void deploytest::testTr() {
     QString bin = TestBinDir + "TestOnlyC.exe";
 
 #endif
-    auto comapareTree = TestModule.onlyC();
-
-    comapareTree += utils.createTree({"./" + DISTRO_DIR + "/translations/TestTr.qm"});
 
     runTestParams({"-bin", bin, "clear" ,
-                   "-tr", ":/testResurces/testRes/TestTr.qm",}, &comapareTree,
-                  true);
+                   "-tr", ":/testResurces/testRes/TestTr.qm",});
 
+    QVERIFY(QFile::exists("./" + DISTRO_DIR + "/translations/TestTr.qm"));
 
     runTestParams({"-bin", bin, "clear" ,
-                   "-tr", ":/testResurces/testRes/"},
-                  &comapareTree, true);
+                   "-tr", ":/testResurces/testRes/"});
+
+    QVERIFY(QFile::exists("./" + DISTRO_DIR + "/translations/TestTr.qm"));
 }
 
 void deploytest::testVirtualKeyBoard() {
