@@ -1190,21 +1190,22 @@ void deploytest::testDeployGeneralFiles() {
 void deploytest::testTr() {
     TestUtils utils;
 #ifdef Q_OS_UNIX
-    QString bin = TestBinDir + "QtWidgetsProject";
-    QString qmake = TestQtDir + "bin/qmake";
+    QString bin = TestBinDir + "TestOnlyC";
 
 #else
-    QString bin = TestBinDir + "QtWidgetsProject.exe";
-    QString qmake = TestQtDir + "bin/qmake.exe";
+    QString bin = TestBinDir + "TestOnlyC.exe";
 
 #endif
-    auto comapareTree = TestModule.qtLibs();
-
-    comapareTree += utils.createTree({"./" + DISTRO_DIR + "/translations/TestTr.qm"});
 
     runTestParams({"-bin", bin, "clear" ,
-                   "-tr", ":/testResurces/testRes/TestTr.qm",
-                   "-qmake", qmake}, &comapareTree);
+                   "-tr", ":/testResurces/testRes/TestTr.qm",});
+
+    QVERIFY(QFile::exists("./" + DISTRO_DIR + "/translations/TestTr.qm"));
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-tr", ":/testResurces/testRes/"});
+
+    QVERIFY(QFile::exists("./" + DISTRO_DIR + "/translations/TestTr.qm"));
 }
 
 void deploytest::testVirtualKeyBoard() {
