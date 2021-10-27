@@ -269,8 +269,22 @@ bool Extracter::copyTr() {
 
             const auto trFiles =  i->tr();
             for (const auto &tr: trFiles) {
-                if (!_fileManager->copyFile(tr, cnf->getPackageTargetDir(i.key()) + i->getTrOutDir())) {
-                    return false;
+
+                QFileInfo info(tr);
+
+                if (info.isDir()) {
+                    QDir dir(info.absoluteFilePath());
+                    auto availableQm = dir.entryInfoList({"*.qm"}, QDir::Files);
+                    for (const auto & trFile : qAsConst(availableQm)) {
+                        if (!_fileManager->copyFile(trFile.absoluteFilePath(),
+                                                    cnf->getPackageTargetDir(i.key()) + i->getTrOutDir())) {
+                            return false;
+                        }
+                    }
+                } else {
+                    if (!_fileManager->copyFile(tr, cnf->getPackageTargetDir(i.key()) + i->getTrOutDir())) {
+                        return false;
+                    }
                 }
             }
         }
