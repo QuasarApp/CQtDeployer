@@ -272,6 +272,12 @@ bool Extracter::copyTr() {
 
                 QFileInfo info(tr);
 
+                if (!info.exists()) {
+                    QuasarAppUtils::Params::log("Failed to copy " + info.absoluteFilePath() + ". Not exists",
+                                                QuasarAppUtils::Warning);
+                    continue;
+                }
+
                 if (info.isDir()) {
                     QDir dir(info.absoluteFilePath());
                     auto availableQm = dir.entryInfoList({"*.qm"}, QDir::Files);
