@@ -112,6 +112,18 @@ QtMajorVersion LibInfo::isDependetOfQt() const {
     return QtMajorVersion::NoQt;
 }
 
+QString LibInfo::toString() const {
+
+    QStringList dependenciesList{_dependncies.begin(), _dependncies.end()};
+
+    return QString("LibInfo: path: '%0', name: '%1', qtPath: '%2', platform: '%3', dependencies: '%4'").
+            arg(_path,
+                _name,
+                _qtPath,
+                DeployCore::platformToString(_platform),
+                dependenciesList.join(", "));
+}
+
 QString LibInfo::fullPath() const {
     return _path + "/" + _name;
 }

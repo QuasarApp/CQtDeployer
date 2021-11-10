@@ -229,6 +229,13 @@ public:
      */
     static QStringList Qt3rdpartyLibs(Platform platform);
 
+    /**
+     * @brief platformToString This method convert platform value to string value.
+     * @param platform This is input platform value.
+     * @return String name of the @a platform
+     */
+    static QString platformToString(Platform platform);
+
     static char getEnvSeparator();
 
     static LibPriority getLibPriority(const QString &lib);

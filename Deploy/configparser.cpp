@@ -1568,9 +1568,18 @@ bool ConfigParser::smartMoveTargets() {
 
     QuasarAppUtils::Params::log(QString("Available Targets: "),
                                 QuasarAppUtils::Debug);
+
+
     for (auto i = _config.targets().cbegin(); i != _config.targets().cend(); ++i) {
 
+        QuasarAppUtils::Params::log(i.value().toString(),
+                                    QuasarAppUtils::Info);
+
         if (!i.value().isValid()) {
+
+            QuasarAppUtils::Params::log(i.value().toString(),
+                                        QuasarAppUtils::Error);
+
             internalError();
             return false;
         }
