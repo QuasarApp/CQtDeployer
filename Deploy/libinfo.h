@@ -48,6 +48,8 @@ public:
     void setWinApi(WinAPI winApi);
     QtMajorVersion isDependetOfQt() const;
 
+    QString toString() const;
+
     friend class DependenciesScanner;
 
 private:

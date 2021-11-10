@@ -876,6 +876,38 @@ QStringList DeployCore::Qt3rdpartyLibs(Platform platform) {
     return result;
 }
 
+QString DeployCore::platformToString(Platform platform) {
+    int platformVal = 1;
+    QString result;
+
+    QHash<int, QString> platformsMap = {
+        {Platform::Win32, "Win32"},
+        {Platform::Win64, "Win64"},
+        {Platform::Win_ARM_32, "Win_ARM_32"},
+        {Platform::win_ARM_64, "win_ARM_64"},
+        {Platform::Unix_x86_32, "Unix_x86_32"},
+        {Platform::Unix_x86_64, "Unix_x86_64"},
+        {Platform::Unix_ARM_32, "Unix_ARM_32"},
+        {Platform::Unix_ARM_64, "Unix_ARM_64"},
+        {Platform::WebGl, "WebGl"},
+        {Platform::WebRemote, "WebRemote"},
+        {Platform::GeneralFile, "GeneralFile"}
+    };
+
+    while (platformVal <= Platform::GeneralFile) {
+
+        if (platformVal & platform) {
+            result.push_back((result.size()? ", " : "") + platformsMap.value(platformVal, " Unknown"));
+        }
+
+        platformVal = platformVal << 1;
+
+
+    }
+
+    return result;
+}
+
 QChar DeployCore::getSeparator(int lvl) {
     switch (lvl) {
     case 0:  return ',';

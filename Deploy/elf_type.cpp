@@ -55,7 +55,10 @@ bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
 
     auto headers = reader.readHeaders();
 
-    if (headers.elfmachine == ElfMachine::Elf_EM_ARM) {
+    const int Elf_EM_ARM64  = 0xb7;
+
+    if (headers.elfmachine == ElfMachine::Elf_EM_ARM ||
+           static_cast<int>(headers.elfmachine) == Elf_EM_ARM64 ) {
 
         if (headers.elfclass == ElfClass::Elf_ELFCLASS32) {
             info.setPlatform(Unix_ARM_32);
