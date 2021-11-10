@@ -114,7 +114,12 @@ QtMajorVersion LibInfo::isDependetOfQt() const {
 
 QString LibInfo::toString() const {
 
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+    QStringList dependenciesList = _dependncies.toList();
+#else
     QStringList dependenciesList{_dependncies.begin(), _dependncies.end()};
+#endif
 
     return QString("LibInfo: path: '%0', name: '%1', qtPath: '%2', platform: '%3', dependencies: '%4'").
             arg(_path,
