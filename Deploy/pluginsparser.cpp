@@ -162,7 +162,7 @@ void PluginsParser::addPlugins(const QStringList& list, const QString& package,
                                QHash<QString, QSet<QString>>& container) {
     const DeployConfig* cnf = DeployCore::_config;
 
-    for (const auto plugin: list) {
+    for (const auto &plugin: qAsConst(list)) {
         if (QFileInfo(cnf->qtDir.getPlugins() + "/" + plugin).isDir()) {
              auto listPlugins = QDir(cnf->qtDir.getPlugins() + "/" + plugin).entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
 
