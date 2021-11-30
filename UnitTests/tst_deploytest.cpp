@@ -2848,6 +2848,8 @@ void deploytest::testExtraPlugins() {
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlite.so",
                     "./" + DISTRO_DIR + "/lib/libQt5Sql.so",
                     "./" + DISTRO_DIR + "/lib/libpq.so",
+                    "./" + DISTRO_DIR + "/lib/libcrypto.so",
+                    "./" + DISTRO_DIR + "/lib/libssl.so",
 
                 });
 #else

@@ -111,6 +111,7 @@ QHash<QString, int> TestUtils::compareTree(const QSet<QString> &leftTree, const 
 bool TestUtils::deployFile(const QString &file, const QString &distanation,
                            const QHash<QByteArray, QByteArray> &replaceCase) const {
     QFile f(file);
+
     if (f.open(QIODevice::ReadOnly)) {
         QFile dist(distanation);
         if (!dist.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
