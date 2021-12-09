@@ -14,6 +14,16 @@ lessThan(QT_MAJOR_VERSION, 6):lessThan(QT_MINOR_VERSION, 12) {
     DEFINES += WITHOUT_TR
 }
 
+unix:gcc {
+    COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
+    COMPILER_MAJOR_VERSION = $$str_member($$COMPILER_VERSION)
+    lessThan(COMPILER_MAJOR_VERSION, 5): {
+        warning("The PE parser library is disabled. For build the PE parser library require gcc 5 or later version.")
+        DEFINES+=DISABLE_PE
+    }
+    message(Version GCC : $$COMPILER_VERSION)
+}
+
 android: DEFINES += WITHOUT_TESTS
 
 !android {
