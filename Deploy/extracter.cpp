@@ -448,8 +448,8 @@ bool Extracter::extractQml() {
 
             QStringList plugins;
             QStringList listItems;
-            const auto qmlInput = distro.qmlInput();
-            for (const auto &qmlInput: qmlInput) {
+            const auto qmlInputList = distro.qmlInput();
+            for (const auto &qmlInput: qmlInputList) {
                 QFileInfo info(qmlInput);
 
                 if (!info.isDir()) {
