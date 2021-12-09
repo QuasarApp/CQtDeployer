@@ -41,7 +41,9 @@ CONFIG(release, debug|release): {
 }
 
 include('$$PWD/../QuasarAppLib/QuasarLib.pri')
-include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
+!contains(DEFINES, DISABLE_PE) {
+    include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
+}
 include('$$PWD/../zip/zip.pri')
 
 

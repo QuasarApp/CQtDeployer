@@ -31,8 +31,9 @@ include('$$PWD/../QuasarAppLib/QuasarLib.pri')
 include('$$PWD/../Deploy/Deploy.pri')
 include('$$PWD/../zip/zip.pri')
 
-include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
-
+!contains(DEFINES, DISABLE_PE) {
+    include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
+}
 
 TARGET = cqtdeployer
 

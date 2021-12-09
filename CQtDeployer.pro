@@ -32,6 +32,10 @@ android: DEFINES += WITHOUT_TESTS
     unix:SUBDIRS += tests/quicknanobrowser
     unix:SUBDIRS += tests/webui
 
+    contains(DEFINES, DISABLE_PE) {
+        SUBDIRS -= Pe
+        DEFINES += WITHOUT_TESTS
+    }
 
     contains(DEFINES, WITHOUT_TESTS) {
         SUBDIRS -= UnitTests \

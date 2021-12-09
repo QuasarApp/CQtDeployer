@@ -11,14 +11,17 @@
 #include <QFileInfo>
 #include <QSet>
 #include <QVector>
-#include <pe-parse/parse.h>
 #include <quasarapp.h>
 
 #include <set>
 
+#ifndef DISABLE_PE
+#include <pe-parse/parse.h>
+
 namespace peparse {
 
 class section;
+
 
 struct importent {
   VA addr;
@@ -63,6 +66,7 @@ bool PE::getDep(peparse::parsed_pe_internal * internal, LibInfo &res) const {
 
     return res.getDependncies().size() || !imports.size();
 }
+#endif
 
 QHash<WinAPI, QSet<QString> > PE::getWinAPI() const {
     return _winAPI;
@@ -110,6 +114,7 @@ PE::PE(): IGetLibInfo () {
 }
 
 bool PE::getLibInfo(const QString &lib, LibInfo &info) const {
+#ifndef DISABLE_PE
     auto parsedPeLib = peparse::ParsePEFromFile(lib.toLatin1());
 
     if (!parsedPeLib)
@@ -155,6 +160,11 @@ bool PE::getLibInfo(const QString &lib, LibInfo &info) const {
 
 
     return info.isValid();
+#else
+    Q_UNUSED(lib)
+    Q_UNUSED(info)
+    return false;
+#endif
 }
 
 PE::~PE(){
