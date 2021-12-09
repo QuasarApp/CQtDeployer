@@ -19,7 +19,7 @@ unix:gcc {
     COMPILER_MAJOR_VERSION = $$str_member($$COMPILER_VERSION)
     lessThan(COMPILER_MAJOR_VERSION, 5): {
         warning("The PE parser library is disabled. For build the PE parser library require gcc 5 or later version.")
-        DEFINES+=DISABLE_PE
+        DEFINES += DISABLE_PE
     }
     message(Version GCC : $$COMPILER_VERSION)
 }
