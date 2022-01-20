@@ -3097,7 +3097,7 @@ void deploytest::testOutDirs() {
     qDebug() << "runScript =" << runScript;
 
     QVERIFY(runScript.contains("SET BASE_DIR=%~dp0"));
-    QVERIFY(runScript.contains("SET PATH=%BASE_DIR%\\lolLib\\;%PATH%"));
+    QVERIFY(runScript.contains("SET PATH=%BASE_DIR%\\lol\\;%BASE_DIR%\\lolLib\\;%PATH%"));
     QVERIFY(runScript.contains("start \"TestQMLWidgets\" /B \"%BASE_DIR%\\lol\\TestQMLWidgets.exe\" %*"));
 
     runTestParams({"-bin", TestBinDir + "TestOnlyC.exe", "clear",
