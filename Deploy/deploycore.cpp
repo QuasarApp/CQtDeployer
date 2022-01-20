@@ -292,6 +292,8 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             " For folders:"
                             " CCQtDeployer will enter these folders and non-recursively copy all executable files to the destination directory."
                             " Then, CQtDeployer will extract all dependencies of the copied files and search dependencies in system environments and libDir paths."
+                            "**Note**: If CQtDeployer can't find required file then"
+                            " CQtDeployer try find required file in the system PATH enviroment."
                         }});
 
     help.insert(group, {QuasarAppUtils::OptionData{
