@@ -880,15 +880,27 @@ bool ConfigParser::setTargets(const QStringList &value) {
             isfillList = true;
 
         } else {
-            QuasarAppUtils::Params::log(targetInfo.absoluteFilePath() + " does not exist!",
+            QuasarAppUtils::Params::log(i + " is not a path. Try search this file in system enviroment",
                                         QuasarAppUtils::Debug);
+
+            auto file = QFileInfo(DeployCore::findProcess(QProcessEnvironment::systemEnvironment().value("PATH"), i));
+
+            if (file.exists()) {
+
+                auto target = createTarget(file.absoluteFilePath());
+                if (!_config.targetsEdit().contains(target.target)) {
+                    _config.targetsEdit().insert(target.target,  target.targetInfo);
+                }
+
+                isfillList = true;
+            } else {
+                QuasarAppUtils::Params::log(targetInfo.absoluteFilePath() + " does not exist!",
+                                            QuasarAppUtils::Debug);
+            }
         }
     }
 
-    if (!isfillList)
-        return false;
-
-    return true;
+    return isfillList;
 }
 
 bool ConfigParser::setTargetsRecursive(const QString &dir) {
