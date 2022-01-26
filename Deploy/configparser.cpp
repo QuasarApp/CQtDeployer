@@ -1010,9 +1010,7 @@ void ConfigParser::initIgnoreList()
     };
 
     _config.ignoreList.addRule(addRuleUnix("libc"));
-    _config.ignoreList.addRule(addRuleUnix("libstdc++"));
     _config.ignoreList.addRule(addRuleUnix("ld-"));
-    _config.ignoreList.addRule(addRuleUnix("libpthread"));
     _config.ignoreList.addRule(addRuleUnix("libm"));
     _config.ignoreList.addRule(addRuleUnix("libz"));
     _config.ignoreList.addRule(addRuleUnix("librt"));
