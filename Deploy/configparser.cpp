@@ -664,9 +664,13 @@ void ConfigParser::initCustomPlatform() {
     const auto platforms = QuasarAppUtils::Params::getArg("platform").
             split(DeployCore::getSeparator(0), splitbehavior);
 
-    for (const auto& platform: platforms) {
+    Platform customPlatform = Platform::UnknownPlatform;
 
+    for (const auto& platform: platforms) {
+        customPlatform = customPlatform | DeployCore::getPlatformFromString(platform);
     }
+
+    _config.setCustomPlatform(customPlatform);
 
 }
 
@@ -864,13 +868,18 @@ void ConfigParser::setTargetDir(const QString &target) {
     }
 }
 
-void ConfigParser::addTarget(const TargetData& target) {
+bool ConfigParser::addTarget(const TargetData& target) {
 
-    if (target.targetInfo.getPlatform())
+    if (_config.customPlatform() == Platform::UnknownPlatform ||
+            _config.customPlatform() & target.targetInfo.getPlatform()) {
 
-    if (!_config.targetsEdit().contains(target.target)) {
-        _config.targetsEdit().insert(target.target,  target.targetInfo);
+        if (!_config.targetsEdit().contains(target.target)) {
+            _config.targetsEdit().insert(target.target,  target.targetInfo);
+            return true;
+        }
     }
+
+    return false;
 }
 
 bool ConfigParser::setTargets(const QStringList &value) {
@@ -885,10 +894,8 @@ bool ConfigParser::setTargets(const QStringList &value) {
 
         if (targetInfo.isFile()) {
 
-            auto target = createTarget(targetInfo.absoluteFilePath());
-            addTarget();
-
-            isfillList = true;
+            if (addTarget(createTarget(targetInfo.absoluteFilePath())))
+                isfillList = true;
         }
         else if (targetInfo.isDir()) {
             if (!setTargetsInDir(targetInfo.absoluteFilePath())) {
@@ -906,12 +913,9 @@ bool ConfigParser::setTargets(const QStringList &value) {
 
             if (file.exists()) {
 
-                auto target = createTarget(file.absoluteFilePath());
-                if (!_config.targetsEdit().contains(target.target)) {
-                    _config.targetsEdit().insert(target.target,  target.targetInfo);
-                }
+                if (addTarget(createTarget(file.absoluteFilePath())))
+                    isfillList = true;
 
-                isfillList = true;
             } else {
                 QuasarAppUtils::Params::log(targetInfo.absoluteFilePath() + " does not exist!",
                                             QuasarAppUtils::Debug);
@@ -966,13 +970,8 @@ bool ConfigParser::setTargetsInDir(const QString &dir, bool recursive) {
         if (sufix.isEmpty() ||  name.contains(".dll", Qt::CaseInsensitive) ||
                 name.contains(".so", Qt::CaseInsensitive) || name.contains(".exe", Qt::CaseInsensitive)) {
 
-
-            auto target = createTarget(QDir::fromNativeSeparators(file.absoluteFilePath()));
-            if (!_config.targetsEdit().contains(target.target)) {
-                _config.targetsEdit().insert(target.target,  target.targetInfo);
-            }
-
-            result = true;
+            if (addTarget(createTarget(QDir::fromNativeSeparators(file.absoluteFilePath()))))
+                result = true;
 
         }
 

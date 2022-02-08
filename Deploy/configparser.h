@@ -114,7 +114,12 @@ private:
 
     QList<iDistribution *> getDistribution();
 
-    void addTarget();
+    /**
+     * @brief addTarget
+     * @param target
+     * @return true if target added successful
+     */
+    bool addTarget(const TargetData &target);
     void initCustomPlatform();
 };
 

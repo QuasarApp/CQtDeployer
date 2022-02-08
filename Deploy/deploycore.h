@@ -236,6 +236,13 @@ public:
      */
     static QString platformToString(Platform platform);
 
+    /**
+     * @brief getPlatformFromString This method return platform enum value form string.
+     * @param platformName This is string platform value.
+     * @return platform enum value form string.
+     */
+    static Platform getPlatformFromString(const QString &platformName);
+
     static char getEnvSeparator();
 
     static LibPriority getLibPriority(const QString &lib);

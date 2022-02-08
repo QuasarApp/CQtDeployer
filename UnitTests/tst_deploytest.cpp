@@ -192,6 +192,8 @@ private slots:
 
     void testQIFResources();
 
+    void testCustomPlatform();
+
     void customTest();
 };
 
@@ -1644,6 +1646,10 @@ void deploytest::testQIFResources() {
                       "-qifResources", templateDir + "customRes.qrc"
                   }, &result
                   );
+
+}
+
+void deploytest::testCustomPlatform() {
 
 }
 
