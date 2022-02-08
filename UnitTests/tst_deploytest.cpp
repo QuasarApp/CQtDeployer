@@ -1662,7 +1662,7 @@ void deploytest::testCustomPlatform() {
     QString bin = {TestBinDir + "TestOnlyC.exe"};
     QString platform = "win_x86_64";
 
-    auto compareTree = utils.createTree(
+    compareTree = utils.createTree(
                 {
                     "./" + distDir + "/TestOnlyC.exe",
                     "./" + distDir + "/TestOnlyC.bat",
