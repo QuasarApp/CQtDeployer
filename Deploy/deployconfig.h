@@ -136,6 +136,18 @@ public:
      */
     QtMajorVersion isNeededQt(const QString& pacakge) const;
 
+    /**
+     * @brief customPlatform This is custom platform of distribution
+     * @return custom platform
+     */
+    Platform customPlatform() const;
+
+    /**
+     * @brief setCustomPlatform This method sets custom platform for this distribution.
+     * @param newCustomPlatform new custom platform.
+     */
+    void setCustomPlatform(Platform newCustomPlatform);
+
 private:
 
     /**
@@ -158,6 +170,8 @@ private:
      */
     QString targetDir = "";
     QString defaultPackage = "";
+
+    Platform _customPlatform = Platform::UnknownPlatform;
 
 
 };

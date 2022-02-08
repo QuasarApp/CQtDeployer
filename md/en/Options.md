@@ -70,7 +70,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   noQt                      | Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework. |
 |   allowEmptyPackages        | Allows configure the empty packages.                            |
 |   getDefaultTemplate        | Extracts defaults deb or qif templates. For more information see the  extracting default templates [page](ExtractDefaultsTemplates.md)       |
-|   noHashSum        | Disable computation of a packages hash sum               |
+|   noHashSum                 | Disable computation of a packages hash sum               |
 
 
 ### Deploy options
@@ -102,6 +102,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   -installDirDeb [params]   | Sets install target directory fordebian package (by default it is /opt path) |
 |   -installDirQIFW [params]  | Sets install target directory for installers (by default it is /home path) |
 |   -verbose [0-3]            | Shows debug log. By default it is 2                             |
+|   -platform [list]          | If this option is enabled then CQtDeployer will deploy only binaries of a selected platform. Supported values: [win_x86 win_x86_64 win_arm win_arm64 linux_x86 linux_x86_64 linux_ARM linux_ARM64]  |
 
 ### Controll of packages options
 
