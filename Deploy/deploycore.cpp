@@ -364,8 +364,10 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                         }});
 
     help.insert(group, {QuasarAppUtils::OptionData{
-                            {"platform"}, "",
-                            "Force deploy only one selected platforms."
+                            {"-platform"}, "{platforms,list}",
+                            "Force deploy only one selected platforms. "
+                            "If this option is enabled then CQtDeployer will deploy only binaries of a selected platform. Supported values: "
+                            "[win_x86 win_x86_64 win_arm win_arm64 linux_x86 linux_x86_64 linux_ARM linux_ARM64]"
                         }});
 
 

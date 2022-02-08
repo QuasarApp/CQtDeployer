@@ -102,7 +102,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   -installDirDeb [params]   | Sets install target directory fordebian package (by default it is /opt path) |
 |   -installDirQIFW [params]  | Sets install target directory for installers (by default it is /home path) |
 |   -verbose [0-3]            | Shows debug log. By default it is 2                             |
-|   -platform [list]          | If this option is enabled then CQtDeployer will deploy only binaries of a selected platform.   |
+|   -platform [list]          | If this option is enabled then CQtDeployer will deploy only binaries of a selected platform. Supported values: [win_x86 win_x86_64 win_arm win_arm64 linux_x86 linux_x86_64 linux_ARM linux_ARM64]  |
 
 ### Controll of packages options
 
