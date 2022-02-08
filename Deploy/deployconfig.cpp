@@ -143,6 +143,14 @@ QtMajorVersion DeployConfig::isNeededQt(const QString &pacakge) const {
     return Qt;
 }
 
+Platform DeployConfig::customPlatform() const {
+    return _customPlatform;
+}
+
+void DeployConfig::setCustomPlatform(Platform newCustomPlatform) {
+    _customPlatform = newCustomPlatform;
+}
+
 const QHash<QString, TargetInfo> &DeployConfig::targets() const {
     return _targets;
 }

@@ -363,6 +363,12 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             "cqtdeployer -runScript \"myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh\""
                         }});
 
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"platform"}, "",
+                            "Force deploy only one selected platforms."
+                        }});
+
+
     group = "Part 3 Control of packages options";
 
     help.insert(group, {QuasarAppUtils::OptionData{

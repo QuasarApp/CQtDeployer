@@ -660,6 +660,16 @@ void ConfigParser::packagesErrorLog(const QString &option) {
                                 QuasarAppUtils::Error);
 }
 
+void ConfigParser::initCustomPlatform() {
+    const auto platforms = QuasarAppUtils::Params::getArg("platform").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
+    for (const auto& platform: platforms) {
+
+    }
+
+}
+
 bool ConfigParser::parseDeployMode(bool checkBin) {
 
     if (QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
@@ -674,6 +684,8 @@ bool ConfigParser::parseDeployMode(bool checkBin) {
     }
 
     setTargetDir();
+
+    initCustomPlatform();
 
     auto bin = QuasarAppUtils::Params::getArg("bin").
             split(DeployCore::getSeparator(0), splitbehavior);
@@ -852,6 +864,15 @@ void ConfigParser::setTargetDir(const QString &target) {
     }
 }
 
+void ConfigParser::addTarget(const TargetData& target) {
+
+    if (target.targetInfo.getPlatform())
+
+    if (!_config.targetsEdit().contains(target.target)) {
+        _config.targetsEdit().insert(target.target,  target.targetInfo);
+    }
+}
+
 bool ConfigParser::setTargets(const QStringList &value) {
 
     bool isfillList = false;
@@ -865,9 +886,7 @@ bool ConfigParser::setTargets(const QStringList &value) {
         if (targetInfo.isFile()) {
 
             auto target = createTarget(targetInfo.absoluteFilePath());
-            if (!_config.targetsEdit().contains(target.target)) {
-                _config.targetsEdit().insert(target.target,  target.targetInfo);
-            }
+            addTarget();
 
             isfillList = true;
         }
@@ -898,6 +917,9 @@ bool ConfigParser::setTargets(const QStringList &value) {
                                             QuasarAppUtils::Debug);
             }
         }
+
+        // Work with exits target
+
     }
 
     return isfillList;

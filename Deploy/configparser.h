@@ -114,6 +114,8 @@ private:
 
     QList<iDistribution *> getDistribution();
 
+    void addTarget();
+    void initCustomPlatform();
 };
 
 #endif // CQT_H
