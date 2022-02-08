@@ -1664,9 +1664,9 @@ void deploytest::testCustomPlatform() {
 
     compareTree = utils.createTree(
                 {
-                    "./" + distDir + "/TestOnlyC.exe",
-                    "./" + distDir + "/TestOnlyC.bat",
-                    "./" + distDir + "/qt.conf"
+                    "./" + DISTRO_DIR + "/TestOnlyC.exe",
+                    "./" + DISTRO_DIR + "/TestOnlyC.bat",
+                    "./" + DISTRO_DIR + "/qt.conf"
                 }
                 );
 
