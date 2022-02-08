@@ -1650,7 +1650,35 @@ void deploytest::testQIFResources() {
 }
 
 void deploytest::testCustomPlatform() {
+    TestUtils utils;
 
+    auto compareTree = TestModule.onlyC();
+
+#ifdef Q_OS_UNIX
+    QString bin = {TestBinDir + "TestOnlyC"};
+    QString platform = "linux_x86_64";
+
+#else
+    QString bin = {TestBinDir + "TestOnlyC.exe"};
+    QString platform = "win_x86_64";
+
+#endif
+
+    runTestParams({
+                      "-bin", bin,
+                      "clear",
+                      "-platform", platform,
+                  }, &compareTree
+                  );
+
+
+
+    runTestParams({
+                      "-bin", bin,
+                      "clear",
+                      "-platform", "GeneralFile",
+                  }, nullptr, false, false, exitCodes::PrepareError
+                  );
 }
 
 void deploytest::customTest() {
