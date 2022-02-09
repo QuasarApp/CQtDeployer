@@ -129,7 +129,7 @@ If you would like to use bitcoins to support us, you can transfer coins to this 
 
 ### Personal Membership Patrons:
 
-- [getflow.tech](https://getflow.tech/)
+- [GETFLOW.TECH](https://getflow.tech/)
 - Semih Ufuk Güler
 
 ***
