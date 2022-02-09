@@ -127,9 +127,9 @@ If you would like to use bitcoins to support us, you can transfer coins to this 
 
 ## Our patrons list:
 
-### Silver Membership Patrons:
+### Personal Membership Patrons:
 
-- Rustem Husnutdinov
+- [GETFLOW.TECH](https://getflow.tech/)
 - Semih Ufuk Güler
 
 ***
