@@ -517,6 +517,12 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             "Sets target directory(by default it is the path to the first deployable file)"
                         }});
 
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-qifArchiveFormat"}, "[7z|zip|tar|tar.gz|tar.bz2|tar.xz]",
+                            "Sets the format used when packaging new component data archives."
+                            " If you omit this option, the 7z format will be used as a default. "
+                        }});
+
     group = "Part 7 Deb package options";
 
     help.insert(group, {QuasarAppUtils::OptionData{

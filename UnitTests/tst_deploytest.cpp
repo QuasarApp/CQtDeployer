@@ -193,6 +193,7 @@ private slots:
     void testQIFResources();
 
     void testCustomPlatform();
+    void testQifArchiveFormat();
 
     void customTest();
 };
@@ -202,6 +203,8 @@ deploytest::deploytest() {
     qputenv("QTEST_FUNCTION_TIMEOUT", "1800000");
     QString qifwPath = qgetenv("PATH") + DeployCore::getEnvSeparator() + TestQtDir + "../../Tools/QtInstallerFramework/4.0/bin/";
     qifwPath += qifwPath + DeployCore::getEnvSeparator() + TestQtDir + "../../Tools/QtInstallerFramework/4.1/bin/";
+    qifwPath += qifwPath + DeployCore::getEnvSeparator() + TestQtDir + "../../Tools/QtInstallerFramework/4.2/bin/";
+    qifwPath += qifwPath + DeployCore::getEnvSeparator() + TestQtDir + "../../Tools/QtInstallerFramework/4.3/bin/";
 
     qputenv("PATH", qifwPath.toLatin1().data());
     TestUtils utils;
@@ -1686,6 +1689,32 @@ void deploytest::testCustomPlatform() {
                       "clear",
                       "-platform", "GeneralFile",
                   }, nullptr, false, false, exitCodes::PrepareError
+                  );
+}
+
+void deploytest::testQifArchiveFormat() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = {TestBinDir + "TestOnlyC"};
+
+    auto result = utils.createTree({{DISTRO_DIR + "/InstallerTestOnlyC.run"},
+                                    {DISTRO_DIR + "/InstallerTestOnlyC.run.md5"}});
+#else
+    QString bin = {TestBinDir + "TestOnlyC.exe"};
+
+    auto result = utils.createTree({{DISTRO_DIR + "/InstallerTestOnlyC.exe"},
+                                    {DISTRO_DIR + "/InstallerTestOnlyC.exe.md5"}});
+#endif
+
+
+    runTestParams({
+                      "-bin", bin,
+                      "qifFromSystem",
+                      "clear",
+                      "qif",
+                      "-qifArchiveFormat", "zip"
+                  }, &result
                   );
 }
 

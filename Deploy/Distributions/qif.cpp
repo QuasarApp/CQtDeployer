@@ -86,6 +86,12 @@ QList<SystemCommandData> QIF::runCmd() {
 
     cmd.arguments.push_back(installerFile());
 
+    QString customFormat = QuasarAppUtils::Params::getArg("qifArchiveFormat");
+    if (customFormat.size()) {
+        cmd.arguments.push_back("--af");
+        cmd.arguments.push_back(customFormat);
+    }
+
     return {cmd};
 }
 
