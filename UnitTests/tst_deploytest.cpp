@@ -1711,6 +1711,7 @@ void deploytest::testQifArchiveFormat() {
     runTestParams({
                       "-bin", bin,
                       "qifFromSystem",
+                      "clear",
                       "qif",
                       "-qifArchiveFormat", "zip"
                   }, &result
