@@ -37,7 +37,7 @@ Key differences of this program:
 See the list of all options [here](md/en/Options.md)
 
 
-#### Example: `cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.12.4/gcc_64/bin/qmake clear`
+#### Example: `cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/6.3.1/gcc_64/bin/qmake clear`
 
 ## More examples
 #### Deployed project structure:
