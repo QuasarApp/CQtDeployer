@@ -39,7 +39,11 @@ parts:
       - libpng16-16
       - dpkg
       - libwayland-cursor0
-
+      - libxcb-icccm4
+      - libxcb-image0
+      - libxcb-keysyms1
+      - libxcb-render-util0
+      - libxcb-xinerama0
 
   qif:
     plugin: dump
