@@ -39,7 +39,7 @@ parts:
       - libpng16-16
       - dpkg
       - libwayland-cursor0
-
+      - libxcb-icccm4
 
   qif:
     plugin: dump
