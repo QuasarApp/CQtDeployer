@@ -41,6 +41,7 @@ parts:
       - libwayland-cursor0
       - libxcb-icccm4
       - libxcb-image0
+      - libxcb-keysyms1
 
   qif:
     plugin: dump
