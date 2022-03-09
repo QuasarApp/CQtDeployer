@@ -40,6 +40,7 @@ parts:
       - dpkg
       - libwayland-cursor0
       - libxcb-icccm4
+      - libxcb-image0
 
   qif:
     plugin: dump
