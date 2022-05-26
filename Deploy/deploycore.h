@@ -182,7 +182,8 @@ public:
         QtVirtualKeyboard         = 0x0010000000000000,
         // Qt6
         QtOpenGLWidgetsModule     = 0x0010000000000000,
-        QtSvgWidgetsModule        = 0x0020000000000000
+        QtSvgWidgetsModule        = 0x0020000000000000,
+        QtShaderToolsModule       = 0x0040000000000000
     };
 
     DeployCore() = delete;
