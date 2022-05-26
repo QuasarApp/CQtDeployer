@@ -79,7 +79,8 @@ QtModuleEntry DeployCore::qtModuleEntries[] = {
     { QtTextToSpeechModule, "texttospeech", "QtXTextToSpeech", nullptr },
     { QtSerialBusModule, "serialbus", "QtXSerialBus", nullptr },
     { QtWebViewModule, "webview", "QtXWebView", nullptr },
-    { QtVirtualKeyboard, "virtualkeyboard", "QtXVirtualKeyboard", nullptr }
+    { QtVirtualKeyboard, "virtualkeyboard", "QtXVirtualKeyboard", nullptr },
+    { QtShaderToolsModule, "shadertools", "QtXShaderTools", nullptr }
 };
 
 DeployCore::QtModule DeployCore::getQtModule(const QString& path) {
