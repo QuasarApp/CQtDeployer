@@ -1730,22 +1730,42 @@ void deploytest::testQifBinaryCreator() {
     QString bin = {TestBinDir + "TestOnlyC.exe"};
 #endif
 
-    QuasarAppUtils::Params::parseParams({
-                                            "-bin", bin,
-                                            "qifFromSystem",
-                                            "clear",
-                                            "qif",
-                                            "-binarycreator", "test testValue"
-                                        });
-    Deploy deploy;
-    QVERIFY(deploy.prepare());
-    FileManager fm;
-    QIF qif(&fm);
+    {
+        QuasarAppUtils::Params::parseParams({
+                                                "-bin", bin,
+                                                "qifFromSystem",
+                                                "clear",
+                                                "qif",
+                                                "-binarycreator", "test testValue"
+                                            });
+        Deploy deploy;
+        QVERIFY(deploy.prepare());
+        FileManager fm;
+        QIF qif(&fm);
 
-    auto command = qif.runCmd();
-    QVERIFY(command.size() == 1);
-    QVERIFY(command.first().command == "test");
-    QVERIFY(command.first().arguments.contains("testValue"));
+        auto command = qif.runCmd();
+        QVERIFY(command.size() == 1);
+        QVERIFY(command.first().command == "test");
+        QVERIFY(command.first().arguments.contains("testValue"));
+    }
+
+    {
+        QuasarAppUtils::Params::parseParams({
+                                                "-bin", bin,
+                                                "qifFromSystem",
+                                                "clear",
+                                                "qif",
+                                                "-binarycreator", "test"
+                                            });
+        Deploy deploy;
+        QVERIFY(deploy.prepare());
+        FileManager fm;
+        QIF qif(&fm);
+
+        auto command = qif.runCmd();
+        QVERIFY(command.size() == 1);
+        QVERIFY(command.first().command == "test");
+    }
 
 
 }
