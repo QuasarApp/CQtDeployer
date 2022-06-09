@@ -51,7 +51,6 @@ private:
      */
     bool initDefaultConfiguratuin();
 
-    QString binarycreator;
     TemplateInfo generalInfo;
 };
 
