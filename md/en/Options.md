@@ -157,6 +157,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -qifPackages [path/to/packagesFodoler] | Sets a custom path to the packages directories. By default it is qif/packages. Note This path sets releative target folder (sets by TargetDir option). |
 |  -qifResources [path/to/resources1.qrc,path/to/resources2.qrc] | Sets a custom path to the resources files. By default this option is skipped. Note This path sets releative target folder (sets by TargetDir option). |
 |  -qifArchiveFormat [7z,zip,tar,tar.gz,tar.bz2,tar.xz] | Sets the format used when packaging new component data archives. If you omit this option, the 7z format will be used as a default. |
+|  -binarycreator [binarycreator command] | Sets new binarycreator command. Example : cqtdeployer -bin my.exe qifw -binarycreator 'wine path/to/binarycreator.exe'|
 
 ### Deb package options
 

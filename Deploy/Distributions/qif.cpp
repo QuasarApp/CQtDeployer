@@ -59,18 +59,22 @@ QList<SystemCommandData> QIF::runCmd() {
 
     SystemCommandData cmd;
 
+    QString binarycreator = QuasarAppUtils::Params::getArg("binarycreator");
+
     if (binarycreator.isEmpty())
         binarycreator = DeployCore::findProcess(toolKitEnv().concatEnv(), base);
 
     if (binarycreator.isEmpty()) {
         cmd.command = base;
     } else {
-        cmd.command = binarycreator;
+        auto commandsList = binarycreator.split(' ');
+        cmd.command = commandsList.first();
+        cmd.arguments = QStringList{commandsList.begin() + 1, commandsList.end()};
     }
 
     auto location = DeployCore::_config->getTargetDir() + "/" + getLocation();
 
-    cmd.arguments = QStringList{
+    cmd.arguments += QStringList{
         "-c",
         QuasarAppUtils::Params::getArg("qifConfig", location + "/config/config.xml"),
         "-p",

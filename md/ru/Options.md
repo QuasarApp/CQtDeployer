@@ -153,6 +153,7 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -qifPackages [path/to/packagesFodoler] | Устанавливает пользовательский путь к каталогам пакетов. По умолчанию это qif/packages. Важно путь считаеться относительным целевого католога (установленным опцией targetDir).   |
 |  -qifResources [path/to/resources1.qrc,path/to/resources2.qrc] | Устанавливает пользовательский путь к файлам ресурсов. По умолчанию эта опция пропущена. Важно путь считаеться относительным целевого католога (установленным опцией targetDir).  |
 |  -qifArchiveFormat [7z,zip,tar,tar.gz,tar.bz2,tar.xz] | Задает формат, используемый при упаковке новых архивов данных компонентов. Если вы опустите этот параметр, по умолчанию будет использоваться формат 7z.  |
+|  -binarycreator [binarycreator command] | Установит новую команду вызова binarycreator. Пример : cqtdeployer -bin my.exe qifw -binarycreator 'wine path/to/binarycreator.exe'|
 
 ### Deb package options:
 

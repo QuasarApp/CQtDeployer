@@ -524,6 +524,12 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             " If you omit this option, the 7z format will be used as a default. "
                         }});
 
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-binarycreator"}, "{binarycreator command}",
+                            "Sets new binarycreator command.",
+                            "cqtdeployer -bin my.exe qifw -binarycreator 'wine path/to/binarycreator.exe'"
+                        }});
+
     group = "Part 7 Deb package options";
 
     help.insert(group, {QuasarAppUtils::OptionData{

@@ -22,6 +22,8 @@
 #include <zipcompresser.h>
 #include <QStorageInfo>
 
+#include <Distributions/qif.h>
+
 #include <QMap>
 #include <QByteArray>
 #include <QDir>
@@ -194,6 +196,7 @@ private slots:
 
     void testCustomPlatform();
     void testQifArchiveFormat();
+    void testQifBinaryCreator();
 
     void customTest();
 };
@@ -1716,6 +1719,35 @@ void deploytest::testQifArchiveFormat() {
                       "-qifArchiveFormat", "zip"
                   }, &result
                   );
+}
+
+void deploytest::testQifBinaryCreator() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = {TestBinDir + "TestOnlyC"};
+#else
+    QString bin = {TestBinDir + "TestOnlyC.exe"};
+#endif
+
+    QuasarAppUtils::Params::parseParams({
+                                            "-bin", bin,
+                                            "qifFromSystem",
+                                            "clear",
+                                            "qif",
+                                            "-binarycreator", "test testValue"
+                                        });
+    Deploy deploy;
+    QVERIFY(deploy.prepare());
+    FileManager fm;
+    QIF qif(&fm);
+
+    auto command = qif.runCmd();
+    QVERIFY(command.size() == 1);
+    QVERIFY(command.first().command == "test");
+    QVERIFY(command.first().arguments.contains("testValue"));
+
+
 }
 
 void deploytest::customTest() {
