@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 
 
     if (!QuasarAppUtils::Params::parseParams(argc, argv, DeployCore::avilableOptions())) {
-        QuasarAppUtils::Params::log("Wrong parameters. Please use the 'help' of 'h' option for show help page.", QuasarAppUtils::Warning);
+        QuasarAppUtils::Params::log("Wrong parameters. Please use the 'help' of 'h' option to show the help page.", QuasarAppUtils::Warning);
         exit(4);
     }
 

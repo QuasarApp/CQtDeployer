@@ -1,6 +1,9 @@
 # QuassarApp operation rules
+
 ## General rules
+
 ### QuasarApp internal developers
+
 * if there is no instruction to complete the task, separate you new branch from the version branch (for example v1.x).
 * Realize the task
 * At the end of the work, create a pull request to the branch from which you created the branch.
@@ -8,6 +11,7 @@ Example:
 I made corrections for version 1.5 and created a new branch from branch v1.5, which means that I should create a pull request to branch v1.5,
 
 ### External QuasarApp Developers
+
 * Making Fork repository.
 * Switch to the branch of the version in which you need to perform the correction (example of the names of the branch with the version: v1.x).
 * Realize the task
@@ -18,26 +22,26 @@ I made corrections for version 1.5 and created a new branch from branch v1.5, wh
 
 ### Forbidden
 
-* Using 'push force'. All conflicts need to be solved by a new commite.
+* Using 'push force'. All conflicts need to be solved by a new commit.
 * Push code directly to master.
-* Break the code design rules. If some aspect is not described, you need to write in the same style as it was written before you.
+* Break the code design rules. If some aspect is not described, you need to write in the same style as it was written before your change.
 * Move the code for no particular reason.
-
 
 ## Making Pull Request
 
 The content of the pull request must include:
-* The number of the task that solves (if performed according to the task)
+* The number of the task that is solved (if performed according to the task)
 * A complete description of everything that was done in the task.
 * In the case when a pull creation is created and you still work on the task, change the header of the pool request by adding a WIP tag to the beginning (example [WIP] MyTask)
-* Pull Request must always be assigned to the branch from which you separated.
+* Pull Request must always be assigned to the branch from which you branched (started to work).
 
 ## Making Tasks
-If necessary, assign a task to someone
+
+If necessary, assign a task to someone.  
 You must:
-* Create relevant discussion on github, selected repository.
+* Create relevant discussion on github for the specific repository.
 * Completely describe the problem or task.
-* If you have a solution to the problem fully describe what and how to do.
+* If you have a solution to the problem, then describe in detail what and how it should be done.
 
 ## Code Guideline
 
