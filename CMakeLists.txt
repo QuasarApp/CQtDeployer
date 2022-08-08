@@ -29,34 +29,35 @@ if (NOT QT_VERSION_MAJOR)
 endif()
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Test QUIET)
 
-include(submodules/CMake/QuasarApp.cmake)
+include(submodules/QuasarAppLib/CMake/QuasarApp.cmake)
 
 updateGitVars()
-set(CQtDeployer_VERSION "0.${GIT_COMMIT_COUNT}.${GIT_COMMIT_HASH}")
-set(CQtDeployer_PACKAGE_ID "quasarapp.core.CQtDeployer")
+set(CQT_DEPLOYER_VERSION "1.6.${GIT_COMMIT_COUNT}.${GIT_COMMIT_HASH}")
 
-option(CQtDeployer_TESTS "This option disables or enables tests of the ${PROJECT_NAME} project"  ON)
-option(CQtDeployer_EXAMPLE "This option disables or enables example app of the ${PROJECT_NAME} project" ON)
+option(CQT_DEPLOYER_TESTS "This option disables or enables tests of the ${PROJECT_NAME} project"  ON)
+option(CQT_DEPLOYER_TOOL "This option disables or enables example app of the ${PROJECT_NAME} project" ON)
 
 if (ANDROID OR IOS OR NOT QT_VERSION_MAJOR OR QA_WASM32)
-    set(CQtDeployer_TESTS OFF CACHE BOOL "This option force disbled for ANDROID IOS QA_WASM32 and Not Qt projects" FORCE)
+    set(CQT_DEPLOYER_TESTS OFF CACHE BOOL "This option force disbled for ANDROID IOS QA_WASM32 and Not Qt projects" FORCE)
 endif()
 
 if (NOT QT_VERSION_MAJOR)
-    set(CQtDeployer_EXAMPLE OFF CACHE BOOL "This option force disbled for Not Qt projects" FORCE)
+    set(CQT_DEPLOYER_TOOL OFF CACHE BOOL "This option force disbled for Not Qt projects" FORCE)
 endif()
 
 make_directory(Distro)
 
 initAll()
 
-add_subdirectory(src/Library)
+add_subdirectory(submodules/QuasarAppLib)
 
-if (DEFINED CQtDeployer_EXAMPLE)
-    add_subdirectory(src/Example)
+add_subdirectory(src/LibDeploy)
+
+if (DEFINED CQT_DEPLOYER_TOOL)
+    add_subdirectory(src/CQtDeployer)
 endif()
 
-if (CQtDeployer_TESTS)
+if (CQT_DEPLOYER_TESTS)
     add_subdirectory(tests)
 else()
     message("The ${PROJECT_NAME} tests is disabled.")

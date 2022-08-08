@@ -7,12 +7,7 @@
 
 #ifndef CQT_H
 #define CQT_H
-#include "deployconfig.h"
 #include "distrostruct.h"
-#include "envirement.h"
-#include "ignorerule.h"
-#include "targetdata.h"
-#include "targetinfo.h"
 
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -36,7 +31,7 @@ public:
     bool smartMoveTargets();
 
     const DeployConfig* config() const;
-    friend class deploytest;
+    friend class DeployTargetTest;
 
 private:
 

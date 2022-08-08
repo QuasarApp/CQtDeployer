@@ -4,11 +4,11 @@
         "src/build/Debug/CQtDeployerEaxample.exe"
         ],
     "clear": true,
-    "binPrefix": "/media/D/builds/build-CMakeProject-Desktop_Qt_6_1_3_GCC_64bit-Debug",
+    "binPrefix": "/media/D/builds/build-CQtDeployerCmakePort-Desktop_Qt_5_15_2_GCC_64bit-Debug",
     "libDir": [
-    "/media/D/builds/CMakeProject",
+    "/media/D/builds/CQtDeployerCmakePort",
     "/home/andrei/Qt/5.15.2/gcc_64",
-    "/media/D/builds/build-CMakeProject-Desktop_Qt_6_1_3_GCC_64bit-Debug"
+    "/media/D/builds/build-CQtDeployerCmakePort-Desktop_Qt_5_15_2_GCC_64bit-Debug"
     ],
     "recursiveDepth": "10",
     "deploySystem": false,
@@ -17,11 +17,11 @@
     "qif": true,
     "zip": true,
     "ignoreEnv": [
-         "/media/D/builds/CMakeProject/Distro"
+         "/media/D/builds/CQtDeployerCmakePort/Distro"
         ],
     "extraLib": "crypto",
-    "targetDir": "/media/D/builds/CMakeProject/Distro",
-    "deployVersion": "0.84.1a139e7",
+    "targetDir": "/media/D/builds/CQtDeployerCmakePort/Distro",
+    "deployVersion": "",
 
 }
 

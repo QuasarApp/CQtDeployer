@@ -85,3 +85,4 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+src/LibDeploy/src/deploy_global.h

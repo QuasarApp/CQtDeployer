@@ -5,6 +5,7 @@
  * of this license document, but changing it is not allowed.
  */
 
+#include "deploytest.h"
 #include <QtTest>
 #include <quasarapp.h>
 #include <deploycore.h>

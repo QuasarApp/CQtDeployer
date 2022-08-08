@@ -12,8 +12,7 @@
 #include <QDebug>
 #include <QFileInfo>
 #include "deploy_global.h"
-#include "defines.h"
-#include "quasarapp.h"
+#include <params.h>
 
 enum MSVCVersion: int {
     MSVC_Unknown = 0x0,
