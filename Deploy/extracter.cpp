@@ -10,7 +10,6 @@
 #include "pluginsparser.h"
 #include "configparser.h"
 #include "metafilemanager.h"
-#include "pathutils.h"
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
