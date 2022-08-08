@@ -69,7 +69,7 @@ QList<SystemCommandData> QIF::runCmd() {
     } else {
         auto commandsList = binarycreator.split(' ');
         cmd.command = commandsList.first();
-        cmd.arguments = QStringList{commandsList.begin() + 1, commandsList.end()};
+        cmd.arguments = commandsList.mid(1,-1);
     }
 
     auto location = DeployCore::_config->getTargetDir() + "/" + getLocation();
