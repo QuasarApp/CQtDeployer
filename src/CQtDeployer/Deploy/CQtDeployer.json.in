@@ -1,0 +1,27 @@
+{
+    "bin": [
+        "src/build/Debug/CQtDeployerEaxample",
+        "src/build/Debug/CQtDeployerEaxample.exe"
+        ],
+    "clear": true,
+    "binPrefix": "@CMAKE_BINARY_DIR@",
+    "libDir": [
+    "@CMAKE_SOURCE_DIR@",
+    "@CMAKE_PREFIX_PATH@",
+    "@CMAKE_BINARY_DIR@"
+    ],
+    "recursiveDepth": "10",
+    "deploySystem": false,
+    "qmlDir": "../",
+    "deb": true,
+    "qif": true,
+    "zip": true,
+    "ignoreEnv": [
+         "@CMAKE_SOURCE_DIR@/Distro"
+        ],
+    "extraLib": "crypto",
+    "targetDir": "@CMAKE_SOURCE_DIR@/Distro",
+    "deployVersion": "@CQtDeployer_VERSION@",
+
+}
+

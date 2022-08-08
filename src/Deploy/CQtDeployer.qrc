@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>src/CQtDeployerModule/qmldir</file>
+        <file>src/CQtDeployerModule/CQtDeployer.qml</file>
+    </qresource>
+    <qresource prefix="/CQtDeployerTr">
+        <file>languages/en.qm</file>
+    </qresource>
+</RCC>
