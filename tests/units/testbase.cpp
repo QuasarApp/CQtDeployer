@@ -5,8 +5,8 @@
 #include <QJsonObject>
 #include <QTest>
 
-static const QString TestBinDir = TEST_BIN_DIR;
-static const QString TestQtDir = QT_BASE_DIR;
+const QString TestBase::TestBinDir = TEST_BIN_DIR;
+const QString TestBase::TestQtDir = QT_BASE_DIR;
 
 TestBase::TestBase()
 {

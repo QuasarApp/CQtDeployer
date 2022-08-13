@@ -9,7 +9,7 @@
 #include "pluginsparser.h"
 #include <QDir>
 #include <dependenciesscanner.h>
-#include <quasarapp.h>
+#include <qaglobalutils.h>
 
 PluginsParser::PluginsParser(){
 }

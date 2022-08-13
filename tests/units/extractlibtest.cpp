@@ -7,6 +7,7 @@
 
 
 #include "extractlibtest.h"
+#include "libcreator.h"
 #include <configparser.h>
 #include <dependenciesscanner.h>
 #include <filemanager.h>

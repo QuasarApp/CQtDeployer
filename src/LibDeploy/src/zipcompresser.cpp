@@ -8,7 +8,7 @@
 #include "zipcompresser.h"
 
 #include <QDir>
-#include "zip.h"
+#include <zip.h>
 
 ZipCompresser::ZipCompresser() {
 

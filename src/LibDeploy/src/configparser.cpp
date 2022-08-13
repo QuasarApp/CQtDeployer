@@ -16,10 +16,9 @@
 #include "packing.h"
 #include "pathutils.h"
 #include "pluginsparser.h"
-#include "quasarapp.h"
-
+#include "defines.h"
 #include <cassert>
-
+#include <qaglobalutils.h>
 #include <Distributions/deb.h>
 #include <Distributions/defaultdistro.h>
 #include <Distributions/qif.h>

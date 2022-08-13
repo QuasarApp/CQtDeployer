@@ -7,6 +7,7 @@
 
 #ifndef CQT_H
 #define CQT_H
+#include "deployconfig.h"
 #include "distrostruct.h"
 
 #include <QJsonObject>
@@ -16,6 +17,7 @@
 #include <QMap>
 #include <QDir>
 #include "deploy_global.h"
+#include "targetdata.h"
 
 class FileManager;
 class DependenciesScanner;
@@ -32,6 +34,8 @@ public:
 
     const DeployConfig* config() const;
     friend class DeployTargetTest;
+    friend class IconsTest;
+    friend class SetTargetDirTest;
 
 private:
 

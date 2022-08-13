@@ -11,6 +11,7 @@
 #include <dependenciesscanner.h>
 #include <filemanager.h>
 #include <packing.h>
+#include <pathutils.h>
 #include <pluginsparser.h>
 
 

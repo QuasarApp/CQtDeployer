@@ -86,3 +86,5 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 src/LibDeploy/src/deploy_global.h
+src/QtELFReader/src/elfreader_global.h
+

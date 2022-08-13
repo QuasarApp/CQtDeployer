@@ -7,7 +7,7 @@
 
 #ifndef ELF_H
 #define ELF_H
-#include "../qtTools/src/shared/winutils/elfreader.h"
+#include "elfreader.h"
 
 #include "igetlibinfo.h"
 

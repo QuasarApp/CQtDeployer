@@ -32,7 +32,7 @@ set(PUBLIC_INCUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 add_library(${CURRENT_PROJECT} ${SOURCE_CPP} ${SOURCE_QRC})
 
-target_link_libraries(${CURRENT_PROJECT} PUBLIC QuasarApp )
+target_link_libraries(${CURRENT_PROJECT} PUBLIC QuasarApp QtELFReader pe-parse zip)
 
 target_include_directories(${CURRENT_PROJECT} PUBLIC ${PUBLIC_INCUDE_DIR})
 

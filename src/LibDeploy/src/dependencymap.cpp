@@ -7,7 +7,7 @@
 
 #include "dependencymap.h"
 #include "deploycore.h"
-#include "quasarapp.h"
+#include "qaglobalutils.h"
 
 DependencyMap::DependencyMap() {
     _qtModules = DeployCore::QtModule::NONE;

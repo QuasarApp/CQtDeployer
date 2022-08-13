@@ -54,6 +54,7 @@ public:
     bool isEmpty();
 
     friend class deploytest;
+    friend class DistroStructTest;
 
 };
 

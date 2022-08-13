@@ -7,6 +7,7 @@
 
 
 #include "qttest.h"
+#include "modules.h"
 #include <configparser.h>
 #include <dependenciesscanner.h>
 #include <filemanager.h>

@@ -20,7 +20,7 @@
 #include <QRegularExpression>
 #include <quasarapp.h>
 #include <cstdio>
-
+#include <qaglobalutils.h>
 #include <cassert>
 
 #include <fstream>

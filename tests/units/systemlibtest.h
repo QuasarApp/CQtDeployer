@@ -6,18 +6,18 @@
 //#
 
 
-#ifndef OVERRIDE_TEMPLATE_DEB_TEST_H
-#define OVERRIDE_TEMPLATE_DEB_TEST_H
+#ifndef SYSTEM_LIB_TEST_H
+#define SYSTEM_LIB_TEST_H
 #include "testbase.h"
 #include "testutils.h"
 
 #include <QtTest>
 
-class OverridingDefaultTemplateDEBTest: public TestBase, protected TestUtils
+class SystemLibTest: public TestBase, protected TestUtils
 {
 public:
-    void test();
+    void test() override;
 
 };
 
-#endif // OVERRIDE_TEMPLATE_DEB_TEST_H
+#endif // SYSTEM_LIB_TEST_H

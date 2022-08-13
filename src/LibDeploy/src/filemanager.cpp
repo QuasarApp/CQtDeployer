@@ -11,6 +11,7 @@
 #include <QDir>
 #include <quasarapp.h>
 #include "configparser.h"
+#include "defines.h"
 #include "deploycore.h"
 #include <QProcess>
 #include <QStack>

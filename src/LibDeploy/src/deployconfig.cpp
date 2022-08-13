@@ -6,7 +6,7 @@
  */
 
 #include "deployconfig.h"
-#include "quasarapp.h"
+#include "qaglobalutils.h"
 
 void DeployConfig::reset() {
     *this = DeployConfig{};

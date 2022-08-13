@@ -7,7 +7,6 @@
 #include <deployconfig.h>
 
 
-
 class TestBase: public Test
 {
 public:
@@ -32,6 +31,10 @@ public:
                        bool onlySize = false,
                        exitCodes exitCode = exitCodes::Good,
                        const std::function<void (const DeployConfig *)> &cb = {});
+
+
+    static const QString TestBinDir;
+    static const QString TestQtDir;
 
 private:
     QSet<QString> filesTree;

@@ -6,13 +6,12 @@
  */
 
 #include "dependenciesscanner.h"
+#include "deployconfig.h"
 #include "deploycore.h"
-#include "quasarapp.h"
-#include "configparser.h"
+#include "qaglobalutils.h"
 #include <QList>
 #include <QDir>
 #include <QDebug>
-#include "pathutils.h"
 
 DependenciesScanner::DependenciesScanner() {
 

@@ -7,6 +7,8 @@
 
 
 #include "qmlextracttest.h"
+#include "qml.h"
+#include "qmlcreator.h"
 #include <configparser.h>
 #include <dependenciesscanner.h>
 #include <filemanager.h>

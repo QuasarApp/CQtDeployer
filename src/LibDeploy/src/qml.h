@@ -39,6 +39,8 @@ public:
     void setQtVersion(const QtMajorVersion &qtVersion);
 
     friend class deploytest;
+    friend class QmlScanerTest;
+    friend class QMLExtractTest;
 };
 
 #endif // QML_DEPLY_H

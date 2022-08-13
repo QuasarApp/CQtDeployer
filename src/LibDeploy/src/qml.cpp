@@ -9,6 +9,7 @@
 
 #include <QDir>
 #include <QFile>
+#include "defines.h"
 #include "quasarapp.h"
 #include "deploycore.h"
 #include "deployconfig.h"

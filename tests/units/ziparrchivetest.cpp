@@ -7,6 +7,7 @@
 
 
 #include "ziparrchivetest.h"
+#include "zipcompresser.h"
 #include <configparser.h>
 #include <dependenciesscanner.h>
 #include <filemanager.h>

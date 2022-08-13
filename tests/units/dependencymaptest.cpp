@@ -7,6 +7,7 @@
 
 
 #include "dependencymaptest.h"
+#include "dependencymap.h"
 #include <configparser.h>
 #include <dependenciesscanner.h>
 #include <filemanager.h>

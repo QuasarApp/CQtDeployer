@@ -5,8 +5,6 @@
  * of this license document, but changing it is not allowed.
  */
 
-#include "extracter.h"
-#include "quasarapp.h"
 #include "deploycore.h"
 #include <QCoreApplication>
 #include <QDir>

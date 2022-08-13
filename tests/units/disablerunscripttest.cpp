@@ -12,7 +12,7 @@
 #include <filemanager.h>
 #include <packing.h>
 #include <pluginsparser.h>
-
+#include "modules.h"
 
 void DisableRunScriptTest::test() {
 
@@ -32,33 +32,3 @@ void DisableRunScriptTest::test() {
                    "-disableRunScript", "TestOnlyC"}, &comapareTreeqif);
 }
 
-void deploytest::testQifOut() {
-    TestUtils utils;
-
-#ifdef Q_OS_UNIX
-    QString bin = TestBinDir + "TestOnlyC";
-#else
-    QString bin = TestBinDir + "TestOnlyC.exe";
-#endif
-
-#ifdef Q_OS_UNIX
-    auto result = utils.createTree({{DISTRO_DIR + "/QIF_OUT.exe"}, {DISTRO_DIR + "/QIF_OUT.exe.md5"},
-                                    {DISTRO_DIR + "/DEB_OUT.deb"}, {DISTRO_DIR + "/DEB_OUT.deb.md5"},
-                                    {DISTRO_DIR + "/ZIP_OUT.zip"}, {DISTRO_DIR + "/ZIP_OUT.zip.md5"}});
-
-    // Run deploy installer
-    runTestParams({"-bin", bin, "clear",
-                   "qif", "-qifOut", "QIF_OUT.exe",
-                   "deb", "-debOut", "DEB_OUT.deb",
-                   "zip", "-zipOut", "ZIP_OUT.zip"}, &result);
-#else
-    auto result = utils.createTree({{DISTRO_DIR + "/QIF_OUT.exe"}, {DISTRO_DIR + "/QIF_OUT.exe.md5"},
-                                    {DISTRO_DIR + "/ZIP_OUT.zip"}, {DISTRO_DIR + "/ZIP_OUT.zip.md5"}});
-
-    // Run deploy installer
-    runTestParams({"-bin", bin, "clear",
-                   "qif", "-qifOut", "QIF_OUT.exe",
-                   "zip", "-zipOut", "ZIP_OUT.zip"}, &result);
-#endif
-
-}

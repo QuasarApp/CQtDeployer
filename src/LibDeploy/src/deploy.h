@@ -63,6 +63,8 @@ public:
      */
     static QString codeString(int code);
     friend class deploytest;
+    friend class CheckQtTest;
+    friend class QIFWBinaryCreatorTest;
 };
 
 #endif // DEPLOY_H

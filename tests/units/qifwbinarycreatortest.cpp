@@ -7,6 +7,7 @@
 
 
 #include "qifwbinarycreatortest.h"
+#include "Distributions/qif.h"
 #include <configparser.h>
 #include <dependenciesscanner.h>
 #include <filemanager.h>

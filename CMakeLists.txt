@@ -51,6 +51,12 @@ initAll()
 
 add_subdirectory(submodules/QuasarAppLib)
 
+add_subdirectory(src/QtELFReader)
+
+option(BUILD_COMMAND_LINE_TOOLS "Build Command Line Tools" OFF)
+add_subdirectory(submodules/pe-parse)
+add_subdirectory(submodules/zip)
+
 add_subdirectory(src/LibDeploy)
 
 if (DEFINED CQT_DEPLOYER_TOOL)
