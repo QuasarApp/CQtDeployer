@@ -1,0 +1,37 @@
+//#
+//# Copyright (C) 2020-2022 QuasarApp.
+//# Distributed under the GPLv3 software license, see the accompanying
+//# Everyone is permitted to copy and distribute verbatim copies
+//# of this license document, but changing it is not allowed.
+//#
+
+
+#include "qmlextracttest.h"
+#include <configparser.h>
+#include <dependenciesscanner.h>
+#include <filemanager.h>
+#include <packing.h>
+#include <pluginsparser.h>
+
+
+void QMLExtractTest::test() {
+    QmlCreator creator("./");
+    auto imports = creator.getQmlImports();
+
+    auto qmlFiles = creator.getCopyedQml();
+
+
+    QML scaner("./", QtMajorVersion::Qt5);
+
+
+    for (const auto &file : qAsConst(qmlFiles)) {
+
+
+        auto fileImports = scaner.extractImportsFromFile(file);
+
+        for (const auto &fil : imports.value(file)) {
+            QVERIFY(fileImports.contains(fil, Qt::CaseInsensitive));
+        }
+
+    }
+}
