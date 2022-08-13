@@ -19,9 +19,10 @@ set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(BUILD_SHARED_LIBS ON)
 
-if (ANDROID OR IOS)
-    set(BUILD_SHARED_LIBS ON)
+if (IOS)
+    set(BUILD_SHARED_LIBS OFF)
 endif()
 
 if (NOT QT_VERSION_MAJOR)
@@ -50,7 +51,6 @@ make_directory(Distro)
 initAll()
 
 add_subdirectory(submodules/QuasarAppLib)
-
 add_subdirectory(src/QtELFReader)
 
 option(BUILD_COMMAND_LINE_TOOLS "Build Command Line Tools" OFF)

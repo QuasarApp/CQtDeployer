@@ -87,4 +87,4 @@ CTestTestfile.cmake
 _deps
 src/LibDeploy/src/deploy_global.h
 src/QtELFReader/src/elfreader_global.h
-
+src/CQtDeployer/Deploy/CQtDeployer.json

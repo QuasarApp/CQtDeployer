@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION 3.18)
 
 get_filename_component(CURRENT_PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 
-set(CURRENT_PROJECT "${PROJECT_NAME}${CURRENT_PROJECT_DIR}")
+set(CURRENT_PROJECT "${PROJECT_NAME}")
 option(SIGN_APP "This option enable od disabled sign apk and aab files" ON)
 
 file(GLOB_RECURSE SOURCE_CPP
@@ -28,7 +28,6 @@ set(PUBLIC_INCUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(PRIVATE_INCUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Private")
 
-updateGitVars()
 
 if (${QT_VERSION_MAJOR} EQUAL 6)
 
@@ -43,7 +42,7 @@ else()
 
 endif()
 
-target_link_libraries(${CURRENT_PROJECT} PUBLIC ${PROJECT_NAME}LibDeploy)
+target_link_libraries(${CURRENT_PROJECT} PUBLIC LibDeploy)
 
 target_include_directories(${CURRENT_PROJECT} PUBLIC ${PUBLIC_INCUDE_DIR})
 target_include_directories(${CURRENT_PROJECT} PRIVATE ${PRIVATE_INCUDE_DIR})
@@ -71,4 +70,6 @@ set(LANGS ${CMAKE_CURRENT_SOURCE_DIR}/languages/en.ts
 
 prepareQM(${CURRENT_PROJECT} ${CMAKE_CURRENT_SOURCE_DIR}/../ "${LANGS}")
 
-
+set(global_file "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployer.json")
+configure_file("${global_file}.in" ${global_file} @ONLY)
+addDeployFromCustomFile(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployer.json")

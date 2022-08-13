@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION 3.18)
 
 get_filename_component(CURRENT_PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 
-set(CURRENT_PROJECT "${PROJECT_NAME}${CURRENT_PROJECT_DIR}")
+set(CURRENT_PROJECT "${PROJECT_NAME}-${CURRENT_PROJECT_DIR}")
 
 file(GLOB_RECURSE SOURCE_CPP
     "*.cpp" "*.h" "*.qrc"
@@ -24,7 +24,7 @@ add_definitions(-DQT_BASE_DIR="${QT_QT_ROOT}")
 add_definitions(-DTEST_BIN_DIR="${CMAKE_CURRENT_LIST_DIR}")
 
 add_executable(${CURRENT_PROJECT} ${SOURCE_CPP})
-target_link_libraries(${CURRENT_PROJECT} PRIVATE Qt${QT_VERSION_MAJOR}::Test ${PROJECT_NAME}LibDeploy)
+target_link_libraries(${CURRENT_PROJECT} PRIVATE Qt${QT_VERSION_MAJOR}::Test LibDeploy)
 
 target_include_directories(${CURRENT_PROJECT} PUBLIC ${PUBLIC_INCUDE_DIR})
 
