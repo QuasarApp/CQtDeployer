@@ -33,5 +33,4 @@ target_link_libraries(${CURRENT_PROJECT} PUBLIC Qt::Core )
 target_include_directories(${CURRENT_PROJECT} PUBLIC ${PUBLIC_INCUDE_DIR})
 
 
-set(global_file "${CMAKE_CURRENT_SOURCE_DIR}/src/elfreader_global.h")
-configure_file("${global_file}.in" ${global_file} @ONLY)
+configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/src/elfreader_global.h")

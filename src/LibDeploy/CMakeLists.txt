@@ -43,5 +43,4 @@ prepareQM(${CURRENT_PROJECT} ${CMAKE_CURRENT_SOURCE_DIR} "${LANGS}")
 
 set(QML_IMPORT_PATH ${QML_IMPORT_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/src" CACHE STRING "" FORCE)
 
-set(global_file "${CMAKE_CURRENT_SOURCE_DIR}/src/deploy_global.h")
-configure_file("${global_file}.in" ${global_file} @ONLY)
+configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/src/deploy_global.h")

@@ -1,8 +1,20 @@
 {
+
+    "allowEmptyPackages": true,
+    "targetPackage": [
+        ["CQtDeployer", "nothing"],
+        ["CQtDeployer.1_6", "CQtDeployer"]
+
+    ],
+    "extraData": [
+        ["QIFW", "./QIFW"]
+    ],
+
     "bin": [
         "src/CQtDeployer/CQtDeployer",
         "src/CQtDeployer/CQtDeployer.exe"
         ],
+
     "clear": true,
     "binPrefix": "@CMAKE_BINARY_DIR@",
     "libDir": [
@@ -10,10 +22,31 @@
     "@CMAKE_PREFIX_PATH@",
     "@CMAKE_BINARY_DIR@"
     ],
+
+    "publisher": [
+        ["QIFW", "Qt corporation"],
+        ["CQtDeployer.1_6", "QuasarApp group"]
+    ],
+    "releaseDate": [
+        ["QIFW", "@TODAY@"],
+        ["CQtDeployer.1_6", "@TODAY@"]
+    ],
+    "name": [
+        ["QIFW", "QtInstallerFramework"],
+        ["CQtDeployer.1_6", "CQtDeployer"]
+    ],
+
+    "deployVersion": [
+        ["QIFW", "@QIFW_VERSION@"],
+        ["CQtDeployer.1_6", "@CQT_DEPLOYER_VERSION@"],
+        ["CQtDeployer", "@CQT_DEPLOYER_VERSION_SHORT_PREFIX@"]
+
+    ],
+
     "recursiveDepth": "10",
     "deploySystem": false,
     "deb": true,
-    "qif": true,
+    "qif": "./QIFWTemplate",
     "zip": true,
     "ignoreEnv": [
          "@CMAKE_SOURCE_DIR@/Distro"

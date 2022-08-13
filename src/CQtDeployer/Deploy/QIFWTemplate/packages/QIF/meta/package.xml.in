@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>Qt Installer Framework</DisplayName>
+    <Description>Qt Installer Framework for CQtDeployer</Description>
+    <Version>@QIFW_VERSION@</Version>
+    <ReleaseDate>@TODAY@</ReleaseDate>
+    <Default>true</Default>
+</Package>
