@@ -1,0 +1,34 @@
+{
+
+    "extraData": "./QIFW/QIF",
+    "bin": [
+        "src/CQtDeployer/CQtDeployer",
+        "src/CQtDeployer/CQtDeployer.exe"
+    ],
+
+    "clear": true,
+    "binPrefix": "@CMAKE_BINARY_DIR@",
+    "libDir": [
+        "@CMAKE_SOURCE_DIR@",
+        "@CMAKE_PREFIX_PATH@",
+        "@CMAKE_BINARY_DIR@"
+    ],
+
+    "publisher": "QuasarApp group",
+    "releaseDate": "@TODAY@",
+
+    "name": "CQtDeployer",
+    "deployVersion": "@CQT_DEPLOYER_VERSION@",
+
+    "recursiveDepth": "10",
+    "deploySystem": false,
+    "deb": true,
+    "qif": false,
+    "zip": true,
+    "ignoreEnv": [
+         "@CMAKE_SOURCE_DIR@/Distro"
+        ],
+    "targetDir": "@CMAKE_SOURCE_DIR@/Distro"
+
+}
+

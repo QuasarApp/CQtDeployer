@@ -88,7 +88,8 @@ _deps
 src/LibDeploy/src/deploy_global.h
 src/QtELFReader/src/elfreader_global.h
 src/CQtDeployer/Deploy/CQtDeployer.json
-src/CQtDeployer/Deploy/QIFWTemplate/packages/cqtdeployer/meta/package.xml
-src/CQtDeployer/Deploy/QIFWTemplate/packages/cqtdeployer.1_6/meta/package.xml
+src/CQtDeployer/Deploy/QIFWTemplate/packages/CQtDeployer/meta/package.xml
+src/CQtDeployer/Deploy/QIFWTemplate/packages/CQtDeployer.1_6/meta/package.xml
 src/CQtDeployer/Deploy/QIFWTemplate/packages/QIF/meta/package.xml
 src/CQtDeployer/Deploy/QIFW/
+src/CQtDeployer/Deploy/CQtDeployerSingle.json

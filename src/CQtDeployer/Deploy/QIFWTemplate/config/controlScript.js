@@ -6,7 +6,6 @@ function Controller()
     installer.uninstallationFinished.connect(this, Controller.prototype.uninstallationFinished);
     installer.installationFinished.connect(this, Controller.prototype.installationFinished);
 
-
 }
 
 Controller.prototype.ComponentSelectionPageCallback = function()
@@ -14,7 +13,7 @@ Controller.prototype.ComponentSelectionPageCallback = function()
     var widget = gui.currentPageWidget(); // get the current wizard page
     if (widget !== null && installer.isInstaller()) {
         widget.deselectAll();
-        widget.selectComponent('cqtdeployer.1_6');
+        widget.selectComponent('CQtDeployer.1_6');
         widget.selectComponent('QIF');
 
     }

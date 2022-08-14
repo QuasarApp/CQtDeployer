@@ -2,57 +2,81 @@
 
     "allowEmptyPackages": true,
     "targetPackage": [
-        ["CQtDeployer", "nothing"],
-        ["CQtDeployer.1_6", "CQtDeployer"]
+        ["CQtDeployer.1_6", "CQtDeployer"],
+        ["CQtDeployer.1_6", "cqt"]
 
     ],
+
+    "icon": [
+        ["CQtDeployer", "./QIFWTemplate/res/icon.png"],
+        ["CQtDeployer.exe", "./QIFWTemplate/res/icon.ico"]
+    ],
+
     "extraData": [
-        ["QIFW", "./QIFW"]
+        ["QIF", "./QIFW/QIF"],
+        ["CQtDeployer", "./../../../LICENSE"]
+    ],
+
+    "extraDataOut": [
+        ["QIF", ""],
+        ["CQtDeployer", ""]
     ],
 
     "bin": [
         "src/CQtDeployer/CQtDeployer",
         "src/CQtDeployer/CQtDeployer.exe"
-        ],
-
+    ],
     "clear": true,
     "binPrefix": "@CMAKE_BINARY_DIR@",
     "libDir": [
-    "@CMAKE_SOURCE_DIR@",
-    "@CMAKE_PREFIX_PATH@",
-    "@CMAKE_BINARY_DIR@"
+        "@CMAKE_SOURCE_DIR@",
+        "@CMAKE_PREFIX_PATH@",
+        "@CMAKE_BINARY_DIR@"
+    ],
+
+    "prefix": [
+        ["CQtDeployer.1_6", "1.6"],
+        ["QIF", "/"],
+        ["CQtDeployer", "/"]
+
     ],
 
     "publisher": [
-        ["QIFW", "Qt corporation"],
+        ["QIF", "Qt corporation"],
+        ["CQtDeployer", "QuasarApp group"],
         ["CQtDeployer.1_6", "QuasarApp group"]
+
     ],
+
     "releaseDate": [
-        ["QIFW", "@TODAY@"],
+        ["QIF", "@TODAY@"],
+        ["CQtDeployer", "@TODAY@"],
         ["CQtDeployer.1_6", "@TODAY@"]
+
     ],
+
     "name": [
-        ["QIFW", "QtInstallerFramework"],
-        ["CQtDeployer.1_6", "CQtDeployer"]
+        ["QIF", "QtInstallerFramework"],
+        ["CQtDeployer", "CQtDeployer"],
+        ["CQtDeployer.1_6", "CQtDeployer 1.6"]
     ],
 
     "deployVersion": [
-        ["QIFW", "@QIFW_VERSION@"],
-        ["CQtDeployer.1_6", "@CQT_DEPLOYER_VERSION@"],
-        ["CQtDeployer", "@CQT_DEPLOYER_VERSION_SHORT_PREFIX@"]
+        ["QIF", "@QIFW_VERSION@"],
+        ["CQtDeployer", "@CQT_DEPLOYER_VERSION_SHORT_PREFIX@"],
+        ["CQtDeployer.1_6", "@CQT_DEPLOYER_VERSION@"]
 
     ],
 
     "recursiveDepth": "10",
     "deploySystem": false,
-    "deb": true,
+    "deb": false,
     "qif": "./QIFWTemplate",
-    "zip": true,
+    "zip": false,
     "ignoreEnv": [
          "@CMAKE_SOURCE_DIR@/Distro"
         ],
-    "targetDir": "@CMAKE_SOURCE_DIR@/Distro",
-    "deployVersion": "@CQtDeployer_VERSION@"
+    "targetDir": "@CMAKE_SOURCE_DIR@/Distro"
 
 }
 

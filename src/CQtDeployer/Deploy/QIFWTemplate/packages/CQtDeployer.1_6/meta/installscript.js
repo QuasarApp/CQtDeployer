@@ -1,4 +1,4 @@
-const VERSION = "$VERSION"
+const VERSION = "1.6"
 
 function Component()
 {
@@ -88,7 +88,7 @@ function systemIntegration() {
 
     if (systemInfo.kernelType === "winnt") {
 
-        component.addOperation('Execute', ["SETX", "cqtdeployer", targetDir + "\\" + VERSION + "\\cqtdeployer.bat"],
+        component.addOperation('Execute', ["SETX", "cqtdeployer", targetDir + "\\" + VERSION + "\\CQtDeployer.bat"],
                                "UNDOEXECUTE", ["SETX", "cqtdeployer", ""])
         component.addOperation('Execute', ["SETX", "cqtDir", targetDir + "\\" + VERSION + "\\"],
                                "UNDOEXECUTE", ["SETX", "cqtDir", ""])
@@ -133,15 +133,15 @@ function systemIntegration() {
             }
 
         }
-        component.addOperation('Execute', ["ln", "-sf", targetDir + "/" + VERSION + "/cqtdeployer.sh",
+        component.addOperation('Execute', ["ln", "-sf", targetDir + "/" + VERSION + "/CQtDeployer.sh",
                                            homeDir + "/.local/bin/cqtdeployer"],
                                "UNDOEXECUTE", ["rm", "-f", homeDir + "/.local/bin/cqtdeployer"] )
 
-        component.addOperation('Execute', ["ln", "-sf", targetDir + "/" + VERSION + "/cqt.sh",
+        component.addOperation('Execute', ["ln", "-sf", targetDir + "/" + VERSION + "/bin/cqt.sh",
                                            homeDir + "/.local/bin/cqt"],
                                "UNDOEXECUTE", ["rm", "-f", homeDir + "/.local/bin/cqt"] )
 
-        component.addOperation('Execute', ["ln", "-sf", targetDir + "/" + VERSION + "/cqt.sh",
+        component.addOperation('Execute', ["ln", "-sf", targetDir + "/" + VERSION + "/bin/cqt.sh",
                                            homeDir + "/.local/bin/cqtdeployer.cqt"],
                                "UNDOEXECUTE", ["rm", "-f", homeDir + "/.local/bin/cqtdeployer.cqt"] )
 
