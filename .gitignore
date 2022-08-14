@@ -85,6 +85,8 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+
+# cmake configured files
 src/LibDeploy/src/deploy_global.h
 src/QtELFReader/src/elfreader_global.h
 src/CQtDeployer/Deploy/CQtDeployer.json
@@ -93,3 +95,4 @@ src/CQtDeployer/Deploy/QIFWTemplate/packages/CQtDeployer.1_6/meta/package.xml
 src/CQtDeployer/Deploy/QIFWTemplate/packages/QIF/meta/package.xml
 src/CQtDeployer/Deploy/QIFW/
 src/CQtDeployer/Deploy/CQtDeployerSingle.json
+src/CQtDeployer/Deploy/QIFWTemplate/config/config.xml
