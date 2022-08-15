@@ -78,6 +78,10 @@ configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFWTem
 configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFWTemplate/packages/CQtDeployer.1_6/meta/package.xml")
 configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFWTemplate/packages/QIF/meta/package.xml")
 
+# snap
+configure_file_in(${CURRENT_PROJECT} "${CMAKE_SOURCE_DIR}/snap/snapcraft.yaml")
+
+
 # sets qifw variable
 set(HomeDir "@HomeDir@")
 configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFWTemplate/config/config.xml")
@@ -101,3 +105,6 @@ ADD_CUSTOM_TARGET(
 add_dependencies(deploy${CURRENT_PROJECT} downloadQIFW)
 
 addDeployFromCustomFile(${CURRENT_PROJECT}Single "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployerSingle.json")
+
+set(SNAPCRAFT_EXTRA_ARG "--use-lxd")
+addDeploySnap(${CURRENT_PROJECT} "${CMAKE_SOURCE_DIR}/Distro/")

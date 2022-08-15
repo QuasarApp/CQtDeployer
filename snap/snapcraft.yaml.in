@@ -6,8 +6,8 @@
 #
 
 name: cqtdeployer # you probably want to 'snapcraft register <name>'
-version: '1.5.4.17' # just for humans, typically '1.2+git' or '1.3.2'
-summary: deploy your qt projects # 79 char long summary
+version: '@CQT_DEPLOYER_VERSION@'
+summary: deploy your qt or c/c++ projects # 79 char long summary
 description: |
   Console app for deploy qt libs.
   Key differences of this program
@@ -16,25 +16,26 @@ description: |
 
 grade: stable # must be 'stable' to release into candidate/stable channels
 confinement: strict # use 'strict' once you have the right plugs and slots
-base: core18
+base: core20
 icon: snap/gui/icon.png
 apps:
   cqtdeployer:
-    command: bash $SNAP/cqtdeployer.sh
+    command: bin/bash $SNAP/CQtDeployer.sh
     plugs: [home, removable-media, process-control, system-backup]
 
-  cqt:
-    command: bash $SNAP/cqt.sh
-    plugs: [home, removable-media, process-control, system-backup]
+#  cqt:
+#    command: bin/bash $SNAP/bin/cqt.sh
+#    plugs: [home, removable-media, process-control, system-backup]
 
 parts:
   cqtdeployer:
     # See 'snapcraft plugins'
 
     plugin: dump
-    source: QIFData/packages/cqtdeployer.1_5/data/1.5
+    source: Distro/CQtDeployer.zip
 
     stage-packages:
+      - bash
       - libfreetype6
       - libpng16-16
       - dpkg
@@ -45,12 +46,5 @@ parts:
       - libxcb-render-util0
       - libxcb-xinerama0
 
-  qif:
-    plugin: dump
-    source: QIFData/packages/QIF/data/
-
-    override-stage: |
-      snapcraftctl stage
-      chmod 777 -R "$SNAPCRAFT_STAGE/QIF"
 
 
