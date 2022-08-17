@@ -31,3 +31,11 @@ target_include_directories(${CURRENT_PROJECT} PUBLIC ${PUBLIC_INCUDE_DIR})
 
 initTests()
 addTests(${PROJECT_NAME} ${CURRENT_PROJECT})
+
+add_subdirectory(examples/quicknanobrowser)
+add_subdirectory(examples/TestCPPOnly)
+add_subdirectory(examples/TestOnlyC)
+add_subdirectory(examples/TestQMLWidgets)
+add_subdirectory(examples/TestQtWidgets)
+add_subdirectory(examples/virtualkeyboard)
+add_subdirectory(examples/webui)

@@ -89,12 +89,12 @@ QChar PathUtils::getDrive(QString path) {
         return path[0];
     }
 
-    return 0;
+    return {};
 }
 
 bool PathUtils::isAbsalutPath(const QString &path) {
     if (getDrive(path).isNull()) {
-        return path.size() && (path.at(0) == "/" ||  path.at(0) == "\\");
+        return path.size() && (path.at(0) == QString("/") ||  path.at(0) == QString("\\"));
     }
 
     return true;
@@ -117,9 +117,11 @@ QString PathUtils::getName(const QString &path) {
     if (fixedPath == "/") {
         return fixedPath;
     }
+    QRegularExpression _matche;
 
-    short endIndex = fixedPath.lastIndexOf(QRegularExpression("[/\\\\]"));
-    short beginIndex = fixedPath.lastIndexOf(QRegularExpression("[/\\\\]"), endIndex - 1) + 1;
+    _matche.setPattern("[/\\\\]");
+    short endIndex = fixedPath.lastIndexOf(_matche);
+    short beginIndex = fixedPath.lastIndexOf(_matche, endIndex - 1) + 1;
 
     return fixedPath.mid(beginIndex, endIndex - beginIndex);
 }
@@ -134,9 +136,11 @@ QString PathUtils::popItem(QString &path) {
         path = "";
         return fixedPath;
     }
+    QRegularExpression _matche;
 
-    short endIndex = fixedPath.lastIndexOf(QRegularExpression("[/\\\\]"));
-    short beginIndex = fixedPath.lastIndexOf(QRegularExpression("[/\\\\]"), endIndex - 1) + 1;
+    _matche.setPattern("[/\\\\]");
+    short endIndex = fixedPath.lastIndexOf(_matche);
+    short beginIndex = fixedPath.lastIndexOf(_matche, endIndex - 1) + 1;
 
     path = fixedPath.left(beginIndex);
 

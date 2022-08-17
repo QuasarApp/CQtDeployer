@@ -53,7 +53,6 @@ endif()
 make_directory(Distro)
 
 initAll()
-
 add_subdirectory(submodules/QuasarAppLib)
 add_subdirectory(src/QtELFReader)
 

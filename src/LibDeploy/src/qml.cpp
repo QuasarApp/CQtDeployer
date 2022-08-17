@@ -10,9 +10,8 @@
 #include <QDir>
 #include <QFile>
 #include "defines.h"
-#include "quasarapp.h"
 #include "deploycore.h"
-#include "deployconfig.h"
+#include "qregularexpression.h"
 
 QStringList QML::extractImportLine(const QString& line) const {
     QStringList result;
@@ -25,7 +24,7 @@ QStringList QML::extractImportLine(const QString& line) const {
             return result;
         }
         // qt5
-        result << (list[2][0] + "#" + list[1].replace(".", "/"));
+        result << (list[2][0] + QString("#") + list[1].replace(".", "/"));
     } else if (list.count() == 2 || (list.count() == 4  && list[2] == "as")) {
         // qt6
         result << (list[1].replace(".", "/"));
@@ -40,8 +39,13 @@ QStringList QML::extractImportsFromFile(const QString &filepath) const {
     if (!F.open(QIODevice::ReadOnly)) return QStringList();
 
     QString content = F.readAll();
-    content.remove(QRegExp("\\{(.*)\\}"));
-    content.remove(QRegExp("/\\*(.*)\\*/"));
+    QRegularExpression matcher;
+
+    matcher.setPattern("\\{(.*)\\}");
+    content.remove(matcher);
+
+    matcher.setPattern("/\\*(.*)\\*/");
+    content.remove(matcher);
     const auto list = content.split("\n");
     for (const QString &line : list)
         for (QString &word : line.split(";", splitbehavior))
@@ -126,8 +130,9 @@ QString QML::getPathFromImport(const QString &import, bool checkVersions) {
     } else {
         return "";
     }
-
-    auto words = importData.value(index).split(QRegExp("[/\\\\]"));
+    QRegularExpression matcher;
+    matcher.setPattern("[/\\\\]");
+    auto words = importData.value(index).split(matcher);
     const bool isSecond = importData.first() == "2" && checkVersions;
     bool secondVersion = isSecond;
 

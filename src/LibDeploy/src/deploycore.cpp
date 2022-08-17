@@ -155,7 +155,7 @@ LibPriority DeployCore::getLibPriority(const QString &lib) {
 }
 
 bool DeployCore::containsModule(const QString& moduleLibrary, const QString& lib) {
-    QRegExp erfexp(QString(moduleLibrary).replace("QtX", "Qt[4,5,6]"));
+    QRegularExpression erfexp(QString(moduleLibrary).replace("QtX", "Qt[4,5,6]"));
     return lib.contains(erfexp);
 }
 
@@ -985,7 +985,7 @@ QString DeployCore::transportPathToSnapRoot(const QString &path) {
             return path;
         }
 
-        if (path.size() && path[0] != "/") {
+        if (path.size() && path[0] != QString("/")) {
             auto absalutPath = QProcessEnvironment::systemEnvironment().value("PWD") + "/" + path;
             if (!absalutPath.contains(DeployCore::snapRootFS())) {
                 return snapRootFS() + "/" + absalutPath;

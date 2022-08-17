@@ -8,6 +8,7 @@
 #ifndef PACKING_H
 #define PACKING_H
 
+#include <QHash>
 #include <QObject>
 #include <QProcess>
 #include "deploy_global.h"

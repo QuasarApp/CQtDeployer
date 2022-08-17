@@ -10,13 +10,15 @@
 #include "filemanager.h"
 #include <QDir>
 #include <quasarapp.h>
-#include "configparser.h"
 #include "defines.h"
+#include "deployconfig.h"
 #include "deploycore.h"
 #include <QProcess>
 #include <QStack>
 #include <fstream>
 #include "pathutils.h"
+#include <QRegularExpression>
+#include <cmath>
 
 #ifdef Q_OS_WIN
 #include "windows.h"
@@ -436,7 +438,7 @@ void FileManager::clear(const QString& targetDir, bool force) {
 
     for (auto it = sortedOldData.end(); it != sortedOldData.begin(); --it) {
 
-        auto index = it - 1;
+        auto index = std::prev(it);
 
         if (!index.value().exists()) {
             continue;
@@ -470,9 +472,10 @@ bool FileManager::copyFile(const QString &file, const QString &target,
 QString FileManager::changeDistanation(const QString& absalutePath,
                                        QString basePath,
                                        int depch) {
-
-    auto prefixes = absalutePath.split(QRegExp("[\\/]"), splitbehavior);
-    depch = std::min(depch, prefixes.size());
+    QRegularExpression _matcher;
+    _matcher.setPattern("[\\/]");
+    auto prefixes = absalutePath.split(_matcher, splitbehavior);
+    depch = std::min(static_cast<long long>(depch), static_cast<long long>(prefixes.size()));
     while (depch) {
         auto index = prefixes.size() - depch;
         if (index >= 0) {

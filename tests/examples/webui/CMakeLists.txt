@@ -3,17 +3,20 @@ project(webui LANGUAGES CXX)
 
 set(CMAKE_AUTOMOC ON)
 
-if(NOT DEFINED INSTALL_EXAMPLESDIR)
-    set(INSTALL_EXAMPLESDIR "examples")
-endif()
-
 set(INSTALL_EXAMPLEDIR "${INSTALL_EXAMPLESDIR}/webenginewidgets/webui")
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui WebEngineWidgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui WebEngineWidgets)
 
-qt_add_executable(webui
+# Resources:
+file(GLOB_RECURSE SOURCE_QRC
+    "*.qrc"
+)
+
+add_executable(webui
     main.cpp
     webuihandler.cpp webuihandler.h
+    ${SOURCE_QRC}
+
 )
 
 set_target_properties(webui PROPERTIES
@@ -25,22 +28,4 @@ target_link_libraries(webui PUBLIC
     Qt::Core
     Qt::Gui
     Qt::WebEngineWidgets
-)
-
-# Resources:
-set(webui_resource_files
-    "about.html"
-)
-
-qt_add_resources(webui "webui"
-    PREFIX
-        "/"
-    FILES
-        ${webui_resource_files}
-)
-
-install(TARGETS webui
-    RUNTIME DESTINATION "${INSTALL_EXAMPLEDIR}"
-    BUNDLE DESTINATION "${INSTALL_EXAMPLEDIR}"
-    LIBRARY DESTINATION "${INSTALL_EXAMPLEDIR}"
 )

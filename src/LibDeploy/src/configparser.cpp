@@ -1213,7 +1213,7 @@ bool ConfigParser::initQmake() {
 
         auto qt = *qtList.begin();
 
-        if (qt.rightRef(3).compare(QString("lib"), Qt::CaseInsensitive)) {
+        if (qt.right(3).compare(QString("lib"), Qt::CaseInsensitive)) {
             return initQmakePrivate(QFileInfo(qt + "/../bin/qmake").absoluteFilePath());
         }
 
@@ -1645,7 +1645,7 @@ bool ConfigParser::smartMoveTargets() {
 
     }
 
-    _config.targetsEdit() = temp;
+    _config.targetsEdit() = QHash<QString, TargetInfo>{temp.begin(), temp.end()};
 
     return result && configureTargets();
 }
