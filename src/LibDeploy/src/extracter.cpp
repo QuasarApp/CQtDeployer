@@ -266,7 +266,7 @@ bool Extracter::copyTr() {
                                             QuasarAppUtils::Warning);
             }
 
-            const auto trFiles =  i->tr();
+            const auto trFiles =  i->translation();
             for (const auto &tr: trFiles) {
 
                 QFileInfo info(tr);

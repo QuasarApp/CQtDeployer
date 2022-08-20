@@ -546,7 +546,7 @@ bool ConfigParser::initDistroStruct() {
         return false;
     }
 
-    if (trData.size() && !parsePackagesPrivate(mainDistro, trData, &DistroModule::addTr)) {
+    if (trData.size() && !parsePackagesPrivate(mainDistro, trData, &DistroModule::addTranslation)) {
         packagesErrorLog("tr");
         return false;
     }

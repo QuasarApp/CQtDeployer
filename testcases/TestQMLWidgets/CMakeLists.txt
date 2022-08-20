@@ -7,9 +7,11 @@
 
 cmake_minimum_required(VERSION 3.18)
 
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Quick)
+set(CMAKE_AUTOMOC ON)
 
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Qml Quick)
 set(CURRENT_PROJECT "TestQMLWidgets")
+
 
 file(GLOB_RECURSE SOURCE_CPP
     "*.cpp" "*.h"
@@ -24,5 +26,11 @@ set(PUBLIC_INCUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
 add_executable(${CURRENT_PROJECT} ${ALL_SOURCES} )
 
-target_link_libraries(${CURRENT_PROJECT} PUBLIC Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Quick)
+target_link_libraries(${CURRENT_PROJECT} PUBLIC
+    Qt::Core
+    Qt::Gui
+    Qt::Qml
+    Qt::Quick
+)
+
 target_include_directories(${CURRENT_PROJECT} PUBLIC ${PUBLIC_INCUDE_DIR})

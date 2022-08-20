@@ -70,9 +70,9 @@ public:
     void setExtraData(const QSet<QString> &extraFiles);
     void addExtraData(const QString &extraFile);
 
-    QSet<QString> tr() const;
-    void setTr(const QSet<QString> &tr);
-    void addTr(const QString &tr);
+    QSet<QString> translation() const;
+    void setTranslation(const QSet<QString> &tr);
+    void addTranslation(const QString &tr);
 
     QString installDirDEB() const;
     void setInstallDirDEB(const QString &newInstallDir);

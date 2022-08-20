@@ -67,6 +67,10 @@ if (DEFINED CQT_DEPLOYER_TOOL)
 endif()
 
 if (CQT_DEPLOYER_TESTS)
+
+
+    add_subdirectory(testcases)
+
     add_subdirectory(tests)
 else()
     message("The ${PROJECT_NAME} tests is disabled.")

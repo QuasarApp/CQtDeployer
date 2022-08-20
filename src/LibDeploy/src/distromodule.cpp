@@ -175,15 +175,15 @@ void DistroModule::setInstallDirDEB(const QString &newInstallDir) {
     _installDirDEB = newInstallDir;
 }
 
-QSet<QString> DistroModule::tr() const {
+QSet<QString> DistroModule::translation() const {
     return _tr;
 }
 
-void DistroModule::setTr(const QSet<QString> &tr) {
+void DistroModule::setTranslation(const QSet<QString> &tr) {
     _tr = tr;
 }
 
-void DistroModule::addTr(const QString &tr) {
+void DistroModule::addTranslation(const QString &tr) {
     _tr += tr;
 }
 
