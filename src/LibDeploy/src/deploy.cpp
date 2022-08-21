@@ -25,6 +25,8 @@ Deploy::Deploy() {
 
 int Deploy::run() {
 
+    QuasarAppUtils::Settings::initService<QuasarAppUtils::Settings>();
+
     if (!prepare()) {
         return PrepareError;
     }
@@ -40,6 +42,8 @@ int Deploy::run() {
         return PackingError;
     }
     _fileManager->saveDeploymendFiles(_paramsParser->config()->getTargetDir());
+
+    QuasarAppUtils::Settings::deinitService();
 
     return Good;
 }

@@ -54,6 +54,8 @@ void IconsTest::test() {
                 });
 
     auto targetsMap = deploy->_config.getTargetsListByFilter("TestOnlyC");
+    QVERIFY(targetsMap.size());
+
     auto targetinfo = targetsMap.begin().value();
     QVERIFY(targetinfo->getName().contains("TestOnlyC"));
     auto icon = QFileInfo(targetinfo->getIcon());
