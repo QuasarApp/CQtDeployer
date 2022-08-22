@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION 3.18)
 
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Widgets)
 
-set(CURRENT_PROJECT "TestQtWidgets")
+set(CURRENT_PROJECT "QtWidgetsProject")
 
 file(GLOB_RECURSE SOURCE_CPP
     "*.cpp" "*.h"

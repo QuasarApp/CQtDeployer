@@ -139,8 +139,8 @@ void ConfFileTest::test() {
 #ifdef Q_OS_UNIX
 
     QVERIFY(data.contains("\"bin\": ["));
-    QVERIFY(data.contains("./../../../../../build/TestOnlyC"));
-    QVERIFY(data.contains("./../../../../../build/TestCPPOnly"));
+    QVERIFY(data.contains("./../../../../../bin/TestOnlyC"));
+    QVERIFY(data.contains("./../../../../../bin/TestCPPOnly"));
 
     QVERIFY(data.contains("\"clear\": true"));
     QString qmake = TestQtDir + "bin/qmake";
