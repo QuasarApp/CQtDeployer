@@ -8,11 +8,14 @@
 #ifndef MODULES_H
 #define MODULES_H
 
-#include "testutils.h"
 #include <configparser.h>
 #include <QSet>
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 3, 0)
+    #include "modulesqt6_3.h"
+    class Modules : public ModulesQt63
+
+#elif QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
     #include "modulesqt5152.h"
     class Modules : public ModulesQt5152
 
