@@ -28,8 +28,8 @@ PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
 
     auto sufix = info.completeSuffix();
 
-    if (sufix.contains("dll", Qt::CaseSensitive) == 0 ||
-            sufix.contains("exe", Qt::CaseSensitive) == 0) {
+    if (sufix.contains("dll", Qt::CaseSensitive)  ||
+            sufix.contains("exe", Qt::CaseSensitive)) {
         return PrivateScaner::PE;
     } else if (sufix.isEmpty() || sufix.contains("so", Qt::CaseSensitive)) {
         return PrivateScaner::ELF;
