@@ -151,6 +151,9 @@ private slots:
     // END TEST CASES
 
 private:
+    void initTestCase();
+    void cleanupTestCase();
+
 
     /**
      * @brief initTest This method prepare @a test for run in the QApplication loop.
@@ -161,12 +164,88 @@ private:
     QCoreApplication *_app = nullptr;
 };
 
+void tstMain::initTestCase() {
+    QDir qt;
+
+    QDir("./" + DISTRO_DIR).removeRecursively();
+
+    qt.mkpath("./test/Qt/5.12/");
+    qt.mkpath("./test/extraPath/");
+    qt.mkpath("./test/extra/");
+    qt.mkpath("./test/warning/");
+    qt.mkpath("./test/bins/");
+
+    QFile f( "./test/Qt/5.12/generalLib.so");
+    if (f.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
+        f.write("lib", 3);
+        f.close();
+    }
+
+    f.setFileName("./test/extraPath/ExtraLib.so");
+    if (f.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
+        f.write("lib", 3);
+        f.close();
+    }
+
+    f.setFileName("./test/extra/ExtraLib.so");
+    if (f.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
+        f.write("lib", 3);
+        f.close();
+    }
+
+    f.setFileName("./test/warning/WarningLib.so");
+    if (f.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
+        f.write("lib", 3);
+        f.close();
+    }
+
+    f.setFileName("./test/bins/execTarget.exe");
+    if (f.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
+        f.write("exec", 3);
+        f.close();
+    }
+
+    f.setFileName("./test/bins/execTarget");
+    if (f.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
+        f.write("exec", 3);
+        f.close();
+    }
+}
+
+void tstMain::cleanupTestCase() {
+    QDir qt("./test");
+    qt.removeRecursively();
+
+}
+
 /**
  * @brief tstMain::tstMain
  * init all availabel units for testsing
  */
 tstMain::tstMain() {
+    qputenv("QTEST_FUNCTION_TIMEOUT", "1800000");
 
+    QString qifwPath = qgetenv("PATH") + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.0/bin/";
+    qifwPath += qifwPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.1/bin/";
+    qifwPath += qifwPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.2/bin/";
+    qifwPath += qifwPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.3/bin/";
+    qifwPath += qifwPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.4/bin/";
+    qifwPath += qifwPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.5/bin/";
+
+    qputenv("PATH", qifwPath.toLatin1().data());
+    TestUtils utils;
+
+    QStringList pathList = QProcessEnvironment::systemEnvironment().
+                           value("PATH").split(DeployCore::getEnvSeparator());
+
+    qDebug () << pathList;
+
+    auto &filesTree = *FilesTreeService::autoInstance();
+    for (const auto& path: qAsConst(pathList)) {
+        filesTree += utils.getFilesSet(path, 1);
+    }
+
+    filesTree += utils.getFilesSet(QT_BASE_DIR);
     // init xample unit test
     int argc =0;
     char * argv[] = {nullptr};
@@ -179,11 +258,13 @@ tstMain::tstMain() {
 
     QDir(path).removeRecursively();
 
+    initTestCase();
 }
 
 tstMain::~tstMain() {
     _app->exit(0);
     delete _app;
+    cleanupTestCase();
 }
 
 void tstMain::initTest(Test *test) {

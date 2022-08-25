@@ -5,7 +5,10 @@
 #include "test.h"
 #include <QString>
 #include <deployconfig.h>
+#include <qaservice.h>
 
+
+class FilesTreeService: public QSet<QString>, public QuasarAppUtils::Service<FilesTreeService>{};
 
 class TestBase: public Test
 {
@@ -35,9 +38,6 @@ public:
 
     static const QString TestBinDir;
     static const QString TestQtDir;
-
-private:
-    QSet<QString> filesTree;
 
 };
 

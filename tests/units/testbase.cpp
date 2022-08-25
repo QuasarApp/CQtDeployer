@@ -13,28 +13,6 @@ TestBase::TestBase()
 
 }
 
-void TestBase::deploytest() {
-
-    qputenv("QTEST_FUNCTION_TIMEOUT", "1800000");
-    QString qifwPath = qgetenv("PATH") + DeployCore::getEnvSeparator() + TestQtDir + "../../Tools/QtInstallerFramework/4.0/bin/";
-    qifwPath += qifwPath + DeployCore::getEnvSeparator() + TestQtDir + "../../Tools/QtInstallerFramework/4.1/bin/";
-    qifwPath += qifwPath + DeployCore::getEnvSeparator() + TestQtDir + "../../Tools/QtInstallerFramework/4.2/bin/";
-    qifwPath += qifwPath + DeployCore::getEnvSeparator() + TestQtDir + "../../Tools/QtInstallerFramework/4.3/bin/";
-
-    qputenv("PATH", qifwPath.toLatin1().data());
-    TestUtils utils;
-
-    QStringList pathList = QProcessEnvironment::systemEnvironment().
-                           value("PATH").split(DeployCore::getEnvSeparator());
-
-    for (const auto& path: qAsConst(pathList)) {
-        filesTree += utils.getFilesSet(path, 1);
-    }
-
-    filesTree += utils.getFilesSet(TestQtDir);
-
-}
-
 int TestBase::generateLib(const QString &paath) {
     QDir dir;
     dir.mkpath(QFileInfo(paath).absolutePath());
@@ -67,60 +45,6 @@ void TestBase::deleteLib(const QString &paath) {
     }
 }
 
-void TestBase::initTestCase() {
-    QDir qt;
-
-    QDir("./" + DISTRO_DIR).removeRecursively();
-
-    qt.mkpath("./test/Qt/5.12/");
-    qt.mkpath("./test/extraPath/");
-    qt.mkpath("./test/extra/");
-    qt.mkpath("./test/warning/");
-    qt.mkpath("./test/bins/");
-
-    QFile f( "./test/Qt/5.12/generalLib.so");
-    if (f.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
-        f.write("lib", 3);
-        f.close();
-    }
-
-    f.setFileName("./test/extraPath/ExtraLib.so");
-    if (f.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
-        f.write("lib", 3);
-        f.close();
-    }
-
-    f.setFileName("./test/extra/ExtraLib.so");
-    if (f.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
-        f.write("lib", 3);
-        f.close();
-    }
-
-    f.setFileName("./test/warning/WarningLib.so");
-    if (f.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
-        f.write("lib", 3);
-        f.close();
-    }
-
-    f.setFileName("./test/bins/execTarget.exe");
-    if (f.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
-        f.write("exec", 3);
-        f.close();
-    }
-
-    f.setFileName("./test/bins/execTarget");
-    if (f.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
-        f.write("exec", 3);
-        f.close();
-    }
-}
-
-void TestBase::cleanupTestCase() {
-    QDir qt("./test");
-    qt.removeRecursively();
-
-}
-
 void TestBase::checkResults(const QSet<QString> &tree, bool noWarnings, bool onlySize) {
     TestUtils utils;
 
@@ -143,6 +67,8 @@ void TestBase::checkResults(const QSet<QString> &tree, bool noWarnings, bool onl
         QVERIFY(resultTree.size() > tree.size());
         return;
     }
+
+    auto &filesTree = *FilesTreeService::autoInstance();
 
     if (comapre.size() != 0) {
 
