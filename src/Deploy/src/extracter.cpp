@@ -473,10 +473,23 @@ bool Extracter::extractQml() {
                 }
             }
 
+
+            QStringList toCopyQmlFiles;
+            for (const auto& plugin: qAsConst(plugins)) {
+                const auto qmlFiles = QDir(plugin).entryInfoList(QDir::Files);
+                for (const auto& qmlFile: qmlFiles) {
+                    toCopyQmlFiles.push_back(qmlFile.absoluteFilePath());
+                }
+            }
+
+            // This function works very slow because use list mask
+            // solution: use the QSet and restriction comparese of the pathes for the mask argument.
+            // to-do optimise this function
             if (!_fileManager->copyFolder(cnf->qtDir.getQmls(),
                                           targetPath + distro.getQmlOutDir(),
                                           DeployCore::debugExtensions() ,
-                                          &listItems, &plugins)) {
+                                          &listItems,
+                                          &toCopyQmlFiles)) {
                 return false;
             }
 

@@ -9,6 +9,11 @@ cmake_minimum_required(VERSION 3.18)
 
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Widgets)
 
+# needed for test RPATH functions
+get_filename_component(QT_QT_ROOT "${Qt${QT_VERSION_MAJOR}Core_DIR}/../../.." ABSOLUTE)
+set(CMAKE_BUILD_RPATH ${QT_QT_ROOT}/bin)
+
+
 set(CURRENT_PROJECT "QtWidgetsProject")
 
 file(GLOB_RECURSE SOURCE_CPP

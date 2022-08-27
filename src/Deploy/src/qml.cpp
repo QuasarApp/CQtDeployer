@@ -46,6 +46,11 @@ QStringList QML::extractImportsFromFile(const QString &filepath) const {
 
     matcher.setPattern("/\\*(.*)\\*/");
     content.remove(matcher);
+
+    // Replace optional imports to restrict option, because before Qt 6.3 The Qml app needee of optional qml packas.
+    content.replace("optional import", "import");
+
+
     const auto list = content.split("\n");
     for (const QString &line : list)
         for (QString &word : line.split(";", splitbehavior))
@@ -77,18 +82,19 @@ bool QML::extractImportsFromDir(const QString &path, bool recursive) {
         for (const auto &import : qAsConst(imports)) {
             if (!_imports.contains(import)) {
                 _imports.insert(import);
-                extractImportsFromDir(getPathFromImport(import), recursive);
+                extractImportsFromDir(getPathFromImport(import), false);
             }
         }
     }
 
     for (const auto& module: qAsConst(qmlmodule)) {
         QStringList imports = extractImportsFromQmlModule(module.absoluteFilePath());
+        imports += extractImportsFromFile(module.absoluteFilePath());
 
         for (const auto &import : qAsConst(imports)) {
             if (!_imports.contains(import)) {
                 _imports.insert(import);
-                extractImportsFromDir(getPathFromImport(import), recursive);
+                extractImportsFromDir(getPathFromImport(import), false);
             }
         }
     }
@@ -99,7 +105,7 @@ bool QML::extractImportsFromDir(const QString &path, bool recursive) {
         auto importQtQml = "QtQml";
         if (!_imports.contains(importQtQml)) {
             _imports.insert(importQtQml);
-            extractImportsFromDir(getPathFromImport(importQtQml), recursive);
+            extractImportsFromDir(getPathFromImport(importQtQml), false);
         }
     }
 

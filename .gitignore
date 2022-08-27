@@ -87,7 +87,7 @@ CTestTestfile.cmake
 _deps
 
 # cmake configured files
-src/LibDeploy/src/deploy_global.h
+src/Deploy/src/deploy_global.h
 src/QtELFReader/src/elfreader_global.h
 src/CQtDeployer/Deploy/CQtDeployer.json
 src/CQtDeployer/Deploy/QIFWTemplate/packages/CQtDeployer/meta/package.xml

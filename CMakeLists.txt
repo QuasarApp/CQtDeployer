@@ -60,7 +60,7 @@ option(BUILD_COMMAND_LINE_TOOLS "Build Command Line Tools" OFF)
 add_subdirectory(submodules/pe-parse)
 add_subdirectory(submodules/zip)
 
-add_subdirectory(src/LibDeploy)
+add_subdirectory(src/Deploy)
 
 if (DEFINED CQT_DEPLOYER_TOOL)
     add_subdirectory(src/CQtDeployer)

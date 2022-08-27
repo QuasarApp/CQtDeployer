@@ -45,6 +45,10 @@ void TestBase::deleteLib(const QString &paath) {
     }
 }
 
+void TestBase::cleanupTestCase() {
+
+}
+
 void TestBase::checkResults(const QSet<QString> &tree, bool noWarnings, bool onlySize) {
     TestUtils utils;
 

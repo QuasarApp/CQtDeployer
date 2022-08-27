@@ -223,16 +223,22 @@ void tstMain::cleanupTestCase() {
  * init all availabel units for testsing
  */
 tstMain::tstMain() {
+    auto originalPath = qgetenv("CQT_TEST_ORIGINAL_PATH");
+    if (originalPath.isEmpty()) {
+        qputenv("CQT_TEST_ORIGINAL_PATH", qgetenv("PATH"));
+    }
+
     qputenv("QTEST_FUNCTION_TIMEOUT", "1800000");
 
-    QString qifwPath = qgetenv("PATH") + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.0/bin/";
-    qifwPath += qifwPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.1/bin/";
-    qifwPath += qifwPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.2/bin/";
-    qifwPath += qifwPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.3/bin/";
-    qifwPath += qifwPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.4/bin/";
-    qifwPath += qifwPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.5/bin/";
+    QString cqtTestPath = qgetenv("CQT_TEST_ORIGINAL_PATH") + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.0/bin/";
+    cqtTestPath += cqtTestPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.1/bin/";
+    cqtTestPath += cqtTestPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.2/bin/";
+    cqtTestPath += cqtTestPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.3/bin/";
+    cqtTestPath += cqtTestPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.4/bin/";
+    cqtTestPath += cqtTestPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.5/bin/";
+    cqtTestPath += cqtTestPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/bin/";
 
-    qputenv("PATH", qifwPath.toLatin1().data());
+    qputenv("PATH", cqtTestPath.toLatin1().data());
     TestUtils utils;
 
     QStringList pathList = QProcessEnvironment::systemEnvironment().
@@ -268,6 +274,7 @@ tstMain::~tstMain() {
 }
 
 void tstMain::initTest(Test *test) {
+
     QTimer::singleShot(0, this, [this, test]() {
         test->test();
         delete test;

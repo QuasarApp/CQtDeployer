@@ -3,9 +3,12 @@ project(webui LANGUAGES CXX)
 
 set(CMAKE_AUTOMOC ON)
 
-set(INSTALL_EXAMPLEDIR "${INSTALL_EXAMPLESDIR}/webenginewidgets/webui")
 
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui WebEngineWidgets)
+
+# needed for test RPATH functions
+get_filename_component(QT_QT_ROOT "${Qt${QT_VERSION_MAJOR}Core_DIR}/../../.." ABSOLUTE)
+set(CMAKE_BUILD_RPATH ${QT_QT_ROOT}/bin)
 
 # Resources:
 file(GLOB_RECURSE SOURCE_QRC

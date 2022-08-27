@@ -62,7 +62,7 @@ private:
 
     bool parseClearMode();
 
-    QSet<QString> getQtPathesFromTargets();
+    QString getRPathFromTargets();
 
     void setTargetDir(const QString &target = "");
     bool setTargets(const QStringList &value);

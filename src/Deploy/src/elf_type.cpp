@@ -50,6 +50,37 @@ int ELF::getVersionOfTag(const QByteArray& tag, QByteArray& source) const {
     return ver;
 }
 
+QString ELF::extractRPath(ElfReader& reader) const {
+
+    QString result;
+    if (!QuasarAppUtils::Params::isEndable("noCheckRPATH")) {
+        auto dynStr = getDynamicString(reader);
+
+        for (auto i = dynStr.rbegin(); i != dynStr.rend(); ++i) {
+
+            if (i->contains("end_")) {
+                return result;
+            }
+
+            const auto pathes = i->split(DeployCore::getEnvSeparator());
+            for (const auto &path: pathes) {
+                if (path.contains("/")) {
+                    if (result.size()) {
+                        result += DeployCore::getEnvSeparator() + DeployCore::transportPathToSnapRoot(path);
+                    } else {
+                        result += DeployCore::transportPathToSnapRoot(path);
+                    }
+                }
+            }
+
+            if (result.size())
+                return result;
+        }
+    }
+
+    return result;
+}
+
 bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
     ElfReader reader(lib);
 
@@ -82,25 +113,10 @@ bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
         return false;
     }
 
-    if (!QuasarAppUtils::Params::isEndable("noCheckRPATH")) {
-        auto dynStr = getDynamicString(reader);
-
-        for (auto i = dynStr.rbegin(); i != dynStr.rend(); ++i) {
-
-            if (i->contains("end_")) {
-                break;
-            }
-
-            if (QFileInfo(*i).isDir()) {
-                info.setQtPath(DeployCore::transportPathToSnapRoot(*i));
-            }
-
-        }
-    }
-
     QFileInfo infolib(lib);
     info.setName(infolib.fileName());
     info.setPath(infolib.absolutePath());
+    info.setRPath(extractRPath(reader));
 
     auto dep = reader.dependencies();
     for (const auto &i : dep) {

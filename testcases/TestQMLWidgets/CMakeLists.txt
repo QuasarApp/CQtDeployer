@@ -12,6 +12,9 @@ set(CMAKE_AUTOMOC ON)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Qml Quick)
 set(CURRENT_PROJECT "TestQMLWidgets")
 
+# needed for test RPATH functions
+get_filename_component(QT_QT_ROOT "${Qt${QT_VERSION_MAJOR}Core_DIR}/../../.." ABSOLUTE)
+set(CMAKE_BUILD_RPATH ${QT_QT_ROOT}/bin)
 
 file(GLOB_RECURSE SOURCE_CPP
     "*.cpp" "*.h"

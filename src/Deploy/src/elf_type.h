@@ -14,15 +14,18 @@
 class ELF : public IGetLibInfo
 {
 
+public:
+    ELF();
+
+    bool getLibInfo(const QString &lib, LibInfo &info) const override;
+
+
 private:
     QByteArrayList getDynamicString(ElfReader &reader) const;
 
     int getVersionOfTag(const QByteArray &tag, QByteArray &source) const;
 
-public:
-    ELF();
-
-    bool getLibInfo(const QString &lib, LibInfo &info) const override;
+    QString extractRPath(ElfReader &reader) const;
 };
 
 #endif // ELF_H

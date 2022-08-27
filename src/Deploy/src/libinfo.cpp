@@ -84,14 +84,14 @@ void LibInfo::setPriority(const LibPriority &value) {
     _priority = value;
 }
 
-QString LibInfo::getQtPath() const
+const QString &LibInfo::getRPath() const
 {
-    return _qtPath;
+    return _rpath;
 }
 
-void LibInfo::setQtPath(const QString &value)
+void LibInfo::setRPath(const QString &value)
 {
-    _qtPath = value;
+    _rpath = value;
 }
 
 WinAPI LibInfo::getWinApi() const {
@@ -124,7 +124,7 @@ QString LibInfo::toString() const {
     return QString("LibInfo: path: '%0', name: '%1', qtPath: '%2', platform: '%3', dependencies: '%4'").
             arg(_path,
                 _name,
-                _qtPath,
+                _rpath,
                 DeployCore::platformToString(_platform),
                 dependenciesList.join(", "));
 }
@@ -136,7 +136,7 @@ QString LibInfo::fullPath() const {
 void LibInfo::clear() {
     _path = "";
     _name = "";
-    _qtPath = "";
+    _rpath = "";
     _platform = Platform::UnknownPlatform;
     _dependncies.clear();
     _allDep.clear();

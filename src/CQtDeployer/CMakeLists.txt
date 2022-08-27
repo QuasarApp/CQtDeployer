@@ -42,7 +42,7 @@ else()
 
 endif()
 
-target_link_libraries(${CURRENT_PROJECT} PUBLIC LibDeploy)
+target_link_libraries(${CURRENT_PROJECT} PUBLIC Deploy)
 
 target_include_directories(${CURRENT_PROJECT} PUBLIC ${PUBLIC_INCUDE_DIR})
 target_include_directories(${CURRENT_PROJECT} PRIVATE ${PRIVATE_INCUDE_DIR})

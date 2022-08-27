@@ -840,12 +840,12 @@ bool ConfigParser::parseClearMode() {
     return true;
 }
 
-QSet<QString> ConfigParser::getQtPathesFromTargets() {
-    QSet<QString> res;
+QString ConfigParser::getRPathFromTargets() {
+    QString res;
 
     for (const auto &i: _config.targets()) {
-        if (i.isValid() && !i.getQtPath().isEmpty()) {
-            res.insert(i.getQtPath());
+        if (i.isValid()) {
+            res += i.getRPath() + DeployCore::getEnvSeparator();
         }
     }
 
@@ -1175,9 +1175,9 @@ bool ConfigParser::initQmake() {
 
     if (!info.isFile() || (info.baseName() != "qmake")) {
 
-        auto qtList = getQtPathesFromTargets();
+        QString qmakeFromRPath = DeployCore::findProcess(getRPathFromTargets(), "qmake");
 
-        if (qtList.isEmpty()) {
+        if (qmakeFromRPath.isEmpty()) {
 
             if (!QuasarAppUtils::Params::isEndable("noCheckPATH")) {
                 auto env = QProcessEnvironment::systemEnvironment();
@@ -1189,6 +1189,14 @@ bool ConfigParser::initQmake() {
                                                 QuasarAppUtils::Error);
                     return false;
                 }
+
+
+                QuasarAppUtils::Params::log(QString("The qmake was found in the PATH variable. qmake : %0"
+                                                    " If you want to disable search qmake executable in PATH variable,"
+                                                    " use the noCheckPATH option").
+                                            arg(proc),
+                                            QuasarAppUtils::Info);
+
 
                 return initQmakePrivate(proc);
             }
@@ -1203,21 +1211,15 @@ bool ConfigParser::initQmake() {
 
         }
 
-        if (qtList.size() > 1) {
-            QuasarAppUtils::Params::log("Your deployment targets were compiled by different qmakes, "
-                                        "auto-capture of the Qt libraries is not possible. "
-                                        "Please use the -qmake flag to solve this problem.",
-                                         QuasarAppUtils::Error);
-            return false;
-        }
 
-        auto qt = *qtList.begin();
+        QuasarAppUtils::Params::log(QString("The qmake was found in the RPATH variable. qmake : %0"
+                                            " If you want to disable search qmake executable in RPATH variable,"
+                                            " use the noCheckRPATH option").
+                                    arg(qmakeFromRPath),
+                                    QuasarAppUtils::Info);
 
-        if (qt.right(3).compare(QString("lib"), Qt::CaseInsensitive)) {
-            return initQmakePrivate(QFileInfo(qt + "/../bin/qmake").absoluteFilePath());
-        }
+        return initQmakePrivate(qmakeFromRPath);
 
-        return initQmakePrivate(QFileInfo(qt + "/qmake").absoluteFilePath());
     }
 
     return initQmakePrivate(qmake);

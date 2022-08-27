@@ -42,8 +42,8 @@ public:
 
     LibPriority getPriority() const;
     void setPriority(const LibPriority &value);
-    QString getQtPath() const;
-    void setQtPath(const QString &value);
+    const QString& getRPath() const;
+    void setRPath(const QString &value);
     WinAPI getWinApi() const;
     void setWinApi(WinAPI winApi);
     QtMajorVersion isDependetOfQt() const;
@@ -60,7 +60,7 @@ private:
     QString _path;
     QSet<QString> _dependncies;
     bool _dependsOfGui;
-    QString _qtPath;
+    QString _rpath;
     LibPriority _priority = NotFile;
     WinAPI _winApi = WinAPI::NoWinAPI;
 

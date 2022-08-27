@@ -64,12 +64,4 @@ void QtTest::test() {
                    "-qmake", qmake,
                    "-qmlDir", TestBinDir + "/../TestQMLWidgets"}, &comapareTree);
 
-
-#ifdef Q_OS_UNIX
-
-    runTestParams({"-bin", bin, "clear" ,
-                   "-qmlDir", TestBinDir + "/../TestQMLWidgets"}, &comapareTree);
-
-#endif
-
 }
