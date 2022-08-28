@@ -1016,9 +1016,79 @@ QSet<QString> ModulesQt63::qtLibs(const QString &distDir) const {
         return Tree;
 }
 
-QSet<QString> ModulesQt63::qmlVirtualKeyBoadrLibs(const QString &distDir) const
-{
+QSet<QString> ModulesQt63::qmlVirtualKeyBoadrLibs(const QString &distDir) const {
 
+    TestUtils utils;
+
+    auto Tree = qmlLibs(distDir);
+
+    Tree = ignoreFilter(Tree, "/TestQMLWidgets");
+
+#ifdef Q_OS_WIN
+    Tree += utils.createTree(
+                {
+                    "./" + distDir + "/basic.sh",
+                    "./" + distDir + "/bin/basic",
+                    "./" + distDir + "/lib/libQt6LabsFolderListModel.so",
+                    "./" + distDir + "/lib/libQt6QuickLayouts.so",
+                    "./" + distDir + "/lib/libQt6VirtualKeyboard.so",
+                    "./" + distDir + "/plugins/platforminputcontexts/libqtvirtualkeyboardplugin.so",
+                    "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_hangul.so",
+                    "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_openwnn.so",
+                    "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_pinyin.so",
+                    "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_tcime.so",
+                    "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_thai.so",
+                    "./" + distDir + "/qml/Qt/labs/folderlistmodel/libqmlfolderlistmodelplugin.so",
+                    "./" + distDir + "/qml/Qt/labs/folderlistmodel/plugins.qmltypes",
+                    "./" + distDir + "/qml/Qt/labs/folderlistmodel/qmldir",
+                    "./" + distDir + "/qml/QtQuick/Layouts/libqquicklayoutsplugin.so",
+                    "./" + distDir + "/qml/QtQuick/Layouts/plugins.qmltypes",
+                    "./" + distDir + "/qml/QtQuick/Layouts/qmldir",
+                    "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Settings/libqtquickvirtualkeyboardsettingsplugin.so",
+                    "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Settings/plugins.qmltypes",
+                    "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Settings/qmldir",
+                    "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Styles/libqtquickvirtualkeyboardstylesplugin.so",
+                    "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Styles/plugins.qmltypes",
+                    "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Styles/qmldir",
+                    "./" + distDir + "/qml/QtQuick/VirtualKeyboard/libqtquickvirtualkeyboardplugin.so",
+                    "./" + distDir + "/qml/QtQuick/VirtualKeyboard/plugins.qmltypes",
+                    "./" + distDir + "/qml/QtQuick/VirtualKeyboard/qmldir"
+                }
+        );
+
+#else
+    Tree += utils.createTree(
+                {
+                    "./" + distDir + "/basic.sh",
+                    "./" + distDir + "/bin/basic",
+                    "./" + distDir + "/lib/libQt6LabsFolderListModel.so",
+                    "./" + distDir + "/lib/libQt6QuickLayouts.so",
+                    "./" + distDir + "/lib/libQt6VirtualKeyboard.so",
+                    "./" + distDir + "/plugins/platforminputcontexts/libqtvirtualkeyboardplugin.so",
+                    "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_hangul.so",
+                    "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_openwnn.so",
+                    "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_pinyin.so",
+                    "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_tcime.so",
+                    "./" + distDir + "/plugins/virtualkeyboard/libqtvirtualkeyboard_thai.so",
+                    "./" + distDir + "/qml/Qt/labs/folderlistmodel/libqmlfolderlistmodelplugin.so",
+                    "./" + distDir + "/qml/Qt/labs/folderlistmodel/plugins.qmltypes",
+                    "./" + distDir + "/qml/Qt/labs/folderlistmodel/qmldir",
+                    "./" + distDir + "/qml/QtQuick/Layouts/libqquicklayoutsplugin.so",
+                    "./" + distDir + "/qml/QtQuick/Layouts/plugins.qmltypes",
+                    "./" + distDir + "/qml/QtQuick/Layouts/qmldir",
+                    "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Settings/libqtquickvirtualkeyboardsettingsplugin.so",
+                    "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Settings/plugins.qmltypes",
+                    "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Settings/qmldir",
+                    "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Styles/libqtquickvirtualkeyboardstylesplugin.so",
+                    "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Styles/plugins.qmltypes",
+                    "./" + distDir + "/qml/QtQuick/VirtualKeyboard/Styles/qmldir",
+                    "./" + distDir + "/qml/QtQuick/VirtualKeyboard/libqtquickvirtualkeyboardplugin.so",
+                    "./" + distDir + "/qml/QtQuick/VirtualKeyboard/plugins.qmltypes",
+                    "./" + distDir + "/qml/QtQuick/VirtualKeyboard/qmldir"
+                }
+        );
+#endif
+    return Tree;
 }
 
 QSet<QString> ModulesQt63::qtWithoutTr(const QString &distDir) const {
