@@ -169,7 +169,13 @@ void ConfFileTest::test() {
 #ifdef Q_OS_UNIX
     comapareTree -= utils.createTree(
                 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 3, 0)
+                    "./" + DISTRO_DIR + "/lib/libQt6EglFSDeviceIntegration.so",
+                    "./" + DISTRO_DIR + "/lib/libQt6WaylandEglClientHwIntegration.so",
+#else
                     "./" + DISTRO_DIR + "/lib/libQt5EglFSDeviceIntegration.so",
+#endif
+
                 });
     auto bin =  TestBinDir + "QtWidgetsProject";
 #else
