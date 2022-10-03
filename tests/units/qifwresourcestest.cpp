@@ -30,14 +30,15 @@ void QIFWResourcesTest::test() {
 #endif
 
 
-    auto templateDir = TestBinDir + "/../../UnitTests/testRes/QIFCustomTemplate";
+    auto templateDir = TestBinDir + "/../../tests/testRes/QIFCustomTemplate";
     runTestParams({
                       "-bin", bin,
+                      "qifFromSystem",
                       "clear",
                       "qif",
                       "-qifConfig", templateDir + "/customconfig.xml",
                       "-qifPackages", templateDir + "/custompackages",
-                      "-qifResources", templateDir + "customRes.qrc"
+                      "-qifResources", templateDir + "/customRes.qrc"
                   }, &result
                   );
 

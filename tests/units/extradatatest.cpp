@@ -21,20 +21,20 @@ void ExtraDataTest::test() {
 
 #ifdef Q_OS_UNIX
     auto comapareTree = utils.createTree(
-                {"./" + DISTRO_DIR + "/build/TestOnlyC",
-                 "./" + DISTRO_DIR + "/build/TestCPPOnly",
-                 "./" + DISTRO_DIR + "/build/QtWidgetsProject",
-                 "./" + DISTRO_DIR + "/build/TestQMLWidgets",
-                 "./" + DISTRO_DIR + "/build/basic",
-                 "./" + DISTRO_DIR + "/build/quicknanobrowser",
-                 "./" + DISTRO_DIR + "/build/webui"});
+                {"./" + DISTRO_DIR + "/bin/TestOnlyC",
+                 "./" + DISTRO_DIR + "/bin/TestCPPOnly",
+                 "./" + DISTRO_DIR + "/bin/QtWidgetsProject",
+                 "./" + DISTRO_DIR + "/bin/TestQMLWidgets",
+                 "./" + DISTRO_DIR + "/bin/basic",
+                 "./" + DISTRO_DIR + "/bin/quicknanobrowser",
+                 "./" + DISTRO_DIR + "/bin/webui"});
 #else
     auto comapareTree = utils.createTree(
-                {"./" + DISTRO_DIR + "/build/TestOnlyC.exe",
-                 "./" + DISTRO_DIR + "/build/TestCPPOnly.exe",
-                 "./" + DISTRO_DIR + "/build/QtWidgetsProject.exe",
-                 "./" + DISTRO_DIR + "/build/TestQMLWidgets.exe",
-                 "./" + DISTRO_DIR + "/build/basic.exe"});
+                {"./" + DISTRO_DIR + "/b    in/TestOnlyC.exe",
+                 "./" + DISTRO_DIR + "/bin/TestCPPOnly.exe",
+                 "./" + DISTRO_DIR + "/bin/QtWidgetsProject.exe",
+                 "./" + DISTRO_DIR + "/bin/TestQMLWidgets.exe",
+                 "./" + DISTRO_DIR + "/bin/basic.exe"});
 #endif
 
 
@@ -43,8 +43,8 @@ void ExtraDataTest::test() {
 
 
     comapareTree = TestModule.replace(comapareTree, {
-                                          {"DistributionKit/build",
-                                           "DistributionKit/myExtraData/build"}});
+                                          {"DistributionKit/bin",
+                                           "DistributionKit/myExtraData/bin"}});
 
     runTestParams({"-extraData", TestBinDir, "clear",
                    "noCheckRPATH", "noCheckPATH", "noQt",

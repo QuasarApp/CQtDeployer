@@ -819,18 +819,35 @@ QSet<QString> ModulesQt63::qmlLibs(const QString &distDir) const {
 QSet<QString> ModulesQt63::testDistroLibs(const QString &distDir) const {
     TestUtils utils;
 
-    auto res = ModulesQt5152::testDistroLibs(distDir);
-    return res;
+    auto Tree = qtLibs(distDir);
+
+    Tree = ignoreFilter(Tree, "/TestOnlyC");
+
+#ifdef Q_OS_WIN
+    Tree += utils.createTree(
+        {
+
+        }
+        );
+
+#else
+    Tree += utils.createTree(
+        {
+             "./" + DISTRO_DIR + "/package1/TestOnlyC.sh",
+             "./" + DISTRO_DIR + "/package1/bin/TestOnlyC",
+             "./" + DISTRO_DIR + "/package1/bin/qt.conf",
+             "./" + DISTRO_DIR + "/package2/pack/TestCPPOnly.sh",
+             "./" + DISTRO_DIR + "/package2/pack/bin/TestCPPOnly",
+             "./" + DISTRO_DIR + "/package2/pack/bin/qt.conf"
+        }
+        );
+#endif
+
+    return Tree;
 }
 
-QSet<QString> ModulesQt63::testOutLibs(const QString &distDir) const {
-    TestUtils utils;
-
-    auto res = ModulesQt5152::testOutLibs(distDir);
-
-    return res;
-
-
+QSet<QString> ModulesQt63::testOutLibs(const QString &) const {
+    throw new std::runtime_error("The testOutLibs is deprecated");
 }
 
 QSet<QString> ModulesQt63::onlyC(const QString &distDir) const {

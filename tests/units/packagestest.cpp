@@ -46,43 +46,28 @@ void PacakgesTest::test() {
                    "-targetPackage", "/package/;" + QFileInfo(target1).absoluteFilePath()}, &comapareTree);
 
 #ifdef Q_OS_UNIX
-    QString target2 = TestBinDir + "TestQMLWidgets";
+    QString target2 = TestBinDir + "TestCPPOnly";
     QString target3 = TestBinDir + "QtWidgetsProject";
 
 #else
-    QString target2 = TestBinDir + "TestQMLWidgets.exe";
+    QString target2 = TestBinDir + "TestCPPOnly.exe";
     QString target3 = TestBinDir + "QtWidgetsProject.exe";
 
 #endif
     bin += "," + target2;
     bin += "," + target3;
 
-    auto packageString = "package1;" + QFileInfo(target1).absoluteFilePath() + ",package2/ZzZ;" + QFileInfo(target2).absoluteFilePath();
-
     comapareTree = TestModule.testDistroLibs(DISTRO_DIR);
 
+    comapareTree = TestModule.replace(comapareTree, {
+                                         {"package1/bin/", "package1/superBin/"},
+
+                                    });
+
+    auto packageString = "package1;" + QFileInfo(target1).absoluteFilePath() +
+                         ",package2/pack;" + QFileInfo(target2).absoluteFilePath();
     runTestParams({"-bin", bin, "force-clear",
-                   "-binOut", "/lol",
-                   "-libOut", "/lolLib",
-                   "-trOut", "/lolTr",
-                   "-pluginOut", "/p",
-                   "-qmlOut", "package2/ZzZ;/q/and/q,/q",
-                   "-qmlDir", "package2/ZzZ;" + TestBinDir + "/../TestQMLWidgets",
+                   "-binOut", "package1;superBin",
                    "-targetPackage", packageString}, &comapareTree);
 
-
-#ifdef Q_OS_UNIX
-
-    // test a wrapers source
-    QFile wraper("./" + DISTRO_DIR + "/package2/ZzZ/TestQMLWidgets.sh");
-
-    QVERIFY(wraper.open(QIODevice::ReadOnly));
-    auto data = wraper.readAll();
-    wraper.close();
-
-    wraper.setFileName(":/testResurces/testRes/TestQMLWidgets.sh");
-    QVERIFY(wraper.open(QIODevice::ReadOnly));
-    QVERIFY(wraper.readAll() == data);
-    wraper.close();
-#endif
 }

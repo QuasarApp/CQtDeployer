@@ -1,5 +1,4 @@
 #include "qif.h"
-#include "quasarapp.h"
 #include "deploycore.h"
 #include "deployconfig.h"
 
@@ -78,8 +77,7 @@ QList<SystemCommandData> QIF::runCmd() {
         "-c",
         QuasarAppUtils::Params::getArg("qifConfig", location + "/config/config.xml"),
         "-p",
-        QuasarAppUtils::Params::getArg("qifPackages", location + "/packages/"),
-        "-v"
+        QuasarAppUtils::Params::getArg("qifPackages", location + "/packages/")
     };
 
     QString resources = QuasarAppUtils::Params::getArg("qifResources");
@@ -95,6 +93,8 @@ QList<SystemCommandData> QIF::runCmd() {
         cmd.arguments.push_back("--af");
         cmd.arguments.push_back(customFormat);
     }
+
+    cmd.arguments += "-v";
 
     return {cmd};
 }

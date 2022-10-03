@@ -11,8 +11,8 @@ public:
     // ModulesQt6.3 interface
 public:
     QSet<QString> qmlLibs(const QString &distDir = DISTRO_DIR) const override;
-    QSet<QString> testDistroLibs(const QString &distDir = DISTRO_DIR) const override;
-    QSet<QString> testOutLibs(const QString &distDir = DISTRO_DIR) const override;
+    QSet<QString> testDistroLibs(const QString &distDir = DISTRO_DIR) const override final;
+    QSet<QString> testOutLibs(const QString &distDir = DISTRO_DIR) const override final;
 
     QSet<QString> onlyC(const QString &distDir = DISTRO_DIR) const override;
     QSet<QString> qtLibs(const QString &distDir = DISTRO_DIR) const override;

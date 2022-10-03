@@ -276,7 +276,13 @@ tstMain::~tstMain() {
 void tstMain::initTest(Test *test) {
 
     QTimer::singleShot(0, this, [this, test]() {
-        test->test();
+        try {
+            test->test();
+        } catch (std::exception *e) {
+            QVERIFY2(false , e->what());
+            delete e;
+        }
+
         delete test;
         _app->exit(0);
     });

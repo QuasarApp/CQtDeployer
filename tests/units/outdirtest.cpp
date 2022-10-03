@@ -14,7 +14,6 @@
 #include <packing.h>
 #include <pluginsparser.h>
 
-
 void OutDirTest::test() {
     TestUtils utils;
 
@@ -29,7 +28,16 @@ void OutDirTest::test() {
 
 #endif
 
-    auto comapareTree = TestModule.testOutLibs();
+    auto comapareTree = TestModule.qmlLibs(DISTRO_DIR);
+
+    comapareTree = TestModule.replace(comapareTree, {
+                                      {"/bin/", "/lol/"},
+                                      {"/lib/", "/lolLib/"},
+                                      {"/translations/", "/lolTr/"},
+                                      {"/plugins/", "/p/"},
+                                      {"/qml/", "/q/"},
+                                     });
+
 
     runTestParams({"-bin", bin, "clear" ,
                    "-binOut", "/lol",
