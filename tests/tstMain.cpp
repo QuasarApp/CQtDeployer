@@ -241,16 +241,7 @@ tstMain::tstMain() {
     qputenv("PATH", cqtTestPath.toLatin1().data());
     TestUtils utils;
 
-    QStringList pathList = QProcessEnvironment::systemEnvironment().
-                           value("PATH").split(DeployCore::getEnvSeparator());
-
-    qDebug () << pathList;
-
     auto &filesTree = *FilesTreeService::autoInstance();
-    for (const auto& path: qAsConst(pathList)) {
-        filesTree += utils.getFilesSet(path, 1);
-    }
-
     filesTree += utils.getFilesSet(QT_BASE_DIR);
     // init xample unit test
     int argc =0;

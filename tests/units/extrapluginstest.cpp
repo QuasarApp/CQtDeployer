@@ -27,10 +27,13 @@ void ExtraPluginTest::test() {
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlodbc.so",
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlpsql.so",
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlite.so",
-                    "./" + DISTRO_DIR + "/lib/libQt5Sql.so",
+                    "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlmysql.so",
+                    "./" + DISTRO_DIR + "/lib/libQt6Sql.so",
                     "./" + DISTRO_DIR + "/lib/libpq.so",
                     "./" + DISTRO_DIR + "/lib/libcrypto.so",
                     "./" + DISTRO_DIR + "/lib/libssl.so",
+                    "./" + DISTRO_DIR + "/lib/libmysqlclient.so",
+
 
                 });
 #else
@@ -43,7 +46,7 @@ void ExtraPluginTest::test() {
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/qsqlodbc.dll",
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/qsqlite.dll",
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/qsqlpsql.dll",
-                    "./" + DISTRO_DIR + "/Qt5Sql.dll",
+                    "./" + DISTRO_DIR + "/Qt6Sql.dll",
                     "./" + DISTRO_DIR + "/libpq.dll",
 
                 });
@@ -74,7 +77,7 @@ void ExtraPluginTest::test() {
                     "./" + DISTRO_DIR + "/lib/libxcb-xinerama.so.0",
                     "./" + DISTRO_DIR + "/plugins/xcbglintegrations/libqxcb-egl-integration.so",
                     "./" + DISTRO_DIR + "/plugins/xcbglintegrations/libqxcb-glx-integration.so",
-                    "./" + DISTRO_DIR + "/lib/libQt5XcbQpa.so",
+                    "./" + DISTRO_DIR + "/lib/libQt6XcbQpa.so",
 
                 });
 
