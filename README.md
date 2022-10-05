@@ -7,7 +7,21 @@
 
 ****************************
 ## Support the project
-If you like what we do and it benefits you, you can support the project on the official page [QuasarApp on Patreon](https://www.patreon.com/QuasarApp)
+![image](https://user-images.githubusercontent.com/12465465/194008498-7f069b4a-b87d-42d1-82f1-af7d8cbcf220.png)
+
+We have a cqtdeployer extended support [subscription](https://www.patreon.com/QuasarApp)
+on the Patrion service. 
+* We'll help you solve your deployment issues personality. 
+* All your tasks needed to solve your issues will have top priority.
+
+Also, if you just want to support the project, you can subscribe to the general subscription plan on patrion
+
+If you can't use Patreon, you can send **bitcoin** to support us and our work.
+If you want to get support for bitcoin payment, write to me in [telegramm](https://t.me/Endrll) 
+
+## bitcoin address
+**bc1q3jnx7pleh7rxg6nm6navvuwwpd9znxvd4lye62**
+
 
 ## What is CQtDeployer
 
@@ -123,14 +137,6 @@ If you would like to use bitcoins to support us, you can transfer coins to this 
 <p align="center"><img src="res/qr.png" alt="qrcode"></p>
 
 <p align="center">bitcoin: bc1qzuymq7jc9q2x04wcwstr45tu8klm46zfl20wyp</p>
-
-
-## Our patrons list:
-
-### Personal Membership Patrons:
-
-- [GETFLOW.TECH](https://getflow.tech/)
-- Semih Ufuk Güler
 
 ***
 
