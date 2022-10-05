@@ -230,13 +230,27 @@ tstMain::tstMain() {
 
     qputenv("QTEST_FUNCTION_TIMEOUT", "1800000");
 
-    QString cqtTestPath = qgetenv("CQT_TEST_ORIGINAL_PATH") + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.0/bin/";
-    cqtTestPath += cqtTestPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.1/bin/";
-    cqtTestPath += cqtTestPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.2/bin/";
-    cqtTestPath += cqtTestPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.3/bin/";
-    cqtTestPath += cqtTestPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.4/bin/";
-    cqtTestPath += cqtTestPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.5/bin/";
-    cqtTestPath += cqtTestPath + DeployCore::getEnvSeparator() + QT_BASE_DIR + "/bin/";
+    QString cqtTestPath = QString(QT_BASE_DIR) + "/bin/" +
+                          DeployCore::getEnvSeparator() +
+                          qgetenv("CQT_TEST_ORIGINAL_PATH");
+    cqtTestPath = cqtTestPath +
+                  DeployCore::getEnvSeparator() +
+                  QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.0/bin/";
+    cqtTestPath = cqtTestPath +
+                  DeployCore::getEnvSeparator() +
+                  QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.1/bin/";
+    cqtTestPath = cqtTestPath +
+                  DeployCore::getEnvSeparator() +
+                  QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.2/bin/";
+    cqtTestPath = cqtTestPath +
+                  DeployCore::getEnvSeparator() +
+                  QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.3/bin/";
+    cqtTestPath = cqtTestPath +
+                  DeployCore::getEnvSeparator() +
+                  QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.4/bin/";
+    cqtTestPath = cqtTestPath +
+                  DeployCore::getEnvSeparator() +
+                  QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.5/bin/";
 
     qputenv("PATH", cqtTestPath.toLatin1().data());
     TestUtils utils;

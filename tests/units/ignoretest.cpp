@@ -51,7 +51,7 @@ void IgnoreTest::test() {
 #endif
 
 
-    if (!TestQtDir.contains("Qt5")) {
+    if (!TestQtDir.contains("Qt6")) {
 
 #ifdef Q_OS_UNIX
         bin = TestBinDir + "QtWidgetsProject";
@@ -67,7 +67,7 @@ void IgnoreTest::test() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake,
-                   "-ignore", "Qt5"}, &comapareTree);
+                   "-ignore", "Qt6"}, &comapareTree);
 
 
 
@@ -79,12 +79,12 @@ void IgnoreTest::test() {
                                            "./" + DISTRO_DIR + "/plugins/virtualkeyboard/libqtvirtualkeyboard_tcime.so",
                                            "./" + DISTRO_DIR + "/plugins/virtualkeyboard/libqtvirtualkeyboard_thai.so",
                                            "./" + DISTRO_DIR + "/plugins/platforminputcontexts/libqtvirtualkeyboardplugin.so",
-                                           "./" + DISTRO_DIR + "/lib/libQt5VirtualKeyboard.so",
+                                           "./" + DISTRO_DIR + "/lib/libQt6VirtualKeyboard.so",
 
                                        });
 #else
     auto removeTree = utils.createTree({
-                                           "./" + DISTRO_DIR + "/Qt5VirtualKeyboard.dll",
+                                           "./" + DISTRO_DIR + "/Qt6VirtualKeyboard.dll",
                                            "./" + DISTRO_DIR + "/plugins/platforminputcontexts/qtvirtualkeyboardplugin.dll",
                                            "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_hangul.dll",
                                            "./" + DISTRO_DIR + "/plugins/virtualkeyboard/qtvirtualkeyboard_openwnn.dll",

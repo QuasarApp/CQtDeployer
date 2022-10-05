@@ -29,14 +29,14 @@ void IgnoreEnvTest::test() {
     };
 
     QStringList testTree = {
-        "./testTree/test/z",
-        "./testTree/z",
-        "./testTree/test1/1z",
-        "./testTree/test2/1/z",
+        "./testTree/test/s",
+        "./testTree/s",
+        "./testTree/test1/1s",
+        "./testTree/test2/1/s",
     };
 
-    createTree(ignoreTree);
-    createTree(testTree);
+    deployTree(ignoreTree);
+    deployTree(testTree);
 
     env.setIgnoreEnvList(ignoreTree);
     env.addEnv(ignoreTree);

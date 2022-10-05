@@ -91,6 +91,18 @@ QSet<QString> TestUtils::createTree(const QStringList &tree) {
     return res;
 }
 
+QSet<QString> TestUtils::deployTree(const QStringList &tree) {
+    QSet<QString> res;
+    for (const auto &i : tree) {
+        QFileInfo fInfo(i);
+        if (!fInfo.exists() && QDir().mkpath(i)) {
+            res.insert(getFilePath(QFileInfo(i).absoluteFilePath()));
+        }
+    }
+
+    return res;
+}
+
 QHash<QString, int> TestUtils::compareTree(const QSet<QString> &leftTree, const QSet<QString> &rightTree) {
     QHash<QString, int> result;
 

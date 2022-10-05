@@ -20,27 +20,27 @@ void QmlScanerTest::test() {
     auto qmlRoot = QFileInfo(TestQtDir + "/qml").absoluteFilePath();
     QML *scaner = new QML(qmlRoot, QtMajorVersion::Qt5);
     auto imports = scaner->extractImportsFromFile(":/qmlFile.qml");
-
     scaner->scanQmlTree(qmlRoot);
 
-    QSet<QString> results = {
-        {qmlRoot + "/QtQuick.2/"},
-        {qmlRoot + "/QtQuick/Controls.2/"},
-        {qmlRoot + "/QtQuick/Controls.2/Material/"},
-        {qmlRoot + "/QtQuick/Layouts/"},
-    };
+        QSet<QString> results = {
+                                 {qmlRoot + "/QtQuick.2/"},
+                                 {qmlRoot + "/QtQuick/Controls.2/"},
+                                 {qmlRoot + "/QtQuick/Controls.2/Material/"},
+                                 {qmlRoot + "/QtQuick/Layouts/"},
+                                 };
 
     QVERIFY(results.size() == imports.size());
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 
     for (const auto &import: qAsConst(imports)) {
         auto path = scaner->getPathFromImport(import);
         QVERIFY(results.contains(path));
     }
-
-
-    scaner->setQtVersion(QtMajorVersion::Qt6);
+#endif
 
     // qt6
+    scaner->setQtVersion(QtMajorVersion::Qt6);
 
     results = {
         {qmlRoot + "/QtQuick"},
@@ -67,6 +67,8 @@ void QmlScanerTest::test() {
         QVERIFY(results.contains(path));
     }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+
     // qt5
     scaner->setQtVersion(QtMajorVersion::Qt5);
 
@@ -87,7 +89,7 @@ void QmlScanerTest::test() {
         auto path = scaner->getPathFromImport(import);
         QVERIFY(results.contains(path));
     }
-
+#endif
     // qt6
     scaner->setQtVersion(QtMajorVersion::Qt6);
 

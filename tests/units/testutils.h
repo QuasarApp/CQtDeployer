@@ -18,6 +18,7 @@ public:
     QSet<QString> getFilesSet(const QString& path, int limit = -1, int depch = 0);
 
     QSet<QString> createTree( const QStringList& tree);
+    QSet<QString> deployTree( const QStringList& tree);
 
     /**
      * @brief compareTree - compare 2 tree

@@ -18,25 +18,25 @@ void LibDirTest::test() {
     TestUtils utils;
 
 #ifdef Q_OS_UNIX
-    QString bin = TestBinDir + "TestOnlyC";
+    QString bin = TestBinDir + "TestCPPOnly";
     QString extraPath = "/usr/lib,/lib";
 
     auto comapareTree = utils.createTree(
                 {
-                    "./" + DISTRO_DIR + "/TestOnlyC.sh",
+                    "./" + DISTRO_DIR + "/TestCPPOnly.sh",
                     "./" + DISTRO_DIR + "/bin/qt.conf",
-                    "./" + DISTRO_DIR + "/bin/TestOnlyC"
+                    "./" + DISTRO_DIR + "/bin/TestCPPOnly"
                 });
 
 #else
-    QString bin = TestBinDir + "TestOnlyC.exe";
+    QString bin = TestBinDir + "TestCPPOnly.exe";
     QString extraPath = TestQtDir;
 
     auto comapareTree = utils.createTree(
                 {
                     "./" + DISTRO_DIR + "/qt.conf",
-                    "./" + DISTRO_DIR + "/TestOnlyC.exe",
-                    "./" + DISTRO_DIR + "/TestOnlyC.bat",
+                    "./" + DISTRO_DIR + "/TestCPPOnly.exe",
+                    "./" + DISTRO_DIR + "/TestCPPOnly.bat",
 
                 });
 
@@ -53,21 +53,22 @@ void LibDirTest::test() {
 #ifdef Q_OS_UNIX
     comapareTree = utils.createTree(
                 {
-                    "./" + DISTRO_DIR + "/TestOnlyC.sh",
+                    "./" + DISTRO_DIR + "/TestCPPOnly.sh",
                     "./" + DISTRO_DIR + "/bin/qt.conf",
-                    "./" + DISTRO_DIR + "/bin/TestOnlyC",
+                    "./" + DISTRO_DIR + "/bin/TestCPPOnly",
                     "./" + DISTRO_DIR + "/lib/libstdc++.so",
                     "./" + DISTRO_DIR + "/lib/libgcc_s.so",
                     "./" + DISTRO_DIR + "/lib/ld-linux-x86-64.so",
                     "./" + DISTRO_DIR + "/lib/libc.so",
                     "./" + DISTRO_DIR + "/lib/libm.so",
+
                 });
 
     auto comapareTreeExtraLib = utils.createTree(
                 {
-                    "./" + DISTRO_DIR + "2/TestOnlyC.sh",
+                    "./" + DISTRO_DIR + "2/TestCPPOnly.sh",
                     "./" + DISTRO_DIR + "2/bin/qt.conf",
-                    "./" + DISTRO_DIR + "2/bin/TestOnlyC",
+                    "./" + DISTRO_DIR + "2/bin/TestCPPOnly",
                     "./" + DISTRO_DIR + "2/lib/libstdc++.so",
                     "./" + DISTRO_DIR + "2/lib/libgcc_s.so"
                 });
@@ -76,8 +77,8 @@ void LibDirTest::test() {
     comapareTree = utils.createTree(
                 {
                     "./" + DISTRO_DIR + "/qt.conf",
-                    "./" + DISTRO_DIR + "/TestOnlyC.exe",
-                    "./" + DISTRO_DIR + "/TestOnlyC.bat",
+                    "./" + DISTRO_DIR + "/TestCPPOnly.exe",
+                    "./" + DISTRO_DIR + "/TestCPPOnly.bat",
                 #if defined(Q_OS_WIN64)
                     "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
                 #else
@@ -91,8 +92,8 @@ void LibDirTest::test() {
     auto comapareTreeExtraLib = utils.createTree(
                 {
                     "./" + DISTRO_DIR + "2/qt.conf",
-                    "./" + DISTRO_DIR + "2/TestOnlyC.exe",
-                    "./" + DISTRO_DIR + "2/TestOnlyC.bat",
+                    "./" + DISTRO_DIR + "2/TestCPPOnly.exe",
+                    "./" + DISTRO_DIR + "2/TestCPPOnly.bat",
                 #if defined(Q_OS_WIN64)
                     "./" + DISTRO_DIR + "2/libgcc_s_seh-1.dll",
                 #else
@@ -122,9 +123,9 @@ void LibDirTest::test() {
 #ifdef Q_OS_UNIX
     comapareTreeExtraLib = utils.createTree(
                 {
-                    "./" + DISTRO_DIR + "/TestOnlyC.sh",
+                    "./" + DISTRO_DIR + "/TestCPPOnly.sh",
                     "./" + DISTRO_DIR + "/bin/qt.conf",
-                    "./" + DISTRO_DIR + "/bin/TestOnlyC",
+                    "./" + DISTRO_DIR + "/bin/TestCPPOnly",
                     "./" + DISTRO_DIR + "/lib/libstdc++.so",
                     "./" + DISTRO_DIR + "/lib/libgcc_s.so"
                 });
@@ -136,8 +137,8 @@ void LibDirTest::test() {
     comapareTreeExtraLib = utils.createTree(
                 {
                     "./" + DISTRO_DIR + "/qt.conf",
-                    "./" + DISTRO_DIR + "/TestOnlyC.exe",
-                    "./" + DISTRO_DIR + "/TestOnlyC.bat",
+                    "./" + DISTRO_DIR + "/TestCPPOnly.exe",
+                    "./" + DISTRO_DIR + "/TestCPPOnly.bat",
                 #if defined(Q_OS_WIN64)
                     "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
                 #else
