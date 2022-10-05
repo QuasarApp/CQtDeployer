@@ -20,6 +20,8 @@ If you can't use Patreon, you can send **bitcoin** to support us and our work.
 If you want to get support for bitcoin payment, write to me in [telegramm](https://t.me/Endrll) 
 
 ## bitcoin address
+![image](https://user-images.githubusercontent.com/12465465/194010492-bae7b9e8-10a6-4e5f-9606-a5f3b4478a3e.png)
+
 **bc1q3jnx7pleh7rxg6nm6navvuwwpd9znxvd4lye62**
 
 
