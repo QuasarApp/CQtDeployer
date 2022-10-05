@@ -1620,7 +1620,7 @@ QSet<QString> ModulesQt63::qtWebEngineWidgets(const QString &distDir) const {
     return Tree;
 }
 
-QSet<QString> ModulesQt63::testEmptyParamsTree(const QString &distDir) const
+QSet<QString> ModulesQt63::testEmptyParamsTree(const QString &) const
 {
-
+    return {};
 }
