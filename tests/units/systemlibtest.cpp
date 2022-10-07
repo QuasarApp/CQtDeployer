@@ -18,14 +18,14 @@ void SystemLibTest::test() {
     TestUtils utils;
 
 #ifdef Q_OS_UNIX
-    QString bin = TestBinDir + "TestOnlyC";
+    QString bin = TestBinDir + "TestCPPOnly";
     QString qmake = TestQtDir + "bin/qmake";
 
     auto comapareTree = utils.createTree(
                 {
-                    "./" + DISTRO_DIR + "/TestOnlyC.sh",
+                    "./" + DISTRO_DIR + "/TestCPPOnly.sh",
                     "./" + DISTRO_DIR + "/bin/qt.conf",
-                    "./" + DISTRO_DIR + "/bin/TestOnlyC",
+                    "./" + DISTRO_DIR + "/bin/TestCPPOnly",
                     "./" + DISTRO_DIR + "/lib/systemLibs/libgcc_s.so",
                     "./" + DISTRO_DIR + "/lib/systemLibs/libstdc++.so"
                 });
@@ -54,7 +54,7 @@ void SystemLibTest::test() {
     runTestParams({"-bin", bin, "clear" ,
                    "deploySystem",
                    "-qmake", qmake,
-                  }, &comapareTree);
+                  }, &comapareTree, true);
 
 #ifdef Q_OS_WIN
     bin = TestBinDir + "QtWidgetsProject.exe";

@@ -33,5 +33,7 @@ target_include_directories(${CURRENT_PROJECT} PUBLIC ${PUBLIC_INCUDE_DIR})
 
 
 initTests()
-addTests(${PROJECT_NAME} ${CURRENT_PROJECT})
+
+SET(QT_TEST_EXTRA_ARGS -maxwarnings 0)
+addTestsArg(${PROJECT_NAME} ${CURRENT_PROJECT} "${QT_TEST_EXTRA_ARGS}")
 
