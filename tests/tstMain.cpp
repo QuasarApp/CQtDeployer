@@ -6,6 +6,9 @@
 //#
 
 #include <QtTest>
+#include "qttest.h"
+
+#ifdef Q_OS_LINUX
 #include "allowemptypackagestest.h"
 #include "binprefixtest.h"
 #include "checkqttest.h"
@@ -35,7 +38,6 @@
 #include "installdiroptionstest.h"
 #include "libdirstest.h"
 #include "md5test.h"
-#include "MSVCtest.h"
 #include "multipackingtest.h"
 #include "outdirtest.h"
 #include "overridingtemplatedebtest.h"
@@ -51,7 +53,6 @@
 #include "QIFWtest.h"
 #include "qmlextracttest.h"
 #include "qmlscanertest.h"
-#include "qttest.h"
 #include "releativelinktest.h"
 #include "runscriptstest.h"
 #include "settargetdirtest.h"
@@ -64,6 +65,11 @@
 #include "zipmultitest.h"
 #include "ziptest.h"
 #include "systemlibtest.h"
+#endif
+
+#ifdef Q_OS_WIN
+#include "MSVCtest.h"
+#endif
 
 // Use This macros for initialize your own test classes.
 // Check exampletests
@@ -86,9 +92,13 @@ public:
     ~tstMain();
 
 private slots:
-
-
     // BEGIN TESTS CASES
+
+    // General tests for all platforms
+        TestCase(qttest, QtTest )
+
+    // main tests works on linux only
+#ifdef Q_OS_LINUX
         TestCase(allowemptypackagestest, AllowEmptyPackagesTest )
         TestCase(binprefixtest,  BinPrefixTest)
         TestCase(checkqttest,  CheckQtTest)
@@ -118,7 +128,6 @@ private slots:
         TestCase(installdiroptionstest, InstallDirsOptionsTest )
         TestCase(libdirstest, LibDirTest )
         TestCase(md5test, MD5Test )
-        TestCase(MSVCtest, MSVCTest )
         TestCase(multipackingtest, MultiPackingTest )
         TestCase(outdirtest, OutDirTest )
         TestCase(overridingtemplatedebtest, OverridingDefaultTemplateDEBTest )
@@ -135,7 +144,6 @@ private slots:
         TestCase(QIFWtest, QIFWTest )
         TestCase(qmlextracttest, QMLExtractTest )
         TestCase(qmlscanertest, QmlScanerTest )
-        TestCase(qttest, QtTest )
         TestCase(releativelinktest, ReleativeLinkTest )
         TestCase(runscriptstest, RunScriptsTest )
         TestCase(settargetdirtest, SetTargetDirTest )
@@ -148,6 +156,12 @@ private slots:
         TestCase(zipmultitest, ZIPMultiTest )
         TestCase(ziptest, ZIPTest )
         TestCase(systemLibTest, SystemLibTest)
+#endif
+
+//     platform tests
+#ifdef Q_OS_WIN
+        TestCase(MSVCtest, MSVCTest )
+#endif
     // END TEST CASES
 
 private:
