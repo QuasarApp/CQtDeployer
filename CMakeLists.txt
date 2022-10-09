@@ -43,11 +43,18 @@ option(CQT_DEPLOYER_TESTS "This option disables or enables tests of the ${PROJEC
 option(CQT_DEPLOYER_TOOL "This option disables or enables example app of the ${PROJECT_NAME} project" ON)
 
 if (ANDROID OR IOS OR NOT QT_VERSION_MAJOR OR QA_WASM32)
-    set(CQT_DEPLOYER_TESTS OFF CACHE BOOL "This option force disbled for ANDROID IOS QA_WASM32 and Not Qt projects" FORCE)
+    message(WARNING "CQtDeployer is not availabel for wasm, android and ios platforms")
+    initAll()
+    return()
 endif()
 
 if (NOT QT_VERSION_MAJOR)
     set(CQT_DEPLOYER_TOOL OFF CACHE BOOL "This option force disbled for Not Qt projects" FORCE)
+endif()
+
+if (${QT_VERSION_MAJOR} LESS 6)
+    message(WARNING "CQtDeployer tests is not available for qt5. Please build cqtdeployer with qt6")
+    set(CQT_DEPLOYER_TESTS OFF CACHE BOOL "This option force disbled for ANDROID IOS QA_WASM32 and Not Qt projects" FORCE)
 endif()
 
 make_directory(Distro)
@@ -67,10 +74,7 @@ if (DEFINED CQT_DEPLOYER_TOOL)
 endif()
 
 if (CQT_DEPLOYER_TESTS)
-
-
     add_subdirectory(testcases)
-
     add_subdirectory(tests)
 else()
     message("The ${PROJECT_NAME} tests is disabled.")
