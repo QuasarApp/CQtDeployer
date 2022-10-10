@@ -8,7 +8,4 @@
     <Script>installscript.js</Script>
     <ReleaseDate>@TODAY@</ReleaseDate>
     <SortingPriority>201</SortingPriority>
-    <Translations>
-        <Translation>ru.qm</Translation>
-    </Translations>
 </Package>
