@@ -31,11 +31,6 @@ ui_*.h
 *.qmlc
 *.jsc
 Makefile*
-*build-*
-*/build/*
-stage/*
-prime/*
-parts/*
 *cqtdeployer_resource.rc
 sharedQtWin64/*
 
@@ -63,15 +58,7 @@ sharedQtWin64/
 distro/
 Distro/
 deployTests/
-QIFData/packages/cqtdeployer*/data/
-QIFData/packages/QIF/data/
-staticQt/
-staticQtWin32/
-staticQtWin64/
 build
-UnitTests/release/*
-UnitTests/debug/*
-UnitTests/res_qmlcache.qrc
 
 # cmake 
 CMakeLists.txt.user
