@@ -106,5 +106,4 @@ add_dependencies(deploy${CURRENT_PROJECT} downloadQIFW)
 
 addDeployFromCustomFile(${CURRENT_PROJECT}Single "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployerSingle.json")
 
-set(SNAPCRAFT_EXTRA_ARG "--use-lxd")
 addDeploySnap(${CURRENT_PROJECT} "${CMAKE_SOURCE_DIR}/Distro/")
