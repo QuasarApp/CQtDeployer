@@ -108,7 +108,7 @@ addDeployFromCustomFile(${CURRENT_PROJECT}Single "${CMAKE_CURRENT_SOURCE_DIR}/De
 
 addDeploySnap(${CURRENT_PROJECT} "${CMAKE_SOURCE_DIR}/Distro/")
 
-if(TARGET snap${CURRENT_PROJECT})
+if(TARGET snapcraft${CURRENT_PROJECT})
     message("snap is depends of single deploy")
-    add_dependencies(snap${CURRENT_PROJECT} "deploy${CURRENT_PROJECT}Single")
+    add_dependencies(snapcraft${CURRENT_PROJECT} "deploy${CURRENT_PROJECT}Single")
 endif()
