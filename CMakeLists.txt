@@ -11,6 +11,7 @@ if(TARGET ${PROJECT_NAME})
   message("The ${PROJECT_NAME} arledy included in main Project")
   return()
 endif()
+set_property(GLOBAL PROPERTY GLOBAL_DEPENDS_DEBUG_MODE 1)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
