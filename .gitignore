@@ -84,6 +84,7 @@ src/CQtDeployer/Deploy/QIFW/
 src/CQtDeployer/Deploy/CQtDeployerSingle.json
 src/CQtDeployer/Deploy/QIFWTemplate/config/config.xml
 snap/snapcraft.yaml
+src/LibDeploy/src/deploy_global.h
 
 # binaries 
 testcases/bin/

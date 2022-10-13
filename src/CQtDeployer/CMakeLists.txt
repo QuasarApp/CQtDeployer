@@ -79,8 +79,10 @@ configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFWTem
 configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFWTemplate/packages/QIF/meta/package.xml")
 
 # snap
-configure_file_in(${CURRENT_PROJECT} "${CMAKE_SOURCE_DIR}/snap/snapcraft.yaml")
-
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Deploy/snapcraft.yaml.in" "${CMAKE_SOURCE_DIR}/snap/snapcraft.yaml" @ONLY)
+add_custom_target(${name}Templates ALL
+    SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/snapcraft.yaml.in"
+)
 
 # sets qifw variable
 set(HomeDir "@HomeDir@")
