@@ -6,7 +6,7 @@
         "src/CQtDeployer/CQtDeployer.exe"
     ],
 
-    "clear": true,
+    "clear": false,
     "binPrefix": "@CMAKE_BINARY_DIR@",
     "libDir": [
         "@CMAKE_SOURCE_DIR@",
