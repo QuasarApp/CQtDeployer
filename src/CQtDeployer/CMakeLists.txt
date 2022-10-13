@@ -92,7 +92,6 @@ configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFWTem
 addDeployFromCustomFile(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployer.json")
 
 set(QIFW_PLATFORM linux)
-
 if (WIN32)
     set(QIFW_PLATFORM windows)
 endif()
@@ -114,3 +113,5 @@ if(TARGET snapcraft${CURRENT_PROJECT})
     message("snap is depends of single deploy")
     add_dependencies(snapcraft${CURRENT_PROJECT} "deploy${CURRENT_PROJECT}Single")
 endif()
+
+addReleaseSnap(${CURRENT_PROJECT})
