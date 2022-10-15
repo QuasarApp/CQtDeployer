@@ -1,7 +1,7 @@
 {
 
     "extraData": "./QIFW/QIF",
-    "extraLibs": "Qt6",
+    "qmake": "@QT_QMAKE_EXECUTABLE@",
     "bin": [
         "src/CQtDeployer/CQtDeployer",
         "src/CQtDeployer/CQtDeployer.exe"

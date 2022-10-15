@@ -1,6 +1,6 @@
 {
 
-    "extraLibs": "Qt6",
+    "qmake": "@QT_QMAKE_EXECUTABLE@",
     "allowEmptyPackages": true,
     "targetPackage": [
         ["CQtDeployer.1_6", "CQtDeployer"],
