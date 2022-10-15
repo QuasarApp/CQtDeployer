@@ -23,9 +23,9 @@ apps:
     command: bin/bash $SNAP/CQtDeployer.sh
     plugs: [home, removable-media, process-control, system-backup]
 
-#  cqt:
-#    command: bin/bash $SNAP/bin/cqt.sh
-#    plugs: [home, removable-media, process-control, system-backup]
+  cqt:
+    command: bin/bash $SNAP/cqt.sh
+    plugs: [home, removable-media, process-control, system-backup]
 
 parts:
   cqtdeployer:
@@ -46,5 +46,24 @@ parts:
       - libxcb-render-util0
       - libxcb-xinerama0
 
+    after: [ cqt-meta, cqt-qifw ]
 
+    override-stage: |
+      snapcraftctl stage
+      chmod 777 -R "$SNAPCRAFT_STAGE"
 
+  cqt-meta:
+    plugin: dump
+    source: src/CQtDeployer/Deploy/snap/
+
+    override-stage: |
+      snapcraftctl stage
+      chmod 777 -R "$SNAPCRAFT_STAGE"
+
+  cqt-qifw:
+    plugin: dump
+    source: src/CQtDeployer/Deploy/QIFW/
+
+    override-stage: |
+      snapcraftctl stage
+      chmod 777 -R "$SNAPCRAFT_STAGE"
