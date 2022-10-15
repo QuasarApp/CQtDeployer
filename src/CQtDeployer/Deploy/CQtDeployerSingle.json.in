@@ -1,6 +1,7 @@
 {
 
     "extraData": "./QIFW/QIF",
+    "extraLibs": "Qt6",
     "bin": [
         "src/CQtDeployer/CQtDeployer",
         "src/CQtDeployer/CQtDeployer.exe"
@@ -25,7 +26,6 @@
     "deb": true,
     "qif": false,
     "zip": true,
-    "verbose": "3",
     "ignoreEnv": [
          "@CMAKE_SOURCE_DIR@/Distro"
         ],

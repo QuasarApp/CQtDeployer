@@ -1,5 +1,6 @@
 {
 
+    "extraLibs": "Qt6",
     "allowEmptyPackages": true,
     "targetPackage": [
         ["CQtDeployer.1_6", "CQtDeployer"],

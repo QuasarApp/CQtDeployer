@@ -811,8 +811,7 @@ QtMajorVersion DeployCore::isQtLibName(const QString &lib) {
         isQt = QtMajorVersion::Qt6;
     }
 
-    if (isQt && QuasarAppUtils::Params::isEndable("noQt") &&
-            !QuasarAppUtils::Params::isEndable("qmake")) {
+    if (isQt && QuasarAppUtils::Params::isEndable("noQt")) {
         return QtMajorVersion::NoQt;
     }
 
