@@ -73,7 +73,7 @@
     "deploySystem": false,
     "deb": false,
     "qif": "./QIFWTemplate",
-    "qifOut": "CQtDeployer_@CMAKE_SYSTEM_NAME@_@CMAKE_SYSTEM_PROCESSOR@_v@CQT_DEPLOYER_VERSION@",
+    "qifOut": "CQtDeployer_@CQT_DEPLOYER_VERSION@_@CMAKE_SYSTEM_NAME@_@CMAKE_SYSTEM_PROCESSOR@",
     "zip": false,
     "ignoreEnv": [
          "@CMAKE_SOURCE_DIR@/Distro"
