@@ -21,8 +21,6 @@ set(PUBLIC_INCUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(PUBLIC_INCUDE_DIR ${PUBLIC_INCUDE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/units")
 set(PUBLIC_INCUDE_DIR ${PUBLIC_INCUDE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/modules")
 
-get_filename_component(QT_QT_ROOT "${Qt${QT_VERSION_MAJOR}Core_DIR}/../../.." ABSOLUTE)
-
 add_definitions(-DQT_BASE_DIR="${QT_QT_ROOT}/")
 add_definitions(-DTEST_BIN_DIR="${CMAKE_CURRENT_LIST_DIR}/../testcases/bin/")
 
