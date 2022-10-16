@@ -11,8 +11,7 @@
     "libDir": [
         "@CMAKE_SOURCE_DIR@",
         "@CMAKE_PREFIX_PATH@",
-        "@CMAKE_BINARY_DIR@",
-        "@QT_QT_ROOT@/lib/"
+        "@CMAKE_BINARY_DIR@"
     ],
 
     "publisher": "QuasarApp group",
