@@ -1,7 +1,6 @@
 {
     "verbose": "3",
     "extraData": "./QIFW/QIF",
-    "extraLibs": "@QT_QT_ROOT@/lib",
     "bin": [
         "src/CQtDeployer/CQtDeployer",
         "src/CQtDeployer/CQtDeployer.exe"
@@ -12,7 +11,8 @@
     "libDir": [
         "@CMAKE_SOURCE_DIR@",
         "@CMAKE_PREFIX_PATH@",
-        "@CMAKE_BINARY_DIR@"
+        "@CMAKE_BINARY_DIR@",
+        "@QT_QT_ROOT@/lib"
     ],
 
     "publisher": "QuasarApp group",
