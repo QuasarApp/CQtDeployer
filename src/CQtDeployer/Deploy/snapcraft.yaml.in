@@ -46,6 +46,7 @@ parts:
       - libxcb-render-util0
       - libxcb-xinerama0
       - libfontconfig1
+      - libxcb-glx0
 
     after: [ cqt-meta ]
 
