@@ -107,10 +107,6 @@ add_dependencies(deploy${CURRENT_PROJECT} downloadQIFW)
 
 addDeployFromCustomFile(${CURRENT_PROJECT}Single "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployerSingle.json")
 
-
-# disable lxd container builds...
-# because host build system has some version as a core package of snap.
-set(SNAPCRAFT_EXTRA_ARG "--destructive-mode")
 addDeploySnap(${CURRENT_PROJECT} "${CMAKE_SOURCE_DIR}/Distro/")
 
 if(TARGET snapcraft${CURRENT_PROJECT})
