@@ -46,7 +46,7 @@ parts:
       - libxcb-render-util0
       - libxcb-xinerama0
 
-    after: [ cqt-meta, cqt-qifw ]
+    after: [ cqt-meta ]
 
     override-stage: |
       snapcraftctl stage
@@ -60,10 +60,10 @@ parts:
       snapcraftctl stage
       chmod 777 -R "$SNAPCRAFT_STAGE"
 
-  cqt-qifw:
-    plugin: dump
-    source: src/CQtDeployer/Deploy/QIFW/
+#  cqt-qifw:
+#    plugin: dump
+#    source: src/CQtDeployer/Deploy/QIFW/
 
-    override-stage: |
-      snapcraftctl stage
-      chmod 777 -R "$SNAPCRAFT_STAGE"
+#    override-stage: |
+#      snapcraftctl stage
+#      chmod 777 -R "$SNAPCRAFT_STAGE"
