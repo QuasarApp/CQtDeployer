@@ -47,6 +47,17 @@ parts:
       - libxcb-xinerama0
       - libfontconfig1
       - libxcb-glx0
+      - libx11-xcb1
+      - libxcb-randr0
+      - libxcb-shape0
+      - libxcb-sync1
+      - libxcb-xfixes0
+      - libxcb-xkb1
+      - libxext6
+      - libx11-6
+      -	libxkbcommon-x11-0
+      - libxkbcommon0
+      - libgl1-mesa-glx
 
     after: [ cqt-meta ]
 
