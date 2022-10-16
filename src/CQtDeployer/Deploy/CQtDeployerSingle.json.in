@@ -1,7 +1,7 @@
 {
     "verbose": "3",
     "extraData": "./QIFW/QIF",
-    "qmake": "@QT_QMAKE_EXECUTABLE@",
+    "extraLibs": "@QT_QT_ROOT@/lib/",
     "bin": [
         "src/CQtDeployer/CQtDeployer",
         "src/CQtDeployer/CQtDeployer.exe"

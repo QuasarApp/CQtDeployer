@@ -1241,9 +1241,9 @@ bool ConfigParser::setQmake(const QString &value) {
     proc.setArguments({"-query"});
 
     proc.start();
-    if (!proc.waitForFinished(1000)) {
-        QuasarAppUtils::Params::log("run qmake fail!");
 
+    if (!(proc.waitForStarted(1000) && proc.waitForFinished(1000))) {
+        QuasarAppUtils::Params::log("Run qmake fail! " + proc.errorString(), QuasarAppUtils::Warning);
         return false;
     }
 
