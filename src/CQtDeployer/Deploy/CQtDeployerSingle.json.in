@@ -1,5 +1,4 @@
 {
-    "verbose": "3",
     "extraData": "./QIFW/QIF",
     "bin": [
         "src/CQtDeployer/CQtDeployer",
