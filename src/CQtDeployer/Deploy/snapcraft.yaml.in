@@ -45,6 +45,7 @@ parts:
       - libxcb-keysyms1
       - libxcb-render-util0
       - libxcb-xinerama0
+      - libfontconfig1
 
     after: [ cqt-meta ]
 
