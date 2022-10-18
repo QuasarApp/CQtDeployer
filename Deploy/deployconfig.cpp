@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 QuasarApp.
+ * Copyright (C) 2018-2022 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -17,6 +17,19 @@ DeployConfig::getTargetsListByFilter(const QString &filter) {
     QHash<QString, TargetInfo*> result;
 
     for( auto it = _targets.begin(); it != _targets.end(); ++it) {
+        if (it.key().contains(filter, Qt::CaseInsensitive)) {
+            result.insert(it.key(), &(*it));
+        }
+    }
+
+    return result;
+}
+
+QHash<QString, const TargetInfo *>
+DeployConfig::getTargetsListByFilter(const QString &filter) const {
+    QHash<QString, const TargetInfo*> result;
+
+    for( auto it = _targets.cbegin(); it != _targets.cend(); ++it) {
         if (it.key().contains(filter, Qt::CaseInsensitive)) {
             result.insert(it.key(), &(*it));
         }
@@ -104,15 +117,6 @@ void DeployConfig::setDefaultPackage(const QString &value) {
     defaultPackage = value;
 }
 
-void DeployConfig::registerRunScript(const QString &targetName,
-                                     const QString &scriptPath) {
-    _runScripts.insert(targetName, scriptPath);
-}
-
-QString DeployConfig::getRunScript(const QString &targetName) const {
-    return _runScripts.value(targetName, "");
-}
-
 QtMajorVersion DeployConfig::isNeededQt() const {
 
     auto Qt = QtMajorVersion::NoQt;
@@ -137,6 +141,14 @@ QtMajorVersion DeployConfig::isNeededQt(const QString &pacakge) const {
     }
 
     return Qt;
+}
+
+Platform DeployConfig::customPlatform() const {
+    return _customPlatform;
+}
+
+void DeployConfig::setCustomPlatform(Platform newCustomPlatform) {
+    _customPlatform = newCustomPlatform;
 }
 
 const QHash<QString, TargetInfo> &DeployConfig::targets() const {

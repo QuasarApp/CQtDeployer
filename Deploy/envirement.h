@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2021 QuasarApp.
+//# Copyright (C) 2018-2022 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -33,6 +33,13 @@ public:
 
     void addEnv(const QString &dir);
     void addEnv(const QStringList &listDirs);
+
+    /**
+     * @brief isIgnore This method return true if the @a path is contains in ignore list else return false.
+     * @brief path This is path to of the system enviroment that will be checked to ignore.
+     * @return true if the @a path is contains in ignore list else return false.
+     */
+    bool isIgnore(const QString& path) const;
 
     void clear();
 

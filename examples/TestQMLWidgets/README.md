@@ -1,5 +1,5 @@
 # This example for packing apps to snap 
- You need to build your project with your own qt version
+You need to build your project with your own Qt version.
 
 1. cd ~/                                                           # go to home dir 
 2. snap install cqtdeployer                                        # install cqtdeployer from snap store 
@@ -7,10 +7,10 @@
 4. cd Console-QtDeployer/examples/TestQMLWidgets                   # go to folder with example
 5. /path/to/your/qmake/bin/qmake TestQMLWidgets.pro                # run your qmake for this example 
 6. make                                                            # build example
-7. cqtdeployer -bin ./build/TestQMLWidgets -qmake /path/to/your/qmake/bin/qmake -qmlDir ./ -targetDir ./distro
-                                                                    # run cqtdeployer for deploy example project
+7. cqtdeployer -bin ./build/TestQMLWidgets -qmake /path/to/your/qmake/bin/qmake -qmlDir ./ -targetDir ./distro  
+                                                                   # run cqtdeployer for deploy example project
 8. snapcraft                                                       # create snapcraft build
 9. snap install cqtdeployerexample_0.1_amd64.snap --dangerous      # install this example 
-10.cqtdeployerexample                                              # check 
-Done!
+10. cqtdeployerexample                                             # check  
 
+Done!

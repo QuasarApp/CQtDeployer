@@ -1,4 +1,56 @@
-# Chnage log for all versions of the CQtDeployer.
+# Change log 
+
+## CQtDeployer 1.5.4
+
+
+### New options 
+
+* qifConfig - Sets a custom path to the configure file of the qt ifw installer. By default it is qif/config/config.xml  #653
+* qifPackages - Sets a custom path to the packages directories. By default it is qif/packages #653
+* qifResources - Sets a custom path to the resources files. By default this option is skipped #653
+* debOut -  Sets name of the output debian file. This option can be work with multiple packages
+* zipOut - Sets name of the output zip arrhive. This option can be work with multiple packages
+
+### Bug fixes :
+
+* fixed crossdeploy linux -> windows #652 
+
+
+## CQtDeployer 1.5.3
+
+### New options 
+
+* installDirDeb - Sets install target directory for debian  package (by default it is /opt path) #640 
+* installDirQIFW - Sets install target directory for installers (by default it is /home path) #640 
+
+### Bug fixes 
+
+* Fix warning on installer fix #628
+* Added support validation input options of the command line fix #421 
+* Added Error message for conflict between libDir and targetDir options #629 
+
+## CQtDeployer 1.5.2
+
+### New parameters
+
+* Added **qifOut** option for set name of the output installer
+* Added **disableRunScript** option for disabling the generation of run script for selected targets
+* Added **disableShortCut** option for disabling the generation of shortcut for selected targets
+
+### Fixes
+
+* Fix documentation
+* Fix deploy openssl libraries
+
+## CQtDeployer 1.5.1 
+
+### Fixes
+
+* Fix deploy multi target Debian packages
+* Fix deploy qt6 qml applications
+
+
+Change log for all versions of the CQtDeployer.
 
 ## CQtDeployer 1.5.0
 
@@ -107,7 +159,7 @@
 - Optimized project deployment performance. 60% faster.
 - Optimized output size of distributions. Size reduced by 25%.
 - Fixed display of shortcuts after installing deployed applications.
-- Fixed launching applications with spaces in the name. Thanks @ahndee (#384)
+- Fixed launching applications with spaces in the name. Thanks ahndee (#384)
 - Fixed deployment of the Renderer plugin.
 - Minor bug fixes and improvements.
 

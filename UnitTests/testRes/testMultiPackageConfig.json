@@ -1,7 +1,6 @@
 {
     "bin": "$BIN_DIR",
     "clear": true,
-    "libDir": "./",
     "recursiveDepth": "5",
     "targetPackage": [
         ["Dstro1", "TestOnlyC"],

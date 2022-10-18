@@ -1,4 +1,4 @@
-
+# Quick Guide
 
 How to deploy project with cqtdeployer.
 
@@ -77,5 +77,5 @@ cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlD
 
 [1]: https://github.com/QuasarApp/CQtDeployer/releases
 [2]: https://github.com/QuasarApp/CQtDeployer/issues
-[3]: https://github.com/QuasarApp/CQtDeployer/wiki/Options
+[3]: https://github.com/QuasarApp/CQtDeployer/blob/main/md/en/Options.md
 

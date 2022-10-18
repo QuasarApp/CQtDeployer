@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 QuasarApp.
+ * Copyright (C) 2018-2022 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -146,6 +146,33 @@ bool DistroModule::isValid() {
 
 void DistroModule::setKey(const QString &key) {
     _key = key;
+}
+
+const QString &DistroModule::zipOut() const {
+    return _zipOut;
+}
+
+void DistroModule::setZipOut(const QString &newZipOut) {
+    _zipOut = newZipOut;
+}
+
+const QString &DistroModule::debOut() const {
+    return _debOut;
+}
+
+void DistroModule::setDebOut(const QString &newDebOut) {
+    _debOut = newDebOut;
+}
+
+QString DistroModule::installDirDEB() const {
+    if (_installDirDEB.isEmpty())
+        return "/opt";
+
+    return _installDirDEB;
+}
+
+void DistroModule::setInstallDirDEB(const QString &newInstallDir) {
+    _installDirDEB = newInstallDir;
 }
 
 QSet<QString> DistroModule::tr() const {

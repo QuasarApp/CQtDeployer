@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 QuasarApp.
+ * Copyright (C) 2018-2022 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -63,6 +63,7 @@ public:
      */
     void reset();
     QHash<QString, TargetInfo *> getTargetsListByFilter(const QString& filter);
+    QHash<QString, const TargetInfo *> getTargetsListByFilter(const QString& filter) const;
 
     /**
      * @brief targetPath
@@ -122,9 +123,6 @@ public:
     QString getDefaultPackage() const;
     void setDefaultPackage(const QString &value);
 
-    void registerRunScript(const QString& targetName, const QString& scriptPath);
-    QString getRunScript(const QString& targetName) const;
-
      /**
      * @brief isNeededQt This method return all needed qt major version for all targets.
      * @return qt major version
@@ -137,6 +135,18 @@ public:
      * @return qt major version
      */
     QtMajorVersion isNeededQt(const QString& pacakge) const;
+
+    /**
+     * @brief customPlatform This is custom platform of distribution
+     * @return custom platform
+     */
+    Platform customPlatform() const;
+
+    /**
+     * @brief setCustomPlatform This method sets custom platform for this distribution.
+     * @param newCustomPlatform new custom platform.
+     */
+    void setCustomPlatform(Platform newCustomPlatform);
 
 private:
 
@@ -156,16 +166,12 @@ private:
     QHash<QString, DistroModule> _packages;
 
     /**
-     * @brief _runScripts
-     * target - pathToScript
-     */
-    QHash<QString, QString> _runScripts;
-
-    /**
      * @brief targetDir -  targe directory (this folder conteins all files of distrebution kit)
      */
     QString targetDir = "";
     QString defaultPackage = "";
+
+    Platform _customPlatform = Platform::UnknownPlatform;
 
 
 };

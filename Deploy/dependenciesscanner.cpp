@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 QuasarApp.
+ * Copyright (C) 2018-2022 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -28,8 +28,8 @@ PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
 
     auto sufix = info.completeSuffix();
 
-    if (sufix.compare("dll", Qt::CaseSensitive) == 0 ||
-            sufix.compare("exe", Qt::CaseSensitive) == 0) {
+    if (sufix.contains("dll", Qt::CaseSensitive)  ||
+            sufix.contains("exe", Qt::CaseSensitive)) {
         return PrivateScaner::PE;
     } else if (sufix.isEmpty() || sufix.contains("so", Qt::CaseSensitive)) {
         return PrivateScaner::ELF;
@@ -149,7 +149,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
             if (!scanedLib.isValid()) {
                 QSet<LibInfo> listDep =  {};
 
-                if (!lib._name.compare(dep.value()._name, ONLY_WIN_CASE_INSENSIATIVE))
+                if (!lib._name.compare(dep.value()._name, DeployCore::getCaseSensitivity(lib._name)))
                     continue;
 
                 recursiveDep(*dep, listDep, libStack);

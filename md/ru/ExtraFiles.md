@@ -1,4 +1,7 @@
-# Добавление дополнительных данных в дистрибутив.
+# Добавление дополнительных данных
+
+Добавление дополнительных данных в дистрибутив.
+
 
 CQtDeployer поддерживает работу с дополнительными файлами данных.
 
@@ -14,7 +17,7 @@ cqtdeployer -extraData путь / к / my / customFile
 
 Или в configFile.json
 
-``` json
+```json
 {
     ...
     "extraData": "./path/to/my/customFile"
@@ -25,13 +28,13 @@ cqtdeployer -extraData путь / к / my / customFile
 Эта команда поддерживает список аргументов.
 
 
-``` bash
+```bash
 cqtdeployer -extraData path/to/my/customFile,path/to/my/customFile2,path/to/my/customFile3
 ```
 
 Или в configFile.json
 
-``` json
+```json
 {
     ...
     "extraData": [
@@ -49,13 +52,13 @@ cqtdeployer -extraData path/to/my/customFile,path/to/my/customFile2,path/to/my/c
 
 ### Пример. Добавьте пользовательские скрипты в папку скриптов в Distribution.
 
-``` bash
+```bash
 cqtdeployer -extraData /path/to/myScripts.sh,/another/path/to/myScripts.sh -extraDataOut scripts
 ```
 
 Или в configFile.json
 
-``` json
+```json
 {
     ...
     "extraData": [
@@ -68,7 +71,7 @@ cqtdeployer -extraData /path/to/myScripts.sh,/another/path/to/myScripts.sh -extr
 ```
 
 ## Пакеты
-Опции extraData и extraDataOut поддерживают работу с пакетами. Дополнительную информацию о пакетах см. На [странице](Pacakges.md) упаковки.
+Опции extraData и extraDataOut поддерживают работу с пакетами. Дополнительную информацию о пакетах см. На [странице](Packing.md) упаковки.
 
 Иногда нам нужно создать многопакетное приложение. Например, создайте установщик для приложения client-server с клиентскими и серверными приложениями. Клиент и сервер имеют собственные файлы конфигурации по умолчанию. Мы добавляем файлы config с помощью опции extraData.
 
@@ -77,7 +80,7 @@ cqtdeployer -extraData /path/to/myScripts.sh,/another/path/to/myScripts.sh -extr
 ## Пример применения мультиупаковки.
 
 
-``` json
+```json
 {
 
     "корзина": [

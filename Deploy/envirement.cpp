@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2021 QuasarApp.
+//# Copyright (C) 2018-2022 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -65,7 +65,9 @@ void Envirement::addEnv(const QStringList &listDirs) {
     for (const auto& i : listDirs) {
         auto path = PathUtils::fixPath(QFileInfo(i).absoluteFilePath());
 
-        if (_ignoreEnvList && _ignoreEnvList->inThisEnvirement(i)) {
+        if (isIgnore(i)) {
+            QuasarAppUtils::Params::log(QString("The %0 path is ignored and not added to a search list!!").arg(i),
+                                        QuasarAppUtils::Debug);
             continue;
         }
 
@@ -83,6 +85,10 @@ void Envirement::addEnv(const QStringList &listDirs) {
 
         _dataEnvironment.insert(path);
     }
+}
+
+bool Envirement::isIgnore(const QString &path) const {
+    return _ignoreEnvList && _ignoreEnvList->inThisEnvirement(path);
 }
 
 void Envirement::clear() {

@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2021 QuasarApp.
+//# Copyright (C) 2018-2022 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -55,7 +55,10 @@ bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
 
     auto headers = reader.readHeaders();
 
-    if (headers.elfmachine == ElfMachine::Elf_EM_ARM) {
+    const int Elf_EM_ARM64  = 0xb7;
+
+    if (headers.elfmachine == ElfMachine::Elf_EM_ARM ||
+           static_cast<int>(headers.elfmachine) == Elf_EM_ARM64 ) {
 
         if (headers.elfclass == ElfClass::Elf_ELFCLASS32) {
             info.setPlatform(Unix_ARM_32);

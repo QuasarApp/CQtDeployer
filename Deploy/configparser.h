@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2021 QuasarApp.
+//# Copyright (C) 2018-2022 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -52,15 +52,14 @@ private:
     bool loadFromFile(const QString& file);
     bool initDistroStruct();
     bool initPackages();
-    bool initRunScripts();
-    bool parseDeployMode();
+    bool parseDeployMode(bool checkBin = true);
     bool parseInfoMode();
     bool parseInitMode();
     /**
      * @brief configureTargets Sets targets data from options.
      * @return true if function finishe successfull
      */
-    void configureTargets();
+    bool configureTargets();
 
     bool parseClearMode();
 
@@ -68,7 +67,6 @@ private:
 
     void setTargetDir(const QString &target = "");
     bool setTargets(const QStringList &value);
-    QFileInfo getBinInfo(const QString& bin);
     bool setTargetsRecursive(const QString &dir);
     bool setTargetsInDir(const QString &dir, bool recursive = false);
 
@@ -85,7 +83,7 @@ private:
     bool setQmake(const QString &value);
     bool setQtDir(const QString &value);
 
-    void initExtraPath();
+    bool initExtraPath();
     void initExtraNames();
 
     bool initPlugins();
@@ -116,6 +114,13 @@ private:
 
     QList<iDistribution *> getDistribution();
 
+    /**
+     * @brief addTarget
+     * @param target
+     * @return true if target added successful
+     */
+    bool addTarget(const TargetData &target);
+    void initCustomPlatform();
 };
 
 #endif // CQT_H

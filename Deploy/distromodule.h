@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 QuasarApp.
+ * Copyright (C) 2018-2022 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -74,6 +74,33 @@ public:
     void setTr(const QSet<QString> &tr);
     void addTr(const QString &tr);
 
+    QString installDirDEB() const;
+    void setInstallDirDEB(const QString &newInstallDir);
+
+    /**
+     * @brief debOut This method return output filePath to debian pacakge
+     * @return output filePath to debian pacakge
+     */
+    const QString &debOut() const;
+
+    /**
+     * @brief setDebOut This method sets new value of debian outpup path.
+     * @param newDebOut This is new value of the debian output
+     */
+    void setDebOut(const QString &newDebOut);
+
+    /**
+     * @brief debOut This method return output filePath to zip pacakge
+     * @return output filePath to zip pacakge
+     */
+    const QString &zipOut() const;
+
+    /**
+     * @brief setDebOut This method sets new value of zip outpup path.
+     * @param newDebOut This is new value of the zip output
+     */
+    void setZipOut(const QString &newZipOut);
+
 protected:
     void setKey(const QString &key);
 
@@ -101,6 +128,9 @@ private:
     // extra translations
     QSet<QString> _tr;
 
+    QString _installDirDEB;
+    QString _debOut;
+    QString _zipOut;
 
 };
 

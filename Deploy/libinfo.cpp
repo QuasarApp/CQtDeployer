@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 QuasarApp.
+ * Copyright (C) 2018-2022 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -104,12 +104,29 @@ void LibInfo::setWinApi(WinAPI winApi) {
 
 QtMajorVersion LibInfo::isDependetOfQt() const {
     for (const auto& i : _dependncies) {
-        if (QtMajorVersion result = DeployCore::isQtLib(i)) {
+        if (QtMajorVersion result = DeployCore::isQtLibName(i)) {
             return result;
         }
     }
 
     return QtMajorVersion::NoQt;
+}
+
+QString LibInfo::toString() const {
+
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+    QStringList dependenciesList = _dependncies.toList();
+#else
+    QStringList dependenciesList{_dependncies.begin(), _dependncies.end()};
+#endif
+
+    return QString("LibInfo: path: '%0', name: '%1', qtPath: '%2', platform: '%3', dependencies: '%4'").
+            arg(_path,
+                _name,
+                _qtPath,
+                DeployCore::platformToString(_platform),
+                dependenciesList.join(", "));
 }
 
 QString LibInfo::fullPath() const {

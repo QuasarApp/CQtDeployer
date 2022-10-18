@@ -2,6 +2,13 @@ function Component() {
 
 }
 
+function getBasename(file) {
+    if (!file.length)
+        return ""
+
+    return file.split('.')[0];
+}
+
 function generateShortCutCmd(cmd) {
 
     var prefix = "$PREFIX";
@@ -12,9 +19,9 @@ function generateShortCutCmd(cmd) {
 
         component.addOperation(
             "CreateShortcut",
-            "@TargetDir@/" + prefix + "/" + cmd + ".bat",
-            "@DesktopDir@/" + cmd + ".lnk",
-            "iconPath=@TargetDir@/$ICON",
+            "@TargetDir@/" + prefix + "/" + cmd,
+            "@DesktopDir@/" + getBasename(cmd) + ".lnk",
+            "iconPath=@TargetDir@/" + prefix + "/icons/" + getBasename(cmd) + ".ico",
             "iconId=0");
 
     }
@@ -23,14 +30,14 @@ function generateShortCutCmd(cmd) {
     if (systemInfo.kernelType === "linux") {
         console.log("create icons!!! on LINUX");
         component.addOperation("CreateDesktopEntry",
-                               "@HomeDir@/.local/share/applications/" + cmd + ".desktop",
+                               "@HomeDir@/.local/share/applications/" + getBasename(cmd) + ".desktop",
                                "Version=@Version@\n
                                 Type=Application\n
                                 Terminal=false\n
-                                Exec=\"@TargetDir@/" + prefix + "/" + cmd + ".sh\"\n
-                                Name=" + cmd + "\n
-                                Icon=@TargetDir@/$ICON\n
-                                Name[en_US]=" + cmd);
+                                Exec=\"@TargetDir@/" + prefix + "/" + cmd + "\"\n
+                                Name=" + getBasename(cmd) + "\n
+                                Icon=@TargetDir@/" + prefix + "/icons/" + getBasename(cmd) + ".png\n
+                                Name[en_US]=" + getBasename(cmd));
 
         console.log("create icons!!! on LINUX done");
     }
@@ -41,8 +48,9 @@ Component.prototype.createOperations = function() {
     component.createOperations();
 
     var cmdArray = ["array", "of", "cmds"]; // will be changed in cqtdeployer
+    var shortcutsCmdArray = ["array", "of", "shortcut", "cmds"]; // will be changed in cqtdeployer
 
-    cmdArray.forEach( function (item){
+    shortcutsCmdArray.forEach( function (item){
         generateShortCutCmd(item);
     });
 

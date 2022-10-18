@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2021 QuasarApp.
+//# Copyright (C) 2018-2022 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -47,6 +47,8 @@ public:
     WinAPI getWinApi() const;
     void setWinApi(WinAPI winApi);
     QtMajorVersion isDependetOfQt() const;
+
+    QString toString() const;
 
     friend class DependenciesScanner;
 

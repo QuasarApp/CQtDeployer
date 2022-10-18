@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 QuasarApp.
+ * Copyright (C) 2018-2022 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -20,7 +20,7 @@ ModulesQt513::~ModulesQt513() {
 QSet<QString> ModulesQt513::ignoreFilter(const QSet<QString> &input, const QString &filter) const {
     QSet<QString> res;
     for (auto& val : input) {
-        if (!val.contains(filter, ONLY_WIN_CASE_INSENSIATIVE)) {
+        if (!val.contains(filter, DeployCore::getCaseSensitivity())) {
             res.insert(val);
         }
     }

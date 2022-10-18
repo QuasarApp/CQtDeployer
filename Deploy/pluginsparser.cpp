@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 QuasarApp.
+ * Copyright (C) 2018-2022 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -37,6 +37,7 @@ static const PluginModuleMapping pluginModuleMappings[] =
     {"mediaservice", DeployCore::QtModule::QtMultimediaModule},
     {"playlistformats", DeployCore::QtModule::QtMultimediaModule},
     {"bearer", DeployCore::QtModule::QtNetworkModule},
+    {"tls", DeployCore::QtModule::QtNetworkModule},
     {"position", DeployCore::QtModule::QtPositioningModule},
     {"printsupport", DeployCore::QtModule::QtPrintSupportModule},
     {"scenegraph", DeployCore::QtModule::QtQuickModule},
@@ -162,7 +163,7 @@ void PluginsParser::addPlugins(const QStringList& list, const QString& package,
                                QHash<QString, QSet<QString>>& container) {
     const DeployConfig* cnf = DeployCore::_config;
 
-    for (const auto plugin: list) {
+    for (const auto &plugin: qAsConst(list)) {
         if (QFileInfo(cnf->qtDir.getPlugins() + "/" + plugin).isDir()) {
              auto listPlugins = QDir(cnf->qtDir.getPlugins() + "/" + plugin).entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
 

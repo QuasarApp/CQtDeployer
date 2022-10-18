@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2021 QuasarApp.
+//# Copyright (C) 2018-2022 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -12,6 +12,8 @@
 #include <deploycore.h>
 
 class FileManager;
+class DistroModule;
+class TargetInfo;
 
 class MetaFileManager
 {
@@ -31,6 +33,11 @@ private:
     bool createRunScript(const QString &target);
 
     bool createQConf(const QString &target);
+
+    QHash<QString, QString> toReplace(const QString &target,
+                                      const DistroModule &distro) const;
+
+    void replace(const QHash<QString, QString>& map, QString& content);
 
     FileManager* _fileManager = nullptr;
     QHash<QString, DeployCore::QtModule> _mudulesMap;

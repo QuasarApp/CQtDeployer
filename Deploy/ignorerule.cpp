@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 QuasarApp.
+ * Copyright (C) 2018-2022 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -27,7 +27,7 @@ void IgnoreRule::addRule(const IgnoreData &rule) {
 }
 
 bool IgnoreRule::check(const LibInfo &info, const QString& ignoreLabel) const {
-    if (info.fullPath().contains(ignoreLabel, ONLY_WIN_CASE_INSENSIATIVE)) {
+    if (info.fullPath().contains(ignoreLabel, DeployCore::getCaseSensitivity())) {
         QuasarAppUtils::Params::log(info.fullPath() + " ignored by filter" + ignoreLabel);
         return true;
     }

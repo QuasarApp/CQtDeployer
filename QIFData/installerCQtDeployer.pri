@@ -1,10 +1,15 @@
+VERSION = 1.5.4.17
+
 include($$PWD/InstallerBase.pri);
 mkpath( $$PWD/../Distro)
-win32:OUT_FILE = CQtDeployerInstaller.exe
-unix:OUT_FILE = CQtDeployerInstaller.run
 
-win32:OUT_FILE_OFF = CQtDeployerOfflineInstaller.exe
-unix:OUT_FILE_OFF = CQtDeployerOfflineInstaller.run
+message(QMAKE_HOST.arch = $$QMAKE_HOST.arch)
+
+win32:OUT_FILE = CQtDeployer_'$$VERSION'_Installer_Win'_$$QMAKE_HOST.arch'.exe
+unix:OUT_FILE = CQtDeployer_'$$VERSION'_Installer_Linux'_$$QMAKE_HOST.arch'.run
+
+win32:OUT_FILE_OFF = CQtDeployer_'$$VERSION'_OfflineInstaller_Win'_$$QMAKE_HOST.arch'.exe
+unix:OUT_FILE_OFF = CQtDeployer_'$$VERSION'_OfflineInstaller_Linux'_$$QMAKE_HOST.arch'.run
 
 DEPLOY_TARGET = $$PWD/../CQtDeployer/build/release
 
@@ -14,13 +19,13 @@ META_DIR = $$PWD/packages/cqtdeployer.1_5/meta/
 win32:OUT_LIB= -libOut lib
 win32:OUT_BIN= -binOut bin
 
-BASE_DEPLOY_FLAGS = clear -qmake $$QMAKE_BIN -libDir $$PWD/../ -recursiveDepth 4 -ignoreEnv $$DEPLOY_TARGET
+BASE_DEPLOY_FLAGS = clear -qmake $$QMAKE_BIN -libDir $$PWD/../ -recursiveDepth 4 -ignoreEnv $$DEPLOY_TARGET -extraLibs icu
 BASE_DEPLOY_FLAGS_CQT = $$BASE_DEPLOY_FLAGS -targetDir $$DATA_DIR $$OUT_LIB $$OUT_BIN
 
 
 win32:CQT_ICON = -icon $$PWD/config/icon.ico
 unix:CQT_ICON = -icon $$PWD/config/logo.png
-BASE_DEPLOY_FLAGS_DEB = $$BASE_DEPLOY_FLAGS -targetDir $$PWD/../Distro $$OUT_LIB $$OUT_BIN deb zip -name CQtDeployer -publisher QuasarApp $$CQT_ICON -deployVersion 1.5.0.34
+BASE_DEPLOY_FLAGS_DEB = $$BASE_DEPLOY_FLAGS -targetDir $$PWD/../Distro $$OUT_LIB $$OUT_BIN deb zip -name CQtDeployer -publisher QuasarApp $$CQT_ICON -deployVersion 1.5.4.17 -debOut CQtDeployer_'$$VERSION'_Linux'_$$QMAKE_HOST.arch'.deb -zipOut CQtDeployer_'$$VERSION'_Linux'_$$QMAKE_HOST.arch'.zip
 
 DEPLOY_TARGET_DEB = $$DEPLOY_TARGET,$$PWD/packages/QIF/data/QIF
 deploy_dep.commands += $$DEPLOYER -bin $$DEPLOY_TARGET $$BASE_DEPLOY_FLAGS_CQT
@@ -35,9 +40,13 @@ deployOffline.commands = $$EXEC \
                        -p $$PWD/packages \
                        $$PWD/../Distro/$$OUT_FILE_OFF
 
-deploy.depends = deploy_dep
 
-deploy.depends += deployOffline
+!contains(QMAKE_HOST.arch, arm.*):{
+    deploy.depends = deploy_dep
+    deploy.depends += deployOffline
+
+}
+
 unix:deploy.depends += deploy_deb
 
 win32:ONLINE_REPO_DIR = $$ONLINE/CQtDeployer/Windows
@@ -77,12 +86,15 @@ releaseSnap.commands = snapcraft push *.snap # bad patern
 
 !isEmpty( ONLINE ) {
 
-    message(Snap)
-    unix:deploy.depends += clearSnap
-    unix:deploy.depends += buildSnap
-    unix:deploy.depends += deploySnap
-    unix:deploy.depends += clearSnap2
-    unix:release.depends += releaseSnap
+    !contains(QMAKE_HOST.arch, arm.*):{
+
+        message(Snap)
+        unix:deploy.depends += clearSnap
+        unix:deploy.depends += buildSnap
+        unix:deploy.depends += deploySnap
+        unix:deploy.depends += clearSnap2
+        unix:release.depends += releaseSnap
+    }
 }
 
 OTHER_FILES += \
@@ -106,43 +118,46 @@ QMAKE_EXTRA_TARGETS += \
     chmodSnap
 
 
-# Translations
-SUPPORT_LANGS = ru
+!contains(DEFINES, WITHOUT_TR) {
 
-defineReplace(findFiles) {
-    patern = $$1
-    path = $$2
+    # Translations
+    SUPPORT_LANGS = ru
 
-    all_files = $$files(*$${patern}, true)
-    win32:all_files ~= s|\\\\|/|g
-    win32:path ~= s|\\\\|/|g
+    defineReplace(findFiles) {
+        patern = $$1
+        path = $$2
 
-    for(file, all_files) {
-        result += $$find(file, $$path)
+        all_files = $$files(*$${patern}, true)
+        win32:all_files ~= s|\\\\|/|g
+        win32:path ~= s|\\\\|/|g
+
+        for(file, all_files) {
+            result += $$find(file, $$path)
+        }
+
+        return($$result)
     }
 
-    return($$result)
-}
+    XML_FILES = $$files(*.xml, true)
 
-XML_FILES = $$files(*.xml, true)
+    for(LANG, SUPPORT_LANGS) {
+        for(XML, XML_FILES) {
+            FILE_PATH = $$dirname(XML)
 
-for(LANG, SUPPORT_LANGS) {
-    for(XML, XML_FILES) {
-        FILE_PATH = $$dirname(XML)
+            JS_FILES = $$findFiles(".js", $$FILE_PATH)
+            UI_FILES = $$findFiles(".ui", $$FILE_PATH)
 
-        JS_FILES = $$findFiles(".js", $$FILE_PATH)
-        UI_FILES = $$findFiles(".ui", $$FILE_PATH)
+            commands += "$$LUPDATE $$JS_FILES $$UI_FILES -ts $$FILE_PATH/$${LANG}.ts"
+            TS_FILES += $$FILE_PATH/$${LANG}.ts
 
-        commands += "$$LUPDATE $$JS_FILES $$UI_FILES -ts $$FILE_PATH/$${LANG}.ts"
-        TS_FILES += $$FILE_PATH/$${LANG}.ts
+        }
 
+        for(TS, TS_FILES) {
+            commands += "$$LRELEASE $$TS"
+        }
     }
 
-    for(TS, TS_FILES) {
-        commands += "$$LRELEASE $$TS"
+    for(command, commands) {
+        system($$command)|error("Failed to run: $$command")
     }
-}
-
-for(command, commands) {
-    system($$command)|error("Failed to run: $$command")
 }

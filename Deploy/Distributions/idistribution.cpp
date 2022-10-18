@@ -70,10 +70,11 @@ bool iDistribution::unpackFile(const QFileInfo &resource,
         inputText.replace("$DESCRIPTION", info.Description);
         inputText.replace("$VERSION", info.Version);
         inputText.replace("$RELEASEDATA", info.ReleaseData);
-        inputText.replace("$ICON", info.Icon);
         inputText.replace("$PUBLISHER", info.Publisher);
         inputText.replace("$HOMEPAGE", info.Homepage);
         inputText.replace("$PREFIX", info.Prefix);
+        inputText.replace("$CQT_INSTALL_DIR", info.InstallDeirQIFW());
+        inputText.replace("$CQT_INSTALL_DEB_DIR", info.InstallDirDEB);
 
 
         for (auto it = info.Custom.cbegin(); it != info.Custom.cend(); ++it) {
@@ -160,7 +161,7 @@ bool iDistribution::collectInfoWithDeployIcons(const DistroModule &pkg,
         return false;
     }
 
-    return deployIcon(info, pkg);
+    return deployIcon(pkg);
 
 }
 
@@ -192,27 +193,58 @@ bool iDistribution::collectInfo(const DistroModule& pkg,
     if (!pkg.homePage().isEmpty())
         info.Homepage = pkg.homePage();
 
+    info.InstallDirDEB = "/opt";
+    if (!pkg.installDirDEB().isEmpty())
+        info.InstallDirDEB = pkg.installDirDEB();
+
+    info.debOut = info.Name + ".deb";
+    if (!pkg.debOut().isEmpty())
+        info.debOut = pkg.debOut();
+
+    info.zipOut = info.Name + ".zip";
+    if (!pkg.zipOut().isEmpty())
+        info.zipOut = pkg.zipOut();
+
     info.Prefix = releativeLocation(pkg);
 
     QString cmdArray = "[";
-    QString bashArray = "";
+    QString bashArray = "(";
+    QString cmdShortCutsArray = "[";
+    QString bashShortCutsArray = "(";
 
     int initSize = cmdArray.size();
     for (const auto &target :pkg.targets()) {
-        auto fileinfo =  QFileInfo(target);
-        if (fileinfo.suffix().compare("exe", ONLY_WIN_CASE_INSENSIATIVE) == 0 || fileinfo.suffix().isEmpty()) {
+        const DeployConfig *cfg = DeployCore::_config;
+        auto fileinfo = QFileInfo(target);
+        auto targetInfo =  cfg->targets().value(target);
+
+        if (targetInfo.getShortCut()) {
+
             if (cmdArray.size() > initSize) {
                 cmdArray += ",";
                 bashArray += " ";
+                cmdShortCutsArray += ",";
+                bashShortCutsArray += " ";
             }
+
             cmdArray += "\"" + fileinfo.baseName() + "\"";
             bashArray += "\"" + fileinfo.baseName() + "\"";
+
+
+            cmdShortCutsArray += "\"" + targetInfo.getRunScriptFile() + "\"";
+            bashShortCutsArray += "\"" + targetInfo.getRunScriptFile() + "\"";
         }
     }
+
     cmdArray += "]";
+    bashArray += ")";
+    cmdShortCutsArray += "]";
+    bashShortCutsArray += ")";
 
     info.Custom = {{"[\"array\", \"of\", \"cmds\"]", cmdArray}};
+    info.Custom["[\"array\", \"of\", \"shortcut\", \"cmds\"]"] = cmdShortCutsArray;
 
+    info.Custom["$BASH_ARRAY_APPLICATIONS"] = bashArray;
     info.Custom["$BASH_ARRAY_APPLICATIONS"] = bashArray;
 
     if (info.Name.isEmpty()) {
@@ -239,31 +271,48 @@ QString iDistribution::getName(const DistroModule& pkg) const {
     return name;
 }
 
-bool iDistribution::deployIcon(TemplateInfo &info, const DistroModule& pkg) {
+bool iDistribution::deployIcon(const DistroModule& pkg) {
     auto localData = dataLocation(pkg);
     const DeployConfig *cfg = DeployCore::_config;
 
-    info.Icon = "icons/Icon.png";
-    QSet<QString> icons;
+    QuasarAppUtils::Params::log(QString("Deploy icons for package %0. count targets: %1").
+                                arg(pkg.name()).arg(pkg.targets().count()),
+                                QuasarAppUtils::Debug);
+
     for (const auto& target: pkg.targets()) {
-        auto icon = cfg->targets().value(target).getIcon();
+        auto targetObject = cfg->targets().value(target);
+
+        if (!targetObject.isValid()) {
+            QuasarAppUtils::Params::log(QString("The target '%0' is not detected in the target list."
+                                                " Available Target List : %1"
+                                                " So icon will be copy by Default.").
+                                        arg(target, cfg->targets().keys().join(',')),
+                                        QuasarAppUtils::Warning);
+        }
+
+        auto icon = targetObject.getIcon();
 
         QuasarAppUtils::Params::log(QString("%0: %1").arg(target, icon),
                                     QuasarAppUtils::Debug);
 
-        if (icons.contains(icon))
-            break;
+        if (!targetObject.getShortCut()) {
+            QuasarAppUtils::Params::log(QString("%0: %1 Ignored").arg(target, icon),
+                                        QuasarAppUtils::Debug);
+            continue;
+        }
 
         QFileInfo iconInfo(icon);
-        info.Icon = releativeLocation(pkg) + "/icons/" + iconInfo.fileName();
-        if (!copyFile(icon, localData + "/icons/", false)) {
+        QFileInfo runScript(targetObject.getRunScriptFile());
+
+        QString dist = localData + "/icons/" + runScript.baseName() + "." + iconInfo.suffix();
+
+        if (!copyFile(icon, dist, true)) {
 
             QuasarAppUtils::Params::log(QString("Failed to copy icon: %0.").arg(icon),
                                         QuasarAppUtils::Error);
 
             return false;
         }
-        icons += icon;
     }
 
     return true;

@@ -1,5 +1,6 @@
-## General rules for using DEB
+# DEB using
 
+General rules for using DEB
 
 #### Available from version CQtDeployer 1.5
 
@@ -83,4 +84,18 @@ For include your templates into your destribution you need to add path of the De
 ],
 "deb": "./Debian templates"
 }
+```
+
+
+## Initialization of the debian template
+
+For initialize default templates you can use the getDefaultTemplate option.
+The getDefaultTemplate option extract default template of the cqtdeployer. This is can be very convinion if you want override default behavior of the installer or anothe distribution package.
+
+### Example
+
+### Getting default debian template.
+
+```bash
+cqtdeployer getDefaultTemplate deb
 ```

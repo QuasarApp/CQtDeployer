@@ -60,8 +60,7 @@ bool Deb::deployTemplate(PackageControl &pkg) {
             QuasarAppUtils::Params::log("Failed to set permissions", QuasarAppUtils::Warning);
         }
 
-        outFiles.push_back(DeployCore::_config->getTargetDir() + "/" + info.Name + ".deb");
-        packageFolders.push_back(local);
+        inouts.push_back({local, cfg->getTargetDir() + "/" + info.debOut});
     }
 
     return true;
@@ -117,35 +116,23 @@ QProcessEnvironment Deb::processEnvirement() const {
 
 QList<SystemCommandData> Deb::runCmd() {
     QList<SystemCommandData> res;
-    for (const auto& dir: qAsConst(packageFolders)) {
-        res.push_back({"dpkg-deb", QStringList{"--build", "--verbose"} << dir});
+    for (const auto& inout: qAsConst(inouts)) {
+        res.push_back({"dpkg-deb", QStringList{"--build", "--verbose"} << inout.input << inout.output});
     }
 
     return res;
 }
 
 QStringList Deb::outPutFiles() const {
-    return outFiles;
-}
-
-bool Deb::cb() const {
-    const DeployConfig* cfg = DeployCore::_config;
-
-    QString from = cfg->getTargetDir() + "/" +  getLocation() + "/";
-    QString to = cfg->getTargetDir() + "/" +  getLocation() + "/../";
-    auto const outputFiles = outPutFiles();
-    for (const QString& file : outputFiles) {
-        if(!moveData(from + PathUtils::getName(file), to, "")) {
-            return false;
-        }
+    QStringList result;
+    for (const auto& inout: qAsConst(inouts)) {
+        result.push_back(inout.output);
     }
-
-    return true;
+    return result;
 }
 
 QString Deb::dataLocation(const DistroModule &module) const {
-    return location(module) + "/opt/" + releativeLocation(module);
-
+    return location(module) + module.installDirDEB() + "/" + releativeLocation(module);
 }
 
 QString Deb::location(const DistroModule &module) const {

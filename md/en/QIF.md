@@ -1,4 +1,6 @@
-## General rules for using Qt Installer Framwork
+# Qt Installer Framwork
+
+General rules for using Qt Installer Framwork
 
 ### What is Qt Installer Framwork
 
@@ -45,6 +47,7 @@ Or you can describe packages in [configuration file](DeployConfigFile.md)
 ```
 
 # Custom Template for QIF
+
 Starting with CQtDeployer Version 1.5 you can use your own installer template. To do this, you must pass the path to your template to the qif parameter.
 
 ```bash
@@ -52,14 +55,17 @@ cqtdeployer ... -qif /path/to/my/custom/qif/template
 ```
 
 ### Template
+
 The qif template should contain 2 folders:
 * packages
 * config
 
 ### Attention
+
 The name of the packages in the packages folder must match the names of the packages during deployment.
 
 For example:
+
 ```json
 "targetPackage": [
     [
@@ -108,4 +114,63 @@ cqtdeployer ... -qif /path/to/my/custom/qif/template -name myCustomInstaller
 
 4 directories, 4 files
 
+```
+
+## Initialization of the qifw template
+
+For initialize default templates you can use the getDefaultTemplate option.
+The getDefaultTemplate option extract default template of the cqtdeployer. This is can be very convinion if you want override default behavior of the installer or anothe distribution package.
+
+### Example
+
+### Getting default qt installer framwork template. 
+
+```bash
+cqtdeployer getDefaultTemplate qif
+```
+
+
+### Note
+
+CQtDeployer will skip create a packages directory for the template because this commmnad do not contains any deploying data.
+If you want to prepare template with packages configurations then you should add deployed data to your command or your config.json file using bin or extraData options.
+If you create multi pacakges distribution then you need to configure your packages in your deploying commnad. 
+
+
+#### Example: 
+
+Extracting template with pacakges:
+
+```bash
+cqtdeployer getDefaultTemplate qif -bin myExecutable
+```
+
+Extracting template for multi packages distribution
+
+```bash
+cqtdeployer getDefaultTemplate qif -bin myExecutable1,myExecutable2 -targetPackage p1;myExecutable1,p2;myExecutable2
+```
+
+You also can use the config file for configure templates.
+
+Config.json
+
+```json
+{
+    "qif": true,
+    "bin": [
+        "myExecutable1",
+        "myExecutable2"
+    ],
+    "targetPackage": [
+        ["p1", "myExecutable1"],
+        ["p2", "myExecutable2"]
+    ]
+}
+```
+
+Run CQtDeployer for generate template:
+
+```bash
+cqtdeployer -confFile Config.json getDefaultTemplate
 ```

@@ -19,6 +19,7 @@
 * [Retrieving packaging templates](ExtractDefaultsTemplates.md)
 * [Default Environment Variables](EnvironmentVariables.md)
 * [Disable standard shortcuts ](DisableShortcats.md)
+* [Custom scripts](CustomScripts.md)
 
 
 ## Support the project

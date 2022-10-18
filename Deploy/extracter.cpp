@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 QuasarApp.
+ * Copyright (C) 2018-2022 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -10,7 +10,6 @@
 #include "pluginsparser.h"
 #include "configparser.h"
 #include "metafilemanager.h"
-#include "pathutils.h"
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
@@ -112,7 +111,15 @@ void Extracter::extractExtraDataTargets() {
         auto &dep = _packageDependencyes[i.key()];
         const auto extraData = i.value().extraData();
         for (const auto &target : extraData) {
-            dep.addExtraData(target);
+
+            QFileInfo info = DeployCore::findItem(target);
+            if (!info.exists()) {
+                QuasarAppUtils::Params::log("Failed to copy extra data from: " + target +
+                                            " Error: target not exists!.", QuasarAppUtils::Warning);
+                continue;
+            }
+
+            dep.addExtraData(info.absoluteFilePath());
         }
     }
 }
@@ -261,8 +268,28 @@ bool Extracter::copyTr() {
 
             const auto trFiles =  i->tr();
             for (const auto &tr: trFiles) {
-                if (!_fileManager->copyFile(tr, cnf->getPackageTargetDir(i.key()) + i->getTrOutDir())) {
-                    return false;
+
+                QFileInfo info(tr);
+
+                if (!info.exists()) {
+                    QuasarAppUtils::Params::log("Failed to copy " + info.absoluteFilePath() + ". Not exists",
+                                                QuasarAppUtils::Warning);
+                    continue;
+                }
+
+                if (info.isDir()) {
+                    QDir dir(info.absoluteFilePath());
+                    auto availableQm = dir.entryInfoList({"*.qm"}, QDir::Files);
+                    for (const auto & trFile : qAsConst(availableQm)) {
+                        if (!_fileManager->copyFile(trFile.absoluteFilePath(),
+                                                    cnf->getPackageTargetDir(i.key()) + i->getTrOutDir())) {
+                            return false;
+                        }
+                    }
+                } else {
+                    if (!_fileManager->copyFile(tr, cnf->getPackageTargetDir(i.key()) + i->getTrOutDir())) {
+                        return false;
+                    }
                 }
             }
         }
@@ -382,7 +409,7 @@ void Extracter::extractLib(const QString &file,
 
     for (const auto &line : data.getAllDep()) {
 
-        if (mask.size() && !line.getName().contains(mask, ONLY_WIN_CASE_INSENSIATIVE)) {
+        if (mask.size() && !line.getName().contains(mask, DeployCore::getCaseSensitivity())) {
             continue;
         }
 
@@ -420,8 +447,8 @@ bool Extracter::extractQml() {
 
             QStringList plugins;
             QStringList listItems;
-            const auto qmlInput = distro.qmlInput();
-            for (const auto &qmlInput: qmlInput) {
+            const auto qmlInputList = distro.qmlInput();
+            for (const auto &qmlInput: qmlInputList) {
                 QFileInfo info(qmlInput);
 
                 if (!info.isDir()) {

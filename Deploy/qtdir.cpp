@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 QuasarApp.
+ * Copyright (C) 2018-2022 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -86,11 +86,11 @@ bool QtDir::isQt(QString path) const {
     path =  PathUtils::fixPath(path);
 
     return
-        (!libs.isEmpty() && path.contains(libs, ONLY_WIN_CASE_INSENSIATIVE)) ||
-        (!bins.isEmpty() && path.contains(bins, ONLY_WIN_CASE_INSENSIATIVE)) ||
-        (!libexecs.isEmpty() && path.contains(libexecs, ONLY_WIN_CASE_INSENSIATIVE)) ||
-        (!plugins.isEmpty() && path.contains(plugins, ONLY_WIN_CASE_INSENSIATIVE)) ||
-        (!qmls.isEmpty() && path.contains(qmls, ONLY_WIN_CASE_INSENSIATIVE)) ||
-        (!translations.isEmpty() && path.contains(translations, ONLY_WIN_CASE_INSENSIATIVE)) ||
-        (!resources.isEmpty() && path.contains(resources, ONLY_WIN_CASE_INSENSIATIVE));
+        (!libs.isEmpty() && path.contains(libs, DeployCore::getCaseSensitivity())) ||
+        (!bins.isEmpty() && path.contains(bins, DeployCore::getCaseSensitivity())) ||
+        (!libexecs.isEmpty() && path.contains(libexecs, DeployCore::getCaseSensitivity())) ||
+        (!plugins.isEmpty() && path.contains(plugins, DeployCore::getCaseSensitivity())) ||
+        (!qmls.isEmpty() && path.contains(qmls, DeployCore::getCaseSensitivity())) ||
+        (!translations.isEmpty() && path.contains(translations, DeployCore::getCaseSensitivity())) ||
+        (!resources.isEmpty() && path.contains(resources, DeployCore::getCaseSensitivity()));
 }

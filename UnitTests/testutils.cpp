@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 QuasarApp.
+ * Copyright (C) 2018-2022 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -111,6 +111,7 @@ QHash<QString, int> TestUtils::compareTree(const QSet<QString> &leftTree, const 
 bool TestUtils::deployFile(const QString &file, const QString &distanation,
                            const QHash<QByteArray, QByteArray> &replaceCase) const {
     QFile f(file);
+
     if (f.open(QIODevice::ReadOnly)) {
         QFile dist(distanation);
         if (!dist.open(QIODevice::WriteOnly | QIODevice::Truncate)) {

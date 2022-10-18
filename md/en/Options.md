@@ -1,4 +1,7 @@
-## General rules for using options
+# Options general rules 
+
+General rules for using options
+
 ```
 cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 ```
@@ -16,12 +19,13 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 * **-libOut [package;path,path]** - parameter with support for selecting the package for which the flag value is set. As a separator, use ';'. Please note that the rule described above is used to enumerate parameter values. The last parameter does not have a package value, this means that this value will be set for all non-configured packages by default.
 * **clear** - boolean option
 
-## Definitions in description 
+## Definitions in description
+
 **System environments** - paths of directories containing the system libraries.
  * Windows:
    * Paths defined in the PATH variable.
-   * C:\Windows\System32
-   * C:\Windows\SysWOW64
+   * C:/Windows/System32
+   * C:/Windows/SysWOW64
  * Linux:
    * Paths defined in the LD_LIBRARY_PATH and PATH variables.
    * /usr/lib
@@ -62,19 +66,18 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |                             | Example: cqtdeployer deb" },                              |
 |                             | you can specify the path to your own DEBIAN template. |
 |                             | Examples: cqtdeployer -deb path/to/myCustom/DEBIAN. More details can be found [here](DEB.md) |
-|   deploySystem              | Deploys all libraries not recomendet because there may be conflicts with system libraries                                           |
-|   deploySystem-with-libc    | Deploys all libs include libc (only linux). Do not use this option for a gui application, for gui use the deploySystem option. (on snap version you need to turn on permission)                             |
-|   noQt                      | Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework.                             |
+|   deploySystem              | Deploys all libraries not recomendet because there may be conflicts with system libraries  |
+|   noQt                      | Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework. |
 |   allowEmptyPackages        | Allows configure the empty packages.                            |
 |   getDefaultTemplate        | Extracts defaults deb or qif templates. For more information see the  extracting default templates [page](ExtractDefaultsTemplates.md)       |
-|   noHashSum        | Disable computation of a packages hash sum               |
+|   noHashSum                 | Disable computation of a packages hash sum               |
 
 
 ### Deploy options
 
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
-|   -bin [list,params]        | Files to deploy or folders that contain files to deploy. For example -bin ~/my/project/bin/,~/my/project/bin.exe,~/my/project/runtimeLinking/lib.dll. For files: These files will be unconditional copied to the destination directory, regardless of their format or suffix. For folders: CQtDeployer will enter these folders and non-recursively copy all executable files to the destination directory. Then, CQtDeployer will extract all dependencies of the copied files and search dependencies in system environments and **libDir** paths. |
+|   -bin [list,params]        | Files to deploy or folders that contain files to deploy. For example -bin ~/my/project/bin/,~/my/project/bin.exe,~/my/project/runtimeLinking/lib.dll. For files: These files will be unconditional copied to the destination directory, regardless of their format or suffix. For folders: CQtDeployer will enter these folders and non-recursively copy all executable files to the destination directory. Then, CQtDeployer will extract all dependencies of the copied files and search dependencies in system environments and **libDir** paths. **Note**: If CQtDeployer can't find required file then CQtDeployer try find required file in the system PATH enviroment.|
 |   -binPrefix [prefixPath]   | Sets prefix path for bin option. Example: **-bin path/MyExecutable** is some as **-bin MyExecutable -binPrefix path** |
 |   -confFile [params]        | The path to the json file with all deployment configurations.|
 |                             | Using this file, you can add the necessary options, |
@@ -89,15 +92,17 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   -ignoreEnv [list,params]  | The list of the environment to ignore.                          |
 |                             | For example -ignoreEnv /bad/dir,/my/bad/Dir                     |
 |   -libDir [list,params]     | Sets additional paths for extra libs of an app.                 |
-|                             | For example -libDir ~/myLib,~/newLibs                           |
+|                             | For example -libDir ~/myLib,~/newLibs.  **Attention** the libDir option should not be children of the targetDir directory. The targetDir option is forbidden for library searches, as it may contain outdated project libraries, which in turn may lead to unwanted crashes.                         |
 |   -extraLibs [list,params]  | Sets the mask of the library name for forced copying.           |
 |                             | Example: "-extraLib mySql" - forces to copy all libraries whose names contain mySql to the project folder. This option is case-insensitive on Windows and case-sensitive on other platforms. This option will only search libraries in system environments similar to **deploySystem**.|
 |   -customScript [scriptCode]| Insert extra code inTo All run script.                          |
 |   -extraPlugin [list,params]| Sets an additional path to extraPlugin of an app                |
 |   -recursiveDepth [params]  | Sets the Depth of recursive search of libs and ignoreEnv (default 0)          |
 |   -targetDir [params]       | Sets target directory(by default it is the path to the first deployable file)|
-|   -runScript [list,parems]  | forces cqtdeployer swap default run script to new from the arguments of option. This option copy all content from input file and insert all code into runScript.sh or .bat. Example of use: cqtdeployer -runScript "myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh"|
-|   -verbose [0-3]            | Shows debug log                                                 |
+|   -installDirDeb [params]   | Sets install target directory fordebian package (by default it is /opt path) |
+|   -installDirQIFW [params]  | Sets install target directory for installers (by default it is /home path) |
+|   -verbose [0-3]            | Shows debug log. By default it is 2                             |
+|   -platform [list]          | If this option is enabled then CQtDeployer will deploy only binaries of a selected platform. Supported values: [win_x86 win_x86_64 win_arm win_arm64 linux_x86 linux_x86_64 linux_ARM linux_ARM64]  |
 
 ### Controll of packages options
 
@@ -125,8 +130,10 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
-|  -icon [target;val,val]    | Sets path to icon for a targets                           |
-
+|  -icon [target;val,val]    | Sets path to icon for a targets. This option support only png (Linux) and ico (Windows) files.  |
+|  -disableRunScript [target,target2,target3]  | Disables the generation of run script for selected targets|
+|  -disableShortCut [target,target2,target3]   | Disables the generation of shortcut for selected targets |
+|  -runScript [target;val,val]  | forces cqtdeployer swap default run script to new from the arguments of option. This option copy all content from input file and insert all code into runScript.sh or .bat. Example of use: cqtdeployer -runScript "myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh" For get more information about customScript see the documentation [page](CustomScripts.md)|
 
 ### Plugins Controll Options
 
@@ -145,6 +152,23 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -qifStyle [path/to/style.css]| Sets the path to the CSS style file or sets the default style. Available styles: quasar |
 |  -qifBanner [path/to/banner.png]| Sets path to the banner png file.                                      |
 |  -qifLogo [path/to/logo.png]| Sets path to the logo png file.                                |
+|  -qifOut [nameOfOutputInstallerFile] | Sets name of output qifw installer. Note: on Windows, the exe suffix will be added to the installer automatically.                |
+|  -qifConfig [path/to/config.xml] | Sets a custom path to the configure file of the qt ifw installer. By default it is qif/config/config.xml. Note This path sets releative target folder (sets by TargetDir option). |
+|  -qifPackages [path/to/packagesFodoler] | Sets a custom path to the packages directories. By default it is qif/packages. Note This path sets releative target folder (sets by TargetDir option). |
+|  -qifResources [path/to/resources1.qrc,path/to/resources2.qrc] | Sets a custom path to the resources files. By default this option is skipped. Note This path sets releative target folder (sets by TargetDir option). |
+|  -qifArchiveFormat [7z,zip,tar,tar.gz,tar.bz2,tar.xz] | Sets the format used when packaging new component data archives. If you omit this option, the 7z format will be used as a default. |
+|  -binarycreator [binarycreator command] | Sets new binarycreator command. Example : cqtdeployer -bin my.exe qifw -binarycreator 'wine path/to/binarycreator.exe'|
 
+### Deb package options
+
+| Option                      | Descriptiion                                              |
+|-----------------------------|-----------------------------------------------------------|
+|  -debOut [package;nameOfOutputDebFile,nameOfOutputDebFile]| Sets name of the output debian file. This option can be work with multiple packages |
+
+### Zip pacakge options
+
+| Option                      | Descriptiion                                              |
+|-----------------------------|-----------------------------------------------------------|
+|  -zipOut [package;nameOfOutputZipFile,nameOfOutputZipFile]| Sets name of the output zip arrhive. This option can be work with multiple packages |
 
 #### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.15.4/gcc_64/bin/qmake clear

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 QuasarApp.
+ * Copyright (C) 2018-2022 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -21,6 +21,8 @@
 #include <pluginsparser.h>
 #include <zipcompresser.h>
 #include <QStorageInfo>
+
+#include <Distributions/qif.h>
 
 #include <QMap>
 #include <QByteArray>
@@ -48,7 +50,8 @@ private:
                        QSet<QString> *tree = nullptr,
                        bool noWarnings = false,
                        bool onlySize = false,
-                       exitCodes exitCode = exitCodes::Good);
+                       exitCodes exitCode = exitCodes::Good,
+                       const std::function<void (const DeployConfig *)> &cb = {});
 
     void checkResults(const QSet<QString> &tree,
                       bool noWarnings,
@@ -181,6 +184,20 @@ private slots:
 
     void testMd5();
 
+    void testDisableShortcuts();
+    void testDisableRunScripts();
+    void testQifOut();
+    void testIgnoreEnvWithLibDir();
+
+    // note: this test checking in manual mode only.
+    void testInstallDirsOptions();
+
+    void testQIFResources();
+
+    void testCustomPlatform();
+    void testQifArchiveFormat();
+    void testQifBinaryCreator();
+
     void customTest();
 };
 
@@ -189,6 +206,8 @@ deploytest::deploytest() {
     qputenv("QTEST_FUNCTION_TIMEOUT", "1800000");
     QString qifwPath = qgetenv("PATH") + DeployCore::getEnvSeparator() + TestQtDir + "../../Tools/QtInstallerFramework/4.0/bin/";
     qifwPath += qifwPath + DeployCore::getEnvSeparator() + TestQtDir + "../../Tools/QtInstallerFramework/4.1/bin/";
+    qifwPath += qifwPath + DeployCore::getEnvSeparator() + TestQtDir + "../../Tools/QtInstallerFramework/4.2/bin/";
+    qifwPath += qifwPath + DeployCore::getEnvSeparator() + TestQtDir + "../../Tools/QtInstallerFramework/4.3/bin/";
 
     qputenv("PATH", qifwPath.toLatin1().data());
     TestUtils utils;
@@ -554,18 +573,18 @@ void deploytest::testQIFCustom() {
     QString qmake = TestQtDir + "bin/qmake";
 
     auto comapareTreeCustom = utils.createTree({
-                                                  "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.run",
-                                                  "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.run.md5",
+                                                   "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.run",
+                                                   "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.run.md5",
 
-                                              });
+                                               });
 #else
     QString bin = TestBinDir + "TestCPPOnly.exe" + "," + TestBinDir + "TestOnlyC.exe";
 
     QString qmake = TestQtDir + "bin/qmake.exe";
     auto comapareTreeCustom = utils.createTree({
-                                                  "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.exe",
-                                                  "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.exe.md5",
-                                              });
+                                                   "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.exe",
+                                                   "./" + DISTRO_DIR + "/Installerorg.qtproject.ifw.example.stylesheet.exe.md5",
+                                               });
 
 #endif
 
@@ -687,10 +706,10 @@ void deploytest::testDEBCustom() {
     QString bin = TestBinDir + "TestOnlyC";
 
     auto comapareTreeCustom = utils.createTree({
-                                                  "./" + DISTRO_DIR + "/chrome.deb",
-                                                  "./" + DISTRO_DIR + "/chrome.deb.md5",
+                                                   "./" + DISTRO_DIR + "/chrome.deb",
+                                                   "./" + DISTRO_DIR + "/chrome.deb.md5",
 
-                                              });
+                                               });
 
     runTestParams({"-bin", bin, "clear" ,
                    "-deb", TestBinDir + "/../../UnitTests/testRes/DEBCustomTemplate",
@@ -901,7 +920,7 @@ void deploytest::testPrefix() {
 #ifdef Q_OS_UNIX
     QFile f("./" + DISTRO_DIR + "/bin/TestOnlyC");
     auto comapareTree = utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/package/TestOnlyC.sh",
                     "./" + DISTRO_DIR + "/package/bin/TestOnlyC",
                     "./" + DISTRO_DIR + "/package/bin/qt.conf"
@@ -911,9 +930,9 @@ void deploytest::testPrefix() {
 #else
     QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
     auto comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "/package/TestOnlyC.exe",
-     "./" + DISTRO_DIR + "/package/TestOnlyC.bat",
-     "./" + DISTRO_DIR + "/package/qt.conf"});
+                {"./" + DISTRO_DIR + "/package/TestOnlyC.exe",
+                 "./" + DISTRO_DIR + "/package/TestOnlyC.bat",
+                 "./" + DISTRO_DIR + "/package/qt.conf"});
     QString target1 = TestBinDir + "TestOnlyC.exe";
 
 #endif
@@ -1032,8 +1051,7 @@ void deploytest::testOverridingDefaultTemplateDEB()
     appScript.remove();
 
     runTestParams(
-                {"-bin", bin,
-                 "force-clear",
+                {"force-clear",
                  "getDefaultTemplate",
                  "-name", "Test",
                  "deb",
@@ -1049,8 +1067,7 @@ void deploytest::testOverridingDefaultTemplateDEB()
                 });
 
     runTestParams(
-                {"-bin", bin,
-                 "force-clear",
+                {"force-clear",
                  "-deb", "temaplate/defaultDEBTemplate",
                  "-targetPackage", "MyApp",
                  "-name", "Test",
@@ -1076,7 +1093,7 @@ void deploytest::testOverridingDefaultTemplateDEB()
 
 void deploytest::testOverridingDefaultTemplateQIF() {
     TestUtils utils;
-// Prepare bin and qmake values
+    // Prepare bin and qmake values
 #ifdef Q_OS_UNIX
     QString bin = TestBinDir + "TestOnlyC" + "," + TestBinDir + "TestCPPOnly";
     QString qmake = TestQtDir + "bin/qmake";
@@ -1181,21 +1198,22 @@ void deploytest::testDeployGeneralFiles() {
 void deploytest::testTr() {
     TestUtils utils;
 #ifdef Q_OS_UNIX
-    QString bin = TestBinDir + "QtWidgetsProject";
-    QString qmake = TestQtDir + "bin/qmake";
+    QString bin = TestBinDir + "TestOnlyC";
 
 #else
-    QString bin = TestBinDir + "QtWidgetsProject.exe";
-    QString qmake = TestQtDir + "bin/qmake.exe";
+    QString bin = TestBinDir + "TestOnlyC.exe";
 
 #endif
-    auto comapareTree = TestModule.qtLibs();
-
-    comapareTree += utils.createTree({"./" + DISTRO_DIR + "/translations/TestTr.qm"});
 
     runTestParams({"-bin", bin, "clear" ,
-                   "-tr", ":/testResurces/testRes/TestTr.qm",
-                   "-qmake", qmake}, &comapareTree);
+                   "-tr", ":/testResurces/testRes/TestTr.qm",});
+
+    QVERIFY(QFile::exists("./" + DISTRO_DIR + "/translations/TestTr.qm"));
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "-tr", ":/testResurces/testRes/"});
+
+    QVERIFY(QFile::exists("./" + DISTRO_DIR + "/translations/TestTr.qm"));
 }
 
 void deploytest::testVirtualKeyBoard() {
@@ -1251,7 +1269,7 @@ void deploytest::testIcons() {
 
     initTargets(deploy, {"-bin", bin,
                          "force-clear",
-                        });
+                });
 
     auto targetsMap = deploy->_config.getTargetsListByFilter("TestOnlyC");
     auto targetinfo = targetsMap.begin().value();
@@ -1307,6 +1325,33 @@ void deploytest::testIcons() {
 
     delete deploy;
 
+    // manual tests
+#ifdef QT_DEBUG
+#ifdef Q_OS_UNIX
+    bin = TestBinDir + "TestOnlyC," + TestBinDir + "TestCPPOnly";
+
+    auto comapareTree = utils.createTree({
+                                             "./" + DISTRO_DIR + "/InstallerTest.run",
+                                             "./" + DISTRO_DIR + "/InstallerTest.run.md5",
+                                         });
+
+#else
+    bin = TestBinDir + "TestOnlyC.exe,"  + TestBinDir + "TestCPPOnly.exe";
+
+    auto comapareTree = utils.createTree({
+                                             "./" + DISTRO_DIR + "/InstallerTest.exe",
+                                             "./" + DISTRO_DIR + "/InstallerTest.exe.md5",
+
+                                         });
+
+#endif
+
+    runTestParams({"-bin", bin, "clear" ,
+                   "qif", "qifFromSystem", "-name", "Test",
+                   "-targetPackage", "testPackage;TestOnlyC;TestCPPOnly",
+                   "-icon", "TestOnlyC;:/testResurces/testRes/TestIcon.png,TestCPPOnly;:/testResurces/testRes/TestTr.qm"}, &comapareTree, true);
+
+#endif
 }
 
 void deploytest::testPathUtils() {
@@ -1384,7 +1429,7 @@ void deploytest::testBinPrefix() {
 
 #ifdef Q_OS_UNIX
     auto comapareTree = utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/TestOnlyC.sh",
                     "./" + DISTRO_DIR + "/bin/TestOnlyC",
                     "./" + DISTRO_DIR + "/bin/qt.conf"
@@ -1394,9 +1439,9 @@ void deploytest::testBinPrefix() {
 
 #else
     auto comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "/TestOnlyC.exe",
-     "./" + DISTRO_DIR + "/TestOnlyC.bat",
-     "./" + DISTRO_DIR + "/qt.conf"});
+                {"./" + DISTRO_DIR + "/TestOnlyC.exe",
+                 "./" + DISTRO_DIR + "/TestOnlyC.bat",
+                 "./" + DISTRO_DIR + "/qt.conf"});
     QString target = TestBinDir + "TestOnlyC.exe";
     QString targetWithoutPrefix = "TestOnlyC.exe";
 
@@ -1426,10 +1471,10 @@ void deploytest::testMd5() {
 #endif
 
     auto comapareTreeqif = utils.createTree(
-                    {
-                        outFile,
-                        outFile + ".md5"
-                    });
+                {
+                    outFile,
+                    outFile + ".md5"
+                });
 
     // Run deploy installer
     runTestParams({"-bin", bin,
@@ -1452,9 +1497,9 @@ void deploytest::testMd5() {
 
 
     comapareTreeqif = utils.createTree(
-                    {
-                        outFile,
-                    });
+                {
+                    outFile,
+                });
 
     // Check noHashSum option. CQtDeployer must be skip calculating  a hash sum of an installer.
     runTestParams({"-bin", bin,
@@ -1464,9 +1509,270 @@ void deploytest::testMd5() {
                    "qifFromSystem"}, &comapareTreeqif);
 }
 
+void deploytest::testDisableShortcuts() {
+
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC";
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+#endif
+
+    auto cb = [](const DeployConfig * config){
+        const auto list = config->getTargetsListByFilter("TestOnlyC");
+        // Check shrtcut option. all targets should be return false.
+        for (auto target: list) {
+            QVERIFY(!target->getShortCut());
+        }
+    };
+
+    // Run deploy installer
+    runTestParams({"-bin", bin, "clear",
+                   "-disableShortCut", "TestOnlyC",
+                   "qif", "qifFromSystem"},
+                  nullptr,
+                  false,
+                  false,
+                  exitCodes::Good,
+                  cb);
+
+
+
+}
+
+void deploytest::testDisableRunScripts() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC";
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+#endif
+
+    auto comapareTreeqif = TestModule.onlyC();
+    comapareTreeqif -= utils.createTree({DISTRO_DIR + "/TestOnlyC.sh",
+                                         DISTRO_DIR + "/TestOnlyC.bat"});
+    // Run deploy installer
+    runTestParams({"-bin", bin, "clear", "-libDir", TestQtDir + "/bin",
+                   "-disableRunScript", "TestOnlyC"}, &comapareTreeqif);
+}
+
+void deploytest::testQifOut() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC";
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+#endif
+
+#ifdef Q_OS_UNIX
+    auto result = utils.createTree({{DISTRO_DIR + "/QIF_OUT.exe"}, {DISTRO_DIR + "/QIF_OUT.exe.md5"},
+                                    {DISTRO_DIR + "/DEB_OUT.deb"}, {DISTRO_DIR + "/DEB_OUT.deb.md5"},
+                                    {DISTRO_DIR + "/ZIP_OUT.zip"}, {DISTRO_DIR + "/ZIP_OUT.zip.md5"}});
+
+    // Run deploy installer
+    runTestParams({"-bin", bin, "clear",
+                   "qif", "-qifOut", "QIF_OUT.exe",
+                   "deb", "-debOut", "DEB_OUT.deb",
+                   "zip", "-zipOut", "ZIP_OUT.zip"}, &result);
+#else
+    auto result = utils.createTree({{DISTRO_DIR + "/QIF_OUT.exe"}, {DISTRO_DIR + "/QIF_OUT.exe.md5"},
+                                    {DISTRO_DIR + "/ZIP_OUT.zip"}, {DISTRO_DIR + "/ZIP_OUT.zip.md5"}});
+
+    // Run deploy installer
+    runTestParams({"-bin", bin, "clear",
+                   "qif", "-qifOut", "QIF_OUT.exe",
+                   "zip", "-zipOut", "ZIP_OUT.zip"}, &result);
+#endif
+}
+
+void deploytest::testIgnoreEnvWithLibDir() {
+#ifdef Q_OS_UNIX
+    QString bin = TestBinDir + "TestOnlyC";
+#else
+    QString bin = TestBinDir + "TestOnlyC.exe";
+#endif
+
+    QVERIFY(QDir().mkdir("libDirtest"));
+
+    // Run deploy installer
+    runTestParams({"-bin", bin, "clear",
+                   "-targetDir", "./libDirtest",
+                   "-libDir", "./libDirtest"}, nullptr, false, false,
+                  exitCodes::PrepareError);
+
+    QVERIFY(QDir().rmdir("libDirtest"));
+}
+
+void deploytest::testInstallDirsOptions() {
+#ifdef QT_DEBUG
+#ifdef Q_OS_UNIX
+    QStringList binMulti = {TestBinDir + "TestOnlyC" , TestBinDir + "TestCPPOnly"};
+
+#else
+    QStringList binMulti = {TestBinDir + "TestOnlyC.exe" , TestBinDir + "TestCPPOnly.exe"};
+
+#endif
+
+
+    runTestParams({"-bin", binMulti.join(","), "clear",
+                   "qif", "deb",
+                   "-targetPackage", "pkg;TestCPPOnly",
+                   "-installDirDeb", "pkg;/var",
+                   "-installDirQIFW", "/opt"});
+
+#endif
+}
+
+void deploytest::testQIFResources() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = {TestBinDir + "TestOnlyC"};
+
+    auto result = utils.createTree({{DISTRO_DIR + "/InstallerTestOnlyC.run"},
+                                    {DISTRO_DIR + "/InstallerTestOnlyC.run.md5"}});
+#else
+    QString bin = {TestBinDir + "TestOnlyC.exe"};
+
+    auto result = utils.createTree({{DISTRO_DIR + "/InstallerTestOnlyC.exe"},
+                                    {DISTRO_DIR + "/InstallerTestOnlyC.exe.md5"}});
+#endif
+
+
+    auto templateDir = TestBinDir + "/../../UnitTests/testRes/QIFCustomTemplate";
+    runTestParams({
+                      "-bin", bin,
+                      "clear",
+                      "qif",
+                      "-qifConfig", templateDir + "/customconfig.xml",
+                      "-qifPackages", templateDir + "/custompackages",
+                      "-qifResources", templateDir + "customRes.qrc"
+                  }, &result
+                  );
+
+}
+
+void deploytest::testCustomPlatform() {
+    TestUtils utils;
+
+    auto compareTree = TestModule.onlyC();
+
+#ifdef Q_OS_UNIX
+    QString bin = {TestBinDir + "TestOnlyC"};
+    QString platform = "linux_x86_64";
+
+#else
+    QString bin = {TestBinDir + "TestOnlyC.exe"};
+    QString platform = "win_x86_64";
+
+    compareTree = utils.createTree(
+                {
+                    "./" + DISTRO_DIR + "/TestOnlyC.exe",
+                    "./" + DISTRO_DIR + "/TestOnlyC.bat",
+                    "./" + DISTRO_DIR + "/qt.conf"
+                }
+                );
+
+#endif
+
+    runTestParams({
+                      "-bin", bin,
+                      "clear",
+                      "-platform", platform,
+                  }, &compareTree
+                  );
+
+
+
+    runTestParams({
+                      "-bin", bin,
+                      "clear",
+                      "-platform", "GeneralFile",
+                  }, nullptr, false, false, exitCodes::PrepareError
+                  );
+}
+
+void deploytest::testQifArchiveFormat() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = {TestBinDir + "TestOnlyC"};
+
+    auto result = utils.createTree({{DISTRO_DIR + "/InstallerTestOnlyC.run"},
+                                    {DISTRO_DIR + "/InstallerTestOnlyC.run.md5"}});
+#else
+    QString bin = {TestBinDir + "TestOnlyC.exe"};
+
+    auto result = utils.createTree({{DISTRO_DIR + "/InstallerTestOnlyC.exe"},
+                                    {DISTRO_DIR + "/InstallerTestOnlyC.exe.md5"}});
+#endif
+
+
+    runTestParams({
+                      "-bin", bin,
+                      "qifFromSystem",
+                      "clear",
+                      "qif",
+                      "-qifArchiveFormat", "zip"
+                  }, &result
+                  );
+}
+
+void deploytest::testQifBinaryCreator() {
+    TestUtils utils;
+
+#ifdef Q_OS_UNIX
+    QString bin = {TestBinDir + "TestOnlyC"};
+#else
+    QString bin = {TestBinDir + "TestOnlyC.exe"};
+#endif
+
+    {
+        QuasarAppUtils::Params::parseParams({
+                                                "-bin", bin,
+                                                "qifFromSystem",
+                                                "clear",
+                                                "qif",
+                                                "-binarycreator", "test testValue"
+                                            });
+        Deploy deploy;
+        QVERIFY(deploy.prepare());
+        FileManager fm;
+        QIF qif(&fm);
+
+        auto command = qif.runCmd();
+        QVERIFY(command.size() == 1);
+        QVERIFY(command.first().command == "test");
+        QVERIFY(command.first().arguments.contains("testValue"));
+    }
+
+    {
+        QuasarAppUtils::Params::parseParams({
+                                                "-bin", bin,
+                                                "qifFromSystem",
+                                                "clear",
+                                                "qif",
+                                                "-binarycreator", "test"
+                                            });
+        Deploy deploy;
+        QVERIFY(deploy.prepare());
+        FileManager fm;
+        QIF qif(&fm);
+
+        auto command = qif.runCmd();
+        QVERIFY(command.size() == 1);
+        QVERIFY(command.first().command == "test");
+    }
+
+
+}
+
 void deploytest::customTest() {
-//    runTestParams({"-confFile", "path",
-//                   "qifFromSystem"});
+    //runTestParams({"-confFile", "",
+    //               "qifFromSystem"});
 }
 
 void deploytest::testQmlExtrct() {
@@ -1721,7 +2027,8 @@ void deploytest::testZip() {
 void deploytest::runTestParams(QStringList list,
                                QSet<QString>* tree,
                                bool noWarnings, bool onlySize,
-                               exitCodes exitCode) {
+                               exitCodes exitCode,
+                               const std::function<void (const DeployConfig *)> &cb) {
 
     QuasarAppUtils::Params::parseParams(list);
 
@@ -1737,6 +2044,9 @@ void deploytest::runTestParams(QStringList list,
     if (tree) {
         checkResults(*tree, noWarnings, onlySize);
     }
+
+    if (cb)
+        cb(DeployCore::_config);
 }
 
 void deploytest::checkResults(const QSet<QString> &tree,
@@ -1832,18 +2142,18 @@ void deploytest::costomScript() {
 #ifdef Q_OS_UNIX
     QFile f("./" + DISTRO_DIR + "/bin/TestOnlyC");
     auto comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "/bin/TestOnlyC",
-     "./" + DISTRO_DIR + "/bin/qt.conf",
-     "./" + DISTRO_DIR + "/TestOnlyC.sh"});
+                {"./" + DISTRO_DIR + "/bin/TestOnlyC",
+                 "./" + DISTRO_DIR + "/bin/qt.conf",
+                 "./" + DISTRO_DIR + "/TestOnlyC.sh"});
     QString bin = TestBinDir + "TestOnlyC";
     QString scriptPath = "./" + DISTRO_DIR + "/TestOnlyC.sh";
 
 #else
     QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
     auto comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "/TestOnlyC.exe",
-     "./" + DISTRO_DIR + "/TestOnlyC.bat",
-     "./" + DISTRO_DIR + "/qt.conf"});
+                {"./" + DISTRO_DIR + "/TestOnlyC.exe",
+                 "./" + DISTRO_DIR + "/TestOnlyC.bat",
+                 "./" + DISTRO_DIR + "/qt.conf"});
     QString bin = TestBinDir + "TestOnlyC.exe";
     QString scriptPath = "./" + DISTRO_DIR + "/TestOnlyC.bat";
 
@@ -1885,17 +2195,17 @@ void deploytest::testOverwrite() {
 #ifdef Q_OS_UNIX
     QFile f("./" + DISTRO_DIR + "/bin/TestOnlyC");
     auto comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "/bin/TestOnlyC",
-     "./" + DISTRO_DIR + "/bin/qt.conf",
-     "./" + DISTRO_DIR + "/TestOnlyC.sh"});
+                {"./" + DISTRO_DIR + "/bin/TestOnlyC",
+                 "./" + DISTRO_DIR + "/bin/qt.conf",
+                 "./" + DISTRO_DIR + "/TestOnlyC.sh"});
     QString bin = TestBinDir + "TestOnlyC";
 
 #else
     QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
     auto comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "/TestOnlyC.exe",
-     "./" + DISTRO_DIR + "/TestOnlyC.bat",
-     "./" + DISTRO_DIR + "/qt.conf"});
+                {"./" + DISTRO_DIR + "/TestOnlyC.exe",
+                 "./" + DISTRO_DIR + "/TestOnlyC.bat",
+                 "./" + DISTRO_DIR + "/qt.conf"});
     QString bin = TestBinDir + "TestOnlyC.exe";
 
 #endif
@@ -1947,17 +2257,17 @@ void deploytest::testOverwriteWithPacking() {
 #endif
 #ifdef Q_OS_UNIX
     auto comapareTreeqif = utils.createTree(
-                    {
-                        "./" + DISTRO_DIR + "/InstallerTest.run",
-                        "./" + DISTRO_DIR + "/InstallerTest.run.md5",
-                    });
+                {
+                    "./" + DISTRO_DIR + "/InstallerTest.run",
+                    "./" + DISTRO_DIR + "/InstallerTest.run.md5",
+                });
 #else
     auto comapareTreeqif = utils.createTree(
-                    {
-                        "./" + DISTRO_DIR + "/InstallerTest.exe",
-                        "./" + DISTRO_DIR + "/InstallerTest.exe.md5",
+                {
+                    "./" + DISTRO_DIR + "/InstallerTest.exe",
+                    "./" + DISTRO_DIR + "/InstallerTest.exe.md5",
 
-                    });
+                });
 
 #endif
 
@@ -1975,20 +2285,20 @@ void deploytest::testextraData() {
 
 #ifdef Q_OS_UNIX
     auto comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "/build/TestOnlyC",
-     "./" + DISTRO_DIR + "/build/TestCPPOnly",
-     "./" + DISTRO_DIR + "/build/QtWidgetsProject",
-     "./" + DISTRO_DIR + "/build/TestQMLWidgets",
-     "./" + DISTRO_DIR + "/build/basic",
-     "./" + DISTRO_DIR + "/build/quicknanobrowser",
-     "./" + DISTRO_DIR + "/build/webui"});
+                {"./" + DISTRO_DIR + "/build/TestOnlyC",
+                 "./" + DISTRO_DIR + "/build/TestCPPOnly",
+                 "./" + DISTRO_DIR + "/build/QtWidgetsProject",
+                 "./" + DISTRO_DIR + "/build/TestQMLWidgets",
+                 "./" + DISTRO_DIR + "/build/basic",
+                 "./" + DISTRO_DIR + "/build/quicknanobrowser",
+                 "./" + DISTRO_DIR + "/build/webui"});
 #else
     auto comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "/build/TestOnlyC.exe",
-     "./" + DISTRO_DIR + "/build/TestCPPOnly.exe",
-     "./" + DISTRO_DIR + "/build/QtWidgetsProject.exe",
-     "./" + DISTRO_DIR + "/build/TestQMLWidgets.exe",
-     "./" + DISTRO_DIR + "/build/basic.exe"});
+                {"./" + DISTRO_DIR + "/build/TestOnlyC.exe",
+                 "./" + DISTRO_DIR + "/build/TestCPPOnly.exe",
+                 "./" + DISTRO_DIR + "/build/QtWidgetsProject.exe",
+                 "./" + DISTRO_DIR + "/build/TestQMLWidgets.exe",
+                 "./" + DISTRO_DIR + "/build/basic.exe"});
 #endif
 
 
@@ -2002,7 +2312,7 @@ void deploytest::testextraData() {
 
     runTestParams({"-extraData", TestBinDir, "clear",
                    "noCheckRPATH", "noCheckPATH", "noQt",
-                  "-extraDataOut", "myExtraData"}, &comapareTree);
+                   "-extraDataOut", "myExtraData"}, &comapareTree);
 }
 
 void deploytest::testConfFile() {
@@ -2014,14 +2324,14 @@ void deploytest::testConfFile() {
 
 #ifdef Q_OS_UNIX
     auto comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "/bin/TestOnlyC",
-     "./" + DISTRO_DIR + "/bin/qt.conf",
-     "./" + DISTRO_DIR + "/TestOnlyC.sh"});
+                {"./" + DISTRO_DIR + "/bin/TestOnlyC",
+                 "./" + DISTRO_DIR + "/bin/qt.conf",
+                 "./" + DISTRO_DIR + "/TestOnlyC.sh"});
 #else
     auto comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "/TestOnlyC.exe",
-     "./" + DISTRO_DIR + "/TestOnlyC.bat",
-     "./" + DISTRO_DIR + "/qt.conf"});
+                {"./" + DISTRO_DIR + "/TestOnlyC.exe",
+                 "./" + DISTRO_DIR + "/TestOnlyC.bat",
+                 "./" + DISTRO_DIR + "/qt.conf"});
 #endif
 
 #ifdef Q_OS_UNIX
@@ -2158,13 +2468,13 @@ void deploytest::testConfFile() {
     comapareTree = TestModule.ignoreFilter(comapareTree, "/plugins/p");
 #ifdef Q_OS_UNIX
     comapareTree -= utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/lib/libQt5EglFSDeviceIntegration.so",
                 });
     auto bin =  TestBinDir + "QtWidgetsProject";
 #else
     comapareTree -= utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/Qt5DBus.dll"
 
                 });
@@ -2184,7 +2494,7 @@ void deploytest::testConfFile() {
 #ifdef Q_OS_UNIX
     QFile f("./" + DISTRO_DIR + "/bin/TestOnlyC");
     comapareTree = utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/package/TestOnlyC.sh",
                     "./" + DISTRO_DIR + "/package/bin/TestOnlyC",
                     "./" + DISTRO_DIR + "/package/bin/qt.conf"
@@ -2194,9 +2504,9 @@ void deploytest::testConfFile() {
 #else
     QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
     comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "/package/TestOnlyC.exe",
-     "./" + DISTRO_DIR + "/package/TestOnlyC.bat",
-     "./" + DISTRO_DIR + "/package/qt.conf"});
+                {"./" + DISTRO_DIR + "/package/TestOnlyC.exe",
+                 "./" + DISTRO_DIR + "/package/TestOnlyC.bat",
+                 "./" + DISTRO_DIR + "/package/qt.conf"});
     QString target1 = TestBinDir + "TestOnlyC.exe";
 
 #endif
@@ -2217,7 +2527,7 @@ void deploytest::testConfFile() {
     bin =  TestBinDir + "QtWidgetsProject.exe," + TestBinDir + "TestOnlyC.exe";
 #endif
     QVERIFY(utils.deployFile(":/testResurces/testRes/testMultiPackageConfig.json", file,
-    {{"$BIN_DIR", bin.toLatin1()}}));
+                             {{"$BIN_DIR", bin.toLatin1()}}));
 
     comapareTree = TestModule.onlyC(DISTRO_DIR + "/Dstro1") +
             TestModule.qtLibs(DISTRO_DIR + "/Dstro2");
@@ -2237,7 +2547,7 @@ void deploytest::testPackages() {
 #ifdef Q_OS_UNIX
     QFile f("./" + DISTRO_DIR + "/bin/TestOnlyC");
     auto comapareTree = utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/package/TestOnlyC.sh",
                     "./" + DISTRO_DIR + "/package/bin/TestOnlyC",
                     "./" + DISTRO_DIR + "/package/bin/qt.conf"
@@ -2247,9 +2557,9 @@ void deploytest::testPackages() {
 #else
     QFile f("./" + DISTRO_DIR + "/TestOnlyC.exe");
     auto comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "/package/TestOnlyC.exe",
-     "./" + DISTRO_DIR + "/package/TestOnlyC.bat",
-     "./" + DISTRO_DIR + "/package/qt.conf"});
+                {"./" + DISTRO_DIR + "/package/TestOnlyC.exe",
+                 "./" + DISTRO_DIR + "/package/TestOnlyC.bat",
+                 "./" + DISTRO_DIR + "/package/qt.conf"});
     QString target1 = TestBinDir + "TestOnlyC.exe";
 
 #endif
@@ -2380,7 +2690,7 @@ void deploytest::testIgnore() {
     QString bin = TestBinDir + "QtWidgetsProject";
     QString qmake = TestQtDir + "bin/qmake";
     auto comapareTree = utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/QtWidgetsProject.sh",
                     "./" + DISTRO_DIR + "/bin/qt.conf",
                     "./" + DISTRO_DIR + "/bin/QtWidgetsProject",
@@ -2391,15 +2701,15 @@ void deploytest::testIgnore() {
     QString qmake = TestQtDir + "bin/qmake.exe";
 
     auto comapareTree = utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/qt.conf",
                     "./" + DISTRO_DIR + "/QtWidgetsProject.exe",
                     "./" + DISTRO_DIR + "/QtWidgetsProject.bat",
-#if defined(Q_OS_WIN64)
+                #if defined(Q_OS_WIN64)
                     "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
-#else
+                #else
                     "./" + DISTRO_DIR + "/libgcc_s_dw2-1.dll",
-#endif
+                #endif
                     "./" + DISTRO_DIR + "/libstdc++-6.dll",
                     "./" + DISTRO_DIR + "/libwinpthread-1.dll"
 
@@ -2512,7 +2822,7 @@ void deploytest::testLibDir() {
     QString extraPath = "/usr/lib,/lib";
 
     auto comapareTree = utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/TestOnlyC.sh",
                     "./" + DISTRO_DIR + "/bin/qt.conf",
                     "./" + DISTRO_DIR + "/bin/TestOnlyC"
@@ -2523,7 +2833,7 @@ void deploytest::testLibDir() {
     QString extraPath = TestQtDir;
 
     auto comapareTree = utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/qt.conf",
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
                     "./" + DISTRO_DIR + "/TestOnlyC.bat",
@@ -2542,7 +2852,7 @@ void deploytest::testLibDir() {
 
 #ifdef Q_OS_UNIX
     comapareTree = utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/TestOnlyC.sh",
                     "./" + DISTRO_DIR + "/bin/qt.conf",
                     "./" + DISTRO_DIR + "/bin/TestOnlyC",
@@ -2554,7 +2864,7 @@ void deploytest::testLibDir() {
                 });
 
     auto comapareTreeExtraLib = utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "2/TestOnlyC.sh",
                     "./" + DISTRO_DIR + "2/bin/qt.conf",
                     "./" + DISTRO_DIR + "2/bin/TestOnlyC",
@@ -2564,30 +2874,30 @@ void deploytest::testLibDir() {
 
 #else
     comapareTree = utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/qt.conf",
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
                     "./" + DISTRO_DIR + "/TestOnlyC.bat",
-#if defined(Q_OS_WIN64)
+                #if defined(Q_OS_WIN64)
                     "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
-#else
+                #else
                     "./" + DISTRO_DIR + "/libgcc_s_dw2-1.dll",
-#endif
+                #endif
                     "./" + DISTRO_DIR + "/libwinpthread-1.dll",
                     "./" + DISTRO_DIR + "/libstdc++-6.dll",
 
                 });
 
     auto comapareTreeExtraLib = utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "2/qt.conf",
                     "./" + DISTRO_DIR + "2/TestOnlyC.exe",
                     "./" + DISTRO_DIR + "2/TestOnlyC.bat",
-#if defined(Q_OS_WIN64)
+                #if defined(Q_OS_WIN64)
                     "./" + DISTRO_DIR + "2/libgcc_s_seh-1.dll",
-#else
+                #else
                     "./" + DISTRO_DIR + "2/libgcc_s_dw2-1.dll",
-#endif
+                #endif
                     "./" + DISTRO_DIR + "2/libstdc++-6.dll",
 
                 });
@@ -2611,7 +2921,7 @@ void deploytest::testLibDir() {
 
 #ifdef Q_OS_UNIX
     comapareTreeExtraLib = utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/TestOnlyC.sh",
                     "./" + DISTRO_DIR + "/bin/qt.conf",
                     "./" + DISTRO_DIR + "/bin/TestOnlyC",
@@ -2624,15 +2934,15 @@ void deploytest::testLibDir() {
 #else
 
     comapareTreeExtraLib = utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/qt.conf",
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
                     "./" + DISTRO_DIR + "/TestOnlyC.bat",
-#if defined(Q_OS_WIN64)
+                #if defined(Q_OS_WIN64)
                     "./" + DISTRO_DIR + "/libgcc_s_seh-1.dll",
-#else
+                #else
                     "./" + DISTRO_DIR + "/libgcc_s_dw2-1.dll",
-#endif
+                #endif
                     "./" + DISTRO_DIR + "/libstdc++-6.dll",
 
                 });
@@ -2655,12 +2965,14 @@ void deploytest::testExtraPlugins() {
     QString qmake = TestQtDir + "bin/qmake";
 
     auto pluginTree = utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlodbc.so",
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlpsql.so",
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlite.so",
                     "./" + DISTRO_DIR + "/lib/libQt5Sql.so",
                     "./" + DISTRO_DIR + "/lib/libpq.so",
+                    "./" + DISTRO_DIR + "/lib/libcrypto.so",
+                    "./" + DISTRO_DIR + "/lib/libssl.so",
 
                 });
 #else
@@ -2668,7 +2980,7 @@ void deploytest::testExtraPlugins() {
     QString qmake = TestQtDir + "bin/qmake.exe";
 
     auto pluginTree = utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/qsqlmysql.dll",
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/qsqlodbc.dll",
                     "./" + DISTRO_DIR + "/plugins/sqldrivers/qsqlite.dll",
@@ -2699,7 +3011,7 @@ void deploytest::testExtraPlugins() {
 
     comapareTree -= pluginTree;
     comapareTree -= utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/plugins/platforms/libqxcb.so",
                     "./" + DISTRO_DIR + "/lib/libxcb-xinerama.so.0",
                     "./" + DISTRO_DIR + "/plugins/xcbglintegrations/libqxcb-egl-integration.so",
@@ -2719,16 +3031,16 @@ void deploytest::testTargetDir() {
 #ifdef Q_OS_UNIX
     QString bin = TestBinDir + "TestOnlyC";
     auto comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "Z/bin/TestOnlyC",
-     "./" + DISTRO_DIR + "Z/bin/qt.conf",
-     "./" + DISTRO_DIR + "Z/TestOnlyC.sh"});
+                {"./" + DISTRO_DIR + "Z/bin/TestOnlyC",
+                 "./" + DISTRO_DIR + "Z/bin/qt.conf",
+                 "./" + DISTRO_DIR + "Z/TestOnlyC.sh"});
 #else
     QString bin = TestBinDir + "TestOnlyC.exe";
 
     auto comapareTree = utils.createTree(
-    {"./" + DISTRO_DIR + "Z/TestOnlyC.exe",
-     "./" + DISTRO_DIR + "Z/TestOnlyC.bat",
-     "./" + DISTRO_DIR + "Z/qt.conf"});
+                {"./" + DISTRO_DIR + "Z/TestOnlyC.exe",
+                 "./" + DISTRO_DIR + "Z/TestOnlyC.bat",
+                 "./" + DISTRO_DIR + "Z/qt.conf"});
 #endif
 
     runTestParams({"-bin", bin, "clear" ,
@@ -2744,7 +3056,7 @@ void deploytest::testSystemLib() {
     QString qmake = TestQtDir + "bin/qmake";
 
     auto comapareTree = utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/TestOnlyC.sh",
                     "./" + DISTRO_DIR + "/bin/qt.conf",
                     "./" + DISTRO_DIR + "/bin/TestOnlyC",
@@ -2757,14 +3069,14 @@ void deploytest::testSystemLib() {
     QString qmake = TestQtDir + "bin/qmake.exe";
 
     auto comapareTree = utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
                     "./" + DISTRO_DIR + "/TestOnlyC.bat",
-#if defined(Q_OS_WIN64)
+                #if defined(Q_OS_WIN64)
                     "./" + DISTRO_DIR + "/systemLibs/libgcc_s_seh-1.dll",
-#else
+                #else
                     "./" + DISTRO_DIR + "/systemLibs/libgcc_s_dw2-1.dll",
-#endif
+                #endif
                     "./" + DISTRO_DIR + "/systemLibs/libstdc++-6.dll",
                     "./" + DISTRO_DIR + "/systemLibs/libwinpthread-1.dll",
                     "./" + DISTRO_DIR + "/systemLibs/msvcrt.dll",
@@ -2784,21 +3096,21 @@ void deploytest::testSystemLib() {
     comapareTree += TestModule.qtLibs();
 
     comapareTree -= utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/TestOnlyC.exe",
                     "./" + DISTRO_DIR + "/TestOnlyC.bat",
-#if defined(Q_OS_WIN64)
+                #if defined(Q_OS_WIN64)
                     "./" + DISTRO_DIR + "/systemLibs/libgcc_s_seh-1.dll",
-#else
+                #else
                     "./" + DISTRO_DIR + "/systemLibs/libgcc_s_dw2-1.dll",
-#endif
+                #endif
                     "./" + DISTRO_DIR + "/systemLibs/libstdc++-6.dll",
                     "./" + DISTRO_DIR + "/systemLibs/libwinpthread-1.dll",
 
                 });
 
     comapareTree += utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/systemLibs/msvcrt.dll",
                     "./" + DISTRO_DIR + "/qt.conf",
                     "./" + DISTRO_DIR + "/systemLibs/mpr.dll",
@@ -2814,17 +3126,17 @@ void deploytest::testSystemLib() {
                     "./" + DISTRO_DIR + "/systemLibs/msvcp_win.dll",
                     "./" + DISTRO_DIR + "/systemLibs/wtsapi32.dll",
                     "./" + DISTRO_DIR + "/systemLibs/combase.dll",
-#if !defined(Q_OS_WIN64)
+                #if !defined(Q_OS_WIN64)
                     "./" + DISTRO_DIR + "/systemLibs/sspicli.dll",
                     "./" + DISTRO_DIR + "/systemLibs/cryptbase.dll",
-#endif
+                #endif
 
                 });
 
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     comapareTree += utils.createTree(
-    {
+                {
                     "./" + DISTRO_DIR + "/systemLibs/d3d11.dll",
                     "./" + DISTRO_DIR + "/systemLibs/dxgi.dll",
                     "./" + DISTRO_DIR + "/systemLibs/win32u.dll",
@@ -2908,7 +3220,7 @@ void deploytest::testOutDirs() {
     qDebug() << "runScript =" << runScript;
 
     QVERIFY(runScript.contains("SET BASE_DIR=%~dp0"));
-    QVERIFY(runScript.contains("SET PATH=%BASE_DIR%\\lolLib\\;%PATH%"));
+    QVERIFY(runScript.contains("SET PATH=%BASE_DIR%\\lol\\;%BASE_DIR%\\lolLib\\;%PATH%"));
     QVERIFY(runScript.contains("start \"TestQMLWidgets\" /B \"%BASE_DIR%\\lol\\TestQMLWidgets.exe\" %*"));
 
     runTestParams({"-bin", TestBinDir + "TestOnlyC.exe", "clear",

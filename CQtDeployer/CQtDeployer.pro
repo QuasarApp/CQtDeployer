@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018-2021 QuasarApp.
+# Copyright (C) 2018-2022 QuasarApp.
 # Distributed under the lgplv3 software license, see the accompanying
 # Everyone is permitted to copy and distribute verbatim copies
 # of this license document, but changing it is not allowed.
@@ -31,8 +31,9 @@ include('$$PWD/../QuasarAppLib/QuasarLib.pri')
 include('$$PWD/../Deploy/Deploy.pri')
 include('$$PWD/../zip/zip.pri')
 
-include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
-
+!contains(DEFINES, DISABLE_PE) {
+    include('$$PWD/../pe/pe-parser-library/pe-parser-library.pri')
+}
 
 TARGET = cqtdeployer
 

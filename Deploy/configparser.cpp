@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2021 QuasarApp.
+//# Copyright (C) 2018-2022 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -71,11 +71,11 @@ void parseTargetPrivate(DeployConfig& conf,
 
     auto &cointainer = conf.targetsEdit();
 
-    for (const auto &iconPair: inputParams) {
-        auto pair = iconPair.split(DeployCore::getSeparator(1), splitbehavior);
+    for (const auto &targetPair: inputParams) {
+        auto pair = targetPair.split(DeployCore::getSeparator(1), splitbehavior);
 
         if (pair.size() == 1) {
-            QuasarAppUtils::Params::log(QString("Set new default icon for all tagets: " + pair.value(0)),
+            QuasarAppUtils::Params::log(QString("Set new default property for all tagets: " + pair.value(0)),
                                         QuasarAppUtils::Debug);
             for (auto& editableTarget: cointainer) {
                 (editableTarget.*adder)(pair.value(0));
@@ -96,12 +96,46 @@ void parseTargetPrivate(DeployConfig& conf,
         }
 
         for (const auto &target: targetsMap) {
-            QuasarAppUtils::Params::log(QString("Set new icon for %0 taget. Icon: %1").
+            QuasarAppUtils::Params::log(QString("Set new property for %0 taget.").
                                         arg(pair.value(0), pair.value(1)),
                                         QuasarAppUtils::Debug);
             (target->*adder)(pair.value(1));
         }
     }
+}
+
+template <typename Enabler>
+bool enableOptionFotTargetPrivate(DeployConfig& conf,
+                        const QStringList &inputParams,
+                        Enabler enabler) {
+
+    for (const auto &iconPair: inputParams) {
+        auto pair = iconPair.split(DeployCore::getSeparator(1), splitbehavior);
+
+        if (pair.size() != 1) {
+            QuasarAppUtils::Params::log(QString("Failed parese list of option values, This option support only single leve list. "
+                                                " Example: use -Option val1,val2,val3 "),
+                                        QuasarAppUtils::Error);
+            return false;
+        }
+
+        const auto targetsMap = conf.getTargetsListByFilter(pair.value(0));
+
+        if (!targetsMap.size()) {
+            QuasarAppUtils::Params::log(QString("Not found any targets for the %0 selector").
+                                        arg(pair.value(0)),
+                                        QuasarAppUtils::Warning);
+        }
+
+        for (const auto &target: targetsMap) {
+            QuasarAppUtils::Params::log(QString("Set new property for %0 taget.").
+                                        arg(pair.value(0)),
+                                        QuasarAppUtils::Debug);
+            (target->*enabler)();
+        }
+    }
+
+    return true;
 }
 
 bool ConfigParser::parseParams() {
@@ -165,7 +199,7 @@ bool ConfigParser::parseParams() {
         QuasarAppUtils::Params::log("Deploy ...",
                                     QuasarAppUtils::Info);
 
-        if (!parseDeployMode()) {
+        if (!parseDeployMode(true)) {
             QuasarAppUtils::Params::log("Deploy failed!",
                                         QuasarAppUtils::Error);
             return false;
@@ -178,7 +212,7 @@ bool ConfigParser::parseParams() {
         QuasarAppUtils::Params::log("Extract defaults Templates ...",
                                     QuasarAppUtils::Info);
 
-        if (!parseDeployMode()) {
+        if (!parseDeployMode(false)) {
             QuasarAppUtils::Params::log("Extract defaults Templates is failed!",
                                         QuasarAppUtils::Error);
             return false;
@@ -239,9 +273,7 @@ QJsonValue ConfigParser::writeKeyArray(int separatorLvl, const QString &paramete
 
 void ConfigParser::writeKey(const QString& key, QJsonObject& obj,
                             const QString& confFileDir) const {
-    if (QuasarAppUtils::Params::isEndable(key)) {
-        obj[key] = writeKeyArray(0, QuasarAppUtils::Params::getArg(key), confFileDir);
-    }
+    obj[key] = writeKeyArray(0, QuasarAppUtils::Params::getArg(key), confFileDir);
 }
 
 QString ConfigParser::readKeyArray(int separatorLvl, const QJsonArray &array,
@@ -323,9 +355,10 @@ bool ConfigParser::createFromDeploy(const QString& confFile) const {
 
     auto info = QFileInfo(confFile);
 
-    const auto keys = DeployCore::helpKeys();
+    const auto keys = QuasarAppUtils::Params::getUserParamsMap().keys();
     for (const auto &key :keys) {
-        writeKey(key, obj, info.absolutePath());
+        if (key != "confFile")
+            writeKey(key, obj, info.absolutePath());
     }
 
     if (!QFile::exists(info.absolutePath()) &&
@@ -429,6 +462,15 @@ bool ConfigParser::initDistroStruct() {
     auto trData = QuasarAppUtils::Params::getArg("tr").
             split(DeployCore::getSeparator(0), splitbehavior);
 
+    auto installDirDeb = QuasarAppUtils::Params::getArg("installDirDeb").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
+    auto debOut = QuasarAppUtils::Params::getArg("debOut").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
+    auto zipOut = QuasarAppUtils::Params::getArg("zipOut").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
 // init distro stucts for all targets
     if (binOut.size() && !parsePackagesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir)) {
         packagesErrorLog("binOut");
@@ -510,12 +552,26 @@ bool ConfigParser::initDistroStruct() {
         return false;
     }
 
+    if (installDirDeb.size() && !parsePackagesPrivate(mainDistro, installDirDeb, &DistroModule::setInstallDirDEB)) {
+        packagesErrorLog("installDirDeb");
+        return false;
+    }
+
+    if (debOut.size() && !parsePackagesPrivate(mainDistro, debOut, &DistroModule::setDebOut)) {
+        packagesErrorLog("debOut");
+        return false;
+    }
+
+    if (zipOut.size() && !parsePackagesPrivate(mainDistro, zipOut, &DistroModule::setZipOut)) {
+        packagesErrorLog("zipOut");
+        return false;
+    }
+
     return true;
 }
 
 bool ConfigParser::initPackages() {
     defaultPackage = "Application";
-
     QSet<QString> configuredTargets;
 
     if (QuasarAppUtils::Params::isEndable("targetPackage")) {
@@ -578,35 +634,6 @@ bool ConfigParser::initPackages() {
     return true;
 }
 
-bool ConfigParser::initRunScripts() {
-    const auto list = QuasarAppUtils::Params::getArg("runScript").split(DeployCore::getSeparator(0), splitbehavior);
-
-    for (const auto& line: list) {
-        auto pair = line.split(DeployCore::getSeparator(1), splitbehavior);
-        if (pair.size() != 2) {
-            QuasarAppUtils::Params::log("Syntax error of the runScript option."
-                                        " Example of use :"
-                                        " -runScript \"myTarget;path/To/Target/RunScript.sh,"
-                                        "mySecondTarget;path/To/Target/SecondRunScript.sh\"",
-                                        QuasarAppUtils::Error);
-            return false;
-        }
-
-        QFileInfo script(pair.value(1));
-
-        if (!script.isFile()) {
-            QuasarAppUtils::Params::log(QString("The %0 file does not exist.").arg(script.absoluteFilePath()),
-                                        QuasarAppUtils::Error);
-            return false;
-        }
-
-        _config.registerRunScript(pair.value(0),
-                                  script.absoluteFilePath());
-    }
-
-    return true;
-}
-
 bool ConfigParser::initQmlInput() {
 
     auto qmlDir = QuasarAppUtils::Params::getArg("qmlDir").
@@ -633,7 +660,21 @@ void ConfigParser::packagesErrorLog(const QString &option) {
                                 QuasarAppUtils::Error);
 }
 
-bool ConfigParser::parseDeployMode() {
+void ConfigParser::initCustomPlatform() {
+    const auto platforms = QuasarAppUtils::Params::getArg("platform").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
+    Platform customPlatform = Platform::UnknownPlatform;
+
+    for (const auto& platform: platforms) {
+        customPlatform = customPlatform | DeployCore::getPlatformFromString(platform);
+    }
+
+    _config.setCustomPlatform(customPlatform);
+
+}
+
+bool ConfigParser::parseDeployMode(bool checkBin) {
 
     if (QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
         QuasarAppUtils::Params::log("You are using a deprecated option \"deploySystem-with-libc\"."
@@ -648,6 +689,8 @@ bool ConfigParser::parseDeployMode() {
 
     setTargetDir();
 
+    initCustomPlatform();
+
     auto bin = QuasarAppUtils::Params::getArg("bin").
             split(DeployCore::getSeparator(0), splitbehavior);
 
@@ -661,7 +704,7 @@ bool ConfigParser::parseDeployMode() {
             split(DeployCore::getSeparator(0), splitbehavior);
 
 
-    if (!(_config.targets().count() || xData.count())) {
+    if (checkBin && !(_config.targets().count() || xData.count())) {
         QuasarAppUtils::Params::log("Failed to initialize targets or extra data!",
                                     QuasarAppUtils::Error);
 
@@ -683,11 +726,6 @@ bool ConfigParser::parseDeployMode() {
         }
     }
 
-
-    if (!initRunScripts()) {
-        return false;
-    }
-
     initIgnoreEnvList();
     initEnvirement();
     initIgnoreList();
@@ -695,7 +733,9 @@ bool ConfigParser::parseDeployMode() {
         return false;
     }
 
-    initExtraPath();
+    if (!initExtraPath()) {
+        return false;
+    }
     initExtraNames();
     initPlugins();
 
@@ -706,9 +746,9 @@ bool ConfigParser::parseDeployMode() {
                                         " then you must use the classic version of CQtDeployer instead of the snap version."
                                         " This is due to the fact that the snap version"
                                         " runs in an isolated container and has limited access"
-                                        " to system utilities and the environment. "
-                                        "For get the classic version of cqtdeployer use the cqtdeployer installer "
-                                        "https://github.com/QuasarApp/CQtDeployer/releases", QuasarAppUtils::Info);
+                                        " to system utilities and the environment."
+                                        " For get the classic version of cqtdeployer use the cqtdeployer installer"
+                                        " https://github.com/QuasarApp/CQtDeployer/releases", QuasarAppUtils::Info);
         }
 
         return false;
@@ -760,15 +800,39 @@ bool ConfigParser::parseInitMode() {
     return true;
 }
 
-void ConfigParser::configureTargets() {
+bool ConfigParser::configureTargets() {
     const auto icons = QuasarAppUtils::Params::getArg("icon").
             split(DeployCore::getSeparator(0), splitbehavior);
+
+    const auto runScripts = QuasarAppUtils::Params::getArg("runScript").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
+    const auto disableRunScripts = QuasarAppUtils::Params::getArg("disableRunScript").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
+    const auto disableShortcuts = QuasarAppUtils::Params::getArg("disableShortCut").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
 
     if (icons.size()) {
         parseTargetPrivate(_config, icons, &TargetInfo::setIcon);
     }
 
-    return;
+    if (runScripts.size()) {
+        parseTargetPrivate(_config, runScripts, &TargetInfo::setRunScript);
+    }
+
+    if (disableShortcuts.size() && !enableOptionFotTargetPrivate(_config, disableShortcuts, &TargetInfo::disableShortCut)) {
+        packagesErrorLog("disableShortCut");
+        return false;
+    }
+
+    if (disableRunScripts.size() && !enableOptionFotTargetPrivate(_config, disableRunScripts, &TargetInfo::disableRunScript)) {
+        packagesErrorLog("disableRunScript");
+        return false;
+    }
+
+    return true;
 }
 
 bool ConfigParser::parseClearMode() {
@@ -804,24 +868,34 @@ void ConfigParser::setTargetDir(const QString &target) {
     }
 }
 
+bool ConfigParser::addTarget(const TargetData& target) {
+
+    if (_config.customPlatform() == Platform::UnknownPlatform ||
+            _config.customPlatform() & target.targetInfo.getPlatform()) {
+
+        if (!_config.targetsEdit().contains(target.target)) {
+            _config.targetsEdit().insert(target.target,  target.targetInfo);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool ConfigParser::setTargets(const QStringList &value) {
 
     bool isfillList = false;
 
     for (const auto &i : value) {
-        QFileInfo targetInfo = getBinInfo(i);
+        QFileInfo targetInfo = DeployCore::findItem(i);
 
         if (i.isEmpty())
             continue;
 
         if (targetInfo.isFile()) {
 
-            auto target = createTarget(targetInfo.absoluteFilePath());
-            if (!_config.targetsEdit().contains(target.target)) {
-                _config.targetsEdit().insert(target.target,  target.targetInfo);
-            }
-
-            isfillList = true;
+            if (addTarget(createTarget(targetInfo.absoluteFilePath())))
+                isfillList = true;
         }
         else if (targetInfo.isDir()) {
             if (!setTargetsInDir(targetInfo.absoluteFilePath())) {
@@ -832,30 +906,27 @@ bool ConfigParser::setTargets(const QStringList &value) {
             isfillList = true;
 
         } else {
-            QuasarAppUtils::Params::log(targetInfo.absoluteFilePath() + " does not exist!",
+            QuasarAppUtils::Params::log(i + " is not a path. Try search this file in system enviroment",
                                         QuasarAppUtils::Debug);
+
+            auto file = QFileInfo(DeployCore::findProcess(QProcessEnvironment::systemEnvironment().value("PATH"), i));
+
+            if (file.exists()) {
+
+                if (addTarget(createTarget(file.absoluteFilePath())))
+                    isfillList = true;
+
+            } else {
+                QuasarAppUtils::Params::log(targetInfo.absoluteFilePath() + " does not exist!",
+                                            QuasarAppUtils::Debug);
+            }
         }
+
+        // Work with exits target
+
     }
 
-    if (!isfillList)
-        return false;
-
-    return true;
-}
-
-QFileInfo ConfigParser::getBinInfo(const QString &bin) {
-    auto prefixes = QuasarAppUtils::Params::getArg("binPrefix").
-            split(DeployCore::getSeparator(0), splitbehavior);
-
-    for (const QString& prefix :qAsConst(prefixes)) {
-        QFileInfo info(prefix + "/" + bin);
-
-        if (info.isFile()) {
-            return info;
-        }
-    }
-
-    return QFileInfo(bin);
+    return isfillList;
 }
 
 bool ConfigParser::setTargetsRecursive(const QString &dir) {
@@ -899,13 +970,8 @@ bool ConfigParser::setTargetsInDir(const QString &dir, bool recursive) {
         if (sufix.isEmpty() ||  name.contains(".dll", Qt::CaseInsensitive) ||
                 name.contains(".so", Qt::CaseInsensitive) || name.contains(".exe", Qt::CaseInsensitive)) {
 
-
-            auto target = createTarget(QDir::fromNativeSeparators(file.absoluteFilePath()));
-            if (!_config.targetsEdit().contains(target.target)) {
-                _config.targetsEdit().insert(target.target,  target.targetInfo);
-            }
-
-            result = true;
+            if (addTarget(createTarget(QDir::fromNativeSeparators(file.absoluteFilePath()))))
+                result = true;
 
         }
 
@@ -965,9 +1031,7 @@ void ConfigParser::initIgnoreList()
     };
 
     _config.ignoreList.addRule(addRuleUnix("libc"));
-    _config.ignoreList.addRule(addRuleUnix("libstdc++"));
     _config.ignoreList.addRule(addRuleUnix("ld-"));
-    _config.ignoreList.addRule(addRuleUnix("libpthread"));
     _config.ignoreList.addRule(addRuleUnix("libm"));
     _config.ignoreList.addRule(addRuleUnix("libz"));
     _config.ignoreList.addRule(addRuleUnix("librt"));
@@ -1150,7 +1214,7 @@ bool ConfigParser::initQmake() {
 
         auto qt = *qtList.begin();
 
-        if (qt.right(3).compare("lib", Qt::CaseInsensitive)) {
+        if (qt.rightRef(3).compare(QString("lib"), Qt::CaseInsensitive)) {
             return initQmakePrivate(QFileInfo(qt + "/../bin/qmake").absoluteFilePath());
         }
 
@@ -1285,7 +1349,7 @@ bool ConfigParser::setQtDir(const QString &value) {
     return true;
 }
 
-void ConfigParser::initExtraPath() {
+bool ConfigParser::initExtraPath() {
     auto listLibDir = QuasarAppUtils::Params::getArg("libDir").
             split(DeployCore::getSeparator(0));
 
@@ -1298,6 +1362,16 @@ void ConfigParser::initExtraPath() {
                 QuasarAppUtils::Params::log("Skip the extra library path because it is target!",
                                             QuasarAppUtils::Debug);
                 continue;
+            }
+
+            if (_config.envirement.isIgnore(info.absoluteFilePath())) {
+                QuasarAppUtils::Params::log(QString("Failed to set libDir path!"
+                                                    " The %0 path will be ignored because"
+                                                    " this path is child path of the targetDir path"
+                                                    " or manually added into ignore environment.").
+                                            arg(info.absoluteFilePath()),
+                                            QuasarAppUtils::Error);
+                return false;
             }
 
             dir.setPath(info.absoluteFilePath());
@@ -1317,6 +1391,8 @@ void ConfigParser::initExtraPath() {
                                         QuasarAppUtils::Debug);
         }
     }
+
+    return true;
 }
 
 void ConfigParser::initExtraNames() {
@@ -1523,9 +1599,15 @@ bool ConfigParser::smartMoveTargets() {
 
     QuasarAppUtils::Params::log(QString("Available Targets: "),
                                 QuasarAppUtils::Debug);
+
+
     for (auto i = _config.targets().cbegin(); i != _config.targets().cend(); ++i) {
 
         if (!i.value().isValid()) {
+
+            QuasarAppUtils::Params::log(i.value().toString(),
+                                        QuasarAppUtils::Error);
+
             internalError();
             return false;
         }
@@ -1566,9 +1648,7 @@ bool ConfigParser::smartMoveTargets() {
 
     _config.targetsEdit() = temp;
 
-    configureTargets();
-
-    return result;
+    return result && configureTargets();
 }
 
 ConfigParser::ConfigParser(FileManager *filemanager, PluginsParser *pluginsParser, DependenciesScanner* scaner, Packing *pac):

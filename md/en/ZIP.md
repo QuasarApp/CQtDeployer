@@ -1,16 +1,18 @@
-## General rules for using ZIP
+# ZIP Using
+
+General rules for using ZIP
 
 
-#### Available from version CQtDeployer 1.5
+Available from version CQtDeployer 1.5
 
 ### How to use zip option
 
 Just add to cqtdeployer option "zip".
 
-#### For example:
+### For example:
 
-``` bash
-    cqtdeployer ... zip
+```bash
+cqtdeployer ... zip
 ```
 
 Where:

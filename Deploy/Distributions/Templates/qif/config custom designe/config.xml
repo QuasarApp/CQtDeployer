@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Installer>
-    <WizardDefaultWidth>800px</WizardDefaultWidth>
-    <WizardDefaultHeight>500px</WizardDefaultHeight>
     <Name>$NAME</Name>
     <Version>$VERSION</Version>
     <Title>$NAME</Title>
     <Publisher>$PUBLISHER</Publisher>
     <StartMenuDir>$NAME</StartMenuDir>
-    <TargetDir>@HomeDir@/$NAME</TargetDir>
+    <TargetDir>$CQT_INSTALL_DIR/$NAME</TargetDir>
     <InstallActionColumnVisible>true</InstallActionColumnVisible>
     <RemoveTargetDir>true</RemoveTargetDir>
     <ControlScript>controlScript.qs</ControlScript>

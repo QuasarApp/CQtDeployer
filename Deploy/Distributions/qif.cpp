@@ -59,25 +59,42 @@ QList<SystemCommandData> QIF::runCmd() {
 
     SystemCommandData cmd;
 
+    QString binarycreator = QuasarAppUtils::Params::getArg("binarycreator");
+
     if (binarycreator.isEmpty())
         binarycreator = DeployCore::findProcess(toolKitEnv().concatEnv(), base);
 
     if (binarycreator.isEmpty()) {
         cmd.command = base;
     } else {
-        cmd.command = binarycreator;
+        auto commandsList = binarycreator.split(' ');
+        cmd.command = commandsList.first();
+        cmd.arguments = commandsList.mid(1,-1);
     }
 
     auto location = DeployCore::_config->getTargetDir() + "/" + getLocation();
 
-    cmd.arguments = QStringList{
+    cmd.arguments += QStringList{
         "-c",
-        location + "/config/config.xml",
+        QuasarAppUtils::Params::getArg("qifConfig", location + "/config/config.xml"),
         "-p",
-        location + "/packages/",
-        "-v",
-        installerFile()
+        QuasarAppUtils::Params::getArg("qifPackages", location + "/packages/"),
+        "-v"
     };
+
+    QString resources = QuasarAppUtils::Params::getArg("qifResources");
+    if (resources.size()) {
+        cmd.arguments.push_back("-r");
+        cmd.arguments.push_back(resources);
+    }
+
+    cmd.arguments.push_back(installerFile());
+
+    QString customFormat = QuasarAppUtils::Params::getArg("qifArchiveFormat");
+    if (customFormat.size()) {
+        cmd.arguments.push_back("--af");
+        cmd.arguments.push_back(customFormat);
+    }
 
     return {cmd};
 }
@@ -248,6 +265,10 @@ QString QIF::installerFile() const {
 #else
     QString sufix = ".exe";
 #endif
+    QString qifOut = QuasarAppUtils::Params::getArg("qifOut");
+    if (qifOut.size()) {
+        return DeployCore::_config->getTargetDir() + "/" + qifOut;
+    }
 
     return DeployCore::_config->getTargetDir() + "/Installer" + generalInfo.Name + sufix;
 }
@@ -287,5 +308,5 @@ bool QIF::initDefaultConfiguratuin() {
     const DeployConfig *cfg = DeployCore::_config;
 
     // init default configuration
-    return collectInfo(DistroModule{cfg->getDefaultPackage()}, generalInfo);
+    return collectInfo(cfg->getDistroFromPackage(cfg->getDefaultPackage()), generalInfo);
 }
