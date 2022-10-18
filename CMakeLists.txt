@@ -80,6 +80,7 @@ else()
     message("The ${PROJECT_NAME} tests is disabled.")
 endif()
 
+configure_file_in("" "${CMAKE_CURRENT_SOURCE_DIR}/doxygen.conf")
 
 addDoc(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/doxygen.conf)
 addDeployFromCustomFile("CQtDeployer" "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployer.json")
