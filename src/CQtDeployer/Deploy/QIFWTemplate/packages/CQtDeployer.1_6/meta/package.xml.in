@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>CQtDeployer @CQT_DEPLOYER_VERSION_SHORT_PREFIX@</DisplayName>
+    <Description>CQtDeployer @CQT_DEPLOYER_VERSION_SHORT_PREFIX@</Description>
+    <Version>@CQT_DEPLOYER_VERSION@</Version>
+    <Default>true</Default>
+    <ForcedInstallation>false</ForcedInstallation>
+    <Script>installscript.js</Script>
+    <ReleaseDate>@TODAY@</ReleaseDate>
+    <SortingPriority>201</SortingPriority>
+</Package>

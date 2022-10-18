@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/CQtDeployerTr">
+        <file>languages/en.qm</file>
+    </qresource>
+</RCC>

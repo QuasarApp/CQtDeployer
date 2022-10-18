@@ -1,0 +1,165 @@
+/****************************************************************************
+**
+** Copyright (C) 2018 The Qt Company Ltd.
+** Contact: https://www.qt.io/licensing/
+**
+** This file is part of the documentation of the Qt Toolkit.
+**
+** $QT_BEGIN_LICENSE:FDL$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
+**
+** GNU Free Documentation License Usage
+** Alternatively, this file may be used under the terms of the GNU Free
+** Documentation License version 1.3 as published by the Free Software
+** Foundation and appearing in the file included in the packaging of
+** this file. Please review the following information to ensure
+** the GNU Free Documentation License version 1.3 requirements
+** will be met: https://www.gnu.org/licenses/fdl-1.3.html.
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+/*!
+    \example webenginewidgets/webui
+    \title WebEngine Widgets WebUI Example
+    \ingroup webengine-widgetexamples
+    \brief Displays HTML over a custom scheme.
+
+    \image webui-example.png
+
+    \e {WebUI} demonstrates how to implement a custom scheme in a secure way.
+
+    Aside from the built-in URL schemes, such as \c {http} and \c {qrc},
+    \QWE may be extended with \e {custom schemes} by creating \e {custom
+    scheme handlers}. This example shows:
+
+    \list
+        \li How to create a custom scheme handler which serves HTML and handles
+            HTML form submissions.
+        \li How to prevent ordinary web content from accessing the custom scheme.
+        \li How to prevent any other scheme from submitting HTML form data.
+    \endlist
+
+    \include examples-run.qdocinc
+
+    \section1 Overview
+
+    The example program consists of a single \l {QWebEngineView} showing a
+    simple HTML page loaded from the URL \c {webui:about}, over our custom
+    scheme. Pressing the button at the bottom of the page will trigger an HTML
+    form submission via POST to the same URL, at which point our custom scheme
+    handler will cause the application to exit.
+
+    The program is divided into two parts, the \c {main} function for setting
+    everything up, and the \c {WebUiHandler} class for implementing our custom
+    scheme handler. The \c {main} function is quite short:
+
+    \quotefromfile webenginewidgets/webui/main.cpp
+    \skipto int main
+    \printuntil /^\}/
+
+    Aside from the relatively standard setup of widgets, two points are
+    noteworthy. First, we call the static method \c
+    {WebUiHandler::registerUrlScheme()} to register our custom scheme with the
+    web engine. Second, we create and install our custom scheme handler \c
+    {WebUiHandler} using \l
+    {QWebEngineProfile::installUrlSchemeHandler()}{installUrlSchemeHandler()}.
+    The following sections describe these aspects in more detail.
+
+    \section1 Registering the Scheme
+
+    As custom schemes are integrated directly into the web engine, they do not
+    necessarily need to follow the standard security rules which apply to
+    ordinary web content. Depending on the chosen configuration, content served
+    over a custom scheme may be given access to local resources, be set to
+    ignore Content-Security-Policy rules, or conversely, be denied access to any
+    other content entirely.
+
+    In order to take advantage of these possibilities, the custom scheme must
+    first be registered. This means creating and configuring a \l
+    {QWebEngineUrlScheme} object and then handing it over to \l
+    {QWebEngineUrlScheme::registerScheme()}. The example program does exactly this in
+    the static method \c {WebUiHandler::registerUrlScheme()}:
+
+    \quotefromfile webenginewidgets/webui/webuihandler.cpp
+    \skipto void WebUiHandler::registerUrlScheme
+    \printuntil /^\}/
+
+    A custom scheme needs a name, which can be set by passing it to
+    the constructor of \c {QWebEngineUrlScheme} or by calling \l
+    {QWebEngineUrlScheme::setName}. In the above, the name \c {webui} is set
+    through the constructor. Additionally, we activate the flags \l
+    {QWebEngineUrlScheme::SecureScheme}{SecureScheme}, \l
+    {QWebEngineUrlScheme::LocalScheme}{LocalScheme} and \l
+    {QWebEngineUrlScheme::LocalAccessAllowed}{LocalAccessAllowed}. Since our
+    custom scheme handler will not deliver resources received from insecure
+    network connections, we can safely mark it as a \c {SecureScheme}. The \c {LocalScheme}
+    flag prevents content from non-local schemes (such as \c {http}) from
+    interacting with our custom scheme. Without this flag it would be possible,
+    for example, to embed the \c {webui:about} page in an \c <iframe> element on
+    a remotely loaded HTML page, perhaps to attempt a phishing attack. We also
+    need the \c {LocalAccessAllowed} flag without which we would not be able to
+    access the \c {webui} scheme from our \c {webui:about} page.
+
+    Earlier we saw that the call to \c {WebUiHandler::registerUrlScheme()} is
+    made already at the top of the \c {main} function. This is so because custom
+    schemes need to be registered as early as possible so that that they can be
+    passed to all subprocesses. Specifically, custom schemes need to be registered
+    before any other \QWE classes are instantiated by the application.
+
+    \section1 Handling Requests
+
+    A custom scheme handler is, broadly speaking, similar to a web application
+    served over HTTP. However, because custom schemes are integrated directly
+    into the web engine, they have the advantage in terms of efficiency: there's
+    no need for generating and parsing HTTP messages or for transferring data
+    over sockets.
+
+    Implementing a handler means creating a subclass of \l
+    {QWebEngineUrlSchemeHandler}, which is just what is done by the \c
+    {WebUiHandler} class of the example program:
+
+    \quotefromfile webenginewidgets/webui/webuihandler.h
+    \skipto class WebUiHandler
+    \printuntil /^\}/
+
+    For each request to a \c {webui} URL, the \c
+    {WebUiHandler::requestStarted()} method will be called:
+
+    \quotefromfile webenginewidgets/webui/webuihandler.cpp
+    \skipto void WebUiHandler::requestStarted
+    \printuntil /^\}/
+
+    The \l {QWebEngineUrlRequestJob} object \c {job} contains the request's
+    attributes and provides methods for replying to the request with a response.
+    Responses are generated asynchronously by reading them from the \l
+    {QIODevice} that the application passes to \l
+    {QWebEngineUrlRequestJob::reply()}{reply()}.
+
+    \warning The \c requestStarted() method is not called from the main thread,
+    but from the web engine's IO thread. Care must be taken to synchronize
+    access to any resources on the main thread.
+
+    Aside from the usual fare of \l
+    {QWebEngineUrlRequestJob::requestMethod()}{requestMethod} and \l
+    {QWebEngineUrlRequestJob::requestUrl()}{requestUrl}, there is also the \l
+    {QWebEngineUrlRequestJob::initiator()}{initiator}, holding the origin of the
+    content which initiated the request. An empty \c initiator means the request
+    was initiated directly by the application (via \l
+    {QWebEnginePage::setUrl()}, for example). The special value \c "null"
+    corresponds to an opaque origin (a sandboxed \c {<iframe>} element, for
+    example). Otherwise, the \c initiator will contain the URL scheme, hostname,
+    and port of the content which initiated the request.
+
+    In this example, the \c initiator is used to ensure that \c {POST} requests
+    to \c {webui:about} will only trigger the application's exit if they
+    originate from the \c {webui} scheme. This prevents content loaded over
+    other schemes from triggering the application's exit.
+
+*/

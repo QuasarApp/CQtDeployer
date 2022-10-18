@@ -1,0 +1,19 @@
+/*
+ * Copyright (C) 2018-2022 QuasarApp.
+ * Distributed under the lgplv3 software license, see the accompanying
+ * Everyone is permitted to copy and distribute verbatim copies
+ * of this license document, but changing it is not allowed.
+ */
+
+#ifndef ELF_READER_GLOBAL_H
+#define ELF_READER_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(QT_ELFREADER_LIBRARY)
+#  define ELFREADER_SHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define ELFREADER_SHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // ELF_READER_GLOBAL_H

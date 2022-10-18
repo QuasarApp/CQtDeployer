@@ -1,0 +1,84 @@
+{
+
+    "qmake": "@QT_QMAKE_EXECUTABLE@",
+    "allowEmptyPackages": true,
+    "targetPackage": [
+        ["CQtDeployer.1_6", "CQtDeployer"],
+        ["CQtDeployer.1_6", "cqt"]
+
+    ],
+
+    "icon": [
+        ["CQtDeployer", "./QIFWTemplate/res/icon.png"],
+        ["CQtDeployer.exe", "./QIFWTemplate/res/icon.ico"]
+    ],
+
+    "extraData": [
+        ["QIF", "./QIFW/QIF"],
+        ["CQtDeployer", "./../../../LICENSE"]
+    ],
+
+    "extraDataOut": [
+        ["QIF", ""],
+        ["CQtDeployer", ""]
+    ],
+
+    "bin": [
+        "src/CQtDeployer/CQtDeployer",
+        "src/CQtDeployer/CQtDeployer.exe"
+    ],
+    "clear": false,
+    "binPrefix": "@CMAKE_BINARY_DIR@",
+    "libDir": [
+        "@CMAKE_SOURCE_DIR@",
+        "@CMAKE_PREFIX_PATH@",
+        "@CMAKE_BINARY_DIR@"
+    ],
+
+    "prefix": [
+        ["CQtDeployer.1_6", "1.6"],
+        ["QIF", "/"],
+        ["CQtDeployer", "/"]
+
+    ],
+
+    "publisher": [
+        ["QIF", "Qt corporation"],
+        ["CQtDeployer", "QuasarApp group"],
+        ["CQtDeployer.1_6", "QuasarApp group"]
+
+    ],
+
+    "releaseDate": [
+        ["QIF", "@TODAY@"],
+        ["CQtDeployer", "@TODAY@"],
+        ["CQtDeployer.1_6", "@TODAY@"]
+
+    ],
+
+    "name": [
+        ["QIF", "QtInstallerFramework"],
+        ["CQtDeployer", "CQtDeployer"],
+        ["CQtDeployer.1_6", "CQtDeployer 1.6"]
+    ],
+
+    "deployVersion": [
+        ["QIF", "@QIFW_VERSION@"],
+        ["CQtDeployer", "@CQT_DEPLOYER_VERSION_SHORT_PREFIX@"],
+        ["CQtDeployer.1_6", "@CQT_DEPLOYER_VERSION@"]
+
+    ],
+
+    "recursiveDepth": "10",
+    "deploySystem": false,
+    "deb": false,
+    "qif": "./QIFWTemplate",
+    "qifOut": "CQtDeployer_@CQT_DEPLOYER_VERSION@_@CMAKE_SYSTEM_NAME@_@CMAKE_SYSTEM_PROCESSOR@",
+    "zip": false,
+    "ignoreEnv": [
+         "@CMAKE_SOURCE_DIR@/Distro"
+        ],
+    "targetDir": "@CMAKE_SOURCE_DIR@/Distro"
+
+}
+
