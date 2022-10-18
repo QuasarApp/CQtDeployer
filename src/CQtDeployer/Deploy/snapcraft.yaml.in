@@ -57,6 +57,7 @@ parts:
       - libx11-6
       - libxkbcommon-x11-0
       - libxkbcommon0
+      - libgl1-mesa-glx
 
     after: [ cqt-meta ]
 
