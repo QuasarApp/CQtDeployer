@@ -52,7 +52,7 @@ PROJECT_BRIEF          = CQtDeployer helps you to extract all libraries your exe
 # pixels and the maximum width should not exceed 200 pixels. Doxygen will copy
 # the logo to the output directory.
 
-PROJECT_LOGO           = res/CQtDeployer logo_web.png
+PROJECT_LOGO           = res/CQtDeployer logo_installer.png
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) path
 # into which the generated documentation will be written. If a relative path is
