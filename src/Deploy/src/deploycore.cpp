@@ -646,6 +646,19 @@ QString DeployCore::findProcess(const QString &env, const QString& proc) {
         }
     }
 
+    // working only for the snap version of cqtdeployer ...
+    if (isSnap()) {
+        for (const auto& path : list) {
+            auto files = QDir(transportPathToSnapRoot(path)).entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
+
+            for (const auto& bin : files) {
+                if (bin.baseName().compare(proc, DeployCore::getCaseSensitivity()) == 0) {
+                    return bin.absoluteFilePath();
+                }
+            }
+        }
+    }
+
     return "";
 }
 
