@@ -92,8 +92,10 @@ configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFWTem
 addDeployFromCustomFile(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployer.json")
 
 set(QIFW_PLATFORM linux)
+set(INSTALLER_SUFIX run)
 if (WIN32)
     set(QIFW_PLATFORM windows)
+    set(INSTALLER_SUFIX exe)
 endif()
 
 ADD_CUSTOM_TARGET(
