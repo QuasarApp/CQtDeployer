@@ -11,20 +11,20 @@ get_filename_component(CURRENT_PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 
 set(CURRENT_PROJECT "${PROJECT_NAME}-${CURRENT_PROJECT_DIR}")
 
-file(GLOB_RECURSE MAIN_CPP
+file(GLOB MAIN_CPP
     "*.cpp" "*.h" "*.qrc"
     "units/*.cpp" "units/*.h"
     "modules/*.cpp" "modules/*.h"
 )
 
 if (UNIX)
-    file(GLOB_RECURSE UNITS_CPP
+    file(GLOB UNITS_CPP
         "units/linux/*.cpp" "units/linux/*.h"
     )
 endif()
 
 if (WIN32)
-    file(GLOB_RECURSE UNITS_CPP
+    file(GLOB UNITS_CPP
         "units/win/*.cpp" "units/win/*.h"
     )
 endif()
