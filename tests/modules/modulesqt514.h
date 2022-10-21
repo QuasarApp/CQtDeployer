@@ -8,6 +8,7 @@
 #ifndef MODULESQT514_H
 #define MODULESQT514_H
 #include "modulesqt513.h"
+#include "testutils.h"
 
 class ModulesQt514 : public ModulesQt513
 {

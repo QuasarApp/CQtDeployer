@@ -12,7 +12,7 @@
 #include <filemanager.h>
 #include <packing.h>
 #include <pluginsparser.h>
-#include <modules.h>
+#include "modules.h"
 
 void CustomPlatformTest::test() {
     TestUtils utils;
