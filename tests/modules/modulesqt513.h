@@ -7,10 +7,9 @@
 
 #ifndef MODULESQT513_H
 #define MODULESQT513_H
-#include "testutils.h"
 #include <configparser.h>
 #include <QSet>
-
+#include "testutils.h"
 
 class ModulesQt513
 {

@@ -36,7 +36,7 @@
 
 QT_BEGIN_NAMESPACE
 
-enum ELFREADER_SHARED_EXPORT ElfProgramHeaderType
+enum ElfProgramHeaderType
 {
     Elf_PT_NULL    = 0,
     Elf_PT_LOAD    = 1,
@@ -49,7 +49,7 @@ enum ELFREADER_SHARED_EXPORT ElfProgramHeaderType
     Elf_PT_NUM     = 8
 };
 
-enum ELFREADER_SHARED_EXPORT ElfSectionHeaderType
+enum ElfSectionHeaderType
 {
     Elf_SHT_NULL          = 0,
     Elf_SHT_PROGBITS      = 1,
@@ -70,7 +70,7 @@ enum ELFREADER_SHARED_EXPORT ElfSectionHeaderType
     Elf_SHT_SYMTAB_SHNDX  = 18
 };
 
-enum ELFREADER_SHARED_EXPORT ElfEndian
+enum ElfEndian
 {
     Elf_ELFDATANONE = 0,
     Elf_ELFDATA2LSB = 1,
@@ -78,13 +78,13 @@ enum ELFREADER_SHARED_EXPORT ElfEndian
     Elf_ELFDATANUM  = 3
 };
 
-enum ELFREADER_SHARED_EXPORT ElfClass
+enum ElfClass
 {
     Elf_ELFCLASS32 = 1,
     Elf_ELFCLASS64 = 2
 };
 
-enum ELFREADER_SHARED_EXPORT ElfType
+enum ElfType
 {
     Elf_ET_NONE = 0,
     Elf_ET_REL  = 1,
@@ -93,14 +93,14 @@ enum ELFREADER_SHARED_EXPORT ElfType
     Elf_ET_CORE = 4
 };
 
-enum ELFREADER_SHARED_EXPORT ElfMachine
+enum ElfMachine
 {
     Elf_EM_386    =  3,
     Elf_EM_ARM    = 40,
     Elf_EM_X86_64 = 62
 };
 
-enum ELFREADER_SHARED_EXPORT DebugSymbolsType
+enum DebugSymbolsType
 {
     UnknownSymbols   = 0,    // Unknown.
     NoSymbols        = 1,    // No usable symbols.

@@ -6,5 +6,5 @@
 	url = https://github.com/QuasarApp/pe-parse.git
 [submodule "submodules/zip"]
 	path = submodules/zip
-	url = https://github.com/QuasarApp/zip.git
+        url = https://github.com/kuba--/zip.git
 

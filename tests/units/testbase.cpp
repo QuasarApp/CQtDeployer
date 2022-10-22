@@ -5,6 +5,10 @@
 #include <QJsonObject>
 #include <QTest>
 
+#ifdef Q_OS_WIN
+#include <modules.h>
+#endif
+
 const QString TestBase::TestBinDir = TEST_BIN_DIR;
 const QString TestBase::TestQtDir = QT_BASE_DIR;
 
