@@ -105,15 +105,18 @@ ADD_CUSTOM_TARGET(
     COMMENT python "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW.py" ${QIFW_PLATFORM} ${QIFW_VERSION} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW"
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
+
 add_dependencies(deploy${CURRENT_PROJECT} downloadQIFW)
 
 addDeployFromCustomFile(${CURRENT_PROJECT}Single "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployerSingle.json")
 
-addDeploySnap(${CURRENT_PROJECT} "${CMAKE_SOURCE_DIR}/Distro/")
+if (UNIX)
+    addDeploySnap(${CURRENT_PROJECT} "${CMAKE_SOURCE_DIR}/Distro/")
 
-if(TARGET snapcraft${CURRENT_PROJECT})
-    message("snap is depends of single deploy")
-    add_dependencies(snapcraft${CURRENT_PROJECT} "deploy${CURRENT_PROJECT}Single")
+    if(TARGET snapcraft${CURRENT_PROJECT})
+        message("snap is depends of single deploy")
+        add_dependencies(snapcraft${CURRENT_PROJECT} "deploy${CURRENT_PROJECT}Single")
+    endif()
+
+    addReleaseSnap(${CURRENT_PROJECT})
 endif()
-
-addReleaseSnap(${CURRENT_PROJECT})
