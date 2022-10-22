@@ -51,17 +51,17 @@ void QtTest::test() {
                    "-qmake", qmake, "noTranslations"}, &comapareTree);
 
 
-//    comapareTree = TestModule.qmlLibs();
+    comapareTree = TestModule.qmlLibs();
 
-//#ifdef Q_OS_UNIX
-//    bin = TestBinDir + "TestQMLWidgets";
-//#else
-//    bin = TestBinDir + "TestQMLWidgets.exe";
+#ifdef Q_OS_UNIX
+    bin = TestBinDir + "TestQMLWidgets";
+#else
+    bin = TestBinDir + "TestQMLWidgets.exe";
 
-//#endif
+#endif
 
-//    runTestParams({"-bin", bin, "clear" ,
-//                   "-qmake", qmake,
-//                   "-qmlDir", TestBinDir + "/../TestQMLWidgets"}, &comapareTree);
+    runTestParams({"-bin", bin, "clear" ,
+                   "-qmake", qmake,
+                   "-qmlDir", TestBinDir + "/../TestQMLWidgets"}, &comapareTree);
 
 }
