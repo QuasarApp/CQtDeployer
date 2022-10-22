@@ -35,20 +35,20 @@ void QtTest::test() {
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake}, &comapareTree);
 
-    // test auto detection of detection qmake from PATH
-    runTestParams({"-bin", bin, "clear", "noCheckRPATH"}, &comapareTree);
+//    // test auto detection of detection qmake from PATH
+//    runTestParams({"-bin", bin, "clear", "noCheckRPATH"}, &comapareTree);
 
-#ifdef Q_OS_UNIX
-    // test auto detection of detection qmake from RPATH
-    runTestParams({"-bin", bin, "clear", "noCheckPATH"}, &comapareTree);
-#endif
-
-
-    comapareTree = TestModule.qtWithoutTr();
+//#ifdef Q_OS_UNIX
+//    // test auto detection of detection qmake from RPATH
+//    runTestParams({"-bin", bin, "clear", "noCheckPATH"}, &comapareTree);
+//#endif
 
 
-    runTestParams({"-bin", bin, "clear" ,
-                   "-qmake", qmake, "noTranslations"}, &comapareTree);
+//    comapareTree = TestModule.qtWithoutTr();
+
+
+//    runTestParams({"-bin", bin, "clear" ,
+//                   "-qmake", qmake, "noTranslations"}, &comapareTree);
 
 
 //    comapareTree = TestModule.qmlLibs();
