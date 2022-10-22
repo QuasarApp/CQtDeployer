@@ -48,10 +48,6 @@ if (ANDROID OR IOS OR NOT QT_VERSION_MAJOR OR QA_WASM32)
     return()
 endif()
 
-if (NOT QT_VERSION_MAJOR)
-    set(CQT_DEPLOYER_TOOL OFF CACHE BOOL "This option force disbled for Not Qt projects" FORCE)
-endif()
-
 if (${QT_VERSION_MAJOR} LESS 6)
     message(WARNING "CQtDeployer tests is not available for qt5. Please build cqtdeployer with qt6")
     set(CQT_DEPLOYER_TESTS OFF CACHE BOOL "This option force disbled for ANDROID IOS QA_WASM32 and Not Qt projects" FORCE)
@@ -63,6 +59,7 @@ initAll()
 add_subdirectory(submodules/QuasarAppLib)
 add_subdirectory(src/QtELFReader)
 
+# disable command line tool of pe-parse
 option(BUILD_COMMAND_LINE_TOOLS "Build Command Line Tools" OFF)
 add_subdirectory(submodules/pe-parse)
 add_subdirectory(submodules/zip)
@@ -71,6 +68,8 @@ add_subdirectory(src/Deploy)
 
 if (DEFINED CQT_DEPLOYER_TOOL)
     add_subdirectory(src/CQtDeployer)
+else()
+    message("The ${PROJECT_NAME} console tool is disabled.")
 endif()
 
 if (CQT_DEPLOYER_TESTS)
@@ -83,4 +82,3 @@ endif()
 configure_file_in("" "${CMAKE_CURRENT_SOURCE_DIR}/doxygen.conf")
 
 addDoc(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/doxygen.conf)
-addDeployFromCustomFile("CQtDeployer" "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployer.json")

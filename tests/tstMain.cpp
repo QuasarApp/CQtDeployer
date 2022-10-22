@@ -229,7 +229,10 @@ void tstMain::initTestCase() {
 void tstMain::cleanupTestCase() {
     QDir qt("./test");
     qt.removeRecursively();
-
+    auto originalPath = qgetenv("CQT_TEST_ORIGINAL_PATH");
+    if (!originalPath.isEmpty()) {
+        qputenv("PATH", originalPath);
+    }
 }
 
 /**
