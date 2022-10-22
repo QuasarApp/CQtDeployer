@@ -68,6 +68,8 @@ add_subdirectory(src/Deploy)
 
 if (DEFINED CQT_DEPLOYER_TOOL)
     add_subdirectory(src/CQtDeployer)
+else()
+    message("The ${PROJECT_NAME} console tool is disabled.")
 endif()
 
 if (CQT_DEPLOYER_TESTS)
