@@ -15,6 +15,7 @@ QSet<QString> ModulesQt63::qmlLibs(const QString &distDir) const {
 
 #ifdef Q_OS_WIN
     Tree += utils.createTree(
+                    {}
                 );
 
 #else
