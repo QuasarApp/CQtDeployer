@@ -35,33 +35,33 @@ void QtTest::test() {
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake}, &comapareTree);
 
-    // test auto detection of detection qmake from PATH
-    runTestParams({"-bin", bin, "clear", "noCheckRPATH"}, &comapareTree);
+//    // test auto detection of detection qmake from PATH
+//    runTestParams({"-bin", bin, "clear", "noCheckRPATH"}, &comapareTree);
 
-#ifdef Q_OS_UNIX
-    // test auto detection of detection qmake from RPATH
-    runTestParams({"-bin", bin, "clear", "noCheckPATH"}, &comapareTree);
-#endif
-
-
-    comapareTree = TestModule.qtWithoutTr();
+//#ifdef Q_OS_UNIX
+//    // test auto detection of detection qmake from RPATH
+//    runTestParams({"-bin", bin, "clear", "noCheckPATH"}, &comapareTree);
+//#endif
 
 
-    runTestParams({"-bin", bin, "clear" ,
-                   "-qmake", qmake, "noTranslations"}, &comapareTree);
+//    comapareTree = TestModule.qtWithoutTr();
 
 
-    comapareTree = TestModule.qmlLibs();
+//    runTestParams({"-bin", bin, "clear" ,
+//                   "-qmake", qmake, "noTranslations"}, &comapareTree);
 
-#ifdef Q_OS_UNIX
-    bin = TestBinDir + "TestQMLWidgets";
-#else
-    bin = TestBinDir + "TestQMLWidgets.exe";
 
-#endif
+//    comapareTree = TestModule.qmlLibs();
 
-    runTestParams({"-bin", bin, "clear" ,
-                   "-qmake", qmake,
-                   "-qmlDir", TestBinDir + "/../TestQMLWidgets"}, &comapareTree);
+//#ifdef Q_OS_UNIX
+//    bin = TestBinDir + "TestQMLWidgets";
+//#else
+//    bin = TestBinDir + "TestQMLWidgets.exe";
+
+//#endif
+
+//    runTestParams({"-bin", bin, "clear" ,
+//                   "-qmake", qmake,
+//                   "-qmlDir", TestBinDir + "/../TestQMLWidgets"}, &comapareTree);
 
 }
