@@ -640,7 +640,7 @@ QString DeployCore::findProcess(const QString &env, const QString& proc) {
         auto files = QDir(path).entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
 
         for (const auto& bin : files) {
-            if (bin.baseName().compare(proc, DeployCore::getCaseSensitivity()) == 0) {
+            if (bin.baseName().compare(proc, DeployCore::getCaseSensitivity()) == 0 && bin.isExecutable()) {
                 return bin.absoluteFilePath();
             }
         }
@@ -1038,8 +1038,8 @@ Qt::CaseSensitivity DeployCore::getCaseSensitivity(const QString &checkedFile) {
     }
 
     QString sufix = QFileInfo(checkedFile).completeSuffix();
-    if (sufix.compare("dll", Qt::CaseInsensitive) == 0 ||
-            sufix.compare("exe", Qt::CaseInsensitive)) {
+    if (sufix.contains("dll", Qt::CaseInsensitive) ||
+            sufix.contains("exe", Qt::CaseInsensitive)) {
         return Qt::CaseInsensitive;
     }
 
