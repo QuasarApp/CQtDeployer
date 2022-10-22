@@ -14,6 +14,10 @@ QSet<QString> ModulesQt63::qmlLibs(const QString &distDir) const {
     Tree = ignoreFilter(Tree, "Qt6Widgets");
 
 #ifdef Q_OS_WIN
+    Tree -= utils.createTree(
+            { "./" + distDir + "plugins/styles/qwindowsvistastyle.dll"}
+        );
+
     Tree += utils.createTree(
         {
             "./" + distDir + "Qt6Network.dll",
@@ -29,7 +33,6 @@ QSet<QString> ModulesQt63::qmlLibs(const QString &distDir) const {
             "./" + distDir + "Qt6QuickTemplates2.dll",
             "./" + distDir + "TestQMLWidgets.bat",
             "./" + distDir + "TestQMLWidgets.exe",
-            "./" + distDir + "plugins/styles/qwindowsvistastyle.dll": "Missing",
             "./" + distDir + "qml/QtQml/Models/modelsplugin.dll",
             "./" + distDir + "qml/QtQml/Models/plugins.qmltypes",
             "./" + distDir + "qml/QtQml/Models/qmldir",
