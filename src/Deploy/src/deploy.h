@@ -34,6 +34,10 @@ enum exitCodes {
 
 };
 
+inline void initCQtDeployerResources() {
+    Q_INIT_RESOURCE(DeployResources);
+}
+
 class DEPLOYSHARED_EXPORT Deploy
 {
 private:
@@ -54,6 +58,7 @@ private:
 public:
     Deploy();
     int run();
+    bool init();
     ~Deploy();
 
     /**

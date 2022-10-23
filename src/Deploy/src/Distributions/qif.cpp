@@ -47,24 +47,30 @@ Envirement QIF::toolKitEnv() const {
     // SNAP
     result.addEnv(AppPath + "/../QIF/");
 
-    //Installer
+    //Installer nad zip
+#ifdef Q_OS_LINUX
     result.addEnvRec(AppPath + "/../../QIF/", 2);
+#endif
+
+#ifdef Q_OS_WIN32
+    result.addEnvRec(AppPath + "/../QIF/", 2);
+#endif
 
     return result;
 }
 
 QList<SystemCommandData> QIF::runCmd() {
-    QString base = "binarycreator";
-
     SystemCommandData cmd;
 
     QString binarycreator = QuasarAppUtils::Params::getArg("binarycreator");
 
-    if (binarycreator.isEmpty())
-        binarycreator = DeployCore::findProcess(toolKitEnv().concatEnv(), base);
-
     if (binarycreator.isEmpty()) {
-        cmd.command = base;
+        binarycreator = DeployCore::findProcess(toolKitEnv().concatEnv(), "binarycreator");
+        if (binarycreator.isEmpty()) {
+            cmd.command = "binarycreator";
+        } else {
+            cmd.command = binarycreator;
+        }
     } else {
         auto commandsList = binarycreator.split(' ');
         cmd.command = commandsList.first();

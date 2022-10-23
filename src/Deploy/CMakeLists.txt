@@ -13,7 +13,7 @@ set(CURRENT_PROJECT "${CURRENT_PROJECT_DIR}")
 add_definitions(-DCQT_DEPLOYER_LIBRARY)
 
 
-file(GLOB_RECURSE SOURCE_CPP
+file(GLOB SOURCE_CPP
     "src/*.cpp"
     "src/*.h"
 
@@ -22,7 +22,7 @@ file(GLOB_RECURSE SOURCE_CPP
 
 )
 
-file(GLOB_RECURSE SOURCE_QRC
+file(GLOB SOURCE_QRC
     "*.qrc"
     "src/*.qrc"
 )
