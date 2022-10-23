@@ -1,5 +1,114 @@
 # Change log 
 
+## CQtDeployer 1.6
+
+### New features
+
+- Move to Cmake build system
+- Refactoring all project structure
+- Improved QML parser 
+- Add support qt 6.4 
+- Added support (snap version) deploy apps that was buildet with Qt from system
+
+### Fixes
+
+- Fixed snap version of cqtdeployer
+- Fixed deploy of windows apps
+- Fixed documentation web city (added support of backend search engine)
+
+### New options of the build 
+
+- **CQT_DEPLOYER_TESTS** "This option disables or enables tests of the CQtDeployer project. By Default enabled
+- **CQT_DEPLOYER_TOOL** "This option disables or enables example app of the CQtDeployer project. By Default enabled
+
+
+## CQtDeployer v1.5.4.17
+
+### Bug fixes :
+
+* Update qifw to 4.4 by @EndrII in #701
+
+## CQtDeployer v1.5.4.16 
+
+### Bug fixes :
+
+* Added support of the binarycreator option by @EndrII in #700
+
+
+## CQtDeployer v1.5.4.15
+
+### Bug fixes :
+
+* Added support the QtShaderToolsModule by @EndrII in #697
+
+
+## CQtDeployer v1.5.4.14
+
+### Bug fixes :
+
+* Fix qifw in cqtdeployer of the snap-store, by @EndrII in #693
+* Fix deploy network module (Qt6) by @EndrII in #692
+
+
+## CQtDeployer v1.5.4.13
+
+### Bug fixes :
+
+* Added new option for change archive format of qifw by @EndrII in #689
+
+
+## CQtDeployer v1.5.4.12
+
+### Bug fixes :
+
+* Allow to deploy libstdc++ library by @EndrII in #684
+* Added 'platform' option by @EndrII in #687
+
+
+## CQtDeployer v1.5.4.11
+
+### Bug fixes :
+
+* Update qifw by @EndrII in #675
+* Add a 'disable pe library' option by @EndrII in #678
+* Add support for gcc4 by @EndrII in #679
+* Add support search targets from the path by @EndrII in #683
+
+
+## CQtDeployer v1.5.4.10
+
+### Bug fixes :
+
+* Simple bug fixes update CQtDeployer v1.5.4.10
+
+## CQtDeployer v1.5.4.8
+
+### Bug fixes :
+
+* Little grammar fixes for Readme by @Kickoman in #666
+* Arm build by @EndrII in #670
+* Added support folders for the tr option by @EndrII in #673
+
+## CQtDeployer v1.5.4.7 
+
+### Bug fixes :
+
+* Fix windows shortcuts by @EndrII in #658
+* Fix deploy icons by @EndrII in #660 and @EndrII in #662
+* Add manual tests for icons option by @EndrII in #664
+
+
+## CQtDeployer v1.5.4.3
+
+### Bug fixes :
+
+* Fix custom icons #659
+
+## CQtDeployer v1.5.4.3
+
+### Bug fixes :
+Fix custom icons #659
+
 ## CQtDeployer 1.5.4
 
 
