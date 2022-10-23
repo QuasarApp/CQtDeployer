@@ -112,6 +112,7 @@ ADD_CUSTOM_TARGET(
 add_dependencies(deploy${CURRENT_PROJECT} downloadQIFW)
 
 addDeployFromCustomFile(${CURRENT_PROJECT}Single "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployerSingle.json")
+add_dependencies(deploy${CURRENT_PROJECT}Single downloadQIFW)
 
 if (UNIX)
     addDeploySnap(${CURRENT_PROJECT} "${CMAKE_SOURCE_DIR}/Distro/")
