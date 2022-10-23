@@ -48,6 +48,11 @@ int Deploy::run() {
     return Good;
 }
 
+bool Deploy::init() {
+    initCQtDeployerResources();
+    return true;
+}
+
 Deploy::~Deploy() {
 
     if (_extracter) {

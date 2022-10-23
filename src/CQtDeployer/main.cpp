@@ -26,6 +26,8 @@ int main(int argc, char *argv[]) {
 
     Deploy deploy;
 
+    deploy.init();
+
     int code = deploy.run();
 
     if (code) {

@@ -60,23 +60,21 @@ Envirement QIF::toolKitEnv() const {
 }
 
 QList<SystemCommandData> QIF::runCmd() {
-    QString base = "binarycreator";
-
     SystemCommandData cmd;
 
     QString binarycreator = QuasarAppUtils::Params::getArg("binarycreator");
 
     if (binarycreator.isEmpty()) {
-        binarycreator = DeployCore::findProcess(toolKitEnv().concatEnv(), base);
+        binarycreator = DeployCore::findProcess(toolKitEnv().concatEnv(), "binarycreator");
+        if (binarycreator.isEmpty()) {
+            cmd.command = "binarycreator";
+        } else {
+            cmd.command = binarycreator;
+        }
     } else {
         auto commandsList = binarycreator.split(' ');
         cmd.command = commandsList.first();
         cmd.arguments = commandsList.mid(1,-1);
-    }
-
-    if (binarycreator.isEmpty()) {
-        cmd.command = base;
-        cmd.arguments.clear();
     }
 
     auto location = DeployCore::_config->getTargetDir() + "/" + getLocation();
