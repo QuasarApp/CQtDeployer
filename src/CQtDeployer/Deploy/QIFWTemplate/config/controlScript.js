@@ -44,7 +44,7 @@ Controller.prototype.installationFinished = function()
     } else {
 
         QMessageBox["information"](qsTr("install in system"), qsTr("Installer"),
-            qsTr("CQtDeployer successfully installed on your computer to use the call \"cqtdeployer\", cqt or cqtdeployer.cqt."),
+            qsTr("CQtDeployer successfully installed on your computer to use the call \"cqtdeployer\"."),
                  QMessageBox.Ok);
     }
 

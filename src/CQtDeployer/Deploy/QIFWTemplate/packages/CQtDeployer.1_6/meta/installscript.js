@@ -137,13 +137,6 @@ function systemIntegration() {
                                            homeDir + "/.local/bin/cqtdeployer"],
                                "UNDOEXECUTE", ["rm", "-f", homeDir + "/.local/bin/cqtdeployer"] )
 
-        component.addOperation('Execute', ["ln", "-sf", targetDir + "/" + VERSION + "/bin/cqt.sh",
-                                           homeDir + "/.local/bin/cqt"],
-                               "UNDOEXECUTE", ["rm", "-f", homeDir + "/.local/bin/cqt"] )
-
-        component.addOperation('Execute', ["ln", "-sf", targetDir + "/" + VERSION + "/bin/cqt.sh",
-                                           homeDir + "/.local/bin/cqtdeployer.cqt"],
-                               "UNDOEXECUTE", ["rm", "-f", homeDir + "/.local/bin/cqtdeployer.cqt"] )
 
         generateShortCutCmd(VERSION + "/cqtdeployer", VERSION + "/icon.png");
 

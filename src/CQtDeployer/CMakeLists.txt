@@ -85,18 +85,21 @@ add_custom_target(${name}Templates ALL
 )
 
 # sets qifw variable
-set(HomeDir "@HomeDir@")
-configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFWTemplate/config/config.xml")
-
-
-addDeployFromCustomFile(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployer.json")
-
+set(ApplicationsDir "@HomeDir@")
 set(QIFW_PLATFORM linux)
 set(INSTALLER_SUFIX run)
 if (WIN32)
     set(QIFW_PLATFORM windows)
     set(INSTALLER_SUFIX exe)
+    set(ApplicationsDir "@ApplicationsDir@")
+
 endif()
+
+configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFWTemplate/config/config.xml")
+
+
+addDeployFromCustomFile(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployer.json")
+
 
 ADD_CUSTOM_TARGET(
     downloadQIFW

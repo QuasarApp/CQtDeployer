@@ -23,10 +23,6 @@
         <source>CQtDeployer successfully installed on your computer to use the call &quot;cqtdeployer&quot;.</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>CQtDeployer successfully installed on your computer to use the call &quot;cqtdeployer&quot;, cqt or cqtdeployer.cqt.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>installscript</name>
