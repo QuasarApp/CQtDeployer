@@ -2,16 +2,16 @@
 <Installer>
     <WizardDefaultWidth>980px</WizardDefaultWidth>
     <WizardDefaultHeight>540px</WizardDefaultHeight>
-    <Name>CQtDeployer</Name>
+    <Name>@PROJECT_NAME@</Name>
     <Version>@CQT_DEPLOYER_VERSION@</Version>
-    <Title>CQtDeployer</Title>
+    <Title>@PROJECT_NAME@</Title>
     <Publisher>QuasarApp</Publisher>
-    <StartMenuDir>CQtDeployer</StartMenuDir>
-    <TargetDir>@HomeDir@/CQtDeployer</TargetDir>
+    <StartMenuDir>@PROJECT_NAME@</StartMenuDir>
+    <TargetDir>@ApplicationsDir@/@PROJECT_NAME@</TargetDir>
     <InstallActionColumnVisible>true</InstallActionColumnVisible>
     <RemoveTargetDir>true</RemoveTargetDir>
     <ControlScript>controlScript.js</ControlScript>
-    <MaintenanceToolName>CQtDeployerTool</MaintenanceToolName>
+    <MaintenanceToolName>@PROJECT_NAME@Tool</MaintenanceToolName>
     <WizardStyle>Modern</WizardStyle>
     <StyleSheet>style.css</StyleSheet>
     <Logo>logo.png</Logo>
