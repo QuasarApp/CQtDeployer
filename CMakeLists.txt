@@ -19,11 +19,13 @@ set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(BUILD_SHARED_LIBS ON)
 
 if (IOS)
-    set(BUILD_SHARED_LIBS OFF)
+    option(BUILD_SHARED_LIBS "This option forece build ${PROJECT_NAME} as a shared project with separated libraries as" OFF)
+elseif()
+    option(BUILD_SHARED_LIBS "This option forece build ${PROJECT_NAME} as a shared project with separated libraries as" ON)
 endif()
+
 
 if (NOT QT_VERSION_MAJOR)
     find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Test QUIET)
@@ -82,3 +84,8 @@ endif()
 configure_file_in("" "${CMAKE_CURRENT_SOURCE_DIR}/doxygen.conf")
 
 addDoc(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/doxygen.conf)
+
+
+install(TARGETS CQtDeployer
+    BUNDLE DESTINATION .
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})

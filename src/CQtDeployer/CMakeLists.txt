@@ -87,7 +87,7 @@ add_custom_target(${name}Templates ALL
 # sets qifw variable
 set(ApplicationsDir "@HomeDir@")
 set(QIFW_PLATFORM linux)
-set(INSTALLER_SUFIX run)
+set(INSTALLER_SUFIX .run)
 if (WIN32)
     set(QIFW_PLATFORM windows)
     set(INSTALLER_SUFIX exe)

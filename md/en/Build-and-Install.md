@@ -129,3 +129,25 @@ sudo snap connect cqtdeployer:system-backup
     ``` bash
     migw32-make deploy 
     ```
+
+
+### Note 
+
+If you do not have installed cqtdeployer on your build machine, you can compile cqtdeployer tool as a static. For this, disable the BUILD_SHARED_LIBS option.
+
+```bash
+
+cmake .. -DBUILD_SHARED_LIBS=0
+make install
+
+```
+
+If you want to change Qt, Just run cmake with override qt location.
+
+```bash
+
+cmake .. -DCMAKE_PREFIX_PATH=/path/to/qt/root/dir
+# or
+cmake .. -DCMAKE_PREFIX_PATH=~/Qt/6.4.3/gcc_64
+
+```
