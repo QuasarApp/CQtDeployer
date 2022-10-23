@@ -31,11 +31,6 @@ ui_*.h
 *.qmlc
 *.jsc
 Makefile*
-*build-*
-*/build/*
-stage/*
-prime/*
-parts/*
 *cqtdeployer_resource.rc
 sharedQtWin64/*
 
@@ -63,15 +58,7 @@ sharedQtWin64/
 distro/
 Distro/
 deployTests/
-QIFData/packages/cqtdeployer*/data/
-QIFData/packages/QIF/data/
-staticQt/
-staticQtWin32/
-staticQtWin64/
 build
-UnitTests/release/*
-UnitTests/debug/*
-UnitTests/res_qmlcache.qrc
 
 # cmake 
 CMakeLists.txt.user
@@ -85,3 +72,20 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+
+# cmake configured files
+src/Deploy/src/deploy_global.h
+src/QtELFReader/src/elfreader_global.h
+src/CQtDeployer/Deploy/CQtDeployer.json
+src/CQtDeployer/Deploy/QIFWTemplate/packages/CQtDeployer/meta/package.xml
+src/CQtDeployer/Deploy/QIFWTemplate/packages/CQtDeployer.1_6/meta/package.xml
+src/CQtDeployer/Deploy/QIFWTemplate/packages/QIF/meta/package.xml
+src/CQtDeployer/Deploy/QIFW/
+src/CQtDeployer/Deploy/CQtDeployerSingle.json
+src/CQtDeployer/Deploy/QIFWTemplate/config/config.xml
+snap/snapcraft.yaml
+src/LibDeploy/src/deploy_global.h
+doxygen.conf
+
+# binaries 
+testcases/bin/

@@ -1,15 +1,10 @@
-[submodule "QuasarAppLib"]
-	path = QuasarAppLib
+[submodule "submodules/QuasarAppLib"]
+	path = submodules/QuasarAppLib
 	url = https://github.com/QuasarApp/QuasarAppLib.git
-[submodule "qtTools"]
-	path = qtTools
-	url = https://github.com/qt/qttools.git
-[submodule "pe"]
-	path = pe
+[submodule "submodules/pe-parse"]
+	path = submodules/pe-parse
 	url = https://github.com/QuasarApp/pe-parse.git
-[submodule "QuasarAppScripts"]
-	path = QuasarAppScripts
-	url = https://github.com/QuasarApp/QuasarAppScripts.git
-[submodule "zip"]
-	path = zip
-	url = https://github.com/QuasarApp/zip.git
+[submodule "submodules/zip"]
+	path = submodules/zip
+        url = https://github.com/kuba--/zip.git
+

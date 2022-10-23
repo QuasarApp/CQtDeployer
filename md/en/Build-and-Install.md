@@ -4,14 +4,13 @@ You can download the latest version of the application [here](https://github.com
 
 ### Installer
 
-- [Download](https://github.com/QuasarApp/CQtDeployer/releases) CQtDeployer_X.X.X.X_Installer_Linux64.run or CQtDeployer_X.X.X.X_Installer_Win64.exe
+- [Download](https://github.com/QuasarApp/CQtDeployer/releases) CQtDeployer*.run or CQtDeployer*.exe
 
 #### Install without gui
 
 ##### Linux
 
 ``` bash
-wget https://github.com/QuasarApp/CQtDeployer/releases/download/1.5.3/CQtDeployer_1.5.3.0_Installer_Linux64.run
 chmod +x CQtDeployer_1.5.3.0_Installer_Linux64.run
 ./CQtDeployer_1.5.3.0_Installer_Linux64.run install
 ```
@@ -19,14 +18,12 @@ chmod +x CQtDeployer_1.5.3.0_Installer_Linux64.run
 ##### Windows
 
 ``` bash
-wget https://github.com/QuasarApp/CQtDeployer/releases/download/1.5.3/CQtDeployer_1.5.3.0_Installer_Win64.exe
 CQtDeployer_1.5.3.0_Installer_Win64.exe install
 ```
 
 ### Deb
 
 ``` bash
-wget https://github.com/QuasarApp/CQtDeployer/releases/download/1.5.3/CQtDeployer_1.5.3.0_Linux64.deb
 sudo dpkg -i CQtDeployer_1.5.3.0_Linux64.deb
 ```
 
@@ -61,30 +58,96 @@ sudo snap connect cqtdeployer:system-backup
 ## Build for Linux
 
 - install qt and qt QtInstallFrameWork from [qt installer](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f9bb77-7bb77-4bb77-4)
-- git clone https://github.com/QuasarApp/CQtDeployer.git
-- cd CQtDeployer
-- git submodule update --init --recursive
-- qmake -r
-    - Here you must definitely call the qmake that was loaded from the 1st item.
-    - Example: ~/Qt/5.15.0/gcc_64/bin/qmake -r
-- make -j$(nproc)
-- make deploy
-    - this command requires installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
-- ./Distro/CQtDeployerInstaller.run
+- clone project 
+ 
+    ``` bash
+    git clone https://github.com/QuasarApp/CQtDeployer.git
+    git submodule update --init --recursive
+    cd CQtDeployer
+    ```
+    
+- create temp build directory
+
+    ``` bash
+    mkdir build 
+    cd build
+    ```
+    
+- run cmake 
+
+    ``` bash
+    cmake .. -DCMAKE_PREFIX_PATH=/path/to/qt/root/dir
+    ```
+    
+- build cqtdeployer 
+
+    ``` bash
+    make -j8
+    ```
+    
+- create installers and packages (requered installed cqtdeployer)
+
+    ``` bash
+    make deploy 
+    ```
+    
 
 ## Build for Windows (CMD)
 
 - install qt and qt QtInstallFrameWork from [qt installer](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f9bb77-7bb77-4bb77-4)
-- git clone https://github.com/QuasarApp/CQtDeployer.git
-- cd CQtDeployer
-- git submodule update --init --recursive
+- clone project 
+ 
+    ``` bash
+    git clone https://github.com/QuasarApp/CQtDeployer.git
+    git submodule update --init --recursive
+    cd CQtDeployer
+    ```
+    
+- create temp build directory
+
+    ``` bash
+    mkdir build 
+    cd build
+    ```
 - SET PATH=C:/Qt/Tools/mingw810_64/bin;%PATH%
     - It is important to set up the qt environment.
-- qmake.exe -r
-    - Here you must definitely call the qmake that was loaded from the 1st item.
-    - Example: C:/Qt/5.15.0/mingw81_64/bin/qmake.exe -r
-- migw32-make -j8
-- migw32-make deploy
-    - this command requires installed [cqtdeployer](https://github.com/QuasarApp/CQtDeployer/releases)
-- ./Distro/CQtDeployerInstaller.exe
+   
+- run cmake 
 
+    ``` bash
+    cmake .. -DCMAKE_PREFIX_PATH=C:/path/to/qt/root/dir
+    ```
+    
+- build cqtdeployer 
+
+    ``` bash
+    migw32-make -j8
+    ```
+    
+- create installers and packages (requered installed cqtdeployer)
+
+    ``` bash
+    migw32-make deploy 
+    ```
+
+
+### Note 
+
+If you do not have installed cqtdeployer on your build machine, you can compile cqtdeployer tool as a static. For this, disable the BUILD_SHARED_LIBS option.
+
+```bash
+
+cmake .. -DBUILD_SHARED_LIBS=0
+make install
+
+```
+
+If you want to change Qt, Just run cmake with override qt location.
+
+```bash
+
+cmake .. -DCMAKE_PREFIX_PATH=/path/to/qt/root/dir
+# or
+cmake .. -DCMAKE_PREFIX_PATH=~/Qt/6.4.3/gcc_64
+
+```

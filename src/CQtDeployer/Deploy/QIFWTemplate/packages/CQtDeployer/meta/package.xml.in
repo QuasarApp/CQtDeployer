@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>CQtDeployer</DisplayName>
+    <Description>CQtDeployer</Description>
+    <Version>@CQT_DEPLOYER_VERSION_SHORT_PREFIX@</Version>
+    <Default>true</Default>
+    <ForcedInstallation>false</ForcedInstallation>
+    <ReleaseDate>@TODAY@</ReleaseDate>
+    <SortingPriority>100</SortingPriority>
+</Package>
