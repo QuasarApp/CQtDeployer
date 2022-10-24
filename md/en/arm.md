@@ -5,13 +5,13 @@ At this time, cqtdeployer does not have precompiled distributions for arm platfo
 
 ## Build
 
-You can read a main article of building cqtdeployer from source [here](Build-and-install.md)
+You can read a main article of building cqtdeployer from source [here](Build-and-Install.md).
 
 ## Qt installer framework.
 
 The QIFW not available for arm platforms. So if you want to create classic installers you need to build Qt installer framework from [source](https://github.com/qtproject/installer-framework).
 
-## build from source
+## Build from source
 
 - clone project 
  
@@ -53,4 +53,11 @@ The QIFW not available for arm platforms. So if you want to create classic insta
     ```
 
 
-Done. Now you can add cqtdeployer into your PATH variable and use it.
+Done. Now you can add cqtdeployer into your PATH variable and use it or create symbol link to cqtdeployer executable in /bin folder.
+
+
+``` bash
+ln -s ./bin/CQtDeployer /bin/cqtdeployer
+```
+
+
