@@ -20,6 +20,7 @@
 * [Default Environment Variables](EnvironmentVariables.md)
 * [Disable standard shortcuts ](DisableShortcats.md)
 * [Custom scripts](CustomScripts.md)
+* [CQtDeployer for arm](arm.md)
 
 
 ## Support the project
