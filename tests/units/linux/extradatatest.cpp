@@ -18,24 +18,15 @@
 void ExtraDataTest::test() {
     TestUtils utils;
 
-
-#ifdef Q_OS_UNIX
     auto comapareTree = utils.createTree(
                 {"./" + DISTRO_DIR + "/bin/TestOnlyC",
                  "./" + DISTRO_DIR + "/bin/TestCPPOnly",
                  "./" + DISTRO_DIR + "/bin/QtWidgetsProject",
                  "./" + DISTRO_DIR + "/bin/TestQMLWidgets",
+                 "./" + DISTRO_DIR + "/bin/QMLFileDialog",
                  "./" + DISTRO_DIR + "/bin/basic",
                  "./" + DISTRO_DIR + "/bin/quicknanobrowser",
                  "./" + DISTRO_DIR + "/bin/webui"});
-#else
-    auto comapareTree = utils.createTree(
-                {"./" + DISTRO_DIR + "/b    in/TestOnlyC.exe",
-                 "./" + DISTRO_DIR + "/bin/TestCPPOnly.exe",
-                 "./" + DISTRO_DIR + "/bin/QtWidgetsProject.exe",
-                 "./" + DISTRO_DIR + "/bin/TestQMLWidgets.exe",
-                 "./" + DISTRO_DIR + "/bin/basic.exe"});
-#endif
 
 
     runTestParams({"-extraData", TestBinDir, "clear",
