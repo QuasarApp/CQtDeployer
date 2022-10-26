@@ -448,6 +448,8 @@ bool Extracter::extractQml() {
 
             QStringList plugins;
             QStringList listItems;
+            auto QtVersion = cnf->isNeededQt(i.key());
+
             const auto qmlInputList = distro.qmlInput();
             for (const auto &qmlInput: qmlInputList) {
                 QFileInfo info(qmlInput);
@@ -465,7 +467,6 @@ bool Extracter::extractQml() {
                     continue;
                 }
 
-                auto QtVersion = cnf->isNeededQt(i.key());
                 QSharedPointer<iQML> qmlScaner;
                 if (QtVersion & QtMajorVersion::Qt6) {
                     qmlScaner = QSharedPointer<QMLQt6>::create(cnf->qtDir.getQmls());
@@ -481,25 +482,36 @@ bool Extracter::extractQml() {
 
             }
 
-
             QStringList toCopyQmlFiles;
-            for (const auto& plugin: qAsConst(plugins)) {
-                const auto qmlFiles = QDir(plugin).entryInfoList(QDir::Files);
-                for (const auto& qmlFile: qmlFiles) {
-                    toCopyQmlFiles.push_back(qmlFile.absoluteFilePath());
+            if (QtVersion & QtMajorVersion::Qt5) {
+                // See the https://github.com/QuasarApp/CQtDeployer/issues/728 issue
+                // use old method of parse qml for qt5
+                if (!_fileManager->copyFolder(cnf->qtDir.getQmls(),
+                                              targetPath + distro.getQmlOutDir(),
+                                              DeployCore::debugExtensions() ,
+                                              &listItems)) {
+                    return false;
+                }
+            } else {
+                for (const auto& plugin: qAsConst(plugins)) {
+                    const auto qmlFiles = QDir(plugin).entryInfoList(QDir::Files);
+                    for (const auto& qmlFile: qmlFiles) {
+                        toCopyQmlFiles.push_back(qmlFile.absoluteFilePath());
+                    }
+                }
+
+                // This function works very slow because use list mask
+                // solution: use the QSet and restriction comparese of the pathes for the mask argument.
+                // to-do optimise this function
+                if (!_fileManager->copyFolder(cnf->qtDir.getQmls(),
+                                              targetPath + distro.getQmlOutDir(),
+                                              DeployCore::debugExtensions() ,
+                                              &listItems,
+                                              &toCopyQmlFiles)) {
+                    return false;
                 }
             }
 
-            // This function works very slow because use list mask
-            // solution: use the QSet and restriction comparese of the pathes for the mask argument.
-            // to-do optimise this function
-            if (!_fileManager->copyFolder(cnf->qtDir.getQmls(),
-                                          targetPath + distro.getQmlOutDir(),
-                                          DeployCore::debugExtensions() ,
-                                          &listItems,
-                                          &toCopyQmlFiles)) {
-                return false;
-            }
 
             for (const auto &item : qAsConst(listItems)) {
                 extractPluginLib(item, i.key());
