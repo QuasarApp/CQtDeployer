@@ -7,7 +7,7 @@
 
 
 #include "qmlextracttest.h"
-#include "qml.h"
+#include "qmlqt5.h"
 #include "qmlcreator.h"
 #include <configparser.h>
 #include <dependenciesscanner.h>
@@ -23,7 +23,7 @@ void QMLExtractTest::test() {
     auto qmlFiles = creator.getCopyedQml();
 
 
-    QML scaner("./", QtMajorVersion::Qt5);
+    QMLQt5 scaner("./");
 
 
     for (const auto &file : qAsConst(qmlFiles)) {

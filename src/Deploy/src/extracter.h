@@ -14,7 +14,7 @@
 #include "dependencymap.h"
 #include "deploy_global.h"
 #include "filemanager.h"
-#include "qml.h"
+#include "qmlqt6.h"
 
 class ConfigParser;
 class MetaFileManager;

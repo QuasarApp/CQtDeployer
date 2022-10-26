@@ -5,15 +5,14 @@
 //# of this license document, but changing it is not allowed.
 //#
 
-#ifndef QML_DEPLY_H
-#define QML_DEPLY_H
+#ifndef QML_QT5_DEPLY_H
+#define QML_QT5_DEPLY_H
 
 #include <QSet>
 #include <QStringList>
-#include "deploy_global.h"
-#include "deploycore.h"
+#include "iqml.h"
 
-class DEPLOYSHARED_EXPORT QML {
+class DEPLOYSHARED_EXPORT QMLQt5: public iQML {
 private:
 
     QStringList extractImportsFromFile(const QString &filepath) const;
@@ -25,22 +24,20 @@ private:
     bool deployPath( const QString& path, QStringList& res);
     bool scanQmlTree(const QString& qmlTree);
     QStringList extractImportsFromQmlModule(const QString& module) const;
-    QString _qmlRoot = "";
     QSet<QString> _imports;
     QSet<QString> secondVersions;
-    QtMajorVersion _qtVersion = QtMajorVersion::Qt5;
 
     QStringList extractImportLine(const QString &line) const;
     
 public:
-    QML(const QString& qmlRoot, QtMajorVersion isQt6);
+    QMLQt5(const QString& qmlRoot);
+    ~QMLQt5() override;
 
-    bool scan(QStringList &res, const QString &_qmlProjectDir);
-    void setQtVersion(const QtMajorVersion &qtVersion);
+    bool scan(QStringList &res, const QString &_qmlProjectDir) override;
 
     friend class deploytest;
     friend class QmlScanerTest;
     friend class QMLExtractTest;
 };
 
-#endif // QML_DEPLY_H
+#endif // QML_QT5_DEPLY_H

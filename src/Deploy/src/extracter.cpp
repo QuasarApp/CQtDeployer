@@ -10,6 +10,7 @@
 #include "pluginsparser.h"
 #include "configparser.h"
 #include "metafilemanager.h"
+#include "qmlqt5.h"
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
@@ -464,13 +465,20 @@ bool Extracter::extractQml() {
                     continue;
                 }
 
-                QML ownQmlScaner(cnf->qtDir.getQmls(), cnf->isNeededQt(i.key()));
+                auto QtVersion = cnf->isNeededQt(i.key());
+                QSharedPointer<iQML> qmlScaner;
+                if (QtVersion & QtMajorVersion::Qt6) {
+                    qmlScaner = QSharedPointer<QMLQt6>::create(cnf->qtDir.getQmls());
+                } else if (QtVersion & QtMajorVersion::Qt5) {
+                    qmlScaner = QSharedPointer<QMLQt5>::create(cnf->qtDir.getQmls());
+                }
 
-                if (!ownQmlScaner.scan(plugins, info.absoluteFilePath())) {
+                if (qmlScaner && !qmlScaner->scan(plugins, info.absoluteFilePath())) {
                     QuasarAppUtils::Params::log("Failed to run qml scanner",
                                                 QuasarAppUtils::Error);
                     continue;
                 }
+
             }
 
 
