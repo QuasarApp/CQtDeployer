@@ -489,7 +489,7 @@ bool Extracter::extractQml() {
                 if (!_fileManager->copyFolder(cnf->qtDir.getQmls(),
                                               targetPath + distro.getQmlOutDir(),
                                               DeployCore::debugExtensions() ,
-                                              &listItems)) {
+                                              &listItems, &plugins)) {
                     return false;
                 }
             } else {
