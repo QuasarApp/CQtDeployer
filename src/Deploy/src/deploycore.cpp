@@ -633,11 +633,16 @@ bool DeployCore::isContainsArraySeparators(const QString &val, int lastLvl) {
     return false;
 }
 
-QString DeployCore::findProcess(const QString &env, const QString& proc) {
+QString DeployCore::findProcess(const QString &env, const QString& proc, bool ignoreSymLinks) {
     auto list = env.split(DeployCore::getEnvSeparator());
 
+    auto findEntries = QDir::NoDotAndDotDot | QDir::Files;
+    if (ignoreSymLinks) {
+        findEntries = findEntries | QDir::NoSymLinks;
+    }
+
     for (const auto& path : list) {
-        auto files = QDir(path).entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
+        auto files = QDir(path).entryInfoList(findEntries);
 
         for (const auto& bin : files) {
             if (bin.baseName().compare(proc, DeployCore::getCaseSensitivity()) == 0 && bin.isExecutable()) {
@@ -649,7 +654,7 @@ QString DeployCore::findProcess(const QString &env, const QString& proc) {
     // working only for the snap version of cqtdeployer ...
     if (isSnap()) {
         for (const auto& path : list) {
-            auto files = QDir(transportPathToSnapRoot(path)).entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
+            auto files = QDir(transportPathToSnapRoot(path)).entryInfoList(findEntries);
 
             for (const auto& bin : files) {
                 if (bin.baseName().compare(proc, DeployCore::getCaseSensitivity()) == 0) {
