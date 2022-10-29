@@ -40,13 +40,13 @@ void QtDir::setBins(const QString &value) {
     bins =  PathUtils::fixPath(value);
 
     auto qtLibs = QDir(bins).entryList(QDir::Files);
-    if (qtLibs.contains("Qt4Core.dll")) {
+    if (qtLibs.contains("Qt4Core.dll", Qt::CaseInsensitive)) {
         _qtVersion = QtMajorVersion::Qt4;
         _platform = Win;
-    } else if (qtLibs.contains("Qt5Core.dll")) {
+    } else if (qtLibs.contains("Qt5Core.dll", Qt::CaseInsensitive)) {
         _qtVersion = QtMajorVersion::Qt5;
         _platform = Win;
-    } else if (qtLibs.contains("Qt6Core.dll")) {
+    } else if (qtLibs.contains("Qt6Core.dll", Qt::CaseInsensitive)) {
         _qtVersion = QtMajorVersion::Qt6;
         _platform = Win;
     }
