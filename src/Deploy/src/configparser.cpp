@@ -1135,25 +1135,51 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
     QFileInfo info(qmake);
 
     QString basePath = info.absolutePath();
-    if (!setQmake(qmake)) {
-        QDir dir(basePath);
 
-        if (!dir.cdUp()) {
-            QuasarAppUtils::Params::log("Failed to initialize qt directories by qmake.",
-                                        QuasarAppUtils::Error);
-            return false;
-        }
+    // Invoke qmake executable only when qmake pathe exclude snapRootFS path.
+    // Because files in snapRootFS is not executable ...
+    if (!qmake.contains(DeployCore::snapRootFS()) && setQmake(qmake)) {
+        return true;
+    }
 
-        QuasarAppUtils::Params::log("Failed to execute the qmake process!"
-                                    " Trying to initialize Qt directories from path: " + dir.absolutePath(),
-                                    QuasarAppUtils::Warning);
 
-        if (!setQtDir(dir.absolutePath())){
+    // try deploy qt using only read FS permisions
+
+    // check debian qt structure
+    if (DeployCore::isDebianQt(info.absoluteFilePath())) {
+        QString neededPlatform = DeployCore::getPlatformLibPrefix(_config.getPlatformOfAll());
+        int qtVersion = DeployCore::qtVersionToString(_config.isNeededQt());
+
+        QString debianQtRoot = QString("/usr/lib/%0/qt%1").
+                               arg(neededPlatform).arg(qtVersion);
+
+
+        if (!setQtDir(debianQtRoot)) {
             QuasarAppUtils::Params::log("Failed to initialize Qt directories",
                                         QuasarAppUtils::Error);
             return false;
         }
+    }
 
+    QDir dir(basePath);
+
+    if (!dir.cdUp()) {
+        QuasarAppUtils::Params::log("Failed to initialize qt directories by qmake.",
+                                    QuasarAppUtils::Error);
+        return false;
+    }
+
+    // For snap package of cqtdeplyer it is norma behavior
+    if (!DeployCore::isSnap()) {
+        QuasarAppUtils::Params::log("Failed to execute the qmake process!"
+                                    " Trying to initialize Qt directories from path: " + dir.absolutePath(),
+                                    QuasarAppUtils::Warning);
+    }
+
+    if (!setQtDir(dir.absolutePath())){
+        QuasarAppUtils::Params::log("Failed to initialize Qt directories",
+                                    QuasarAppUtils::Error);
+        return false;
     }
 
     return true;
@@ -1284,11 +1310,16 @@ bool ConfigParser::setQtDir(const QString &value) {
     }
     _config.qtDir.setBins(info.absoluteFilePath() + ("/bin"));
 
-    if (!QFile::exists(info.absoluteFilePath() + ("/lib"))) {
-        QuasarAppUtils::Params::log("get qt lib failed!", QuasarAppUtils::Debug);
-        return false;
+    if (DeployCore::isDebianQt(value)) {
+        _config.qtDir.setLibs(info.absoluteFilePath() + ("/.."));
+    } else {
+        if (!QFile::exists(info.absoluteFilePath() + ("/lib"))) {
+            QuasarAppUtils::Params::log("get qt lib failed!", QuasarAppUtils::Debug);
+            return false;
+        }
+        _config.qtDir.setLibs(info.absoluteFilePath() + ("/lib"));
     }
-    _config.qtDir.setLibs(info.absoluteFilePath() + ("/lib"));
+
 
     if (!QFile::exists(info.absoluteFilePath() + ("/qml"))) {
         QuasarAppUtils::Params::log("get qt qml failed!", QuasarAppUtils::Debug);
@@ -1312,10 +1343,15 @@ bool ConfigParser::setQtDir(const QString &value) {
         _config.qtDir.setLibexecs(info.absoluteFilePath() + ("/bin"));
     }
 
-    if (!QFile::exists(info.absoluteFilePath() + ("/translations"))) {
-        QuasarAppUtils::Params::log("get qt translations failed!", QuasarAppUtils::Debug);
+    if (DeployCore::isDebianQt(value)) {
+        _config.qtDir.setTranslations(QString("/usr/share/qt%0/translations").
+                                      arg(DeployCore::qtVersionToString(_config.isNeededQt())));
     } else {
-        _config.qtDir.setTranslations(info.absoluteFilePath() + ("/translations"));
+        if (!QFile::exists(info.absoluteFilePath() + ("/translations"))) {
+            QuasarAppUtils::Params::log("get qt translations failed!", QuasarAppUtils::Debug);
+        } else {
+            _config.qtDir.setTranslations(info.absoluteFilePath() + ("/translations"));
+        }
     }
 
     if (!QFile::exists(info.absoluteFilePath() + ("/resources"))) {

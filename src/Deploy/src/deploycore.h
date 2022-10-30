@@ -48,7 +48,7 @@ enum Platform {
     Win32           = 0x0001,
     Win64           = 0x0002,
     Win_ARM_32      = 0x0004,
-    win_ARM_64      = 0x0008,
+    Win_ARM_64      = 0x0008,
     Win             = Win32 | Win64,
 
     // Unix
@@ -323,6 +323,27 @@ public:
      * @return Qt CaseSensitivity value
      */
     static Qt::CaseSensitivity getCaseSensitivity(const QString& checkedFile = "");
+
+    /**
+     * @brief getPlatformLibPrefix This method return string value of the @a platform
+     * @param plarform This is input platform
+     * @return string value of the @a platfrom. If platform not supported strings implementations the return empty string.
+     */
+    static QString getPlatformLibPrefix(Platform plarform);
+
+    /**
+     * @brief qtVersionToString return integer interpritation of the Qt major version
+     * @return integer implementation of major qt version.
+     * @note return 0 if the @a qtVersion is invalid
+     */
+    static int qtVersionToString(QtMajorVersion qtVersion);
+
+    /**
+     * @brief isDebianQt this method return true if the @a qtRoot is debian system qt.
+     * @param qtRoot path to qt root dir.
+     * @return true if the @a qtRoot is debian system qt else false.
+     */
+    static bool isDebianQt(const QString& qtRoot);
 };
 
 #define internalError() DeployCore::printInternalError(__FUNCTION__, __FILE__, __LINE__)
