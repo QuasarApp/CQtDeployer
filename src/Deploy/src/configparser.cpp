@@ -1134,7 +1134,7 @@ QString ConfigParser::getPathFrmoQmakeLine(const QString &in) const {
 bool ConfigParser::initQmakePrivate(const QString &qmake) {
     QFileInfo info(qmake);
 
-    QuasarAppUtils::Params::log("initialize qt dirs for ." + info.absoluteFilePath(),
+    QuasarAppUtils::Params::log("initialize qmake for ." + info.absoluteFilePath(),
                                 QuasarAppUtils::Debug);
 
     QString basePath = info.absolutePath();
@@ -1157,6 +1157,9 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
         QString debianQtRoot = QString("/usr/lib/%0/qt%1").
                                arg(neededPlatform).arg(qtVersion);
 
+        if (DeployCore::isSnap()) {
+            debianQtRoot = DeployCore::snapRootFS() + debianQtRoot;
+        }
 
         if (!setQtDir(debianQtRoot)) {
             QuasarAppUtils::Params::log("Failed to initialize Qt directories",
@@ -1309,6 +1312,9 @@ bool ConfigParser::setQmake(const QString &value) {
 bool ConfigParser::setQtDir(const QString &value) {
 
     QFileInfo info(value);
+
+    QuasarAppUtils::Params::log("initialize qt dirs for ." + info.absoluteFilePath(),
+                                QuasarAppUtils::Debug);
 
     if (!QFile::exists(info.absoluteFilePath() + ("/bin"))) {
         QuasarAppUtils::Params::log("get qt bin failed!", QuasarAppUtils::Debug);
