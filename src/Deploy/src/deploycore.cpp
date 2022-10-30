@@ -1106,7 +1106,7 @@ int DeployCore::qtVersionToString(QtMajorVersion qtVersion) {
 }
 
 bool DeployCore::isDebianQt(const QString &qtRoot) {
-    return qtRoot.contains("/usr/lib/qt");
+    return qtRoot.contains("/usr/lib/qt") || qtRoot.contains("/usr/bin");
 }
 
 QString DeployCore::systemLibsFolderName() {
