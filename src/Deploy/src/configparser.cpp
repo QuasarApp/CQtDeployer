@@ -1265,18 +1265,8 @@ bool ConfigParser::setQmake(const QString &value) {
             _config.qtDir.setTranslations(getPathFrmoQmakeLine(value));
         } else if (value.contains("QT_INSTALL_DATA")) {
             _config.qtDir.setResources(getPathFrmoQmakeLine(value) + "/resources");
-        } else if (value.contains("QMAKE_XSPEC")) {
-            auto val = value.split(':').value(1);
-
-            if (val.contains("win32")) {
-                _config.qtDir.setQtPlatform(Platform::Win);
-            } else {
-                _config.qtDir.setQtPlatform(Platform::Unix);
-            }
         }
     }
-
-    _config.qtDir.setQtVersion(_config.isNeededQt());
 
     _config.envirement.addEnv(_config.qtDir.getLibs());
     _config.envirement.addEnv(_config.qtDir.getBins());
@@ -1312,16 +1302,15 @@ bool ConfigParser::setQtDir(const QString &value) {
         _config.qtDir.setPlugins(info.absoluteFilePath() + ("/plugins"));
     }
 
-#ifdef Q_OS_UNIX
-    if (!QFile::exists(info.absoluteFilePath() + ("/libexec"))) {
-        QuasarAppUtils::Params::log("get qt libexec failed!", QuasarAppUtils::Debug);
-    } else {
-        _config.qtDir.setLibexecs(info.absoluteFilePath() + ("/libexec"));
+    if (_config.qtDir.getQtPlatform() & Unix) {
+        if (!QFile::exists(info.absoluteFilePath() + ("/libexec"))) {
+            QuasarAppUtils::Params::log("get qt libexec failed!", QuasarAppUtils::Debug);
+        } else {
+            _config.qtDir.setLibexecs(info.absoluteFilePath() + ("/libexec"));
+        }
+    } else if (_config.qtDir.getQtPlatform() & Win) {
+        _config.qtDir.setLibexecs(info.absoluteFilePath() + ("/bin"));
     }
-#endif
-#ifdef Q_OS_WIN
-    _config.qtDir.setLibexecs(info.absoluteFilePath() + ("/bin"));
-#endif
 
     if (!QFile::exists(info.absoluteFilePath() + ("/translations"))) {
         QuasarAppUtils::Params::log("get qt translations failed!", QuasarAppUtils::Debug);
@@ -1334,15 +1323,6 @@ bool ConfigParser::setQtDir(const QString &value) {
     } else {
         _config.qtDir.setResources(info.absoluteFilePath() + ("/resources"));
     }
-
-#ifdef Q_OS_UNIX
-    _config.qtDir.setQtPlatform(Platform::Unix);
-#endif
-#ifdef Q_OS_WIN
-    _config.qtDir.setQtPlatform(Platform::Win);
-#endif
-
-    _config.qtDir.setQtVersion(_config.isNeededQt());
 
     _config.envirement.addEnv(_config.qtDir.getLibs());
     _config.envirement.addEnv(_config.qtDir.getBins());

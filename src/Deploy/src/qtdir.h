@@ -21,9 +21,9 @@ class DEPLOYSHARED_EXPORT QtDir {
     QString translations;
     QString resources;
 
-    Platform qtPlatform = UnknownPlatform;
+    Platform _platform = UnknownPlatform;
 
-    QtMajorVersion _qtVersion;
+    QtMajorVersion _qtVersion = NoQt;
 public:
     QString getLibs() const;
     void setLibs(const QString &value);
@@ -40,7 +40,6 @@ public:
     QString getResources() const;
     void setResources(const QString &value);
     Platform getQtPlatform() const;
-    void setQtPlatform(const Platform &value);
 
     /**
      * @brief isQt - This method check a path for belonging to QtDirs.
@@ -54,7 +53,6 @@ public:
      * @return the masjor version of qt
      */
     QtMajorVersion getQtVersion() const;
-    void setQtVersion(const QtMajorVersion &qtVersion);
 };
 
 #endif // QTDIR_H
