@@ -1147,6 +1147,7 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
 
     // check debian qt structure
     if (DeployCore::isDebianQt(info.absoluteFilePath())) {
+        // initialize qt that was installed from apt package manager on any debian based os
         QString neededPlatform = DeployCore::getPlatformLibPrefix(_config.getPlatformOfAll());
         int qtVersion = DeployCore::qtVersionToString(_config.isNeededQt());
 
@@ -1159,8 +1160,10 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
                                         QuasarAppUtils::Error);
             return false;
         }
+        
+        return true;
     }
-
+    // initialize qt that was installed from qt installer or aqtinstall package manager
     QDir dir(basePath);
 
     if (!dir.cdUp()) {
@@ -1169,7 +1172,7 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
         return false;
     }
 
-    // For snap package of cqtdeplyer it is norma behavior
+    // For snap package of cqtdeplyer it is normal behavior
     if (!DeployCore::isSnap()) {
         QuasarAppUtils::Params::log("Failed to execute the qmake process!"
                                     " Trying to initialize Qt directories from path: " + dir.absolutePath(),
