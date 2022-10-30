@@ -1207,13 +1207,13 @@ bool ConfigParser::initQmake() {
 
     if (!info.isFile() || (info.baseName() != "qmake")) {
 
-        QString qmakeFromRPath = DeployCore::findProcess(getRPathFromTargets(), "qmake", true);
+        QString qmakeFromRPath = DeployCore::findProcess(getRPathFromTargets(), "qmake");
 
         if (qmakeFromRPath.isEmpty()) {
 
             if (!QuasarAppUtils::Params::isEndable("noCheckPATH")) {
                 auto env = QProcessEnvironment::systemEnvironment();
-                auto proc = DeployCore::findProcess(env.value("PATH"), "qmake", true);
+                auto proc = DeployCore::findProcess(env.value("PATH"), "qmake");
                 if (proc.isEmpty()) {
                     QuasarAppUtils::Params::log("The deployment target requires Qt libraries,"
                                                 " but initialize of Qt directories is failed."
