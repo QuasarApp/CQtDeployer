@@ -603,6 +603,9 @@ QString DeployCore::getAppVersion() {
 }
 
 QString DeployCore::getAppVersionName() {
+    if (isSnap()) {
+        return "*** Cool Core (snap) ***";
+    }
     return "*** Cool Core ***";
 }
 

@@ -1134,6 +1134,9 @@ QString ConfigParser::getPathFrmoQmakeLine(const QString &in) const {
 bool ConfigParser::initQmakePrivate(const QString &qmake) {
     QFileInfo info(qmake);
 
+    QuasarAppUtils::Params::log("initialize qt dirs for ." + info.absoluteFilePath(),
+                                QuasarAppUtils::Debug);
+
     QString basePath = info.absolutePath();
 
     // Invoke qmake executable only when qmake paths exclude snapRootFS path.
