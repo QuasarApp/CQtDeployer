@@ -1136,7 +1136,7 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
 
     QString basePath = info.absolutePath();
 
-    // Invoke qmake executable only when qmake pathe exclude snapRootFS path.
+    // Invoke qmake executable only when qmake paths exclude snapRootFS path.
     // Because files in snapRootFS is not executable ...
     if (!qmake.contains(DeployCore::snapRootFS()) && setQmake(qmake)) {
         return true;
