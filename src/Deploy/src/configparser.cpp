@@ -1327,7 +1327,7 @@ bool ConfigParser::setQtDir(const QString &value) {
     _config.qtDir.setBins(info.absoluteFilePath() + ("/bin"));
 
     if (DeployCore::isDebianQt(value)) {
-        _config.qtDir.setLibs(info.absoluteFilePath() + ("/.."));
+        _config.qtDir.setLibs(info.absolutePath());
     } else {
         if (!QFile::exists(info.absoluteFilePath() + ("/lib"))) {
             QuasarAppUtils::Params::log("get qt lib failed!", QuasarAppUtils::Debug);
