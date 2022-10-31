@@ -5,7 +5,7 @@
  * of this license document, but changing it is not allowed.
  */
 
-#include "qml.h"
+#include "qmlqt6.h"
 
 #include <QDir>
 #include <QFile>
@@ -13,27 +13,17 @@
 #include "deploycore.h"
 #include "qregularexpression.h"
 
-QStringList QML::extractImportLine(const QString& line) const {
+QStringList QMLQt6::extractImportLine(const QString& line) const {
     QStringList result;
     QStringList list = line.split(" ", splitbehavior);
 
-    if (list.count() == 3 || (list.count() == 5  && list[3] == "as")) {
-        if (list[2] == "auto" || (_qtVersion & QtMajorVersion::Qt6)) {
-            // qt6
-            result << (list[1].replace(".", "/"));
-            return result;
-        }
-        // qt5
-        result << (list[2][0] + QString("#") + list[1].replace(".", "/"));
-    } else if (list.count() == 2 || (list.count() == 4  && list[2] == "as")) {
-        // qt6
-        result << (list[1].replace(".", "/"));
-    }
+    result << (list[1].replace(".", "/"));
+    return result;
 
     return result;
 }
 
-QStringList QML::extractImportsFromFile(const QString &filepath) const {
+QStringList QMLQt6::extractImportsFromFile(const QString &filepath) const {
     QStringList imports;
     QFile F(filepath);
     if (!F.open(QIODevice::ReadOnly)) return QStringList();
@@ -65,7 +55,7 @@ QStringList QML::extractImportsFromFile(const QString &filepath) const {
     return imports;
 }
 
-bool QML::extractImportsFromDir(const QString &path, bool recursive) {
+bool QMLQt6::extractImportsFromDir(const QString &path, bool recursive) {
     QDir dir(path);
 
     if (!dir.isReadable()) {
@@ -101,12 +91,10 @@ bool QML::extractImportsFromDir(const QString &path, bool recursive) {
 
     // task https://github.com/QuasarApp/CQtDeployer/issues/600
     // There are no import lines for the qt models module in Qt 6.1, but this module is required for all qml applications.
-    if (_qtVersion & QtMajorVersion::Qt6) {
-        auto importQtQml = "QtQml";
-        if (!_imports.contains(importQtQml)) {
-            _imports.insert(importQtQml);
-            extractImportsFromDir(getPathFromImport(importQtQml), false);
-        }
+    auto importQtQml = "QtQml";
+    if (!_imports.contains(importQtQml)) {
+        _imports.insert(importQtQml);
+        extractImportsFromDir(getPathFromImport(importQtQml), false);
     }
 
     if (recursive) {
@@ -118,7 +106,7 @@ bool QML::extractImportsFromDir(const QString &path, bool recursive) {
     return true;
 }
 
-QString QML::getPathFromImport(const QString &import, bool checkVersions) {
+QString QMLQt6::getPathFromImport(const QString &import, bool checkVersions) {
     if (!import.contains("#")) {
         // qt 6
         auto info = QFileInfo(_qmlRoot + "/" + import);
@@ -161,7 +149,7 @@ QString QML::getPathFromImport(const QString &import, bool checkVersions) {
     return info.absoluteFilePath();
 }
 
-bool QML::deployPath(const QString &path, QStringList &res) {
+bool QMLQt6::deployPath(const QString &path, QStringList &res) {
     QDir dir(path);
     auto infoList = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs);
 
@@ -178,7 +166,7 @@ bool QML::deployPath(const QString &path, QStringList &res) {
     return true;
 }
 
-bool QML::scanQmlTree(const QString &qmlTree) {
+bool QMLQt6::scanQmlTree(const QString &qmlTree) {
     QDir dir(qmlTree);
 
     if (!dir.isReadable()) {
@@ -198,7 +186,7 @@ bool QML::scanQmlTree(const QString &qmlTree) {
     return true;
 }
 
-QStringList QML::extractImportsFromQmlModule(const QString &module) const {
+QStringList QMLQt6::extractImportsFromQmlModule(const QString &module) const {
     QStringList imports;
     QFile F(module);
     if (!F.open(QIODevice::ReadOnly)) return QStringList();
@@ -210,24 +198,17 @@ QStringList QML::extractImportsFromQmlModule(const QString &module) const {
         if (line.startsWith("//") || line.startsWith("#")) continue;
         if (!line.startsWith("depends")) continue;
 
-        QStringList list = line.split(" ", splitbehavior);
         imports += extractImportLine(line);
     }
 
     return imports;
 }
 
-void QML::setQtVersion(const QtMajorVersion &qtVersion) {
-    _qtVersion = qtVersion;
-}
+QMLQt6::QMLQt6(const QString &qmlRoot): iQML(qmlRoot) {}
 
-QML::QML(const QString &qmlRoot, QtMajorVersion qtVersion) {
-    _qmlRoot = qmlRoot;
-    setQtVersion(qtVersion);
+QMLQt6::~QMLQt6(){}
 
-}
-
-bool QML::scan(QStringList &res, const QString& _qmlProjectDir) {
+bool QMLQt6::scan(QStringList &res, const QString& _qmlProjectDir) {
 
     if (!scanQmlTree(_qmlRoot)) {
         return false;
