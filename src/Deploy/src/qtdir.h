@@ -13,7 +13,7 @@
 #include "deploy_global.h"
 #include "deploycore.h"
 
-class DEPLOYSHARED_EXPORT QtDir: QuasarAppUtils::HumanReadableObject {
+class DEPLOYSHARED_EXPORT QtDir: QuasarAppUtils::iHRO {
     QString libs;
     QString bins;
     QString libexecs;
