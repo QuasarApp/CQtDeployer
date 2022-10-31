@@ -9,10 +9,11 @@
 #define QTDIR_H
 
 #include <QDir>
+#include <humanreadableobject.h>
 #include "deploy_global.h"
 #include "deploycore.h"
 
-class DEPLOYSHARED_EXPORT QtDir {
+class DEPLOYSHARED_EXPORT QtDir: QuasarAppUtils::HumanReadableObject {
     QString libs;
     QString bins;
     QString libexecs;
@@ -53,6 +54,8 @@ public:
      * @return the masjor version of qt
      */
     QtMajorVersion getQtVersion() const;
+
+    QString toString() const override;
 };
 
 #endif // QTDIR_H

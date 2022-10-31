@@ -753,6 +753,10 @@ bool ConfigParser::parseDeployMode(bool checkBin) {
         return false;
     }
 
+    QuasarAppUtils::Params::log(
+        _config.qtDir.toString(),
+        QuasarAppUtils::Debug);
+
     if (!initQmlInput()) {
         return false;
     }
@@ -1134,7 +1138,7 @@ QString ConfigParser::getPathFrmoQmakeLine(const QString &in) const {
 bool ConfigParser::initQmakePrivate(const QString &qmake) {
     QFileInfo info(qmake);
 
-    QuasarAppUtils::Params::log("initialize qmake for ." + info.absoluteFilePath(),
+    QuasarAppUtils::Params::log("initialize qmake for.  " + info.absoluteFilePath(),
                                 QuasarAppUtils::Debug);
 
     QString basePath = info.absolutePath();
@@ -1313,7 +1317,7 @@ bool ConfigParser::setQtDir(const QString &value) {
 
     QFileInfo info(value);
 
-    QuasarAppUtils::Params::log("initialize qt dirs for ." + info.absoluteFilePath(),
+    QuasarAppUtils::Params::log("initialize qt dirs for. " + info.absoluteFilePath(),
                                 QuasarAppUtils::Debug);
 
     if (!QFile::exists(info.absoluteFilePath() + ("/bin"))) {

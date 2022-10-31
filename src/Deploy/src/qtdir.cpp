@@ -12,6 +12,29 @@ QtMajorVersion QtDir::getQtVersion() const {
     return _qtVersion;
 }
 
+QString QtDir::toString() const {
+    return QString {
+        "Qt Inforamtion: \n"
+        "Platform: %0\n"
+        "Major version: %1\n"
+        "Binaries dir: %2\n"
+        "Libraries dir: %3\n"
+        "Libexecs dir: %4\n"
+        "Plugins dir: %5\n"
+        "QMLs dir: %6\n"
+        "Translations dir: %7\n"
+        "Resources dir: %8\n"
+    }.arg(DeployCore::platformToString(_platform),
+             QString::number(DeployCore::qtVersionToString(_qtVersion)),
+             bins,
+             libs,
+             libexecs,
+             plugins,
+             qmls,
+             translations,
+             resources);
+}
+
 QString QtDir::getLibs() const {
     return libs;
 }
