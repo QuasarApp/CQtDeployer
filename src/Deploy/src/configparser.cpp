@@ -1307,6 +1307,9 @@ bool ConfigParser::setQmake(const QString &value) {
         }
     }
 
+    if (_config.qtDir.getLibs().isEmpty())
+        return false;
+
     _config.envirement.addEnv(_config.qtDir.getLibs());
     _config.envirement.addEnv(_config.qtDir.getBins());
 
