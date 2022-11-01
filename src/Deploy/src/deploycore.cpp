@@ -603,6 +603,9 @@ QString DeployCore::getAppVersion() {
 }
 
 QString DeployCore::getAppVersionName() {
+    if (isSnap()) {
+        return "*** Cool Core (snap) ***";
+    }
     return "*** Cool Core ***";
 }
 
@@ -633,11 +636,16 @@ bool DeployCore::isContainsArraySeparators(const QString &val, int lastLvl) {
     return false;
 }
 
-QString DeployCore::findProcess(const QString &env, const QString& proc) {
+QString DeployCore::findProcess(const QString &env, const QString& proc, bool ignoreSymLinks) {
     auto list = env.split(DeployCore::getEnvSeparator());
 
+    auto findEntries = QDir::NoDotAndDotDot | QDir::Files;
+    if (ignoreSymLinks) {
+        findEntries = findEntries | QDir::NoSymLinks;
+    }
+
     for (const auto& path : list) {
-        auto files = QDir(path).entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
+        auto files = QDir(path).entryInfoList(findEntries);
 
         for (const auto& bin : files) {
             if (bin.baseName().compare(proc, DeployCore::getCaseSensitivity()) == 0 && bin.isExecutable()) {
@@ -649,7 +657,7 @@ QString DeployCore::findProcess(const QString &env, const QString& proc) {
     // working only for the snap version of cqtdeployer ...
     if (isSnap()) {
         for (const auto& path : list) {
-            auto files = QDir(transportPathToSnapRoot(path)).entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
+            auto files = QDir(transportPathToSnapRoot(path)).entryInfoList(findEntries);
 
             for (const auto& bin : files) {
                 if (bin.baseName().compare(proc, DeployCore::getCaseSensitivity()) == 0) {
@@ -918,7 +926,7 @@ QString DeployCore::platformToString(Platform platform) {
         {Platform::Win32, "win_x86"},
         {Platform::Win64, "win_x86_64"},
         {Platform::Win_ARM_32, "win_arm"},
-        {Platform::win_ARM_64, "win_arm64"},
+        {Platform::Win_ARM_64, "win_arm64"},
         {Platform::Unix_x86_32, "linux_x86"},
         {Platform::Unix_x86_64, "linux_x86_64"},
         {Platform::Unix_ARM_32, "linux_ARM"},
@@ -952,7 +960,7 @@ Platform DeployCore::getPlatformFromString(const QString &platformName) {
         {"win_x86", Platform::Win32},
         {"win_x86_64", Platform::Win64},
         {"win_arm", Platform::Win_ARM_32},
-        {"win_arm64", Platform::win_ARM_64},
+        {"win_arm64", Platform::Win_ARM_64},
         {"linux_x86", Platform::Unix_x86_32},
         {"linux_x86_64", Platform::Unix_x86_64},
         {"linux_ARM", Platform::Unix_ARM_32},
@@ -1057,7 +1065,49 @@ Qt::CaseSensitivity DeployCore::getCaseSensitivity(const QString &checkedFile) {
     }
 
     return Qt::CaseSensitive;
-};
+}
+
+
+
+QString DeployCore::getPlatformLibPrefix(Platform plarform) {
+
+    if (plarform & Platform::Unix_x86_64) {
+        return "x86_64-linux-gnu";
+    } else if (plarform & Platform::Unix_ARM_64) {
+        return "aarch64-linux-gnu";
+    } else if (plarform & Platform::Unix_x86_32) {
+        return "x86_32-linux-gnu";
+    } else if (plarform & Platform::Unix_ARM_32) {
+        return "arm-linux-gnu";
+    } else if (plarform & Platform::Win64) {
+        return "";
+    } else if (plarform & Platform::Win32) {
+        return "";
+    } else if (plarform & Platform::Win_ARM_64) {
+        return "";
+    } else if (plarform & Platform::Win_ARM_32) {
+        return "";
+    }
+
+    // not supported
+    return "";
+}
+
+int DeployCore::qtVersionToString(QtMajorVersion qtVersion) {
+    if (qtVersion & QtMajorVersion::Qt6) {
+        return 6;
+    } else if (qtVersion & QtMajorVersion::Qt5) {
+        return 5;
+    } else if (qtVersion & QtMajorVersion::Qt4) {
+        return 4;
+    }
+
+    return 0;
+}
+
+bool DeployCore::isDebianQt(const QString &qtRoot) {
+    return qtRoot.contains("/usr/lib/") || qtRoot.contains("/usr/bin");
+}
 
 QString DeployCore::systemLibsFolderName() {
     return "systemLibs";

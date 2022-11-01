@@ -8,7 +8,6 @@
 #include "deploycore.h"
 #include "envirement.h"
 #include "pathutils.h"
-#include "quasarapp.h"
 
 #include <QDir>
 #include <QFileInfo>
