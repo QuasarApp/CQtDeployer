@@ -1,6 +1,18 @@
 # Change log 
 
-## CQtDeployer 1.6
+## CQtDeployer v1.6.2265
+
+### What's Changed
+
+* Added sources into documentation by @EndrII in https://github.com/QuasarApp/CQtDeployer/pull/727
+* Added article for building cqtdeployer on arm platforms by @EndrII in https://github.com/QuasarApp/CQtDeployer/pull/726
+* Update zip submodule by @EndrII in https://github.com/QuasarApp/CQtDeployer/pull/730
+* Added the qml files dialogs test by @EndrII in https://github.com/QuasarApp/CQtDeployer/pull/729
+* Added the dynamic detection qt version and qt platform properties by @EndrII in https://github.com/QuasarApp/CQtDeployer/pull/733
+* Fix warning: ``run qmake file! execve: Permission denied`` by @EndrII in https://github.com/QuasarApp/CQtDeployer/pull/732
+
+
+## CQtDeployer 1.6.2227
 
 ### New features
 
