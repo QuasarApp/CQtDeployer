@@ -76,7 +76,7 @@ set(QIFW_PLATFORM linux)
 set(INSTALLER_SUFIX ".run")
 if (WIN32)
     set(QIFW_PLATFORM windows)
-    set(INSTALLER_SUFIX exe)
+    set(INSTALLER_SUFIX ".exe")
     set(ApplicationsDir "@ApplicationsDir@")
 
 endif()
