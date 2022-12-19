@@ -1271,11 +1271,6 @@ bool ConfigParser::setQmake(const QString &value) {
     QuasarAppUtils::Params::log("sets qmake for.  " + qmakeInfo.absoluteFilePath(),
                                 QuasarAppUtils::Debug);
 
-    if (!(qmakeInfo.fileName().compare("qmake", Qt::CaseInsensitive) ||
-          qmakeInfo.fileName().compare("qmake.exe", Qt::CaseInsensitive))) {
-        return false;
-    }
-
     QProcess proc;
     proc.setProgram(qmakeInfo.absoluteFilePath());
     proc.setProcessEnvironment(QProcessEnvironment::systemEnvironment());
