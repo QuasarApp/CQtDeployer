@@ -1266,11 +1266,13 @@ bool ConfigParser::initQmake() {
 
 bool ConfigParser::setQmake(const QString &value) {
 
-    auto qmakeInfo = QFileInfo(QDir::fromNativeSeparators(value));
+    auto qmakeInfo = QFileInfo(value);
+
+    QuasarAppUtils::Params::log("sets qmake for.  " + qmakeInfo.absoluteFilePath(),
+                                QuasarAppUtils::Debug);
 
     if (!(qmakeInfo.fileName().compare("qmake", Qt::CaseInsensitive) ||
           qmakeInfo.fileName().compare("qmake.exe", Qt::CaseInsensitive))) {
-
         return false;
     }
 
@@ -1531,7 +1533,7 @@ QList<iDistribution *> ConfigParser::getDistribution() {
         distros.push_back(new ZipArhive(_fileManager));
     }
 
-    if (QuasarAppUtils::Params::isEndable("qif")) {
+    if (QuasarAppUtils::Params::isEndable("qifw") || QuasarAppUtils::Params::isEndable("qif")) {
         distros.push_back(new QIF(_fileManager));
     }
 
