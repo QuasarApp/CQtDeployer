@@ -1533,7 +1533,7 @@ QList<iDistribution *> ConfigParser::getDistribution() {
         distros.push_back(new ZipArhive(_fileManager));
     }
 
-    if (QuasarAppUtils::Params::isEndable("qifw") || QuasarAppUtils::Params::isEndable("qif")) {
+    if (QuasarAppUtils::Params::isEndable("qif")) {
         distros.push_back(new QIF(_fileManager));
     }
 
