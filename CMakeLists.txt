@@ -39,7 +39,7 @@ updateGitVars()
 string(TIMESTAMP TODAY "%Y-%m-%d")
 set(CQT_DEPLOYER_VERSION_SHORT_PREFIX "1.6")
 set(CQT_DEPLOYER_VERSION "${CQT_DEPLOYER_VERSION_SHORT_PREFIX}.${GIT_COMMIT_COUNT}.${GIT_COMMIT_HASH}")
-set(QIFW_VERSION "4.4")
+set(QIFW_VERSION "4.5")
 
 option(CQT_DEPLOYER_TESTS "This option disables or enables tests of the ${PROJECT_NAME} project"  ON)
 option(CQT_DEPLOYER_TOOL "This option disables or enables example app of the ${PROJECT_NAME} project" ON)
