@@ -1266,13 +1266,10 @@ bool ConfigParser::initQmake() {
 
 bool ConfigParser::setQmake(const QString &value) {
 
-    auto qmakeInfo = QFileInfo(QDir::fromNativeSeparators(value));
+    auto qmakeInfo = QFileInfo(value);
 
-    if (!(qmakeInfo.fileName().compare("qmake", Qt::CaseInsensitive) ||
-          qmakeInfo.fileName().compare("qmake.exe", Qt::CaseInsensitive))) {
-
-        return false;
-    }
+    QuasarAppUtils::Params::log("sets qmake for.  " + qmakeInfo.absoluteFilePath(),
+                                QuasarAppUtils::Debug);
 
     QProcess proc;
     proc.setProgram(qmakeInfo.absoluteFilePath());
@@ -1307,8 +1304,13 @@ bool ConfigParser::setQmake(const QString &value) {
         }
     }
 
-    if (_config.qtDir.getLibs().isEmpty())
+    if (_config.qtDir.getLibs().isEmpty()) {
+        QuasarAppUtils::Params::log("Wrong output from the qmake process. " + qmakeInfo.absoluteFilePath(), QuasarAppUtils::Warning);
+        QuasarAppUtils::Params::log("Raw output:" + qmakeData, QuasarAppUtils::Debug);
+        QuasarAppUtils::Params::log("Parsed Qt configuration: \n" + _config.qtDir.toString(), QuasarAppUtils::Debug);
+
         return false;
+    }
 
     _config.envirement.addEnv(_config.qtDir.getLibs());
     _config.envirement.addEnv(_config.qtDir.getBins());
@@ -1323,11 +1325,17 @@ bool ConfigParser::setQtDir(const QString &value) {
     QuasarAppUtils::Params::log("initialize qt dirs for. " + info.absoluteFilePath(),
                                 QuasarAppUtils::Debug);
 
-    if (!QFile::exists(info.absoluteFilePath() + ("/bin"))) {
-        QuasarAppUtils::Params::log("get qt bin failed!", QuasarAppUtils::Debug);
-        return false;
+    if (DeployCore::isDebianQt(value)) {
+        if (QFile::exists(info.absoluteFilePath() + ("/bin"))) {
+            _config.qtDir.setBins(info.absoluteFilePath() + ("/bin"));
+        }
+    } else {
+        if (!QFile::exists(info.absoluteFilePath() + ("/bin"))) {
+            QuasarAppUtils::Params::log("get qt bin failed!", QuasarAppUtils::Debug);
+            return false;
+        }
+        _config.qtDir.setBins(info.absoluteFilePath() + ("/bin"));
     }
-    _config.qtDir.setBins(info.absoluteFilePath() + ("/bin"));
 
     if (DeployCore::isDebianQt(value)) {
         _config.qtDir.setLibs(info.absolutePath());
