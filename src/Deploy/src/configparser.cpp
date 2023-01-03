@@ -1208,7 +1208,7 @@ bool ConfigParser::initQmake() {
         return true;
     }
 
-    auto qmake = QuasarAppUtils::Params::getArg("qmake");
+    auto qmake = DeployCore::transportPathToSnapRoot(QuasarAppUtils::Params::getArg("qmake"));
 
     QFileInfo info(qmake);
 
@@ -1305,9 +1305,12 @@ bool ConfigParser::setQmake(const QString &value) {
     }
 
     if (_config.qtDir.getLibs().isEmpty()) {
-        QuasarAppUtils::Params::log("Wrong output from the qmake process. " + qmakeInfo.absoluteFilePath(), QuasarAppUtils::Warning);
-        QuasarAppUtils::Params::log("Raw output:" + qmakeData, QuasarAppUtils::Debug);
-        QuasarAppUtils::Params::log("Parsed Qt configuration: \n" + _config.qtDir.toString(), QuasarAppUtils::Debug);
+        QuasarAppUtils::Params::log("Wrong output from the qmake process. " + qmakeInfo.absoluteFilePath(),
+                                    QuasarAppUtils::Warning);
+        QuasarAppUtils::Params::log("Raw output:" + qmakeData,
+                                    QuasarAppUtils::Debug);
+        QuasarAppUtils::Params::log("Parsed Qt configuration: \n" + _config.qtDir.toString(),
+                                    QuasarAppUtils::Debug);
 
         return false;
     }
