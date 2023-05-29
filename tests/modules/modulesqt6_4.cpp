@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2023-2023 QuasarApp.
+ * Distributed under the lgplv3 software license, see the accompanying
+ * Everyone is permitted to copy and distribute verbatim copies
+ * of this license document, but changing it is not allowed.
+ */
+
 #include "modulesqt6_4.h"
 
 ModulesQt6_4::ModulesQt6_4()
