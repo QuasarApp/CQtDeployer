@@ -22,15 +22,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (IOS)
     option(BUILD_SHARED_LIBS "This option forece build ${PROJECT_NAME} as a shared project with separated libraries as" OFF)
-elseif()
+else()
     option(BUILD_SHARED_LIBS "This option forece build ${PROJECT_NAME} as a shared project with separated libraries as" ON)
 endif()
 
 
 if (NOT QT_VERSION_MAJOR)
     find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Test QUIET)
+    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
+    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test QUIET)
 endif()
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Test QUIET)
 
 include(submodules/QuasarAppLib/CMake/QuasarApp.cmake)
 
@@ -41,7 +42,7 @@ set(CQT_DEPLOYER_VERSION_SHORT_PREFIX "1.6")
 set(CQT_DEPLOYER_VERSION "${CQT_DEPLOYER_VERSION_SHORT_PREFIX}.${GIT_COMMIT_COUNT}.${GIT_COMMIT_HASH}")
 set(QIFW_VERSION "4.5") # rebuild for the 4.5.2
 
-option(CQT_DEPLOYER_TESTS "This option disables or enables tests of the ${PROJECT_NAME} project"  ON)
+option(CQT_DEPLOYER_TESTS "This option disables or enables tests of the ${PROJECT_NAME} project" ${Qt${QT_VERSION_MAJOR}Test_FOUND})
 option(CQT_DEPLOYER_TOOL "This option disables or enables example app of the ${PROJECT_NAME} project" ON)
 
 if (ANDROID OR IOS OR NOT QT_VERSION_MAJOR OR QA_WASM32)
