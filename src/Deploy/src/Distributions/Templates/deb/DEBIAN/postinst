@@ -21,7 +21,7 @@ function createShortCut {
         echo "Encoding=UTF-8" >> $DEST_FILE
         echo "Name=$DEST_NAME" >> $DEST_FILE
         echo "Type=Application" >> $DEST_FILE
-        echo "Icon=$CQT_INSTALL_DEB_DIR/icons/${SRC_FILE%%.*}.png" >> $DEST_FILE
+        echo "Icon=$TARGET_DIR/icons/${DEST_NAME}.png" >> $DEST_FILE
         echo "Terminal=false" >> $DEST_FILE
         echo "Exec=$SRC_FILE" >> $DEST_FILE
 
@@ -34,8 +34,6 @@ echo "Available commands:"
 for app in "${APPS[@]}"
 do
     
-    DEST_NAME=$app
-
     if [ ! -e /usr/bin/"${app,,}" ]; then
         ln -s "$TARGET_DIR/$app.sh" /usr/bin/"${app,,}"
         echo "${app,,}"
@@ -45,10 +43,10 @@ done
 for app in "${APPS_SHORTCUTS[@]}"
 do
 
-    DEST_NAME=$app
+    DEST_NAME=${app%.*}
 
     SRC_FILE="$TARGET_DIR/$app"
-    DEST_FILE="/usr/share/applications/${app%.*}.desktop"
+    DEST_FILE="/usr/share/applications/${DEST_NAME}.desktop"
     createShortCut
 done
 

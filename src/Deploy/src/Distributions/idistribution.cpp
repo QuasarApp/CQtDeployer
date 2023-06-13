@@ -252,7 +252,7 @@ bool iDistribution::collectInfo(const DistroModule& pkg,
     info.Custom["[\"array\", \"of\", \"shortcut\", \"cmds\"]"] = cmdShortCutsArray;
 
     info.Custom["$BASH_ARRAY_APPLICATIONS"] = bashArray;
-    info.Custom["$BASH_ARRAY_APPLICATIONS"] = bashArray;
+    info.Custom["$BASH_ARRAY_SHORTCUTS_APPLICATIONS"] = bashShortCutsArray;
 
     if (info.Name.isEmpty()) {
         info.Name = "Application";
