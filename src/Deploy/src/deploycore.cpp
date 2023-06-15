@@ -445,6 +445,12 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             "Adds qm files into the translations folder."
                         }});
 
+    help.insert(group, {QuasarAppUtils::OptionData{
+                           {"-extraDepends"}, "{package;val,val}",
+                           "Adds extra dependencies for package, if package is skiped then for default package.",
+                           "Example -extraDepends libssl.so or -targetPackage packageName;myExecutable -extraDepends packageName;libssl.so"
+                       }});
+
     group = "Part 4 Control of target options";
 
     help.insert(group, {QuasarAppUtils::OptionData{

@@ -125,7 +125,8 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -prefix [package;val,val]   | Sets the prefix for the package relatively a target directory       |
 |  -extraData [package;val,val]| Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure.|
 |  -tr [package;val,val]       | Adds qm files into the translations folder.                     |
-
+|  -extraDepends [package;val,val]  | Adds extra dependencies for package, if package is skiped then for default package. Example -extraDepends libssl.so or -targetPackage packageName;myExecutable -extraDepends packageName;libssl.so           |
+|                             | Example: "-extraLib mySql" - forces to copy all libraries whose names contain mySql to the project folder. This option is case-insensitive on Windows and case-sensitive on other platforms. This option will only search libraries in system environments similar to **deploySystem**.|
 ### Controll of targets options
 
 | Option                      | Descriptiion                                              |

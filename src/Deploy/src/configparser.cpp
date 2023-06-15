@@ -461,6 +461,9 @@ bool ConfigParser::initDistroStruct() {
     auto trData = QuasarAppUtils::Params::getArg("tr").
             split(DeployCore::getSeparator(0), splitbehavior);
 
+    auto extraDependsData = QuasarAppUtils::Params::getArg("extraDepends").
+                  split(DeployCore::getSeparator(0), splitbehavior);
+
     auto installDirDeb = QuasarAppUtils::Params::getArg("installDirDeb").
             split(DeployCore::getSeparator(0), splitbehavior);
 
@@ -548,6 +551,11 @@ bool ConfigParser::initDistroStruct() {
 
     if (trData.size() && !parsePackagesPrivate(mainDistro, trData, &DistroModule::addTranslation)) {
         packagesErrorLog("tr");
+        return false;
+    }
+
+    if (extraDependsData.size() && !parsePackagesPrivate(mainDistro, extraDependsData, &DistroModule::addExtraDepends)) {
+        packagesErrorLog("extraDepends");
         return false;
     }
 

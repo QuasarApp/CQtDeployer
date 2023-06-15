@@ -101,6 +101,23 @@ public:
      */
     void setZipOut(const QString &newZipOut);
 
+    /**
+     * @brief extraDepends This method return list of the extra depends of this package.
+     * @return list of the extra depends of this package.
+     */
+    QSet<QString> extraDepends() const;
+
+    /**
+     * @brief setExtraDepends This method sets new list of the extra depends
+     * @param newExtraDepends This is new list of extra depends.
+     */
+    void setExtraDepends(const QSet<QString> &newExtraDepends);
+
+    /**
+     * @brief addExtraDepends this method adds new extra depends value into list of extra depends.
+     * @param newExtraDepends This is new value of extra depends of this package.
+     */
+    void addExtraDepends(const QString &newExtraDepends);
 protected:
     void setKey(const QString &key);
 
@@ -127,6 +144,9 @@ private:
 
     // extra translations
     QSet<QString> _tr;
+
+    // extra translations
+    QSet<QString> _extraDepends;
 
     QString _installDirDEB;
     QString _debOut;
