@@ -148,18 +148,6 @@ void DistroModule::setKey(const QString &key) {
     _key = key;
 }
 
-QSet<QString> DistroModule::extraDepends() const {
-    return _extraDepends;
-}
-
-void DistroModule::setExtraDepends(const QSet<QString> &newExtraDepends) {
-    _extraDepends = newExtraDepends;
-}
-
-void DistroModule::addExtraDepends(const QString &newExtraDepends) {
-    _extraDepends += newExtraDepends;
-}
-
 const QString &DistroModule::zipOut() const {
     return _zipOut;
 }

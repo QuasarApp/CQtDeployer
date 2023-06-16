@@ -102,4 +102,16 @@ void TargetInfo::disableRunScript() {
     setFEnableRunScript(false);
 }
 
+const QStringList& TargetInfo::extraDepends() const {
+    return _extraDepends;
+}
+
+void TargetInfo::setExtraDepends(const QStringList &newExtraDepends) {
+    _extraDepends = newExtraDepends;
+}
+
+void TargetInfo::addExtraDepends(const QString &newExtraDepends) {
+    _extraDepends += newExtraDepends;
+}
+
 

@@ -445,12 +445,6 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             "Adds qm files into the translations folder."
                         }});
 
-    help.insert(group, {QuasarAppUtils::OptionData{
-                           {"-extraDepends"}, "{package;val,val}",
-                           "Adds extra dependencies for package, if package is skiped then for default package.",
-                           "Example -extraDepends libssl.so or -targetPackage packageName;myExecutable -extraDepends packageName;libssl.so"
-                       }});
-
     group = "Part 4 Control of target options";
 
     help.insert(group, {QuasarAppUtils::OptionData{
@@ -458,13 +452,19 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             "Sets path to icon for a targets"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
-                            {"-disableRunScript"}, "{package;val,val}",
+                            {"-disableRunScript"}, "{target;val,val}",
                             "Disables a generation of run script for selected targets"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
-                            {"-disableShortCut"}, "{package;val,val}",
+                            {"-disableShortCut"}, "{target;val,val}",
                             "Disables a generation of shortcut for selected targets"
                         }});
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                           {"-extraDepends"}, "{target;val,val}",
+                           "Adds extra dependencies for target, if package is skiped then for rest of all targets.",
+                           "Example -extraDepends libssl.so or -targetPackage packageName;myExecutable -extraDepends packageName;libssl.so"
+                       }});
 
     group = "Part 5 Plugins Control Options";
 

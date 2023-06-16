@@ -125,8 +125,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -prefix [package;val,val]   | Sets the prefix for the package relatively a target directory       |
 |  -extraData [package;val,val]| Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure.|
 |  -tr [package;val,val]       | Adds qm files into the translations folder.                     |
-|  -extraDepends [package;val,val]  | Adds extra dependencies for package, if package is skiped then for default package. Example -extraDepends libssl.so or -targetPackage packageName;myExecutable -extraDepends packageName;libssl.so           |
-|                             | Example: "-extraLib mySql" - forces to copy all libraries whose names contain mySql to the project folder. This option is case-insensitive on Windows and case-sensitive on other platforms. This option will only search libraries in system environments similar to **deploySystem**.|
+
 ### Controll of targets options
 
 | Option                      | Descriptiion                                              |
@@ -135,9 +134,10 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -disableRunScript [target,target2,target3]  | Disables the generation of run script for selected targets|
 |  -disableShortCut [target,target2,target3]   | Disables the generation of shortcut for selected targets |
 |  -runScript [target;val,val]  | forces cqtdeployer swap default run script to new from the arguments of option. This option copy all content from input file and insert all code into runScript.sh or .bat. Example of use: cqtdeployer -runScript "myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh" For get more information about customScript see the documentation [page](CustomScripts.md)|
+|  -extraDepends [target;val,val]  | Adds extra dependencies for target, if package is skiped then for all targets. Example -extraDepends libssl.so or -targetPackage packageName;myExecutable -extraDepends packageName;libssl.so           |
 
 ### Plugins Controll Options
-
+ 
 | Option                      | Descriptiion                                              |
 |-----------------------------|-----------------------------------------------------------|
 |  -extraPlugin [package;val1;val2,SingeleVal]| Sets an additional path to third-party application plug-in |

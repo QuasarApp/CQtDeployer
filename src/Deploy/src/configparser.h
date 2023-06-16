@@ -68,7 +68,6 @@ private:
     bool setTargets(const QStringList &value);
     bool setTargetsRecursive(const QString &dir);
     bool setTargetsInDir(const QString &dir, bool recursive = false);
-
     void initIgnoreList();
     void initIgnoreEnvList();
 
@@ -120,6 +119,7 @@ private:
      */
     bool addTarget(const TargetData &target);
     void initCustomPlatform();
+    void addExtraNamesMasks(const QStringList &listNamesMasks);
 };
 
 #endif // CQT_H

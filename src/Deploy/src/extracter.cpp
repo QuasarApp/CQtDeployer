@@ -100,8 +100,17 @@ void Extracter::extractAllTargets() {
     for (auto i = cfg->packages().cbegin(); i != cfg->packages().cend(); ++i) {
         auto &dep = _packageDependencyes[i.key()];
 
-        for (const auto &target : i.value().targets()) {
-            extract(target, &dep);
+        for (const auto &targetId : i.value().targets()) {
+            auto target = cfg->targets().value(targetId);
+
+            const auto depends = target.extraDepends();
+            for (const auto &extraDepends: depends) {
+                dep.addNeadedLib(extraDepends);
+                extract(extraDepends, &dep);
+            }
+
+            extract(targetId, &dep);
+
         }
     }
 }
