@@ -98,24 +98,6 @@ public:
      */
     void disableRunScript();
 
-    /**
-     * @brief extraDepends This method contais list of all extra depends of this target object.
-     * @return list of extra depends.
-     */
-    const QStringList &extraDepends() const;
-
-    /**
-     * @brief setExtraDepends This method sets new list of extra depends
-     * @param newExtraDepends This is new value.
-     */
-    void setExtraDepends(const QStringList &newExtraDepends);
-
-    /**
-     * @brief addExtraDepends This method add new value to the depends list.
-     * @param newExtraDepends new value of depends.
-     */
-    void addExtraDepends(const QString& newExtraDepends);
-
 private:
     QString _package = "";
     QString _icon = "";
@@ -123,7 +105,6 @@ private:
     bool _fEnableRunScript = true;
 
     QString _runScript = "";
-    QStringList _extraDepends;
 
  };
 

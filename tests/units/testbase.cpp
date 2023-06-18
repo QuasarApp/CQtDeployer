@@ -187,7 +187,12 @@ void TestBase::costomScript() {
 
 }
 
-void TestBase::runTestParams(QStringList list, QSet<QString> *tree, bool noWarnings, bool onlySize, exitCodes exitCode, const std::function<void (const DeployConfig *)> &cb) {
+void TestBase::runTestParams(QStringList list,
+                             QSet<QString> *tree,
+                             bool noWarnings,
+                             bool onlySize,
+                             exitCodes exitCode,
+                             const std::function<void (const DeployConfig *)> &cb) {
 
     QuasarAppUtils::Params::parseParams(list);
 

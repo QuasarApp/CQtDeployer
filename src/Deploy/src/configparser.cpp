@@ -838,7 +838,7 @@ bool ConfigParser::configureTargets() {
     }
 
     if (extraDepends.size()) {
-        parseTargetPrivate(_config, extraDepends, &TargetInfo::addExtraDepends);
+        parseTargetPrivate(_config, extraDepends, &TargetInfo::addDepends);
     }
 
     return true;

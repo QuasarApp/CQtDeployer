@@ -219,10 +219,13 @@ LibInfo DependenciesScanner::scan(const QString &path) {
         return info;
     }
 
-    QSet<QString> stack;
-    recursiveDep(info, info._allDep , stack);
-
+    scan(info);
     return info;
+}
+
+void DependenciesScanner::scan(LibInfo &lib) {
+    QSet<QString> stack;
+    recursiveDep(lib, lib._allDep , stack);
 }
 
 DependenciesScanner::~DependenciesScanner() {
