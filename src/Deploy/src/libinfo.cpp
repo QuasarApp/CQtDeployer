@@ -60,6 +60,10 @@ void LibInfo::addDependncies(const QString &value) {
     _dependncies.insert(value);
 }
 
+void LibInfo::addDepends(const QString &value) {
+    addDependncies(value);
+}
+
 void LibInfo::addDependncies(const QSet<QString> &value) {
     _dependncies += value;
 }

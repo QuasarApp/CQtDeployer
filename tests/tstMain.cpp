@@ -9,6 +9,8 @@
 #include "qttest.h"
 
 #ifdef Q_OS_LINUX
+#include "extradependstest.h"
+
 #include "allowemptypackagestest.h"
 #include "binprefixtest.h"
 #include "checkqttest.h"
@@ -100,6 +102,7 @@ private slots:
 
     // main tests works on linux only
 #ifdef Q_OS_LINUX
+        TestCase(extraDependsTest, ExtraDependsTest)
         TestCase(allowemptypackagestest, AllowEmptyPackagesTest )
         TestCase(binprefixtest,  BinPrefixTest)
         TestCase(checkqttest,  CheckQtTest)

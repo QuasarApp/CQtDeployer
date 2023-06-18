@@ -100,8 +100,8 @@ void Extracter::extractAllTargets() {
     for (auto i = cfg->packages().cbegin(); i != cfg->packages().cend(); ++i) {
         auto &dep = _packageDependencyes[i.key()];
 
-        for (const auto &target : i.value().targets()) {
-            extract(target, &dep);
+        for (const auto &targetId : i.value().targets()) {
+            extract(targetId, &dep);
         }
     }
 }
@@ -406,9 +406,16 @@ void Extracter::extractLib(const QString &file,
     QuasarAppUtils::Params::log("extract lib :" + file,
                                 QuasarAppUtils::Debug);
 
-    auto data = _scaner->scan(file);
+    QSet<LibInfo> allDependencies;
+    auto targetObject = DeployCore::_config->targets().value(file);
+    if (targetObject.isValid()) {
+        _scaner->scan(targetObject);
+        allDependencies = targetObject.getAllDep();
+    } else {
+        allDependencies = _scaner->scan(file).getAllDep();
+    }
 
-    for (const auto &line : data.getAllDep()) {
+    for (const auto &line : qAsConst(allDependencies)) {
 
         if (mask.size() && !line.getName().contains(mask, DeployCore::getCaseSensitivity())) {
             continue;

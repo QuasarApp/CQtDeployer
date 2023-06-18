@@ -816,6 +816,8 @@ bool ConfigParser::configureTargets() {
     const auto disableShortcuts = QuasarAppUtils::Params::getArg("disableShortCut").
             split(DeployCore::getSeparator(0), splitbehavior);
 
+    const auto extraDepends = QuasarAppUtils::Params::getArg("extraDepends").
+                                  split(DeployCore::getSeparator(0), splitbehavior);
 
     if (icons.size()) {
         parseTargetPrivate(_config, icons, &TargetInfo::setIcon);
@@ -833,6 +835,10 @@ bool ConfigParser::configureTargets() {
     if (disableRunScripts.size() && !enableOptionFotTargetPrivate(_config, disableRunScripts, &TargetInfo::disableRunScript)) {
         packagesErrorLog("disableRunScript");
         return false;
+    }
+
+    if (extraDepends.size()) {
+        parseTargetPrivate(_config, extraDepends, &TargetInfo::addDepends);
     }
 
     return true;
@@ -1442,27 +1448,27 @@ bool ConfigParser::initExtraPath() {
     return true;
 }
 
-void ConfigParser::initExtraNames() {
+void ConfigParser::addExtraNamesMasks(const QStringList& listNamesMasks) {
+    for (const auto &i : listNamesMasks) {
+        if (i.size() > 1) {
+            _config.allowedPaths.addtExtraNamesMasks({i});
 
-    const auto deployExtraNames = [this](const QStringList& listNamesMasks){
-        for (const auto &i : listNamesMasks) {
-            if (i.size() > 1) {
-                _config.allowedPaths.addtExtraNamesMasks({i});
-
-                QuasarAppUtils::Params::log(i + " is added as a filename mask",
-                                            QuasarAppUtils::Debug);
-            } else {
-                QuasarAppUtils::Params::log(i + " not added in file mask because"
-                                                " the file mask must be large 2 characters",
-                                            QuasarAppUtils::Debug);
-            }
+            QuasarAppUtils::Params::log(i + " is added as a filename mask",
+                                        QuasarAppUtils::Debug);
+        } else {
+            QuasarAppUtils::Params::log(i + " not added in file mask because"
+                                            " the file mask must be large 2 characters",
+                                        QuasarAppUtils::Debug);
         }
-    };
+    }
+}
+
+void ConfigParser::initExtraNames() {
 
     auto listNamesMasks = QuasarAppUtils::Params::getArg("extraLibs").
             split(DeployCore::getSeparator(0));
 
-    deployExtraNames(listNamesMasks);
+    addExtraNamesMasks(listNamesMasks);
 
 /*
  * Task https://github.com/QuasarApp/CQtDeployer/issues/422
@@ -1471,7 +1477,7 @@ void ConfigParser::initExtraNames() {
 */
     if (_config.isNeededQt()) {
         auto libs = DeployCore::Qt3rdpartyLibs( _config.getPlatformOfAll());
-        deployExtraNames(libs);
+        addExtraNamesMasks(libs);
     }
 }
 

@@ -6,8 +6,6 @@
 //#
 
 #include "targetinfo.h"
-#include "deploycore.h"
-#include "deployconfig.h"
 
 TargetInfo::TargetInfo() {
 
@@ -101,5 +99,3 @@ void TargetInfo::setFEnableRunScript(bool newFEnableRunScript) {
 void TargetInfo::disableRunScript() {
     setFEnableRunScript(false);
 }
-
-

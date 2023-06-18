@@ -48,8 +48,20 @@ public:
 
     void setEnvironment(const QStringList &env);
 
+    /**
+     * @brief scan This method create a "lib info" object from path and extract all depends on from the current environment.
+     * @param path This is full path to the library
+     * @return full lib of executable info
+     */
     LibInfo scan(const QString& path);
-    bool fillLibInfo(LibInfo& info ,const QString& file) const;
+
+    /**
+     * @brief scan This method do same as a scan(const QString& path) but not use already created libInfo data.
+     * @param lib this is already prepared lib info.
+     */
+    void scan(LibInfo& lib);
+
+    bool fillLibInfo(LibInfo& info, const QString& file) const;
 
     ~DependenciesScanner();
 

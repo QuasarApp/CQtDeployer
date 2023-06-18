@@ -452,13 +452,19 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             "Sets path to icon for a targets"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
-                            {"-disableRunScript"}, "{package;val,val}",
+                            {"-disableRunScript"}, "{target;val,val}",
                             "Disables a generation of run script for selected targets"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
-                            {"-disableShortCut"}, "{package;val,val}",
+                            {"-disableShortCut"}, "{target;val,val}",
                             "Disables a generation of shortcut for selected targets"
                         }});
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                           {"-extraDepends"}, "{target;val,val}",
+                           "Adds extra dependencies for target, if target is skipped then for rest of all targets",
+                           "Example -extraDepends libssl.so or -targetPackage packageName;myExecutable -extraDepends packageName;libssl.so"
+                       }});
 
     group = "Part 5 Plugins Control Options";
 
