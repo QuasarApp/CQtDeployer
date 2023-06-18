@@ -462,7 +462,7 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
 
     help.insert(group, {QuasarAppUtils::OptionData{
                            {"-extraDepends"}, "{target;val,val}",
-                           "Adds extra dependencies for target, if package is skiped then for rest of all targets.",
+                           "Adds extra dependencies for target, if target is skipped then for rest of all targets",
                            "Example -extraDepends libssl.so or -targetPackage packageName;myExecutable -extraDepends packageName;libssl.so"
                        }});
 
