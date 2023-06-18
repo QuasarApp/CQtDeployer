@@ -134,7 +134,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -disableRunScript [target,target2,target3]  | Disables the generation of run script for selected targets|
 |  -disableShortCut [target,target2,target3]   | Disables the generation of shortcut for selected targets |
 |  -runScript [target;val,val]  | forces cqtdeployer swap default run script to new from the arguments of option. This option copy all content from input file and insert all code into runScript.sh or .bat. Example of use: cqtdeployer -runScript "myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh" For get more information about customScript see the documentation [page](CustomScripts.md)|
-|  -extraDepends [target;val,val]  | Adds extra dependencies for target, if package is skiped then for all targets. Example -extraDepends libssl.so or -targetPackage packageName;myExecutable -extraDepends packageName;libssl.so           |
+|  -extraDepends [target;val,val]  | Adds extra dependencies for target, if package is skiped then for all targets. Example -extraDepends libssl.so or -extraDepends myExecutable;libssl.so           |
 
 ### Plugins Controll Options
  
