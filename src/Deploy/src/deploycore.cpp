@@ -677,7 +677,7 @@ QString DeployCore::findProcess(const QString &env, const QString& proc, bool ig
 }
 
 QStringList DeployCore::debugExtensions() {
-    // from 6.5 windows version of Qt use a "gebug" extansion too.
+    // from 6.5 windows version of Qt use a "gebug" extension too.
     return {".debug", ".pdb"};
 }
 
