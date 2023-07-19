@@ -18,10 +18,35 @@ QSet<QString> ModulesQt6_5::qmlLibs(const QString &distDir) const {
 
     Tree -= utils.createTree(
         {
+            "./" + distDir + "/qml/QtQml/qmlplugin.dll",
             "./" + distDir + "/qml/QtQml/libqmlplugin.so",
             "./" + distDir + "/qml/QtQml/plugins.qmltypes"
         }
     );
+
+#ifdef Q_OS_WIN
+    Tree += utils.createTree(
+        {
+            "./" + distDir + "/qml/QtQml/Base/qmlplugin.dll",
+            "./" + distDir + "/qml/QtQml/Base/plugins.qmltypes",
+            "./" + distDir + "/qml/QtQml/Base/qmldir",
+            "./" + distDir + "/qml/QtQml/qmlmetaplugin.dll",
+            "./" + distDir + "/qml/QtQuick/Controls/Material/impl/RoundedElevationEffect.qml"
+            "./" + distDir + "/qml/QtQuick/Controls/Windows/ApplicationWindow.qml"
+
+        }
+        );
+#else
+    Tree += utils.createTree(
+        {
+            "./" + distDir + "/qml/QtQml/Base/libqmlplugin.so",
+            "./" + distDir + "/qml/QtQml/Base/plugins.qmltypes",
+            "./" + distDir + "/qml/QtQml/Base/qmldir",
+            "./" + distDir + "/qml/QtQml/libqmlmetaplugin.so",
+            "./" + distDir + "/qml/QtQuick/Controls/Material/impl/RoundedElevationEffect.qml"
+        }
+        );
+#endif
 
     Tree += utils.createTree(
         {

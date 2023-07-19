@@ -743,6 +743,9 @@ MSVCVersion DeployCore::getMSVC(const QString &_qtBin) {
     else if (version == "2019") {
         res |= MSVC_19;
     }
+    else if (version == "2022") {
+        res |= MSVC_22;
+    }
 
     if (type == "32") {
         res |= MSVC_x32;
@@ -756,6 +759,10 @@ MSVCVersion DeployCore::getMSVC(const QString &_qtBin) {
 
 QString DeployCore::getVCredist(const QString &_qtbinDir) {
     auto msvc = getMSVC(_qtbinDir);
+
+    if (msvc == MSVCVersion::MSVC_Unknown) {
+        return "";
+    }
 
     QDir dir = _qtbinDir;
 
@@ -790,6 +797,8 @@ QString DeployCore::getMSVCName(MSVCVersion msvc) {
         return "msvc2017";
     } else if (msvc & MSVCVersion::MSVC_19) {
         return "msvc2019";
+    } else if (msvc & MSVCVersion::MSVC_22) {
+        return "msvc2022";
     }
 
     return "";

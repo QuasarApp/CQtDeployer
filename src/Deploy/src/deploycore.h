@@ -15,13 +15,14 @@
 #include <params.h>
 
 enum MSVCVersion: int {
-    MSVC_Unknown = 0x0,
-    MSVC_x64 = 0x01,
-    MSVC_x32 = 0x02,
-    MSVC_13 = 0x10,
-    MSVC_15 = 0x20,
-    MSVC_17 = 0x40,
-    MSVC_19 = 0x80,
+    MSVC_Unknown =  0x0000,
+    MSVC_x64 =      0x0001,
+    MSVC_x32 =      0x0002,
+    MSVC_13 =       0x0010,
+    MSVC_15 =       0x0020,
+    MSVC_17 =       0x0040,
+    MSVC_19 =       0x0080,
+    MSVC_22 =       0x0100,
 };
 
 /**
