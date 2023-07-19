@@ -52,6 +52,21 @@ QSet<QString> ModulesQt6_5::qtWebEngine(const QString &distDir) const
     return Tree;
 }
 
+QSet<QString> ModulesQt6_5::qtLibs(const QString &distDir) const {
+    auto Tree = ModulesQt6_4::qtLibs(distDir);
+    TestUtils utils;
+
+#ifdef Q_OS_WIN
+    Tree += utils.createTree(
+        {
+            "./" + distDir + "/plugins/platforms/qdirect2d.dll",
+        }
+        );
+#endif
+
+    return Tree;
+}
+
 QSet<QString> ModulesQt6_5::qtWebEngineWidgets(const QString &distDir) const
 {
     TestUtils utils;

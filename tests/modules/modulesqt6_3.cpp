@@ -908,7 +908,7 @@ QSet<QString> ModulesQt63::qtLibs(const QString &distDir) const {
                 "./" + distDir + "/plugins/platforms/qwindows.dll",
                 "./" + distDir + "/tls/qcertonlybackend.dll",
                 "./" + distDir + "/tls/qopensslbackend.dll",
-                "./" + distDir + "/tls/qschennelbackend.dll",
+                "./" + distDir + "/tls/qschannelbackend.dll",
                 "./" + distDir + "/plugins/styles/qwindowsvistastyle.dll",
                 "./" + distDir + "/qt.conf",
                 "./" + distDir + "/translations/qtbase_ar.qm",
