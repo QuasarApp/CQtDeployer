@@ -18,7 +18,7 @@ public:
     QSet<QString> qmlVirtualKeyBoadrLibs(const QString &distDir = DISTRO_DIR) const override;
     QSet<QString> qtWebEngine(const QString &distDir = DISTRO_DIR) const override;
     QSet<QString> qtWebEngineWidgets(const QString &distDir = DISTRO_DIR) const override;
-    QSet<QString> qtLibs(const QString &distDir) const override;
+    QSet<QString> qtLibs(const QString &distDir = DISTRO_DIR) const override;
 };
 
 #endif // MODULESQT6_5_H
