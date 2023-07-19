@@ -42,15 +42,15 @@ public:
     QString publisher() const;
     void setPublisher(const QString &publisher);
 
-    QSet<QString> enabledPlugins() const;
+    const QSet<QString> &enabledPlugins() const;
     void setEnabledPlugins(const QSet<QString> &enabled);
     void addEnabledPlugins(const QString &enabled);
 
-    QSet<QString> disabledPlugins() const;
+    const QSet<QString> &disabledPlugins() const;
     void setDisabledPlugins(const QSet<QString> &disabled);
     void addDisabledPlugins(const QString &disabled);
 
-    QSet<QString> extraPlugins() const;
+    const QSet<QString>& extraPlugins() const;
     void setExtraPlugins(const QSet<QString> &extraPlugins);
     void addExtraPlugins(const QString &extraPlugin);
 
@@ -66,11 +66,11 @@ public:
 
     bool isValid();
 
-    QSet<QString> extraData() const;
+    const QSet<QString>& extraData() const;
     void setExtraData(const QSet<QString> &extraFiles);
     void addExtraData(const QString &extraFile);
 
-    QSet<QString> translation() const;
+    const QSet<QString>& translation() const;
     void setTranslation(const QSet<QString> &tr);
     void addTranslation(const QString &tr);
 

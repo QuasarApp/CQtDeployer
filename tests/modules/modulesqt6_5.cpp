@@ -18,20 +18,35 @@ QSet<QString> ModulesQt6_5::qmlLibs(const QString &distDir) const {
 
     Tree -= utils.createTree(
         {
+            "./" + distDir + "/qml/QtQml/qmlplugin.dll",
             "./" + distDir + "/qml/QtQml/libqmlplugin.so",
             "./" + distDir + "/qml/QtQml/plugins.qmltypes"
         }
     );
 
+#ifdef Q_OS_WIN
     Tree += utils.createTree(
         {
-         "./" + distDir + "/qml/QtQml/Base/libqmlplugin.so",
-         "./" + distDir + "/qml/QtQml/Base/plugins.qmltypes",
-         "./" + distDir + "/qml/QtQml/Base/qmldir",
-         "./" + distDir + "/qml/QtQml/libqmlmetaplugin.so",
-         "./" + distDir + "/qml/QtQuick/Controls/Material/impl/RoundedElevationEffect.qml"
+            "./" + distDir + "/qml/QtQml/Base/qmlplugin.dll",
+            "./" + distDir + "/qml/QtQml/Base/plugins.qmltypes",
+            "./" + distDir + "/qml/QtQml/Base/qmldir",
+            "./" + distDir + "/qml/QtQml/qmlmetaplugin.dll",
+            "./" + distDir + "/qml/QtQuick/Controls/Material/impl/RoundedElevationEffect.qml",
+            "./" + distDir + "/qml/QtQuick/Controls/Windows/ApplicationWindow.qml"
+
         }
-    );
+        );
+#else
+    Tree += utils.createTree(
+        {
+            "./" + distDir + "/qml/QtQml/Base/libqmlplugin.so",
+            "./" + distDir + "/qml/QtQml/Base/plugins.qmltypes",
+            "./" + distDir + "/qml/QtQml/Base/qmldir",
+            "./" + distDir + "/qml/QtQml/libqmlmetaplugin.so",
+            "./" + distDir + "/qml/QtQuick/Controls/Material/impl/RoundedElevationEffect.qml"
+        }
+        );
+#endif
 
     return Tree;
 }
@@ -49,6 +64,21 @@ QSet<QString> ModulesQt6_5::qtWebEngine(const QString &distDir) const
     TestUtils utils;
 
     auto Tree = ModulesQt6_4::qtWebEngine(distDir);
+    return Tree;
+}
+
+QSet<QString> ModulesQt6_5::qtLibs(const QString &distDir) const {
+    auto Tree = ModulesQt6_4::qtLibs(distDir);
+    TestUtils utils;
+
+#ifdef Q_OS_WIN
+    Tree += utils.createTree(
+        {
+            "./" + distDir + "/plugins/platforms/qdirect2d.dll",
+        }
+        );
+#endif
+
     return Tree;
 }
 
