@@ -120,7 +120,7 @@ See building and installation instructions on wiki [page](md/en/Build-and-Instal
 
 ***
 
-### Check out our documentation for more information: [here](https://quasarapp.ddns.net:3031/docs/QuasarApp/CQtDeployer/latest/)
+### Check out our documentation for more information: [here](md/README.md)
 
 ***
 
