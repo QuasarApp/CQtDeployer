@@ -25,7 +25,8 @@ Deploy::Deploy() {
 
 int Deploy::run() {
 
-    QuasarAppUtils::Settings::initService<QuasarAppUtils::Settings>();
+
+    QuasarAppUtils::Settings::initService();
 
     if (!prepare()) {
         return PrepareError;
