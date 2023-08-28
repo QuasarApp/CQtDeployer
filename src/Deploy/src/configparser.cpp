@@ -1218,7 +1218,7 @@ bool ConfigParser::initQmake() {
 
     QFileInfo info(qmake);
 
-    if (!info.isFile() || (info.baseName() != "qmake")) {
+    if (!info.isFile()) {
 
         QString qmakeFromRPath = DeployCore::findProcess(getRPathFromTargets(), "qmake");
 
