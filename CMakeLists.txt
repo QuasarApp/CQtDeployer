@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2020-2022 QuasarApp.
+# Copyright (C) 2020-2023 QuasarApp.
 # Distributed under the GPLv3 software license, see the accompanying
 # Everyone is permitted to copy and distribute verbatim copies
 # of this license document, but changing it is not allowed.
@@ -22,15 +22,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (IOS)
     option(BUILD_SHARED_LIBS "This option forece build ${PROJECT_NAME} as a shared project with separated libraries as" OFF)
-elseif()
+else()
     option(BUILD_SHARED_LIBS "This option forece build ${PROJECT_NAME} as a shared project with separated libraries as" ON)
 endif()
 
 
 if (NOT QT_VERSION_MAJOR)
     find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Test QUIET)
+    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
+    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test QUIET)
 endif()
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Test QUIET)
 
 include(submodules/QuasarAppLib/CMake/QuasarApp.cmake)
 
@@ -39,9 +40,9 @@ updateGitVars()
 string(TIMESTAMP TODAY "%Y-%m-%d")
 set(CQT_DEPLOYER_VERSION_SHORT_PREFIX "1.6")
 set(CQT_DEPLOYER_VERSION "${CQT_DEPLOYER_VERSION_SHORT_PREFIX}.${GIT_COMMIT_COUNT}.${GIT_COMMIT_HASH}")
-set(QIFW_VERSION "4.4")
+set(QIFW_VERSION "4.6") # rebuild for the 4.6.0
 
-option(CQT_DEPLOYER_TESTS "This option disables or enables tests of the ${PROJECT_NAME} project"  ON)
+option(CQT_DEPLOYER_TESTS "This option disables or enables tests of the ${PROJECT_NAME} project" ${Qt${QT_VERSION_MAJOR}Test_FOUND})
 option(CQT_DEPLOYER_TOOL "This option disables or enables example app of the ${PROJECT_NAME} project" ON)
 
 if (ANDROID OR IOS OR NOT QT_VERSION_MAJOR OR QA_WASM32)

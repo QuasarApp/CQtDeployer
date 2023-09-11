@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 QuasarApp.
+ * Copyright (C) 2018-2023 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -128,7 +128,7 @@ bool PE::getLibInfo(const QString &lib, LibInfo &info) const {
             info.setPlatform(Win_ARM_32);
 
         } else {
-            info.setPlatform(win_ARM_64);
+            info.setPlatform(Win_ARM_64);
         }
 
     } else if (parsedPeLib->peHeader.nt.FileHeader.Machine == peparse::IMAGE_FILE_MACHINE_I386 ||

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 QuasarApp.
+ * Copyright (C) 2018-2023 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -219,10 +219,13 @@ LibInfo DependenciesScanner::scan(const QString &path) {
         return info;
     }
 
-    QSet<QString> stack;
-    recursiveDep(info, info._allDep , stack);
-
+    scan(info);
     return info;
+}
+
+void DependenciesScanner::scan(LibInfo &lib) {
+    QSet<QString> stack;
+    recursiveDep(lib, lib._allDep , stack);
 }
 
 DependenciesScanner::~DependenciesScanner() {

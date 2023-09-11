@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2023-2023 QuasarApp.
+ * Distributed under the lgplv3 software license, see the accompanying
+ * Everyone is permitted to copy and distribute verbatim copies
+ * of this license document, but changing it is not allowed.
+ */
+
 #include "modulesqt6_3.h"
 
 ModulesQt63::ModulesQt63() {
@@ -397,6 +404,9 @@ QSet<QString> ModulesQt63::qmlLibs(const QString &distDir) const {
             "./" + distDir + "/qml/QtQuick/plugins.qmltypes",
             "./" + distDir + "/qml/QtQuick/qmldir",
             "./" + distDir + "/qml/QtQuick/qtquick2plugin.dll",
+             "./" + distDir + "/plugins/tls/qcertonlybackend.dll",
+             "./" + distDir + "/plugins/tls/qopensslbackend.dll",
+             "./" + distDir + "/plugins/tls/qschannelbackend.dll",
             "./" + distDir + "/translations/qtdeclarative_ar.qm",
             "./" + distDir + "/translations/qtdeclarative_bg.qm",
             "./" + distDir + "/translations/qtdeclarative_ca.qm",

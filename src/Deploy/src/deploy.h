@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 QuasarApp.
+ * Copyright (C) 2018-2023 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -22,13 +22,13 @@ class Packing;
  * @brief The exitCodes enum contains all general erro codes of the CQtDeployer tool.
  */
 enum exitCodes {
-    // CQtDeployer are  deployed project successful. (no error)
+    /// CQtDeployer are  deployed project successful. (no error)
     Good =          0x0,
-    // CQtDeployer failed in the reading arguments. (fail to parse of input arguments)
+    /// CQtDeployer failed in the reading arguments. (fail to parse of input arguments)
     PrepareError =  0x1,
-    // CQtDeployer failed in the deploy step. Fail to copy deployed files.
+    /// CQtDeployer failed in the deploy step. Fail to copy deployed files.
     DeployError =   0x2,
-    // CQtDeployer failed in the prepare package step. Fail to create a result pacakge.
+    /// CQtDeployer failed in the prepare package step. Fail to create a result pacakge.
     PackingError =  0x3,
 
 

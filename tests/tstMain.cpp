@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2020-2022 QuasarApp.
+//# Copyright (C) 2020-2023 QuasarApp.
 //# Distributed under the GPLv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -9,6 +9,8 @@
 #include "qttest.h"
 
 #ifdef Q_OS_LINUX
+#include "extradependstest.h"
+
 #include "allowemptypackagestest.h"
 #include "binprefixtest.h"
 #include "checkqttest.h"
@@ -65,6 +67,7 @@
 #include "zipmultitest.h"
 #include "ziptest.h"
 #include "systemlibtest.h"
+#include "qmlfiledialogtest.h"
 #endif
 
 #ifdef Q_OS_WIN
@@ -99,6 +102,7 @@ private slots:
 
     // main tests works on linux only
 #ifdef Q_OS_LINUX
+        TestCase(extraDependsTest, ExtraDependsTest)
         TestCase(allowemptypackagestest, AllowEmptyPackagesTest )
         TestCase(binprefixtest,  BinPrefixTest)
         TestCase(checkqttest,  CheckQtTest)
@@ -156,6 +160,9 @@ private slots:
         TestCase(zipmultitest, ZIPMultiTest )
         TestCase(ziptest, ZIPTest )
         TestCase(systemLibTest, SystemLibTest)
+        TestCase(qmlfiledialogtest, QmlFileDialogTest)
+
+
 #endif
 
 //     platform tests
@@ -268,7 +275,9 @@ tstMain::tstMain() {
     cqtTestPath = cqtTestPath +
                   DeployCore::getEnvSeparator() +
                   QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.5/bin/";
-
+    cqtTestPath = cqtTestPath +
+                  DeployCore::getEnvSeparator() +
+                  QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.6/bin/";
     qputenv("PATH", cqtTestPath.toLatin1().data());
     TestUtils utils;
 

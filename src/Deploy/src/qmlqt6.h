@@ -1,19 +1,26 @@
 //#
-//# Copyright (C) 2018-2022 QuasarApp.
+//# Copyright (C) 2018-2023 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
 //#
 
-#ifndef QML_DEPLY_H
-#define QML_DEPLY_H
+#ifndef QML_QT6_DEPLY_H
+#define QML_QT6_DEPLY_H
 
 #include <QSet>
 #include <QStringList>
-#include "deploy_global.h"
-#include "deploycore.h"
+#include "iqml.h"
 
-class DEPLOYSHARED_EXPORT QML {
+class DEPLOYSHARED_EXPORT QMLQt6: public iQML {
+
+public:
+    QMLQt6(const QString& qmlRoot);
+    ~QMLQt6() override;
+
+    bool scan(QStringList &res, const QString &_qmlProjectDir) override;
+
+
 private:
 
     QStringList extractImportsFromFile(const QString &filepath) const;
@@ -25,22 +32,14 @@ private:
     bool deployPath( const QString& path, QStringList& res);
     bool scanQmlTree(const QString& qmlTree);
     QStringList extractImportsFromQmlModule(const QString& module) const;
-    QString _qmlRoot = "";
-    QSet<QString> _imports;
-    QSet<QString> secondVersions;
-    QtMajorVersion _qtVersion = QtMajorVersion::Qt5;
-
     QStringList extractImportLine(const QString &line) const;
     
-public:
-    QML(const QString& qmlRoot, QtMajorVersion isQt6);
-
-    bool scan(QStringList &res, const QString &_qmlProjectDir);
-    void setQtVersion(const QtMajorVersion &qtVersion);
+    QSet<QString> _imports;
+    QSet<QString> secondVersions;
 
     friend class deploytest;
     friend class QmlScanerTest;
     friend class QMLExtractTest;
 };
 
-#endif // QML_DEPLY_H
+#endif // QML_QT6_DEPLY_H

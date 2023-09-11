@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 QuasarApp.
+ * Copyright (C) 2018-2023 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -15,13 +15,14 @@
 #include <params.h>
 
 enum MSVCVersion: int {
-    MSVC_Unknown = 0x0,
-    MSVC_x64 = 0x01,
-    MSVC_x32 = 0x02,
-    MSVC_13 = 0x10,
-    MSVC_15 = 0x20,
-    MSVC_17 = 0x40,
-    MSVC_19 = 0x80,
+    MSVC_Unknown =  0x0000,
+    MSVC_x64 =      0x0001,
+    MSVC_x32 =      0x0002,
+    MSVC_13 =       0x0010,
+    MSVC_15 =       0x0020,
+    MSVC_17 =       0x0040,
+    MSVC_19 =       0x0080,
+    MSVC_22 =       0x0100,
 };
 
 /**
@@ -48,7 +49,7 @@ enum Platform {
     Win32           = 0x0001,
     Win64           = 0x0002,
     Win_ARM_32      = 0x0004,
-    win_ARM_64      = 0x0008,
+    Win_ARM_64      = 0x0008,
     Win             = Win32 | Win64,
 
     // Unix
@@ -277,7 +278,7 @@ public:
     static bool isExecutable(const QFileInfo &file);
     static bool isContainsArraySeparators(const QString& val,
                                           int lastLvl = 2);
-    static QString findProcess(const QString& env, const QString& proc);
+    static QString findProcess(const QString& env, const QString& proc, bool ignoreSymLinks = false);
 
     static QStringList debugExtensions();
     static bool isDebugFile(const QString& file);
@@ -323,6 +324,27 @@ public:
      * @return Qt CaseSensitivity value
      */
     static Qt::CaseSensitivity getCaseSensitivity(const QString& checkedFile = "");
+
+    /**
+     * @brief getPlatformLibPrefix This method return string value of the @a platform
+     * @param plarform This is input platform
+     * @return string value of the @a platfrom. If platform not supported strings implementations the return empty string.
+     */
+    static QString getPlatformLibPrefix(Platform plarform);
+
+    /**
+     * @brief qtVersionToString return integer interpritation of the Qt major version
+     * @return integer implementation of major qt version.
+     * @note return 0 if the @a qtVersion is invalid
+     */
+    static int qtVersionToString(QtMajorVersion qtVersion);
+
+    /**
+     * @brief isDebianQt this method return true if the @a qtRoot is debian system qt.
+     * @param qtRoot path to qt root dir.
+     * @return true if the @a qtRoot is debian system qt else false.
+     */
+    static bool isDebianQt(const QString& qtRoot);
 };
 
 #define internalError() DeployCore::printInternalError(__FUNCTION__, __FILE__, __LINE__)

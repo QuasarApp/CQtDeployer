@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 QuasarApp.
+ * Copyright (C) 2018-2023 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -12,8 +12,27 @@ QtMajorVersion QtDir::getQtVersion() const {
     return _qtVersion;
 }
 
-void QtDir::setQtVersion(const QtMajorVersion &qtVersion) {
-    _qtVersion = qtVersion;
+QString QtDir::toString() const {
+    return QString {
+        "Qt Inforamtion: \n"
+        "Platform: %0\n"
+        "Major version: %1\n"
+        "Binaries dir: %2\n"
+        "Libraries dir: %3\n"
+        "Libexecs dir: %4\n"
+        "Plugins dir: %5\n"
+        "QMLs dir: %6\n"
+        "Translations dir: %7\n"
+        "Resources dir: %8\n"
+    }.arg(DeployCore::platformToString(_platform),
+             QString::number(DeployCore::qtVersionToString(_qtVersion)),
+             bins,
+             libs,
+             libexecs,
+             plugins,
+             qmls,
+             translations,
+             resources);
 }
 
 QString QtDir::getLibs() const {
@@ -22,6 +41,18 @@ QString QtDir::getLibs() const {
 
 void QtDir::setLibs(const QString &value) {
     libs = PathUtils::fixPath(value);
+
+    auto qtLibs = QDir(libs).entryList(QDir::Files);
+    if (qtLibs.contains("libQt4Core.so")) {
+        _qtVersion = QtMajorVersion::Qt4;
+        _platform = Unix;
+    } else if (qtLibs.contains("libQt5Core.so")) {
+        _qtVersion = QtMajorVersion::Qt5;
+        _platform = Unix;
+    } else if (qtLibs.contains("libQt6Core.so")) {
+        _qtVersion = QtMajorVersion::Qt6;
+        _platform = Unix;
+    }
 }
 
 QString QtDir::getBins() const {
@@ -30,6 +61,18 @@ QString QtDir::getBins() const {
 
 void QtDir::setBins(const QString &value) {
     bins =  PathUtils::fixPath(value);
+
+    auto qtLibs = QDir(bins).entryList(QDir::Files);
+    if (qtLibs.contains("Qt4Core.dll", Qt::CaseInsensitive)) {
+        _qtVersion = QtMajorVersion::Qt4;
+        _platform = Win;
+    } else if (qtLibs.contains("Qt5Core.dll", Qt::CaseInsensitive)) {
+        _qtVersion = QtMajorVersion::Qt5;
+        _platform = Win;
+    } else if (qtLibs.contains("Qt6Core.dll", Qt::CaseInsensitive)) {
+        _qtVersion = QtMajorVersion::Qt6;
+        _platform = Win;
+    }
 }
 
 QString QtDir::getLibexecs() const {
@@ -74,11 +117,7 @@ void QtDir::setResources(const QString &value) {
 }
 
 Platform QtDir::getQtPlatform() const {
-    return qtPlatform;
-}
-
-void QtDir::setQtPlatform(const Platform &value) {
-    qtPlatform = value;
+    return _platform;
 }
 
 bool QtDir::isQt(QString path) const {

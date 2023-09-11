@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2022 QuasarApp.
+//# Copyright (C) 2018-2023 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -753,6 +753,10 @@ bool ConfigParser::parseDeployMode(bool checkBin) {
         return false;
     }
 
+    QuasarAppUtils::Params::log(
+        _config.qtDir.toString(),
+        QuasarAppUtils::Debug);
+
     if (!initQmlInput()) {
         return false;
     }
@@ -812,6 +816,8 @@ bool ConfigParser::configureTargets() {
     const auto disableShortcuts = QuasarAppUtils::Params::getArg("disableShortCut").
             split(DeployCore::getSeparator(0), splitbehavior);
 
+    const auto extraDepends = QuasarAppUtils::Params::getArg("extraDepends").
+                                  split(DeployCore::getSeparator(0), splitbehavior);
 
     if (icons.size()) {
         parseTargetPrivate(_config, icons, &TargetInfo::setIcon);
@@ -829,6 +835,10 @@ bool ConfigParser::configureTargets() {
     if (disableRunScripts.size() && !enableOptionFotTargetPrivate(_config, disableRunScripts, &TargetInfo::disableRunScript)) {
         packagesErrorLog("disableRunScript");
         return false;
+    }
+
+    if (extraDepends.size()) {
+        parseTargetPrivate(_config, extraDepends, &TargetInfo::addDepends);
     }
 
     return true;
@@ -1134,26 +1144,61 @@ QString ConfigParser::getPathFrmoQmakeLine(const QString &in) const {
 bool ConfigParser::initQmakePrivate(const QString &qmake) {
     QFileInfo info(qmake);
 
-    QString basePath = info.absolutePath();
-    if (!setQmake(qmake)) {
-        QDir dir(basePath);
+    QuasarAppUtils::Params::log("initialize qmake for.  " + info.absoluteFilePath(),
+                                QuasarAppUtils::Debug);
 
-        if (!dir.cdUp()) {
-            QuasarAppUtils::Params::log("Failed to initialize qt directories by qmake.",
-                                        QuasarAppUtils::Error);
-            return false;
+    QString basePath = info.absolutePath();
+
+    // Invoke qmake executable only when qmake paths exclude snapRootFS path.
+    // Because files in snapRootFS is not executable ...
+    if (!qmake.contains(DeployCore::snapRootFS()) && setQmake(qmake)) {
+        return true;
+    }
+
+
+    // try deploy qt using only read FS permisions
+
+    // check debian qt structure
+    if (DeployCore::isDebianQt(info.absoluteFilePath())) {
+        // initialize qt that was installed from apt package manager on any debian based os
+        QString neededPlatform = DeployCore::getPlatformLibPrefix(_config.getPlatformOfAll());
+        int qtVersion = DeployCore::qtVersionToString(_config.isNeededQt());
+
+        QString debianQtRoot = QString("/usr/lib/%0/qt%1").
+                               arg(neededPlatform).arg(qtVersion);
+
+        if (DeployCore::isSnap()) {
+            debianQtRoot = DeployCore::snapRootFS() + debianQtRoot;
         }
 
-        QuasarAppUtils::Params::log("Failed to execute the qmake process!"
-                                    " Trying to initialize Qt directories from path: " + dir.absolutePath(),
-                                    QuasarAppUtils::Warning);
-
-        if (!setQtDir(dir.absolutePath())){
+        if (!setQtDir(debianQtRoot)) {
             QuasarAppUtils::Params::log("Failed to initialize Qt directories",
                                         QuasarAppUtils::Error);
             return false;
         }
+        
+        return true;
+    }
+    // initialize qt that was installed from qt installer or aqtinstall package manager
+    QDir dir(basePath);
 
+    if (!dir.cdUp()) {
+        QuasarAppUtils::Params::log("Failed to initialize qt directories by qmake.",
+                                    QuasarAppUtils::Error);
+        return false;
+    }
+
+    // For snap package of cqtdeplyer it is normal behavior
+    if (!DeployCore::isSnap()) {
+        QuasarAppUtils::Params::log("Failed to execute the qmake process!"
+                                    " Trying to initialize Qt directories from path: " + dir.absolutePath(),
+                                    QuasarAppUtils::Warning);
+    }
+
+    if (!setQtDir(dir.absolutePath())){
+        QuasarAppUtils::Params::log("Failed to initialize Qt directories",
+                                    QuasarAppUtils::Error);
+        return false;
     }
 
     return true;
@@ -1169,11 +1214,11 @@ bool ConfigParser::initQmake() {
         return true;
     }
 
-    auto qmake = QuasarAppUtils::Params::getArg("qmake");
+    auto qmake = DeployCore::transportPathToSnapRoot(QuasarAppUtils::Params::getArg("qmake"));
 
     QFileInfo info(qmake);
 
-    if (!info.isFile() || (info.baseName() != "qmake")) {
+    if (!info.isFile()) {
 
         QString qmakeFromRPath = DeployCore::findProcess(getRPathFromTargets(), "qmake");
 
@@ -1227,13 +1272,10 @@ bool ConfigParser::initQmake() {
 
 bool ConfigParser::setQmake(const QString &value) {
 
-    auto qmakeInfo = QFileInfo(QDir::fromNativeSeparators(value));
+    auto qmakeInfo = QFileInfo(value);
 
-    if (!(qmakeInfo.fileName().compare("qmake", Qt::CaseInsensitive) ||
-          qmakeInfo.fileName().compare("qmake.exe", Qt::CaseInsensitive))) {
-
-        return false;
-    }
+    QuasarAppUtils::Params::log("sets qmake for.  " + qmakeInfo.absoluteFilePath(),
+                                QuasarAppUtils::Debug);
 
     QProcess proc;
     proc.setProgram(qmakeInfo.absoluteFilePath());
@@ -1265,18 +1307,19 @@ bool ConfigParser::setQmake(const QString &value) {
             _config.qtDir.setTranslations(getPathFrmoQmakeLine(value));
         } else if (value.contains("QT_INSTALL_DATA")) {
             _config.qtDir.setResources(getPathFrmoQmakeLine(value) + "/resources");
-        } else if (value.contains("QMAKE_XSPEC")) {
-            auto val = value.split(':').value(1);
-
-            if (val.contains("win32")) {
-                _config.qtDir.setQtPlatform(Platform::Win);
-            } else {
-                _config.qtDir.setQtPlatform(Platform::Unix);
-            }
         }
     }
 
-    _config.qtDir.setQtVersion(_config.isNeededQt());
+    if (_config.qtDir.getLibs().isEmpty()) {
+        QuasarAppUtils::Params::log("Wrong output from the qmake process. " + qmakeInfo.absoluteFilePath(),
+                                    QuasarAppUtils::Warning);
+        QuasarAppUtils::Params::log("Raw output:" + qmakeData,
+                                    QuasarAppUtils::Debug);
+        QuasarAppUtils::Params::log("Parsed Qt configuration: \n" + _config.qtDir.toString(),
+                                    QuasarAppUtils::Debug);
+
+        return false;
+    }
 
     _config.envirement.addEnv(_config.qtDir.getLibs());
     _config.envirement.addEnv(_config.qtDir.getBins());
@@ -1288,17 +1331,31 @@ bool ConfigParser::setQtDir(const QString &value) {
 
     QFileInfo info(value);
 
-    if (!QFile::exists(info.absoluteFilePath() + ("/bin"))) {
-        QuasarAppUtils::Params::log("get qt bin failed!", QuasarAppUtils::Debug);
-        return false;
-    }
-    _config.qtDir.setBins(info.absoluteFilePath() + ("/bin"));
+    QuasarAppUtils::Params::log("initialize qt dirs for. " + info.absoluteFilePath(),
+                                QuasarAppUtils::Debug);
 
-    if (!QFile::exists(info.absoluteFilePath() + ("/lib"))) {
-        QuasarAppUtils::Params::log("get qt lib failed!", QuasarAppUtils::Debug);
-        return false;
+    if (DeployCore::isDebianQt(value)) {
+        if (QFile::exists(info.absoluteFilePath() + ("/bin"))) {
+            _config.qtDir.setBins(info.absoluteFilePath() + ("/bin"));
+        }
+    } else {
+        if (!QFile::exists(info.absoluteFilePath() + ("/bin"))) {
+            QuasarAppUtils::Params::log("get qt bin failed!", QuasarAppUtils::Debug);
+            return false;
+        }
+        _config.qtDir.setBins(info.absoluteFilePath() + ("/bin"));
     }
-    _config.qtDir.setLibs(info.absoluteFilePath() + ("/lib"));
+
+    if (DeployCore::isDebianQt(value)) {
+        _config.qtDir.setLibs(info.absolutePath());
+    } else {
+        if (!QFile::exists(info.absoluteFilePath() + ("/lib"))) {
+            QuasarAppUtils::Params::log("get qt lib failed!", QuasarAppUtils::Debug);
+            return false;
+        }
+        _config.qtDir.setLibs(info.absoluteFilePath() + ("/lib"));
+    }
+
 
     if (!QFile::exists(info.absoluteFilePath() + ("/qml"))) {
         QuasarAppUtils::Params::log("get qt qml failed!", QuasarAppUtils::Debug);
@@ -1312,21 +1369,25 @@ bool ConfigParser::setQtDir(const QString &value) {
         _config.qtDir.setPlugins(info.absoluteFilePath() + ("/plugins"));
     }
 
-#ifdef Q_OS_UNIX
-    if (!QFile::exists(info.absoluteFilePath() + ("/libexec"))) {
-        QuasarAppUtils::Params::log("get qt libexec failed!", QuasarAppUtils::Debug);
-    } else {
-        _config.qtDir.setLibexecs(info.absoluteFilePath() + ("/libexec"));
+    if (_config.qtDir.getQtPlatform() & Unix) {
+        if (!QFile::exists(info.absoluteFilePath() + ("/libexec"))) {
+            QuasarAppUtils::Params::log("get qt libexec failed!", QuasarAppUtils::Debug);
+        } else {
+            _config.qtDir.setLibexecs(info.absoluteFilePath() + ("/libexec"));
+        }
+    } else if (_config.qtDir.getQtPlatform() & Win) {
+        _config.qtDir.setLibexecs(info.absoluteFilePath() + ("/bin"));
     }
-#endif
-#ifdef Q_OS_WIN
-    _config.qtDir.setLibexecs(info.absoluteFilePath() + ("/bin"));
-#endif
 
-    if (!QFile::exists(info.absoluteFilePath() + ("/translations"))) {
-        QuasarAppUtils::Params::log("get qt translations failed!", QuasarAppUtils::Debug);
+    if (DeployCore::isDebianQt(value)) {
+        _config.qtDir.setTranslations(QString("/usr/share/qt%0/translations").
+                                      arg(DeployCore::qtVersionToString(_config.isNeededQt())));
     } else {
-        _config.qtDir.setTranslations(info.absoluteFilePath() + ("/translations"));
+        if (!QFile::exists(info.absoluteFilePath() + ("/translations"))) {
+            QuasarAppUtils::Params::log("get qt translations failed!", QuasarAppUtils::Debug);
+        } else {
+            _config.qtDir.setTranslations(info.absoluteFilePath() + ("/translations"));
+        }
     }
 
     if (!QFile::exists(info.absoluteFilePath() + ("/resources"))) {
@@ -1334,15 +1395,6 @@ bool ConfigParser::setQtDir(const QString &value) {
     } else {
         _config.qtDir.setResources(info.absoluteFilePath() + ("/resources"));
     }
-
-#ifdef Q_OS_UNIX
-    _config.qtDir.setQtPlatform(Platform::Unix);
-#endif
-#ifdef Q_OS_WIN
-    _config.qtDir.setQtPlatform(Platform::Win);
-#endif
-
-    _config.qtDir.setQtVersion(_config.isNeededQt());
 
     _config.envirement.addEnv(_config.qtDir.getLibs());
     _config.envirement.addEnv(_config.qtDir.getBins());
@@ -1396,27 +1448,27 @@ bool ConfigParser::initExtraPath() {
     return true;
 }
 
-void ConfigParser::initExtraNames() {
+void ConfigParser::addExtraNamesMasks(const QStringList& listNamesMasks) {
+    for (const auto &i : listNamesMasks) {
+        if (i.size() > 1) {
+            _config.allowedPaths.addtExtraNamesMasks({i});
 
-    const auto deployExtraNames = [this](const QStringList& listNamesMasks){
-        for (const auto &i : listNamesMasks) {
-            if (i.size() > 1) {
-                _config.allowedPaths.addtExtraNamesMasks({i});
-
-                QuasarAppUtils::Params::log(i + " is added as a filename mask",
-                                            QuasarAppUtils::Debug);
-            } else {
-                QuasarAppUtils::Params::log(i + " not added in file mask because"
-                                                " the file mask must be large 2 characters",
-                                            QuasarAppUtils::Debug);
-            }
+            QuasarAppUtils::Params::log(i + " is added as a filename mask",
+                                        QuasarAppUtils::Debug);
+        } else {
+            QuasarAppUtils::Params::log(i + " not added in file mask because"
+                                            " the file mask must be large 2 characters",
+                                        QuasarAppUtils::Debug);
         }
-    };
+    }
+}
+
+void ConfigParser::initExtraNames() {
 
     auto listNamesMasks = QuasarAppUtils::Params::getArg("extraLibs").
             split(DeployCore::getSeparator(0));
 
-    deployExtraNames(listNamesMasks);
+    addExtraNamesMasks(listNamesMasks);
 
 /*
  * Task https://github.com/QuasarApp/CQtDeployer/issues/422
@@ -1425,7 +1477,7 @@ void ConfigParser::initExtraNames() {
 */
     if (_config.isNeededQt()) {
         auto libs = DeployCore::Qt3rdpartyLibs( _config.getPlatformOfAll());
-        deployExtraNames(libs);
+        addExtraNamesMasks(libs);
     }
 }
 

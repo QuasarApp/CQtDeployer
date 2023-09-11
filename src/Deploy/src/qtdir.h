@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 QuasarApp.
+ * Copyright (C) 2018-2023 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -9,10 +9,11 @@
 #define QTDIR_H
 
 #include <QDir>
+#include <humanreadableobject.h>
 #include "deploy_global.h"
 #include "deploycore.h"
 
-class DEPLOYSHARED_EXPORT QtDir {
+class DEPLOYSHARED_EXPORT QtDir: QuasarAppUtils::iHRO {
     QString libs;
     QString bins;
     QString libexecs;
@@ -21,9 +22,9 @@ class DEPLOYSHARED_EXPORT QtDir {
     QString translations;
     QString resources;
 
-    Platform qtPlatform = UnknownPlatform;
+    Platform _platform = UnknownPlatform;
 
-    QtMajorVersion _qtVersion;
+    QtMajorVersion _qtVersion = NoQt;
 public:
     QString getLibs() const;
     void setLibs(const QString &value);
@@ -40,7 +41,6 @@ public:
     QString getResources() const;
     void setResources(const QString &value);
     Platform getQtPlatform() const;
-    void setQtPlatform(const Platform &value);
 
     /**
      * @brief isQt - This method check a path for belonging to QtDirs.
@@ -54,7 +54,8 @@ public:
      * @return the masjor version of qt
      */
     QtMajorVersion getQtVersion() const;
-    void setQtVersion(const QtMajorVersion &qtVersion);
+
+    QString toString() const override;
 };
 
 #endif // QTDIR_H

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 QuasarApp.
+ * Copyright (C) 2018-2023 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -10,6 +10,7 @@
 #include "pluginsparser.h"
 #include "configparser.h"
 #include "metafilemanager.h"
+#include "qmlqt5.h"
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
@@ -99,8 +100,8 @@ void Extracter::extractAllTargets() {
     for (auto i = cfg->packages().cbegin(); i != cfg->packages().cend(); ++i) {
         auto &dep = _packageDependencyes[i.key()];
 
-        for (const auto &target : i.value().targets()) {
-            extract(target, &dep);
+        for (const auto &targetId : i.value().targets()) {
+            extract(targetId, &dep);
         }
     }
 }
@@ -405,9 +406,16 @@ void Extracter::extractLib(const QString &file,
     QuasarAppUtils::Params::log("extract lib :" + file,
                                 QuasarAppUtils::Debug);
 
-    auto data = _scaner->scan(file);
+    QSet<LibInfo> allDependencies;
+    auto targetObject = DeployCore::_config->targets().value(file);
+    if (targetObject.isValid()) {
+        _scaner->scan(targetObject);
+        allDependencies = targetObject.getAllDep();
+    } else {
+        allDependencies = _scaner->scan(file).getAllDep();
+    }
 
-    for (const auto &line : data.getAllDep()) {
+    for (const auto &line : qAsConst(allDependencies)) {
 
         if (mask.size() && !line.getName().contains(mask, DeployCore::getCaseSensitivity())) {
             continue;
@@ -447,6 +455,8 @@ bool Extracter::extractQml() {
 
             QStringList plugins;
             QStringList listItems;
+            auto QtVersion = cnf->isNeededQt(i.key());
+
             const auto qmlInputList = distro.qmlInput();
             for (const auto &qmlInput: qmlInputList) {
                 QFileInfo info(qmlInput);
@@ -464,34 +474,51 @@ bool Extracter::extractQml() {
                     continue;
                 }
 
-                QML ownQmlScaner(cnf->qtDir.getQmls(), cnf->isNeededQt(i.key()));
+                QSharedPointer<iQML> qmlScaner;
+                if (QtVersion & QtMajorVersion::Qt6) {
+                    qmlScaner = QSharedPointer<QMLQt6>::create(cnf->qtDir.getQmls());
+                } else if (QtVersion & QtMajorVersion::Qt5) {
+                    qmlScaner = QSharedPointer<QMLQt5>::create(cnf->qtDir.getQmls());
+                }
 
-                if (!ownQmlScaner.scan(plugins, info.absoluteFilePath())) {
+                if (qmlScaner && !qmlScaner->scan(plugins, info.absoluteFilePath())) {
                     QuasarAppUtils::Params::log("Failed to run qml scanner",
                                                 QuasarAppUtils::Error);
                     continue;
                 }
+
             }
 
-
             QStringList toCopyQmlFiles;
-            for (const auto& plugin: qAsConst(plugins)) {
-                const auto qmlFiles = QDir(plugin).entryInfoList(QDir::Files);
-                for (const auto& qmlFile: qmlFiles) {
-                    toCopyQmlFiles.push_back(qmlFile.absoluteFilePath());
+            if (QtVersion & QtMajorVersion::Qt5) {
+                // See the https://github.com/QuasarApp/CQtDeployer/issues/728 issue
+                // use old method of parse qml for qt5
+                if (!_fileManager->copyFolder(cnf->qtDir.getQmls(),
+                                              targetPath + distro.getQmlOutDir(),
+                                              DeployCore::debugExtensions() ,
+                                              &listItems, &plugins)) {
+                    return false;
+                }
+            } else {
+                for (const auto& plugin: qAsConst(plugins)) {
+                    const auto qmlFiles = QDir(plugin).entryInfoList(QDir::Files);
+                    for (const auto& qmlFile: qmlFiles) {
+                        toCopyQmlFiles.push_back(qmlFile.absoluteFilePath());
+                    }
+                }
+
+                // This function works very slow because use list mask
+                // solution: use the QSet and restriction comparese of the pathes for the mask argument.
+                // to-do optimise this function
+                if (!_fileManager->copyFolder(cnf->qtDir.getQmls(),
+                                              targetPath + distro.getQmlOutDir(),
+                                              DeployCore::debugExtensions() ,
+                                              &listItems,
+                                              &toCopyQmlFiles)) {
+                    return false;
                 }
             }
 
-            // This function works very slow because use list mask
-            // solution: use the QSet and restriction comparese of the pathes for the mask argument.
-            // to-do optimise this function
-            if (!_fileManager->copyFolder(cnf->qtDir.getQmls(),
-                                          targetPath + distro.getQmlOutDir(),
-                                          DeployCore::debugExtensions() ,
-                                          &listItems,
-                                          &toCopyQmlFiles)) {
-                return false;
-            }
 
             for (const auto &item : qAsConst(listItems)) {
                 extractPluginLib(item, i.key());

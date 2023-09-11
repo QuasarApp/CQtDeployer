@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2022 QuasarApp.
+//# Copyright (C) 2018-2023 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -68,7 +68,6 @@ private:
     bool setTargets(const QStringList &value);
     bool setTargetsRecursive(const QString &dir);
     bool setTargetsInDir(const QString &dir, bool recursive = false);
-
     void initIgnoreList();
     void initIgnoreEnvList();
 
@@ -120,6 +119,7 @@ private:
      */
     bool addTarget(const TargetData &target);
     void initCustomPlatform();
+    void addExtraNamesMasks(const QStringList &listNamesMasks);
 };
 
 #endif // CQT_H

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2020-2022 QuasarApp.
+# Copyright (C) 2020-2023 QuasarApp.
 # Distributed under the GPLv3 software license, see the accompanying
 # Everyone is permitted to copy and distribute verbatim copies
 # of this license document, but changing it is not allowed.
@@ -14,9 +14,10 @@ add_subdirectory(TestCPPOnly)
 add_subdirectory(TestOnlyC)
 add_subdirectory(TestQMLWidgets)
 add_subdirectory(TestQtWidgets)
-add_subdirectory(virtualkeyboard)
 
 if (NOT WIN32)
+    add_subdirectory(QMLFileDialog)
+    add_subdirectory(virtualkeyboard)
     add_subdirectory(quicknanobrowser)
     add_subdirectory(webui)
 endif()

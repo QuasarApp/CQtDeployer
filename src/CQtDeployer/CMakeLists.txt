@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2021-2022 QuasarApp.
+# Copyright (C) 2021-2023 QuasarApp.
 # Distributed under the GPLv3 software license, see the accompanying
 # Everyone is permitted to copy and distribute verbatim copies
 # of this license document, but changing it is not allowed.
@@ -70,6 +70,17 @@ set(LANGS ${CMAKE_CURRENT_SOURCE_DIR}/languages/en.ts
 
 prepareQM(${CURRENT_PROJECT} ${CMAKE_CURRENT_SOURCE_DIR}/../ "${LANGS}")
 
+# sets qifw variable
+set(ApplicationsDir "@HomeDir@")
+set(QIFW_PLATFORM linux)
+set(INSTALLER_SUFIX ".run")
+if (WIN32)
+    set(QIFW_PLATFORM windows)
+    set(INSTALLER_SUFIX ".exe")
+    set(ApplicationsDir "@ApplicationsDir@")
+
+endif()
+
 configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployer.json")
 configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployerSingle.json")
 
@@ -83,17 +94,6 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Deploy/snapcraft.yaml.in" "${CMAKE_S
 add_custom_target(${name}Templates ALL
     SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/snapcraft.yaml.in"
 )
-
-# sets qifw variable
-set(ApplicationsDir "@HomeDir@")
-set(QIFW_PLATFORM linux)
-set(INSTALLER_SUFIX .run)
-if (WIN32)
-    set(QIFW_PLATFORM windows)
-    set(INSTALLER_SUFIX exe)
-    set(ApplicationsDir "@ApplicationsDir@")
-
-endif()
 
 configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFWTemplate/config/config.xml")
 

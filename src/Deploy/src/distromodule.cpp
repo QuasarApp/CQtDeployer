@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022 QuasarApp.
+ * Copyright (C) 2018-2023 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -77,7 +77,7 @@ void DistroModule::setPublisher(const QString &publisher) {
     _publisher = publisher;
 }
 
-QSet<QString> DistroModule::enabledPlugins() const {
+const QSet<QString>& DistroModule::enabledPlugins() const {
     return _enabled;
 }
 
@@ -89,7 +89,7 @@ void DistroModule::addEnabledPlugins(const QString &enabled) {
     _enabled += enabled;
 }
 
-QSet<QString> DistroModule::disabledPlugins() const {
+const QSet<QString>& DistroModule::disabledPlugins() const {
     return _disabled;
 }
 
@@ -101,7 +101,7 @@ void DistroModule::addDisabledPlugins(const QString &disabled) {
     _disabled += disabled;
 }
 
-QSet<QString> DistroModule::extraPlugins() const {
+const QSet<QString> &DistroModule::extraPlugins() const {
     return _extraPlugins;
 }
 
@@ -175,7 +175,7 @@ void DistroModule::setInstallDirDEB(const QString &newInstallDir) {
     _installDirDEB = newInstallDir;
 }
 
-QSet<QString> DistroModule::translation() const {
+const QSet<QString> &DistroModule::translation() const {
     return _tr;
 }
 
@@ -187,7 +187,7 @@ void DistroModule::addTranslation(const QString &tr) {
     _tr += tr;
 }
 
-QSet<QString> DistroModule::extraData() const {
+const QSet<QString> &DistroModule::extraData() const {
     return _extraData;
 }
 

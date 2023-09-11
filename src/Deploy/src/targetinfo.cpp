@@ -1,13 +1,11 @@
 //#
-//# Copyright (C) 2018-2022 QuasarApp.
+//# Copyright (C) 2018-2023 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
 //#
 
 #include "targetinfo.h"
-#include "deploycore.h"
-#include "deployconfig.h"
 
 TargetInfo::TargetInfo() {
 
@@ -101,5 +99,3 @@ void TargetInfo::setFEnableRunScript(bool newFEnableRunScript) {
 void TargetInfo::disableRunScript() {
     setFEnableRunScript(false);
 }
-
-

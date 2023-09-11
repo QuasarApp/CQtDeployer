@@ -9,7 +9,6 @@
 * [Параметры](Options.md)
 * [Руководство](Guide.md)
 * [Краткое Руководство](QuickGuide.md)
-* [Сборка и установка](Build-and-Install.md)
 * [Файл развертывания](DeployConfigFile.md)
 * [Упаковка](Packing.md)
 * [Список изменений](Changelog.md)
