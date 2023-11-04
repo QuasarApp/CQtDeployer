@@ -174,7 +174,7 @@ void Extracter::copyExtraPlugins(const QString& package) {
                                             QuasarAppUtils::Warning);
             }
 
-            for (const auto& plugin : qAsConst(plugins)) {
+            for (const auto& plugin : std::as_const(plugins)) {
                 extractPluginLib(plugin, package);
             }
         }
@@ -198,7 +198,7 @@ void Extracter::extractPlugins() {
         _fileManager->copyFiles(plugins, targetPath + distro.getPluginsOutDir(), 1,
                                 DeployCore::debugExtensions(), &listItems);
 
-        for (const auto &item : qAsConst(listItems)) {
+        for (const auto &item : std::as_const(listItems)) {
             extractPluginLib(item, i.key());
         }
 
@@ -281,7 +281,7 @@ bool Extracter::copyTr() {
                 if (info.isDir()) {
                     QDir dir(info.absoluteFilePath());
                     auto availableQm = dir.entryInfoList({"*.qm"}, QDir::Files);
-                    for (const auto & trFile : qAsConst(availableQm)) {
+                    for (const auto & trFile : std::as_const(availableQm)) {
                         if (!_fileManager->copyFile(trFile.absoluteFilePath(),
                                                     cnf->getPackageTargetDir(i.key()) + i->getTrOutDir())) {
                             return false;
@@ -415,7 +415,7 @@ void Extracter::extractLib(const QString &file,
         allDependencies = _scaner->scan(file).getAllDep();
     }
 
-    for (const auto &line : qAsConst(allDependencies)) {
+    for (const auto &line : std::as_const(allDependencies)) {
 
         if (mask.size() && !line.getName().contains(mask, DeployCore::getCaseSensitivity())) {
             continue;
@@ -500,7 +500,7 @@ bool Extracter::extractQml() {
                     return false;
                 }
             } else {
-                for (const auto& plugin: qAsConst(plugins)) {
+                for (const auto& plugin: std::as_const(plugins)) {
                     const auto qmlFiles = QDir(plugin).entryInfoList(QDir::Files);
                     for (const auto& qmlFile: qmlFiles) {
                         toCopyQmlFiles.push_back(qmlFile.absoluteFilePath());
@@ -520,7 +520,7 @@ bool Extracter::extractQml() {
             }
 
 
-            for (const auto &item : qAsConst(listItems)) {
+            for (const auto &item : std::as_const(listItems)) {
                 extractPluginLib(item, i.key());
             }
 

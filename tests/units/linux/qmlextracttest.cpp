@@ -26,7 +26,7 @@ void QMLExtractTest::test() {
     QMLQt5 scaner("./");
 
 
-    for (const auto &file : qAsConst(qmlFiles)) {
+    for (const auto &file : std::as_const(qmlFiles)) {
 
 
         auto fileImports = scaner.extractImportsFromFile(file);

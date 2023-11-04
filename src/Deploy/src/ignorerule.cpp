@@ -9,7 +9,7 @@
 #include <quasarapp.h>
 
 bool IgnoreRule::checkOnlytext(const QString &lib) {
-    for (const auto &ignore : qAsConst(_data)) {
+    for (const auto &ignore : std::as_const(_data)) {
         if (lib.contains(ignore.label)) {
             return true;
         }

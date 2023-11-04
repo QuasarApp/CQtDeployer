@@ -83,7 +83,7 @@ bool Packing::create() {
         return false;
     }
 
-    for (auto package : qAsConst(_pakages)) {
+    for (auto package : std::as_const(_pakages)) {
 
         if (!package) {
             internalError();
@@ -207,7 +207,7 @@ bool Packing::extractTemplates() {
         return false;
     }
 
-    for (auto package : qAsConst(_pakages)) {
+    for (auto package : std::as_const(_pakages)) {
 
         if (!package)
             return false;

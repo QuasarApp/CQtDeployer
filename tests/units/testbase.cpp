@@ -109,7 +109,7 @@ void TestBase::checkResults(const QSet<QString> &tree, bool noWarnings, bool onl
         }
 
         QJsonObject obj;
-        for (const auto &i : qAsConst(resultTree)) {
+        for (const auto &i : std::as_const(resultTree)) {
             obj[i];
         }
 

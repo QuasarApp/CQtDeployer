@@ -125,7 +125,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
 
     libStack.insert(lib.fullPath());
 
-    for (const auto &i : qAsConst(lib._dependncies)) {
+    for (const auto &i : std::as_const(lib._dependncies)) {
 
         auto libs = getLibsFromEnvirement(i);
 

@@ -180,7 +180,7 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
     
     bool copy = !masks;
     if (masks) {
-        for (const auto &mask : qAsConst(*masks)) {
+        for (const auto &mask : std::as_const(*masks)) {
             if (info.absoluteFilePath().contains(mask, DeployCore::getCaseSensitivity())) {
                 copy = true;
                 break;
@@ -432,7 +432,7 @@ void FileManager::clear(const QString& targetDir, bool force) {
     }
 
     QMultiMap<int, QFileInfo> sortedOldData;
-    for (const auto& i : qAsConst(_deployedFiles)) {
+    for (const auto& i : std::as_const(_deployedFiles)) {
         sortedOldData.insert(i.size(), QFileInfo(i));
     }
 

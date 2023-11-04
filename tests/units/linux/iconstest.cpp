@@ -76,7 +76,7 @@ void IconsTest::test() {
                          "-icon", ":/testResurces/testRes/TestIcon.png",
                 });
 
-    for (const auto &target : qAsConst(binMulti)) {
+    for (const auto &target : std::as_const(binMulti)) {
         QFileInfo tarInfo(target);
 
         targetsMap = deploy->_config.getTargetsListByFilter(tarInfo.baseName());

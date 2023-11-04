@@ -41,7 +41,7 @@ void DistroStructTest::test() {
         {"\\\\res\\\\\\type\\\\\\\\\\","/../../"},
     };
 
-    for (const auto &i: qAsConst(cases)) {
+    for (const auto &i: std::as_const(cases)) {
         if (distro.getRelativePath(i.first) != i.second)
             QVERIFY(false);
     }

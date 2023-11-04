@@ -116,7 +116,7 @@ QProcessEnvironment Deb::processEnvirement() const {
 
 QList<SystemCommandData> Deb::runCmd() {
     QList<SystemCommandData> res;
-    for (const auto& inout: qAsConst(inouts)) {
+    for (const auto& inout: std::as_const(inouts)) {
         res.push_back({"dpkg-deb", QStringList{"--build", "--verbose"} << inout.input << inout.output});
     }
 
@@ -125,7 +125,7 @@ QList<SystemCommandData> Deb::runCmd() {
 
 QStringList Deb::outPutFiles() const {
     QStringList result;
-    for (const auto& inout: qAsConst(inouts)) {
+    for (const auto& inout: std::as_const(inouts)) {
         result.push_back(inout.output);
     }
     return result;

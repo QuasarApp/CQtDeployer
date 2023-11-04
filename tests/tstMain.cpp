@@ -78,7 +78,7 @@
 // Check exampletests
 #define TestCase(name, testClass) \
     void name() { \
-        initTest(new testClass()); \
+        initTest(new testClass); \
     }
 
 /**
@@ -314,11 +314,12 @@ void tstMain::initTest(Test *test) {
             delete e;
         }
 
-        delete test;
         _app->exit(0);
     });
 
     _app->exec();
+
+    delete test;
 }
 
 QTEST_APPLESS_MAIN(tstMain)
