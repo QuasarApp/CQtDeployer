@@ -159,8 +159,8 @@ private slots:
         TestCase(ziparrchivetest, ZIPArchiveTest )
         TestCase(zipmultitest, ZIPMultiTest )
         TestCase(ziptest, ZIPTest )
-        TestCase(systemLibTest, SystemLibTest)
         TestCase(qmlfiledialogtest, QmlFileDialogTest)
+        TestCase(systemLibTest, SystemLibTest)
 
 
 #endif

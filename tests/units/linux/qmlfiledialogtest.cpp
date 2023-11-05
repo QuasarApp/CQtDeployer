@@ -36,9 +36,24 @@ void QmlFileDialogTest::test() {
             "./" + DISTRO_DIR + "/qml/QtCore/qmldir",
             "./" + DISTRO_DIR + "/qml/QtQuick/Dialogs/libqtquickdialogsplugin.so",
             "./" + DISTRO_DIR + "/qml/QtQuick/Dialogs/plugins.qmltypes",
-            "./" + DISTRO_DIR + "/qml/QtQuick/Dialogs/qmldir"
+            "./" + DISTRO_DIR + "/qml/QtQuick/Dialogs/qmldir",
         }
         );
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+    compareTree += utils.createTree(
+        {
+            "./" + DISTRO_DIR + "/lib/libQt6QuickLayouts.so",
+            "./" + DISTRO_DIR + "/qml/QtQuick/Dialogs/quickimpl/libqtquickdialogs2quickimplplugin.so",
+            "./" + DISTRO_DIR + "/qml/QtQuick/Dialogs/quickimpl/plugins.qmltypes",
+            "./" + DISTRO_DIR + "/qml/QtQuick/Dialogs/quickimpl/qmldir",
+            "./" + DISTRO_DIR + "/qml/QtQuick/Layouts/libqquicklayoutsplugin.so",
+            "./" + DISTRO_DIR + "/qml/QtQuick/Layouts/plugins.qmltypes",
+            "./" + DISTRO_DIR + "/qml/QtQuick/Layouts/qmldir"
+
+        }
+        );
+#endif
 
     auto bin = TestBinDir + "QMLFileDialog";
 
