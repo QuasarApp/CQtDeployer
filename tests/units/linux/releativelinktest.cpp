@@ -35,7 +35,7 @@ void ReleativeLinkTest::test() {
 
 };
 
-    for (const auto &i: qAsConst(cases)) {
+    for (const auto &i: std::as_const(cases)) {
         if (PathUtils::getRelativeLink(i[0], i[1]) != i[2])
             QVERIFY(false);
     }

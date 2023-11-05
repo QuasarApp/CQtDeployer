@@ -1053,7 +1053,7 @@ QFileInfo DeployCore::findItem(const QString &bin) {
     auto prefixes = QuasarAppUtils::Params::getArg("binPrefix").
             split(DeployCore::getSeparator(0), splitbehavior);
 
-    for (const QString& prefix :qAsConst(prefixes)) {
+    for (const QString& prefix :std::as_const(prefixes)) {
         QFileInfo info(prefix + "/" + bin);
 
         if (info.exists()) {

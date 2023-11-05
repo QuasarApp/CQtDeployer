@@ -35,7 +35,7 @@ QSet<QString> TestUtils::getTree(const QString &path, int limit, int depch) {
 
     QDir dir(info.absoluteFilePath());
     auto list = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
-    for (const auto &i: qAsConst(list)) {
+    for (const auto &i: std::as_const(list)) {
         result.unite(getTree(i.absoluteFilePath(), limit, depch + 1));
     }
 
@@ -62,7 +62,7 @@ QSet<QString> TestUtils::getFilesSet(const QString &path, int limit, int depch) 
 
     QDir dir(info.absoluteFilePath());
     auto list = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
-    for (const auto &i: qAsConst(list)) {
+    for (const auto &i: std::as_const(list)) {
         result.unite(getFilesSet(i.absoluteFilePath(), limit, depch + 1));
     }
 
@@ -109,11 +109,11 @@ QHash<QString, int> TestUtils::compareTree(const QSet<QString> &leftTree, const 
     auto valuel = leftTree - rightTree;
     auto valuer = rightTree - leftTree;
 
-    for(auto &i :qAsConst(valuel)) {
+    for(auto &i :std::as_const(valuel)) {
         result.insert(i, 1);
     }
 
-    for(auto &i :qAsConst(valuer)) {
+    for(auto &i :std::as_const(valuer)) {
         result.insert(i, -1);
     }
 

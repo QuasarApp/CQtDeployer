@@ -47,7 +47,7 @@ void CheckQtTest::test() {
 
     };
 
-    for (const auto &i: qAsConst(cases)) {
+    for (const auto &i: std::as_const(cases)) {
         QVERIFY(DeployCore::isQtLib(i.first) == i.second);
     }
     delete deployer;
@@ -109,7 +109,7 @@ void CheckQtTest::test() {
 
     };
 
-    for (const auto &i: qAsConst(cases)) {
+    for (const auto &i: std::as_const(cases)) {
         auto dexription = QString("The isQtLib(%0) function should be return %1").arg(
                     i.first).arg(i.second);
         QVERIFY2(DeployCore::isQtLib(i.first) == i.second, dexription.toLatin1().data());

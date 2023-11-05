@@ -36,6 +36,11 @@ void ExtraPluginTest::test() {
 
 
                 });
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+    pluginTree += utils.createTree({"./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlmimer.so"});
+#endif
+
 #else
     QString bin = TestBinDir + "QtWidgetsProject.exe";
     QString qmake = TestQtDir + "bin/qmake.exe";
@@ -50,6 +55,10 @@ void ExtraPluginTest::test() {
                     "./" + DISTRO_DIR + "/libpq.dll",
 
                 });
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+    pluginTree.insert("./" + DISTRO_DIR + "/plugins/sqldrivers/qsqlmimer.dll");
+#endif
 #endif
 
     auto comapareTree = TestModule.qtLibs();

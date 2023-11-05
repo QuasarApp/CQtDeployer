@@ -966,7 +966,7 @@ bool ConfigParser::setTargetsInDir(const QString &dir, bool recursive) {
     }
 
     bool result = false;
-    for (const auto &file : qAsConst(list)) {
+    for (const auto &file : std::as_const(list)) {
 
         if (file.isDir()) {
             result |= setTargetsInDir(file.absoluteFilePath(), recursive);

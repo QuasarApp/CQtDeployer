@@ -33,7 +33,7 @@ void QmlScanerTest::test() {
 
     QVERIFY(results.size() == imports.size());
 
-    for (const auto &import: qAsConst(imports)) {
+    for (const auto &import: std::as_const(imports)) {
         auto path = scaner6.getPathFromImport(import);
         QVERIFY(results.contains(path));
     }
@@ -42,7 +42,7 @@ void QmlScanerTest::test() {
 
     QVERIFY(results.size() == imports.size());
 
-    for (const auto & import: qAsConst(imports)) {
+    for (const auto & import: std::as_const(imports)) {
         auto path = scaner6.getPathFromImport(import);
         QVERIFY(results.contains(path));
     }
@@ -62,7 +62,7 @@ void QmlScanerTest::test() {
 
     QVERIFY(results.size() == imports.size());
 
-    for (const auto &import: qAsConst(imports)) {
+    for (const auto &import: std::as_const(imports)) {
         auto path = scaner6.getPathFromImport(import);
         QVERIFY(results.contains(path));
     }

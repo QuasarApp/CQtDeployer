@@ -69,7 +69,7 @@ bool QMLQt6::extractImportsFromDir(const QString &path, bool recursive) {
 
     for (const auto &info: files) {
         auto imports = extractImportsFromFile(info.absoluteFilePath());
-        for (const auto &import : qAsConst(imports)) {
+        for (const auto &import : std::as_const(imports)) {
             if (!_imports.contains(import)) {
                 _imports.insert(import);
                 extractImportsFromDir(getPathFromImport(import), false);
@@ -77,11 +77,11 @@ bool QMLQt6::extractImportsFromDir(const QString &path, bool recursive) {
         }
     }
 
-    for (const auto& module: qAsConst(qmlmodule)) {
+    for (const auto& module: std::as_const(qmlmodule)) {
         QStringList imports = extractImportsFromQmlModule(module.absoluteFilePath());
         imports += extractImportsFromFile(module.absoluteFilePath());
 
-        for (const auto &import : qAsConst(imports)) {
+        for (const auto &import : std::as_const(imports)) {
             if (!_imports.contains(import)) {
                 _imports.insert(import);
                 extractImportsFromDir(getPathFromImport(import), false);
@@ -153,7 +153,7 @@ bool QMLQt6::deployPath(const QString &path, QStringList &res) {
     QDir dir(path);
     auto infoList = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs);
 
-    for (const auto &info : qAsConst(infoList)) {
+    for (const auto &info : std::as_const(infoList)) {
         if (DeployCore::isDebugFile(info.fileName())) {
             QuasarAppUtils::Params::log("Skip debug library " +
                                         info.absoluteFilePath());
@@ -218,7 +218,7 @@ bool QMLQt6::scan(QStringList &res, const QString& _qmlProjectDir) {
         return false;
     }
 
-    for (const auto &import : qAsConst(_imports)) {
+    for (const auto &import : std::as_const(_imports)) {
         res.push_back(getPathFromImport(import));
     }
 
