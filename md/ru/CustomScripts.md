@@ -65,4 +65,4 @@ CQT_RUN_COMMAND
 ```
 
 
-Или вы можете получить последнюю версию этих скриптов из github [репозитория](https://github.com/QuasarApp/CQtDeployer/tree/main/Deploy/ScriptsTemplates).
+Или вы можете получить последнюю версию этих скриптов из github [репозитория](https://github.com/QuasarApp/CQtDeployer/tree/main/src/Deploy/src/ScriptsTemplates).
