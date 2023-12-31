@@ -122,5 +122,5 @@ if (UNIX)
         add_dependencies(snapcraft${CURRENT_PROJECT} "deploy${CURRENT_PROJECT}Single")
     endif()
 
-    addReleaseSnap(${CURRENT_PROJECT})
+    addReleaseSnap(${CURRENT_PROJECT} latest/edge)
 endif()
