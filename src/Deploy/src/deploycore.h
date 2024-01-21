@@ -283,11 +283,6 @@ public:
     static QStringList debugExtensions();
     static bool isDebugFile(const QString& file);
 
-    static bool isSnap();
-    static QString snapRootFS();
-    static QString transportPathToSnapRoot(const QString &path);
-    static bool checkSystemBakupSnapInterface();
-
     /**
      * @brief getLibCoreName This method remove platfomr specificly prefixes and sufixes of the librarry.
      *  Example : getLibCoreName(libTest.so) return Test

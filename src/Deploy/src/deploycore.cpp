@@ -16,6 +16,7 @@
 #include <QProcess>
 #include <configparser.h>
 #include <iostream>
+#include <qaplatformutils.h>
 
 //QString DeployCore::qtDir = "";
 //QStringList DeployCore::extraPaths = QStringList();
@@ -609,7 +610,7 @@ QString DeployCore::getAppVersion() {
 }
 
 QString DeployCore::getAppVersionName() {
-    if (isSnap()) {
+    if (QuasarAppUtils::PlatformUtils::isSnap()) {
         return "*** Cool Core (snap) ***";
     }
     return "*** Cool Core ***";
@@ -661,9 +662,10 @@ QString DeployCore::findProcess(const QString &env, const QString& proc, bool ig
     }
 
     // working only for the snap version of cqtdeployer ...
-    if (isSnap()) {
+    if (QuasarAppUtils::PlatformUtils::isSnap()) {
         for (const auto& path : list) {
-            auto files = QDir(transportPathToSnapRoot(path)).entryInfoList(findEntries);
+            auto files = QDir(QuasarAppUtils::PlatformUtils::transportPathToSnapRoot(path)).
+                         entryInfoList(findEntries);
 
             for (const auto& bin : files) {
                 if (bin.baseName().compare(proc, DeployCore::getCaseSensitivity()) == 0) {
@@ -1004,40 +1006,6 @@ char DeployCore::getEnvSeparator() {
 #else
     return ';';
 #endif
-}
-
-bool DeployCore::isSnap() {
-    return QProcessEnvironment::systemEnvironment().value("SNAP").size();
-}
-
-QString DeployCore::snapRootFS() {
-    return "/var/lib/snapd/hostfs";
-}
-
-QString DeployCore::transportPathToSnapRoot(const QString &path) {
-    if (isSnap() && checkSystemBakupSnapInterface()) {
-
-        if(QFileInfo(path).isWritable()) {
-            return path;
-        }
-
-        if (path.size() && path[0] != QString("/")) {
-            auto absalutPath = QProcessEnvironment::systemEnvironment().value("PWD") + "/" + path;
-            if (!absalutPath.contains(DeployCore::snapRootFS())) {
-                return snapRootFS() + "/" + absalutPath;
-            }
-        }
-
-        if (!path.contains(DeployCore::snapRootFS())) {
-            return snapRootFS() + "/" + path;
-        }
-    }
-
-    return path;
-}
-
-bool DeployCore::checkSystemBakupSnapInterface() {
-    return QDir(DeployCore::snapRootFS()).entryList(QDir::AllEntries | QDir::NoDotAndDotDot).size();
 }
 
 void DeployCore::printInternalError(const char * function, const char* file, int line ) {

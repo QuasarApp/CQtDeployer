@@ -66,9 +66,10 @@ QString ELF::extractRPath(ElfReader& reader) const {
             for (const auto &path: pathes) {
                 if (path.contains("/")) {
                     if (result.size()) {
-                        result += DeployCore::getEnvSeparator() + DeployCore::transportPathToSnapRoot(path);
+                        result += DeployCore::getEnvSeparator() +
+                                  QuasarAppUtils::PlatformUtils::transportPathToSnapRoot(path);
                     } else {
-                        result += DeployCore::transportPathToSnapRoot(path);
+                        result += QuasarAppUtils::PlatformUtils::transportPathToSnapRoot(path);
                     }
                 }
             }
