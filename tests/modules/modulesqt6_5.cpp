@@ -22,7 +22,7 @@ QSet<QString> ModulesQt6_5::qmlLibs(const QString &distDir) const {
             "./" + distDir + "/qml/QtQml/libqmlplugin.so",
             "./" + distDir + "/qml/QtQml/plugins.qmltypes"
         }
-    );
+        );
 
 #ifdef Q_OS_WIN
     Tree += utils.createTree(
@@ -43,6 +43,7 @@ QSet<QString> ModulesQt6_5::qmlLibs(const QString &distDir) const {
             "./" + distDir + "/qml/QtQml/Base/plugins.qmltypes",
             "./" + distDir + "/qml/QtQml/Base/qmldir",
             "./" + distDir + "/qml/QtQml/libqmlmetaplugin.so",
+            "./" + distDir + "/plugins/networkinformation/libqglib.so",
             "./" + distDir + "/qml/QtQuick/Controls/Material/impl/RoundedElevationEffect.qml"
         }
         );
@@ -77,12 +78,6 @@ QSet<QString> ModulesQt6_5::qtLibs(const QString &distDir) const {
             "./" + distDir + "/plugins/platforms/qdirect2d.dll",
         }
         );
-#else
-    Tree += utils.createTree(
-        {
-            "./" + distDir + "/plugins/networkinformation/libqglib.so",
-        }
-        );
 
 #endif
 
@@ -94,6 +89,15 @@ QSet<QString> ModulesQt6_5::qtWebEngineWidgets(const QString &distDir) const
     TestUtils utils;
 
     auto Tree = ModulesQt6_4::qtWebEngineWidgets(distDir);
+
+#ifdef Q_OS_LINUX
+    Tree += utils.createTree(
+        {
+            "./" + distDir + "/plugins/networkinformation/libqglib.so",
+        }
+        );
+#endif
+
 
     return Tree;
 }
