@@ -77,6 +77,13 @@ QSet<QString> ModulesQt6_5::qtLibs(const QString &distDir) const {
             "./" + distDir + "/plugins/platforms/qdirect2d.dll",
         }
         );
+#else
+    Tree += utils.createTree(
+        {
+            "./" + distDir + "/plugins/networkinformation/libqglib.so",
+        }
+        );
+
 #endif
 
     return Tree;
