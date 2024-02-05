@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2023 QuasarApp.
+ * Copyright (C) 2018-2024 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -8,6 +8,7 @@
 #include "deployconfig.h"
 #include "deploycore.h"
 #include "distromodule.h"
+#include <qaplatformutils.h>
 
 DistroModule::DistroModule(const QString& key) {
     setKey(key);
@@ -34,7 +35,7 @@ void DistroModule::setQmlInput(const QSet<QString> &qmlInput) {
 }
 
 void DistroModule::addQmlInput(const QString &target) {
-    _qmlInput.insert(DeployCore::transportPathToSnapRoot(target));
+    _qmlInput.insert(QuasarAppUtils::PlatformUtils::transportPathToSnapRoot(target));
 }
 
 QString DistroModule::name() const {
@@ -110,7 +111,7 @@ void DistroModule::setExtraPlugins(const QSet<QString> &extraPlugins) {
 }
 
 void DistroModule::addExtraPlugins(const QString &extraPlugin) {
-    _extraPlugins += DeployCore::transportPathToSnapRoot(extraPlugin);
+    _extraPlugins += QuasarAppUtils::PlatformUtils::transportPathToSnapRoot(extraPlugin);
 
 }
 

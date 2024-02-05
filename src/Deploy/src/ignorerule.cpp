@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2023 QuasarApp.
+ * Copyright (C) 2018-2024 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -9,7 +9,7 @@
 #include <quasarapp.h>
 
 bool IgnoreRule::checkOnlytext(const QString &lib) {
-    for (const auto &ignore : qAsConst(_data)) {
+    for (const auto &ignore : std::as_const(_data)) {
         if (lib.contains(ignore.label)) {
             return true;
         }

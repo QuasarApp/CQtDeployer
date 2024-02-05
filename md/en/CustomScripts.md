@@ -66,4 +66,4 @@ CQT_RUN_COMMAND
 ```
 
 
-Or you can get last version of this scripts from the github [repository](https://github.com/QuasarApp/CQtDeployer/tree/main/Deploy/ScriptsTemplates).
+Or you can get last version of this scripts from the github [repository](https://github.com/QuasarApp/CQtDeployer/tree/main/src/Deploy/src/ScriptsTemplates).

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2023 QuasarApp.
+ * Copyright (C) 2018-2024 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -282,11 +282,6 @@ public:
 
     static QStringList debugExtensions();
     static bool isDebugFile(const QString& file);
-
-    static bool isSnap();
-    static QString snapRootFS();
-    static QString transportPathToSnapRoot(const QString &path);
-    static bool checkSystemBakupSnapInterface();
 
     /**
      * @brief getLibCoreName This method remove platfomr specificly prefixes and sufixes of the librarry.

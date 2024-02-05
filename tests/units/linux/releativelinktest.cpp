@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2020-2023 QuasarApp.
+//# Copyright (C) 2020-2024 QuasarApp.
 //# Distributed under the GPLv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -35,7 +35,7 @@ void ReleativeLinkTest::test() {
 
 };
 
-    for (const auto &i: qAsConst(cases)) {
+    for (const auto &i: std::as_const(cases)) {
         if (PathUtils::getRelativeLink(i[0], i[1]) != i[2])
             QVERIFY(false);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2023 QuasarApp.
+ * Copyright (C) 2018-2024 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -125,7 +125,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
 
     libStack.insert(lib.fullPath());
 
-    for (const auto &i : qAsConst(lib._dependncies)) {
+    for (const auto &i : std::as_const(lib._dependncies)) {
 
         auto libs = getLibsFromEnvirement(i);
 

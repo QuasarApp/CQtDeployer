@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2020-2023 QuasarApp.
+//# Copyright (C) 2020-2024 QuasarApp.
 //# Distributed under the GPLv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -26,7 +26,7 @@ void QMLExtractTest::test() {
     QMLQt5 scaner("./");
 
 
-    for (const auto &file : qAsConst(qmlFiles)) {
+    for (const auto &file : std::as_const(qmlFiles)) {
 
 
         auto fileImports = scaner.extractImportsFromFile(file);

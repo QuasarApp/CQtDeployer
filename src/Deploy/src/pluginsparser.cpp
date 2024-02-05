@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2023 QuasarApp.
+ * Copyright (C) 2018-2024 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -163,7 +163,7 @@ void PluginsParser::addPlugins(const QStringList& list, const QString& package,
                                QHash<QString, QSet<QString>>& container) {
     const DeployConfig* cnf = DeployCore::_config;
 
-    for (const auto &plugin: qAsConst(list)) {
+    for (const auto &plugin: std::as_const(list)) {
         if (QFileInfo(cnf->qtDir.getPlugins() + "/" + plugin).isDir()) {
              auto listPlugins = QDir(cnf->qtDir.getPlugins() + "/" + plugin).entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
 

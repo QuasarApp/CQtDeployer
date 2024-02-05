@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2020-2023 QuasarApp.
+//# Copyright (C) 2020-2024 QuasarApp.
 //# Distributed under the GPLv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -36,6 +36,11 @@ void ExtraPluginTest::test() {
 
 
                 });
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+    pluginTree += utils.createTree({"./" + DISTRO_DIR + "/plugins/sqldrivers/libqsqlmimer.so"});
+#endif
+
 #else
     QString bin = TestBinDir + "QtWidgetsProject.exe";
     QString qmake = TestQtDir + "bin/qmake.exe";
@@ -50,6 +55,10 @@ void ExtraPluginTest::test() {
                     "./" + DISTRO_DIR + "/libpq.dll",
 
                 });
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+    pluginTree.insert("./" + DISTRO_DIR + "/plugins/sqldrivers/qsqlmimer.dll");
+#endif
 #endif
 
     auto comapareTree = TestModule.qtLibs();

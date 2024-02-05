@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2020-2023 QuasarApp.
+//# Copyright (C) 2020-2024 QuasarApp.
 //# Distributed under the GPLv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -78,7 +78,7 @@
 // Check exampletests
 #define TestCase(name, testClass) \
     void name() { \
-        initTest(new testClass()); \
+        initTest(new testClass); \
     }
 
 /**
@@ -159,8 +159,8 @@ private slots:
         TestCase(ziparrchivetest, ZIPArchiveTest )
         TestCase(zipmultitest, ZIPMultiTest )
         TestCase(ziptest, ZIPTest )
-        TestCase(systemLibTest, SystemLibTest)
         TestCase(qmlfiledialogtest, QmlFileDialogTest)
+        TestCase(systemLibTest, SystemLibTest)
 
 
 #endif
@@ -314,11 +314,12 @@ void tstMain::initTest(Test *test) {
             delete e;
         }
 
-        delete test;
         _app->exit(0);
     });
 
     _app->exec();
+
+    delete test;
 }
 
 QTEST_APPLESS_MAIN(tstMain)

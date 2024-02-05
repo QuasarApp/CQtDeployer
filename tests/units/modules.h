@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2023 QuasarApp.
+ * Copyright (C) 2018-2024 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -11,7 +11,10 @@
 #include <configparser.h>
 #include <QSet>
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+    #include "modulesqt6_6.h"
+    class Modules: public ModulesQt6_6
+#elif QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     #include "modulesqt6_5.h"
     class Modules: public ModulesQt6_5
 

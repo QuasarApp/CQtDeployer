@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2023 QuasarApp.
+//# Copyright (C) 2018-2024 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -23,6 +23,7 @@
 #include <Distributions/defaultdistro.h>
 #include <Distributions/qif.h>
 #include <Distributions/ziparhive.h>
+#include <qaplatformutils.h>
 
 
 /**
@@ -740,7 +741,7 @@ bool ConfigParser::parseDeployMode(bool checkBin) {
 
     if (!initQmake()) {
 
-        if (DeployCore::isSnap()) {
+        if (QuasarAppUtils::PlatformUtils::isSnap()) {
             QuasarAppUtils::Params::log("If you are using qmake from the system repository,"
                                         " then you must use the classic version of CQtDeployer instead of the snap version."
                                         " This is due to the fact that the snap version"
@@ -966,7 +967,7 @@ bool ConfigParser::setTargetsInDir(const QString &dir, bool recursive) {
     }
 
     bool result = false;
-    for (const auto &file : qAsConst(list)) {
+    for (const auto &file : std::as_const(list)) {
 
         if (file.isDir()) {
             result |= setTargetsInDir(file.absoluteFilePath(), recursive);
@@ -1024,9 +1025,11 @@ void ConfigParser::initIgnoreList()
     envUnix.addEnv(Envirement::recursiveInvairement("/lib", 3));
     envUnix.addEnv(Envirement::recursiveInvairement("/usr/lib", 3));
 
-    if (DeployCore::isSnap()) {
-        envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/lib"), 3));
-        envUnix.addEnv(Envirement::recursiveInvairement(DeployCore::transportPathToSnapRoot("/usr/lib"), 3));
+    if (QuasarAppUtils::PlatformUtils::isSnap()) {
+        envUnix.addEnv(Envirement::recursiveInvairement(
+            QuasarAppUtils::PlatformUtils::transportPathToSnapRoot("/lib"), 3));
+        envUnix.addEnv(Envirement::recursiveInvairement(
+            QuasarAppUtils::PlatformUtils::transportPathToSnapRoot("/usr/lib"), 3));
     }
 
     ruleUnix.prority = SystemLib;
@@ -1113,7 +1116,7 @@ void ConfigParser::initIgnoreEnvList() {
     }
 
     // forbid pathes of the snap container
-    if (DeployCore::isSnap()) {
+    if (QuasarAppUtils::PlatformUtils::isSnap()) {
         ignoreEnvList.push_back("/lib");
         ignoreEnvList.push_back("/usr/lib");
     }
@@ -1134,7 +1137,7 @@ QString ConfigParser::getPathFrmoQmakeLine(const QString &in) const {
     auto list = in.split(':');
     if (list.size() > 1) {
         list.removeAt(0);
-        return DeployCore::transportPathToSnapRoot(
+        return QuasarAppUtils::PlatformUtils::transportPathToSnapRoot(
                     QFileInfo(list.join(':')).absoluteFilePath().remove('\r'));
     }
 
@@ -1151,7 +1154,7 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
 
     // Invoke qmake executable only when qmake paths exclude snapRootFS path.
     // Because files in snapRootFS is not executable ...
-    if (!qmake.contains(DeployCore::snapRootFS()) && setQmake(qmake)) {
+    if (!qmake.contains(QuasarAppUtils::PlatformUtils::snapRootFS()) && setQmake(qmake)) {
         return true;
     }
 
@@ -1167,8 +1170,8 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
         QString debianQtRoot = QString("/usr/lib/%0/qt%1").
                                arg(neededPlatform).arg(qtVersion);
 
-        if (DeployCore::isSnap()) {
-            debianQtRoot = DeployCore::snapRootFS() + debianQtRoot;
+        if (QuasarAppUtils::PlatformUtils::isSnap()) {
+            debianQtRoot = QuasarAppUtils::PlatformUtils::snapRootFS() + debianQtRoot;
         }
 
         if (!setQtDir(debianQtRoot)) {
@@ -1189,7 +1192,7 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
     }
 
     // For snap package of cqtdeplyer it is normal behavior
-    if (!DeployCore::isSnap()) {
+    if (!QuasarAppUtils::PlatformUtils::isSnap()) {
         QuasarAppUtils::Params::log("Failed to execute the qmake process!"
                                     " Trying to initialize Qt directories from path: " + dir.absolutePath(),
                                     QuasarAppUtils::Warning);
@@ -1214,7 +1217,8 @@ bool ConfigParser::initQmake() {
         return true;
     }
 
-    auto qmake = DeployCore::transportPathToSnapRoot(QuasarAppUtils::Params::getArg("qmake"));
+    auto qmake = QuasarAppUtils::PlatformUtils::transportPathToSnapRoot(
+        QuasarAppUtils::Params::getArg("qmake"));
 
     QFileInfo info(qmake);
 
@@ -1409,7 +1413,7 @@ bool ConfigParser::initExtraPath() {
     QDir dir;
 
     for (const auto &i : listLibDir) {
-        QFileInfo info(DeployCore::transportPathToSnapRoot(i));
+        QFileInfo info(QuasarAppUtils::PlatformUtils::transportPathToSnapRoot(i));
         if (info.isDir()) {
             if (_config.targets().contains(info.absoluteFilePath())) {
                 QuasarAppUtils::Params::log("Skip the extra library path because it is target!",
@@ -1563,7 +1567,7 @@ void ConfigParser::initEnvirement() {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     auto path = env.value("PATH");
 
-    if (!DeployCore::isSnap()) {
+    if (!QuasarAppUtils::PlatformUtils::isSnap()) {
 
         _config.envirement.addEnv(env.value("LD_LIBRARY_PATH"));
         _config.envirement.addEnv(path);
@@ -1572,8 +1576,8 @@ void ConfigParser::initEnvirement() {
     QStringList dirs;
 #ifdef Q_OS_LINUX
 
-    dirs.append(getDirsRecursive(DeployCore::transportPathToSnapRoot("/lib"), 5));
-    dirs.append(getDirsRecursive(DeployCore::transportPathToSnapRoot("/usr/lib"), 5));
+    dirs.append(getDirsRecursive(QuasarAppUtils::PlatformUtils::transportPathToSnapRoot("/lib"), 5));
+    dirs.append(getDirsRecursive(QuasarAppUtils::PlatformUtils::transportPathToSnapRoot("/usr/lib"), 5));
 
 #else
     auto winPath = findWindowsPath(path);
@@ -1592,14 +1596,14 @@ void ConfigParser::initEnvirement() {
 
 bool ConfigParser::checkSnapPermisions() {
 
-    if (!DeployCore::isSnap())
+    if (!QuasarAppUtils::PlatformUtils::isSnap())
         return true;
 
 
     bool system = QuasarAppUtils::Params::isEndable("deploySystem") ||
             QuasarAppUtils::Params::isEndable("extraLibs");
 
-    if (system && !DeployCore::checkSystemBakupSnapInterface()) {
+    if (system && !QuasarAppUtils::PlatformUtils::checkSystemBakupSnapInterface()) {
 
         QuasarAppUtils::Params::log("You use a deploySystem or extraLibs options,"
                                     " but not added permision system-backup for cqtdeployer."

@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2020-2023 QuasarApp.
+//# Copyright (C) 2020-2024 QuasarApp.
 //# Distributed under the GPLv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -33,7 +33,7 @@ void QmlScanerTest::test() {
 
     QVERIFY(results.size() == imports.size());
 
-    for (const auto &import: qAsConst(imports)) {
+    for (const auto &import: std::as_const(imports)) {
         auto path = scaner6.getPathFromImport(import);
         QVERIFY(results.contains(path));
     }
@@ -42,7 +42,7 @@ void QmlScanerTest::test() {
 
     QVERIFY(results.size() == imports.size());
 
-    for (const auto & import: qAsConst(imports)) {
+    for (const auto & import: std::as_const(imports)) {
         auto path = scaner6.getPathFromImport(import);
         QVERIFY(results.contains(path));
     }
@@ -62,7 +62,7 @@ void QmlScanerTest::test() {
 
     QVERIFY(results.size() == imports.size());
 
-    for (const auto &import: qAsConst(imports)) {
+    for (const auto &import: std::as_const(imports)) {
         auto path = scaner6.getPathFromImport(import);
         QVERIFY(results.contains(path));
     }

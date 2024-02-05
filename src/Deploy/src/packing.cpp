@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2023 QuasarApp.
+ * Copyright (C) 2018-2024 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -83,7 +83,7 @@ bool Packing::create() {
         return false;
     }
 
-    for (auto package : qAsConst(_pakages)) {
+    for (auto package : std::as_const(_pakages)) {
 
         if (!package) {
             internalError();
@@ -207,7 +207,7 @@ bool Packing::extractTemplates() {
         return false;
     }
 
-    for (auto package : qAsConst(_pakages)) {
+    for (auto package : std::as_const(_pakages)) {
 
         if (!package)
             return false;

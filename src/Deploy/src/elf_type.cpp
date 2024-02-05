@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2023 QuasarApp.
+//# Copyright (C) 2018-2024 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -18,7 +18,7 @@ ELF::ELF()
 QByteArrayList ELF::getDynamicString(ElfReader& reader) const {
     auto headers = reader.readHeaders();
 
-    for (const auto &sectionHeader : qAsConst(headers.sectionHeaders)) {
+    for (const auto &sectionHeader : std::as_const(headers.sectionHeaders)) {
         if (sectionHeader.name == ".dynstr") {
             auto arr = reader.readSection(sectionHeader.name).split(0);
             return arr;
@@ -66,9 +66,10 @@ QString ELF::extractRPath(ElfReader& reader) const {
             for (const auto &path: pathes) {
                 if (path.contains("/")) {
                     if (result.size()) {
-                        result += DeployCore::getEnvSeparator() + DeployCore::transportPathToSnapRoot(path);
+                        result += DeployCore::getEnvSeparator() +
+                                  QuasarAppUtils::PlatformUtils::transportPathToSnapRoot(path);
                     } else {
-                        result += DeployCore::transportPathToSnapRoot(path);
+                        result += QuasarAppUtils::PlatformUtils::transportPathToSnapRoot(path);
                     }
                 }
             }
