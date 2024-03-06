@@ -36,6 +36,7 @@ static const PluginModuleMapping pluginModuleMappings[] =
     {"audio", DeployCore::QtModule::QtMultimediaModule},
     {"mediaservice", DeployCore::QtModule::QtMultimediaModule},
     {"playlistformats", DeployCore::QtModule::QtMultimediaModule},
+    {"multimedia", DeployCore::QtModule::QtMultimediaModule},
     {"bearer", DeployCore::QtModule::QtNetworkModule},
     {"tls", DeployCore::QtModule::QtNetworkModule},
     {"networkinformation", DeployCore::QtModule::QtNetworkModule},

@@ -18,6 +18,10 @@ class AllowEmptyPackagesTest: public TestBase, protected TestUtils
 public:
     void test() override;
 
+
+    // TestBase interface
+public:
+     QString testName() const override;
 };
 
 #endif // ALLOW_EMPTY_PACKAGES_TEST_H

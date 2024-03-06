@@ -17,6 +17,10 @@ TestBase::TestBase()
 
 }
 
+QString TestBase::testName() const {
+    return typeid(*this).name();
+}
+
 int TestBase::generateLib(const QString &paath) {
     QDir dir;
     dir.mkpath(QFileInfo(paath).absolutePath());
@@ -115,13 +119,13 @@ void TestBase::checkResults(const QSet<QString> &tree, bool noWarnings, bool onl
 
         QJsonDocument doc(obj);
 
-        QFile lasttree("./LastTree.json");
+        QFile lasttree(QString("./%0_LastTree.json").arg(testName()));
         lasttree.open(QIODevice::WriteOnly| QIODevice::Truncate);
 
         lasttree.write(doc.toJson());
         lasttree.close();
 
-        lasttree.setFileName("./CompareTree.json");
+        lasttree.setFileName(QString("./%0_CompareTree.json").arg(testName()));
         lasttree.open(QIODevice::WriteOnly| QIODevice::Truncate);
 
         lasttree.write(QJsonDocument(comapreResult).toJson());

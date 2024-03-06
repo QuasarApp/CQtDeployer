@@ -15,6 +15,7 @@ class TestBase: public Test
 public:
     TestBase();
 
+    virtual QString testName() const;
     void deploytest();
     int generateLib(const QString &paath);
     void deleteLib(const QString &paath);
