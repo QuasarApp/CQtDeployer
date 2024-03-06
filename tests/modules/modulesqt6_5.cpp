@@ -57,6 +57,22 @@ QSet<QString> ModulesQt6_5::qmlVirtualKeyBoadrLibs(const QString &distDir) const
     TestUtils utils;
 
     auto Tree = ModulesQt6_4::qmlVirtualKeyBoadrLibs(distDir);
+
+#ifdef Q_OS_WIN
+    Tree += utils.createTree(
+        {
+            "./" + distDir + "/plugins/multimedia/ffmpegmediaplugin.dll",
+            "./" + distDir + "/plugins/multimedia/windowsmediaplugin.dll"
+        }
+        );
+#else
+    Tree += utils.createTree(
+        {
+            "./" + distDir + "/plugins/multimedia/libffmpegmediaplugin.so",
+            "./" + distDir + "/plugins/multimedia/libgstreamermediaplugin.so"
+        }
+        );
+#endif
     return Tree;
 }
 

@@ -30,3 +30,7 @@ void AllowEmptyPackagesTest::test() {
                    "-prefix", "package;prefix",
                    "allowEmptyPackages"});
 }
+
+QString AllowEmptyPackagesTest::testName() const {
+    return "AllowEmptyPackagesTest";
+}
