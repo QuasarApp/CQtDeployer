@@ -57,8 +57,8 @@ static const PluginModuleMapping pluginModuleMappings[] =
     {"geometryloaders", DeployCore::QtModule::Qt3DRendererModule},
     {"webview", DeployCore::QtModule::QtWebViewModule},
     {"xcbglintegrations", DeployCore::QtModule::QtGuiModule},
-    {"wayland-decoration-client", DeployCore::QtModule::QtQuickModule},
-    {"wayland-graphics-integration-client", DeployCore::QtModule::QtQuickModule},
+    {"wayland-decoration-client", DeployCore::QtModule::QtGuiModule},
+    {"wayland-graphics-integration-client", DeployCore::QtModule::QtGuiModule},
     {"wayland-graphics-integration-server", DeployCore::QtModule::QtQuickModule},
     {"wayland-shell-integration", DeployCore::QtModule::QtGuiModule},
 
