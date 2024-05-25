@@ -133,7 +133,7 @@ QStringList Envirement::recursiveInvairement(QDir &dir, int depch, int depchLimi
         return {dir.absolutePath()};
     }
 
-    QFileInfoList list = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+    QFileInfoList list = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
     QStringList res = {};
 
     for (QFileInfo &i : list) {

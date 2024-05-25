@@ -6,6 +6,7 @@
 //#
 
 #include <QtTest>
+#include "hidenfilestest.h"
 #include "qttest.h"
 
 #ifdef Q_OS_LINUX
@@ -102,6 +103,7 @@ private slots:
 
     // main tests works on linux only
 #ifdef Q_OS_LINUX
+        TestCase(hidenFilesTest, HidenFilesTest)
         TestCase(extraDependsTest, ExtraDependsTest)
         TestCase(allowemptypackagestest, AllowEmptyPackagesTest )
         TestCase(binprefixtest,  BinPrefixTest)
