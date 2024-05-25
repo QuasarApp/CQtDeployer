@@ -34,7 +34,7 @@ QSet<QString> TestUtils::getTree(const QString &path, int limit, int depch) {
     }
 
     QDir dir(info.absoluteFilePath());
-    auto list = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
+    auto list = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden);
     for (const auto &i: std::as_const(list)) {
         result.unite(getTree(i.absoluteFilePath(), limit, depch + 1));
     }
@@ -61,7 +61,7 @@ QSet<QString> TestUtils::getFilesSet(const QString &path, int limit, int depch) 
     }
 
     QDir dir(info.absoluteFilePath());
-    auto list = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
+    auto list = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden);
     for (const auto &i: std::as_const(list)) {
         result.unite(getFilesSet(i.absoluteFilePath(), limit, depch + 1));
     }

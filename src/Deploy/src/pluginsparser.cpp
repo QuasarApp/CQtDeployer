@@ -153,7 +153,7 @@ bool PluginsParser::scan(const QString& pluginPath,
                          DeployCore::QtModule qtModules,
                          const QString& package) {
 
-    auto plugins = QDir(pluginPath).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+    auto plugins = QDir(pluginPath).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
     for (const auto &plugin: plugins) {
         scanPluginGroup(plugin, resDependencies, package, qtModules);
     }
@@ -167,7 +167,7 @@ void PluginsParser::addPlugins(const QStringList& list, const QString& package,
 
     for (const auto &plugin: std::as_const(list)) {
         if (QFileInfo(cnf->qtDir.getPlugins() + "/" + plugin).isDir()) {
-             auto listPlugins = QDir(cnf->qtDir.getPlugins() + "/" + plugin).entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
+             auto listPlugins = QDir(cnf->qtDir.getPlugins() + "/" + plugin).entryInfoList(QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
 
              for (const auto &plugin: listPlugins) {
                  container[package].insert(getPluginNameFromFile( plugin.baseName()));
@@ -211,7 +211,7 @@ void PluginsParser::scanPlatforms(const QString& package, QList<QString>& disabl
     auto platform = cnf->getPlatform(package);
 
     QString platformPluginPath = cnf->qtDir.getPlugins() + "/platforms";
-    auto plugins = QDir(platformPluginPath).entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
+    auto plugins = QDir(platformPluginPath).entryInfoList(QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
 
     for (const auto &plugin: plugins) {
 
@@ -229,7 +229,7 @@ void PluginsParser::scanPluginGroup(const QFileInfo& plugin,
                                     const QString &package,
                                     DeployCore::QtModule qtModules) const {
 
-    auto plugins = QDir(plugin.absoluteFilePath()).entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
+    auto plugins = QDir(plugin.absoluteFilePath()).entryInfoList(QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
     auto groupModule = qtModuleForPluginGroup(plugin.fileName());
 
     for (const auto& info: plugins) {

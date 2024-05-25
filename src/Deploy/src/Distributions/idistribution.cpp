@@ -108,7 +108,7 @@ bool iDistribution::unpackDir(const QString &resource,
 
 
     QDir res(resource);
-    auto list = res.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries);
+    auto list = res.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries | QDir::Hidden);
 
     for (const auto & item :list) {
 

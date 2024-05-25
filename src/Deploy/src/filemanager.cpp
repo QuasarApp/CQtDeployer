@@ -142,7 +142,7 @@ bool FileManager::strip(const QString &dir) const {
 
     if (info.isDir()) {
         QDir d(dir);
-        auto list = d.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+        auto list = d.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
 
         bool res = false;
         for (const auto &i : list) {
@@ -298,7 +298,7 @@ bool FileManager::copyFolder(const QString &from,
 
     QDir fromDir(from);
 
-    auto list = fromDir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries);
+    auto list = fromDir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries | QDir::Hidden);
 
     for (const auto &item : list) {
         if (item.isDir()) {
@@ -402,7 +402,7 @@ bool FileManager::moveFolder(const QString &from, const QString &to, const QStri
     }
 
     QDir dir(from);
-    auto list = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    auto list = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
     for (const auto &i :list) {
         auto targetDir = to;
         if (i.isDir()) {

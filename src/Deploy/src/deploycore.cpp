@@ -646,7 +646,7 @@ bool DeployCore::isContainsArraySeparators(const QString &val, int lastLvl) {
 QString DeployCore::findProcess(const QString &env, const QString& proc, bool ignoreSymLinks) {
     auto list = env.split(DeployCore::getEnvSeparator());
 
-    auto findEntries = QDir::NoDotAndDotDot | QDir::Files;
+    auto findEntries = QDir::NoDotAndDotDot | QDir::Files | QDir::Hidden;
     if (ignoreSymLinks) {
         findEntries = findEntries | QDir::NoSymLinks;
     }
@@ -773,7 +773,7 @@ QString DeployCore::getVCredist(const QString &_qtbinDir) {
         return "";
     }
 
-    auto infoList = dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
+    auto infoList = dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
 
     auto name = getMSVCName(msvc);
     auto version = getMSVCVersion(msvc);
