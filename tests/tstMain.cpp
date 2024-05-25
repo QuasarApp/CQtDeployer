@@ -6,11 +6,11 @@
 //#
 
 #include <QtTest>
-#include "hidenfilestest.h"
 #include "qttest.h"
 
 #ifdef Q_OS_LINUX
 #include "extradependstest.h"
+#include "hidenfilestest.h"
 
 #include "allowemptypackagestest.h"
 #include "binprefixtest.h"
