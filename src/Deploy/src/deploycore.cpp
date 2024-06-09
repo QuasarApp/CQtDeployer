@@ -254,7 +254,13 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             {"deb", "-deb"}, "",
                             "Create the deb package for deployment programm"
                             " You can specify the path to your own debian template.",
-                            "cqtdeployer -deb path/to/myCustom/DEBIAN."
+                            " cqtdeployer -deb path/to/myCustom/templates"
+                            " Where: the custom path should point to a folder with your packages templates, and template name should match with real package name."
+                            " For Exmaple: cqtdeployer -deb path/to/tempalates -name appnameOrPackageName "
+                            " path/to/tempalates/appnameOrPackageName/DEBIAN"
+                            " To get more information see documentation page "
+                            "https://quasarapp.ddns.net:3031/docs/QuasarApp/CQtDeployer/latest/md_md_2en_2DEB.html"
+
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"deploySystem"}, "",
