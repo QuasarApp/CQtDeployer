@@ -41,7 +41,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 
 ### Boolean options
 
-| Option                      | Descriptiion                                              |
+| Option                      | Description                                              |
 |-----------------------------|-----------------------------------------------------------|
 |   init                      | will initialize cqtdeployer.json file (configuration file)|
 |                             | For example: "cqtdeployer init" - for initialize base package configuration|
@@ -58,7 +58,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   noCheckPATH               | Disables automatic search of paths to qmake in system PATH.     |
 |   noRecursiveiIgnoreEnv     | Disables recursive ignore for ignoreEnv option.                 |
 |   v / version               | Shows compiled version                                          |
-|   qif                       | Create the QIF installer for deployment programm"              |
+|   qif                       | Create the QIF installer for deployment program"              |
 |                             | Example: cqtdeployer qif" },                              |
 |                             | Starting with CQtDeployer 1.5 you can specify the path to your own installer template. |
 |                             | Examples: cqtdeployer -qif path/to/myCustom/qif. More details can be found [here](QIF.md) |
@@ -66,8 +66,8 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |                             | Example: cqtdeployer deb" },                              |
 |                             | you can specify the path to your own DEBIAN template. |
 |                             | Examples: cqtdeployer -deb path/to/myCustom/DEBIAN. More details can be found [here](DEB.md) |
-|   deploySystem              | Deploys all libraries not recomendet because there may be conflicts with system libraries  |
-|   noQt                      | Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework. |
+|   deploySystem              | Deploys all libraries not recommended because there may be conflicts with system libraries  |
+|   noQt                      | Ignores the error of initialize of a qmake. Use only if your application does not use the qt framework. |
 |   allowEmptyPackages        | Allows configure the empty packages.                            |
 |   getDefaultTemplate        | Extracts defaults deb or qif templates. For more information see the  extracting default templates [page](ExtractDefaultsTemplates.md)       |
 |   noHashSum                 | Disable computation of a packages hash sum               |
@@ -75,7 +75,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 
 ### Deploy options
 
-| Option                      | Descriptiion                                              |
+| Option                      | Description                                              |
 |-----------------------------|-----------------------------------------------------------|
 |   -bin [list,params]        | Files to deploy or folders that contain files to deploy. For example -bin ~/my/project/bin/,~/my/project/bin.exe,~/my/project/runtimeLinking/lib.dll. For files: These files will be unconditional copied to the destination directory, regardless of their format or suffix. For folders: CQtDeployer will enter these folders and non-recursively copy all executable files to the destination directory. Then, CQtDeployer will extract all dependencies of the copied files and search dependencies in system environments and **libDir** paths. **Note**: If CQtDeployer can't find required file then CQtDeployer try find required file in the system PATH enviroment.|
 |   -binPrefix [prefixPath]   | Sets prefix path for bin option. Example: **-bin path/MyExecutable** is some as **-bin MyExecutable -binPrefix path** |
@@ -106,7 +106,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 
 ### Controll of packages options
 
-| Option                      | Descriptiion                                              |
+| Option                      | Description                                              |
 |-----------------------------|-----------------------------------------------------------|
 |  -targetPackage [package;tar1,package;tar2]| Creates a new package and adds 'tar1 and tar2' to it |
 |  -qmlOut [package;path,path] | Sets path to qml out directory                                  |
@@ -128,7 +128,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 
 ### Controll of targets options
 
-| Option                      | Descriptiion                                              |
+| Option                      | Description                                              |
 |-----------------------------|-----------------------------------------------------------|
 |  -icon [target;val,val]    | Sets path to icon for a targets. This option support only png (Linux) and ico (Windows) files.  |
 |  -disableRunScript [target,target2,target3]  | Disables the generation of run script for selected targets|
@@ -136,40 +136,40 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -runScript [target;val,val]  | forces cqtdeployer swap default run script to new from the arguments of option. This option copy all content from input file and insert all code into runScript.sh or .bat. Example of use: cqtdeployer -runScript "myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh" For get more information about customScript see the documentation [page](CustomScripts.md)|
 |  -extraDepends [target;val,val]  | Adds extra dependencies for target, if package is skiped then for all targets. Example -extraDepends libssl.so or -extraDepends myExecutable;libssl.so           |
 
-### Plugins Controll Options
+### Plugins Control Options
  
-| Option                      | Descriptiion                                              |
+| Option                      | Description                                              |
 |-----------------------------|-----------------------------------------------------------|
 |  -extraPlugin [package;val1;val2,SingeleVal]| Sets an additional path to third-party application plug-in |
 |  -enablePlugins [package;val1;val2,SingeleVal] | Enables additional plugins for distribution.  |
 |  -disablePlugins [package;val1;val2,SingeleVal]| Disables plugins for distribution.            |
-|                    |You can disable any plugin of your Qt build, just see the yourQtFolder/plugins forlder for available plugins.|
+|                    |You can disable any plugin of your Qt build, just see the yourQtFolder/plugins folder for available plugins.|
 | |Example: if you want disable qxcb plugin: -disablePlugins qxcb. Note that the name of the plugin is indicated without its extension.|
 
 ### QtInstallFramework options
 
-| Option                      | Descriptiion                                              |
+| Option                      | Description                                              |
 |-----------------------------|-----------------------------------------------------------|
 |  -qifStyle [path/to/style.css]| Sets the path to the CSS style file or sets the default style. Available styles: quasar |
 |  -qifBanner [path/to/banner.png]| Sets path to the banner png file.                                      |
 |  -qifLogo [path/to/logo.png]| Sets path to the logo png file.                                |
 |  -qifOut [nameOfOutputInstallerFile] | Sets name of output qifw installer. Note: on Windows, the exe suffix will be added to the installer automatically.                |
-|  -qifConfig [path/to/config.xml] | Sets a custom path to the configure file of the qt ifw installer. By default it is qif/config/config.xml. Note This path sets releative target folder (sets by TargetDir option). |
-|  -qifPackages [path/to/packagesFodoler] | Sets a custom path to the packages directories. By default it is qif/packages. Note This path sets releative target folder (sets by TargetDir option). |
-|  -qifResources [path/to/resources1.qrc,path/to/resources2.qrc] | Sets a custom path to the resources files. By default this option is skipped. Note This path sets releative target folder (sets by TargetDir option). |
+|  -qifConfig [path/to/config.xml] | Sets a custom path to the configure file of the qt ifw installer. By default it is qif/config/config.xml. Note This path sets relative target folder (sets by TargetDir option). |
+|  -qifPackages [path/to/packagesFodoler] | Sets a custom path to the packages directories. By default it is qif/packages. Note This path sets relative target folder (sets by TargetDir option). |
+|  -qifResources [path/to/resources1.qrc,path/to/resources2.qrc] | Sets a custom path to the resources files. By default this option is skipped. Note This path sets relative target folder (sets by TargetDir option). |
 |  -qifArchiveFormat [7z,zip,tar,tar.gz,tar.bz2,tar.xz] | Sets the format used when packaging new component data archives. If you omit this option, the 7z format will be used as a default. |
 |  -binarycreator [binarycreator command] | Sets new binarycreator command. Example : cqtdeployer -bin my.exe qifw -binarycreator 'wine path/to/binarycreator.exe'|
 
 ### Deb package options
 
-| Option                      | Descriptiion                                              |
+| Option                      | Description                                              |
 |-----------------------------|-----------------------------------------------------------|
 |  -debOut [package;nameOfOutputDebFile,nameOfOutputDebFile]| Sets name of the output debian file. This option can be work with multiple packages |
 
 ### Zip pacakge options
 
-| Option                      | Descriptiion                                              |
+| Option                      | Description                                              |
 |-----------------------------|-----------------------------------------------------------|
-|  -zipOut [package;nameOfOutputZipFile,nameOfOutputZipFile]| Sets name of the output zip arrhive. This option can be work with multiple packages |
+|  -zipOut [package;nameOfOutputZipFile,nameOfOutputZipFile]| Sets name of the output zip archive. This option can be work with multiple packages |
 
 #### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.15.4/gcc_64/bin/qmake clear
