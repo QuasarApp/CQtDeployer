@@ -47,7 +47,7 @@ QStringList QMLQt6::extractImportsFromFile(const QString &filepath) const {
         {
             word = word.simplified();
             if (word.startsWith("//")) continue;
-            if (!word.startsWith("import")) continue;
+            if (!word.startsWith("import ")) continue;
 
             imports += extractImportLine(word);
         }
