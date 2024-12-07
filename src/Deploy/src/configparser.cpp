@@ -708,7 +708,7 @@ bool ConfigParser::parseDeployMode(bool checkBin) {
         QuasarAppUtils::Params::log("Failed to initialize targets or extra data!",
                                     QuasarAppUtils::Error);
 
-        QuasarAppUtils::Params::log("Use bin or extraData optins. And check input pathes.",
+        QuasarAppUtils::Params::log("Use bin or extraData options. And check input pathes.",
                                     QuasarAppUtils::Info);
         return false;
     }
