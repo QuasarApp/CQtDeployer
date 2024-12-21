@@ -19,10 +19,8 @@ if (NOT WIN32)
     add_subdirectory(QMLFileDialog)
     add_subdirectory(virtualkeyboard)
 
-    # this tests is not actual for the qt 6.8 and later. Use WebView.
-    if (QT_VERSION_MAJOR LESS_EQUAL 6 AND QT_VERSION_MINOR LESS_EQUAL 7)
+    if (Qt${QT_VERSION_MAJOR}WebEngineQuick_FOUND)
         add_subdirectory(quicknanobrowser)
         add_subdirectory(webui)
-
     endif()
 endif()

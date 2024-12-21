@@ -47,6 +47,10 @@ set(PUBLIC_INCUDE_DIR ${PUBLIC_INCUDE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/modules"
 add_definitions(-DQT_BASE_DIR="${QT_QT_ROOT}/")
 add_definitions(-DTEST_BIN_DIR="${CMAKE_CURRENT_LIST_DIR}/../testcases/bin/")
 
+if (Qt${QT_VERSION_MAJOR}WebEngineQuick_FOUND)
+    add_definitions(-DUSE_WEBENGINE)
+endif()
+
 add_executable(${CURRENT_PROJECT} ${SOURCE_CPP})
 target_link_libraries(${CURRENT_PROJECT} PRIVATE Qt${QT_VERSION_MAJOR}::Test Deploy)
 
