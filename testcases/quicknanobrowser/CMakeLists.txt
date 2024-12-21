@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Qml Quick WebEngineQuick)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Qml Quick WebViewQuick)
 
 # Resources:
 file(GLOB_RECURSE SOURCE_QRC
@@ -25,5 +25,5 @@ target_link_libraries(quicknanobrowser PUBLIC
     Qt::Gui
     Qt::Qml
     Qt::Quick
-    Qt::WebEngineQuick
+    Qt::WebViewQuick
 )

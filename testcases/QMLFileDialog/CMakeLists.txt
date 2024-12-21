@@ -14,6 +14,7 @@ qt_add_executable(QMLFileDialog
 qt_add_qml_module(QMLFileDialog
     URI QMLFileDialog
     VERSION 1.0
+    RESOURCE_PREFIX "/"
     QML_FILES main.qml 
 )
 
