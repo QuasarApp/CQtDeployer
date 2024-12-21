@@ -7,7 +7,11 @@
 
 
 #include "webenginetest.h"
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
 #include "modules.h"
+#endif
+
 #include <configparser.h>
 #include <dependenciesscanner.h>
 #include <filemanager.h>
@@ -17,6 +21,7 @@
 
 void WebEngineTest::test() {
 #ifdef Q_OS_UNIX
+#if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
     TestUtils utils;
 
     QString bin = TestBinDir + "quicknanobrowser";
@@ -37,6 +42,6 @@ void WebEngineTest::test() {
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake}, &comapareTree);
 
-
+#endif
 #endif
 }
