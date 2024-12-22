@@ -17,8 +17,6 @@ QSet<QString> ModulesQt6_8::qmlLibs(const QString &distDir) const {
 #ifdef Q_OS_LINUX
     Tree -= utils.createTree(
         {
-            "./" + distDir + "/lib/libQt6Pdf.so" ,
-            "./" + distDir + "/plugins/imageformats/libqpdf.so" ,
             "./" + distDir + "/qml/QtQml/Base/libqmlplugin.so" ,
             "./" + distDir + "/qml/QtQml/Base/plugins.qmltypes" ,
             "./" + distDir + "/qml/QtQml/Base/qmldir",
@@ -140,12 +138,7 @@ QSet<QString> ModulesQt6_8::qtWebEngine(const QString &distDir) const{
     auto Tree = ModulesQt6_6::qtWebEngine(distDir);
 
 #ifdef Q_OS_LINUX
-    Tree -= utils.createTree(
-        {
-            "./" + distDir + "/lib/libQt6Pdf.so" ,
-            "./" + distDir + "/plugins/imageformats/libqpdf.so"
-        }
-        );
+
 
     Tree += utils.createTree(
         {
@@ -180,13 +173,6 @@ QSet<QString> ModulesQt6_8::qtWebEngineWidgets(const QString &distDir) const{
         }
         );
 
-    Tree -= utils.createTree(
-        {
-            "./" + distDir + "/lib/libQt6Pdf.so" ,
-            "./" + distDir + "/plugins/imageformats/libqpdf.so"
-        }
-        );
-
 #endif
     return Tree;
 }
@@ -198,9 +184,7 @@ QSet<QString> ModulesQt6_8::qtLibs(const QString &distDir) const {
 #ifdef Q_OS_LINUX
     Tree -= utils.createTree(
         {
-            "./" + distDir + "/lib/libQt6Network.so",
-            "./" + distDir + "/lib/libQt6Pdf.so"
-                             "./" + distDir + "/plugins/imageformats/libqpdf.so"
+            "./" + distDir + "/lib/libQt6Network.so"
         }
         );
 
