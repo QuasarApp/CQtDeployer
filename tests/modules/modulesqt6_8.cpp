@@ -182,11 +182,6 @@ QSet<QString> ModulesQt6_8::qtLibs(const QString &distDir) const {
     TestUtils utils;
 
 #ifdef Q_OS_LINUX
-    Tree -= utils.createTree(
-        {
-            "./" + distDir + "/lib/libQt6Network.so"
-        }
-        );
 
     Tree += utils.createTree(
         {
