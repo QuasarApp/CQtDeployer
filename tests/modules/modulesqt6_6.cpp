@@ -16,12 +16,6 @@ QSet<QString> ModulesQt6_6::qmlLibs(const QString &distDir) const {
     TestUtils utils;
     auto Tree = ModulesQt6_5::qmlLibs(distDir);
 
-#ifdef Q_OS_WIN
-
-#else
-
-#endif
-
     return Tree;
 }
 
