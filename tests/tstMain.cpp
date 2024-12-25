@@ -283,6 +283,12 @@ tstMain::tstMain() {
     cqtTestPath = cqtTestPath +
                   DeployCore::getEnvSeparator() +
                   QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.7/bin/";
+    cqtTestPath = cqtTestPath +
+                  DeployCore::getEnvSeparator() +
+                  QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.8/bin/";
+    cqtTestPath = cqtTestPath +
+                  DeployCore::getEnvSeparator() +
+                  QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.9/bin/";
     qputenv("PATH", cqtTestPath.toLatin1().data());
     TestUtils utils;
 

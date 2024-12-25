@@ -76,6 +76,9 @@ else()
 endif()
 
 if (CQT_DEPLOYER_TESTS)
+    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS WebEngineQuick)
+
+
     add_subdirectory(testcases)
     add_subdirectory(tests)
 else()

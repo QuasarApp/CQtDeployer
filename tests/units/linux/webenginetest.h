@@ -13,6 +13,7 @@
 
 #include <QtTest>
 
+// webenginetest
 class WebEngineTest: public TestBase, protected TestUtils
 {
 public:

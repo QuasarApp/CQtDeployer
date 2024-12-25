@@ -7,7 +7,11 @@
 
 
 #include "webenginetest.h"
+
+#ifdef USE_WEBENGINE
 #include "modules.h"
+#endif
+
 #include <configparser.h>
 #include <dependenciesscanner.h>
 #include <filemanager.h>
@@ -16,7 +20,7 @@
 
 
 void WebEngineTest::test() {
-#ifdef Q_OS_UNIX
+#ifdef USE_WEBENGINE
     TestUtils utils;
 
     QString bin = TestBinDir + "quicknanobrowser";
@@ -36,7 +40,5 @@ void WebEngineTest::test() {
 
     runTestParams({"-bin", bin, "clear" ,
                    "-qmake", qmake}, &comapareTree);
-
-
 #endif
 }
