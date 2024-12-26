@@ -129,7 +129,7 @@ bool QIF::deployTemplate(PackageControl &pkg) {
         QuasarAppUtils::Params::log("Using custom template for installer: " + customTemplate,
                                     QuasarAppUtils::Info);
 
-        auto availablePacakages = QDir(customTemplate + "/packages").entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+        auto availablePacakages = QDir(customTemplate + "/packages").entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
 
         for (const auto& pkg: availablePacakages) {
             pakcagesTemplates.insert(pkg.fileName(), pkg.absoluteFilePath());
@@ -237,7 +237,7 @@ QString QIF::location(const DistroModule &module) const {
 
 QString QIF::getStyle(const QString& input) const {
     QDir resurces(":/Styles/Distributions/Templates/qif/Styles");
-    auto list = resurces.entryInfoList(QDir::Files);
+    auto list = resurces.entryInfoList(QDir::Files | QDir::Hidden);
     for (const auto& style : list) {
         if (input == style.baseName()) {
             QuasarAppUtils::Params::log(QString("Use the %0 installer style").arg(style.baseName()),

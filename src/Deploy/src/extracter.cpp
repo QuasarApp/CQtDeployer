@@ -357,7 +357,7 @@ bool Extracter::copyTranslations(const QStringList &list, const QString& package
         filters.push_back("*" + i + "*");
     }
 
-    auto listItems = dir.entryInfoList(filters, QDir::Files | QDir::NoDotAndDotDot);
+    auto listItems = dir.entryInfoList(filters, QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
 
     auto targetPath = cnf->getTargetDir() + "/" + package;
     auto distro = cnf->getDistroFromPackage(package);
@@ -383,7 +383,7 @@ QFileInfoList Extracter::findFilesInsideDir(const QString &name,
 
     QDir dir(dirpath);
 
-    auto list = dir.entryInfoList( QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    auto list = dir.entryInfoList( QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
 
     for (const auto & item :list) {
         if (item.isFile()) {
@@ -501,7 +501,7 @@ bool Extracter::extractQml() {
                 }
             } else {
                 for (const auto& plugin: std::as_const(plugins)) {
-                    const auto qmlFiles = QDir(plugin).entryInfoList(QDir::Files);
+                    const auto qmlFiles = QDir(plugin).entryInfoList(QDir::Files | QDir::Hidden);
                     for (const auto& qmlFile: qmlFiles) {
                         toCopyQmlFiles.push_back(qmlFile.absoluteFilePath());
                     }

@@ -10,6 +10,7 @@
 
 #ifdef Q_OS_LINUX
 #include "extradependstest.h"
+#include "hidenfilestest.h"
 
 #include "allowemptypackagestest.h"
 #include "binprefixtest.h"
@@ -102,6 +103,7 @@ private slots:
 
     // main tests works on linux only
 #ifdef Q_OS_LINUX
+        TestCase(hidenFilesTest, HidenFilesTest)
         TestCase(extraDependsTest, ExtraDependsTest)
         TestCase(allowemptypackagestest, AllowEmptyPackagesTest )
         TestCase(binprefixtest,  BinPrefixTest)
@@ -281,6 +283,12 @@ tstMain::tstMain() {
     cqtTestPath = cqtTestPath +
                   DeployCore::getEnvSeparator() +
                   QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.7/bin/";
+    cqtTestPath = cqtTestPath +
+                  DeployCore::getEnvSeparator() +
+                  QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.8/bin/";
+    cqtTestPath = cqtTestPath +
+                  DeployCore::getEnvSeparator() +
+                  QT_BASE_DIR + "/../../Tools/QtInstallerFramework/4.9/bin/";
     qputenv("PATH", cqtTestPath.toLatin1().data());
     TestUtils utils;
 

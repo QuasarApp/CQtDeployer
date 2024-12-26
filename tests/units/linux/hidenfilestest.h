@@ -6,19 +6,18 @@
 //#
 
 
-#ifndef WEBENGINE_TEST_H
-#define WEBENGINE_TEST_H
+#ifndef HidenFilesTest_H
+#define HidenFilesTest_H
 #include "testbase.h"
 #include "testutils.h"
 
 #include <QtTest>
 
-// webenginetest
-class WebEngineTest: public TestBase, protected TestUtils
+class HidenFilesTest: public TestBase, protected TestUtils
 {
 public:
     void test() override;
 
 };
 
-#endif // WEBENGINE_TEST_H
+#endif // HidenFilesTest_H

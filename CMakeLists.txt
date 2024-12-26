@@ -8,7 +8,7 @@
 cmake_minimum_required(VERSION 3.18)
 project(CQtDeployer LANGUAGES CXX)
 if(TARGET ${PROJECT_NAME})
-  message("The ${PROJECT_NAME} arledy included in main Project")
+  message("The ${PROJECT_NAME} already included in main Project")
   return()
 endif()
 
@@ -46,14 +46,14 @@ option(CQT_DEPLOYER_TESTS "This option disables or enables tests of the ${PROJEC
 option(CQT_DEPLOYER_TOOL "This option disables or enables example app of the ${PROJECT_NAME} project" ON)
 
 if (ANDROID OR IOS OR NOT QT_VERSION_MAJOR OR QA_WASM32)
-    message(WARNING "CQtDeployer is not availabel for wasm, android and ios platforms")
+    message(WARNING "CQtDeployer is not available for wasm, android and ios platforms")
     initAll()
     return()
 endif()
 
 if (${QT_VERSION_MAJOR} LESS 6)
     message(WARNING "CQtDeployer tests is not available for qt5. Please build cqtdeployer with qt6")
-    set(CQT_DEPLOYER_TESTS OFF CACHE BOOL "This option force disbled for ANDROID IOS QA_WASM32 and Not Qt projects" FORCE)
+    set(CQT_DEPLOYER_TESTS OFF CACHE BOOL "This option force disabled for ANDROID IOS QA_WASM32 and Not Qt projects" FORCE)
 endif()
 
 make_directory(Distro)
@@ -76,6 +76,9 @@ else()
 endif()
 
 if (CQT_DEPLOYER_TESTS)
+    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS WebEngineQuick)
+
+
     add_subdirectory(testcases)
     add_subdirectory(tests)
 else()

@@ -14,6 +14,10 @@
         <file alias="qmlFile.qml">testRes/qml/Scene</file>
         <file alias="qmlFileQt6.qml">testRes/qml/SceneQt6</file>
         <file alias="qmlDir">testRes/qml/qmldir</file>
+        <file>testRes/.hidenAssets/win64/.mingw/cqtdeployer.exe</file>
+        <file>testRes/.hidenAssets/win64/.mingw/.Deploy.dll</file>
+        <file>testRes/.hidenAssets/win64/msvc/lib.dll</file>
+        <file>testRes/.hidenAssets/win64/msvc/exe.exe</file>
     </qresource>
     <qresource prefix="/testResurces">
         <file>testRes/TestQMLWidgets.sh</file>

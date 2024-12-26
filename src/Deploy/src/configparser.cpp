@@ -708,7 +708,7 @@ bool ConfigParser::parseDeployMode(bool checkBin) {
         QuasarAppUtils::Params::log("Failed to initialize targets or extra data!",
                                     QuasarAppUtils::Error);
 
-        QuasarAppUtils::Params::log("Use bin or extraData optins. And check input pathes.",
+        QuasarAppUtils::Params::log("Use bin or extraData options and check input paths.",
                                     QuasarAppUtils::Info);
         return false;
     }
@@ -961,9 +961,9 @@ bool ConfigParser::setTargetsInDir(const QString &dir, bool recursive) {
     QFileInfoList list;
 
     if (recursive) {
-        list = d.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+        list = d.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
     } else {
-        list = d.entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
+        list = d.entryInfoList(QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
     }
 
     bool result = false;
@@ -1639,7 +1639,7 @@ QSet<QString> ConfigParser::getSetDirsRecursive(const QString &path, int maxDepc
         return res;
     }
 
-    auto list = dir.entryInfoList(QDir::Dirs| QDir::NoDotAndDotDot);
+    auto list = dir.entryInfoList(QDir::Dirs| QDir::NoDotAndDotDot | QDir::Hidden);
 
     for (const auto &subDir: list) {
         res.insert(subDir.absoluteFilePath());
