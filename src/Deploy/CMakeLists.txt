@@ -36,12 +36,6 @@ target_link_libraries(${CURRENT_PROJECT} PUBLIC QuasarApp QtELFReader pe-parse z
 
 target_include_directories(${CURRENT_PROJECT} PUBLIC ${PUBLIC_INCUDE_DIR})
 
-set(LANGS ${CMAKE_CURRENT_SOURCE_DIR}/languages/en.ts)
-
-
-prepareQM(${CURRENT_PROJECT} ${CMAKE_CURRENT_SOURCE_DIR} "${LANGS}")
-
-set(QML_IMPORT_PATH ${QML_IMPORT_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/src" CACHE STRING "" FORCE)
 
 configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/src/deploy_global.h")
 

@@ -55,7 +55,7 @@ sudo snap connect cqtdeployer:system-backup
 
 # Build from sources
 
-## Build for Linux
+## Build for Linux (using official qt binaries)
 
 - install qt and qt QtInstallFrameWork from [qt installer](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f9bb77-7bb77-4bb77-4)
 - clone project 
@@ -91,6 +91,47 @@ sudo snap connect cqtdeployer:system-backup
     make deploy 
     ```
     
+
+## Build for Linux (using native OS binaries)
+
+- clone project 
+ 
+    ``` bash
+    git clone https://github.com/QuasarApp/CQtDeployer.git
+    git submodule update --init --recursive
+    cd CQtDeployer
+    ```
+    
+- create temp build directory
+
+    ``` bash
+    mkdir build 
+    cd build
+    ```
+    
+- Install qt from package manager (for example apt on ubuntu)
+
+    ``` bash
+    sudo apt install qt6-base-dev
+    ```
+    
+- run cmake 
+
+    ``` bash
+    cmake .. -DCQT_DEPLOYER_TESTS=0
+    ```
+    
+- build cqtdeployer 
+
+    ``` bash
+    cmake --build .. --parallel 
+    ```
+    
+- create cqtdeployer executable.
+
+    ``` bash
+    make install 
+    ```
 
 ## Build for Windows (CMD)
 
