@@ -12,7 +12,7 @@ struct DebInOut {
 };
 
 /**
- * @brief The deb class contains methods for create a debian pacakge.
+ * @brief The deb class contains methods for create a debian package.
  */
 class DEPLOYSHARED_EXPORT Deb: public iDistribution
 {

@@ -55,7 +55,7 @@ private:
     bool restorePackagesLocations();
 
     /**
-     * @brief calcDistributiveHash This method calc md hashes for all pacakges of the @a distro distributive
+     * @brief calcDistributiveHash This method calc md hashes for all packages of the @a distro distributive
      * @param distro This is pointer to the distributive object.
      */
     void calcDistributiveHash(const iDistribution* distro);

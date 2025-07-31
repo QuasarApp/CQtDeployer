@@ -30,14 +30,14 @@ public:
     /**
      * @brief deployTemplate This method deploy tempate on the target dir and replace all variables.
      * @param pkgCtrl This is object for control data of the pacakages.
-     * @return true if pacakge deployed successfull
+     * @return true if package deployed successful
      */
     virtual bool deployTemplate(PackageControl& pkgCtrl) = 0;
 
     /**
      * @brief deployRawTemplate This method will copy tempate in to target dir withot changes.
      * @param pkgCtrl This is object for control data of the pacakages.
-     * @return true if pacakge deployed successfull
+     * @return true if package deployed successful
      */
     virtual bool deployRawTemplate(PackageControl& pkgCtrl) = 0;
 
@@ -91,8 +91,8 @@ protected:
                      TemplateInfo& info);
 
     /**
-     * @brief getName This method return name of package from pacakge key.
-     * @param pkgKey This is pacakge.
+     * @brief getName This method return name of package from package key.
+     * @param pkgKey This is package.
      * @return package name.
      */
     QString getName(const DistroModule &pkgKey) const;

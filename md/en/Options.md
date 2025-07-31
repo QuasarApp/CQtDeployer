@@ -166,7 +166,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |-----------------------------|-----------------------------------------------------------|
 |  -debOut [package;nameOfOutputDebFile,nameOfOutputDebFile]| Sets name of the output debian file. This option can be work with multiple packages |
 
-### Zip pacakge options
+### Zip package options
 
 | Option                      | Description                                              |
 |-----------------------------|-----------------------------------------------------------|

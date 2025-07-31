@@ -108,8 +108,8 @@ public:
 
     /**
      * @brief getPlatform This method return a platform of distribution.
-     *  If you set a pacakge name then this method return platform of package.
-     * @param package This is name of pacakge. Set this parameter to empty string for get a distribution of all pacakges.
+     *  If you set a package name then this method return platform of package.
+     * @param package This is name of package. Set this parameter to empty string for get a distribution of all packages.
      * @return platform of distribution.
      */
     Platform getPlatform(const QString& package) const;
@@ -130,11 +130,11 @@ public:
     QtMajorVersion isNeededQt() const;
 
     /**
-     * @brief isNeededQt This method return all needed qt major versions for the @a pacakge.
-     * @param pacakge This is validation pacakge.
+     * @brief isNeededQt This method return all needed qt major versions for the @a package.
+     * @param package This is validation package.
      * @return qt major version
      */
-    QtMajorVersion isNeededQt(const QString& pacakge) const;
+    QtMajorVersion isNeededQt(const QString& package) const;
 
     /**
      * @brief customPlatform This is custom platform of distribution

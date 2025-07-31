@@ -78,8 +78,8 @@ public:
     void setInstallDirDEB(const QString &newInstallDir);
 
     /**
-     * @brief debOut This method return output filePath to debian pacakge
-     * @return output filePath to debian pacakge
+     * @brief debOut This method return output filePath to debian package
+     * @return output filePath to debian package
      */
     const QString &debOut() const;
 
@@ -90,8 +90,8 @@ public:
     void setDebOut(const QString &newDebOut);
 
     /**
-     * @brief debOut This method return output filePath to zip pacakge
-     * @return output filePath to zip pacakge
+     * @brief debOut This method return output filePath to zip package
+     * @return output filePath to zip package
      */
     const QString &zipOut() const;
 
