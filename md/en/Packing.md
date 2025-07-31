@@ -12,7 +12,7 @@ General information on packaging your distributions in packages.
 Packages with this type creates automaticly.
 By default the distribution have a one main package. You can configure it using [Controll of packages options](Options.md).
 
-#### Example (Set new name for pacakge)
+#### Example (Set new name for package)
 
 ```
 ctdeployer ... -name "MyPackage"

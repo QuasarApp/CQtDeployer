@@ -26,8 +26,8 @@ public:
     const QString & getPackage() const;
 
     /**
-     * @brief setPackage This method sets new value for pacakge name in that contains this target.
-     * @param value new This is new value of the pacakge.
+     * @brief setPackage This method sets new value for package name in that contains this target.
+     * @param value new This is new value of the package.
      */
     void setPackage(const QString &value);
 

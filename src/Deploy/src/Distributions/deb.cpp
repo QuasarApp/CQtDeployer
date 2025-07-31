@@ -22,16 +22,16 @@ bool Deb::deployTemplate(PackageControl &pkg) {
 
         QString defaultPackageTempalte = ":/Templates/DEB/Distributions/Templates/deb";
         auto customTemplate = QuasarAppUtils::Params::getArg("deb", "");
-        QHash<QString, QString> pakcagesTemplates;
+        QHash<QString, QString> packagesTemplates;
 
         if (!customTemplate.isEmpty()) {
-            QuasarAppUtils::Params::log("Using custom template for debian pacakge: " + customTemplate,
+            QuasarAppUtils::Params::log("Using custom template for debian package: " + customTemplate,
                                         QuasarAppUtils::Info);
 
             auto availablePacakages = QDir(customTemplate).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
 
             for (const auto& pkg: availablePacakages) {
-                pakcagesTemplates.insert(pkg.fileName(), pkg.absoluteFilePath());
+              packagesTemplates.insert(pkg.fileName(), pkg.absoluteFilePath());
             }
         }
 
@@ -51,7 +51,8 @@ bool Deb::deployTemplate(PackageControl &pkg) {
             {"default", info.Name}
         };
 
-        if (!unpackDir(pakcagesTemplates.value(info.Name, defaultPackageTempalte),
+        if (!unpackDir(
+                packagesTemplates.value(info.Name, defaultPackageTempalte),
                        local, info, {""}, replace)) {
             return false;
         }

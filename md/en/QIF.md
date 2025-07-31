@@ -134,12 +134,12 @@ cqtdeployer getDefaultTemplate qif
 
 CQtDeployer will skip create a packages directory for the template because this commmnad do not contains any deploying data.
 If you want to prepare template with packages configurations then you should add deployed data to your command or your config.json file using bin or extraData options.
-If you create multi pacakges distribution then you need to configure your packages in your deploying commnad. 
+If you create multi packages distribution then you need to configure your packages in your deploying command.
 
 
 #### Example: 
 
-Extracting template with pacakges:
+Extracting template with packages:
 
 ```bash
 cqtdeployer getDefaultTemplate qif -bin myExecutable

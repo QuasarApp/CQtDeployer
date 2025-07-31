@@ -28,7 +28,7 @@ enum exitCodes {
     PrepareError =  0x1,
     /// CQtDeployer failed in the deploy step. Fail to copy deployed files.
     DeployError =   0x2,
-    /// CQtDeployer failed in the prepare package step. Fail to create a result pacakge.
+    /// CQtDeployer failed in the prepare package step. Fail to create a result package.
     PackingError =  0x3,
 
 

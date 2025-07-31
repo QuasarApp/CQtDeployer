@@ -54,12 +54,12 @@ cqtdeployer создает вуи пакет для каждого пакета.
 
 ```bash
 └── Debian templates
-    ├── debPacakge1
+    ├── debPackage1
     │   └── DEBIAN
     │       ├── control
     │       ├── postinst
     │       └── prerm
-    └── debPacakge2
+    └── debPackage2
         └── DEBIAN
             ├── control
             ├── postinst
@@ -73,11 +73,11 @@ cqtdeployer создает вуи пакет для каждого пакета.
 {
 "targetPackage": [
     [
-        "debPacakge1",
+        "debPackage1",
         "tar1"
     ],
     [
-        "debPacakge2",
+        "debPackage2",
         "tar2"
     ],
 ],

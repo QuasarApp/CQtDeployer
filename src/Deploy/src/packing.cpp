@@ -37,8 +37,8 @@ Packing::~Packing() {
     _proc->kill();
 }
 
-void Packing::setDistribution(const QList<iDistribution*> &pakages) {
-    _pakages = pakages;
+void Packing::setDistribution(const QList<iDistribution*> &packages) {
+  _packages = packages;
 }
 
 void Packing::calcDistributiveHash(const iDistribution* distro) {
@@ -83,7 +83,7 @@ bool Packing::create() {
         return false;
     }
 
-    for (auto package : std::as_const(_pakages)) {
+    for (auto package : std::as_const(_packages)) {
 
         if (!package) {
             internalError();
@@ -207,7 +207,7 @@ bool Packing::extractTemplates() {
         return false;
     }
 
-    for (auto package : std::as_const(_pakages)) {
+    for (auto package : std::as_const(_packages)) {
 
         if (!package)
             return false;

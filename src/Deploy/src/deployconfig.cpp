@@ -129,8 +129,8 @@ QtMajorVersion DeployConfig::isNeededQt() const {
     return Qt;
 }
 
-QtMajorVersion DeployConfig::isNeededQt(const QString &pacakge) const {
-    const auto targetsKeys = packages().value(pacakge, DistroModule{""}).targets();
+QtMajorVersion DeployConfig::isNeededQt(const QString &package) const {
+  const auto targetsKeys = packages().value(package, DistroModule{""}).targets();
 
     auto Qt = QtMajorVersion::NoQt;
     for (const auto &i: targetsKeys) {

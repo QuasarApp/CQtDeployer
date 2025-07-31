@@ -48,19 +48,19 @@ Or you can describe packages in [configuration file](DeployConfigFile.md)
 
 ## Custom Template for DEB
 
-You can create a own Template fo the debian pacakges.
+You can create an own Template for the debian packages.
 
-### The debian pacakge structure: 
+### The debian packages structure:
 
 
 ```bash
 └── Debian templates
-    ├── debPacakge1
+    ├── debPackage1
     │   └── DEBIAN
     │       ├── control
     │       ├── postinst
     │       └── prerm
-    └── debPacakge2
+    └── debPackage2
         └── DEBIAN
             ├── control
             ├── postinst
@@ -74,11 +74,11 @@ For include your templates into your destribution you need to add path of the De
 {
 "targetPackage": [
     [
-        "debPacakge1",
+        "debPackage1",
         "tar1"
     ],
     [
-        "debPacakge2",
+        "debPackage2",
         "tar2"
     ],
 ],
