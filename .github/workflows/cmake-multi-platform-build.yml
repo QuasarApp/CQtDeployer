@@ -39,7 +39,7 @@ jobs:
         arch: 'win64_llvm_mingw'
         cache: true
         tools: 'tools_llvm_mingw1706'
-        modules: 'all'
+        # modules: 'qtquick3d qtquick3dphysics qtmultimedia qtquicktimeline qtshadertools'
         aqtversion: ==3.2.*
 
     - name: Install Qt
@@ -50,7 +50,7 @@ jobs:
         target: 'desktop'
         arch: 'linux_gcc_64'
         cache: true
-        modules: 'all'
+        # modules: 'qtquick3d qtquick3dphysics qtmultimedia  qtquicktimeline qtshadertools'
         aqtversion: ==3.2.*
 
     - name: Install Snapcraft
