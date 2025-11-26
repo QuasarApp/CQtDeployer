@@ -1,7 +1,4 @@
-# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
-# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
-name: CMake on multiple platforms
-
+name: CMake Release Builder
 on:
   push:
     tags:
@@ -42,7 +39,7 @@ jobs:
         arch: 'win64_llvm_mingw'
         cache: true
         tools: 'tools_llvm_mingw1706'
-        modules: 'qtquick3d qtquick3dphysics qtmultimedia qtquicktimeline qtshadertools'
+        modules: 'all'
         aqtversion: ==3.2.*
 
     - name: Install Qt
@@ -53,7 +50,7 @@ jobs:
         target: 'desktop'
         arch: 'linux_gcc_64'
         cache: true
-        modules: 'qtquick3d qtquick3dphysics qtmultimedia  qtquicktimeline qtshadertools'
+        modules: 'all'
         aqtversion: ==3.2.*
 
     - name: Install Snapcraft
