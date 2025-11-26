@@ -120,6 +120,7 @@ jobs:
         -DCMAKE_CXX_COMPILER=clang++
         -DCMAKE_C_COMPILER=clang
         -DBUILD_SHARED_LIBS=ON
+        -DCQT_DEPLOYER_TESTS=OFF
         -DCMAKE_PREFIX_PATH='${{ steps.sdl.outputs.prefix }};${{ env.QT_ROOT_DIR }}'
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S ${{ github.workspace }}
@@ -130,6 +131,7 @@ jobs:
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -G Ninja
         -DBUILD_SHARED_LIBS=ON
+        -DCQT_DEPLOYER_TESTS=OFF
         -DCMAKE_PREFIX_PATH='${{ steps.sdl.outputs.prefix }};${{ env.QT_ROOT_DIR }}'
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S ${{ github.workspace }}
