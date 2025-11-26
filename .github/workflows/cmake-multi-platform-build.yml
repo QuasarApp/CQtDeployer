@@ -38,7 +38,7 @@ jobs:
         target: 'desktop'
         arch: 'win64_llvm_mingw'
         cache: true
-        tools: 'tools_llvm_mingw1706'
+        tools: 'tools_llvm_mingw1706 tools_ifw'
         # modules: 'qtquick3d qtquick3dphysics qtmultimedia qtquicktimeline qtshadertools'
         aqtversion: ==3.2.*
 
@@ -50,6 +50,8 @@ jobs:
         target: 'desktop'
         arch: 'linux_gcc_64'
         cache: true
+        tools: 'tools_ifw'
+
         # modules: 'qtquick3d qtquick3dphysics qtmultimedia  qtquicktimeline qtshadertools'
         aqtversion: ==3.2.*
 
@@ -60,7 +62,7 @@ jobs:
     # Checkout main repository without submodules first
     - uses: actions/checkout@v4
       with:
-        submodules: true
+        submodules: recursive
         fetch-tags: true
         fetch-depth: 0
 
