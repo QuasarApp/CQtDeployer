@@ -40,7 +40,7 @@ PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
 QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
         const QString &libName) const {
 
-    auto values = _EnvLibs.values(libName.toUpper());
+    const auto values = _EnvLibs.values(libName.toUpper());
     QMultiMap<LibPriority, LibInfo> res;
 
     for (const auto & lib : values) {
@@ -202,7 +202,7 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
                                       << "*.SO*" << "*.so*",
                                       QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
 
-        for (const auto &i : list) {
+        for (const auto &i : std::as_const(list)) {
             addToWinAPI(i.fileName().toUpper(), winAPI);
             _EnvLibs.insert(i.fileName().toUpper(), i.absoluteFilePath());
         }
