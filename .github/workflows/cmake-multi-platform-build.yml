@@ -63,7 +63,14 @@ jobs:
         submodules: true
         fetch-tags: true
         fetch-depth: 0
-  
+
+    - name: Set reusable strings
+      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
+      id: strings
+      shell: bash
+      run: |
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
     - name: Download and Extract CQtDeployer Linux
       if: runner.os == 'Linux'
       uses: robinraju/release-downloader@v1
