@@ -1,0 +1,177 @@
+# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
+# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
+name: CMake on multiple platforms
+
+on:
+  push:
+    tags:
+      - 'v*' # This will trigger the workflow on any tag starting with 'v', like v1.0.0, v2.1, etc.
+  workflow_dispatch:
+
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    env:
+      SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
+      
+    strategy:
+      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+      fail-fast: false
+
+      # Set up a matrix to run the following 3 configurations:
+      # 1. <Windows, Release, latest MSVC compiler toolchain on the default runner image, default generator>
+      # 2. <Linux, Release, latest GCC compiler toolchain on the default runner image, default generator>
+      # 3. <Linux, Release, latest Clang compiler toolchain on the default runner image, default generator>
+      #
+      # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
+      matrix:
+        os: [windows-2025, ubuntu-22.04]
+        build_type: [Release]
+        c_compiler: [gcc]
+
+
+    steps:
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v4.3.0
+      if: runner.os == 'Windows'
+      with:
+        version: '6.10.1'
+        target: 'desktop'
+        arch: 'win64_llvm_mingw'
+        cache: true
+        tools: 'tools_llvm_mingw1706'
+        modules: 'qtquick3d qtquick3dphysics qtmultimedia qtquicktimeline qtshadertools'
+        aqtversion: ==3.2.*
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v4.3.0
+      if: runner.os == 'Linux'
+      with:
+        version: '6.10.1'
+        target: 'desktop'
+        arch: 'linux_gcc_64'
+        cache: true
+        modules: 'qtquick3d qtquick3dphysics qtmultimedia  qtquicktimeline qtshadertools'
+        aqtversion: ==3.2.*
+
+    - name: Install Snapcraft
+      if: runner.os == 'Linux'
+      uses: samuelmeuli/action-snapcraft@v3
+
+    # Checkout main repository without submodules first
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+        fetch-tags: true
+        fetch-depth: 0
+  
+    - name: Download and Extract CQtDeployer Linux
+      if: runner.os == 'Linux'
+      uses: robinraju/release-downloader@v1
+      with:
+        repository: 'QuasarApp/CQtDeployer'
+        latest: true
+        fileName: 'CQtDeployer_1.6.2365.7cce7f3_Linux_x86_64.zip'
+        extract: true
+        out-file-path: ${{ github.workspace }}/cqt
+
+    - name: Install CQtDeployer Linux
+      if: runner.os == 'Linux'
+      run: |
+        chmod +x "${{ github.workspace }}/cqt/CQtDeployer.sh"
+        chmod +x "${{ github.workspace }}/cqt/bin/CQtDeployer"
+        ln -s ${{ github.workspace }}/cqt/CQtDeployer.sh ${{ github.workspace }}/cqt/cqtdeployer
+        echo "$GITHUB_WORKSPACE/cqt" >> $GITHUB_PATH
+
+    - name: Download and Extract CQtDeployer Windows
+      if: runner.os == 'Windows'
+      uses: robinraju/release-downloader@v1
+      with:
+        repository: 'QuasarApp/CQtDeployer'
+        latest: true
+        fileName: 'CQtDeployer_1.6.2365.7cce7f3_Windows_AMD64.zip'
+        extract: true
+        out-file-path: ${{ github.workspace }}/cqt
+
+    - name: Install CQtDeployer Windows
+      if: runner.os == 'Windows'
+      run: echo "${{ github.workspace }}\cqt" >> $env:GITHUB_PATH
+      shell: pwsh
+
+
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ${{ matrix.os }}-${{ matrix.type }}
+
+    - name: Configure CMake
+      if: runner.os == 'Windows'
+      run: >
+        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        -G Ninja
+        -DCMAKE_CXX_COMPILER=clang++
+        -DCMAKE_C_COMPILER=clang
+        -DBUILD_SHARED_LIBS=ON
+        -DCMAKE_PREFIX_PATH='${{ steps.sdl.outputs.prefix }};${{ env.QT_ROOT_DIR }}'
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -S ${{ github.workspace }}
+
+    - name: Configure CMake
+      if: runner.os == 'Linux'
+      run: >
+        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        -G Ninja
+        -DBUILD_SHARED_LIBS=ON
+        -DCMAKE_PREFIX_PATH='${{ steps.sdl.outputs.prefix }};${{ env.QT_ROOT_DIR }}'
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -S ${{ github.workspace }}
+
+    - name: Build
+      # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 16
+
+    - name: deploy
+      # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target deploy
+
+    - name: release
+      # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target release
+
+    - name: Create Release and Upload Assets Installer
+      uses: svenstaro/upload-release-action@v2
+      with:
+        tag: v${{ env.CQT_DEPLOYER_VERSION }}
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: Distro/${{ env.INSTALLER_FULL_NAME }}
+        prerelease: true
+        asset_name: ${{ env.INSTALLER_FULL_NAME }}
+        overwrite: true
+        body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
+
+    - name: Create Release and Upload Assets Deb
+      if: runner.os == 'Linux'
+
+      uses: svenstaro/upload-release-action@v2
+      with:
+        tag: v${{ env.CQT_DEPLOYER_VERSION }}
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: Distro/${{ env.BASE_FULL_NAME }}.deb
+        prerelease: true
+        asset_name: ${{ env.BASE_FULL_NAME }}.deb
+        overwrite: true
+        body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
+
+    - name: Create Release and Upload Assets zip
+      uses: svenstaro/upload-release-action@v2
+      with:
+        tag: v${{ env.CQT_DEPLOYER_VERSION }}
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: Distro/${{ env.BASE_FULL_NAME }}.zip
+        prerelease: true
+        asset_name: ${{ env.BASE_FULL_NAME }}.zip
+        overwrite: true
+        body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
+
