@@ -52,17 +52,18 @@ bool iDistribution::unpackFile(const QFileInfo &resource,
     QByteArray inputData = file.readAll();
     file.close();
     if (!_fileManager->initDir(target)) {
-        QuasarAppUtils::Params::log(QString("Failed to create path : %0 ").arg(target),
-                                    QuasarAppUtils::Error);
+
+
+        qCritical() << QString("Failed to create path : %0 ").arg(target);
         return false;
 
     }
 
     file.setFileName(target + "/" +  resource.fileName());
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        QuasarAppUtils::Params::log(QString("Failed to open file for writing: %0. %1").arg(file.fileName(),
-                                                                                       file.errorString()),
-                                    QuasarAppUtils::Error);
+
+        qCritical() << QString("Failed to open file for writing: %0. %1").arg(file.fileName(),
+                                                                              file.errorString());
         return false;
     }
 
@@ -108,7 +109,7 @@ bool iDistribution::unpackDir(const QString &resource,
 
 
     QDir res(resource);
-    auto list = res.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries | QDir::Hidden);
+    const auto list = res.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries | QDir::Hidden);
 
     for (const auto & item :list) {
 
@@ -156,7 +157,7 @@ bool iDistribution::copyFile(const QString &from, const QString &to, bool isFile
 void iDistribution::registerOutFiles() const {
     auto files = outPutFiles();
 
-    for (const auto& i : files) {
+    for (const auto& i : std::as_const(files)) {
         _fileManager->addToDeployed(i);
     }
 }
@@ -282,29 +283,28 @@ bool iDistribution::deployIcon(const DistroModule& pkg) {
     auto localData = dataLocation(pkg);
     const DeployConfig *cfg = DeployCore::_config;
 
-    QuasarAppUtils::Params::log(QString("Deploy icons for package %0. count targets: %1").
-                                arg(pkg.name()).arg(pkg.targets().count()),
-                                QuasarAppUtils::Debug);
+    qDebug() << QString("Deploy icons for package %0. count targets: %1").
+                arg(pkg.name()).arg(pkg.targets().count());
 
     for (const auto& target: pkg.targets()) {
         auto targetObject = cfg->targets().value(target);
 
         if (!targetObject.isValid()) {
-            QuasarAppUtils::Params::log(QString("The target '%0' is not detected in the target list."
-                                                " Available Target List : %1"
-                                                " So icon will be copy by Default.").
-                                        arg(target, cfg->targets().keys().join(',')),
-                                        QuasarAppUtils::Warning);
+
+
+            qWarning() << QString("The target '%0' is not detected in the target list."
+                                  " Available Target List : %1"
+                                  " So icon will be copy by Default.").
+                          arg(target, cfg->targets().keys().join(','));
         }
 
         auto icon = targetObject.getIcon();
 
-        QuasarAppUtils::Params::log(QString("%0: %1").arg(target, icon),
-                                    QuasarAppUtils::Debug);
+        qDebug() << QString("%0: %1").arg(target, icon);
 
         if (!targetObject.getShortCut()) {
-            QuasarAppUtils::Params::log(QString("%0: %1 Ignored").arg(target, icon),
-                                        QuasarAppUtils::Debug);
+
+            qDebug() <<  QString("%0: %1 Ignored").arg(target, icon);
             continue;
         }
 
@@ -315,8 +315,7 @@ bool iDistribution::deployIcon(const DistroModule& pkg) {
 
         if (!copyFile(icon, dist, true)) {
 
-            QuasarAppUtils::Params::log(QString("Failed to copy icon: %0.").arg(icon),
-                                        QuasarAppUtils::Error);
+            qCritical() << QString("Failed to copy icon: %0.").arg(icon);
 
             return false;
         }

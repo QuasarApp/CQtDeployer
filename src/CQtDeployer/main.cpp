@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
 
 
     if (!QuasarAppUtils::Params::parseParams(argc, argv, DeployCore::avilableOptions())) {
-        QuasarAppUtils::Params::log("Wrong parameters. Please use the 'help' of 'h' option to show the help page.", QuasarAppUtils::Warning);
+        qWarning() << "Wrong parameters. Please use the 'help' of 'h' option to show the help page.";
         exit(4);
     }
 
@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
     int code = deploy.run();
 
     if (code) {
-        QuasarAppUtils::Params::log(Deploy::codeString(code), QuasarAppUtils::Error);
+        qCritical() << Deploy::codeString(code);
     }
 
     return code;
