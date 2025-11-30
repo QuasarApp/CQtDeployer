@@ -142,11 +142,11 @@ jobs:
 
     - name: deploy
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target deploy
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target deploy --parallel 1
 
     - name: release
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target release
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target release --parallel 1
 
     - name: Create Release and Upload Assets Installer
       uses: svenstaro/upload-release-action@v2
