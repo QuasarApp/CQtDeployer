@@ -189,3 +189,16 @@ jobs:
         overwrite: true
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
+    - name: Create Release and Upload Assets Snap
+      if: runner.os == 'Linux'
+
+      uses: svenstaro/upload-release-action@v2
+      with:
+        tag: v${{ env.CQT_DEPLOYER_VERSION }}
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: Distro/*.snap
+        prerelease: true
+        asset_name: ${{ env.BASE_FULL_NAME }}.snap
+        overwrite: true
+        body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
+
