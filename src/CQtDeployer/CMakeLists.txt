@@ -96,15 +96,25 @@ configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFWTem
 
 addDeployFromCustomFile(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployer.json")
 
-set(QIF_SOURCE_BIN_PATH "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin")
 set(QIF_DESTINATION_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW")
+
+if (WIN32)
+    set(QIF_SOURCE_BIN_PATH "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin/binarycreator.exe")
+    set(QIF_OUT_BIN_PATH "${QIF_DESTINATION_PATH}/binarycreator.exe")
+
+else()
+    set(QIF_SOURCE_BIN_PATH "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin/binarycreator")
+    set(QIF_OUT_BIN_PATH "${QIF_DESTINATION_PATH}/binarycreator")
+
+endif()
+
 
 add_custom_target(
     downloadQIFW
     COMMAND ${CMAKE_COMMAND} -E make_directory "${QIF_DESTINATION_PATH}"
     COMMAND ${CMAKE_COMMAND} -E copy
-        "${QIF_SOURCE_BIN_PATH}/binarycreator"
-        "${QIF_DESTINATION_PATH}/binarycreator"
+        "${QIF_SOURCE_BIN_PATH}"
+        "${QIF_OUT_BIN_PATH}"
 
     COMMENT "Copy QIFW binaries to build directory""
 )
