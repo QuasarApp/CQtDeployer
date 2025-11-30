@@ -96,13 +96,17 @@ configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFWTem
 
 addDeployFromCustomFile(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployer.json")
 
+set(QIF_SOURCE_BIN_PATH "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin")
+set(QIF_DESTINATION_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW")
 
-ADD_CUSTOM_TARGET(
+add_custom_target(
     downloadQIFW
-    SOURCES ${${name}files}
-    COMMAND python "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW.py" ${QIFW_PLATFORM} ${QIFW_VERSION} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW"
-    COMMENT python "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW.py" ${QIFW_PLATFORM} ${QIFW_VERSION} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW"
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${QIF_DESTINATION_PATH}"
+    COMMAND ${CMAKE_COMMAND} -E copy
+        "${QIF_SOURCE_BIN_PATH}/binarycreator"
+        "${QIF_DESTINATION_PATH}/binarycreator"
+
+    COMMENT "Copy QIFW binaries to build directory""
 )
 
 add_dependencies(deploy${CURRENT_PROJECT} downloadQIFW)
