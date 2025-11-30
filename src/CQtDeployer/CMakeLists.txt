@@ -98,35 +98,41 @@ addDeployFromCustomFile(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/C
 
 set(QIF_DESTINATION_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW")
 
+addDeployFromCustomFile(${CURRENT_PROJECT}Single "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployerSingle.json")
+
 if (NOT DEFINED IQTA_TOOLS)
     set(IQTA_TOOLS $ENV{IQTA_TOOLS})
+
+    if(NOT "${IQTA_TOOLS}" STREQUAL "")
+
+        if (WIN32)
+            set(QIF_SOURCE_BIN_PATH "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin/binarycreator.exe")
+            set(QIF_OUT_BIN_PATH "${QIF_DESTINATION_PATH}/binarycreator.exe")
+
+        else()
+            set(QIF_SOURCE_BIN_PATH "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin/binarycreator")
+            set(QIF_OUT_BIN_PATH "${QIF_DESTINATION_PATH}/binarycreator")
+
+        endif()
+
+
+        add_custom_target(
+            downloadQIFW
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${QIF_DESTINATION_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy
+                "${QIF_SOURCE_BIN_PATH}"
+                "${QIF_OUT_BIN_PATH}"
+
+            COMMENT "Copy QIFW binaries to build directory"
+        )
+
+        add_dependencies(deploy${CURRENT_PROJECT} downloadQIFW)
+        add_dependencies(deploy${CURRENT_PROJECT}Single downloadQIFW)
+
+    endif()
 endif()
 
-if (WIN32)
-    set(QIF_SOURCE_BIN_PATH "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin/binarycreator.exe")
-    set(QIF_OUT_BIN_PATH "${QIF_DESTINATION_PATH}/binarycreator.exe")
 
-else()
-    set(QIF_SOURCE_BIN_PATH "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin/binarycreator")
-    set(QIF_OUT_BIN_PATH "${QIF_DESTINATION_PATH}/binarycreator")
-
-endif()
-
-
-add_custom_target(
-    downloadQIFW
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${QIF_DESTINATION_PATH}"
-    COMMAND ${CMAKE_COMMAND} -E copy
-        "${QIF_SOURCE_BIN_PATH}"
-        "${QIF_OUT_BIN_PATH}"
-
-    COMMENT "Copy QIFW binaries to build directory"
-)
-
-add_dependencies(deploy${CURRENT_PROJECT} downloadQIFW)
-
-addDeployFromCustomFile(${CURRENT_PROJECT}Single "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployerSingle.json")
-add_dependencies(deploy${CURRENT_PROJECT}Single downloadQIFW)
 
 if (UNIX)
     addDeploySnap(${CURRENT_PROJECT} "${CMAKE_SOURCE_DIR}/Distro/")
