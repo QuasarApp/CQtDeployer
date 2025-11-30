@@ -196,7 +196,7 @@ jobs:
       with:
         tag: v${{ env.CQT_DEPLOYER_VERSION }}
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: Distro/*.snap
+        file: Distro/${{ env.SNAP_BASE_NAME }}_amd64.snap
         prerelease: true
         asset_name: ${{ env.BASE_FULL_NAME }}.snap
         overwrite: true
