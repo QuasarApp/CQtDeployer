@@ -97,7 +97,7 @@ configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFWTem
 
 addDeployFromCustomFile(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployer.json")
 
-set(QIF_DESTINATION_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW")
+set(QIF_DESTINATION_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW/QIF")
 
 addDeployFromCustomFile(${CURRENT_PROJECT}Single "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployerSingle.json")
 
