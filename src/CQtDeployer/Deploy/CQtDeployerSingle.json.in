@@ -26,7 +26,6 @@
     "zip": true,
     "debOut": "@BASE_FULL_NAME@.deb",
     "zipOut": "@BASE_FULL_NAME@.zip",
-    "verbose": "3",
     "ignoreEnv": [
          "@CMAKE_SOURCE_DIR@/Distro"
         ],
