@@ -116,7 +116,7 @@ add_custom_target(
         "${QIF_SOURCE_BIN_PATH}"
         "${QIF_OUT_BIN_PATH}"
 
-    COMMENT "Copy QIFW binaries to build directory""
+    COMMENT "Copy QIFW binaries to build directory"
 )
 
 add_dependencies(deploy${CURRENT_PROJECT} downloadQIFW)
