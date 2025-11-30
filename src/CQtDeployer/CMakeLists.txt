@@ -98,6 +98,10 @@ addDeployFromCustomFile(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/C
 
 set(QIF_DESTINATION_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW")
 
+if (NOT DEFINED IQTA_TOOLS)
+    set(IQTA_TOOLS $ENV{IQTA_TOOLS})
+endif()
+
 if (WIN32)
     set(QIF_SOURCE_BIN_PATH "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin/binarycreator.exe")
     set(QIF_OUT_BIN_PATH "${QIF_DESTINATION_PATH}/binarycreator.exe")
