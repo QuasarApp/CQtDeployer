@@ -36,9 +36,9 @@ jobs:
       with:
         version: '6.10.1'
         target: 'desktop'
-        arch: 'win64_llvm_mingw'
+        arch: 'win64_mingw'
         cache: true
-        tools: 'tools_llvm_mingw1706 tools_ifw'
+        tools: 'tools_ifw'
         # modules: 'qtquick3d qtquick3dphysics qtmultimedia qtquicktimeline qtshadertools'
         aqtversion: ==3.2.*
 
