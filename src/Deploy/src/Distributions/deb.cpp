@@ -25,10 +25,10 @@ bool Deb::deployTemplate(PackageControl &pkg) {
         QHash<QString, QString> packagesTemplates;
 
         if (!customTemplate.isEmpty()) {
-            QuasarAppUtils::Params::log("Using custom template for debian package: " + customTemplate,
-                                        QuasarAppUtils::Info);
 
-            auto availablePacakages = QDir(customTemplate).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
+            qInfo() << "Using custom template for debian package: " + customTemplate;
+
+            const auto availablePacakages = QDir(customTemplate).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
 
             for (const auto& pkg: availablePacakages) {
               packagesTemplates.insert(pkg.fileName(), pkg.absoluteFilePath());
@@ -58,7 +58,8 @@ bool Deb::deployTemplate(PackageControl &pkg) {
         }
 
         if (!QFile::setPermissions(local +  "/DEBIAN",  static_cast<QFile::Permission>(0x7775))) {
-            QuasarAppUtils::Params::log("Failed to set permissions", QuasarAppUtils::Warning);
+
+            qWarning() << "Failed to set permissions";
         }
 
         inouts.push_back({local, cfg->getTargetDir() + "/" + info.debOut});

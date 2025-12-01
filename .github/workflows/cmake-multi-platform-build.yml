@@ -1,7 +1,4 @@
-# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
-# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
-name: CMake on multiple platforms
-
+name: CMake Release Builder
 on:
   push:
     tags:
@@ -13,7 +10,7 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     env:
-      SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
+      SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
       
     strategy:
       # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
@@ -26,7 +23,7 @@ jobs:
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
-        os: [windows-2025, ubuntu-22.04]
+        os: [windows-2025, ubuntu-24.04]
         build_type: [Release]
         c_compiler: [gcc]
 
@@ -39,10 +36,10 @@ jobs:
       with:
         version: '6.10.1'
         target: 'desktop'
-        arch: 'win64_llvm_mingw'
+        arch: 'win64_mingw'
         cache: true
-        tools: 'tools_llvm_mingw1706'
-        modules: 'qtquick3d qtquick3dphysics qtmultimedia qtquicktimeline qtshadertools'
+        tools: 'tools_mingw1310 tools_ifw'
+        # modules: 'qtquick3d qtquick3dphysics qtmultimedia qtquicktimeline qtshadertools'
         aqtversion: ==3.2.*
 
     - name: Install Qt
@@ -53,8 +50,16 @@ jobs:
         target: 'desktop'
         arch: 'linux_gcc_64'
         cache: true
-        modules: 'qtquick3d qtquick3dphysics qtmultimedia  qtquicktimeline qtshadertools'
+        tools: 'tools_ifw'
+
+        # modules: 'qtquick3d qtquick3dphysics qtmultimedia  qtquicktimeline qtshadertools'
         aqtversion: ==3.2.*
+
+    - name: Setup LXD
+      if: runner.os == 'Linux'
+      uses: canonical/setup-lxd@main
+      with:
+        channel: latest/stable
 
     - name: Install Snapcraft
       if: runner.os == 'Linux'
@@ -63,10 +68,17 @@ jobs:
     # Checkout main repository without submodules first
     - uses: actions/checkout@v4
       with:
-        submodules: true
+        submodules: recursive
         fetch-tags: true
         fetch-depth: 0
-  
+
+    - name: Set reusable strings
+      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
+      id: strings
+      shell: bash
+      run: |
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
     - name: Download and Extract CQtDeployer Linux
       if: runner.os == 'Linux'
       uses: robinraju/release-downloader@v1
@@ -111,9 +123,8 @@ jobs:
       run: >
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -G Ninja
-        -DCMAKE_CXX_COMPILER=clang++
-        -DCMAKE_C_COMPILER=clang
         -DBUILD_SHARED_LIBS=ON
+        -DCQT_DEPLOYER_TESTS=OFF
         -DCMAKE_PREFIX_PATH='${{ steps.sdl.outputs.prefix }};${{ env.QT_ROOT_DIR }}'
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S ${{ github.workspace }}
@@ -124,6 +135,7 @@ jobs:
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -G Ninja
         -DBUILD_SHARED_LIBS=ON
+        -DCQT_DEPLOYER_TESTS=OFF
         -DCMAKE_PREFIX_PATH='${{ steps.sdl.outputs.prefix }};${{ env.QT_ROOT_DIR }}'
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S ${{ github.workspace }}
@@ -134,11 +146,11 @@ jobs:
 
     - name: deploy
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target deploy
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target deploy --parallel 1
 
     - name: release
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target release
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target release --parallel 1
 
     - name: Create Release and Upload Assets Installer
       uses: svenstaro/upload-release-action@v2
@@ -172,6 +184,19 @@ jobs:
         file: Distro/${{ env.BASE_FULL_NAME }}.zip
         prerelease: true
         asset_name: ${{ env.BASE_FULL_NAME }}.zip
+        overwrite: true
+        body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
+
+    - name: Create Release and Upload Assets Snap
+      if: runner.os == 'Linux'
+
+      uses: svenstaro/upload-release-action@v2
+      with:
+        tag: v${{ env.CQT_DEPLOYER_VERSION }}
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: Distro/${{ env.SNAP_BASE_NAME }}_amd64.snap
+        prerelease: true
+        asset_name: ${{ env.BASE_FULL_NAME }}.snap
         overwrite: true
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 

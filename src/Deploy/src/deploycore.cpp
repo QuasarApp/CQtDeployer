@@ -344,7 +344,7 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-extraLibs"}, "{list,params}",
                             "Sets the mask of the library name for forced copying.",
-                            "\"-extraLib mySql\" - forces to copy all libraries whose names contain mySql to the project folder."
+                            "\"-extraLibs mySql\" - forces to copy all libraries whose names contain mySql to the project folder."
                             " This option is case-insensitive on Windows and case-sensitive on other platforms."
                             " This option will only search libraries in system environments similar to **deploySystem**."
                         }});

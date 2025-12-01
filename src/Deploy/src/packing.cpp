@@ -9,8 +9,7 @@
 #include "deployconfig.h"
 #include "filemanager.h"
 #include "packing.h"
-#include "pathutils.h"
-#include "quasarapp.h"
+
 #include <QDebug>
 #include <QProcess>
 #include <QThread>
@@ -38,7 +37,7 @@ Packing::~Packing() {
 }
 
 void Packing::setDistribution(const QList<iDistribution*> &packages) {
-  _packages = packages;
+  _pakages = packages;
 }
 
 void Packing::calcDistributiveHash(const iDistribution* distro) {
@@ -52,19 +51,18 @@ void Packing::calcDistributiveHash(const iDistribution* distro) {
         return;
     }
 
-    auto files = distro->outPutFiles();
+    const auto files = distro->outPutFiles();
 
     for (const auto &file: files) {
 
         QFileInfo info(file);
 
-        QuasarAppUtils::Params::log("Computing hash of " + info.absoluteFilePath(),
-                                    QuasarAppUtils::Info);
+        qInfo() << "Computing hash of " + info.absoluteFilePath();
 
         QFile out(info.absoluteFilePath() + ".md5");
         if (!out.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-            QuasarAppUtils::Params::log("Failed to open " + info.absoluteFilePath(),
-                                        QuasarAppUtils::Error);
+
+            qCritical() << "Failed to open " + info.absoluteFilePath();
             continue;
         }
 
@@ -79,11 +77,11 @@ void Packing::calcDistributiveHash(const iDistribution* distro) {
 bool Packing::create() {
 
     if (!collectPackages()) {
-        QuasarAppUtils::Params::log("Fail to collect packages data.", QuasarAppUtils::Error);
+        qCritical() << "Fail to collect packages data.";
         return false;
     }
 
-    for (auto package : std::as_const(_packages)) {
+    for (auto package : std::as_const(_pakages)) {
 
         if (!package) {
             internalError();
@@ -91,13 +89,13 @@ bool Packing::create() {
         }
 
         if (!package->deployTemplate(*this)) {
-            QuasarAppUtils::Params::log(QString("Failed to deploy a package template. Package: %0.").
-                                        arg(package->getClassName()),
-                                        QuasarAppUtils::Error);
+
+            qCritical() << QString("Failed to deploy a package template. Package: %0.").
+                           arg(package->getClassName());
             return false;
         }
 
-        auto commands = package->runCmd();
+        const auto commands = package->runCmd();
 
         for (const auto& cmd: commands) {
             const DeployConfig *cfg = DeployCore::_config;
@@ -117,21 +115,17 @@ bool Packing::create() {
 
             _proc->start();
 
-            QuasarAppUtils::Params::log(cmd.command + " " + cmd.arguments.join(' '),
-                                        QuasarAppUtils::Debug);
+
+            qDebug() << cmd.command + " " + cmd.arguments.join(' ');
 
             if (!_proc->waitForStarted()) {
-                QuasarAppUtils::Params::log(_proc->errorString(), QuasarAppUtils::Error);
-                QuasarAppUtils::Params::log(QString("Process error code: %0").arg(_proc->error()),
-                                            QuasarAppUtils::Error);
+
+                qCritical() << _proc->errorString() << QString("Process error code: %0").arg(_proc->error());
                 return false;
             }
 
             if (!_proc->waitForFinished(-1)) {
-                QuasarAppUtils::Params::log(_proc->errorString(), QuasarAppUtils::Error);
-                QuasarAppUtils::Params::log(QString("Process error code: %0").arg(_proc->error()),
-                                            QuasarAppUtils::Error);
-
+                qCritical() << _proc->errorString() <<  QString("Process error code: %0").arg(_proc->error());
 
                 return false;
             }
@@ -141,7 +135,7 @@ bool Packing::create() {
             auto message = QString("message = %0").arg(stdoutLog + " " + erroutLog);
 
             if (_proc->exitCode() != 0) {
-                QuasarAppUtils::Params::log(message, QuasarAppUtils::Error);
+                qCritical() << message;
                 return false;
             }
         }
@@ -165,8 +159,8 @@ bool Packing::create() {
     const DeployConfig *cfg = DeployCore::_config;
 
     if (!QDir(cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR).removeRecursively()) {
-        QuasarAppUtils::Params::log("Failed to remove " + cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR,
-                                    QuasarAppUtils::Error);
+
+        qCritical() << "Failed to remove " + cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR;
         return false;
     }
 
@@ -199,15 +193,13 @@ bool Packing::extractTemplates() {
 
     const DeployConfig *cfg = DeployCore::_config;
 
-
-    QuasarAppUtils::Params::log("You use the getDefaultTemplate. All using templates will be extracted into " + cfg->getTargetDir(),
-                                QuasarAppUtils::Info);
+    qInfo() << "You use the getDefaultTemplate. All using templates will be extracted into " + cfg->getTargetDir();
 
     if (!prepareTemplatesForExtract()) {
         return false;
     }
 
-    for (auto package : std::as_const(_packages)) {
+    for (auto package : std::as_const(_pakages)) {
 
         if (!package)
             return false;
@@ -237,7 +229,7 @@ bool Packing::collectPackages() {
         }
 
         if (!moveData(from, cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR + "/" + it.key())) {
-            QuasarAppUtils::Params::log("Fail to move " + from, QuasarAppUtils::Error);
+            qCritical() << "Fail to move " + from;
             return false;
         }
 
@@ -300,11 +292,6 @@ void Packing::handleOutputUpdate() {
     QByteArray stdoutLog = _proc->readAllStandardOutput();
     QByteArray erroutLog = _proc->readAllStandardError();
 
-    if (stdoutLog.size())
-        QuasarAppUtils::Params::log(stdoutLog,
-                                    QuasarAppUtils::Info);
-
-    if (erroutLog.size())
-        QuasarAppUtils::Params::log(erroutLog,
-                                    QuasarAppUtils::Error);
+    if (stdoutLog.size()) qInfo() << stdoutLog;
+    if (erroutLog.size()) qCritical() << erroutLog;
 }
