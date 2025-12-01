@@ -38,7 +38,7 @@ jobs:
         target: 'desktop'
         arch: 'win64_mingw'
         cache: true
-        tools: 'tools_ifw'
+        tools: 'tools_mingw1310 tools_ifw'
         # modules: 'qtquick3d qtquick3dphysics qtmultimedia qtquicktimeline qtshadertools'
         aqtversion: ==3.2.*
 
