@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2020-2024 QuasarApp.
+# Copyright (C) 2020-2026 QuasarApp.
 # Distributed under the GPLv3 software license, see the accompanying
 # Everyone is permitted to copy and distribute verbatim copies
 # of this license document, but changing it is not allowed.
@@ -42,7 +42,17 @@ set(CQT_DEPLOYER_VERSION_SHORT_PREFIX "1.6")
 set(CQT_DEPLOYER_VERSION "${CQT_DEPLOYER_VERSION_SHORT_PREFIX}.${GIT_COMMIT_COUNT}.${GIT_COMMIT_HASH}")
 set(QIFW_VERSION "4.7") # rebuild for the 4.7.0
 
+if(DEFINED ENV{GITHUB_ENV})
+    file(APPEND $ENV{GITHUB_ENV} "CQT_DEPLOYER_VERSION=${CQT_DEPLOYER_VERSION}\n")
+    file(APPEND $ENV{GITHUB_ENV} "CMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}\n")
+    file(APPEND $ENV{GITHUB_ENV} "CMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}\n")
+    file(APPEND $ENV{GITHUB_ENV} "INSTALLER_SUFIX=${INSTALLER_SUFIX}\n")
+
+endif()
+
 option(CQT_DEPLOYER_TESTS "This option disables or enables tests of the ${PROJECT_NAME} project" ${Qt${QT_VERSION_MAJOR}Test_FOUND})
+option(CQT_DEPLOYER_DOCS "This option disables or enables documentation of the ${PROJECT_NAME} project" OFF)
+
 option(CQT_DEPLOYER_TOOL "This option disables or enables example app of the ${PROJECT_NAME} project" ON)
 
 if (ANDROID OR IOS OR NOT QT_VERSION_MAJOR OR QA_WASM32)
@@ -87,8 +97,9 @@ endif()
 
 configure_file_in("" "${CMAKE_CURRENT_SOURCE_DIR}/doxygen.conf")
 
-addDoc(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/doxygen.conf)
-
+if (CQT_DEPLOYER_DOCS)
+    addDoc(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/doxygen.conf)
+endif()
 
 install(TARGETS CQtDeployer
     BUNDLE DESTINATION .

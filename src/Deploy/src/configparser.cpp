@@ -1,5 +1,5 @@
 //#
-//# Copyright (C) 2018-2024 QuasarApp.
+//# Copyright (C) 2018-2026 QuasarApp.
 //# Distributed under the lgplv3 software license, see the accompanying
 //# Everyone is permitted to copy and distribute verbatim copies
 //# of this license document, but changing it is not allowed.
@@ -75,8 +75,8 @@ void parseTargetPrivate(DeployConfig& conf,
         auto pair = targetPair.split(DeployCore::getSeparator(1), splitbehavior);
 
         if (pair.size() == 1) {
-            QuasarAppUtils::Params::log(QString("Set new default property for all tagets: " + pair.value(0)),
-                                        QuasarAppUtils::Debug);
+
+            qDebug() << QString("Set new default property for all tagets: " + pair.value(0));
             for (auto& editableTarget: cointainer) {
                 (editableTarget.*adder)(pair.value(0));
             }
@@ -87,18 +87,15 @@ void parseTargetPrivate(DeployConfig& conf,
         const auto targetsMap = conf.getTargetsListByFilter(pair.value(0));
 
         if (pair.value(0).isEmpty() || targetsMap.isEmpty()) {
-
-            QuasarAppUtils::Params::log(QString("You try sets property for the not exits target."
-                                                " target: %0").arg(pair.value(0)),
-                                        QuasarAppUtils::Warning);
+            qWarning() << QString("You try sets property for the not exits target."
+                                  " target: %0").arg(pair.value(0));
 
             continue;
         }
 
         for (const auto &target: targetsMap) {
-            QuasarAppUtils::Params::log(QString("Set new property for %0 taget.").
-                                        arg(pair.value(0), pair.value(1)),
-                                        QuasarAppUtils::Debug);
+            qDebug() << QString("Set new property for %0 taget.").
+                        arg(pair.value(0), pair.value(1));
             (target->*adder)(pair.value(1));
         }
     }
@@ -113,24 +110,23 @@ bool enableOptionFotTargetPrivate(DeployConfig& conf,
         auto pair = iconPair.split(DeployCore::getSeparator(1), splitbehavior);
 
         if (pair.size() != 1) {
-            QuasarAppUtils::Params::log(QString("Failed parese list of option values, This option support only single leve list. "
-                                                " Example: use -Option val1,val2,val3 "),
-                                        QuasarAppUtils::Error);
+
+            qCritical() << QString("Failed parese list of option values, This option support only single leve list. "
+                                " Example: use -Option val1,val2,val3 ");
             return false;
         }
 
         const auto targetsMap = conf.getTargetsListByFilter(pair.value(0));
 
         if (!targetsMap.size()) {
-            QuasarAppUtils::Params::log(QString("Not found any targets for the %0 selector").
-                                        arg(pair.value(0)),
-                                        QuasarAppUtils::Warning);
+            qWarning() << QString("Not found any targets for the %0 selector").
+                          arg(pair.value(0));
         }
 
         for (const auto &target: targetsMap) {
-            QuasarAppUtils::Params::log(QString("Set new property for %0 taget.").
-                                        arg(pair.value(0)),
-                                        QuasarAppUtils::Debug);
+
+            qDebug() << QString("Set new property for %0 taget.").
+                        arg(pair.value(0));
             (target->*enabler)();
         }
     }
@@ -151,8 +147,8 @@ bool ConfigParser::parseParams() {
 
     if (QFile::exists(path)) {
         if (!loadFromFile(path)) {
-            QuasarAppUtils::Params::log("Failed to parse json file : " + path,
-                                        QuasarAppUtils::Error);
+
+            qCritical() << "Failed to parse json file : " + path;
             return false;
         }
     }
@@ -162,46 +158,48 @@ bool ConfigParser::parseParams() {
 
     switch (DeployCore::getMode()) {
     case RunMode::Info: {
-        QuasarAppUtils::Params::log("Print info ...",
-                                    QuasarAppUtils::Info);
+        qInfo() << "Print info ...";
+
 
         if (!parseInfoMode()) {
-            QuasarAppUtils::Params::log("Show info is failed!",
-                                        QuasarAppUtils::Error);
+
+            qCritical() << "Show info is failed!";
+
             return false;
         }
         break;
     }
     case RunMode::Clear: {
-        QuasarAppUtils::Params::log("Clear ...",
-                                    QuasarAppUtils::Info);
+
+        qInfo() << "Clear ...";
 
         if (!parseClearMode()) {
-            QuasarAppUtils::Params::log("Clear failed!",
-                                        QuasarAppUtils::Error);
+            qCritical() << "Clear is failed!";
+
             return false;
         }
         break;
     }
 
     case RunMode::Init: {
-        QuasarAppUtils::Params::log("Init ...",
-                                    QuasarAppUtils::Info);
+        qInfo() << "Init ...";
+
         if (!parseInitMode()) {
-            QuasarAppUtils::Params::log("init is failed!",
-                                        QuasarAppUtils::Error);
+
+            qCritical() << "init is failed!";
+
             return false;
         }
         break;
     }
 
     case RunMode::Deploy: {
-        QuasarAppUtils::Params::log("Deploy ...",
-                                    QuasarAppUtils::Info);
+        qInfo() << "Deploy ...";
 
         if (!parseDeployMode(true)) {
-            QuasarAppUtils::Params::log("Deploy failed!",
-                                        QuasarAppUtils::Error);
+
+            qCritical() << "Deploy is failed!";
+
             return false;
         }
         break;
@@ -209,12 +207,12 @@ bool ConfigParser::parseParams() {
 
     case RunMode::Template: {
 
-        QuasarAppUtils::Params::log("Extract defaults Templates ...",
-                                    QuasarAppUtils::Info);
+        qInfo() << "Extract defaults Templates ...";
 
         if (!parseDeployMode(false)) {
-            QuasarAppUtils::Params::log("Extract defaults Templates is failed!",
-                                        QuasarAppUtils::Error);
+
+            qCritical() << "Extract defaults Templates is failed!";
+
             return false;
         }
 
@@ -226,8 +224,9 @@ bool ConfigParser::parseParams() {
     DeployCore::_config = &_config;
 
     if (createFile && !createFromDeploy(path)) {
-        QuasarAppUtils::Params::log("Failed to create a deploy config file in " + path,
-                                    QuasarAppUtils::Error);
+
+        qCritical() << "Failed to create a deploy config file in " + path;
+
     }
 
     return true;
@@ -241,7 +240,7 @@ const DeployConfig *ConfigParser::config() const {
 QJsonValue ConfigParser::writeKeyArray(int separatorLvl, const QString &parameter,
                                        const QString &confFileDir) const {
 
-    auto list = parameter.split(DeployCore::getSeparator(separatorLvl));
+    const auto list = parameter.split(DeployCore::getSeparator(separatorLvl));
 
     if (DeployCore::isContainsArraySeparators(parameter)) {
         QJsonArray array;
@@ -591,7 +590,7 @@ bool ConfigParser::initPackages() {
                     auto warning = QString("You create the %0 package with the %1 pattern, "
                                            "but no matches were found for this pattern. ").
                             arg(package, targetPattern);
-                    QuasarAppUtils::Params::log(warning, QuasarAppUtils::Warning);
+                    qWarning() << warning;
                     continue;
                 }
 
@@ -610,9 +609,8 @@ bool ConfigParser::initPackages() {
             }
         }
 
-        QuasarAppUtils::Params::log(
-                    "The default package is " + defaultPackage,
-                     QuasarAppUtils::Info);
+        qInfo() << "The default package is " + defaultPackage;
+
     }
 
     // init default packages
@@ -652,12 +650,12 @@ bool ConfigParser::initQmlInput() {
 }
 
 void ConfigParser::packagesErrorLog(const QString &option) {
-    QuasarAppUtils::Params::log(QString("Failed to set the %0 option, because you are trying to set it for an uninitialized package."
-                                        " Use the 'targetPackage' flag to init this package. "
-                                        "Or, if you want to configure an empty package, "
-                                        "use the allowEmptyPackages option to disable this error message.").
-                                arg(option),
-                                QuasarAppUtils::Error);
+
+    qCritical() << QString("Failed to set the %0 option, because you are trying to set it for an uninitialized package."
+                           " Use the 'targetPackage' flag to init this package. "
+                           "Or, if you want to configure an empty package, "
+                           "use the allowEmptyPackages option to disable this error message.").
+                   arg(option);
 }
 
 void ConfigParser::initCustomPlatform() {
@@ -677,9 +675,11 @@ void ConfigParser::initCustomPlatform() {
 bool ConfigParser::parseDeployMode(bool checkBin) {
 
     if (QuasarAppUtils::Params::isEndable("deploySystem-with-libc")) {
-        QuasarAppUtils::Params::log("You are using a deprecated option \"deploySystem-with-libc\"."
-                                    " In this version this option is no different from \"deploySystem\"."
-                                    " Please use the deploySystem option.", QuasarAppUtils::Warning);
+
+        qWarning() << "You are using a deprecated option \"deploySystem-with-libc\"."
+                      " In this version this option is no different from \"deploySystem\"."
+                      " Please use the deploySystem option.";
+
         QuasarAppUtils::Params::setEnable("deploySystem", true );
     }
 
@@ -696,8 +696,7 @@ bool ConfigParser::parseDeployMode(bool checkBin) {
 
     if (bin.size() && !setTargets(bin)) {
 
-        QuasarAppUtils::Params::log("Failed to set targets",
-                                    QuasarAppUtils::Warning);
+        qWarning() << "Failed to set targets";
     }
 
     auto xData = QuasarAppUtils::Params::getArg("extraData").
@@ -705,11 +704,9 @@ bool ConfigParser::parseDeployMode(bool checkBin) {
 
 
     if (checkBin && !(_config.targets().count() || xData.count())) {
-        QuasarAppUtils::Params::log("Failed to initialize targets or extra data!",
-                                    QuasarAppUtils::Error);
 
-        QuasarAppUtils::Params::log("Use bin or extraData options and check input paths.",
-                                    QuasarAppUtils::Info);
+        qCritical() << "Failed to initialize targets or extra data!";
+        qInfo() << "Use bin or extraData options and check input paths.";
         return false;
     }
 
@@ -720,9 +717,9 @@ bool ConfigParser::parseDeployMode(bool checkBin) {
         _config.depchLimit = QuasarAppUtils::Params::getArg("recursiveDepth").toInt(&ok);
         if (!ok) {
             _config.depchLimit = 0;
-            QuasarAppUtils::Params::log("Failed to set the recursive depth. The argument of the recursiveDepth option is invalid!"
-                                        " Using the default value 0",
-                                        QuasarAppUtils::Warning);
+
+            qWarning() << "Failed to set the recursive depth. The argument of the recursiveDepth option is invalid!"
+                          " Using the default value 0";
         }
     }
 
@@ -742,21 +739,19 @@ bool ConfigParser::parseDeployMode(bool checkBin) {
     if (!initQmake()) {
 
         if (QuasarAppUtils::PlatformUtils::isSnap()) {
-            QuasarAppUtils::Params::log("If you are using qmake from the system repository,"
-                                        " then you must use the classic version of CQtDeployer instead of the snap version."
-                                        " This is due to the fact that the snap version"
-                                        " runs in an isolated container and has limited access"
-                                        " to system utilities and the environment."
-                                        " For get the classic version of cqtdeployer use the cqtdeployer installer"
-                                        " https://github.com/QuasarApp/CQtDeployer/releases", QuasarAppUtils::Info);
+            qInfo() << "If you are using qmake from the system repository,"
+                       " then you must use the classic version of CQtDeployer instead of the snap version."
+                       " This is due to the fact that the snap version"
+                       " runs in an isolated container and has limited access"
+                       " to system utilities and the environment."
+                       " For get the classic version of cqtdeployer use the cqtdeployer installer"
+                       " https://github.com/QuasarApp/CQtDeployer/releases";
         }
 
         return false;
     }
 
-    QuasarAppUtils::Params::log(
-        _config.qtDir.toString(),
-        QuasarAppUtils::Debug);
+    qDebug() << _config.qtDir.toString();
 
     if (!initQmlInput()) {
         return false;
@@ -872,9 +867,9 @@ void ConfigParser::setTargetDir(const QString &target) {
     } else {
 
         _config.setTargetDir(QFileInfo("./" + DISTRO_DIR).absoluteFilePath());
-        QuasarAppUtils::Params::log("The targetDir option is not used."
-                                    " CQtDeployer will use default target dir :" + _config.getTargetDir(),
-                                    QuasarAppUtils::Info);
+
+        qInfo() << "The targetDir option is not used."
+                   " CQtDeployer will use default target dir :" + _config.getTargetDir();
     }
 }
 
@@ -909,15 +904,15 @@ bool ConfigParser::setTargets(const QStringList &value) {
         }
         else if (targetInfo.isDir()) {
             if (!setTargetsInDir(targetInfo.absoluteFilePath())) {
-                QuasarAppUtils::Params::log(i + " does not contain executable binaries!",
-                                            QuasarAppUtils::Debug);
+
+                qDebug() << i + " does not contain executable binaries!";
                 continue;
             }
             isfillList = true;
 
         } else {
-            QuasarAppUtils::Params::log(i + " is not a path. Try search this file in system enviroment",
-                                        QuasarAppUtils::Debug);
+
+            qDebug() << i + " is not a path. Try search this file in system enviroment";
 
             auto file = QFileInfo(DeployCore::findProcess(QProcessEnvironment::systemEnvironment().value("PATH"), i));
 
@@ -927,8 +922,7 @@ bool ConfigParser::setTargets(const QStringList &value) {
                     isfillList = true;
 
             } else {
-                QuasarAppUtils::Params::log(targetInfo.absoluteFilePath() + " does not exist!",
-                                            QuasarAppUtils::Debug);
+                qDebug() << targetInfo.absoluteFilePath() + " does not exist!";
             }
         }
 
@@ -941,8 +935,7 @@ bool ConfigParser::setTargets(const QStringList &value) {
 
 bool ConfigParser::setTargetsRecursive(const QString &dir) {
     if (!setTargetsInDir(dir, true)) {
-        QuasarAppUtils::Params::log("setTargetsInDir failed!",
-                                     QuasarAppUtils::Debug);
+        qDebug() << "setTargetsInDir is failed!";
         return false;
     }
 
@@ -952,12 +945,12 @@ bool ConfigParser::setTargetsRecursive(const QString &dir) {
 bool ConfigParser::setTargetsInDir(const QString &dir, bool recursive) {
     QDir d(dir);
     if (dir.isEmpty() || !d.exists()) {
-        QuasarAppUtils::Params::log(dir + " dir not exits!",
-                                    QuasarAppUtils::Debug);
+        qDebug() << dir + " dir not exits!";
         return false;
     }
-    QuasarAppUtils::Params::log("setTargetsInDir check path: " + dir,
-                                QuasarAppUtils::Debug);
+
+    qDebug() << "setTargetsInDir check path: " + dir;
+
     QFileInfoList list;
 
     if (recursive) {
@@ -1010,7 +1003,7 @@ ConfigParser::moveTarget(TargetInfo target, const QString& newLocation) {
 void ConfigParser::initIgnoreList()
 {
     if (QuasarAppUtils::Params::isEndable("ignore")) {
-        auto list = QuasarAppUtils::Params::getArg("ignore").
+        const auto list = QuasarAppUtils::Params::getArg("ignore").
                 split(DeployCore::getSeparator(0));
 
         for (const auto &i : list) {
@@ -1100,7 +1093,7 @@ void ConfigParser::initIgnoreEnvList() {
     QStringList ignoreEnvList;
 
     if (QuasarAppUtils::Params::isEndable("ignoreEnv")) {
-        auto ignoreList = QuasarAppUtils::Params::getArg("ignoreEnv").
+        const auto ignoreList = QuasarAppUtils::Params::getArg("ignoreEnv").
                 split(DeployCore::getSeparator(0));
 
 
@@ -1146,9 +1139,7 @@ QString ConfigParser::getPathFrmoQmakeLine(const QString &in) const {
 
 bool ConfigParser::initQmakePrivate(const QString &qmake) {
     QFileInfo info(qmake);
-
-    QuasarAppUtils::Params::log("initialize qmake for.  " + info.absoluteFilePath(),
-                                QuasarAppUtils::Debug);
+    qDebug() << "initialize qmake for.  " + info.absoluteFilePath();
 
     QString basePath = info.absolutePath();
 
@@ -1175,8 +1166,7 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
         }
 
         if (!setQtDir(debianQtRoot)) {
-            QuasarAppUtils::Params::log("Failed to initialize Qt directories",
-                                        QuasarAppUtils::Error);
+            qCritical() << "Failed to initialize Qt directories";
             return false;
         }
         
@@ -1186,21 +1176,20 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
     QDir dir(basePath);
 
     if (!dir.cdUp()) {
-        QuasarAppUtils::Params::log("Failed to initialize qt directories by qmake.",
-                                    QuasarAppUtils::Error);
+        qCritical() << "Failed to initialize qt directories by qmake.";
         return false;
     }
 
     // For snap package of cqtdeplyer it is normal behavior
     if (!QuasarAppUtils::PlatformUtils::isSnap()) {
-        QuasarAppUtils::Params::log("Failed to execute the qmake process!"
-                                    " Trying to initialize Qt directories from path: " + dir.absolutePath(),
-                                    QuasarAppUtils::Warning);
+
+        qWarning() << "Failed to execute the qmake process!"
+                      " Trying to initialize Qt directories from path: " + dir.absolutePath();
     }
 
     if (!setQtDir(dir.absolutePath())){
-        QuasarAppUtils::Params::log("Failed to initialize Qt directories",
-                                    QuasarAppUtils::Error);
+
+        qCritical() << "Failed to initialize Qt directories";
         return false;
     }
 
@@ -1211,9 +1200,9 @@ bool ConfigParser::initQmake() {
 
 
     if (!_config.isNeededQt()) {
-        QuasarAppUtils::Params::log("Deploy only C/C++ libraries because"
-                                    " all target applications do not depend on the Qt libraries",
-                                     QuasarAppUtils::Info);
+
+        qInfo() << "Deploy only C/C++ libraries because"
+                   " all target applications do not depend on the Qt libraries";
         return true;
     }
 
@@ -1232,40 +1221,35 @@ bool ConfigParser::initQmake() {
                 auto env = QProcessEnvironment::systemEnvironment();
                 auto proc = DeployCore::findProcess(env.value("PATH"), "qmake");
                 if (proc.isEmpty()) {
-                    QuasarAppUtils::Params::log("The deployment target requires Qt libraries,"
-                                                " but initialize of Qt directories is failed."
-                                                " Please use the qmake option to set a path to the qmake executable.",
-                                                QuasarAppUtils::Error);
+
+                    qCritical() << "The deployment target requires Qt libraries,"
+                                   " but initialize of Qt directories is failed."
+                                   " Please use the qmake option to set a path to the qmake executable.";
                     return false;
                 }
 
-
-                QuasarAppUtils::Params::log(QString("The qmake was found in the PATH variable. qmake : %0"
-                                                    " If you want to disable search qmake executable in PATH variable,"
-                                                    " use the noCheckPATH option").
-                                            arg(proc),
-                                            QuasarAppUtils::Info);
+                qInfo() << QString("The qmake was found in the PATH variable. qmake : %0"
+                                   " If you want to disable search qmake executable in PATH variable,"
+                                   " use the noCheckPATH option").
+                           arg(proc);
 
 
                 return initQmakePrivate(proc);
             }
 
-            QuasarAppUtils::Params::log("Your distribution required Qt libraries "
-                                        "but qmake executable cannot be found in the 'qmake' option or RPATH. "
-                                        "You are using the option noCheckPATH, "
-                                        "please remove this option from your deploy command to search qmake in PATH",
-                                         QuasarAppUtils::Error);
+
+            qCritical() << "Your distribution required Qt libraries "
+                         "but qmake executable cannot be found in the 'qmake' option or RPATH. "
+                         "You are using the option noCheckPATH, "
+                         "please remove this option from your deploy command to search qmake in PATH";
 
             return false;
 
         }
 
-
-        QuasarAppUtils::Params::log(QString("The qmake was found in the RPATH variable. qmake : %0"
-                                            " If you want to disable search qmake executable in RPATH variable,"
-                                            " use the noCheckRPATH option").
-                                    arg(qmakeFromRPath),
-                                    QuasarAppUtils::Info);
+        qInfo() << "The qmake was found in the RPATH variable. qmake : %0"
+                   " If you want to disable search qmake executable in RPATH variable,"
+                   " use the noCheckRPATH option";
 
         return initQmakePrivate(qmakeFromRPath);
 
@@ -1278,8 +1262,7 @@ bool ConfigParser::setQmake(const QString &value) {
 
     auto qmakeInfo = QFileInfo(value);
 
-    QuasarAppUtils::Params::log("sets qmake for.  " + qmakeInfo.absoluteFilePath(),
-                                QuasarAppUtils::Debug);
+    qDebug() << "sets qmake for.  " + qmakeInfo.absoluteFilePath();
 
     QProcess proc;
     proc.setProgram(qmakeInfo.absoluteFilePath());
@@ -1289,12 +1272,12 @@ bool ConfigParser::setQmake(const QString &value) {
     proc.start();
 
     if (!(proc.waitForStarted(1000) && proc.waitForFinished(1000))) {
-        QuasarAppUtils::Params::log("Run qmake fail! " + proc.errorString(), QuasarAppUtils::Warning);
+        qWarning() << "Run qmake fail! " + proc.errorString();
         return false;
     }
 
     QString qmakeData = proc.readAll();
-    auto list = qmakeData.split('\n');
+    const auto list = qmakeData.split('\n');
 
     for (const auto &value : list) {
         if (value.contains("QT_INSTALL_LIBS")) {
@@ -1315,12 +1298,10 @@ bool ConfigParser::setQmake(const QString &value) {
     }
 
     if (_config.qtDir.getLibs().isEmpty()) {
-        QuasarAppUtils::Params::log("Wrong output from the qmake process. " + qmakeInfo.absoluteFilePath(),
-                                    QuasarAppUtils::Warning);
-        QuasarAppUtils::Params::log("Raw output:" + qmakeData,
-                                    QuasarAppUtils::Debug);
-        QuasarAppUtils::Params::log("Parsed Qt configuration: \n" + _config.qtDir.toString(),
-                                    QuasarAppUtils::Debug);
+
+
+        qWarning() << "Wrong output from the qmake process. " + qmakeInfo.absoluteFilePath();
+        qDebug () << "Raw output:" + qmakeData << "Parsed Qt configuration: \n" + _config.qtDir.toString();
 
         return false;
     }
@@ -1335,8 +1316,7 @@ bool ConfigParser::setQtDir(const QString &value) {
 
     QFileInfo info(value);
 
-    QuasarAppUtils::Params::log("initialize qt dirs for. " + info.absoluteFilePath(),
-                                QuasarAppUtils::Debug);
+    qDebug() << "initialize qt dirs for. " + info.absoluteFilePath();
 
     if (DeployCore::isDebianQt(value)) {
         if (QFile::exists(info.absoluteFilePath() + ("/bin"))) {
@@ -1344,7 +1324,7 @@ bool ConfigParser::setQtDir(const QString &value) {
         }
     } else {
         if (!QFile::exists(info.absoluteFilePath() + ("/bin"))) {
-            QuasarAppUtils::Params::log("get qt bin failed!", QuasarAppUtils::Debug);
+            qDebug() << "get qt bin failed!";
             return false;
         }
         _config.qtDir.setBins(info.absoluteFilePath() + ("/bin"));
@@ -1354,7 +1334,7 @@ bool ConfigParser::setQtDir(const QString &value) {
         _config.qtDir.setLibs(info.absolutePath());
     } else {
         if (!QFile::exists(info.absoluteFilePath() + ("/lib"))) {
-            QuasarAppUtils::Params::log("get qt lib failed!", QuasarAppUtils::Debug);
+            qDebug () << "get qt lib failed!";
             return false;
         }
         _config.qtDir.setLibs(info.absoluteFilePath() + ("/lib"));
@@ -1362,20 +1342,23 @@ bool ConfigParser::setQtDir(const QString &value) {
 
 
     if (!QFile::exists(info.absoluteFilePath() + ("/qml"))) {
-        QuasarAppUtils::Params::log("get qt qml failed!", QuasarAppUtils::Debug);
+        qDebug () << "get qt qml failed!";
+
     } else {
         _config.qtDir.setQmls(info.absoluteFilePath() + ("/qml"));
     }
 
     if (!QFile::exists(info.absoluteFilePath() + ("/plugins"))) {
-        QuasarAppUtils::Params::log("get qt plugins failed!", QuasarAppUtils::Debug);
+        qDebug () << "get qt plugins failed!";
+
     } else {
         _config.qtDir.setPlugins(info.absoluteFilePath() + ("/plugins"));
     }
 
     if (_config.qtDir.getQtPlatform() & Unix) {
         if (!QFile::exists(info.absoluteFilePath() + ("/libexec"))) {
-            QuasarAppUtils::Params::log("get qt libexec failed!", QuasarAppUtils::Debug);
+            qDebug () << "get qt libexec failed!";
+
         } else {
             _config.qtDir.setLibexecs(info.absoluteFilePath() + ("/libexec"));
         }
@@ -1388,14 +1371,16 @@ bool ConfigParser::setQtDir(const QString &value) {
                                       arg(DeployCore::qtVersionToString(_config.isNeededQt())));
     } else {
         if (!QFile::exists(info.absoluteFilePath() + ("/translations"))) {
-            QuasarAppUtils::Params::log("get qt translations failed!", QuasarAppUtils::Debug);
+            qDebug () << "get qt translations failed!";
+
         } else {
             _config.qtDir.setTranslations(info.absoluteFilePath() + ("/translations"));
         }
     }
 
     if (!QFile::exists(info.absoluteFilePath() + ("/resources"))) {
-        QuasarAppUtils::Params::log("get qt resources failed!", QuasarAppUtils::Debug);
+        qDebug () << "get qt resources failed!";
+
     } else {
         _config.qtDir.setResources(info.absoluteFilePath() + ("/resources"));
     }
@@ -1407,7 +1392,7 @@ bool ConfigParser::setQtDir(const QString &value) {
 }
 
 bool ConfigParser::initExtraPath() {
-    auto listLibDir = QuasarAppUtils::Params::getArg("libDir").
+    const auto listLibDir = QuasarAppUtils::Params::getArg("libDir").
             split(DeployCore::getSeparator(0));
 
     QDir dir;
@@ -1416,18 +1401,18 @@ bool ConfigParser::initExtraPath() {
         QFileInfo info(QuasarAppUtils::PlatformUtils::transportPathToSnapRoot(i));
         if (info.isDir()) {
             if (_config.targets().contains(info.absoluteFilePath())) {
-                QuasarAppUtils::Params::log("Skip the extra library path because it is target!",
-                                            QuasarAppUtils::Debug);
+
+                qDebug() << "Skip the extra library path because it is target!";
                 continue;
             }
 
             if (_config.envirement.isIgnore(info.absoluteFilePath())) {
-                QuasarAppUtils::Params::log(QString("Failed to set libDir path!"
-                                                    " The %0 path will be ignored because"
-                                                    " this path is child path of the targetDir path"
-                                                    " or manually added into ignore environment.").
-                                            arg(info.absoluteFilePath()),
-                                            QuasarAppUtils::Error);
+
+                qCritical() << QString("Failed to set libDir path!"
+                                       " The %0 path will be ignored because"
+                                       " this path is child path of the targetDir path"
+                                       " or manually added into ignore environment.").
+                               arg(info.absoluteFilePath());
                 return false;
             }
 
@@ -1439,13 +1424,10 @@ bool ConfigParser::initExtraPath() {
         } else if (i.size() > 1) {
 
             _config.extraPaths.addExtraPathsMasks({i});
-
-            QuasarAppUtils::Params::log(i + " is added as a path mask",
-                                        QuasarAppUtils::Debug);
+            qDebug() << i + " is added as a path mask";
         } else {
-            QuasarAppUtils::Params::log(i + " not added in path mask because"
-                                            " the path mask must be large 2 characters",
-                                        QuasarAppUtils::Debug);
+            qDebug() << i + " not added in path mask because"
+                            " the path mask must be large 2 characters";
         }
     }
 
@@ -1457,12 +1439,12 @@ void ConfigParser::addExtraNamesMasks(const QStringList& listNamesMasks) {
         if (i.size() > 1) {
             _config.allowedPaths.addtExtraNamesMasks({i});
 
-            QuasarAppUtils::Params::log(i + " is added as a filename mask",
-                                        QuasarAppUtils::Debug);
+            qDebug() << i + " is added as a filename mask";
         } else {
-            QuasarAppUtils::Params::log(i + " not added in file mask because"
-                                            " the file mask must be large 2 characters",
-                                        QuasarAppUtils::Debug);
+
+            qDebug() << i + " not added in file mask because"
+                            " the file mask must be large 2 characters";
+
         }
     }
 }
@@ -1522,7 +1504,7 @@ bool ConfigParser::initPlugins() {
 }
 
 QString ConfigParser::findWindowsPath(const QString& path) const {
-    auto list = path.split(';');
+    const auto list = path.split(';');
     QString win_magic = "windows";
 
     for (const auto &i: list ) {
@@ -1589,8 +1571,8 @@ void ConfigParser::initEnvirement() {
     _config.envirement.addEnv(dirs);
 
     if (_config.envirement.size() < 2) {
-        QuasarAppUtils::Params::log("System environment is empty",
-                                    QuasarAppUtils::Warning);
+
+        qWarning() << "System environment is empty";
     }
 }
 
@@ -1605,20 +1587,15 @@ bool ConfigParser::checkSnapPermisions() {
 
     if (system && !QuasarAppUtils::PlatformUtils::checkSystemBakupSnapInterface()) {
 
-        QuasarAppUtils::Params::log("You use a deploySystem or extraLibs options,"
-                                    " but not added permision system-backup for cqtdeployer."
-                                    " Please add permissions system-backup before using cqtdeployer."
-                                    " Add system-backup permision from console: ",
-                                    QuasarAppUtils::Error);
+        qCritical() << "You use a deploySystem or extraLibs options,"
+                       " but not added permision system-backup for cqtdeployer."
+                       " Please add permissions system-backup before using cqtdeployer."
+                       " Add system-backup permision from console: ";
 
-        QuasarAppUtils::Params::log(
-                    "'snap connect cqtdeployer:system-backup :system-backup'",
-                    QuasarAppUtils::Info);
 
-        QuasarAppUtils::Params::log(
-                    "GUI: Open the gnome system setting >> Applications >> CQtDeployer. "
-                    "in menu rights and permisions enable system-backup.",
-                    QuasarAppUtils::Info);
+        qInfo() << "'snap connect cqtdeployer:system-backup :system-backup'" <<
+            "GUI: Open the gnome system setting >> Applications >> CQtDeployer. "
+            "in menu rights and permisions enable system-backup.";
 
         return false;
     }
@@ -1639,7 +1616,7 @@ QSet<QString> ConfigParser::getSetDirsRecursive(const QString &path, int maxDepc
         return res;
     }
 
-    auto list = dir.entryInfoList(QDir::Dirs| QDir::NoDotAndDotDot | QDir::Hidden);
+    const auto list = dir.entryInfoList(QDir::Dirs| QDir::NoDotAndDotDot | QDir::Hidden);
 
     for (const auto &subDir: list) {
         res.insert(subDir.absoluteFilePath());
@@ -1654,16 +1631,15 @@ bool ConfigParser::smartMoveTargets() {
     QMultiHash<QString, TargetInfo> temp;
     bool result = true;
 
-    QuasarAppUtils::Params::log(QString("Available Targets: "),
-                                QuasarAppUtils::Debug);
+
+    qDebug () << "Available Targets: ";
 
 
     for (auto i = _config.targets().cbegin(); i != _config.targets().cend(); ++i) {
 
         if (!i.value().isValid()) {
 
-            QuasarAppUtils::Params::log(i.value().toString(),
-                                        QuasarAppUtils::Error);
+            qCritical() << i.value().toString();
 
             internalError();
             return false;
@@ -1683,15 +1659,15 @@ bool ConfigParser::smartMoveTargets() {
 
         const auto newTarget = moveTarget(i.value(), newTargetKey);
         temp.unite(newTarget);
-        QuasarAppUtils::Params::log(QString("Target: " + newTarget.begin().key()),
-                                    QuasarAppUtils::Debug);
+
+        qDebug() << QString("Target: " + newTarget.begin().key());
 
         auto pkgKey = i.value().getPackage();
         if (!_config.packagesEdit().contains(pkgKey)) {
 
-            QuasarAppUtils::Params::log(QString("The target %0 belongs to package %1"
-                                                " but this package is not initialized!").
-                                        arg(i.key(), pkgKey));
+            qDebug() << QString("The target %0 belongs to package %1"
+                                " but this package is not initialized!").
+                        arg(i.key(), pkgKey);
 
             internalError();
             return false;
@@ -1724,5 +1700,5 @@ ConfigParser::ConfigParser(FileManager *filemanager, PluginsParser *pluginsParse
         _config.appDir = _config.appDir.left(_config.appDir.size() - 4);
     }
 
-    QuasarAppUtils::Params::log("appDir = " + _config.appDir);
+    qDebug() << "appDir = " + _config.appDir;
 }

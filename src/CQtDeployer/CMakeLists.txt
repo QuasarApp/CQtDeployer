@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2021-2024 QuasarApp.
+# Copyright (C) 2021-2026 QuasarApp.
 # Distributed under the GPLv3 software license, see the accompanying
 # Everyone is permitted to copy and distribute verbatim copies
 # of this license document, but changing it is not allowed.
@@ -68,6 +68,21 @@ if (WIN32)
 
 endif()
 
+set(BASE_NAME "${CURRENT_PROJECT}_${CQT_DEPLOYER_VERSION}")
+string(TOLOWER ${BASE_NAME} SNAP_BASE_NAME)
+
+set(BASE_FULL_NAME "${BASE_NAME}_${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}")
+
+set(INSTALLER_FULL_NAME "${BASE_FULL_NAME}${INSTALLER_SUFIX}")
+
+if(DEFINED ENV{GITHUB_ENV})
+    file(APPEND $ENV{GITHUB_ENV} "INSTALLER_FULL_NAME=${INSTALLER_FULL_NAME}\n")
+    file(APPEND $ENV{GITHUB_ENV} "BASE_FULL_NAME=${BASE_FULL_NAME}\n")
+    file(APPEND $ENV{GITHUB_ENV} "SNAP_BASE_NAME=${SNAP_BASE_NAME}\n")
+
+
+endif()
+
 configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployer.json")
 configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployerSingle.json")
 
@@ -87,19 +102,43 @@ configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFWTem
 
 addDeployFromCustomFile(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployer.json")
 
-
-ADD_CUSTOM_TARGET(
-    downloadQIFW
-    SOURCES ${${name}files}
-    COMMAND python "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW.py" ${QIFW_PLATFORM} ${QIFW_VERSION} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW"
-    COMMENT python "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW.py" ${QIFW_PLATFORM} ${QIFW_VERSION} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW"
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
-add_dependencies(deploy${CURRENT_PROJECT} downloadQIFW)
+set(QIF_DESTINATION_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW/QIF")
 
 addDeployFromCustomFile(${CURRENT_PROJECT}Single "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployerSingle.json")
-add_dependencies(deploy${CURRENT_PROJECT}Single downloadQIFW)
+
+if (NOT DEFINED IQTA_TOOLS)
+    set(IQTA_TOOLS $ENV{IQTA_TOOLS})
+
+    if(NOT "${IQTA_TOOLS}" STREQUAL "")
+
+        if (WIN32)
+            set(QIF_SOURCE_BIN_PATH "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin/binarycreator.exe")
+            set(QIF_OUT_BIN_PATH "${QIF_DESTINATION_PATH}/binarycreator.exe")
+
+        else()
+            set(QIF_SOURCE_BIN_PATH "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin/binarycreator")
+            set(QIF_OUT_BIN_PATH "${QIF_DESTINATION_PATH}/binarycreator")
+
+        endif()
+
+
+        add_custom_target(
+            downloadQIFW
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${QIF_DESTINATION_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy
+                "${QIF_SOURCE_BIN_PATH}"
+                "${QIF_OUT_BIN_PATH}"
+
+            COMMENT "Copy QIFW binaries to build directory"
+        )
+
+        add_dependencies(deploy${CURRENT_PROJECT} downloadQIFW)
+        add_dependencies(deploy${CURRENT_PROJECT}Single downloadQIFW)
+
+    endif()
+endif()
+
+
 
 if (UNIX)
     addDeploySnap(${CURRENT_PROJECT} "${CMAKE_SOURCE_DIR}/Distro/")

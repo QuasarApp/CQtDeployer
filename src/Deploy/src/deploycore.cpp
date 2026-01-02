@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2024 QuasarApp.
+ * Copyright (C) 2018-2026 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -344,7 +344,7 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-extraLibs"}, "{list,params}",
                             "Sets the mask of the library name for forced copying.",
-                            "\"-extraLib mySql\" - forces to copy all libraries whose names contain mySql to the project folder."
+                            "\"-extraLibs mySql\" - forces to copy all libraries whose names contain mySql to the project folder."
                             " This option is case-insensitive on Windows and case-sensitive on other platforms."
                             " This option will only search libraries in system environments similar to **deploySystem**."
                         }});

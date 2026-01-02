@@ -120,16 +120,18 @@ void TestBase::checkResults(const QSet<QString> &tree, bool noWarnings, bool onl
         QJsonDocument doc(obj);
 
         QFile lasttree(QString("./%0_LastTree.json").arg(testName()));
-        lasttree.open(QIODevice::WriteOnly| QIODevice::Truncate);
+        if (lasttree.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
+            lasttree.write(doc.toJson());
+            lasttree.close();
+        }
 
-        lasttree.write(doc.toJson());
-        lasttree.close();
+
 
         lasttree.setFileName(QString("./%0_CompareTree.json").arg(testName()));
-        lasttree.open(QIODevice::WriteOnly| QIODevice::Truncate);
-
-        lasttree.write(QJsonDocument(comapreResult).toJson());
-        lasttree.close();
+        if (lasttree.open(QIODevice::WriteOnly| QIODevice::Truncate)) {
+            lasttree.write(QJsonDocument(comapreResult).toJson());
+            lasttree.close();
+        }
 
         QVERIFY2(false, "runTestParams fail");
 
