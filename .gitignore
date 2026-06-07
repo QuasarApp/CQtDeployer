@@ -33,6 +33,7 @@ ui_*.h
 Makefile*
 *cqtdeployer_resource.rc
 sharedQtWin64/*
+*.qmlls.ini
 
 # Qt unit tests
 target_wrapper.*

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2024 QuasarApp.
+ * Copyright (C) 2018-2026 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -17,10 +17,13 @@ QStringList QMLQt6::extractImportLine(const QString& line) const {
     QStringList result;
     QStringList list = line.split(" ", splitbehavior);
 
+    if (list.size() <= 1) {
+        return {};
+    }
+    
     result << (list[1].replace(".", "/"));
     return result;
 
-    return result;
 }
 
 QStringList QMLQt6::extractImportsFromFile(const QString &filepath) const {

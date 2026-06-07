@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2024 QuasarApp.
+ * Copyright (C) 2018-2026 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -57,7 +57,7 @@ QStringList QMLQt5::extractImportsFromFile(const QString &filepath) const {
         {
             word = word.simplified();
             if (word.startsWith("//")) continue;
-            if (!word.startsWith("import")) continue;
+            if (!word.startsWith("import ")) continue;
 
             imports += extractImportLine(word);
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2024 QuasarApp.
+ * Copyright (C) 2018-2026 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -40,7 +40,7 @@ PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
 QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
         const QString &libName) const {
 
-    auto values = _EnvLibs.values(libName.toUpper());
+    const auto values = _EnvLibs.values(libName.toUpper());
     QMultiMap<LibPriority, LibInfo> res;
 
     for (const auto & lib : values) {
@@ -64,9 +64,7 @@ QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
             info.setPriority(priority);
 
             if (!fillLibInfo(info, lib)) {
-                QuasarAppUtils::Params::log(
-                            "Failed to extract lib info from " + lib + "(" + libName + ")",
-                            QuasarAppUtils::VerboseLvl::Warning);
+                qWarning() << "Failed to extract lib info from " + lib + "(" + libName + ")";
                 continue;
             }
         }
@@ -100,15 +98,14 @@ bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) const 
 }
 
 void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QString>& libStack) {
-    QuasarAppUtils::Params::log("Get the recursive dependencies of " + lib.fullPath(),
-                                       QuasarAppUtils::Debug);
+
+    qWarning() << "Get the recursive dependencies of " + lib.fullPath();
 
     if (_scanedLibs.contains(lib.fullPath())) {
         auto scanedLib = _scanedLibs.value(lib.fullPath());
 
         if (!scanedLib.isValid()) {
-            QuasarAppUtils::Params::log( "Detected an invalid library in scanned library cache!!",
-                                               QuasarAppUtils::Error);
+            qCritical() << "Detected an invalid library in scanned library cache!!";
             return;
         }
 
@@ -118,8 +115,8 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
     }
 
     if (libStack.contains(lib.fullPath())) {
-        QuasarAppUtils::Params::log("A recursive dependency was found in library " + lib.fullPath(),
-                                    QuasarAppUtils::Warning);
+
+        qWarning() << "A recursive dependency was found in library " + lib.fullPath();
         return;
     }
 
@@ -130,8 +127,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
         auto libs = getLibsFromEnvirement(i);
 
         if (!libs.size()) {
-            QuasarAppUtils::Params::log("Cannot find the library for dependency " + i,
-                                        QuasarAppUtils::Debug);
+            qDebug() << "Cannot find the library for dependency " + i;
             continue;
         }
 
@@ -202,7 +198,7 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
                                       << "*.SO*" << "*.so*",
                                       QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
 
-        for (const auto &i : list) {
+        for (const auto &i : std::as_const(list)) {
             addToWinAPI(i.fileName().toUpper(), winAPI);
             _EnvLibs.insert(i.fileName().toUpper(), i.absoluteFilePath());
         }

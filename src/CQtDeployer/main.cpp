@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2024 QuasarApp.
+ * Copyright (C) 2018-2026 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
 
 
     if (!QuasarAppUtils::Params::parseParams(argc, argv, DeployCore::avilableOptions())) {
-        QuasarAppUtils::Params::log("Wrong parameters. Please use the 'help' of 'h' option to show the help page.", QuasarAppUtils::Warning);
+        qWarning() << "Wrong parameters. Please use the 'help' of 'h' option to show the help page.";
         exit(4);
     }
 
@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
     int code = deploy.run();
 
     if (code) {
-        QuasarAppUtils::Params::log(Deploy::codeString(code), QuasarAppUtils::Error);
+        qCritical() << Deploy::codeString(code);
     }
 
     return code;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2024 QuasarApp.
+ * Copyright (C) 2018-2026 QuasarApp.
  * Distributed under the lgplv3 software license, see the accompanying
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
@@ -67,7 +67,7 @@ private:
      */
     QByteArray calcHash(const QString& file);
 
-    QList<iDistribution*> _pakages;
+    QList<iDistribution*> _packages;
     QProcess *_proc = nullptr;
     QHash<QString, QString> _packagesLocations;
     QHash<QString, QString> _defaultPackagesLocations;
