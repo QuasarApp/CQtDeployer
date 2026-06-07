@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2025, ubuntu-24.04 ubuntu-24.04-arm]
+        os: [windows-2025, ubuntu-24.04]
         build_type: [Release]
         c_compiler: [gcc]
 
@@ -32,7 +32,7 @@ jobs:
       with:
         version: '6.10.3'
         target: 'desktop'
-        arch: ${{ runner.arch == 'ARM64' && 'linux_arm64' || 'linux_gcc_64' }}
+        arch: 'linux_gcc_64'
         cache: true
         tools: 'tools_ifw'
         aqtversion: ==3.2.*
