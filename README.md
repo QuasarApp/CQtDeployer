@@ -111,6 +111,15 @@ See the list of all options [here](md/en/Options.md)
 ## Build and install
 See building and installation instructions on wiki [page](md/en/Build-and-Install.md)
 
+### Available in github-actions
+see https://github.com/marketplace/actions/setup-cqtdeployer
+
+``` yaml
+- name: Install CQtDeployer
+  uses: QuasarApp/setup-cqtdeployer@v1.0.0
+
+```
+
 ## Projects using CQtDeployer:
 
 - [QAmigo](https://github.com/QAmigo/QAmigo) - Qt cross-platform serial port socket assistant for visualizing data.
