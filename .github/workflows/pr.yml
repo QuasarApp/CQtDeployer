@@ -50,38 +50,9 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-    - name: Download and Extract CQtDeployer Linux
-      if: runner.os == 'Linux'
-      uses: robinraju/release-downloader@v1
-      with:
-        repository: 'QuasarApp/CQtDeployer'
-        latest: true
-        fileName: 'CQtDeployer_1.6.2365.7cce7f3_Linux_x86_64.zip'
-        extract: true
-        out-file-path: ${{ github.workspace }}/cqt
+    - name: Install CQtDeployer
+      uses: QuasarApp/cqtdeployer-install-action@v1.0.0
 
-    - name: Install CQtDeployer Linux
-      if: runner.os == 'Linux'
-      run: |
-        chmod +x "${{ github.workspace }}/cqt/CQtDeployer.sh"
-        chmod +x "${{ github.workspace }}/cqt/bin/CQtDeployer"
-        ln -s ${{ github.workspace }}/cqt/CQtDeployer.sh ${{ github.workspace }}/cqt/cqtdeployer
-        echo "$GITHUB_WORKSPACE/cqt" >> $GITHUB_PATH
-
-    - name: Download and Extract CQtDeployer Windows
-      if: runner.os == 'Windows'
-      uses: robinraju/release-downloader@v1
-      with:
-        repository: 'QuasarApp/CQtDeployer'
-        latest: true
-        fileName: 'CQtDeployer_1.6.2365.7cce7f3_Windows_AMD64.zip'
-        extract: true
-        out-file-path: ${{ github.workspace }}/cqt
-
-    - name: Install CQtDeployer Windows
-      if: runner.os == 'Windows'
-      run: echo "${{ github.workspace }}\cqt" >> $env:GITHUB_PATH
-      shell: pwsh
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
