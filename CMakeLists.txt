@@ -50,7 +50,7 @@ if(DEFINED ENV{GITHUB_ENV})
 
 endif()
 
-option(CQT_DEPLOYER_TESTS "This option disables or enables tests of the ${PROJECT_NAME} project" ${Qt${QT_VERSION_MAJOR}Test_FOUND})
+option(CQT_DEPLOYER_TESTS "This option disables or enables tests of the ${PROJECT_NAME} project" OFF)
 option(CQT_DEPLOYER_DOCS "This option disables or enables documentation of the ${PROJECT_NAME} project" OFF)
 
 option(CQT_DEPLOYER_TOOL "This option disables or enables example app of the ${PROJECT_NAME} project" ON)
