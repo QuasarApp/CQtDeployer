@@ -30,7 +30,7 @@ bool Deb::deployTemplate(PackageControl &pkg) {
 
             const auto availablePackages = QDir(customTemplate).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
 
-            for (const auto& pkg: availablePacakages) {
+            for (const auto& pkg: availablePackages) {
               packagesTemplates.insert(pkg.fileName(), pkg.absoluteFilePath());
             }
         }

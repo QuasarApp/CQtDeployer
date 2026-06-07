@@ -67,7 +67,7 @@ private:
      */
     QByteArray calcHash(const QString& file);
 
-    QList<iDistribution*> _pakages;
+    QList<iDistribution*> _packages;
     QProcess *_proc = nullptr;
     QHash<QString, QString> _packagesLocations;
     QHash<QString, QString> _defaultPackagesLocations;
