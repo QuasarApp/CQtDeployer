@@ -28,7 +28,7 @@ bool Deb::deployTemplate(PackageControl &pkg) {
 
             qInfo() << "Using custom template for debian package: " + customTemplate;
 
-            const auto availablePacakages = QDir(customTemplate).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
+            const auto availablePackages = QDir(customTemplate).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
 
             for (const auto& pkg: availablePacakages) {
               packagesTemplates.insert(pkg.fileName(), pkg.absoluteFilePath());
