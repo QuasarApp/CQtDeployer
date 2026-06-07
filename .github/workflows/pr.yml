@@ -1,0 +1,114 @@
+name: CMake PR Builder
+on:
+  pull_request:
+    types: [opened, synchronize, reopened] # Triggers only on pull request events
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2025, ubuntu-24.04 ubuntu-24.04-arm]
+        build_type: [Release]
+        c_compiler: [gcc]
+
+    steps:
+    - name: Install Qt (Windows)
+      uses: jurplel/install-qt-action@v4.3.0
+      if: runner.os == 'Windows'
+      with:
+        version: '6.10.3'
+        target: 'desktop'
+        arch: 'win64_mingw'
+        cache: true
+        tools: 'tools_mingw1310 tools_ifw'
+        aqtversion: ==3.2.*
+
+    - name: Install Qt (Linux)
+      uses: jurplel/install-qt-action@v4.3.0
+      if: runner.os == 'Linux'
+      with:
+        version: '6.10.3'
+        target: 'desktop'
+        arch: ${{ runner.arch == 'ARM64' && 'linux_arm64' || 'linux_gcc_64' }}
+        cache: true
+        tools: 'tools_ifw'
+        aqtversion: ==3.2.*
+
+    # Checkout main repository with submodules
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-tags: true
+        fetch-depth: 0
+
+    - name: Set reusable strings
+      id: strings
+      shell: bash
+      run: |
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+    - name: Download and Extract CQtDeployer Linux
+      if: runner.os == 'Linux'
+      uses: robinraju/release-downloader@v1
+      with:
+        repository: 'QuasarApp/CQtDeployer'
+        latest: true
+        fileName: 'CQtDeployer_1.6.2365.7cce7f3_Linux_x86_64.zip'
+        extract: true
+        out-file-path: ${{ github.workspace }}/cqt
+
+    - name: Install CQtDeployer Linux
+      if: runner.os == 'Linux'
+      run: |
+        chmod +x "${{ github.workspace }}/cqt/CQtDeployer.sh"
+        chmod +x "${{ github.workspace }}/cqt/bin/CQtDeployer"
+        ln -s ${{ github.workspace }}/cqt/CQtDeployer.sh ${{ github.workspace }}/cqt/cqtdeployer
+        echo "$GITHUB_WORKSPACE/cqt" >> $GITHUB_PATH
+
+    - name: Download and Extract CQtDeployer Windows
+      if: runner.os == 'Windows'
+      uses: robinraju/release-downloader@v1
+      with:
+        repository: 'QuasarApp/CQtDeployer'
+        latest: true
+        fileName: 'CQtDeployer_1.6.2365.7cce7f3_Windows_AMD64.zip'
+        extract: true
+        out-file-path: ${{ github.workspace }}/cqt
+
+    - name: Install CQtDeployer Windows
+      if: runner.os == 'Windows'
+      run: echo "${{ github.workspace }}\cqt" >> $env:GITHUB_PATH
+      shell: pwsh
+
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ${{ matrix.os }}-${{ matrix.type }}
+
+    - name: Configure CMake (Windows)
+      if: runner.os == 'Windows'
+      run: >
+        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        -G Ninja
+        -DBUILD_SHARED_LIBS=ON
+        -DCQT_DEPLOYER_TESTS=OFF
+        -DCMAKE_PREFIX_PATH='${{ steps.sdl.outputs.prefix }};${{ env.QT_ROOT_DIR }}'
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -S ${{ github.workspace }}
+
+    - name: Configure CMake (Linux)
+      if: runner.os == 'Linux'
+      run: >
+        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        -G Ninja
+        -DBUILD_SHARED_LIBS=ON
+        -DCQT_DEPLOYER_TESTS=OFF
+        -DCMAKE_PREFIX_PATH='${{ steps.sdl.outputs.prefix }};${{ env.QT_ROOT_DIR }}'
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -S ${{ github.workspace }}
+
+    - name: Build
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 16
