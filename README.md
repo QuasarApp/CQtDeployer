@@ -111,8 +111,8 @@ See the list of all options [here](md/en/Options.md)
 ## Build and install
 See building and installation instructions on wiki [page](md/en/Build-and-Install.md)
 
-### Available in github-actions
-see https://github.com/marketplace/actions/setup-cqtdeployer
+### Available in GitHub Actions
+See https://github.com/marketplace/actions/setup-cqtdeployer
 
 ``` yaml
 - name: Install CQtDeployer
