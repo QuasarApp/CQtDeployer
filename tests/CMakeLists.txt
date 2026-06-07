@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2020-2024 QuasarApp.
+# Copyright (C) 2020-2026 QuasarApp.
 # Distributed under the GPLv3 software license, see the accompanying
 # Everyone is permitted to copy and distribute verbatim copies
 # of this license document, but changing it is not allowed.
@@ -51,7 +51,7 @@ if (Qt${QT_VERSION_MAJOR}WebEngineQuick_FOUND)
     add_definitions(-DUSE_WEBENGINE)
 endif()
 
-add_executable(${CURRENT_PROJECT} ${SOURCE_CPP})
+add_executable(${CURRENT_PROJECT} ${SOURCE_CPP} )
 target_link_libraries(${CURRENT_PROJECT} PRIVATE Qt${QT_VERSION_MAJOR}::Test Deploy)
 
 target_include_directories(${CURRENT_PROJECT} PUBLIC ${PUBLIC_INCUDE_DIR})
