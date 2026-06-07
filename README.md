@@ -114,7 +114,7 @@ See building and installation instructions on wiki [page](md/en/Build-and-Instal
 ### Available in GitHub Actions
 See https://github.com/marketplace/actions/setup-cqtdeployer
 
-``` yaml
+```yaml
 - name: Install CQtDeployer
   uses: QuasarApp/setup-cqtdeployer@v1.0.0
 
