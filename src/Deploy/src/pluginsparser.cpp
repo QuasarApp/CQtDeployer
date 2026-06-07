@@ -93,6 +93,7 @@ static const PlatformMapping platformMappings[] =
     {"qwindows",                Win },
     {"qwinrt",                  Win },
     {"qxcb",                    Unix },
+    {"qwayland",                Unix },
     {"webgl",                   WebGl },
     {"qwayland-xcomposite-glx", Unix_x86_64},
     {"qwayland-xcomposite-egl", Unix_x86_64},
