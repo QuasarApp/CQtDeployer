@@ -115,9 +115,15 @@ if (NOT DEFINED IQTA_TOOLS)
             set(QIF_SOURCE_BIN_PATH "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin/binarycreator.exe")
             set(QIF_OUT_BIN_PATH "${QIF_DESTINATION_PATH}/binarycreator.exe")
 
+            set(QIF_SOURCE_BIN_PATH_B "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin/installerbase.exe")
+            set(QIF_OUT_BIN_PATH_B "${QIF_DESTINATION_PATH}/installerbase.exe")
+
         else()
             set(QIF_SOURCE_BIN_PATH "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin/binarycreator")
             set(QIF_OUT_BIN_PATH "${QIF_DESTINATION_PATH}/binarycreator")
+
+            set(QIF_SOURCE_BIN_PATH_B "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin/installerbase")
+            set(QIF_OUT_BIN_PATH_B "${QIF_DESTINATION_PATH}/installerbase")
 
         endif()
 
@@ -128,6 +134,9 @@ if (NOT DEFINED IQTA_TOOLS)
             COMMAND ${CMAKE_COMMAND} -E copy
                 "${QIF_SOURCE_BIN_PATH}"
                 "${QIF_OUT_BIN_PATH}"
+            COMMAND ${CMAKE_COMMAND} -E copy
+                "${QIF_SOURCE_BIN_PATH_B}"
+                "${QIF_OUT_BIN_PATH_B}"
 
             COMMENT "Copy QIFW binaries to build directory"
         )
