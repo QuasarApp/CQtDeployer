@@ -5,25 +5,6 @@
 
 # ![Logo](res/CQtDeployer_banner_web.png)
 
-****************************
-## Support the project
-![image](https://user-images.githubusercontent.com/12465465/194008498-7f069b4a-b87d-42d1-82f1-af7d8cbcf220.png)
-
-We have a cqtdeployer extended support [subscription](https://www.patreon.com/QuasarApp)
-on the Patrion service. 
-* We'll help you solve your deployment issues personality. 
-* All your tasks needed to solve your issues will have top priority.
-
-Also, if you just want to support the project, you can subscribe to the general subscription plan on patrion
-
-If you can't use Patreon, you can send **bitcoin** to support us and our work.
-If you want to get support for bitcoin payment, write to me in [telegramm](https://t.me/Endrll) 
-
-## bitcoin address
-![image](https://user-images.githubusercontent.com/12465465/194010492-bae7b9e8-10a6-4e5f-9606-a5f3b4478a3e.png)
-
-**bc1q3jnx7pleh7rxg6nm6navvuwwpd9znxvd4lye62**
-
 
 ## What is CQtDeployer
 
@@ -111,10 +92,10 @@ See the list of all options [here](md/en/Options.md)
 ## Build and install
 See building and installation instructions on wiki [page](md/en/Build-and-Install.md)
 
-### Available in github-actions
-see https://github.com/marketplace/actions/setup-cqtdeployer
+### Available in GitHub Actions
+See https://github.com/marketplace/actions/setup-cqtdeployer
 
-``` yaml
+```yaml
 - name: Install CQtDeployer
   uses: QuasarApp/setup-cqtdeployer@v1.0.0
 
