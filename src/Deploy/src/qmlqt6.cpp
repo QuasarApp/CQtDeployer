@@ -17,10 +17,13 @@ QStringList QMLQt6::extractImportLine(const QString& line) const {
     QStringList result;
     QStringList list = line.split(" ", splitbehavior);
 
+    if (list.size() <= 1) {
+        return {};
+    }
+    
     result << (list[1].replace(".", "/"));
     return result;
 
-    return result;
 }
 
 QStringList QMLQt6::extractImportsFromFile(const QString &filepath) const {
