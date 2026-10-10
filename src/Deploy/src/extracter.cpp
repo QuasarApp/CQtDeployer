@@ -19,6 +19,7 @@
 #include <QFileInfo>
 #include <QProcess>
 #include <QRegularExpression>
+#include <QSet>
 #include <quasarapp.h>
 #include <cstdio>
 #include <qaglobalutils.h>
@@ -455,6 +456,7 @@ bool Extracter::extractQml() {
 
             QStringList plugins;
             QStringList listItems;
+            QStringList qmlInputDirs;
             auto QtVersion = cnf->isNeededQt(i.key());
 
             const auto qmlInputList = distro.qmlInput();
@@ -473,6 +475,7 @@ bool Extracter::extractQml() {
                                                 QuasarAppUtils::Warning);
                     continue;
                 }
+                qmlInputDirs.push_back(info.absoluteFilePath());
 
                 QSharedPointer<iQML> qmlScaner;
                 if (QtVersion & QtMajorVersion::Qt6) {
@@ -517,6 +520,66 @@ bool Extracter::extractQml() {
                                               &toCopyQmlFiles)) {
                     return false;
                 }
+
+                // Custom auto generated qml modules (created by qt_add_qml_module without
+                // the NO_PLUGIN option) are built into the project build dir and are not
+                // part of the Qt distribution. Deploy them together with their plugins.
+                // See the https://github.com/QuasarApp/CQtDeployer/issues/847 issue.
+                const auto qtQmlRoot = QFileInfo(cnf->qtDir.getQmls()).absoluteFilePath();
+                QSet<QString> deployedModules;
+                for (const auto& plugin: std::as_const(plugins)) {
+                    const auto absPlugin = QFileInfo(plugin).absoluteFilePath();
+                    if (absPlugin.isEmpty() ||
+                        absPlugin == qtQmlRoot ||
+                        absPlugin.startsWith(qtQmlRoot + QDir::separator())) {
+                        continue; // qt distribution module, already handled above
+                    }
+                    if (deployedModules.contains(absPlugin)) {
+                        continue; // already deployed
+                    }
+                    deployedModules.insert(absPlugin);
+
+                    // The deploy subdir is the module uri (from the qmldir "module"
+                    // line), so that the module is deployed next to its import path.
+                    QString relPath;
+                    const auto qmldir = QFileInfo(absPlugin + QDir::separator() + "qmldir");
+                    if (qmldir.exists()) {
+                        const auto uri = QMLQt6::extractModuleName(qmldir.absoluteFilePath());
+                        if (!uri.isEmpty()) {
+                            relPath = uri;
+                            relPath.replace(".", "/");
+                        }
+                    }
+
+                    // Fallback: use the relative path from the qml source dir,
+                    // or the dir name, if the module uri cannot be read.
+                    if (relPath.isEmpty()) {
+                        for (const auto& qmlInputDir: std::as_const(qmlInputDirs)) {
+                            const auto absInput = QFileInfo(qmlInputDir).absoluteFilePath();
+                            const auto prefix = absInput + QDir::separator();
+                            if (absPlugin.startsWith(prefix)) {
+                                relPath = absPlugin.mid(prefix.size());
+                                break;
+                            }
+                        }
+                    }
+                    if (relPath.isEmpty()) {
+                        relPath = QFileInfo(absPlugin).fileName();
+                    }
+
+                    if (relPath.isEmpty()) {
+                        QuasarAppUtils::Params::log("Failed to deploy custom qml module: " + absPlugin,
+                                                    QuasarAppUtils::Warning);
+                        continue;
+                    }
+
+                    const auto dest = targetPath + distro.getQmlOutDir() + QDir::separator() + relPath;
+                    if (!copyQmlModuleFiles(absPlugin, dest, &listItems)) {
+                        QuasarAppUtils::Params::log("Failed to copy custom qml module from: " +
+                                                    absPlugin + " to: " + dest,
+                                                    QuasarAppUtils::Warning);
+                    }
+                }
             }
 
 
@@ -530,6 +593,54 @@ bool Extracter::extractQml() {
     }
 
     return false;
+}
+
+bool Extracter::copyQmlModuleFiles(const QString &fromDir, const QString &toDir, QStringList *listItems) {
+    // A custom qml module (created by qt_add_qml_module without the NO_PLUGIN
+    // option) is built into the project build dir together with the cmake build
+    // artifacts (Makefile, *.cpp, CMakeFiles, ...). Only the qml module files
+    // are needed for the deployment, so copy only the top level qml module
+    // files (and not the cmake artifacts).
+    // See the https://github.com/QuasarApp/CQtDeployer/issues/847 issue.
+    static const QStringList qmlModuleExtensions = {
+        "qml", "so", "qmltypes", "js", "json",
+        "png", "jpg", "jpeg", "svg", "gif", "bmp", "ico",
+        "ttf", "otf", "wav", "mp3"
+    };
+
+    QDir dir(fromDir);
+    if (!dir.exists() || !dir.isReadable()) {
+        return false;
+    }
+
+    if (!_fileManager->initDir(toDir)) {
+        return false;
+    }
+
+    const auto files = dir.entryInfoList(QDir::Files | QDir::Hidden);
+    for (const auto &file : files) {
+        const auto name = file.fileName();
+
+        const bool isQmldir = (name.compare("qmldir", Qt::CaseSensitive) == 0);
+        if (!isQmldir) {
+            const auto ext = QFileInfo(name).suffix();
+            if (!qmlModuleExtensions.contains(ext, Qt::CaseInsensitive)) {
+                continue; // skip cmake build artifacts and other non qml files
+            }
+        }
+
+        if (!_fileManager->copyFile(file.absoluteFilePath(), toDir)) {
+            QuasarAppUtils::Params::log("not copied qml module file " + toDir + "/" + name,
+                                        QuasarAppUtils::Warning);
+            continue;
+        }
+
+        if (listItems) {
+            *listItems << toDir + "/" + name;
+        }
+    }
+
+    return true;
 }
 
 void Extracter::extract(const QString &file,

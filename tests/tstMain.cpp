@@ -69,6 +69,7 @@
 #include "ziptest.h"
 #include "systemlibtest.h"
 #include "qmlfiledialogtest.h"
+#include "qmlnativeplugintest.h"
 #endif
 
 #ifdef Q_OS_WIN
@@ -162,6 +163,7 @@ private slots:
         TestCase(zipmultitest, ZIPMultiTest )
         TestCase(ziptest, ZIPTest )
         TestCase(qmlfiledialogtest, QmlFileDialogTest)
+        TestCase(qmlnativeplugintest, QmlNativePluginTest)
         TestCase(systemLibTest, SystemLibTest)
 
 

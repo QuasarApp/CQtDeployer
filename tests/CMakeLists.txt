@@ -46,6 +46,7 @@ set(PUBLIC_INCUDE_DIR ${PUBLIC_INCUDE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/modules"
 
 add_definitions(-DQT_BASE_DIR="${QT_QT_ROOT}/")
 add_definitions(-DTEST_BIN_DIR="${CMAKE_CURRENT_LIST_DIR}/../testcases/bin/")
+add_definitions(-DTEST_BUILD_DIR="${CMAKE_BINARY_DIR}/testcases/")
 
 if (Qt${QT_VERSION_MAJOR}WebEngineQuick_FOUND)
     add_definitions(-DUSE_WEBENGINE)

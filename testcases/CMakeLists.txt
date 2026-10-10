@@ -17,6 +17,7 @@ add_subdirectory(TestQtWidgets)
 
 if (NOT WIN32)
     add_subdirectory(QMLFileDialog)
+    add_subdirectory(QMLNativePlugin)
     add_subdirectory(virtualkeyboard)
 
     if (Qt${QT_VERSION_MAJOR}WebEngineQuick_FOUND)

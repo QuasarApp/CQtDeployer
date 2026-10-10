@@ -39,6 +39,7 @@ public:
 
     static const QString TestBinDir;
     static const QString TestQtDir;
+    static const QString TestBuildDir;
 
 };
 

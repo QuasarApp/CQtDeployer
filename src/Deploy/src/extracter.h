@@ -45,6 +45,16 @@ private:
 
     bool extractQml();
 
+    /**
+     * @brief copyQmlModuleFiles copies the qml module files (qmldir, plugin
+     * shared libraries, qml files and type info) of a custom auto generated
+     * qml module into the deploy dir. The custom module is built into the
+     * project build dir together with the cmake build artifacts, so only the
+     * qml module files are copied (not the cmake artifacts).
+     * See the https://github.com/QuasarApp/CQtDeployer/issues/847 issue.
+     */
+    bool copyQmlModuleFiles(const QString &fromDir, const QString &toDir, QStringList *listItems);
+
     QFileInfoList findFilesInsideDir(const QString &name, const QString &dirpath);
     /**
    * @brief extractLib

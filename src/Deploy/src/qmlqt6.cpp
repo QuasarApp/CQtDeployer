@@ -9,6 +9,7 @@
 
 #include <QDir>
 #include <QFile>
+#include <QQueue>
 #include "defines.h"
 #include "deploycore.h"
 #include "qregularexpression.h"
@@ -113,6 +114,26 @@ QString QMLQt6::getPathFromImport(const QString &import, bool checkVersions) {
     if (!import.contains("#")) {
         // qt 6
         auto info = QFileInfo(_qmlRoot + "/" + import);
+        if (info.exists()) {
+            return info.absoluteFilePath();
+        }
+
+        // Custom auto generated qml modules (created by qt_add_qml_module without
+        // the NO_PLUGIN option) are built into the project build dir and are not
+        // part of the Qt distribution. The module dir is resolved by scanning the
+        // project dir for a qmldir that declares the module uri.
+        // See the https://github.com/QuasarApp/CQtDeployer/issues/847 issue.
+        if (_moduleDirs.contains(import)) {
+            return _moduleDirs.value(import);
+        }
+
+        if (!_qmlProjectDir.isEmpty()) {
+            auto projectInfo = QFileInfo(_qmlProjectDir + "/" + import);
+            if (projectInfo.exists()) {
+                return projectInfo.absoluteFilePath();
+            }
+        }
+
         return info.absoluteFilePath();
     }
 
@@ -211,7 +232,66 @@ QMLQt6::QMLQt6(const QString &qmlRoot): iQML(qmlRoot) {}
 
 QMLQt6::~QMLQt6(){}
 
-bool QMLQt6::scan(QStringList &res, const QString& _qmlProjectDir) {
+QString QMLQt6::extractModuleName(const QString &qmldirPath) {
+    QFile F(qmldirPath);
+    if (!F.open(QIODevice::ReadOnly)) return {};
+
+    const auto list = QString(F.readAll()).split("\n");
+    for (QString line : list) {
+        line = line.simplified();
+        if (line.startsWith("//") || line.startsWith("#")) continue;
+        if (!line.startsWith("module")) continue;
+
+        const auto words = line.split(" ", Qt::SkipEmptyParts);
+        if (words.size() >= 2) {
+            return words.at(1);
+        }
+    }
+
+    return {};
+}
+
+void QMLQt6::scanProjectModules() {
+    _moduleDirs.clear();
+
+    QDir dir(_qmlProjectDir);
+    if (!dir.exists() || !dir.isReadable()) {
+        return;
+    }
+
+    QQueue<QDir> queue;
+    queue.enqueue(dir);
+
+    while (!queue.isEmpty()) {
+        const auto d = queue.dequeue();
+
+        const auto files = d.entryInfoList(QStringList() << "qmldir", QDir::Files);
+        for (const auto &file : files) {
+            auto uri = extractModuleName(file.absoluteFilePath());
+            if (uri.isEmpty()) {
+                continue;
+            }
+
+            // The imports are stored with "." replaced by "/" (see extractImportLine),
+            // so store the module uri in the same format to allow the lookup in
+            // getPathFromImport (module uri may contain dots, e.g. "My.Company.Module").
+            uri.replace(".", "/");
+            if (!_moduleDirs.contains(uri)) {
+                _moduleDirs.insert(uri, d.absolutePath());
+            }
+        }
+
+        const auto subDirs = d.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs);
+        for (const auto &sub : subDirs) {
+            queue.enqueue(QDir(sub.absoluteFilePath()));
+        }
+    }
+}
+
+bool QMLQt6::scan(QStringList &res, const QString& qmlProjectDir) {
+    _qmlProjectDir = qmlProjectDir;
+
+    scanProjectModules();
 
     if (!scanQmlTree(_qmlRoot)) {
         return false;
