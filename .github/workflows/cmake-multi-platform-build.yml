@@ -80,7 +80,9 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Install CQtDeployer
-      uses: QuasarApp/cqtdeployer-install-action@v1.0.0
+      uses: QuasarApp/cqtdeployer-install-action@v1.1.0
+      with:
+        version: v1.6.2365
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
