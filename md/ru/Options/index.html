@@ -1,0 +1,2831 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="CQtDeployer helps you to extract all libraries your executable depends on and to create a launch script for your application.">
+      
+      
+      
+        <link rel="canonical" href="https://quasarapp.github.io/CQtDeployer/md/ru/Options/">
+      
+      
+        <link rel="prev" href="../Guide/">
+      
+      
+        <link rel="next" href="../DeployConfigFile/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Использование параметров - CQtDeployer</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="CQtDeployer" class="md-header__button md-logo" aria-label="CQtDeployer" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CQtDeployer
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Использование параметров
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="orange" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/QuasarApp/CQtDeployer" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    QuasarApp/CQtDeployer
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="CQtDeployer" class="md-nav__button md-logo" aria-label="CQtDeployer" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CQtDeployer
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/QuasarApp/CQtDeployer" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    QuasarApp/CQtDeployer
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    English
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    English
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/Home/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/Description/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What is CQtDeployer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/QuickGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/Guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to deploy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/Build-and-Install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install CQtDeployer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/Options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/DeployConfigFile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment file
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/QIF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Qt Installer Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/EnvironmentVariables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/CustomScripts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/ExtraFiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extra files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/ExtractDefaultsTemplates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Default templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/DisableShortcats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disabling shortcuts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/Packing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/ZIP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ZIP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/DEB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DEB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/arm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    arm machines
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/CompareFeatures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compare features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/ReleaseReviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release reviews
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/Changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Change log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_21" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_21" id="__nav_3_21_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_21_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_21">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Releases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/1_6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.6
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/1_5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.5
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/1_4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Русский
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Русский
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Home/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Добро пожаловать
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Description/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Что такое CQtDeployer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../QuickGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Быстрый гайд
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Как развернуть
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Использование параметров
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Использование параметров
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Обозначения в таблице
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Определения в описании
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Параметры:
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Параметры:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Флаги
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Параметры развертывания:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Параметры управлениями пакетами:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Параметры управлениями целями:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Параметры управления плагинами:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qtinstallframework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Параметры QtInstallFramework:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deb-package-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deb package options:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zip-package-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zip package options:
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Zip package options:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cqtdeployer-bin-myapp-qmldir-myappprojectqml-qmake-qt5150gcc_64binqmake-clear" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Пример: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.15.0/gcc_64/bin/qmake clear
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DeployConfigFile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Файл развертывания
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../QIF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Qt Installer Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnvironmentVariables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Переменные окружения
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CustomScripts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Пользовательские скрипты
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ExtraFiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Дополнительные данные
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ExtractDefaultsTemplates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Шаблоны по умолчанию
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DisableShortcats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Отключение ярлыков
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Packing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Упаковка
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ZIP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ZIP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DEB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CompareFeatures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Сравнение особенностей
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ReleaseReviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Обзоры на релизы
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Журнал изменений
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_19" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_19" id="__nav_4_19_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Релизы
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_19_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_19">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Релизы
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1_5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.5
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1_4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Marketplace/Marketplace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Marketplace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Обозначения в таблице
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Определения в описании
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Параметры:
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Параметры:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Флаги
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Параметры развертывания:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Параметры управлениями пакетами:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Параметры управлениями целями:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Параметры управления плагинами:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qtinstallframework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Параметры QtInstallFramework:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deb-package-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deb package options:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zip-package-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zip package options:
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Zip package options:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cqtdeployer-bin-myapp-qmldir-myappprojectqml-qmake-qt5150gcc_64binqmake-clear" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Пример: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.15.0/gcc_64/bin/qmake clear
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="_1">Использование параметров<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<p>Общие правила использования параметров</p>
+<div class="highlight"><pre><span></span><code>cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
+</code></pre></div>
+<ul>
+<li>Все параметры должны начинается с знака '-' за исключением параметров, из котегории "Флаги".</li>
+<li>После указания нужного параметра нужно в обязательном порядке указать значение</li>
+<li>Некоторые параметры поддерживают перечисления (массивы значений). При инициализации таких параметров укажите список значений через ',' без прабелов. Если вы используете какой либо язык программирования и вызываете процесс cqtdeployer то массив значений должен передаваться как 1 параметр.</li>
+<li>Некоторые параметры поддерживают пересисления с возможностью выбрать цель для которой будет применен флаг. Цель и значения разделяются при помощи знака ';'. Пример -libOut target1;value1,target2;value2,defaultValue.</li>
+<li>Для включения какого либо флага достаточно просто включить в список опций имя флага.</li>
+</ul>
+<h2 id="_2">Обозначения в таблице<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>-binDir [params]</strong> - параметр без поддержки массивов.</li>
+<li><strong>-bin [params,list]</strong> - параметр c поддержкой массивов. В качестве разделителя используется ','.</li>
+<li><strong>-libOut [package;path,path]</strong> - параметр c поддержкой выбора пакета для которого бутет установленно значение флага. В качестве разделителя используется ';'. Обратитте внимание что для перечисления значений параметра используется правило описанное выше. Последний параметр не имеет значение пакета, это значит что это значение будет установленно для всех не настроенных пакетов по умолчанию.</li>
+<li><strong>clear</strong> - флаг</li>
+</ul>
+<h2 id="_3">Определения в описании<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p><strong>Системное окружение</strong> - пути к системным библиотекам.
+  * Windows:
+    * Пути, определенные в переменной PATH.
+    * C:/Windows/System32
+    * C:/Windows/SysWOW64</p>
+<ul>
+<li>Linux:<ul>
+<li>Пути, определенные в переменных LD_LIBRARY_PATH и PATH.</li>
+<li>/usr/lib</li>
+<li>/lib</li>
+</ul>
+</li>
+</ul>
+<p><strong>Развертываемые файлы</strong> - это все файлы, которые будут скопированы в дистрибутив (включая исполняемые файлы)</p>
+<p><strong>Цели</strong> - это все исполняемые файлы, отмеченные опцией bin.</p>
+<p><strong>Исполняемые файлы</strong> - это все файлы в форматах PE, ELF и Mach-O.</p>
+<h2 id="_4">Параметры:<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h3 id="_5">Флаги<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Descriptiion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>init</td>
+<td>проинициализирует файл cqtdeployer.json (файл конфигурации)</td>
+</tr>
+<tr>
+<td></td>
+<td>Например: «cqtdeployer init» - для инициализации базовой конфигурации пакета</td>
+</tr>
+<tr>
+<td></td>
+<td>"cqtdeployer -init multi" - для инициализации конфигурации нескольких пакетов</td>
+</tr>
+<tr>
+<td></td>
+<td>"cqtdeployer -init single" - для инициализации конфигурации одного пакета</td>
+</tr>
+<tr>
+<td>help / h</td>
+<td>Показывает справку</td>
+</tr>
+<tr>
+<td>clear</td>
+<td>Удаляет все старые файлы (с прошлого запуска)</td>
+</tr>
+<tr>
+<td>force-clear</td>
+<td>Удаляет целевую директорию перед развертыванием</td>
+</tr>
+<tr>
+<td>noStrip</td>
+<td>Пропускает шаг strip</td>
+</tr>
+<tr>
+<td>noTranslations</td>
+<td>Пропускает файлы переводов</td>
+</tr>
+<tr>
+<td>noOverwrite</td>
+<td>Запрещает замену уже существующих файлов.</td>
+</tr>
+<tr>
+<td>noCheckRPATH</td>
+<td>Отключает автоматический поиск путей к qmake в исполняемых файлах.</td>
+</tr>
+<tr>
+<td>noCheckPATH</td>
+<td>Отключает автоматический поиск путей к qmake в системном окружении.</td>
+</tr>
+<tr>
+<td>noRecursiveiIgnoreEnv</td>
+<td>Отключает рекурсивное игнорирование переменной среды для флага ignoreEnv.</td>
+</tr>
+<tr>
+<td>v / version</td>
+<td>Показывает версию приложения</td>
+</tr>
+<tr>
+<td>qif</td>
+<td>Создаст установщик QIF для развертываемой программы"</td>
+</tr>
+<tr>
+<td></td>
+<td>Примеры: cqtdeployer qif</td>
+</tr>
+<tr>
+<td></td>
+<td>Начиная с версии CQtDeployer 1.5 вы можете указать путь к своему собственному шаблону установщика.</td>
+</tr>
+<tr>
+<td></td>
+<td>Примеры: cqtdeployer -qif path/to/myCustom/qif. Подробнее можно посмотреть <a href="../QIF/">здесь</a></td>
+</tr>
+<tr>
+<td>deb</td>
+<td>Создаст deb пакет для развертываемой программы"</td>
+</tr>
+<tr>
+<td></td>
+<td>Примеры: cqtdeployer deb</td>
+</tr>
+<tr>
+<td></td>
+<td>Вы можете указать путь к своему собственному шаблону пакета.</td>
+</tr>
+<tr>
+<td></td>
+<td>Примеры: cqtdeployer -deb path/to/myCustom/DEBIAN. Подробнее можно посмотреть <a href="../DEB/">здесь</a></td>
+</tr>
+<tr>
+<td>deploySystem</td>
+<td>Копирует все библиотеки кроме libc</td>
+</tr>
+<tr>
+<td></td>
+<td>(не рекомендуется, так как занимает много памяти, возможны конфликты библиотек)</td>
+</tr>
+<tr>
+<td>noQt</td>
+<td>Игнорирует ошибку инициализации qmake. Используйте только в том случае, если ваше приложение не использует платформу qt.</td>
+</tr>
+<tr>
+<td>allowEmptyPackages</td>
+<td>Разрешите настраивать пустые пакеты.</td>
+</tr>
+<tr>
+<td>getDefaultTemplate</td>
+<td>Извлекает deb или qif шаблоны по умолчанию. Для получения дополнительной информации см. <a href="../ExtractDefaultsTemplates/">Страницу</a> извлечения шаблонов по умолчанию.</td>
+</tr>
+<tr>
+<td>noHashSum</td>
+<td>Отключить вычисление хеш-суммы пакетов</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_6">Параметры развертывания:<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Descriptiion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-bin    [list,params]</td>
+<td>Развертываемый файл или папка. пример -bin ~/my/project/bin/,~/my/project/bin.exe. Для файлов: эти файлы будут безоговорочно скопированы в целевой каталог, независимо от их формата или суффикса. Для папок: CQtDeployer войдет в эти папки и нерекурсивно скопирует все развертываемые файлы в целевой каталог. Затем CQtDeployer извлечет все зависимости скопированных файлов. CQtDeployer будет искать зависимости в системной среде и в путях libDir. <strong>Примечание</strong>. Если CQtDeployer не может найти требуемый файл, CQtDeployer попытается найти требуемый файл в системной среде PATH.</td>
+</tr>
+<tr>
+<td>-binPrefix [prefixPath]</td>
+<td>Устанавливает путь префикса для опции bin. Пример: <strong>-bin path/MyExecutable</strong> - это тоже что и <strong>-bin MyExecutable -binPrefix path</strong></td>
+</tr>
+<tr>
+<td>-confFile [params]</td>
+<td>Путь к файлу json со всеми конфигурациями развертывания. С помощью этого файла можно добавить нужные опции, тем самым упрастить вызов комманды в консоли. Однако пораметры в консоли имеют больший приоритет чем в файле. Для получения дополнительной информации об этом флаге см. <a href="DeployConfigFile">Вики</a></td>
+</tr>
+<tr>
+<td>-qmlDir [params]</td>
+<td>Папка qml. пример -qmlDir ~/my/project/qml</td>
+</tr>
+<tr>
+<td>-qmake  [params]</td>
+<td>Путь к qmake. пример</td>
+</tr>
+<tr>
+<td></td>
+<td>-qmake ~/Qt/5.14.0/gcc_64/bin/qmake</td>
+</tr>
+<tr>
+<td>-ignore [list,params]</td>
+<td>Список библиотек для игнорирования</td>
+</tr>
+<tr>
+<td></td>
+<td>Пример -ignore libicudata.so.56,libicudata2.so.56</td>
+</tr>
+<tr>
+<td>-ignoreEnv [list,params]</td>
+<td>Список путей для игнорирования.</td>
+</tr>
+<tr>
+<td></td>
+<td>Пример -ignoreEnv /bad/dir,/my/bad/Dir</td>
+</tr>
+<tr>
+<td>-libDir [list,params]</td>
+<td>Устанавливает дополнительные пути к библиотекам</td>
+</tr>
+<tr>
+<td></td>
+<td>Пример -libDir ~/myLib,~/newLibs. <strong>Внимание</strong> опция libDir не должна быть дочерней от каталога targetDir. Опция targetDir является запрещенной для поиска библиотек, так как может содержать устаревшие библиотеки проекта, что в свою очередь может привести к нежелательным крашам.</td>
+</tr>
+<tr>
+<td>-extraLibs [list,params]</td>
+<td>Пример: «-extraLib mySql» - заставляет скопировать все библиотеки, имена которых содержат mySql, в папку проекта. Этот параметр не чувствителен к регистру в Windows и чувствителен к регистру на других платформах. Эта опция будет искать библиотеки только в системных средах, подобных <strong>deploySystem</strong>.</td>
+</tr>
+<tr>
+<td>-customScript [scriptCode]</td>
+<td>Установит дополнительный код в скрипты запуска.</td>
+</tr>
+<tr>
+<td>-extraPlugin [list,params]</td>
+<td>Устанавливает дополнительный путь для extraPlugin приложения</td>
+</tr>
+<tr>
+<td>-recursiveDepth [params]</td>
+<td>Устанавливает глубину поиска библиотек и глубину игнорирования окружения для ignoreEnv (по умолчанию 0)</td>
+</tr>
+<tr>
+<td>-targetDir [params]</td>
+<td>Устанавливает целевой каталог (по умолчанию это путь к первому развертываемому файлу)</td>
+</tr>
+<tr>
+<td>-installDirDeb [параметры]</td>
+<td>Устанавливает целевой каталог для установки пакета Debian (по умолчанию это /opt путь)</td>
+</tr>
+<tr>
+<td>-installDirQIFW [параметры]</td>
+<td>Устанавливает целевой каталог установки для инсталляторов (по умолчанию это путь /home)</td>
+</tr>
+<tr>
+<td>-verbose [0-3]</td>
+<td>Показывает дебаг лог. По умолчанию равен 2</td>
+</tr>
+<tr>
+<td>-platform [list]</td>
+<td>Если этот параметр включен, CQtDeployer будет развертывать только двоичные файлы указанной платформы. Поддерживоемые значения : [win_x86 win_x86_64 win_arm win_arm64 linux_x86 linux_x86_64 linux_ARM linux_ARM64]</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_7">Параметры управлениями пакетами:<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Descriptiion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-targetPackage [package;tar1,package;tar2]</td>
+<td>Создает новый пакет и добавляет в него 'tar1 и tar2'</td>
+</tr>
+<tr>
+<td>-qmlOut [package;path,path]</td>
+<td>Установит путь к папке с qml</td>
+</tr>
+<tr>
+<td>-libOut [package;path,path]</td>
+<td>Установит путь к папке с зависимостями</td>
+</tr>
+<tr>
+<td>-trOut [package;path,path]</td>
+<td>Установит путь к папке с файламми переводов</td>
+</tr>
+<tr>
+<td>-pluginOut [package;path,path]</td>
+<td>Установит путь к папке с плагинами</td>
+</tr>
+<tr>
+<td>-binOut [package;path,path]</td>
+<td>Установит путь к папке с исполняемыми файлами</td>
+</tr>
+<tr>
+<td>-recOut [package;path,path]</td>
+<td>Установит путь к папке с ресурсами</td>
+</tr>
+<tr>
+<td>-extraDataOut [package;path,path]</td>
+<td>Устанавливает путь к каталогу с дополнительными файлами данных. По умолчанию это корневой каталог дистрибутива.</td>
+</tr>
+<tr>
+<td>-name [package;val,val]</td>
+<td>Установит имя пакету. Если указать значение без префикса, то значение будет установленно пакету по умолчанию.</td>
+</tr>
+<tr>
+<td>-description [package;val,val]</td>
+<td>Установит описание пакету</td>
+</tr>
+<tr>
+<td>-deployVersion [package;val,val]</td>
+<td>Установит версию пакету</td>
+</tr>
+<tr>
+<td>-releaseDate [package;val,val]</td>
+<td>Установит дату выпуска пакету</td>
+</tr>
+<tr>
+<td>-icon [package;val,val]</td>
+<td>Установит путь к иконке или логотипу пакету</td>
+</tr>
+<tr>
+<td>-publisher [package;val,val]</td>
+<td>Установит Издательство (автора) пакету</td>
+</tr>
+<tr>
+<td>-homePage [package;val,val]</td>
+<td>Установит URL-адрес домашней страницы для пакета</td>
+</tr>
+<tr>
+<td>-prefix [package;val,val]</td>
+<td>Устанавливает префикс для пакета относительно целевого каталога</td>
+</tr>
+<tr>
+<td>-extraData [package;val,val]</td>
+<td>Добавляет дополнительные файлы или каталоги как цель. Выбранный каталог будет скопирован в расположение extraDataOut с сохранением собственной структуры.</td>
+</tr>
+<tr>
+<td>-tr [package;val,val]</td>
+<td>Добавляет qm файлы в папку переводов.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">Параметры управлениями целями:<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Descriptiion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-icon [target;val,val]</td>
+<td>Установит путь к иконке или логотипу для целе. Эта комманда поддерживает только png файлы для Linux и ico файлы для Windows</td>
+</tr>
+<tr>
+<td>-disableRunScript [target; val, val]</td>
+<td>Отключает создание сценария выполнения для выбранных целей</td>
+</tr>
+<tr>
+<td>-disableShortCut [target; val, val]</td>
+<td>Отключает создание ярлыков для выбранных целей</td>
+</tr>
+<tr>
+<td>-runScript [target; val, val]</td>
+<td>заставляет cqtdeployer заменить сценарий запуска по умолчанию на новый из аргументов параметра. Эта опция копирует все содержимое из входного файла и вставляет весь код в runScript.sh или .bat. Пример использования: cqtdeployer -runScript "myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh". Для получения дополнительной информации смотрите статью <a href="../CustomScripts/">Кастомные скрипты</a></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_9">Параметры управления плагинами:<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Descriptiion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-extraPlugin [пакет; val1; val2, SingeleVal]</td>
+<td>Устанавливает дополнительный путь к стороннему плагину приложения</td>
+</tr>
+<tr>
+<td>-enablePlugins [target,target2,target3]</td>
+<td>Включает дополнительные плагины для распространения.</td>
+</tr>
+<tr>
+<td>-disablePlugins [target,target2,target3]</td>
+<td>Отключает плагины для распространения.</td>
+</tr>
+<tr>
+<td></td>
+<td>Вы можете отключить любой плагин вашей сборки Qt, просто проверте список доступных плагинов в свой qlFolder/plugins папке.</td>
+</tr>
+<tr>
+<td></td>
+<td>Пример: Если вы хотите отключить плагин qxcb: -disablePlugins qxcb. Обратите внимание, что имя плагина указывается без его расширения.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="qtinstallframework">Параметры QtInstallFramework:<a class="headerlink" href="#qtinstallframework" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Descriptiion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-qifStyle [path/to/style.css]</td>
+<td>Устанавливает путь к CSS файлу стиля или устанавливает стиль по умолчанию. Доступные стили: quasar</td>
+</tr>
+<tr>
+<td>-qifBanner [path/to/banner.png]</td>
+<td>Устанавливает путь к png-файлу баннера.</td>
+</tr>
+<tr>
+<td>-qifLogo [path/to/logo.png]</td>
+<td>Устанавливает путь к файлу логотипа png.</td>
+</tr>
+<tr>
+<td>-qifOut [nameOfOutputInstallerFile]</td>
+<td>Устанавливает имя выходного установщика qifw. Примечание: для установщика Windows автоматически добавляется суффикс exe.</td>
+</tr>
+<tr>
+<td>-qifConfig [path/to/config.xml]</td>
+<td>Устанавливает пользовательский путь к файлу конфигурации установщика qt ifw. По умолчанию это qif/config/config.xml. Важно путь считаеться относительным целевого католога (установленным опцией targetDir).</td>
+</tr>
+<tr>
+<td>-qifPackages [path/to/packagesFodoler]</td>
+<td>Устанавливает пользовательский путь к каталогам пакетов. По умолчанию это qif/packages. Важно путь считаеться относительным целевого католога (установленным опцией targetDir).</td>
+</tr>
+<tr>
+<td>-qifResources [path/to/resources1.qrc,path/to/resources2.qrc]</td>
+<td>Устанавливает пользовательский путь к файлам ресурсов. По умолчанию эта опция пропущена. Важно путь считаеться относительным целевого католога (установленным опцией targetDir).</td>
+</tr>
+<tr>
+<td>-qifArchiveFormat [7z,zip,tar,tar.gz,tar.bz2,tar.xz]</td>
+<td>Задает формат, используемый при упаковке новых архивов данных компонентов. Если вы опустите этот параметр, по умолчанию будет использоваться формат 7z.</td>
+</tr>
+<tr>
+<td>-binarycreator [binarycreator command]</td>
+<td>Установит новую команду вызова binarycreator. Пример : cqtdeployer -bin my.exe qifw -binarycreator 'wine path/to/binarycreator.exe'</td>
+</tr>
+</tbody>
+</table>
+<h3 id="deb-package-options">Deb package options:<a class="headerlink" href="#deb-package-options" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Descriptiion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-debOut [package;nameOfOutputDebFile,nameOfOutputDebFile]</td>
+<td>Устанавливает имя выходного файла debian. Эта опция может работать с несколькими пакетами</td>
+</tr>
+</tbody>
+</table>
+<h3 id="zip-package-options">Zip package options:<a class="headerlink" href="#zip-package-options" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Descriptiion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-zipOut [package;nameOfOutputZipFile,nameOfOutputZipFile]</td>
+<td>Устанавливает имя выходного zip архива. Эта опция может работать с несколькими пакетами</td>
+</tr>
+</tbody>
+</table>
+<h4 id="cqtdeployer-bin-myapp-qmldir-myappprojectqml-qmake-qt5150gcc_64binqmake-clear">Пример: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.15.0/gcc_64/bin/qmake clear<a class="headerlink" href="#cqtdeployer-bin-myapp-qmldir-myappprojectqml-qmake-qt5150gcc_64binqmake-clear" title="Permanent link">&para;</a></h4>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../Guide/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Как развернуть">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Как развернуть
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../DeployConfigFile/" class="md-footer__link md-footer__link--next" aria-label="Next: Файл развертывания">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Файл развертывания
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["content.code.copy", "navigation.footer", "navigation.indexes", "navigation.sections", "navigation.top", "navigation.tracking", "search.highlight", "search.suggest", "toc"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

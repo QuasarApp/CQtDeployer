@@ -1,0 +1,2661 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="CQtDeployer helps you to extract all libraries your executable depends on and to create a launch script for your application.">
+      
+      
+      
+        <link rel="canonical" href="https://quasarapp.github.io/CQtDeployer/md/ru/Guide/">
+      
+      
+        <link rel="prev" href="../QuickGuide/">
+      
+      
+        <link rel="next" href="../Options/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Как развернуть - CQtDeployer</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="CQtDeployer" class="md-header__button md-logo" aria-label="CQtDeployer" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CQtDeployer
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Как развернуть
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="orange" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/QuasarApp/CQtDeployer" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    QuasarApp/CQtDeployer
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="CQtDeployer" class="md-nav__button md-logo" aria-label="CQtDeployer" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CQtDeployer
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/QuasarApp/CQtDeployer" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    QuasarApp/CQtDeployer
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    English
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    English
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/Home/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/Description/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What is CQtDeployer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/QuickGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/Guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to deploy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/Build-and-Install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install CQtDeployer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/Options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/DeployConfigFile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment file
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/QIF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Qt Installer Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/EnvironmentVariables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/CustomScripts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/ExtraFiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extra files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/ExtractDefaultsTemplates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Default templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/DisableShortcats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disabling shortcuts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/Packing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/ZIP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ZIP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/DEB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DEB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/arm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    arm machines
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/CompareFeatures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compare features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/ReleaseReviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release reviews
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/Changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Change log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_21" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_21" id="__nav_3_21_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_21_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_21">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Releases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/1_6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.6
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/1_5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.5
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../en/1_4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Русский
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Русский
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Home/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Добро пожаловать
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Description/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Что такое CQtDeployer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../QuickGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Быстрый гайд
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Как развернуть
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Как развернуть
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Рекомендация
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Кейс
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Установить CQtDeployer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qt-gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Развертывание приложения Qt GUI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Развертывание приложения Qt GUI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Разверните исполняемый файл.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Дополнительные параметры
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Использование параметров
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DeployConfigFile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Файл развертывания
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../QIF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Qt Installer Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnvironmentVariables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Переменные окружения
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CustomScripts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Пользовательские скрипты
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ExtraFiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Дополнительные данные
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ExtractDefaultsTemplates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Шаблоны по умолчанию
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DisableShortcats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Отключение ярлыков
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Packing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Упаковка
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ZIP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ZIP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DEB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CompareFeatures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Сравнение особенностей
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ReleaseReviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Обзоры на релизы
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Журнал изменений
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_19" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_19" id="__nav_4_19_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Релизы
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_19_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_19">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Релизы
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1_5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.5
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1_4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Marketplace/Marketplace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Marketplace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Рекомендация
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Кейс
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Установить CQtDeployer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qt-gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Развертывание приложения Qt GUI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Развертывание приложения Qt GUI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Разверните исполняемый файл.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Дополнительные параметры
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="_1">Как развернуть приложение<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<p>В этой статье я описываю процессы развертывания приложения c++/qt с помощью cqtdeployer.</p>
+<h2 id="_2">Рекомендация<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>Если вам нужна максимальная стабильность вашего дистрибутива и вы хотите запускать свое приложение в разных дистрибутивах с разными версиями, вам необходимо использовать Qt из официального <a href="https://www.qt.io/download-open-source?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5">build</a>.</p>
+<h2 id="_3">Кейс<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>В этом случае мы развертываем приложение Qt GUI для Ubuntu 16.04, Ubuntu 18.04 и Ubuntu 20.04++.</p>
+<p><strong>Если вы хотите поддерживать все дистрибутивы, начиная с Ubuntu 16.04, вам необходимо собрать и развернуть приложение в более старом дистрибутиве (в моем случае это 16.04)</strong></p>
+<h2 id="cqtdeployer">Установить CQtDeployer<a class="headerlink" href="#cqtdeployer" title="Permanent link">&para;</a></h2>
+<p>Если вы хотите использовать системный qt из своей ОС, установите <a href="https://github.com/QuasarApp/CQtDeployer/releases/download/1.4.7/LinuxInstaller.run">классическую</a> версию cqtdeployer.</p>
+<div class="highlight"><pre><span></span><code>wget<span class="w"> </span>https://github.com/QuasarApp/CQtDeployer/releases/download/1.4.7/LinuxInstaller.run
+</code></pre></div>
+<p><div class="highlight"><pre><span></span><code>chmod + x LinuxInstaller.run
+./LinuxInstaller.run
+</code></pre></div>
+<img alt="Настройка CQtDeployer" src="https://user-images.githubusercontent.com/12465465/100077575-9280a600-2e53-11eb-8d9d-d184341cfa7c.png" /></p>
+<p>Выберите последнюю стабильную версию (1.4)</p>
+<p><img alt="Настройка CQtDeployer" src="https://user-images.githubusercontent.com/12465465/100077707-bb08a000-2e53-11eb-9838-6f896af33105.png" /></p>
+<p>Выполнено.</p>
+<p>Если вы используете официальную сборку qt, вы можете использовать snap-версию cqtdeployer.</p>
+<div class="highlight"><pre><span></span><code>sudo snap install cqtdeployer
+</code></pre></div>
+<p>После установки добавьте необходимые разрешения.</p>
+<div class="highlight"><pre><span></span><code>sudo snap connect cqtdeployer:process-control
+sudo snap connect cqtdeployer:removable-media
+sudo snap connect cqtdeployer:system-backup
+</code></pre></div>
+<p>Выполнено!!!</p>
+<h2 id="qt-gui">Развертывание приложения Qt GUI<a class="headerlink" href="#qt-gui" title="Permanent link">&para;</a></h2>
+<h3 id="_4">Разверните исполняемый файл.<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Для систем Linux:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable
+</code></pre></div>
+<ul>
+<li>Для систем Windows:</li>
+</ul>
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable.exe<span class="w"> </span>-qmake<span class="w"> </span>C:<span class="w"> </span>/Qt/5.15.0/min_gw/bin/qmake.exe
+</code></pre></div>
+<ul>
+<li>Для кроссплатформенной сборки (Linux -&gt; Windows)</li>
+</ul>
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable.exe<span class="w"> </span>-qmake<span class="w"> </span>~/crossbuildet-Qt/5.15.0/min_gw/<span class="w"> </span>bin<span class="w"> </span>/<span class="w"> </span>qmake
+</code></pre></div>
+<h2 id="_5">Дополнительные параметры<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<p>Если вы используете дополнительные библиотеки, просто добавьте путь для cqtdeployer к используемым библиотекам.</p>
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable<span class="w"> </span>-libDir/PathToMyExtraLibs
+</code></pre></div>
+<p>Если вы хотите найти библиотеки рекурсивно из пути libDir, просто добавьте параметр рекурсивной глубины.</p>
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable<span class="w"> </span>-libDir/PathToMyExtraLibs<span class="w"> </span>-recursiveDepth<span class="w"> </span><span class="m">5</span>
+</code></pre></div>
+<p>Если ваше приложение использует qml, просто добавьте опцию qmlDir</p>
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable<span class="w"> </span>-libDir/PathToMyExtraLibs<span class="w"> </span>-recursiveDepth<span class="w"> </span><span class="m">5</span><span class="w"> </span>-qmlDir<span class="w"> </span>/path/to/my/qml/sources
+</code></pre></div>
+<p>Если вы хотите создать простой установщик для своего приложения, просто добавьте опцию gif.
+<div class="highlight"><pre><span></span><code>cqtdeployer -bin myexecutable -libDir/PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qif
+</code></pre></div></p>
+<p>Если cqtdeployer не нашел qmake, добавьте параметр -qmake в команду вызова.</p>
+<div class="highlight"><pre><span></span><code>cqtdeployer -bin myexecutable -libDir / PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qif -qmake/path/to/my/qmake
+</code></pre></div>
+<h1 id="animation-qt">На живом примере animation из <a href="https://doc.qt.io/qt-5/qtquick-animation-example.html">Примеров Qt</a><a class="headerlink" href="#animation-qt" title="Permanent link">&para;</a></h1>
+<h2 id="_6">Собираем проект в релизную сборку<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p>Выполняем qmake с опцие -r для релизной сборки.</p>
+<div class="highlight"><pre><span></span><code>andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$<span class="w"> </span>~/Qt/5.15.2/gcc_64/bin/qmake<span class="w"> </span>-r<span class="w"> </span>.
+</code></pre></div>
+<p>Вызываем ваш make generator</p>
+<p>Для Linux:</p>
+<div class="highlight"><pre><span></span><code>make<span class="w"> </span>-j<span class="si">${</span><span class="nv">nproc</span><span class="si">}</span>
+</code></pre></div>
+<p>Для Windows </p>
+<p><div class="highlight"><pre><span></span><code>Qt/Tools/QtCreator/bin/jom.exe
+</code></pre></div>
+Билд лог</p>
+<div class="highlight"><pre><span></span><code>andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$<span class="w"> </span>make<span class="w"> </span>-j<span class="si">${</span><span class="nv">nproc</span><span class="si">}</span>
+g++<span class="w"> </span>-c<span class="w"> </span>-pipe<span class="w"> </span>-O2<span class="w"> </span>-Wall<span class="w"> </span>-Wextra<span class="w"> </span>-D_REENTRANT<span class="w"> </span>-fPIC<span class="w"> </span>-DQT_NO_DEBUG<span class="w"> </span>-DQT_QUICK_LIB<span class="w"> </span>-DQT_GUI_LIB<span class="w"> </span>-DQT_QMLMODELS_LIB<span class="w"> </span>-DQT_QML_LIB<span class="w"> </span>-DQT_NETWORK_LIB<span class="w"> </span>-DQT_CORE_LIB<span class="w"> </span>-I.<span class="w"> </span>-I../../../../5.15.2/gcc_64/include<span class="w"> </span>-I../../../../5.15.2/gcc_64/include/QtQuick<span class="w"> </span>-I../../../../5.15.2/gcc_64/include/QtGui<span class="w"> </span>-I../../../../5.15.2/gcc_64/include/QtQmlModels<span class="w"> </span>-I../../../../5.15.2/gcc_64/include/QtQml<span class="w"> </span>-I../../../../5.15.2/gcc_64/include/QtNetwork<span class="w"> </span>-I../../../../5.15.2/gcc_64/include/QtCore<span class="w"> </span>-I.<span class="w"> </span>-I/usr/include/libdrm<span class="w"> </span>-I../../../../5.15.2/gcc_64/mkspecs/linux-g++<span class="w"> </span>-o<span class="w"> </span>main.o<span class="w"> </span>main.cpp
+/home/andrei/Qt/5.15.2/gcc_64/bin/rcc<span class="w"> </span>-name<span class="w"> </span>shared<span class="w"> </span>../shared/shared.qrc<span class="w"> </span>-o<span class="w"> </span>qrc_shared.cpp
+/home/andrei/Qt/5.15.2/gcc_64/bin/rcc<span class="w"> </span>-name<span class="w"> </span>animation<span class="w"> </span>animation.qrc<span class="w"> </span>-o<span class="w"> </span>qrc_animation.cpp
+g++<span class="w"> </span>-c<span class="w"> </span>-pipe<span class="w"> </span>-O2<span class="w"> </span>-Wall<span class="w"> </span>-Wextra<span class="w"> </span>-D_REENTRANT<span class="w"> </span>-fPIC<span class="w"> </span>-DQT_NO_DEBUG<span class="w"> </span>-DQT_QUICK_LIB<span class="w"> </span>-DQT_GUI_LIB<span class="w"> </span>-DQT_QMLMODELS_LIB<span class="w"> </span>-DQT_QML_LIB<span class="w"> </span>-DQT_NETWORK_LIB<span class="w"> </span>-DQT_CORE_LIB<span class="w"> </span>-I.<span class="w"> </span>-I../../../../5.15.2/gcc_64/include<span class="w"> </span>-I../../../../5.15.2/gcc_64/include/QtQuick<span class="w"> </span>-I../../../../5.15.2/gcc_64/include/QtGui<span class="w"> </span>-I../../../../5.15.2/gcc_64/include/QtQmlModels<span class="w"> </span>-I../../../../5.15.2/gcc_64/include/QtQml<span class="w"> </span>-I../../../../5.15.2/gcc_64/include/QtNetwork<span class="w"> </span>-I../../../../5.15.2/gcc_64/include/QtCore<span class="w"> </span>-I.<span class="w"> </span>-I/usr/include/libdrm<span class="w"> </span>-I../../../../5.15.2/gcc_64/mkspecs/linux-g++<span class="w"> </span>-o<span class="w"> </span>qrc_animation.o<span class="w"> </span>qrc_animation.cpp
+g++<span class="w"> </span>-c<span class="w"> </span>-pipe<span class="w"> </span>-O2<span class="w"> </span>-Wall<span class="w"> </span>-Wextra<span class="w"> </span>-D_REENTRANT<span class="w"> </span>-fPIC<span class="w"> </span>-DQT_NO_DEBUG<span class="w"> </span>-DQT_QUICK_LIB<span class="w"> </span>-DQT_GUI_LIB<span class="w"> </span>-DQT_QMLMODELS_LIB<span class="w"> </span>-DQT_QML_LIB<span class="w"> </span>-DQT_NETWORK_LIB<span class="w"> </span>-DQT_CORE_LIB<span class="w"> </span>-I.<span class="w"> </span>-I../../../../5.15.2/gcc_64/include<span class="w"> </span>-I../../../../5.15.2/gcc_64/include/QtQuick<span class="w"> </span>-I../../../../5.15.2/gcc_64/include/QtGui<span class="w"> </span>-I../../../../5.15.2/gcc_64/include/QtQmlModels<span class="w"> </span>-I../../../../5.15.2/gcc_64/include/QtQml<span class="w"> </span>-I../../../../5.15.2/gcc_64/include/QtNetwork<span class="w"> </span>-I../../../../5.15.2/gcc_64/include/QtCore<span class="w"> </span>-I.<span class="w"> </span>-I/usr/include/libdrm<span class="w"> </span>-I../../../../5.15.2/gcc_64/mkspecs/linux-g++<span class="w"> </span>-o<span class="w"> </span>qrc_shared.o<span class="w"> </span>qrc_shared.cpp
+g++<span class="w"> </span>-Wl,-O1<span class="w"> </span>-Wl,-rpath,/home/andrei/Qt/5.15.2/gcc_64/lib<span class="w"> </span>-o<span class="w"> </span>animation<span class="w"> </span>main.o<span class="w"> </span>qrc_shared.o<span class="w"> </span>qrc_animation.o<span class="w">   </span>/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Quick.so<span class="w"> </span>/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Gui.so<span class="w"> </span>/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5QmlModels.so<span class="w"> </span>/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Qml.so<span class="w"> </span>/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Network.so<span class="w"> </span>/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Core.so<span class="w"> </span>-lGL<span class="w"> </span>-lpthread<span class="w">   </span>
+</code></pre></div>
+<h2 id="_7">Находим наш получившийся исполняемый файл<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p>Если вы собирали проект с помощью qtCreator ваш исполняемый файл будет находиться на уровень выше в папке <strong>build-Animations-Desktop_Qt_5_15_2_GCC_64bit-Release</strong>
+В моем случае исполняемый файл лежит в корневом катологе проекта.</p>
+<div class="highlight"><pre><span></span><code>andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$<span class="w"> </span>tree
+.
+├──<span class="w"> </span>animation<span class="w"> </span><span class="c1"># Вот он.</span>
+├──<span class="w"> </span>animation.pro
+├──<span class="w"> </span>animation.qml
+├──<span class="w"> </span>animation.qmlproject
+├──<span class="w"> </span>animation.qrc
+├──<span class="w"> </span>basics
+│<span class="w">   </span>├──<span class="w"> </span>animators.qml
+│<span class="w">   </span>├──<span class="w"> </span>color-animation.qml
+│<span class="w">   </span>├──<span class="w"> </span>images
+│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>face-smile.png
+│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>moon.png
+│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>shadow.png
+│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>star.png
+│<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>sun.png
+│<span class="w">   </span>└──<span class="w"> </span>property-animation.qml
+├──<span class="w"> </span>behaviors
+│<span class="w">   </span>├──<span class="w"> </span>behavior-example.qml
+│<span class="w">   </span>├──<span class="w"> </span>FocusRect.qml
+│<span class="w">   </span>├──<span class="w"> </span>SideRect.qml
+│<span class="w">   </span>├──<span class="w"> </span>tvtennis.qml
+│<span class="w">   </span>└──<span class="w"> </span>wigglytext.qml
+├──<span class="w"> </span>doc
+│<span class="w">   </span>├──<span class="w"> </span>images
+│<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>qml-animations-example.png
+│<span class="w">   </span>└──<span class="w"> </span>src
+│<span class="w">       </span>└──<span class="w"> </span>animation.qdoc
+├──<span class="w"> </span>easing
+│<span class="w">   </span>└──<span class="w"> </span>easing.qml
+├──<span class="w"> </span>main.cpp
+├──<span class="w"> </span>main.o
+├──<span class="w"> </span>Makefile
+├──<span class="w"> </span>pathanimation
+│<span class="w">   </span>└──<span class="w"> </span>pathanimation.qml
+├──<span class="w"> </span>pathinterpolator
+│<span class="w">   </span>└──<span class="w"> </span>pathinterpolator.qml
+├──<span class="w"> </span>qrc_animation.cpp
+├──<span class="w"> </span>qrc_animation.o
+├──<span class="w"> </span>qrc_shared.cpp
+├──<span class="w"> </span>qrc_shared.o
+└──<span class="w"> </span>states
+<span class="w">    </span>├──<span class="w"> </span>qt-logo.png
+<span class="w">    </span>├──<span class="w"> </span>states.qml
+<span class="w">    </span>└──<span class="w"> </span>transitions.qml
+<span class="m">10</span><span class="w"> </span>directories,<span class="w"> </span><span class="m">33</span><span class="w"> </span>files
+</code></pre></div>
+<h2 id="cqtdeployer_1">Вызываем cqtdeployer для формирования Базового Дистрибутива<a class="headerlink" href="#cqtdeployer_1" title="Permanent link">&para;</a></h2>
+<p>Для Linux:</p>
+<p><div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>animation<span class="w"> </span>-qmlDir<span class="w"> </span>.<span class="w"> </span>qif<span class="w"> </span>-qmake<span class="w"> </span>~/Qt/5.15.2/gcc_64/bin/qmake
+</code></pre></div>
+Для Windows:</p>
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>animation<span class="w"> </span>-qmlDir<span class="w"> </span>.<span class="w"> </span>qif<span class="w"> </span>-qmake<span class="w"> </span>~/Qt/5.15.2/mingw_810_64/bin/qmake.exe
+</code></pre></div>
+<p>Лог развёртывания</p>
+<div class="highlight"><pre><span></span><code>andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$<span class="w"> </span>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>animation<span class="w"> </span>-qmlDir<span class="w"> </span>.<span class="w"> </span>qif<span class="w"> </span>-qmake<span class="w"> </span>~/Qt/5.15.2/gcc_64/bin/qmake
+Info:<span class="w"> </span>Deploy<span class="w"> </span>...
+Info:<span class="w"> </span>flag<span class="w"> </span>targetDir<span class="w"> </span>not<span class="w">  </span>used.<span class="w"> </span>use<span class="w"> </span>default<span class="w"> </span>target<span class="w"> </span>dir<span class="w"> </span>:/home/andrei/Qt/Examples/Qt-5.15.2/quick/animation/DistributionKit
+Info:<span class="w"> </span>target<span class="w"> </span>deploy<span class="w"> </span>started!!
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/Examples/Qt-5.15.2/quick/animation/animation
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQml/libqmlplugin.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQml/Models.2/libmodelsplugin.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQml/Models.2/plugins.qmltypes
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQml/Models.2/qmldir
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQml/plugins.qmltypes
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQml/qmldir
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQml/RemoteObjects/libqtqmlremoteobjects.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQml/RemoteObjects/plugins.qmltypes
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQml/RemoteObjects/qmldir
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQml/StateMachine/libqtqmlstatemachine.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQml/StateMachine/plugins.qmltypes
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQml/StateMachine/qmldir
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQml/WorkerScript.2/libworkerscriptplugin.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQml/WorkerScript.2/plugins.qmltypes
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQml/WorkerScript.2/qmldir
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQuick/Particles.2/libparticlesplugin.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQuick/Particles.2/plugins.qmltypes
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQuick/Particles.2/qmldir
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQuick.2/libqtquick2plugin.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQuick.2/plugins.qmltypes
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/qml/QtQuick.2/qmldir
+Info:<span class="w"> </span>platform<span class="w"> </span>:<span class="w"> </span>libqvnc<span class="w"> </span>is<span class="w"> </span>disabled
+Info:<span class="w"> </span>platform<span class="w"> </span>:<span class="w"> </span>libqvnc<span class="w"> </span>is<span class="w"> </span>disabled
+Info:<span class="w"> </span>platform<span class="w"> </span>:<span class="w"> </span>libqwebgl<span class="w"> </span>is<span class="w"> </span>disabled
+Info:<span class="w"> </span>platform<span class="w"> </span>:<span class="w"> </span>libqwebgl<span class="w"> </span>is<span class="w"> </span>disabled
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/bearer/libqconnmanbearer.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/bearer/libqgenericbearer.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/bearer/libqnmbearer.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/iconengines/libqsvgicon.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/imageformats/libqgif.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/imageformats/libqicns.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/imageformats/libqico.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/imageformats/libqjpeg.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/imageformats/libqsvg.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/imageformats/libqtga.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/imageformats/libqtiff.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/imageformats/libqwbmp.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/imageformats/libqwebp.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/platforminputcontexts/libcomposeplatforminputcontextplugin.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/platforminputcontexts/libibusplatforminputcontextplugin.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/platforms/libqeglfs.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/platforms/libqlinuxfb.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/platforms/libqminimal.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/platforms/libqminimalegl.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/platforms/libqoffscreen.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/platforms/libqwayland-egl.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/platforms/libqwayland-generic.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/platforms/libqwayland-xcomposite-egl.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/platforms/libqwayland-xcomposite-glx.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/platforms/libqxcb.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/platformthemes/libqgtk3.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/platformthemes/libqxdgdesktopportal.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-decoration-client/libbradient.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-graphics-integration-client/libdmabuf-server.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-graphics-integration-client/libdrm-egl-server.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-graphics-integration-client/libqt-plugin-wayland-egl.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-graphics-integration-client/libshm-emulation-server.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-graphics-integration-client/libvulkan-server.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-graphics-integration-client/libxcomposite-egl.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-graphics-integration-client/libxcomposite-glx.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-graphics-integration-server/libqt-wayland-compositor-dmabuf-server-buffer.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-graphics-integration-server/libqt-wayland-compositor-drm-egl-server-buffer.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-graphics-integration-server/libqt-wayland-compositor-linux-dmabuf-unstable-v1.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-graphics-integration-server/libqt-wayland-compositor-shm-emulation-server.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-graphics-integration-server/libqt-wayland-compositor-vulkan-server.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-graphics-integration-server/libqt-wayland-compositor-wayland-egl.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-graphics-integration-server/libqt-wayland-compositor-wayland-eglstream-controller.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-graphics-integration-server/libqt-wayland-compositor-xcomposite-egl.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-graphics-integration-server/libqt-wayland-compositor-xcomposite-glx.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-shell-integration/libfullscreen-shell-v1.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-shell-integration/libivi-shell.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-shell-integration/libwl-shell.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-shell-integration/libxdg-shell-v5.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-shell-integration/libxdg-shell-v6.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/wayland-shell-integration/libxdg-shell.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/xcbglintegrations/libqxcb-egl-integration.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/plugins/xcbglintegrations/libqxcb-glx-integration.so
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Core.so.5
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Network.so.5
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5EglFSDeviceIntegration.so.5
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5XcbQpa.so.5
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/CQtDeployer/1.5/lib/libicui18n.so.56
+Info:<span class="w"> </span>copy<span class="w"> </span>:/usr/lib/x86_64-linux-gnu/libxcb-xinerama.so.0
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5RemoteObjects.so.5
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5QuickParticles.so.5
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/CQtDeployer/1.5/lib/libicudata.so.56
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/CQtDeployer/1.5/lib/libicuuc.so.56
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5QmlWorkerScript.so.5
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Widgets.so.5
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5WaylandClient.so.5
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5DBus.so.5
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Qml.so.5
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Quick.so.5
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5QmlModels.so.5
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Gui.so.5
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5Svg.so.5
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/lib/libQt5WaylandCompositor.so.5
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_ar.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_bg.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_ca.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_cs.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_da.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_de.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_en.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_es.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_fi.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_fr.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_gd.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_he.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_hu.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_it.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_ja.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_ko.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_lv.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_pl.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_ru.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_sk.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_tr.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_uk.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtbase_zh_TW.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtdeclarative_bg.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtdeclarative_da.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtdeclarative_de.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtdeclarative_en.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtdeclarative_es.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtdeclarative_fi.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtdeclarative_fr.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtdeclarative_hu.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtdeclarative_ja.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtdeclarative_ko.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtdeclarative_lv.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtdeclarative_pl.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtdeclarative_ru.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtdeclarative_sk.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtdeclarative_tr.qm
+Info:<span class="w"> </span>copy<span class="w"> </span>:/home/andrei/Qt/5.15.2/gcc_64/translations/qtdeclarative_uk.qm
+Info:<span class="w"> </span>try<span class="w"> </span>deploy<span class="w"> </span>msvc
+Info:<span class="w"> </span>deploy<span class="w"> </span><span class="k">done</span>!
+Info:<span class="w"> </span>copy<span class="w"> </span>::/shared/Distributions/Templates/Icon.png
+Error:<span class="w">  </span>not<span class="w"> </span>exits
+Info:<span class="w"> </span><span class="o">[</span><span class="m">0</span><span class="o">]</span><span class="w"> </span>Parsed<span class="w"> </span>arguments,<span class="w"> </span>ok.
+Info:<span class="w"> </span><span class="o">[</span><span class="m">2</span><span class="o">]</span><span class="w"> </span>Collecting<span class="w"> </span>information<span class="w"> </span>about<span class="w"> </span>available<span class="w"> </span>packages...
+Info:<span class="w"> </span><span class="o">[</span><span class="m">4</span><span class="o">]</span><span class="w"> </span>Found<span class="w"> </span>subdirectory<span class="w"> </span><span class="s2">&quot;Application&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">4</span><span class="o">]</span><span class="w"> </span>-<span class="w"> </span>it<span class="w"> </span>provides<span class="w"> </span>the<span class="w"> </span>package<span class="w"> </span><span class="s2">&quot;Application&quot;</span><span class="w">  </span>-<span class="w">  </span><span class="s2">&quot;1.0&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">4</span><span class="o">]</span><span class="w"> </span>Copying<span class="w"> </span>component<span class="w"> </span>data<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="s2">&quot;Application&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">5</span><span class="o">]</span><span class="w"> </span>Compressing<span class="w"> </span>data<span class="w"> </span>directory<span class="w"> </span><span class="s2">&quot;bin&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">21</span><span class="o">]</span><span class="w"> </span>Compressing<span class="w"> </span>data<span class="w"> </span>directory<span class="w"> </span><span class="s2">&quot;icons&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">31</span><span class="o">]</span><span class="w"> </span>Compressing<span class="w"> </span>data<span class="w"> </span>directory<span class="w"> </span><span class="s2">&quot;lib&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">11111</span><span class="o">]</span><span class="w"> </span>Compressing<span class="w"> </span>data<span class="w"> </span>directory<span class="w"> </span><span class="s2">&quot;plugins&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">11740</span><span class="o">]</span><span class="w"> </span>Compressing<span class="w"> </span>data<span class="w"> </span>directory<span class="w"> </span><span class="s2">&quot;qml&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">11786</span><span class="o">]</span><span class="w"> </span>Compressing<span class="w"> </span>data<span class="w"> </span>directory<span class="w"> </span><span class="s2">&quot;translations&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12321</span><span class="o">]</span><span class="w"> </span>Compressing<span class="w"> </span>files<span class="w"> </span>found<span class="w"> </span><span class="k">in</span><span class="w"> </span>data<span class="w"> </span>directory:<span class="w"> </span><span class="o">(</span><span class="s2">&quot;/home/andrei/Qt/Examples/Qt-5.15.2/quick/animation/DistributionKit/defaultQIFWTemplate/packages/Application/data/animation.sh&quot;</span><span class="o">)</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12321</span><span class="o">]</span><span class="w"> </span>Hash<span class="w"> </span>is<span class="w"> </span>stored<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0bin.7z.sha1&quot;</span>
+<span class="o">[</span><span class="m">12321</span><span class="o">]</span><span class="w"> </span>Creating<span class="w"> </span><span class="nb">hash</span><span class="w"> </span>of<span class="w"> </span>archive<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0bin.7z&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12321</span><span class="o">]</span><span class="w"> </span>Generated<span class="w"> </span>sha1<span class="w"> </span>hash:<span class="w"> </span><span class="s2">&quot;0af6cb9dc074407a8857403f07d13aa7d1b3c9cb&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12322</span><span class="o">]</span><span class="w"> </span>Hash<span class="w"> </span>is<span class="w"> </span>stored<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0icons.7z.sha1&quot;</span>
+<span class="o">[</span><span class="m">12322</span><span class="o">]</span><span class="w"> </span>Creating<span class="w"> </span><span class="nb">hash</span><span class="w"> </span>of<span class="w"> </span>archive<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0icons.7z&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12322</span><span class="o">]</span><span class="w"> </span>Generated<span class="w"> </span>sha1<span class="w"> </span>hash:<span class="w"> </span><span class="s2">&quot;aa938cb332bfb427a6d0280c07c204c1bb48da22&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12322</span><span class="o">]</span><span class="w"> </span>Hash<span class="w"> </span>is<span class="w"> </span>stored<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0lib.7z.sha1&quot;</span>
+<span class="o">[</span><span class="m">12322</span><span class="o">]</span><span class="w"> </span>Creating<span class="w"> </span><span class="nb">hash</span><span class="w"> </span>of<span class="w"> </span>archive<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0lib.7z&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12347</span><span class="o">]</span><span class="w"> </span>Generated<span class="w"> </span>sha1<span class="w"> </span>hash:<span class="w"> </span><span class="s2">&quot;7c3a43111e694bc82a0ab0d19a6e4d0025f17313&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12347</span><span class="o">]</span><span class="w"> </span>Hash<span class="w"> </span>is<span class="w"> </span>stored<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0plugins.7z.sha1&quot;</span>
+<span class="o">[</span><span class="m">12347</span><span class="o">]</span><span class="w"> </span>Creating<span class="w"> </span><span class="nb">hash</span><span class="w"> </span>of<span class="w"> </span>archive<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0plugins.7z&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12349</span><span class="o">]</span><span class="w"> </span>Generated<span class="w"> </span>sha1<span class="w"> </span>hash:<span class="w"> </span><span class="s2">&quot;4ed23c36835a9b62701478ab6897737dfe9dfc9a&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12349</span><span class="o">]</span><span class="w"> </span>Hash<span class="w"> </span>is<span class="w"> </span>stored<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0qml.7z.sha1&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12349</span><span class="o">]</span><span class="w"> </span>Creating<span class="w"> </span><span class="nb">hash</span><span class="w"> </span>of<span class="w"> </span>archive<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0qml.7z&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12349</span><span class="o">]</span><span class="w"> </span>Generated<span class="w"> </span>sha1<span class="w"> </span>hash:<span class="w"> </span><span class="s2">&quot;bd44e15d2c26c8f6cb50760032eadf0241eedf43&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12349</span><span class="o">]</span><span class="w"> </span>Hash<span class="w"> </span>is<span class="w"> </span>stored<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0translations.7z.sha1&quot;</span>
+<span class="o">[</span><span class="m">12349</span><span class="o">]</span><span class="w"> </span>Creating<span class="w"> </span><span class="nb">hash</span><span class="w"> </span>of<span class="w"> </span>archive<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0translations.7z&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12350</span><span class="o">]</span><span class="w"> </span>Generated<span class="w"> </span>sha1<span class="w"> </span>hash:<span class="w"> </span><span class="s2">&quot;030e0ede0c0e058a5d5a3b6c43c6a4767119d3f1&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12350</span><span class="o">]</span><span class="w"> </span>Hash<span class="w"> </span>is<span class="w"> </span>stored<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0content.7z.sha1&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12350</span><span class="o">]</span><span class="w"> </span>Creating<span class="w"> </span><span class="nb">hash</span><span class="w"> </span>of<span class="w"> </span>archive<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0content.7z&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12350</span><span class="o">]</span><span class="w"> </span>Generated<span class="w"> </span>sha1<span class="w"> </span>hash:<span class="w"> </span><span class="s2">&quot;acd2cd63e77971acedbcda2a65f93b2cc036025f&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12350</span><span class="o">]</span><span class="w"> </span>Copy<span class="w"> </span>meta<span class="w"> </span>data<span class="w"> </span><span class="k">for</span><span class="w"> </span>package<span class="w"> </span><span class="s2">&quot;Application&quot;</span><span class="w"> </span>using<span class="w"> </span><span class="s2">&quot;/home/andrei/Qt/Examples/Qt-5.15.2/quick/animation/DistributionKit/defaultQIFWTemplate/packages/Application/meta/package.xml&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12350</span><span class="o">]</span><span class="w"> </span>calculate<span class="w"> </span>size<span class="w"> </span>of<span class="w"> </span>directory<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/data&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12359</span><span class="o">]</span><span class="w"> </span>Copying<span class="w"> </span>associated<span class="w"> </span><span class="s2">&quot;script&quot;</span><span class="w"> </span>file<span class="w"> </span><span class="s2">&quot;/home/andrei/Qt/Examples/Qt-5.15.2/quick/animation/DistributionKit/defaultQIFWTemplate/packages/Application/meta/installscript.qs&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12360</span><span class="o">]</span><span class="w"> </span><span class="k">done</span>.
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12360</span><span class="o">]</span><span class="w"> </span>Begin<span class="w"> </span>to<span class="w"> </span>copy<span class="w"> </span>configuration<span class="w"> </span>file<span class="w"> </span>and<span class="w"> </span>data.
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12360</span><span class="o">]</span><span class="w"> </span>Copying<span class="w"> </span>associated<span class="w"> </span><span class="s2">&quot;configuration&quot;</span><span class="w"> </span>file<span class="w"> </span><span class="s2">&quot;/home/andrei/Qt/Examples/Qt-5.15.2/quick/animation/DistributionKit/defaultQIFWTemplate/config/config.xml&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12360</span><span class="o">]</span><span class="w"> </span><span class="k">done</span>.
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12360</span><span class="o">]</span><span class="w"> </span>Read<span class="w"> </span>dom<span class="w"> </span>element:<span class="w"> </span>&lt;Name&gt;animation&lt;/Name&gt;.
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12360</span><span class="o">]</span><span class="w"> </span>Read<span class="w"> </span>dom<span class="w"> </span>element:<span class="w"> </span>&lt;Version&gt;1.0&lt;/Version&gt;.
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12360</span><span class="o">]</span><span class="w"> </span>Read<span class="w"> </span>dom<span class="w"> </span>element:<span class="w"> </span>&lt;Title&gt;animation&lt;/Title&gt;.
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12360</span><span class="o">]</span><span class="w"> </span>Read<span class="w"> </span>dom<span class="w"> </span>element:<span class="w"> </span>&lt;Publisher&gt;Company&lt;/Publisher&gt;.
+<span class="o">[</span><span class="m">12360</span><span class="o">]</span><span class="w"> </span>Read<span class="w"> </span>dom<span class="w"> </span>element:<span class="w"> </span>&lt;StartMenuDir&gt;animation&lt;/StartMenuDir&gt;.
+<span class="o">[</span><span class="m">12360</span><span class="o">]</span><span class="w"> </span>Read<span class="w"> </span>dom<span class="w"> </span>element:<span class="w"> </span>&lt;TargetDir&gt;@HomeDir@/animation&lt;/TargetDir&gt;.
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12360</span><span class="o">]</span><span class="w"> </span>Read<span class="w"> </span>dom<span class="w"> </span>element:<span class="w"> </span>&lt;InstallActionColumnVisible&gt;true&lt;/InstallActionColumnVisible&gt;.
+<span class="o">[</span><span class="m">12360</span><span class="o">]</span><span class="w"> </span>Read<span class="w"> </span>dom<span class="w"> </span>element:<span class="w"> </span>&lt;RemoveTargetDir&gt;true&lt;/RemoveTargetDir&gt;.
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12360</span><span class="o">]</span><span class="w"> </span>Read<span class="w"> </span>dom<span class="w"> </span>element:<span class="w"> </span>&lt;ControlScript&gt;controlScript.qs&lt;/ControlScript&gt;.
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12360</span><span class="o">]</span><span class="w"> </span>Copying<span class="w"> </span>associated<span class="w"> </span><span class="s2">&quot;ControlScript&quot;</span><span class="w"> </span>file<span class="w"> </span><span class="s2">&quot;/home/andrei/Qt/Examples/Qt-5.15.2/quick/animation/DistributionKit/defaultQIFWTemplate/config/controlScript.qs&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12360</span><span class="o">]</span><span class="w"> </span><span class="k">done</span>.
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12360</span><span class="o">]</span><span class="w"> </span>Read<span class="w"> </span>dom<span class="w"> </span>element:<span class="w"> </span>&lt;MaintenanceToolName&gt;animationTool&lt;/MaintenanceToolName&gt;.
+<span class="o">[</span><span class="m">12360</span><span class="o">]</span><span class="w"> </span>Read<span class="w"> </span>dom<span class="w"> </span>element:<span class="w"> </span>&lt;ProductUrl&gt;&lt;/ProductUrl&gt;.
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12360</span><span class="o">]</span><span class="w"> </span><span class="k">done</span>.
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12362</span><span class="o">]</span><span class="w"> </span>Creating<span class="w"> </span>the<span class="w"> </span>binary
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12407</span><span class="o">]</span><span class="w"> </span>Creating<span class="w"> </span>resource<span class="w"> </span>archive<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="s2">&quot;Application&quot;</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12407</span><span class="o">]</span><span class="w"> </span>Appending<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0bin.7z&quot;</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;61.58 KB&quot;</span><span class="o">)</span>
+<span class="o">[</span><span class="m">12407</span><span class="o">]</span><span class="w"> </span>Appending<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0bin.7z.sha1&quot;</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;40.00 bytes&quot;</span><span class="o">)</span>
+<span class="o">[</span><span class="m">12407</span><span class="o">]</span><span class="w"> </span>Appending<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0icons.7z&quot;</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;108.00 KB&quot;</span><span class="o">)</span>
+<span class="o">[</span><span class="m">12407</span><span class="o">]</span><span class="w"> </span>Appending<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0icons.7z.sha1&quot;</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;40.00 bytes&quot;</span><span class="o">)</span>
+<span class="o">[</span><span class="m">12407</span><span class="o">]</span><span class="w"> </span>Appending<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0lib.7z&quot;</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;18.08 MB&quot;</span><span class="o">)</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12407</span><span class="o">]</span><span class="w"> </span>Appending<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0lib.7z.sha1&quot;</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;40.00 bytes&quot;</span><span class="o">)</span>
+<span class="o">[</span><span class="m">12407</span><span class="o">]</span><span class="w"> </span>Appending<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0plugins.7z&quot;</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;1.08 MB&quot;</span><span class="o">)</span>
+<span class="o">[</span><span class="m">12407</span><span class="o">]</span><span class="w"> </span>Appending<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0plugins.7z.sha1&quot;</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;40.00 bytes&quot;</span><span class="o">)</span>
+<span class="o">[</span><span class="m">12407</span><span class="o">]</span><span class="w"> </span>Appending<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0qml.7z&quot;</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;53.29 KB&quot;</span><span class="o">)</span>
+<span class="o">[</span><span class="m">12407</span><span class="o">]</span><span class="w"> </span>Appending<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0qml.7z.sha1&quot;</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;40.00 bytes&quot;</span><span class="o">)</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12407</span><span class="o">]</span><span class="w"> </span>Appending<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0translations.7z&quot;</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;595.71 KB&quot;</span><span class="o">)</span>
+<span class="o">[</span><span class="m">12407</span><span class="o">]</span><span class="w"> </span>Appending<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0translations.7z.sha1&quot;</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;40.00 bytes&quot;</span><span class="o">)</span>
+<span class="o">[</span><span class="m">12407</span><span class="o">]</span><span class="w"> </span>Appending<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0content.7z&quot;</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;439.00 bytes&quot;</span><span class="o">)</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12407</span><span class="o">]</span><span class="w"> </span>Appending<span class="w"> </span><span class="s2">&quot;/tmp/binarycreator-yOPMPa/Application/1.0content.7z.sha1&quot;</span><span class="w"> </span><span class="o">(</span><span class="s2">&quot;40.00 bytes&quot;</span><span class="o">)</span>
+Info:<span class="w"> </span><span class="o">[</span><span class="m">12449</span><span class="o">]</span><span class="w"> </span>Cleaning<span class="w"> </span>up...
+</code></pre></div>
+<p>Готово. дистрибутив был сохранен в папку <strong>DistributionKit</strong> </p>
+<div class="highlight"><pre><span></span><code>andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$<span class="w"> </span>./DistributionKit/Installeranimation.run<span class="w"> </span>
+</code></pre></div>
+<p><img alt="Снимок экрана от 2021-02-22 11-25-34" src="https://user-images.githubusercontent.com/12465465/108681955-c629a580-7500-11eb-8087-cedfa8134aae.png" /></p>
+<p>После установки буду созданы все необходимые ярлыки.</p>
+<p><img alt="Снимок экрана от 2021-02-22 11-27-11" src="https://user-images.githubusercontent.com/12465465/108682148-012bd900-7501-11eb-9f0b-f46fd79aef25.png" /></p>
+<p><img alt="Снимок экрана от 2021-02-22 11-29-23" src="https://user-images.githubusercontent.com/12465465/108682391-48b26500-7501-11eb-8d81-b430ddf97d46.png" /></p>
+<h2 id="qtcreator">Интеграция с QtCreator<a class="headerlink" href="#qtcreator" title="Permanent link">&para;</a></h2>
+<p>К сожалению, на данный момент нет интеграции с qtcreator.
+Единственный способ - включить цель сборки для <strong>qmake</strong> или <strong>cmake</strong></p>
+<h3 id="qmake">qmake<a class="headerlink" href="#qmake" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>QT_DIR= $$[QT_HOST_BINS]
+win32:QMAKE_BIN= $$QT_DIR/qmake.exe
+contains(QMAKE_HOST.os, Linux):{
+    QMAKE_BIN= $$QT_DIR/qmake
+}
+
+deploy.commands= cqtdeployer -bin $$DESTDIR/$$TARGET -qmake $$QMAKE_BIN -libDir $$PWD -qmlDir $$PWD -recursiveDepth 5  qif
+
+QMAKE_EXTRA_TARGETS += deploy
+</code></pre></div>
+<h3 id="cmake">cmake<a class="headerlink" href="#cmake" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nb">find_program</span><span class="p">(</span><span class="s">Q_MAKE_EXE</span><span class="w"> </span><span class="s">qmake</span><span class="p">)</span>
+
+<span class="w">    </span><span class="nb">find_program</span><span class="p">(</span><span class="s">CQT_EXE</span><span class="w"> </span><span class="s">cqtdeployer</span><span class="p">)</span>
+
+<span class="w">    </span><span class="nb">IF</span><span class="p">(</span><span class="s">NOT</span><span class="w"> </span><span class="s">EXISTS</span><span class="w"> </span><span class="o">${</span><span class="nv">CQT_EXE</span><span class="o">}</span><span class="p">)</span>
+<span class="w">        </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;the cqtdeployer not exits please install the cqtdeployer and run cmake again!&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="nb">return</span><span class="p">()</span>
+<span class="w">    </span><span class="nb">endif</span><span class="p">(</span><span class="s">NOT</span><span class="w"> </span><span class="s">EXISTS</span><span class="w"> </span><span class="o">${</span><span class="nv">CQT_EXE</span><span class="o">}</span><span class="p">)</span>
+
+<span class="w">    </span><span class="nb">ADD_CUSTOM_TARGET</span><span class="p">(</span>
+<span class="w">        </span><span class="s">deploy</span>
+<span class="w">        </span><span class="s">COMMAND</span><span class="w"> </span><span class="s">cqtdeployer</span><span class="w"> </span><span class="s">clear</span><span class="w"> </span><span class="s">-bin</span><span class="w"> </span><span class="o">${</span><span class="nv">CURENT_PROJECT</span><span class="o">}</span><span class="w"> </span><span class="s">-qmake</span><span class="w"> </span><span class="o">${</span><span class="nv">Q_MAKE_EXE</span><span class="o">}</span><span class="w"> </span><span class="s">-libDir</span><span class="w"> </span><span class="o">${</span><span class="nv">PROJECT_SOURCE_DIR</span><span class="o">}</span><span class="w"> </span><span class="s">-qmlDir</span><span class="w"> </span><span class="o">${</span><span class="nv">PROJECT_SOURCE_DIR</span><span class="o">}</span><span class="w"> </span><span class="s">-recursiveDepth</span><span class="w"> </span><span class="s">5</span>
+<span class="w">        </span><span class="s">COMMENT</span><span class="w"> </span><span class="s2">&quot;Deploy: cqtdeployer clear -bin ${CURENT_PROJECT} -qmake ${Q_MAKE_EXE} -libDir ${PROJECT_SOURCE_DIR} -qmlDir ${PROJECT_SOURCE_DIR} -recursiveDepth 5&quot;</span>
+<span class="w">        </span><span class="s">WORKING_DIRECTORY</span><span class="w"> </span><span class="o">${</span><span class="nv">PROJECT_SOURCE_DIR</span><span class="o">}</span>
+<span class="w">    </span><span class="p">)</span>
+</code></pre></div>
+<p>Параметр <strong>libDir</strong> используется для установки путей к каталогам, в которых пути содержат зависимости вашего приложения, а параметр <strong>qmlDir</strong> используется для установки путей к каталогам, содержащих файлы qml, необходимые вашему приложению. В этом примере корень исходного кода приложения выбирается этими двумя параметрами.</p>
+<p>Параметр <strong>recursiveDepth</strong> используется для установки глубины поиска <strong>libDir</strong> и <strong>qmlDir</strong>.</p>
+<p>Параметр <strong>qif</strong> используется для создания установщика с использованием Qt Installer Framework.</p>
+<h2 id="_8">Пример интеграции<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<p>Создаем тестовый проект</p>
+<div class="highlight"><pre><span></span><code>QT += quick
+CONFIG += c++11
+# You can make your code fail to compile if it uses deprecated APIs.
+# In order to do so, uncomment the following line.
+#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+SOURCES += \
+        main.cpp
+RESOURCES += qml.qrc
+# Additional import path used to resolve QML modules in Qt Creator&#39;s code model
+QML_IMPORT_PATH =
+# Additional import path used to resolve QML modules just for Qt Quick Designer
+QML_DESIGNER_IMPORT_PATH =
+# Default rules for deployment.
+qnx: target.path = /tmp/$${TARGET}/bin
+else: unix:!android: target.path = /opt/$${TARGET}/bin
+!isEmpty(target.path): INSTALLS += target
+QT_DIR= $$[QT_HOST_BINS]
+win32:QMAKE_BIN= $$QT_DIR/qmake.exe
+contains(QMAKE_HOST.os, Linux):{
+    QMAKE_BIN= $$QT_DIR/qmake
+}
+DESTDIR=$$PWD/Build
+deploy.commands= cqtdeployer -bin $$DESTDIR/$$TARGET -qmake $$QMAKE_BIN -libDir $$PWD -qmlDir $$PWD -recursiveDepth 5  qif
+QMAKE_EXTRA_TARGETS += deploy
+</code></pre></div>
+<ol>
+<li>
+<p>Открываем панель управления проектом 
+    <img alt="Снимок экрана от 2021-02-22 12-15-51" src="https://user-images.githubusercontent.com/12465465/108687472-d09b6d80-7507-11eb-9b56-8d09d42dac5e.png" /></p>
+</li>
+<li>
+<p>Выбираем релизную сборку.
+    <img alt="изображение" src="https://user-images.githubusercontent.com/12465465/108688147-a39b8a80-7508-11eb-81b9-9a24426a94a3.png" /></p>
+</li>
+<li>
+<p>Добавляем "Особый этап сборки"
+    <img alt="изображение" src="https://user-images.githubusercontent.com/12465465/108687640-02143900-7508-11eb-8d1c-532afd7f6ccb.png" /></p>
+</li>
+<li>
+<p>В поле "Make arguments" добавляем наш этап развертывания "Deploy"
+    <img alt="изображение" src="https://user-images.githubusercontent.com/12465465/108687800-35ef5e80-7508-11eb-8f69-aec090d4baa0.png" /></p>
+</li>
+<li>
+<p>Сохраняем</p>
+</li>
+<li>Запускаем сборку.</li>
+</ol>
+<h4 id="distributionkit">На выходе вы получите папку DistributionKit с установщиком вашего приложения.<a class="headerlink" href="#distributionkit" title="Permanent link">&para;</a></h4>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../QuickGuide/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Быстрый гайд">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Быстрый гайд
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../Options/" class="md-footer__link md-footer__link--next" aria-label="Next: Использование параметров">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Использование параметров
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["content.code.copy", "navigation.footer", "navigation.indexes", "navigation.sections", "navigation.top", "navigation.tracking", "search.highlight", "search.suggest", "toc"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

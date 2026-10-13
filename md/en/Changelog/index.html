@@ -1,0 +1,4800 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="CQtDeployer helps you to extract all libraries your executable depends on and to create a launch script for your application.">
+      
+      
+      
+        <link rel="canonical" href="https://quasarapp.github.io/CQtDeployer/md/en/Changelog/">
+      
+      
+        <link rel="prev" href="../ReleaseReviews/">
+      
+      
+        <link rel="next" href="../1_6/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Change log - CQtDeployer</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#change-log" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="CQtDeployer" class="md-header__button md-logo" aria-label="CQtDeployer" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CQtDeployer
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Change log
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="orange" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/QuasarApp/CQtDeployer" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    QuasarApp/CQtDeployer
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="CQtDeployer" class="md-nav__button md-logo" aria-label="CQtDeployer" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CQtDeployer
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/QuasarApp/CQtDeployer" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    QuasarApp/CQtDeployer
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    English
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    English
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Home/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Description/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What is CQtDeployer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../QuickGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to deploy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Build-and-Install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install CQtDeployer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DeployConfigFile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment file
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../QIF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Qt Installer Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnvironmentVariables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CustomScripts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ExtraFiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extra files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ExtractDefaultsTemplates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Default templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DisableShortcats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disabling shortcuts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Packing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ZIP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ZIP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DEB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../arm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    arm machines
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CompareFeatures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compare features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ReleaseReviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release reviews
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Change log
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Change log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v162265" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.6.2265
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.6.2265">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-162227" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.6.2227
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.6.2227">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-options-of-the-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New options of the build
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v15417" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.17
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.17">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v15416" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.16
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.16">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v15415" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.15
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.15">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v15414" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.14
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.14">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v15413" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.13
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.13">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v15412" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.12
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.12">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v15411" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.11
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.11">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v15410" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.10
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.10">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v1548" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.8
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.8">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v1547" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.7
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.7">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v1543" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.3
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v1543_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.3
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-154" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.5.4
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.5.4">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-153" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.5.3
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.5.3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-options_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-152" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.5.2
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.5.2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-151" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.5.1
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.5.1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-150" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.5.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.5.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-features_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixes_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-envirement-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Envirement Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-parameters_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deprecated-and-removed-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deprecated and removed options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-150-alpha" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.5.0 Alpha
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.5.0 Alpha">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#corrections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Corrections
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-features_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-options_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-147" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.4.7
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.4.7">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#corrections_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Corrections
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-features_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-146" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.4.6
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.4.6">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#corrections_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Corrections
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-options_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-145" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.4.5
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.4.5">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#corrections_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Corrections
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-features_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-options_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-144" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.4.4
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.4.4">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-options_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-143" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.4.3
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.4.3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixes_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-features_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-options_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-142" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.4.2
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.4.2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixes_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-141" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.4.1
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.4.1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixes_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-140" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.4.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.4.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixes_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-features_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-options_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-132" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.3.2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-131" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.3.1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-130" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.3.0
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-123" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.2.3
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-122" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.2.2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-121" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.2.1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-120" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.2.0
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-112" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.1.2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-111" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.1.1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-110" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.1.0
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-102" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.0.2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-101" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.0.1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-100" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.0.0
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_21" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_21" id="__nav_3_21_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_21_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_21">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Releases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1_6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.6
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1_5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.5
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1_4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Русский
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Русский
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/Home/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Добро пожаловать
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/Description/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Что такое CQtDeployer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/QuickGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Быстрый гайд
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/Guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Как развернуть
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/Options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Использование параметров
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/DeployConfigFile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Файл развертывания
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/QIF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Qt Installer Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/EnvironmentVariables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Переменные окружения
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/CustomScripts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Пользовательские скрипты
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/ExtraFiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Дополнительные данные
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/ExtractDefaultsTemplates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Шаблоны по умолчанию
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/DisableShortcats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Отключение ярлыков
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/Packing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Упаковка
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/ZIP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ZIP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/DEB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DEB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/CompareFeatures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Сравнение особенностей
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/ReleaseReviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Обзоры на релизы
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/Changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Журнал изменений
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_19" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_19" id="__nav_4_19_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Релизы
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_19_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_19">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Релизы
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/1_5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.5
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ru/1_4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1.4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Marketplace/Marketplace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Marketplace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v162265" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.6.2265
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.6.2265">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-162227" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.6.2227
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.6.2227">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-options-of-the-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New options of the build
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v15417" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.17
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.17">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v15416" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.16
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.16">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v15415" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.15
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.15">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v15414" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.14
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.14">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v15413" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.13
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.13">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v15412" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.12
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.12">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v15411" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.11
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.11">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v15410" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.10
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.10">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v1548" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.8
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.8">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v1547" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.7
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.7">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v1543" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.3
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-v1543_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer v1.5.4.3
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer v1.5.4.3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-154" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.5.4
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.5.4">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes :
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-153" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.5.3
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.5.3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-options_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-fixes_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-152" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.5.2
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.5.2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-151" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.5.1
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.5.1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-150" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.5.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.5.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-features_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixes_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-envirement-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Envirement Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-parameters_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deprecated-and-removed-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deprecated and removed options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-150-alpha" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.5.0 Alpha
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.5.0 Alpha">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#corrections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Corrections
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-features_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-options_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-147" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.4.7
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.4.7">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#corrections_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Corrections
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-features_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-146" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.4.6
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.4.6">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#corrections_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Corrections
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-options_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-145" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.4.5
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.4.5">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#corrections_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Corrections
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-features_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-options_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-144" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.4.4
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.4.4">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-options_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-143" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.4.3
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.4.3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixes_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-features_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-options_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-142" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.4.2
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.4.2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixes_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-141" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.4.1
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.4.1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixes_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-140" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.4.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CQtDeployer 1.4.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixes_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-features_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-options_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-132" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.3.2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-131" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.3.1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-130" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.3.0
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-123" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.2.3
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-122" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.2.2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-121" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.2.1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-120" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.2.0
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-112" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.1.2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-111" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.1.1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-110" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.1.0
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-102" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.0.2
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-101" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.0.1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cqtdeployer-100" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CQtDeployer 1.0.0
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="change-log">Change log<a class="headerlink" href="#change-log" title="Permanent link">&para;</a></h1>
+<h2 id="cqtdeployer-v162265">CQtDeployer v1.6.2265<a class="headerlink" href="#cqtdeployer-v162265" title="Permanent link">&para;</a></h2>
+<h3 id="whats-changed">What's Changed<a class="headerlink" href="#whats-changed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added sources into documentation by @EndrII in https://github.com/QuasarApp/CQtDeployer/pull/727</li>
+<li>Added article for building cqtdeployer on arm platforms by @EndrII in https://github.com/QuasarApp/CQtDeployer/pull/726</li>
+<li>Update zip submodule by @EndrII in https://github.com/QuasarApp/CQtDeployer/pull/730</li>
+<li>Added the qml files dialogs test by @EndrII in https://github.com/QuasarApp/CQtDeployer/pull/729</li>
+<li>Added the dynamic detection qt version and qt platform properties by @EndrII in https://github.com/QuasarApp/CQtDeployer/pull/733</li>
+<li>Fix warning: <code>run qmake file! execve: Permission denied</code> by @EndrII in https://github.com/QuasarApp/CQtDeployer/pull/732</li>
+</ul>
+<h2 id="cqtdeployer-162227">CQtDeployer 1.6.2227<a class="headerlink" href="#cqtdeployer-162227" title="Permanent link">&para;</a></h2>
+<h3 id="new-features">New features<a class="headerlink" href="#new-features" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Move to Cmake build system</li>
+<li>Refactoring all project structure</li>
+<li>Improved QML parser </li>
+<li>Add support qt 6.4 </li>
+<li>Added support (snap version) deploy apps that was buildet with Qt from system</li>
+</ul>
+<h3 id="fixes">Fixes<a class="headerlink" href="#fixes" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fixed snap version of cqtdeployer</li>
+<li>Fixed deploy of windows apps</li>
+<li>Fixed documentation web city (added support of backend search engine)</li>
+</ul>
+<h3 id="new-options-of-the-build">New options of the build<a class="headerlink" href="#new-options-of-the-build" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>CQT_DEPLOYER_TESTS</strong> "This option disables or enables tests of the CQtDeployer project. By Default enabled</li>
+<li><strong>CQT_DEPLOYER_TOOL</strong> "This option disables or enables example app of the CQtDeployer project. By Default enabled</li>
+</ul>
+<h2 id="cqtdeployer-v15417">CQtDeployer v1.5.4.17<a class="headerlink" href="#cqtdeployer-v15417" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes">Bug fixes :<a class="headerlink" href="#bug-fixes" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Update qifw to 4.4 by @EndrII in #701</li>
+</ul>
+<h2 id="cqtdeployer-v15416">CQtDeployer v1.5.4.16<a class="headerlink" href="#cqtdeployer-v15416" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_1">Bug fixes :<a class="headerlink" href="#bug-fixes_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added support of the binarycreator option by @EndrII in #700</li>
+</ul>
+<h2 id="cqtdeployer-v15415">CQtDeployer v1.5.4.15<a class="headerlink" href="#cqtdeployer-v15415" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_2">Bug fixes :<a class="headerlink" href="#bug-fixes_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added support the QtShaderToolsModule by @EndrII in #697</li>
+</ul>
+<h2 id="cqtdeployer-v15414">CQtDeployer v1.5.4.14<a class="headerlink" href="#cqtdeployer-v15414" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_3">Bug fixes :<a class="headerlink" href="#bug-fixes_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix qifw in cqtdeployer of the snap-store, by @EndrII in #693</li>
+<li>Fix deploy network module (Qt6) by @EndrII in #692</li>
+</ul>
+<h2 id="cqtdeployer-v15413">CQtDeployer v1.5.4.13<a class="headerlink" href="#cqtdeployer-v15413" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_4">Bug fixes :<a class="headerlink" href="#bug-fixes_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added new option for change archive format of qifw by @EndrII in #689</li>
+</ul>
+<h2 id="cqtdeployer-v15412">CQtDeployer v1.5.4.12<a class="headerlink" href="#cqtdeployer-v15412" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_5">Bug fixes :<a class="headerlink" href="#bug-fixes_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Allow to deploy libstdc++ library by @EndrII in #684</li>
+<li>Added 'platform' option by @EndrII in #687</li>
+</ul>
+<h2 id="cqtdeployer-v15411">CQtDeployer v1.5.4.11<a class="headerlink" href="#cqtdeployer-v15411" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_6">Bug fixes :<a class="headerlink" href="#bug-fixes_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Update qifw by @EndrII in #675</li>
+<li>Add a 'disable pe library' option by @EndrII in #678</li>
+<li>Add support for gcc4 by @EndrII in #679</li>
+<li>Add support search targets from the path by @EndrII in #683</li>
+</ul>
+<h2 id="cqtdeployer-v15410">CQtDeployer v1.5.4.10<a class="headerlink" href="#cqtdeployer-v15410" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_7">Bug fixes :<a class="headerlink" href="#bug-fixes_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Simple bug fixes update CQtDeployer v1.5.4.10</li>
+</ul>
+<h2 id="cqtdeployer-v1548">CQtDeployer v1.5.4.8<a class="headerlink" href="#cqtdeployer-v1548" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_8">Bug fixes :<a class="headerlink" href="#bug-fixes_8" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Little grammar fixes for Readme by @Kickoman in #666</li>
+<li>Arm build by @EndrII in #670</li>
+<li>Added support folders for the tr option by @EndrII in #673</li>
+</ul>
+<h2 id="cqtdeployer-v1547">CQtDeployer v1.5.4.7<a class="headerlink" href="#cqtdeployer-v1547" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_9">Bug fixes :<a class="headerlink" href="#bug-fixes_9" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix windows shortcuts by @EndrII in #658</li>
+<li>Fix deploy icons by @EndrII in #660 and @EndrII in #662</li>
+<li>Add manual tests for icons option by @EndrII in #664</li>
+</ul>
+<h2 id="cqtdeployer-v1543">CQtDeployer v1.5.4.3<a class="headerlink" href="#cqtdeployer-v1543" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_10">Bug fixes :<a class="headerlink" href="#bug-fixes_10" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix custom icons #659</li>
+</ul>
+<h2 id="cqtdeployer-v1543_1">CQtDeployer v1.5.4.3<a class="headerlink" href="#cqtdeployer-v1543_1" title="Permanent link">&para;</a></h2>
+<h3 id="bug-fixes_11">Bug fixes :<a class="headerlink" href="#bug-fixes_11" title="Permanent link">&para;</a></h3>
+<p>Fix custom icons #659</p>
+<h2 id="cqtdeployer-154">CQtDeployer 1.5.4<a class="headerlink" href="#cqtdeployer-154" title="Permanent link">&para;</a></h2>
+<h3 id="new-options">New options<a class="headerlink" href="#new-options" title="Permanent link">&para;</a></h3>
+<ul>
+<li>qifConfig - Sets a custom path to the configure file of the qt ifw installer. By default it is qif/config/config.xml  #653</li>
+<li>qifPackages - Sets a custom path to the packages directories. By default it is qif/packages #653</li>
+<li>qifResources - Sets a custom path to the resources files. By default this option is skipped #653</li>
+<li>debOut -  Sets name of the output debian file. This option can be work with multiple packages</li>
+<li>zipOut - Sets name of the output zip arrhive. This option can be work with multiple packages</li>
+</ul>
+<h3 id="bug-fixes_12">Bug fixes :<a class="headerlink" href="#bug-fixes_12" title="Permanent link">&para;</a></h3>
+<ul>
+<li>fixed crossdeploy linux -&gt; windows #652 </li>
+</ul>
+<h2 id="cqtdeployer-153">CQtDeployer 1.5.3<a class="headerlink" href="#cqtdeployer-153" title="Permanent link">&para;</a></h2>
+<h3 id="new-options_1">New options<a class="headerlink" href="#new-options_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>installDirDeb - Sets install target directory for debian  package (by default it is /opt path) #640 </li>
+<li>installDirQIFW - Sets install target directory for installers (by default it is /home path) #640 </li>
+</ul>
+<h3 id="bug-fixes_13">Bug fixes<a class="headerlink" href="#bug-fixes_13" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix warning on installer fix #628</li>
+<li>Added support validation input options of the command line fix #421 </li>
+<li>Added Error message for conflict between libDir and targetDir options #629 </li>
+</ul>
+<h2 id="cqtdeployer-152">CQtDeployer 1.5.2<a class="headerlink" href="#cqtdeployer-152" title="Permanent link">&para;</a></h2>
+<h3 id="new-parameters">New parameters<a class="headerlink" href="#new-parameters" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added <strong>qifOut</strong> option for set name of the output installer</li>
+<li>Added <strong>disableRunScript</strong> option for disabling the generation of run script for selected targets</li>
+<li>Added <strong>disableShortCut</strong> option for disabling the generation of shortcut for selected targets</li>
+</ul>
+<h3 id="fixes_1">Fixes<a class="headerlink" href="#fixes_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix documentation</li>
+<li>Fix deploy openssl libraries</li>
+</ul>
+<h2 id="cqtdeployer-151">CQtDeployer 1.5.1<a class="headerlink" href="#cqtdeployer-151" title="Permanent link">&para;</a></h2>
+<h3 id="fixes_2">Fixes<a class="headerlink" href="#fixes_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix deploy multi target Debian packages</li>
+<li>Fix deploy qt6 qml applications</li>
+</ul>
+<p>Change log for all versions of the CQtDeployer.</p>
+<h2 id="cqtdeployer-150">CQtDeployer 1.5.0<a class="headerlink" href="#cqtdeployer-150" title="Permanent link">&para;</a></h2>
+<h3 id="new-features_1">New features<a class="headerlink" href="#new-features_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added new theme of qif installer "quasarDark".</li>
+<li>Added support of work with custom template for qif option.</li>
+<li>Added support of debian packages.</li>
+<li>Added support icons for targets. now the icon option work with targets but not packages.</li>
+<li>Added support of the control custom translation files. </li>
+<li>Added support the deploy nonexecutable data. (extraData option)</li>
+<li>Added envirement variables for deployed applications.</li>
+<li>Added support of the generate deb packages.</li>
+<li>Added support of the generate zip arrhives.</li>
+<li>Added support create a qif installer using custom template</li>
+<li>Added command of init default qif of deb template (getDefaulttemplate)</li>
+<li>Added support of import custom launch scripts</li>
+<li>Added support of md5 packages hashes</li>
+<li>Added support of Qt6.1 </li>
+</ul>
+<h3 id="fixes_3">Fixes<a class="headerlink" href="#fixes_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fixed stability for the deploySystem option on windows</li>
+<li>Fixed verbose log.</li>
+<li>Fixed general output log.</li>
+<li>Fixed typo errors in log.</li>
+<li>Fixed crossdeploy of the arm distributions. </li>
+<li>Fixed deploy Qt6 qml </li>
+<li>Fixed powershell commands on Windows</li>
+<li>bug fixes and improvements.</li>
+</ul>
+<h3 id="new-envirement-variables">New Envirement Variables<a class="headerlink" href="#new-envirement-variables" title="Permanent link">&para;</a></h3>
+<ul>
+<li>CQT_RUN_FILE - This variable contains path to the run script of the using application.</li>
+<li>CQT_PKG_ROOT - This variable contains path to root of the current package.</li>
+</ul>
+<h3 id="new-parameters_1">New parameters<a class="headerlink" href="#new-parameters_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>zip - create a ZIP archive for deployable programs</li>
+<li>deb - Create the deb package for deployment programm</li>
+<li>homepage - Sets the homepage url for a package</li>
+<li>noQt - Ignors the error of initialize of a qmake. Use only if your application does not use the qt framework</li>
+<li>allowEmptyPackages -  Allows configure the empty packages.  </li>
+<li>getDefaultTemplate - Extracts defaults deb or qif templates.</li>
+<li>tr -  Adds qm files into the translations folder.</li>
+<li>extraData - Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure.</li>
+<li>extraDataOut - Sets path to extra data files out directory.</li>
+<li>prefix - Sets the prefix for the package relatively a target directory</li>
+<li>homePage - Sets the homepage url for a package</li>
+<li>binPrefix - Sets prefix for bin option.</li>
+<li>noHashSum - Disables campute hashes of packages</li>
+</ul>
+<h3 id="deprecated-and-removed-options">Deprecated and removed options<a class="headerlink" href="#deprecated-and-removed-options" title="Permanent link">&para;</a></h3>
+<ul>
+<li>deploySystem-with-libc - instead of this option use the deploySystem option.</li>
+<li>allQmlDependes - instead of this option use the qmlDir option.</li>
+</ul>
+<h2 id="cqtdeployer-150-alpha">CQtDeployer 1.5.0 Alpha<a class="headerlink" href="#cqtdeployer-150-alpha" title="Permanent link">&para;</a></h2>
+<h3 id="corrections">Corrections<a class="headerlink" href="#corrections" title="Permanent link">&para;</a></h3>
+<ul>
+<li>bug fixes and improvements.</li>
+</ul>
+<h3 id="new-features_2">New Features<a class="headerlink" href="#new-features_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added a new Theme for qif installer "quasarDark".</li>
+</ul>
+<h3 id="new-options_2">New options<a class="headerlink" href="#new-options_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>zip - create the ZIP arhive for deployement programm</li>
+</ul>
+<h2 id="cqtdeployer-147">CQtDeployer 1.4.7<a class="headerlink" href="#cqtdeployer-147" title="Permanent link">&para;</a></h2>
+<h3 id="corrections_1">Corrections<a class="headerlink" href="#corrections_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fixed deploy the qxcb plugin. #438</li>
+<li>Fixed deploy the qtGui module. #446</li>
+</ul>
+<h3 id="new-features_3">New Features<a class="headerlink" href="#new-features_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added support of Qt6 #437</li>
+<li>Added support of Qt installer Framework 4 (with improved command line interface experience) #436</li>
+</ul>
+<h2 id="cqtdeployer-146">CQtDeployer 1.4.6<a class="headerlink" href="#cqtdeployer-146" title="Permanent link">&para;</a></h2>
+<h3 id="corrections_2">Corrections<a class="headerlink" href="#corrections_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fixed deploy sql drivers #367</li>
+<li>Fixed algorithm of deploy libraryes. #423 #371</li>
+<li>Fixed working with a qt from the linux system repository. (classic instaler only) #422</li>
+<li>Fixed snap version of cqtdeployer, added support for qmake search by RPATH #424 #420</li>
+<li>Fixed help message.</li>
+<li>Minor bug fixes and improvements.</li>
+<li>Removed deprecated option extractPlugins. #371</li>
+</ul>
+<h3 id="new-options_3">New options<a class="headerlink" href="#new-options_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>noQt - Ignore the error of initialize of a qmake. Use only if your application does not use the qt framework.</li>
+</ul>
+<h2 id="cqtdeployer-145">CQtDeployer 1.4.5<a class="headerlink" href="#cqtdeployer-145" title="Permanent link">&para;</a></h2>
+<h3 id="corrections_3">Corrections<a class="headerlink" href="#corrections_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Optimized project deployment performance. 60% faster.</li>
+<li>Optimized output size of distributions. Size reduced by 25%.</li>
+<li>Fixed display of shortcuts after installing deployed applications.</li>
+<li>Fixed launching applications with spaces in the name. Thanks ahndee (#384)</li>
+<li>Fixed deployment of the Renderer plugin.</li>
+<li>Minor bug fixes and improvements.</li>
+</ul>
+<h3 id="new-features_4">New Features<a class="headerlink" href="#new-features_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added a new deployment plugin management system.</li>
+</ul>
+<h3 id="new-options_4">New options<a class="headerlink" href="#new-options_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>extraPlugin - sets an additional path to third-party application plug-in</li>
+<li>enablePlugins - enables additional plugins for distribution.</li>
+<li>disablePlugins - disables plugins for distribution.</li>
+</ul>
+<h2 id="cqtdeployer-144">CQtDeployer 1.4.4<a class="headerlink" href="#cqtdeployer-144" title="Permanent link">&para;</a></h2>
+<h3 id="new-options_5">New options<a class="headerlink" href="#new-options_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>qifFromSystem - force use system binarycreator tool of qif from path or qt.</li>
+</ul>
+<h2 id="cqtdeployer-143">CQtDeployer 1.4.3<a class="headerlink" href="#cqtdeployer-143" title="Permanent link">&para;</a></h2>
+<h3 id="fixes_4">Fixes<a class="headerlink" href="#fixes_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fixed display of the application downloaded from the snap store and installers in the ubuntu 20.04 application settings menu</li>
+</ul>
+<h3 id="new-features_5">New features<a class="headerlink" href="#new-features_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>added support recursive ignore for ignoreEnvirement #356</li>
+</ul>
+<h3 id="new-options_6">New options<a class="headerlink" href="#new-options_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>noRecursiveiIgnoreEnv - Disables recursive ignore for ignoreEnv option.</li>
+</ul>
+<h2 id="cqtdeployer-142">CQtDeployer 1.4.2<a class="headerlink" href="#cqtdeployer-142" title="Permanent link">&para;</a></h2>
+<h3 id="fixes_5">Fixes<a class="headerlink" href="#fixes_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>fixed #337 (error generate installer with custom name)</li>
+<li>fixed #338 (windows version collect pdb files)</li>
+<li>fixed #339 (error of show all help messages)</li>
+<li>fixed #340 (cqdeployer don't added a targets dirs into "ignore")</li>
+<li>fixed #341 (The clear option don't delete old installer)</li>
+</ul>
+<h2 id="cqtdeployer-141">CQtDeployer 1.4.1<a class="headerlink" href="#cqtdeployer-141" title="Permanent link">&para;</a></h2>
+<h3 id="fixes_6">Fixes<a class="headerlink" href="#fixes_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fixed Not deploying platformthemes (#324)</li>
+<li>Fixed create shortcuts on windows (#322)</li>
+<li>Minor improvements and fixes</li>
+</ul>
+<h2 id="cqtdeployer-140">CQtDeployer 1.4.0<a class="headerlink" href="#cqtdeployer-140" title="Permanent link">&para;</a></h2>
+<h3 id="fixes_7">Fixes<a class="headerlink" href="#fixes_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fixed The help output in the console, now the actual size of the console is recounted before the output, which allows you to correctly transfer text.</li>
+<li>Fixed work with the deployment of Qt plugins. Now plug-ins do not extract all system dependencies, but only qt. Extract system dependencies caused applications to crash due to incompatible plugin libraries.</li>
+<li>Minor bug fixes and improvements.</li>
+</ul>
+<h3 id="new-features_6">New features<a class="headerlink" href="#new-features_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added support for qmake search from the system environment.</li>
+<li>Added the ability to initialize the repository for further packaging, similar to git init.</li>
+<li>Added support for Qt Install Framework packages. Now you can pack the distribution into the installer.</li>
+<li>Added the ability to split the final distribution into several packages.</li>
+<li>Added the ability to unify the creation of packages for the final distribution.</li>
+<li>Added support for adding custom scripts to application launch scripts.</li>
+<li>Added support for extracting system dependencies for Windows.</li>
+<li>Added support for RPATH for Linux. Now cqtdeployer can independently determine the necessary qmake to deploy the application.</li>
+<li>Added support for finding the required dependency by library name.</li>
+<li>Added support for Qt libraries from Linux distributions repositories.</li>
+<li>Added new alias for the run command (cqt and cqtdeployer.cqt) for fast deploy of applications.</li>
+<li>Added support the native name of command for windows. Now you can run a cqtdeployer from cqtdeployer commnad in cmd and powershell.</li>
+</ul>
+<h3 id="new-options_7">New options<a class="headerlink" href="#new-options_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>init - will initialize cqtdeployer.json file (configuration file). For example: "cqtdeployer init" - to initialize the configuration of a base package. "cqtdeployer -init multi" - to initialize the configuration of several packages.</li>
+<li>noCheckRPATH - disables the automatic search for paths to qmake in executable files (Linux only).</li>
+<li>noCheckPATH - disables the automatic search for paths to qmake in the system environment.</li>
+<li>extractPlugins - forces to extract all plug-in dependencies.</li>
+<li>qif - creates an installer at the end of the deployment.</li>
+<li>extraLibs - adds a template for an additional library, which should be included in the distribution.</li>
+<li>customScript - adds a custom script to the startup script of the application.</li>
+<li>-targetPackage [package; tar1, package; tar2] - used to form packages, denotes lists of target files for specific packages.</li>
+<li>recOut - indicates in which folder the resources will be added after deployment.</li>
+<li>name - sets the name of the package.</li>
+<li>description - sets the package description</li>
+<li>deployVersion - sets the package version</li>
+<li>releaseDate -  sets the release date of the package.</li>
+<li>icon -  sets the package icon.</li>
+<li>publisher - sets the publisher of the package.</li>
+<li>qifStyle - Sets the path to the CSS style file or sets the default style. Available styles: quasar</li>
+<li>qifBanner - Sets path to the banner png file.</li>
+<li>qifLogo - Sets path to the logo png file.</li>
+</ul>
+<h2 id="cqtdeployer-132">CQtDeployer 1.3.2<a class="headerlink" href="#cqtdeployer-132" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fixed #218 (The CQtDeployer adding sh scripts for target libraries.)</li>
+<li>Fixed #217 (The Qmake option did not work with the configuration file.)</li>
+</ul>
+<hr />
+<h2 id="cqtdeployer-131">CQtDeployer 1.3.1<a class="headerlink" href="#cqtdeployer-131" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fixed a task #191 (ignore command for plugins)</li>
+<li>Fixed a task #192  (invalid paths when creating) </li>
+<li>Fixed absalute pathes of deployement file (see <a href="DeployConfigFile">confFile</a>)</li>
+</ul>
+<hr />
+<h2 id="cqtdeployer-130">CQtDeployer 1.3.0<a class="headerlink" href="#cqtdeployer-130" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added support of qt.conf for Linux</li>
+<li>Added support of config file for project (deploy.json) with all rules of deployment, for create deploy.json use flag -confFile [./path/to/file.json],</li>
+<li>Added support of output dirs for all deployement files #145,</li>
+<li>Added support of deploy WebEngine #146</li>
+<li>Added support multi package in cqtdeployer installer </li>
+<li>Renamed project from Console-QtDeployer to CQtDeployer #139</li>
+<li>Fixed deployment of system libs in linux #172</li>
+<li>Added new tests of application</li>
+<li>Removed flag noLibC and added flag deploySystem-with-libc. If you need libc in the program, use the deploySystem-with-libc flag, and if not, use deploySystem.</li>
+<li>The always-overwrite flag has been replaced with noOverwrite, now all files are overwritten by default, use noOverwrite to disable overwriting.</li>
+</ul>
+<hr />
+<h2 id="cqtdeployer-123">CQtDeployer 1.2.3<a class="headerlink" href="#cqtdeployer-123" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added support of qt.conf for Windows builds  #130 </li>
+<li>Fixed bug #129 now the 'clear' flag  remove only copied files.</li>
+<li>Fixed ignoreEnv flag </li>
+<li>Fixed deploySystem flag</li>
+</ul>
+<hr />
+<h2 id="cqtdeployer-122">CQtDeployer 1.2.2<a class="headerlink" href="#cqtdeployer-122" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added new flag noLibc for ignore libc and li-linux libs </li>
+<li>Fixed bug #125 Deployed system lib (working with simple projects, for big projects no recommended)</li>
+<li>Fixed ignoreEnv flag </li>
+</ul>
+<hr />
+<h2 id="cqtdeployer-121">CQtDeployer 1.2.1<a class="headerlink" href="#cqtdeployer-121" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added new ignore flag (ignoreEnv). This flag disables unnecessary environment </li>
+<li>Added support QIFW (online installer for windows and Other Linux distributives)</li>
+<li>Added support update for windows and Other Linux distributives (not snap)</li>
+<li>Fixed bug #116 (copy files from removable media)</li>
+<li>Fixed bug #115 (create target in folder with russean name) </li>
+<li>Fixed big size of msvc version </li>
+<li>FIxed crossdeploy Linux &gt;&gt; Windows</li>
+<li>Removeв old build scripts</li>
+</ul>
+<hr />
+<h2 id="cqtdeployer-120">CQtDeployer 1.2.0<a class="headerlink" href="#cqtdeployer-120" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added own qml dependecies scaner.</li>
+<li>Moved to used a new <a href="https://github.com/QuasarApp/pe-parse/tree/7138bb218a05c81d825728ba8a0a6f6a56c4fdbc">PE-Lib scaner</a>.</li>
+<li>Moved to used a new <a href="https://github.com/qt/qttools/blob/b0147a5d79ce7a7e77a24f36aaddfacb1a1517c8/src/shared/winutils/elfreader.h">ELF-lib scaner</a>.</li>
+<li>Added a new unit tests.</li>
+<li>Added  support of snap version (home dir only).</li>
+<li>Added new flag qmlExtern - for use qt qml import scaner.</li>
+<li>Added support a levels of verbose log (0-3).</li>
+<li>Fixed log of deploy app.</li>
+<li>Fixed deploy the app on snap version.</li>
+</ul>
+<hr />
+<h2 id="cqtdeployer-112">CQtDeployer 1.1.2<a class="headerlink" href="#cqtdeployer-112" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added support of translations</li>
+<li>Added a flag for disable deploy translations</li>
+<li>Added the strip flag on linux version</li>
+<li>Added unit tests</li>
+<li>Fixed deploy with shared version</li>
+<li>Fixed bug deploy on current dir with snap and static versions </li>
+</ul>
+<hr />
+<h2 id="cqtdeployer-111">CQtDeployer 1.1.1<a class="headerlink" href="#cqtdeployer-111" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fixed qml build in dinomisc version</li>
+<li>Fixed -recursiveDepth flag</li>
+<li>Fixed -libDir flag operation</li>
+<li>The output of the application has been cleaned, a part of the log has been moved to verbose</li>
+</ul>
+<hr />
+<h2 id="cqtdeployer-110">CQtDeployer 1.1.0<a class="headerlink" href="#cqtdeployer-110" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added windows support (dynamic linking only)</li>
+<li>Added support for snap (now available in the snapstore)</li>
+<li>Added snap build scripts</li>
+<li>Added flag binDir allowing recursively to capture exe dll and so</li>
+<li>Changed the logic of the bin flag now, if you select a folder in the file location, then all its contents will be captured</li>
+<li>Changed and corrected the logic of the clear flag now it cleans all the expanded content on a specific target.</li>
+<li>Added flag targetDir which defines the place where the expanded project will lie</li>
+<li>The structure of the deployed project has been changed, now all the launch shells are in the root and the binaries are in the bin folder, a launch script of the same name is created for each binary.</li>
+<li>Removed old runScript flag due to change of deployment logic</li>
+<li>Added verbose flag for debugging by</li>
+<li>Fixed performance bugs</li>
+</ul>
+<hr />
+<h2 id="cqtdeployer-102">CQtDeployer 1.0.2<a class="headerlink" href="#cqtdeployer-102" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added a script to build (dynamic and static release)</li>
+<li>Added flag -libDir to install additional path for additional libraries of the application</li>
+<li>Added flag -extraPlugin to install an additional path for additional application plugins</li>
+<li>Added build for C libraries only</li>
+<li>Fixed deployment</li>
+<li>Fixed startup script</li>
+<li>Fixed static build</li>
+</ul>
+<hr />
+<h2 id="cqtdeployer-101">CQtDeployer 1.0.1<a class="headerlink" href="#cqtdeployer-101" title="Permanent link">&para;</a></h2>
+<ul>
+<li>fix qml deploy (redundancy)</li>
+<li>fix run script</li>
+</ul>
+<hr />
+<h2 id="cqtdeployer-100">CQtDeployer 1.0.0<a class="headerlink" href="#cqtdeployer-100" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added a flag runScript</li>
+<li>Added a flag allQmlDependes</li>
+<li>Fixed bug of deploy qml</li>
+<li>Fixed bug of deploy plugins</li>
+<li>Added support static build </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../ReleaseReviews/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Release reviews">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Release reviews
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../1_6/" class="md-footer__link md-footer__link--next" aria-label="Next: 1.6">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                1.6
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["content.code.copy", "navigation.footer", "navigation.indexes", "navigation.sections", "navigation.top", "navigation.tracking", "search.highlight", "search.suggest", "toc"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
