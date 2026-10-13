@@ -1,0 +1,82 @@
+# CQtDeployer documentation site (GitHub Pages)
+#
+# Built with MkDocs + the Material theme. Before `mkdocs build` runs,
+# the "Deploy Documentation (GitHub Pages)" workflow copies the root
+# README.md to docs/index.md (the site home page) and generates the
+# Doxygen HTML output into docs/api/, so the documentation section of
+# the site is served from /api/. The Doxygen output renders the whole
+# md/ wiki (English and Russian documentation, see INPUT in
+# doxygen.conf.in), which is the project's "doxygen documentation".
+
+site_name: CQtDeployer
+site_description: CQtDeployer helps you to extract all libraries your executable depends on and to create a launch script for your application.
+site_url: https://quasarapp.github.io/CQtDeployer/
+
+repo_name: QuasarApp/CQtDeployer
+repo_url: https://github.com/QuasarApp/CQtDeployer
+edit_uri: https://github.com/QuasarApp/CQtDeployer/edit/main/
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      # Orange brand palette derived from the project banner
+      # (res/CQtDeployer banner.png, dominant burnt orange ~#b06030),
+      # expressed through Material's named "orange" color so the site
+      # needs no custom CSS. The palette is intentionally different
+      # from the sibling documentation sites (Heart: maroon,
+      # OpenSimplex2: teal). Orange top bar, orange links.
+      primary: orange
+      accent: orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to dark mode
+    - scheme: slate
+      # Same orange top bar on the slate neutrals. The slate links are
+      # derived from the primary color by the theme, so the same orange
+      # accent keeps both schemes consistent (Material ships prebuilt
+      # accent rules for the base color names only).
+      primary: orange
+      accent: orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to light mode
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - content.code.copy
+    - navigation.footer
+    - navigation.indexes
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.suggest
+    - toc
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+nav:
+  # index.md is copied from the root README.md by the documentation
+  # workflow before the MkDocs build, so the README stays the single
+  # source of truth and the generated copy is not committed.
+  - Home: index.md
+  # api/index.html is the static Doxygen index generated into docs/api/
+  # by the documentation workflow before the MkDocs build. It lists the
+  # whole md/ wiki (the English and Russian documentation).
+  - Documentation: api/index.html

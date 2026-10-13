@@ -1,0 +1,339 @@
+/*
+ * doxygen-material.css
+ *
+ * Material Design restyling for the Doxygen HTML output. It is attached
+ * through the HTML_EXTRA_STYLESHEET tag and therefore loaded after the
+ * generated doxygen.css, so every rule in this file wins the cascade.
+ *
+ * Doxygen 1.18+ drives its look with CSS custom properties, which makes
+ * the restyle a pure palette/font re-mapping: the orange brand palette
+ * and the Roboto font stack of the MkDocs site (see mkdocs.yml) are
+ * applied to the light scheme, and the same brand colors on the site's
+ * "slate" neutrals are applied to the dark scheme (Doxygen follows the
+ * system color scheme automatically).
+ *
+ * Palette reference (orange brand palette derived from the project
+ * banner res/CQtDeployer banner.png, dominant burnt orange ~#b06030;
+ * expressed with the Material "orange" scale, distinct from the
+ * sibling documentation sites - Heart: maroon, OpenSimplex2: teal):
+ *   primary        #e65100 (orange 900: bars, links, labels, icons)
+ *   primary dark   #bf360c (deep orange 900: visited links, table headers)
+ *   primary light  #ef6c00 (orange 700: external links, emphasis)
+ *   accent         #fb8c00 (orange 600: glow / dark-scheme emphasis)
+ *   accent light   #ffb74d (orange 300: dark-scheme links)
+ *   soft tints     #fff3e0 #ffe0b2 #ffcc80 #ffb74d (50/100/200/300 tints)
+ */
+
+/* ------------------------------------------------------------------ */
+/* Light scheme                                                        */
+/* ------------------------------------------------------------------ */
+html {
+    /* page base */
+    --page-background-color: #ffffff;
+    --page-foreground-color: rgba(0, 0, 0, 0.87);
+    --page-link-color: #e65100;
+    --page-visited-link-color: #bf360c;
+    --page-external-link-color: #ef6c00;
+
+    /* index */
+    --index-odd-item-bg-color: #fff3e0;
+    --index-even-item-bg-color: #ffffff;
+    --index-header-color: #bf360c;
+    --index-separator-color: #ffcc80;
+
+    /* header (top app bar) */
+    --header-background-color: #ffffff;
+    --header-separator-color: #ffe0b2;
+    --group-header-separator-color: #ffcc80;
+    --group-header-color: #e65100;
+    --footer-foreground-color: #e65100;
+    --citation-label-color: #e65100;
+    --glow-color: #ffb74d;
+    --title-background-color: #ffffff;
+    --title-separator-color: #ffe0b2;
+
+    --blockquote-background-color: #fff3e0;
+    --blockquote-border-color: #ffcc80;
+
+    --scrollbar-thumb-color: #ffb74d;
+    --scrollbar-background-color: #fff3e0;
+
+    /* icons */
+    --icon-background-color: #e65100;
+    --icon-foreground-color: #ffffff;
+    --icon-folder-open-fill-color: #ffcc80;
+    --icon-folder-fill-color: #ffe0b2;
+    --icon-folder-border-color: #e65100;
+    --icon-doc-fill-color: #ffe0b2;
+    --icon-doc-border-color: #e65100;
+
+    /* brief member declaration list */
+    --memdecl-background-color: #fff3e0;
+    --memdecl-foreground-color: rgba(0, 0, 0, 0.7);
+    --memdecl-template-color: #e65100;
+    --memdecl-border-color: #ffe0b2;
+
+    /* detailed member list */
+    --memdef-border-color: #ffcc80;
+    --memdef-title-background-color: #ffe0b2;
+    --memdef-proto-background-color: #fff3e0;
+    --memdef-proto-text-color: #bf360c;
+    --memdef-param-name-color: #8d6e63;
+    --memdef-template-color: #e65100;
+
+    /* tables */
+    --table-cell-border-color: #ffb74d;
+    --table-header-background-color: #e65100;
+    --table-header-foreground-color: #ffffff;
+
+    /* labels */
+    --label-background-color: #e65100;
+    --label-left-top-border-color: #bf360c;
+    --label-right-bottom-border-color: #ffb74d;
+    --label-foreground-color: #ffffff;
+
+    /* navigation bar / tree / menu */
+    --nav-background-color: #fff3e0;
+    --nav-foreground-color: #e65100;
+    --nav-border-color: #ffe0b2;
+    --nav-breadcrumb-separator-color: #ffcc80;
+    --nav-breadcrumb-active-bg: #ffe0b2;
+    --nav-breadcrumb-color: #e65100;
+    --nav-splitbar-bg-color: #ffe0b2;
+    --nav-splitbar-handle-color: #ffb74d;
+    --nav-text-normal-color: #bf360c;
+    --nav-menu-button-color: #e65100;
+    --nav-menu-background-color: #ffffff;
+    --nav-menu-foreground-color: rgba(0, 0, 0, 0.7);
+    --nav-menu-active-bg: #ffe0b2;
+    --nav-menu-active-color: #e65100;
+    --nav-arrow-color: #ffcc80;
+    --nav-arrow-selected-color: #ffb74d;
+
+    /* sync icon */
+    --sync-icon-border-color: #ffe0b2;
+    --sync-icon-background-color: #fff3e0;
+    --sync-icon-selected-background-color: #ffe0b2;
+    --sync-icon-color: #ffcc80;
+    --sync-icon-selected-color: #e65100;
+
+    /* table of contents */
+    --toc-background-color: #fff3e0;
+    --toc-border-color: #ffe0b2;
+    --toc-header-color: #e65100;
+
+    /* search field */
+    --search-foreground-color: #909090;
+    --search-active-color: rgba(0, 0, 0, 0.87);
+    --search-box-border-color: #ffcc80;
+    --search-filter-highlight-bg-color: #e65100;
+    --search-results-foreground-color: #e65100;
+
+    /* code fragments */
+    --fragment-foreground-color: rgba(0, 0, 0, 0.87);
+    --fragment-background-color: #fff3e0;
+    --fragment-border-color: #ffcc80;
+    --fragment-lineno-background-color: #fff8f0;
+    --fragment-lineno-foreground-color: rgba(0, 0, 0, 0.54);
+    --fragment-lineno-link-fg-color: #e65100;
+    --fragment-lineno-link-bg-color: #ffe0b2;
+    --fragment-lineno-link-hover-fg-color: #e65100;
+    --fragment-lineno-link-hover-bg-color: #ffcc80;
+    --fragment-copy-ok-color: #2e7d32;
+
+    /* tooltips */
+    --tooltip-foreground-color: rgba(0, 0, 0, 0.87);
+    --tooltip-background-color: rgba(255, 255, 255, 0.95);
+    --tooltip-arrow-background-color: #ffffff;
+    --tooltip-border-color: rgba(191, 122, 60, 0.7);
+    --tooltip-doc-color: #616161;
+    --tooltip-declaration-color: #2e7d32;
+    --tooltip-link-color: #e65100;
+
+    /* fonts (same stack as the MkDocs site) */
+    --font-family-normal: Roboto, system-ui, -apple-system, 'Segoe UI', Ubuntu, 'Noto Sans', sans-serif;
+    --font-family-monospace: 'Roboto Mono', 'JetBrains Mono', Consolas, Monaco, monospace;
+    --font-family-nav: Roboto, system-ui, sans-serif;
+    --font-family-title: Roboto, system-ui, sans-serif;
+    --font-family-toc: Roboto, system-ui, sans-serif;
+    --font-family-search: Roboto, system-ui, sans-serif;
+    --font-family-tooltip: Roboto, sans-serif;
+}
+
+/* ------------------------------------------------------------------ */
+/* Dark scheme (the "slate" palette of the MkDocs site)                */
+/* ------------------------------------------------------------------ */
+@media (prefers-color-scheme: dark) {
+    html:not(.dark-mode) {
+        /* page base */
+        --page-background-color: #1e2129;
+        --page-foreground-color: rgba(255, 255, 255, 0.87);
+        --page-link-color: #ffb74d;
+        --page-visited-link-color: #ffd180;
+        --page-external-link-color: #ffcc80;
+
+        /* index */
+        --index-odd-item-bg-color: #262a35;
+        --index-even-item-bg-color: #1e2129;
+        --index-header-color: #ffd180;
+        --index-separator-color: #3a4150;
+
+        /* header (top app bar) */
+        --header-background-color: #1a1d24;
+        --header-separator-color: #2e3442;
+        --group-header-separator-color: #3a4150;
+        --group-header-color: #ffb74d;
+        --footer-foreground-color: #ffb74d;
+        --citation-label-color: #ffb74d;
+        --glow-color: #fb8c00;
+        --title-background-color: #1e2129;
+        --title-separator-color: #2e3442;
+
+        --blockquote-background-color: #262a35;
+        --blockquote-border-color: #3a4150;
+
+        --scrollbar-thumb-color: #4c5468;
+        --scrollbar-background-color: #1e2129;
+
+        /* icons */
+        --icon-background-color: #e65100;
+        --icon-foreground-color: #ffffff;
+        --icon-folder-open-fill-color: #4c5468;
+        --icon-folder-fill-color: #2e3442;
+        --icon-folder-border-color: #ffb74d;
+        --icon-doc-fill-color: #2e3442;
+        --icon-doc-border-color: #ffb74d;
+
+        /* brief member declaration list */
+        --memdecl-background-color: #262a35;
+        --memdecl-foreground-color: rgba(255, 255, 255, 0.7);
+        --memdecl-template-color: #ffb74d;
+        --memdecl-border-color: #2e3442;
+
+        /* detailed member list */
+        --memdef-border-color: #3a4150;
+        --memdef-title-background-color: #262a35;
+        --memdef-proto-background-color: #1a1d24;
+        --memdef-proto-text-color: #ffd180;
+        --memdef-param-name-color: #ffcc80;
+        --memdef-template-color: #ffb74d;
+
+        /* tables */
+        --table-cell-border-color: #4c5468;
+        --table-header-background-color: #bf360c;
+        --table-header-foreground-color: #ffffff;
+
+        /* labels */
+        --label-background-color: #e65100;
+        --label-left-top-border-color: #bf360c;
+        --label-right-bottom-border-color: #ffcc80;
+        --label-foreground-color: #ffffff;
+
+        /* navigation bar / tree / menu */
+        --nav-background-color: #1a1d24;
+        --nav-foreground-color: #ffb74d;
+        --nav-border-color: #2e3442;
+        --nav-breadcrumb-separator-color: #3a4150;
+        --nav-breadcrumb-active-bg: #262a35;
+        --nav-breadcrumb-color: #ffb74d;
+        --nav-splitbar-bg-color: #262a35;
+        --nav-splitbar-handle-color: #4c5468;
+        --nav-text-normal-color: #ffd180;
+        --nav-menu-button-color: #ffb74d;
+        --nav-menu-background-color: #1e2129;
+        --nav-menu-foreground-color: rgba(255, 255, 255, 0.7);
+        --nav-menu-active-bg: #262a35;
+        --nav-menu-active-color: #ffb74d;
+        --nav-arrow-color: #3a4150;
+        --nav-arrow-selected-color: #ffb74d;
+
+        /* sync icon */
+        --sync-icon-border-color: #2e3442;
+        --sync-icon-background-color: #1a1d24;
+        --sync-icon-selected-background-color: #262a35;
+        --sync-icon-color: #3a4150;
+        --sync-icon-selected-color: #ffb74d;
+
+        /* table of contents */
+        --toc-background-color: #1a1d24;
+        --toc-border-color: #2e3442;
+        --toc-header-color: #ffb74d;
+
+        /* search field */
+        --search-foreground-color: #9aa3b5;
+        --search-active-color: rgba(255, 255, 255, 0.87);
+        --search-box-border-color: #3a4150;
+        --search-filter-background-color: rgba(30, 33, 41, 0.85);
+        --search-filter-foreground-color: rgba(255, 255, 255, 0.87);
+        --search-filter-border-color: rgba(76, 84, 104, 0.6);
+        --search-filter-highlight-bg-color: #e65100;
+        --search-results-background-color: rgba(30, 33, 41, 0.95);
+        --search-results-foreground-color: #ffb74d;
+        --search-results-border-color: rgba(76, 84, 104, 0.6);
+        --search-close-icon-bg-color: #5c657a;
+
+        /* code fragments */
+        --fragment-foreground-color: rgba(255, 255, 255, 0.87);
+        --fragment-background-color: #1a1d24;
+        --fragment-border-color: #3a4150;
+        --fragment-lineno-background-color: #262a35;
+        --fragment-lineno-foreground-color: rgba(255, 255, 255, 0.54);
+        --fragment-lineno-link-fg-color: #ffb74d;
+        --fragment-lineno-link-bg-color: #2e3442;
+        --fragment-lineno-link-hover-fg-color: #ffb74d;
+        --fragment-lineno-link-hover-bg-color: #3a4150;
+        --fragment-copy-ok-color: #4caf50;
+
+        /* tooltips */
+        --tooltip-foreground-color: rgba(255, 255, 255, 0.87);
+        --tooltip-background-color: rgba(26, 29, 36, 0.95);
+        --tooltip-arrow-background-color: #1a1d24;
+        --tooltip-border-color: rgba(76, 84, 104, 0.7);
+        --tooltip-doc-color: #b0bec5;
+        --tooltip-declaration-color: #66bb6a;
+        --tooltip-link-color: #ffb74d;
+        --tooltip-shadow: none;
+
+        /* fonts (same stack as the MkDocs site) */
+        --font-family-normal: Roboto, system-ui, -apple-system, 'Segoe UI', Ubuntu, 'Noto Sans', sans-serif;
+        --font-family-monospace: 'Roboto Mono', 'JetBrains Mono', Consolas, Monaco, monospace;
+        --font-family-nav: Roboto, system-ui, sans-serif;
+        --font-family-title: Roboto, system-ui, sans-serif;
+        --font-family-toc: Roboto, system-ui, sans-serif;
+        --font-family-search: Roboto, system-ui, sans-serif;
+        --font-family-tooltip: Roboto, sans-serif;
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* Small Material structural tweaks (both schemes)                     */
+/* ------------------------------------------------------------------ */
+
+/* elevation for the top app bar */
+#top {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* medium-weight titles, like Material headlines */
+#projectname {
+    font-weight: 500;
+}
+
+#projectnumber {
+    color: var(--memdecl-template-color);
+}
+
+h1.groupheader,
+h2.groupheader,
+h3.groupheader {
+    font-weight: 500;
+}
+
+/* rounded search field and breadcrumb chip */
+#MSearchField {
+    border-radius: 4px;
+}
+
+#nav-path ul {
+    border-radius: 4px;
+}
