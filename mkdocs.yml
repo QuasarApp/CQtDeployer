@@ -1,12 +1,13 @@
 # CQtDeployer documentation site (GitHub Pages)
 #
-# Built with MkDocs + the Material theme. Before `mkdocs build` runs,
-# the "Deploy Documentation (GitHub Pages)" workflow copies the root
-# README.md to docs/index.md (the site home page) and generates the
-# Doxygen HTML output into docs/api/, so the documentation section of
-# the site is served from /api/. The Doxygen output renders the whole
-# md/ wiki (English and Russian documentation, see INPUT in
-# doxygen.conf.in), which is the project's "doxygen documentation".
+# A classic Markdown documentation site built with MkDocs + the Material
+# theme. The content is the md/ wiki (the English and Russian
+# documentation of the project), so the site is generated straight from
+# Markdown without Doxygen. Before `mkdocs build` runs, the
+# "Deploy Documentation (GitHub Pages)" workflow copies the root
+# README.md to docs/index.md (the site home page) and mirrors the md/
+# tree and the banner image into docs/, because the README references
+# them with relative links.
 
 site_name: CQtDeployer
 site_description: CQtDeployer helps you to extract all libraries your executable depends on and to create a launch script for your application.
@@ -76,7 +77,57 @@ nav:
   # workflow before the MkDocs build, so the README stays the single
   # source of truth and the generated copy is not committed.
   - Home: index.md
-  # api/index.html is the static Doxygen index generated into docs/api/
-  # by the documentation workflow before the MkDocs build. It lists the
-  # whole md/ wiki (the English and Russian documentation).
-  - Documentation: api/index.html
+  # The wiki landing page (md/README.md) offers the language choice.
+  - Documentation: md/README.md
+  # The English documentation (md/en/).
+  - English:
+      - Welcome: md/en/Home.md
+      - What is CQtDeployer: md/en/Description.md
+      - Quick guide: md/en/QuickGuide.md
+      - How to deploy: md/en/Guide.md
+      - Install CQtDeployer: md/en/Build-and-Install.md
+      - Options: md/en/Options.md
+      - Deployment file: md/en/DeployConfigFile.md
+      - Qt Installer Framework: md/en/QIF.md
+      - Environment variables: md/en/EnvironmentVariables.md
+      - Custom scripts: md/en/CustomScripts.md
+      - Extra files: md/en/ExtraFiles.md
+      - Default templates: md/en/ExtractDefaultsTemplates.md
+      - Disabling shortcuts: md/en/DisableShortcats.md
+      - Packaging: md/en/Packing.md
+      - ZIP: md/en/ZIP.md
+      - DEB: md/en/DEB.md
+      - arm machines: md/en/arm.md
+      - Compare features: md/en/CompareFeatures.md
+      - Release reviews: md/en/ReleaseReviews.md
+      - Change log: md/en/Changelog.md
+      - Releases:
+          - 1.6: md/en/1_6.md
+          - 1.5: md/en/1_5.md
+          - 1.4: md/en/1_4.md
+  # The Russian documentation (md/ru/).
+  - Русский:
+      - Добро пожаловать: md/ru/Home.md
+      - Что такое CQtDeployer: md/ru/Description.md
+      - Быстрый гайд: md/ru/QuickGuide.md
+      - Как развернуть: md/ru/Guide.md
+      - Использование параметров: md/ru/Options.md
+      - Файл развертывания: md/ru/DeployConfigFile.md
+      - Qt Installer Framework: md/ru/QIF.md
+      - Переменные окружения: md/ru/EnvironmentVariables.md
+      - Пользовательские скрипты: md/ru/CustomScripts.md
+      - Дополнительные данные: md/ru/ExtraFiles.md
+      - Шаблоны по умолчанию: md/ru/ExtractDefaultsTemplates.md
+      - Отключение ярлыков: md/ru/DisableShortcats.md
+      - Упаковка: md/ru/Packing.md
+      - ZIP: md/ru/ZIP.md
+      - DEB: md/ru/DEB.md
+      - Сравнение особенностей: md/ru/CompareFeatures.md
+      - Обзоры на релизы: md/ru/ReleaseReviews.md
+      - Журнал изменений: md/ru/Changelog.md
+      - Релизы:
+          - 1.5: md/ru/1_5.md
+          - 1.4: md/ru/1_4.md
+  # The Marketplace page (md/Marketplace/) describes how to obtain the
+  # application.
+  - Marketplace: md/Marketplace/Marketplace.md

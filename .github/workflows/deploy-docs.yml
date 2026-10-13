@@ -16,56 +16,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          # The full history is required to compute the
-          # 1.6.<commit-count>.<short-sha> project version.
-          fetch-depth: 0
 
-      - name: Install Doxygen
-        uses: ssciwr/doxygen-install@v2.0.3
-        with:
-          # The latest stable release the documentation was generated and
-          # validated with.
-          version: 1.18.0
-
-      - name: Install Graphviz
-        uses: ts-graphviz/setup-graphviz@v2.0.2
-
-      - name: Generate the Doxygen configuration file
+      - name: Copy the README and the documentation pages
         run: |
-          PROJECT_VERSION="1.6.$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
-          # Two build-time substitutions on top of the version: the HTML
-          # output goes to docs/api/ (OUTPUT_DIRECTORY, HTML_OUTPUT stays
-          # "." in doxygen.conf.in) so the MkDocs build serves it as the
-          # /api/ documentation section of the site. The INPUT of the
-          # config is the md/ wiki (all md documentation), so USE_MDFILES
-          # has to be enabled explicitly: the tag is absent from
-          # doxygen.conf.in and defaults to NO in the newer Doxygen
-          # releases, which would then find no input files.
-          sed -e "s|@CQT_DEPLOYER_VERSION@|${PROJECT_VERSION}|" \
-              -e "s|^OUTPUT_DIRECTORY       = docs$|OUTPUT_DIRECTORY       = docs/api|" \
-              doxygen.conf.in > doxygen.conf
-          grep -q '^USE_MDFILES' doxygen.conf || echo 'USE_MDFILES        = YES' >> doxygen.conf
-          grep -E '^(PROJECT_NAME|PROJECT_NUMBER|OUTPUT_DIRECTORY|USE_MDFILES)' doxygen.conf
-
-      - name: Generate the Doxygen HTML documentation
-        run: |
-          # The docs/ directory is generated at build time (gitignored),
-          # so it has to be created before Doxygen writes its output
-          # into docs/api/.
-          mkdir -p docs
-          doxygen doxygen.conf
-
-      - name: Copy the README and the documentation assets
-        run: |
-          # docs/index.md is generated from the root README.md at build
-          # time (it is gitignored), so the README stays the single
-          # source of truth for the site home page. The README links the
-          # md/en/Build-and-Install.md and md/en/Options.md pages and
-          # res/CQtDeployer_banner_web.png relative to its own location,
-          # and `mkdocs build --strict` fails on unresolved relative
-          # links, so the referenced md/ tree and banner image are
-          # mirrored into docs/ as well.
+          # The site is a classic Markdown site: the content is the md/
+          # wiki (the English and Russian documentation of the project),
+          # rendered straight by MkDocs. docs/index.md is generated from
+          # the root README.md at build time (it is gitignored), so the
+          # README stays the single source of truth for the site home
+          # page. The README links the md/en/Build-and-Install.md and
+          # md/en/Options.md pages and res/CQtDeployer_banner_web.png
+          # relative to its own location, and `mkdocs build --strict`
+          # fails on unresolved relative links, so the referenced md/
+          # tree and banner image are mirrored into docs/ as well.
           mkdir -p docs
           cp README.md docs/index.md
           cp -r md docs/md
@@ -80,7 +43,7 @@ jobs:
       - name: Build the documentation site
         run: |
           mkdocs build --strict
-          ls -la site site/api | head -40
+          ls -la site
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
