@@ -1,0 +1,53 @@
+name: Deploy Documentation (GitHub Pages)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    name: Build the documentation site and deploy to GitHub Pages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Copy the README and the documentation pages
+        run: |
+          # The site is a classic Markdown site: the content is the md/
+          # wiki (the English and Russian documentation of the project),
+          # rendered straight by MkDocs. docs/index.md is generated from
+          # the root README.md at build time (it is gitignored), so the
+          # README stays the single source of truth for the site home
+          # page. The README links the md/en/Build-and-Install.md and
+          # md/en/Options.md pages and res/CQtDeployer_banner_web.png
+          # relative to its own location, and `mkdocs build --strict`
+          # fails on unresolved relative links, so the referenced md/
+          # tree and banner image are mirrored into docs/ as well.
+          mkdir -p docs
+          cp README.md docs/index.md
+          cp -r md docs/md
+          mkdir -p docs/res
+          cp 'res/CQtDeployer_banner_web.png' docs/res/CQtDeployer_banner_web.png
+
+      - name: Install MkDocs and the Material theme
+        run: |
+          python -m pip install --upgrade pip
+          pip install mkdocs==1.6.1 mkdocs-material==9.7.7
+
+      - name: Build the documentation site
+        run: |
+          mkdocs build --strict
+          ls -la site
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: site
+          clean: true
