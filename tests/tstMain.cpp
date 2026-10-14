@@ -28,7 +28,6 @@
 #include "deploytargettest.h"
 #include "disablerunscripttest.h"
 #include "disableshortcutstest.h"
-#include "distrostructtest.h"
 #include "emptypackagestest.h"
 #include "extractlibtest.h"
 #include "extradatatest.h"
@@ -47,7 +46,6 @@
 #include "overwritetest.h"
 #include "overwritewithpackingtest.h"
 #include "packagestest.h"
-#include "pathutilstest.h"
 #include "prefixtest.h"
 #include "qifwachiveformattest.h"
 #include "qifwbinarycreatortest.h"
@@ -121,7 +119,6 @@ private slots:
         TestCase(deploytargettest,  DeployTargetTest)
         TestCase(disablerunscripttest, DisableRunScriptTest )
         TestCase(disableshortcutstest,  DisableShortcutsTest)
-        TestCase(distrostructtest, DistroStructTest )
         TestCase(emptypackagestest,  EmptyPackagesTest)
         TestCase(extractlibtest,  ExtractLibTest)
         TestCase(extradatatest, ExtraDataTest )
@@ -141,7 +138,6 @@ private slots:
         TestCase(overwritetest, OverwiriteTest )
         TestCase(overwritewithpackingtest, OverwiriteWithPackingTest )
         TestCase(packagestest, PacakgesTest )
-        TestCase(pathutilstest, PathUtilsTest )
         TestCase(prefixtest, PrefixTest )
         TestCase(qifwachiveformattest, QIFWArchiveFormatTest )
         TestCase(qifwbinarycreatortest, QIFWBinaryCreatorTest )

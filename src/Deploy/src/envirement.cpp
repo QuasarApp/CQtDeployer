@@ -91,8 +91,10 @@ bool Envirement::isIgnore(const QString &path) const {
 }
 
 void Envirement::clear() {
-    if (_ignoreEnvList)
+    if (_ignoreEnvList) {
         delete _ignoreEnvList;
+        _ignoreEnvList = nullptr;
+    }
 
     _dataEnvironment.clear();
 

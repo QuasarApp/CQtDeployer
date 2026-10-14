@@ -51,6 +51,7 @@ if(DEFINED ENV{GITHUB_ENV})
 endif()
 
 option(CQT_DEPLOYER_TESTS "This option disables or enables tests of the ${PROJECT_NAME} project" OFF)
+option(CQT_DEPLOYER_UNIT_TESTS "This option disables or enables the fast unit tests of the ${PROJECT_NAME} project" OFF)
 option(CQT_DEPLOYER_DOCS "This option disables or enables documentation of the ${PROJECT_NAME} project" OFF)
 
 option(CQT_DEPLOYER_TOOL "This option disables or enables example app of the ${PROJECT_NAME} project" ON)
@@ -93,6 +94,12 @@ if (CQT_DEPLOYER_TESTS)
     add_subdirectory(tests)
 else()
     message("The ${PROJECT_NAME} tests is disabled.")
+endif()
+
+if (CQT_DEPLOYER_UNIT_TESTS)
+    add_subdirectory(tests/unittests)
+else()
+    message("The ${PROJECT_NAME} unit tests are disabled.")
 endif()
 
 configure_file_in("" "${CMAKE_CURRENT_SOURCE_DIR}/doxygen.conf")
