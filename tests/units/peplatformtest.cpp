@@ -253,11 +253,34 @@ void PePlatformTest::test() {
                   "VCRUNTIME140.dll"}, true, platform);
     QCOMPARE(platform, Platform::Win64);
 
-    // MSVC app linked against the MSVC CRT: imports msvcrt.dll but no MinGW
-    // runtime module, so it must NOT be tagged as MinGW
+    // MSVC app linked against the MSVC CRT: imports msvcrt.dll but no
+    // MSVC CRT (msvcr*.dll) and no MinGW runtime module, so it must NOT
+    // be tagged as MinGW or MSVC
     scanPlatform(dir, "app.exe",
                  {"msvcrt.dll", "KERNEL32.dll"}, true, platform);
     QCOMPARE(platform, Platform::Win64);
+
+    // MSVC app (PE32+): imports the MSVC CRT (msvcr*.dll) and no MinGW
+    // runtime module, so it gets the MSVC platform
+    scanPlatform(dir, "app.exe",
+                 {"MSVCR140.dll", "msvcp140.dll", "KERNEL32.dll"}, true, platform);
+    QCOMPARE(platform, Platform::Win64_MSVC);
+
+    // MSVC app (PE32): older MSVC CRT version (msvcr100.dll)
+    scanPlatform(dir, "app.exe",
+                 {"MSVCR100.dll", "KERNEL32.dll"}, false, platform);
+    QCOMPARE(platform, Platform::Win32_MSVC);
+
+    // MSVC app with the split CRT (msvcr140_1.dll)
+    scanPlatform(dir, "app.exe",
+                 {"msvcr140_1.dll", "KERNEL32.dll"}, true, platform);
+    QCOMPARE(platform, Platform::Win64_MSVC);
+
+    // A MinGW binary keeps the MinGW flavor even if it also imports the
+    // MSVC CRT
+    scanPlatform(dir, "app.exe",
+                 {"msvcrt.dll", "MSVCR140.dll", "libgcc_s_seh-1.dll"}, true, platform);
+    QCOMPARE(platform, Platform::Win64_MinGW_Msvcrt);
 
     // MinGW runtime library recognized by its file name (MSVC CRT build)
     scanPlatform(dir, "libwinpthread-1.dll",
@@ -295,6 +318,22 @@ void PePlatformTest::test() {
                                               Platform::Win64_MinGW_Ucrt), true);
     QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64,
                                               Platform::Win64), true);
+    // The MSVC family matches the generic platform of the same bitness
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MSVC,
+                                              Platform::Win64_MSVC), true);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MSVC,
+                                              Platform::Win64), true);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64,
+                                              Platform::Win64_MSVC), true);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win32_MSVC,
+                                              Platform::Win32), true);
+    // MSVC and MinGW runtime sets must never be mixed
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MinGW_Msvcrt,
+                                              Platform::Win64_MSVC), false);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MSVC,
+                                              Platform::Win64_MinGW_Msvcrt), false);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MinGW_Ucrt,
+                                              Platform::Win64_MSVC), false);
     // Different bitness or architecture stays incompatible
     QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win32_MinGW_Msvcrt,
                                               Platform::Win64_MinGW_Msvcrt), false);
@@ -302,6 +341,10 @@ void PePlatformTest::test() {
                                               Platform::Win_ARM_64), false);
     QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64,
                                               Platform::Win32), false);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win32_MSVC,
+                                              Platform::Win64_MSVC), false);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MSVC,
+                                              Platform::Win_ARM_64), false);
     QCOMPARE(DeployCore::isPlatformCompatible(Platform::UnknownPlatform,
                                               Platform::Win64), false);
 
@@ -343,6 +386,32 @@ void PePlatformTest::test() {
                  "UCRT rule must match UCRT MinGW lib");
         QVERIFY2(ucrtRules.isIgnore(msvcrtLib) == nullptr,
                  "UCRT rule must NOT match MSVCRT MinGW lib");
+
+        // A MSVC flavored library (same name, so the rule name matching
+        // does not hide the platform check)
+        LibInfo msvcLib = msvcrtLib;
+        msvcLib.setPlatform(Platform::Win64_MSVC);
+
+        // A generic Windows rule must match the MSVC flavor as well
+        QVERIFY2(win64Rules.isIgnore(msvcLib) != nullptr,
+                 "generic Win64 rule must match MSVC lib");
+
+        IgnoreData msvcRule("libstdc++");
+        msvcRule.platform = Platform::Win64_MSVC;
+        IgnoreRule msvcRules;
+        msvcRules.addRule(msvcRule);
+        // A flavored rule must only match the identical flavor
+        QVERIFY2(msvcRules.isIgnore(msvcLib) != nullptr,
+                 "MSVC rule must match MSVC lib");
+        QVERIFY2(msvcRules.isIgnore(msvcrtLib) == nullptr,
+                 "MSVC rule must NOT match MSVCRT MinGW lib");
+        QVERIFY2(msvcRules.isIgnore(ucrtLib) == nullptr,
+                 "MSVC rule must NOT match UCRT MinGW lib");
+        // MinGW flavored rules must not match the MSVC lib
+        QVERIFY2(msvcrtRules.isIgnore(msvcLib) == nullptr,
+                 "MSVCRT MinGW rule must NOT match MSVC lib");
+        QVERIFY2(ucrtRules.isIgnore(msvcLib) == nullptr,
+                 "UCRT MinGW rule must NOT match MSVC lib");
     }
 
     // Platform string conversion
@@ -350,12 +419,20 @@ void PePlatformTest::test() {
              QStringLiteral("win_x86_64, MinGW_Msvcrt"));
     QCOMPARE(DeployCore::platformToString(Platform::Win32_MinGW_Ucrt),
              QStringLiteral("win_x86, MinGW_Ucrt"));
+    QCOMPARE(DeployCore::platformToString(Platform::Win64_MSVC),
+             QStringLiteral("win_x86_64, MSVC"));
+    QCOMPARE(DeployCore::platformToString(Platform::Win32_MSVC),
+             QStringLiteral("win_x86, MSVC"));
     QCOMPARE(DeployCore::platformToString(Platform::Win64),
              QStringLiteral("win_x86_64"));
     QCOMPARE(DeployCore::getPlatformFromString("win_x86_64_msvcrt"),
              Platform::Win64_MinGW_Msvcrt);
     QCOMPARE(DeployCore::getPlatformFromString("win_x86_ucrt"),
              Platform::Win32_MinGW_Ucrt);
+    QCOMPARE(DeployCore::getPlatformFromString("win_x86_64_msvc"),
+             Platform::Win64_MSVC);
+    QCOMPARE(DeployCore::getPlatformFromString("win_x86_msvc"),
+             Platform::Win32_MSVC);
     QCOMPARE(DeployCore::getPlatformFromString("win_x86_64"),
              Platform::Win64);
 }

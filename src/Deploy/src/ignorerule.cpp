@@ -39,22 +39,22 @@ const IgnoreData* IgnoreRule::isIgnore(const LibInfo &info) const {
 
     for (const auto &ignore : _data) {
 
-        // MinGW runtime flavors (issue #855) must not prevent a platform
+        // Runtime flavors (issue #855) must not prevent a platform
         // scoped rule (e.g. "Win") from matching flavored Windows libraries.
-        // A rule that itself carries a MinGW flavor only matches libraries
+        // A rule that itself carries a runtime flavor only matches libraries
         // of the identical flavor.
-        const int minGWFlavors = int(Platform::MinGW_Msvcrt) | int(Platform::MinGW_Ucrt);
+        const int flavors = int(Platform::MinGW_Msvcrt) | int(Platform::MinGW_Ucrt) | int(Platform::MSVC);
         const int libPlatform = int(info.getPlatform());
         const int rulePlatform = int(ignore.platform);
 
         bool checkPlatform = ignore.platform == UnknownPlatform;
         if (!checkPlatform) {
-            const bool baseMatch = ((rulePlatform & ~minGWFlavors) &
-                                    (libPlatform & ~minGWFlavors)) ==
-                                   (libPlatform & ~minGWFlavors);
-            const bool flavorMatch = !(rulePlatform & minGWFlavors) ||
-                                     ((libPlatform & minGWFlavors) ==
-                                      (rulePlatform & minGWFlavors));
+            const bool baseMatch = ((rulePlatform & ~flavors) &
+                                    (libPlatform & ~flavors)) ==
+                                   (libPlatform & ~flavors);
+            const bool flavorMatch = !(rulePlatform & flavors) ||
+                                     ((libPlatform & flavors) ==
+                                      (rulePlatform & flavors));
             checkPlatform = baseMatch && flavorMatch;
         }
         bool checkPriority = (ignore.prority <= info.getPriority()) || ignore.prority == NotFile;

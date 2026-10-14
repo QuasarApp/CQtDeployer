@@ -61,6 +61,16 @@ enum Platform {
     Win64_MinGW_Msvcrt = Win64 | MinGW_Msvcrt,
     Win32_MinGW_Ucrt   = Win32 | MinGW_Ucrt,
     Win64_MinGW_Ucrt   = Win64 | MinGW_Ucrt,
+    // MSVC runtime flavor (issue #855). Binaries built with the MSVC
+    // toolchain import the MSVC CRT (msvcr*.dll) and form a separate
+    // platform family, so MSVC applications never resolve MinGW runtime
+    // libraries (libstdc++/libgcc/libwinpthread) and vice versa. UCRT
+    // MSVC binaries (vcruntime140.dll / api-ms-win-crt-* imports) cannot
+    // be told apart from other UCRT binaries by their import table, so
+    // they stay in the generic family.
+    MSVC              = 0x2000,
+    Win32_MSVC        = Win32 | MSVC,
+    Win64_MSVC        = Win64 | MSVC,
 
     // Unix
     Unix_x86_32     = 0x0010,
@@ -259,11 +269,12 @@ public:
      * @a candidate platform can satisfy the dependencies of a library with the
      * @a wanted platform.
      *
-     * MinGW runtime flavors (Win32/Win64_MinGW_Msvcrt and Win32/Win64_MinGW_Ucrt)
-     * only match the identical platform or a generic (non flavored) platform of
-     * the same bitness. This prevents mixing MSVCRT and UCRT MinGW runtime sets
-     * in one deployed bundle (issue #855), while keeping generic Windows/MSVC
-     * libraries compatible with MinGW applications.
+     * Runtime flavored platforms (Win32/Win64_MinGW_Msvcrt, Win32/Win64_MinGW_Ucrt
+     * and Win32/Win64_MSVC) only match the identical platform or a generic
+     * (non flavored) platform of the same bitness, and never another runtime
+     * flavor. This prevents mixing incompatible runtime sets in one deployed
+     * bundle (issue #855), while keeping generic Windows libraries compatible
+     * with MinGW and MSVC applications.
      */
     static bool isPlatformCompatible(Platform candidate, Platform wanted);
 

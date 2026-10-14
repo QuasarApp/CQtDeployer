@@ -67,24 +67,34 @@ bool PE::getDep(peparse::parsed_pe_internal * internal, LibInfo &res) const {
     return res.getDependncies().size() || !imports.size();
 }
 
-void PE::refineMinGWPlatform(peparse::parsed_pe_internal *internal,
-                             const QString &libName,
-                             LibInfo &res) const {
+void PE::refineWindowsPlatform(peparse::parsed_pe_internal *internal,
+                               const QString &libName,
+                               LibInfo &res) const {
     auto platform = res.getPlatform();
     if (platform != Win32 && platform != Win64)
         return;
 
-    // issue #855: MinGW binaries can be linked against the MSVC CRT
-    // (they import msvcrt.dll) or against the UCRT (they import
-    // api-ms-win-crt-* modules). Tag the platform with the detected
-    // runtime flavor so the deployer selects a compatible MinGW runtime
-    // set. MSVC binaries import neither, so they keep the generic platform.
+    // issue #855: Windows binaries are split into runtime families by their
+    // import table, so the deployer selects a compatible runtime set:
+    //  - MinGW binaries linked against the MSVC CRT import msvcrt.dll and
+    //    the MinGW runtime (libgcc_s_* / libwinpthread-* / libstdc++-*)
+    //    and get the *_MinGW_Msvcrt platform;
+    //  - MinGW binaries linked against the UCRT import api-ms-win-crt-*
+    //    modules and get the *_MinGW_Ucrt platform;
+    //  - MSVC toolchain binaries import the MSVC CRT (msvcr*.dll) and get
+    //    the *_MSVC platform;
+    //  - everything else keeps the generic platform. UCRT MSVC binaries
+    //    (vcruntime140.dll + api-ms-win-crt-*) cannot be told apart from
+    //    other UCRT binaries by their import table, and system DLLs import
+    //    vcruntime140.dll too, so vcruntime140.dll is not an MSVC marker.
     const QString msvcrtCrt = QStringLiteral("msvcrt.dll");
     const QString ucrtPrefix = QStringLiteral("api-ms-win-crt-");
+    const QString msvcCrtPrefix = QStringLiteral("msvcr");
 
     bool importMsvcrt = false;
     bool importUcrt = false;
     bool importMinGW = false;
+    bool importMsvcCrt = false;
     for (const auto &i : internal->imports) {
         const QString mod = QString::fromStdString(i.moduleName);
         if (!importMsvcrt && mod.compare(msvcrtCrt, Qt::CaseInsensitive) == 0)
@@ -95,7 +105,12 @@ void PE::refineMinGWPlatform(peparse::parsed_pe_internal *internal,
                              mod.startsWith("libwinpthread-", Qt::CaseInsensitive) ||
                              mod.startsWith("libstdc++-", Qt::CaseInsensitive)))
             importMinGW = true;
-        if (importMsvcrt && importUcrt && importMinGW)
+        // msvcr<version>.dll (msvcr100/120/140/140_1/...) is the MSVC CRT;
+        // the isDigit() check keeps msvcrt.dll out of this group.
+        if (!importMsvcCrt && mod.startsWith(msvcCrtPrefix, Qt::CaseInsensitive) &&
+            mod.size() > msvcCrtPrefix.size() && mod.at(msvcCrtPrefix.size()).isDigit())
+            importMsvcCrt = true;
+        if (importMsvcrt && importUcrt && importMinGW && importMsvcCrt)
             break;
     }
 
@@ -105,13 +120,14 @@ void PE::refineMinGWPlatform(peparse::parsed_pe_internal *internal,
                             libName.startsWith("libwinpthread-", Qt::CaseInsensitive) ||
                             libName.startsWith("libstdc++-", Qt::CaseInsensitive);
 
-    if (!importMinGW && !isMinGWLib)
-        return;
-
-    if (importMsvcrt && !importUcrt) {
-        res.setPlatform(platform == Win64 ? Win64_MinGW_Msvcrt : Win32_MinGW_Msvcrt);
-    } else if (importUcrt && !importMsvcrt) {
-        res.setPlatform(platform == Win64 ? Win64_MinGW_Ucrt : Win32_MinGW_Ucrt);
+    if (importMinGW || isMinGWLib) {
+        if (importMsvcrt && !importUcrt) {
+            res.setPlatform(platform == Win64 ? Win64_MinGW_Msvcrt : Win32_MinGW_Msvcrt);
+        } else if (importUcrt && !importMsvcrt) {
+            res.setPlatform(platform == Win64 ? Win64_MinGW_Ucrt : Win32_MinGW_Ucrt);
+        }
+    } else if (importMsvcCrt) {
+        res.setPlatform(platform == Win64 ? Win64_MSVC : Win32_MSVC);
     }
 }
 #endif
@@ -197,7 +213,7 @@ bool PE::getLibInfo(const QString &lib, LibInfo &info) const {
     info.setName(infolib.fileName());
     info.setPath(infolib.absolutePath());
 
-    refineMinGWPlatform(parsedPeLib->internal, info.getName(), info);
+    refineWindowsPlatform(parsedPeLib->internal, info.getName(), info);
 
     info.setWinApi(getAPIModule(info.getName()));
 

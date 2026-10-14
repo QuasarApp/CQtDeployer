@@ -953,6 +953,7 @@ QString DeployCore::platformToString(Platform platform) {
         {Platform::Win_ARM_64, "win_arm64"},
         {Platform::MinGW_Msvcrt, "MinGW_Msvcrt"},
         {Platform::MinGW_Ucrt, "MinGW_Ucrt"},
+        {Platform::MSVC, "MSVC"},
         {Platform::Unix_x86_32, "linux_x86"},
         {Platform::Unix_x86_64, "linux_x86_64"},
         {Platform::Unix_ARM_32, "linux_ARM"},
@@ -962,7 +963,7 @@ QString DeployCore::platformToString(Platform platform) {
         {Platform::GeneralFile, "GeneralFile"}
     };
 
-    while (platformVal <= Platform::MinGW_Ucrt) {
+    while (platformVal <= Platform::MSVC) {
 
         if (platformVal & platform) {
             result.push_back((result.size()? ", " : "") + platformsMap.value(platformVal, " Unknown"));
@@ -991,6 +992,8 @@ Platform DeployCore::getPlatformFromString(const QString &platformName) {
         {"win_x86_64_msvcrt", Platform::Win64_MinGW_Msvcrt},
         {"win_x86_ucrt", Platform::Win32_MinGW_Ucrt},
         {"win_x86_64_ucrt", Platform::Win64_MinGW_Ucrt},
+        {"win_x86_msvc", Platform::Win32_MSVC},
+        {"win_x86_64_msvc", Platform::Win64_MSVC},
         {"linux_x86", Platform::Unix_x86_32},
         {"linux_x86_64", Platform::Unix_x86_64},
         {"linux_ARM", Platform::Unix_ARM_32},
@@ -1007,17 +1010,17 @@ bool DeployCore::isPlatformCompatible(Platform candidate, Platform wanted) {
     if (candidate == wanted)
         return true;
 
-    const int minGWFlavors = int(Platform::MinGW_Msvcrt) | int(Platform::MinGW_Ucrt);
-    const int candFlavor = int(candidate) & minGWFlavors;
-    const int wantFlavor = int(wanted) & minGWFlavors;
+    const int flavors = int(Platform::MinGW_Msvcrt) | int(Platform::MinGW_Ucrt) | int(Platform::MSVC);
+    const int candFlavor = int(candidate) & flavors;
+    const int wantFlavor = int(wanted) & flavors;
 
-    // A MinGW runtime flavored platform matches the generic platform of the
-    // same bitness (and vice versa), but never a different runtime flavor.
+    // A runtime flavored platform matches the generic platform of the same
+    // bitness (and vice versa), but never a different runtime flavor.
     if (candFlavor && !wantFlavor)
-        return (int(candidate) & ~minGWFlavors) == int(wanted);
+        return (int(candidate) & ~flavors) == int(wanted);
 
     if (wantFlavor && !candFlavor)
-        return (int(wanted) & ~minGWFlavors) == int(candidate);
+        return (int(wanted) & ~flavors) == int(candidate);
 
     return false;
 }

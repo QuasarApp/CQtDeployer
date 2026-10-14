@@ -88,6 +88,8 @@ void LibCreator::initWin32() {
               Platform::Win32_MinGW_Msvcrt
               );
 
+    // issue #855: the msvc fixtures import the MSVC CRT (MSVCR120.dll)
+    // and no MinGW runtime, so they are classified as the MSVC platform
     createLib(":/win32msvc.dll",{
                   "ole32.dll",
                   "OLEAUT32.dll",
@@ -98,7 +100,7 @@ void LibCreator::initWin32() {
                   "MSVCR120.dll",
                   "KERNEL32.dll",
               },
-              Platform::Win32);
+              Platform::Win32_MSVC);
     createLib(":/win32msvc.exe", {
                   "Qt5Core.dll",
                   "ViewFortis.dll",
@@ -123,7 +125,7 @@ void LibCreator::initWin32() {
                   "SHELL32.dll",
 
               },
-              Platform::Win32);
+              Platform::Win32_MSVC);
 
 }
 
@@ -150,6 +152,9 @@ void LibCreator::initWin64() {
                   "libstdc++-6.dll",
               },
               Platform::Win64_MinGW_Msvcrt);
+    // issue #855: the win64 msvc fixtures are UCRT MSVC binaries
+    // (vcruntime140.dll + api-ms-win-crt-*, no MSVC CRT import), which are
+    // indistinguishable from other UCRT binaries and keep the generic platform
     createLib(":/win64msvc.dll", {
                   "Qt5Core.dll",
                   "MSVCP140.dll",
