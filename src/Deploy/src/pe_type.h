@@ -24,7 +24,7 @@
 namespace peparse {
 struct parsed_pe_internal;
 }
-class PE : public IGetLibInfo {
+class DEPLOYSHARED_EXPORT PE : public IGetLibInfo {
 
 private:
 
