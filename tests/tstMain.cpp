@@ -7,6 +7,7 @@
 
 #include <QtTest>
 #include "qttest.h"
+#include "peplatformtest.h"
 
 #ifdef Q_OS_LINUX
 #include "extradependstest.h"
@@ -100,6 +101,7 @@ private slots:
 
     // General tests for all platforms
         TestCase(qttest, QtTest )
+        TestCase(pePlatformTest, PePlatformTest)
 
     // main tests works on linux only
 #ifdef Q_OS_LINUX

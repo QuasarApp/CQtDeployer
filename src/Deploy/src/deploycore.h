@@ -51,6 +51,16 @@ enum Platform {
     Win_ARM_32      = 0x0004,
     Win_ARM_64      = 0x0008,
     Win             = Win32 | Win64,
+    // MinGW runtime flavor (issue #855). MinGW binaries can be linked against
+    // the MSVC CRT (they import msvcrt.dll) or against the UCRT (they import
+    // api-ms-win-crt-* modules). Mixing the two runtime sets in one deployed
+    // bundle breaks the app (STATUS_ENTRYPOINT_NOT_FOUND / 0xc0000139).
+    MinGW_Msvcrt    = 0x0800,
+    MinGW_Ucrt      = 0x1000,
+    Win32_MinGW_Msvcrt = Win32 | MinGW_Msvcrt,
+    Win64_MinGW_Msvcrt = Win64 | MinGW_Msvcrt,
+    Win32_MinGW_Ucrt   = Win32 | MinGW_Ucrt,
+    Win64_MinGW_Ucrt   = Win64 | MinGW_Ucrt,
 
     // Unix
     Unix_x86_32     = 0x0010,
@@ -243,6 +253,19 @@ public:
      * @return platform enum value form string.
      */
     static Platform getPlatformFromString(const QString &platformName);
+
+    /**
+     * @brief isPlatformCompatible This method returns true if a library with the
+     * @a candidate platform can satisfy the dependencies of a library with the
+     * @a wanted platform.
+     *
+     * MinGW runtime flavors (Win32/Win64_MinGW_Msvcrt and Win32/Win64_MinGW_Ucrt)
+     * only match the identical platform or a generic (non flavored) platform of
+     * the same bitness. This prevents mixing MSVCRT and UCRT MinGW runtime sets
+     * in one deployed bundle (issue #855), while keeping generic Windows/MSVC
+     * libraries compatible with MinGW applications.
+     */
+    static bool isPlatformCompatible(Platform candidate, Platform wanted);
 
     static char getEnvSeparator();
 

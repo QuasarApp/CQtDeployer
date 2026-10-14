@@ -65,13 +65,15 @@ void LibCreator::initLinux64() {
 }
 
 void LibCreator::initWin32() {
+    // issue #855: the mingw fixtures import msvcrt.dll + the MinGW runtime,
+    // so they are classified as MinGW with the MSVC CRT flavor
     createLib(":/win32mingw.dll", {
                   "libgcc_s_dw2-1.dll",
                   "KERNEL32.dll",
                   "msvcrt.dll",
                   "libGLESv2.dll",
               },
-              Platform::Win32 );
+              Platform::Win32_MinGW_Msvcrt );
     createLib(":/win32mingw.exe",{
                   "Qt5Core.dll",
                   "Qt5Gui.dll",
@@ -83,7 +85,7 @@ void LibCreator::initWin32() {
                   "SHELL32.dll",
                   "libstdc++-6.dll",
               },
-              Platform::Win32
+              Platform::Win32_MinGW_Msvcrt
               );
 
     createLib(":/win32msvc.dll",{
@@ -126,6 +128,8 @@ void LibCreator::initWin32() {
 }
 
 void LibCreator::initWin64() {
+    // issue #855: the mingw fixtures import msvcrt.dll + the MinGW runtime,
+    // so they are classified as MinGW with the MSVC CRT flavor
     createLib(":/win64mingw.dll", {
                   "QuasarApp1.dll",
                   "Qt5Core.dll",
@@ -135,7 +139,7 @@ void LibCreator::initWin64() {
                   "SHLWAPI.dll",
                   "libstdc++-6.dll",
               },
-              Platform::Win64);
+              Platform::Win64_MinGW_Msvcrt);
     createLib(":/win64mingw.exe", {
                   "Deploy.dll",
                   "QuasarApp1.dll",
@@ -145,7 +149,7 @@ void LibCreator::initWin64() {
                   "msvcrt.dll",
                   "libstdc++-6.dll",
               },
-              Platform::Win64);
+              Platform::Win64_MinGW_Msvcrt);
     createLib(":/win64msvc.dll", {
                   "Qt5Core.dll",
                   "MSVCP140.dll",

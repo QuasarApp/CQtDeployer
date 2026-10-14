@@ -66,6 +66,54 @@ bool PE::getDep(peparse::parsed_pe_internal * internal, LibInfo &res) const {
 
     return res.getDependncies().size() || !imports.size();
 }
+
+void PE::refineMinGWPlatform(peparse::parsed_pe_internal *internal,
+                             const QString &libName,
+                             LibInfo &res) const {
+    auto platform = res.getPlatform();
+    if (platform != Win32 && platform != Win64)
+        return;
+
+    // issue #855: MinGW binaries can be linked against the MSVC CRT
+    // (they import msvcrt.dll) or against the UCRT (they import
+    // api-ms-win-crt-* modules). Tag the platform with the detected
+    // runtime flavor so the deployer selects a compatible MinGW runtime
+    // set. MSVC binaries import neither, so they keep the generic platform.
+    const QString msvcrtCrt = QStringLiteral("msvcrt.dll");
+    const QString ucrtPrefix = QStringLiteral("api-ms-win-crt-");
+
+    bool importMsvcrt = false;
+    bool importUcrt = false;
+    bool importMinGW = false;
+    for (const auto &i : internal->imports) {
+        const QString mod = QString::fromStdString(i.moduleName);
+        if (!importMsvcrt && mod.compare(msvcrtCrt, Qt::CaseInsensitive) == 0)
+            importMsvcrt = true;
+        if (!importUcrt && mod.startsWith(ucrtPrefix, Qt::CaseInsensitive))
+            importUcrt = true;
+        if (!importMinGW && (mod.startsWith("libgcc_s_", Qt::CaseInsensitive) ||
+                             mod.startsWith("libwinpthread-", Qt::CaseInsensitive) ||
+                             mod.startsWith("libstdc++-", Qt::CaseInsensitive)))
+            importMinGW = true;
+        if (importMsvcrt && importUcrt && importMinGW)
+            break;
+    }
+
+    // The MinGW runtime libraries themselves (libstdc++-6.dll, libgcc_s_*.dll,
+    // libwinpthread-1.dll) are recognized by their file name.
+    const bool isMinGWLib = libName.startsWith("libgcc_s_", Qt::CaseInsensitive) ||
+                            libName.startsWith("libwinpthread-", Qt::CaseInsensitive) ||
+                            libName.startsWith("libstdc++-", Qt::CaseInsensitive);
+
+    if (!importMinGW && !isMinGWLib)
+        return;
+
+    if (importMsvcrt && !importUcrt) {
+        res.setPlatform(platform == Win64 ? Win64_MinGW_Msvcrt : Win32_MinGW_Msvcrt);
+    } else if (importUcrt && !importMsvcrt) {
+        res.setPlatform(platform == Win64 ? Win64_MinGW_Ucrt : Win32_MinGW_Ucrt);
+    }
+}
 #endif
 
 QHash<WinAPI, QSet<QString> > PE::getWinAPI() const {
@@ -148,6 +196,8 @@ bool PE::getLibInfo(const QString &lib, LibInfo &info) const {
     QFileInfo infolib(lib);
     info.setName(infolib.fileName());
     info.setPath(infolib.absolutePath());
+
+    refineMinGWPlatform(parsedPeLib->internal, info.getName(), info);
 
     info.setWinApi(getAPIModule(info.getName()));
 

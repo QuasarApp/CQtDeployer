@@ -29,6 +29,7 @@ class PE : public IGetLibInfo {
 private:
 
     bool getDep(peparse::parsed_pe_internal *, LibInfo &res) const;
+    void refineMinGWPlatform(peparse::parsed_pe_internal *, const QString &libName, LibInfo &res) const;
     QHash<WinAPI, QSet<QString>> _winAPI;
 
 public:
