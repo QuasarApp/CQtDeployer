@@ -6,11 +6,13 @@
 //
 // Fast unit tests (issue #861).
 //
-// This executable is a plain QTest runner. Unlike the integration
-// tests (CQtDeployer-tests) it does not deploy any sample application
-// and does not require a full Qt installation, qmake or Qt Installer
-// Framework. All tests are fast, self-contained and are executed by
-// CTest (see CMakeLists.txt in this folder).
+// This executable is a plain QTest runner. It does not deploy any
+// sample application and does not require a full Qt installation,
+// qmake or Qt Installer Framework. All tests are fast and
+// self-contained. The executable is registered with the QuasarApp
+// CMake test targets and is run with the test target:
+//
+//   cmake --build <build-dir> --target test
 //
 
 #include <QCoreApplication>
