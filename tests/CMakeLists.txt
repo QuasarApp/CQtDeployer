@@ -57,6 +57,9 @@ add_custom_target(
     COMMAND ${CMAKE_COMMAND} -E make_directory ${DIR_FOR_TESTING}
     COMMENT "Create the ${DIR_FOR_TESTING} directory for the parallel test deployments")
 
+set(QT_ROOT_DIR "$ENV{QT_ROOT_DIR}")
+message("QT_ROOT_DIR = ${QT_ROOT_DIR}")
+
 foreach (TEST_CLASS ${TEST_CLASSES})
     string(TOLOWER ${TEST_CLASS} TEST_CLASS_LOWER)
     set(TEST_EXEC ${PROJECT_NAME}-tests-${TEST_CLASS})
