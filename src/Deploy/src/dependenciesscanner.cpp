@@ -12,6 +12,7 @@
 #include <QList>
 #include <QDir>
 #include <QDebug>
+#include <algorithm>
 
 DependenciesScanner::DependenciesScanner() {
 
@@ -43,6 +44,13 @@ QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
     const auto values = _EnvLibs.values(libName.toUpper());
     QMultiMap<LibPriority, LibInfo> res;
 
+    struct Candidate {
+        LibPriority _priority;
+        LibInfo _info;
+    };
+
+    QList<Candidate> candidates;
+
     for (const auto & lib : values) {
         LibInfo info;
 
@@ -70,9 +78,26 @@ QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
         }
 
         if (!DeployCore::_config->ignoreList.isIgnore(info)) {
-            res.insert(info.getPriority(), info);
+            candidates.append(Candidate{info.getPriority(), info});
         }
 
+    }
+
+    // The scan environment is a QHash and its iteration order is salted per
+    // process, so without a stable order every cqtdeployer process could
+    // pick a different copy of a library that exists in several directories
+    // (for example an old libstdc++-6.dll instead of the one from the build
+    // toolchain, issue #861, #862). Sort by priority and then by full path
+    // to make the selection deterministic.
+    std::sort(candidates.begin(), candidates.end(), [](const auto &a, const auto &b) {
+        if (a._priority != b._priority) {
+            return a._priority < b._priority;
+        }
+        return a._info.fullPath() < b._info.fullPath();
+    });
+
+    for (const auto &candidate : candidates) {
+        res.insert(candidate._priority, candidate._info);
     }
 
     return res;

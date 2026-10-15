@@ -27,6 +27,36 @@
 
 
 /**
+ * Registers the MinGW compiler toolchain that belongs to the Qt
+ * installation as an extra (project) library path.
+ *
+ * The MinGW runtime libraries (libstdc++-6.dll, libgcc_s_seh-1.dll,
+ * libwinpthread-1.dll) of that toolchain are the only copies that are ABI
+ * compatible with the deployed targets. The Qt kit, other MinGW
+ * installations and release bundles that are found in the scan environment
+ * ship their own (often older) copies of these libraries. Without this
+ * registration the deployer may deploy one of the stale copies and the
+ * deployed application crashes at load time with
+ * STATUS_ENTRYPOINT_NOT_FOUND (0xC0000139) (issue #861, #862).
+ */
+static void addQtToolchainEnv(DeployConfig &config) {
+
+    const QString toolchain = QtDir::findMingwToolchainBin(config.qtDir.getBins());
+
+    if (toolchain.isEmpty()) {
+        return;
+    }
+
+    QuasarAppUtils::Params::log("Use the MinGW toolchain from " + toolchain
+                                + " for the C++ runtime libraries.",
+                                QuasarAppUtils::Debug);
+
+    config.envirement.addEnv(toolchain);
+    config.extraPaths.addExtraPaths({toolchain});
+}
+
+
+/**
  * this function init packages of project
  * inputParamsList - list of parameters
  *                   patern : value;package
@@ -1308,6 +1338,7 @@ bool ConfigParser::setQmake(const QString &value) {
 
     _config.envirement.addEnv(_config.qtDir.getLibs());
     _config.envirement.addEnv(_config.qtDir.getBins());
+    addQtToolchainEnv(_config);
 
     return true;
 }
@@ -1387,6 +1418,7 @@ bool ConfigParser::setQtDir(const QString &value) {
 
     _config.envirement.addEnv(_config.qtDir.getLibs());
     _config.envirement.addEnv(_config.qtDir.getBins());
+    addQtToolchainEnv(_config);
 
     return true;
 }

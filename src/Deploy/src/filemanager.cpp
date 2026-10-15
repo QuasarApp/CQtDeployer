@@ -48,7 +48,13 @@ bool FileManager::initDir(const QString &path) {
         while (toInitDirs.size()) {
             QString dirName = toInitDirs.pop();
 
-            if (!dir.mkdir(dirName)) {
+            // The directory might have been created by another process in
+            // parallel (for example by another cqtdeployer instance that
+            // deploys into a sibling folder with the same missing parent
+            // dir). QDir::mkdir fails in this case, so do not treat a
+            // failed mkdir as an error when the directory exists now.
+            // The cd() call below rejects a path that is not a directory.
+            if (!dir.mkdir(dirName) && !dir.exists(dirName)) {
                 return false;
             }
 

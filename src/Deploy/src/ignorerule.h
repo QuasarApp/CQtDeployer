@@ -19,7 +19,7 @@
  * @brief The IgnoreData struct
  * ignore file with label and othe rooles
  */
-struct IgnoreData{
+struct DEPLOYSHARED_EXPORT IgnoreData{
     IgnoreData(const QString& label = "");
 
     QString label;
@@ -29,7 +29,7 @@ struct IgnoreData{
 };
 
 
-class IgnoreRule
+class DEPLOYSHARED_EXPORT IgnoreRule
 {
 private:
     QList<IgnoreData> _data;

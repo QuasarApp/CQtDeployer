@@ -14,11 +14,11 @@ class DEPLOYSHARED_EXPORT LibInfo {
 
 public:
 
-    friend bool operator == (const LibInfo& left ,const LibInfo& right);
-    friend bool operator > (const LibInfo& left, const LibInfo& right);
-    friend bool operator < (const LibInfo& left, const LibInfo& right);
-    friend bool operator >= (const LibInfo& left, const LibInfo& right);
-    friend bool operator <= (const LibInfo& left, const LibInfo& right);
+    friend DEPLOYSHARED_EXPORT bool operator == (const LibInfo& left ,const LibInfo& right);
+    friend DEPLOYSHARED_EXPORT bool operator > (const LibInfo& left, const LibInfo& right);
+    friend DEPLOYSHARED_EXPORT bool operator < (const LibInfo& left, const LibInfo& right);
+    friend DEPLOYSHARED_EXPORT bool operator >= (const LibInfo& left, const LibInfo& right);
+    friend DEPLOYSHARED_EXPORT bool operator <= (const LibInfo& left, const LibInfo& right);
 
     QString fullPath() const;
 
@@ -67,5 +67,5 @@ private:
 
 };
 
-uint qHash(const LibInfo& info);
+DEPLOYSHARED_EXPORT uint qHash(const LibInfo& info);
 #endif // LIBINFO_H
