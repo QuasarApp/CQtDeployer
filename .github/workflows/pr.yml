@@ -84,6 +84,40 @@ jobs:
     - name: Build
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 16
 
+    - name: Align MinGW runtime libraries with the build toolchain (Windows)
+      if: runner.os == 'Windows'
+      shell: bash
+      run: |
+        # The Qt kit and the cqtdeployer release bundle ship their own
+        # copies of the MinGW runtime libraries (libstdc++-6.dll,
+        # libgcc_s_seh-1.dll, libwinpthread-1.dll). These copies are built
+        # with an older GCC and do not export symbols like
+        # _ZSt21ios_base_library_initv that are required by the DLLs that
+        # are built with the mingw1310 toolchain. cqtdeployer matches
+        # runtime libraries by name, and the scan environment is a salted
+        # QHash, so parallel deployments may deploy a stale copy and the
+        # deployed tests crash with STATUS_ENTRYPOINT_NOT_FOUND
+        # (0xC0000139) (issues #861, #862). Replace every stale copy with
+        # the toolchain libraries to make the deployment deterministic.
+        TOOLCHAIN_BIN="$(ls -d "${IQTA_TOOLS}"/mingw*/bin 2>/dev/null | sort -V | tail -n 1)"
+        if [ -z "${TOOLCHAIN_BIN}" ]; then
+            echo "::error::MinGW toolchain bin directory not found under ${IQTA_TOOLS}"
+            exit 1
+        fi
+        echo "Using toolchain: ${TOOLCHAIN_BIN}"
+        for lib in libstdc++-6.dll libgcc_s_seh-1.dll libwinpthread-1.dll; do
+            if [ -f "${TOOLCHAIN_BIN}/${lib}" ]; then
+                if [ -f "${QT_ROOT_DIR}/bin/${lib}" ]; then
+                    cp "${TOOLCHAIN_BIN}/${lib}" "${QT_ROOT_DIR}/bin/${lib}"
+                    echo "Replaced ${QT_ROOT_DIR}/bin/${lib}"
+                fi
+                if [ -f "cqt/${lib}" ]; then
+                    cp "${TOOLCHAIN_BIN}/${lib}" "cqt/${lib}"
+                    echo "Replaced cqt/${lib}"
+                fi
+            fi
+        done
+
     - name: Run unit tests
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 16 --target test
 
