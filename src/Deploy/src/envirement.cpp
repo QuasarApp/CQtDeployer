@@ -91,8 +91,10 @@ bool Envirement::isIgnore(const QString &path) const {
 }
 
 void Envirement::clear() {
-    if (_ignoreEnvList)
+    if (_ignoreEnvList) {
         delete _ignoreEnvList;
+        _ignoreEnvList = nullptr;
+    }
 
     _dataEnvironment.clear();
 
@@ -130,7 +132,7 @@ QString Envirement::concatEnv() const {
 QStringList Envirement::recursiveInvairement(QDir &dir, int depch, int depchLimit) {
 
     if (!dir.exists() || (depchLimit >= 0 && depch >= depchLimit)) {
-        return {dir.absolutePath()};
+        return {PathUtils::fixPath(dir.absolutePath())};
     }
 
     QFileInfoList list = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
@@ -145,7 +147,7 @@ QStringList Envirement::recursiveInvairement(QDir &dir, int depch, int depchLimi
         dir.cdUp();
     }
 
-    res += dir.absolutePath();
+    res += PathUtils::fixPath(dir.absolutePath());
 
     return res;
 }

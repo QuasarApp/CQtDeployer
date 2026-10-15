@@ -133,3 +133,79 @@ bool QtDir::isQt(QString path) const {
         (!translations.isEmpty() && path.contains(translations, DeployCore::getCaseSensitivity())) ||
         (!resources.isEmpty() && path.contains(resources, DeployCore::getCaseSensitivity()));
 }
+
+QString QtDir::findMingwToolchainBin(const QString &qtBins) {
+
+    if (qtBins.isEmpty()) {
+        return {};
+    }
+
+    QDir start(qtBins);
+
+    // The prefix root of a Qt installation is 1 to 3 levels above the bin
+    // directory, depending on the layout (for example
+    // D:/Qt/6.10.3/mingw_64/bin, D:/Qt/6.10.3/bin or D:/Qt/bin). Probe
+    // each of them for the aqt style Tools/mingwXXXX toolchain layout.
+    for (int up = 1; up <= 3; ++up) {
+
+        QDir root = start;
+        bool valid = true;
+
+        for (int i = 0; i < up; ++i) {
+            if (!root.cdUp()) {
+                valid = false;
+                break;
+            }
+        }
+
+        if (!valid) {
+            break;
+        }
+
+        QDir tools(root.filePath("Tools"));
+        if (!tools.exists()) {
+            continue;
+        }
+
+        QString found;
+        int bestVersion = -1;
+
+        for (const auto &entry : tools.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+
+            const QString name = entry.fileName();
+            if (!name.startsWith("mingw", Qt::CaseInsensitive)) {
+                continue;
+            }
+
+            const QString bin = entry.absoluteFilePath() + "/bin";
+            if (!QFileInfo(bin).isDir()) {
+                continue;
+            }
+
+            // Only a directory that really contains the MinGW C++ runtime
+            // is a valid toolchain candidate.
+            if (!QFileInfo::exists(bin + "/libstdc++-6.dll")) {
+                continue;
+            }
+
+            QString digits;
+            for (const auto &c : name.mid(5)) {
+                if (c.isDigit()) {
+                    digits += c;
+                }
+            }
+
+            const int version = digits.isEmpty() ? 0 : digits.toInt();
+            if (version > bestVersion) {
+                bestVersion = version;
+                found = PathUtils::fixPath(bin);
+            }
+        }
+
+        if (!found.isEmpty()) {
+            return found;
+        }
+    }
+
+    return {};
+}

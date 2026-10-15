@@ -23,7 +23,7 @@ jobs:
         target: 'desktop'
         arch: 'win64_mingw'
         cache: true
-        tools: 'tools_mingw1310 tools_ifw'
+        tools: 'tools_mingw1310'
         aqtversion: ==3.2.*
 
     - name: Install Qt (Linux)
@@ -34,7 +34,6 @@ jobs:
         target: 'desktop'
         arch: 'linux_gcc_64'
         cache: true
-        tools: 'tools_ifw'
         aqtversion: ==3.2.*
 
     # Checkout main repository with submodules
@@ -51,7 +50,7 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Install CQtDeployer
-      uses: QuasarApp/cqtdeployer-install-action@v1.0.0
+      uses: QuasarApp/cqtdeployer-install-action@v1.1.0
 
 
     - name: ccache
@@ -65,7 +64,7 @@ jobs:
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -G Ninja
         -DBUILD_SHARED_LIBS=ON
-        -DCQT_DEPLOYER_TESTS=OFF
+        -DCQT_DEPLOYER_TESTS=ON
         -DCMAKE_PREFIX_PATH='${{ steps.sdl.outputs.prefix }};${{ env.QT_ROOT_DIR }}'
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S ${{ github.workspace }}
@@ -76,10 +75,21 @@ jobs:
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -G Ninja
         -DBUILD_SHARED_LIBS=ON
-        -DCQT_DEPLOYER_TESTS=OFF
+        -DCQT_DEPLOYER_TESTS=ON
         -DCMAKE_PREFIX_PATH='${{ steps.sdl.outputs.prefix }};${{ env.QT_ROOT_DIR }}'
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S ${{ github.workspace }}
 
     - name: Build
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 16
+
+    - name: Run unit tests
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 16 --target test
+
+    - name: Upload unit test reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: unit-test-reports-${{ matrix.os }}
+        path: ${{ github.workspace }}/Testing/*/test_report.txt*
+        if-no-files-found: ignore

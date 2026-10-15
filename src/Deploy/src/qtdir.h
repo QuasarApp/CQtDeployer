@@ -55,6 +55,31 @@ public:
      */
     QtMajorVersion getQtVersion() const;
 
+    /**
+     * @brief findMingwToolchainBin This method finds the MinGW compiler
+     * toolchain directory that is associated with the Qt installation,
+     * for example D:/Qt/Tools/mingw1310/bin for the Qt installation in
+     * D:/Qt/6.10.3/mingw_64 (the aqt / official installer layout keeps
+     * the toolchain in <prefix root>/Tools/mingwXXXX).
+     *
+     * The MinGW runtime libraries (libstdc++-6.dll, libgcc_s_seh-1.dll,
+     * libwinpthread-1.dll) from that toolchain are the only copies that
+     * are ABI compatible with the executables and libraries that are
+     * built for this Qt. The Qt kit itself ships its own (often older)
+     * copies of these runtime libraries in its bin directory, so a
+     * deployment that picks the kit copies instead of the toolchain
+     * copies crashes at load time with STATUS_ENTRYPOINT_NOT_FOUND
+     * (0xC0000139) (issue #861, #862).
+     *
+     * @param qtBins - The bin directory of the Qt installation,
+     *                 for example D:/Qt/6.10.3/mingw_64/bin.
+     * @return The bin directory of the MinGW toolchain, for example
+     *         D:/Qt/Tools/mingw1310/bin, or an empty string when no
+     *         toolchain was found. If several toolchains are found the
+     *         one with the highest version number is returned.
+     */
+    static QString findMingwToolchainBin(const QString &qtBins);
+
     QString toString() const override;
 };
 

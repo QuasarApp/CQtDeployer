@@ -1,64 +1,81 @@
 #
 # Copyright (C) 2020-2026 QuasarApp.
-# Distributed under the GPLv3 software license, see the accompanying
+# Distributed under the lgplv3 software license, see the accompanying
 # Everyone is permitted to copy and distribute verbatim copies
 # of this license document, but changing it is not allowed.
 #
 
 cmake_minimum_required(VERSION 3.18)
 
-get_filename_component(CURRENT_PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+#
+# Fast unit tests (issue #861).
+#
+# Every test class is a small stand-alone QTest executable that uses the
+# standard QTEST_GUILESS_MAIN macro (no custom main(), see the Qt test
+# tutorial https://doc.qt.io/qt-6/qttestlib-tutorial1-example.html).
+#
+# The executables are registered with the addTestsArg helper of the
+# QuasarApp CMake CI targets
+# (submodules/QuasarAppLib/CMake/QuasarAppCITargets.cmake). For every test
+# addTestsArg creates a deployTest<Name> target that deploys the executable
+# with the cqtdeployer tool into ${DIR_FOR_TESTING}/<Name> and a test<Name>
+# target that runs the deployed executable. All test targets are attached
+# to the `test` target, so all tests are run automatically on every
+# platform with:
+#
+#   cmake --build <build-dir> --target test
+#
 
-set(CURRENT_PROJECT "${PROJECT_NAME}-${CURRENT_PROJECT_DIR}")
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
 
-file(GLOB MAIN_CPP
-    "*.cpp" "*.h" "*.qrc"
-    "units/*.cpp" "units/*.h"
-    "modules/*.cpp" "modules/*.h"
-)
+set(TEST_CLASSES DeployConfig DistroModule DistroStruct Envirement
+    FileManager IgnoreRule LibInfo PathUtils Pe TargetInfo ZipCompresser)
 
-if (UNIX)
-    file(GLOB UNITS_CPP
-        "units/linux/*.cpp" "units/linux/*.h"
-    )
+# Path to the PE fixture (example.exe) from the pe-parse submodule. It is
+# used by PeTest to parse a real PE file. The definition is only added when
+# the fixture exists, so the PE tests are gracefully skipped (QSKIP) in
+# source trees without the pe-parse test assets.
+set(PE_EXAMPLE_EXE "${CMAKE_CURRENT_SOURCE_DIR}/../submodules/pe-parse/tests/assets/example.exe")
+
+# The deploy step of the test targets runs the cqtdeployer tool with the
+# qmake taken from the QT_QMAKE_EXECUTABLE variable. The Qt CMake packages
+# do not set this variable, so resolve qmake from the PATH when it is empty.
+if (NOT QT_QMAKE_EXECUTABLE)
+    find_program(QT_QMAKE_EXECUTABLE NAMES qmake6 qmake)
 endif()
 
-if (WIN32)
-    file(GLOB UNITS_CPP
-        "units/win/*.cpp" "units/win/*.h"
-    )
-endif()
+# The deployTest<Name> targets start one cqtdeployer instance per test, all
+# in parallel. They all create their deployment folder inside the common
+# ${DIR_FOR_TESTING} directory. If that parent directory does not exist yet,
+# the first two cqtdeployer instances race on its creation and the losing
+# one aborts with "Fail to copy targets" (QDir::mkdir fails when the
+# directory was created by the other process in the meantime). Create the
+# directory in a dedicated target that every deploy target depends on, so
+# the parent exists before any of the parallel deployments starts.
+add_custom_target(
+    prepareTestDir
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${DIR_FOR_TESTING}
+    COMMENT "Create the ${DIR_FOR_TESTING} directory for the parallel test deployments")
 
-set(SOURCE_CPP ${MAIN_CPP} ${UNITS_CPP})
+set(QT_ROOT_DIR "$ENV{QT_ROOT_DIR}")
+message("QT_ROOT_DIR = ${QT_ROOT_DIR}")
 
-set(PUBLIC_INCUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-set(PUBLIC_INCUDE_DIR ${PUBLIC_INCUDE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/units")
+foreach (TEST_CLASS ${TEST_CLASSES})
+    string(TOLOWER ${TEST_CLASS} TEST_CLASS_LOWER)
+    set(TEST_EXEC ${PROJECT_NAME}-tests-${TEST_CLASS})
 
-if (UNIX)
-    set(PUBLIC_INCUDE_DIR ${PUBLIC_INCUDE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/units/linux")
-endif()
+    add_executable(${TEST_EXEC} ${TEST_CLASS_LOWER}test.cpp ${TEST_CLASS_LOWER}test.h)
+    target_link_libraries(${TEST_EXEC} PRIVATE Qt${QT_VERSION_MAJOR}::Test Deploy)
 
-if (WIN32)
-    set(PUBLIC_INCUDE_DIR ${PUBLIC_INCUDE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/units/win")
-endif()
+    if (TEST_CLASS STREQUAL "Pe" AND EXISTS "${PE_EXAMPLE_EXE}")
+        target_compile_definitions(${TEST_EXEC} PRIVATE PE_EXAMPLE_EXE="${PE_EXAMPLE_EXE}")
+    endif()
 
-set(PUBLIC_INCUDE_DIR ${PUBLIC_INCUDE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/modules")
 
-add_definitions(-DQT_BASE_DIR="${QT_QT_ROOT}/")
-add_definitions(-DTEST_BIN_DIR="${CMAKE_CURRENT_LIST_DIR}/../testcases/bin/")
+    # Register the test executable with the QuasarApp CI test targets.
+    addTestsArg(${TEST_CLASS} ${TEST_EXEC} "-o;test_report.txt;-txt")
 
-if (Qt${QT_VERSION_MAJOR}WebEngineQuick_FOUND)
-    add_definitions(-DUSE_WEBENGINE)
-endif()
-
-add_executable(${CURRENT_PROJECT} ${SOURCE_CPP} )
-target_link_libraries(${CURRENT_PROJECT} PRIVATE Qt${QT_VERSION_MAJOR}::Test Deploy)
-
-target_include_directories(${CURRENT_PROJECT} PUBLIC ${PUBLIC_INCUDE_DIR})
-
+    add_dependencies(deployTest${TEST_CLASS} ${TEST_EXEC} prepareTestDir)
+endforeach()
 
 initTests()
-
-SET(QT_TEST_EXTRA_ARGS -maxwarnings 0)
-addTestsArg(${PROJECT_NAME} ${CURRENT_PROJECT} "${QT_TEST_EXTRA_ARGS}")
-
