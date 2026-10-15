@@ -38,51 +38,81 @@ int main(int argc, char *argv[]) {
     // FileManager::saveDeploymendFiles/loadDeployemendFiles tests.
     (void)QuasarAppUtils::Settings::autoInstance();
 
+    // Each QTest::qExec() call re-parses the command line arguments.
+    // Every call that sees "-o <file>" (re)opens and truncates that
+    // file, so if all classes share a single report file, only the
+    // last class survives and every failure of the previous classes
+    // is lost (see issue #861). Run every class with its own report
+    // file "<file>.<ClassName>" so no failure can hide.
+    auto runClass = [&argc, argv](const char *className, QObject *obj) -> int {
+        QStringList args;
+        for (int i = 0; i < argc; ++i) {
+            const QString a = QString::fromLocal8Bit(argv[i]);
+            args.append(a);
+            if (a == QLatin1String("-o") && i + 1 < argc) {
+                args.append(QString::fromLocal8Bit(argv[++i]) + QLatin1String(".") + className);
+            }
+        }
+
+        QVector<QByteArray> a;
+        a.reserve(args.size());
+        for (const QString &s : std::as_const(args)) {
+            a.append(s.toLocal8Bit());
+        }
+
+        QVector<char *> argv2;
+        argv2.reserve(a.size());
+        for (QByteArray &s : a) {
+            argv2.append(s.data());
+        }
+        return QTest::qExec(obj, args.size(), argv2.data());
+    };
+
     int result = 0;
 
     {
         PathUtilsTest test;
-        result |= QTest::qExec(&test, argc, argv);
+        result |= runClass("PathUtilsTest", &test);
     }
     {
         EnvirementTest test;
-        result |= QTest::qExec(&test, argc, argv);
+        result |= runClass("EnvirementTest", &test);
     }
     {
         IgnoreRuleTest test;
-        result |= QTest::qExec(&test, argc, argv);
+        result |= runClass("IgnoreRuleTest", &test);
     }
     {
         LibInfoTest test;
-        result |= QTest::qExec(&test, argc, argv);
+        result |= runClass("LibInfoTest", &test);
     }
     {
         DeployConfigTest test;
-        result |= QTest::qExec(&test, argc, argv);
+        result |= runClass("DeployConfigTest", &test);
     }
     {
         DistroModuleTest test;
-        result |= QTest::qExec(&test, argc, argv);
+        result |= runClass("DistroModuleTest", &test);
     }
     {
         DistroStructTest test;
-        result |= QTest::qExec(&test, argc, argv);
+        result |= runClass("DistroStructTest", &test);
     }
     {
         TargetInfoTest test;
-        result |= QTest::qExec(&test, argc, argv);
+        result |= runClass("TargetInfoTest", &test);
     }
     {
         FileManagerTest test;
-        result |= QTest::qExec(&test, argc, argv);
+        result |= runClass("FileManagerTest", &test);
     }
     {
         ZipCompresserTest test;
-        result |= QTest::qExec(&test, argc, argv);
+        result |= runClass("ZipCompresserTest", &test);
     }
     {
         PeTest test;
-        result |= QTest::qExec(&test, argc, argv);
+        result |= runClass("PeTest", &test);
     }
 
     return result;

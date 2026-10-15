@@ -59,9 +59,14 @@ void FileManagerTest::copyFile() {
     QVERIFY(createFile(m_source + "/file1.txt", "one-again"));
     QVERIFY(fm.copyFile(m_source + "/file1.txt", m_target));
 
-    QFile dst(m_target + "/file1.txt");
-    QVERIFY(dst.open(QIODevice::ReadOnly));
-    QCOMPARE(dst.readAll(), QByteArray("one-again"));
+    // The file must be closed before the next copy: on Windows an
+    // open handle makes the remove of the destination file inside
+    // copyFile fail with a sharing violation.
+    {
+        QFile dst(m_target + "/file1.txt");
+        QVERIFY(dst.open(QIODevice::ReadOnly));
+        QCOMPARE(dst.readAll(), QByteArray("one-again"));
+    }
 
     // A missing source file can not be copied.
     QVERIFY(!fm.copyFile(m_source + "/missing.txt", m_target));
