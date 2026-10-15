@@ -51,6 +51,26 @@ enum Platform {
     Win_ARM_32      = 0x0004,
     Win_ARM_64      = 0x0008,
     Win             = Win32 | Win64,
+    // MinGW runtime flavor (issue #855). MinGW binaries can be linked against
+    // the MSVC CRT (they import msvcrt.dll) or against the UCRT (they import
+    // api-ms-win-crt-* modules). Mixing the two runtime sets in one deployed
+    // bundle breaks the app (STATUS_ENTRYPOINT_NOT_FOUND / 0xc0000139).
+    MinGW_Msvcrt    = 0x0800,
+    MinGW_Ucrt      = 0x1000,
+    Win32_MinGW_Msvcrt = Win32 | MinGW_Msvcrt,
+    Win64_MinGW_Msvcrt = Win64 | MinGW_Msvcrt,
+    Win32_MinGW_Ucrt   = Win32 | MinGW_Ucrt,
+    Win64_MinGW_Ucrt   = Win64 | MinGW_Ucrt,
+    // MSVC runtime flavor (issue #855). Binaries built with the MSVC
+    // toolchain import the MSVC CRT (msvcr*.dll) and form a separate
+    // platform family, so MSVC applications never resolve MinGW runtime
+    // libraries (libstdc++/libgcc/libwinpthread) and vice versa. UCRT
+    // MSVC binaries (vcruntime140.dll / api-ms-win-crt-* imports) cannot
+    // be told apart from other UCRT binaries by their import table, so
+    // they stay in the generic family.
+    MSVC              = 0x2000,
+    Win32_MSVC        = Win32 | MSVC,
+    Win64_MSVC        = Win64 | MSVC,
 
     // Unix
     Unix_x86_32     = 0x0010,
@@ -243,6 +263,20 @@ public:
      * @return platform enum value form string.
      */
     static Platform getPlatformFromString(const QString &platformName);
+
+    /**
+     * @brief isPlatformCompatible This method returns true if a library with the
+     * @a candidate platform can satisfy the dependencies of a library with the
+     * @a wanted platform.
+     *
+     * Runtime flavored platforms (Win32/Win64_MinGW_Msvcrt, Win32/Win64_MinGW_Ucrt
+     * and Win32/Win64_MSVC) only match the identical platform or a generic
+     * (non flavored) platform of the same bitness, and never another runtime
+     * flavor. This prevents mixing incompatible runtime sets in one deployed
+     * bundle (issue #855), while keeping generic Windows libraries compatible
+     * with MinGW and MSVC applications.
+     */
+    static bool isPlatformCompatible(Platform candidate, Platform wanted);
 
     static char getEnvSeparator();
 

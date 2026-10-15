@@ -161,6 +161,76 @@ void IgnoreRuleTest::environmentRule() {
 }
 
 
+void IgnoreRuleTest::windowsRuntimeFlavors() {
+    // The Windows runtime flavors (issue #855): a generic Windows platform
+    // rule must match all runtime flavors, a flavored rule only the
+    // identical runtime flavor.
+
+    LibInfo msvcrtLib;
+    msvcrtLib.setName("libstdc++-6.dll");
+    msvcrtLib.setPath("/opt/mingw/bin");
+    msvcrtLib.setPlatform(Platform::Win64_MinGW_Msvcrt);
+
+    LibInfo ucrtLib = msvcrtLib;
+    ucrtLib.setPlatform(Platform::Win64_MinGW_Ucrt);
+
+    IgnoreData win64Rule("libstdc++");
+    win64Rule.platform = Platform::Win64;
+    IgnoreRule win64Rules;
+    win64Rules.addRule(win64Rule);
+    // A generic Windows rule must match both MinGW flavors
+    QVERIFY2(win64Rules.isIgnore(msvcrtLib) != nullptr,
+             "generic Win64 rule must match MSVCRT MinGW lib");
+    QVERIFY2(win64Rules.isIgnore(ucrtLib) != nullptr,
+             "generic Win64 rule must match UCRT MinGW lib");
+
+    IgnoreData msvcrtRule("libstdc++");
+    msvcrtRule.platform = Platform::Win64_MinGW_Msvcrt;
+    IgnoreRule msvcrtRules;
+    msvcrtRules.addRule(msvcrtRule);
+    // A flavored rule must only match the identical flavor
+    QVERIFY2(msvcrtRules.isIgnore(msvcrtLib) != nullptr,
+             "MSVCRT rule must match MSVCRT MinGW lib");
+    QVERIFY2(msvcrtRules.isIgnore(ucrtLib) == nullptr,
+             "MSVCRT rule must NOT match UCRT MinGW lib");
+
+    IgnoreData ucrtRule("libstdc++");
+    ucrtRule.platform = Platform::Win64_MinGW_Ucrt;
+    IgnoreRule ucrtRules;
+    ucrtRules.addRule(ucrtRule);
+    QVERIFY2(ucrtRules.isIgnore(ucrtLib) != nullptr,
+             "UCRT rule must match UCRT MinGW lib");
+    QVERIFY2(ucrtRules.isIgnore(msvcrtLib) == nullptr,
+             "UCRT rule must NOT match MSVCRT MinGW lib");
+
+    // A MSVC flavored library (same name, so the rule name matching
+    // does not hide the platform check)
+    LibInfo msvcLib = msvcrtLib;
+    msvcLib.setPlatform(Platform::Win64_MSVC);
+
+    // A generic Windows rule must match the MSVC flavor as well
+    QVERIFY2(win64Rules.isIgnore(msvcLib) != nullptr,
+             "generic Win64 rule must match MSVC lib");
+
+    IgnoreData msvcRule("libstdc++");
+    msvcRule.platform = Platform::Win64_MSVC;
+    IgnoreRule msvcRules;
+    msvcRules.addRule(msvcRule);
+    // A flavored rule must only match the identical flavor
+    QVERIFY2(msvcRules.isIgnore(msvcLib) != nullptr,
+             "MSVC rule must match MSVC lib");
+    QVERIFY2(msvcRules.isIgnore(msvcrtLib) == nullptr,
+             "MSVC rule must NOT match MSVCRT MinGW lib");
+    QVERIFY2(msvcRules.isIgnore(ucrtLib) == nullptr,
+             "MSVC rule must NOT match UCRT MinGW lib");
+    // MinGW flavored rules must not match the MSVC lib
+    QVERIFY2(msvcrtRules.isIgnore(msvcLib) == nullptr,
+             "MSVCRT MinGW rule must NOT match MSVC lib");
+    QVERIFY2(ucrtRules.isIgnore(msvcLib) == nullptr,
+             "UCRT MinGW rule must NOT match MSVC lib");
+}
+
+
 // Standard stand-alone QTest entry point, see the Qt test tutorial:
 // https://doc.qt.io/qt-6/qttestlib-tutorial1-example.html
 QTEST_GUILESS_MAIN(IgnoreRuleTest)

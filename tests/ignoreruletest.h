@@ -26,6 +26,7 @@ private slots:
     void platform();
     void priority();
     void environmentRule();
+    void windowsRuntimeFlavors();
 };
 
 #endif // IGNORERULETEST_H

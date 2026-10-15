@@ -28,7 +28,7 @@ cmake_minimum_required(VERSION 3.18)
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
 
-set(TEST_CLASSES DeployConfig DistroModule DistroStruct Envirement
+set(TEST_CLASSES DeployConfig DeployCore DistroModule DistroStruct Envirement
     FileManager IgnoreRule LibInfo PathUtils Pe TargetInfo ZipCompresser)
 
 # Path to the PE fixture (example.exe) from the pe-parse submodule. It is

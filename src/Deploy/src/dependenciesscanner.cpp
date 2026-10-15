@@ -159,7 +159,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
         auto dep = libs.begin();
 
         while (dep != libs.end() &&
-               dep.value()._platform != lib._platform) dep++;
+               !DeployCore::isPlatformCompatible(dep.value()._platform, lib._platform)) dep++;
 
         if (dep != libs.end() && !res.contains(*dep)) {
             res.insert(*dep);
