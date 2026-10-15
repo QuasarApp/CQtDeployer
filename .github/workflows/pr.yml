@@ -65,8 +65,7 @@ jobs:
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -G Ninja
         -DBUILD_SHARED_LIBS=ON
-        -DCQT_DEPLOYER_TESTS=OFF
-        -DCQT_DEPLOYER_UNIT_TESTS=ON
+        -DCQT_DEPLOYER_TESTS=ON
         -DCMAKE_PREFIX_PATH='${{ steps.sdl.outputs.prefix }};${{ env.QT_ROOT_DIR }}'
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S ${{ github.workspace }}
@@ -77,8 +76,7 @@ jobs:
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -G Ninja
         -DBUILD_SHARED_LIBS=ON
-        -DCQT_DEPLOYER_TESTS=OFF
-        -DCQT_DEPLOYER_UNIT_TESTS=ON
+        -DCQT_DEPLOYER_TESTS=ON
         -DCMAKE_PREFIX_PATH='${{ steps.sdl.outputs.prefix }};${{ env.QT_ROOT_DIR }}'
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S ${{ github.workspace }}
@@ -87,10 +85,12 @@ jobs:
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 16
 
     - name: Run unit tests
-      shell: bash
-      run: |
-        TEST_BIN="${{ steps.strings.outputs.build-output-dir }}/tests/unittests/CQtDeployer-unittests"
-        if [ -f "$TEST_BIN.exe" ]; then
-            TEST_BIN="$TEST_BIN.exe"
-        fi
-        "$TEST_BIN"
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 16 --target test
+
+    - name: Upload unit test reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: unit-test-reports-${{ matrix.os }}
+        path: ${{ github.workspace }}/Testing/CQtDeployer/test_report.txt*
+        if-no-files-found: ignore
