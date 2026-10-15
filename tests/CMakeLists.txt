@@ -68,63 +68,11 @@ foreach (TEST_CLASS ${TEST_CLASSES})
         target_compile_definitions(${TEST_EXEC} PRIVATE PE_EXAMPLE_EXE="${PE_EXAMPLE_EXE}")
     endif()
 
-    # Copy the runtime dependencies of the test executable next to it, so
-    # that the executable can also be started directly from the build tree
-    # without a deployment step.
-    add_custom_command(TARGET ${TEST_EXEC} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            $<TARGET_FILE:Deploy>
-            $<TARGET_FILE:QuasarApp>
-            $<TARGET_FILE:QtELFReader>
-            $<TARGET_FILE:pe-parse>
-            $<TARGET_FILE:zip>
-            $<TARGET_FILE_DIR:${TEST_EXEC}>)
-
-    if (WIN32)
-        add_custom_command(TARGET ${TEST_EXEC} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                $<TARGET_FILE:Qt${QT_VERSION_MAJOR}::Core>
-                $<TARGET_FILE:Qt${QT_VERSION_MAJOR}::Test>
-                $<TARGET_FILE_DIR:${TEST_EXEC}>)
-    endif()
 
     # Register the test executable with the QuasarApp CI test targets.
     addTestsArg(${TEST_CLASS} ${TEST_EXEC} "-o;test_report.txt;-txt")
 
-    # The test targets deploy the test executable from the build tree.
-    # Make sure the executable is built before the deploy step runs and
-    # that the common ${DIR_FOR_TESTING} parent directory exists before
-    # any of the parallel deployments starts (see prepareTestDir above).
     add_dependencies(deployTest${TEST_CLASS} ${TEST_EXEC} prepareTestDir)
 endforeach()
 
-# On Linux the official Qt builds link their libQt6Core against the ICU
-# libraries, which live in the Qt installation directory. The addTestsArg
-# deploy command only scans the source and the build tree, so the ICU
-# libraries would be classified as system libraries and not copied into
-# the deployment. The deployed libQt6Core.so.6 carries a RUNPATH of
-# $ORIGIN, so the ICU libraries must sit next to it. Copy them into the
-# build tree: there they are scanned as extra (project) libraries and end
-# up in every test deployment.
-if (UNIX AND NOT APPLE)
-    get_target_property(QT_CORE_LIB_DIR Qt${QT_VERSION_MAJOR}::Core LOCATION)
-    if (NOT QT_CORE_LIB_DIR)
-        get_target_property(QT_CORE_LIB_DIR Qt${QT_VERSION_MAJOR}::Core LOCATION_RELEASE)
-    endif()
-    get_filename_component(QT_CORE_LIB_DIR "${QT_CORE_LIB_DIR}" DIRECTORY)
-    file(GLOB QT_ICU_LIBS "${QT_CORE_LIB_DIR}/libicu*.so.[0-9]*")
-    if (QT_ICU_LIBS)
-        set(QUASAR_TEST_ICU_DIR "${CMAKE_BINARY_DIR}/qt-icu")
-        add_custom_command(
-            OUTPUT ${QUASAR_TEST_ICU_DIR}/.stamp
-            COMMAND ${CMAKE_COMMAND} -E make_directory ${QUASAR_TEST_ICU_DIR}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${QT_ICU_LIBS} ${QUASAR_TEST_ICU_DIR}
-            COMMAND ${CMAKE_COMMAND} -E touch ${QUASAR_TEST_ICU_DIR}/.stamp
-            DEPENDS ${QT_ICU_LIBS}
-            COMMENT "Copy the Qt ICU libraries into the build tree for the test deployments")
-        add_custom_target(deployTestICU DEPENDS ${QUASAR_TEST_ICU_DIR}/.stamp)
-        foreach (TEST_CLASS ${TEST_CLASSES})
-            add_dependencies(deployTest${TEST_CLASS} deployTestICU)
-        endforeach()
-    endif()
-endif()
+initTests()
