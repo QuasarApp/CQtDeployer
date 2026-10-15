@@ -1,6 +1,6 @@
 //
 // Copyright (C) 2026 QuasarApp.
-// Distributed under the GPLv3 software license, see the accompanying
+// Distributed under the lgplv3 software license, see the accompanying
 // Everyone is permitted to copy and distribute verbatim copies
 // of this license document, but changing it is not allowed.
 //
@@ -193,3 +193,7 @@ void PathUtilsTest::getRelativeLink() {
              QStringLiteral("D:/media/etc/usr"));
 }
 
+
+// Standard stand-alone QTest entry point, see the Qt test tutorial:
+// https://doc.qt.io/qt-6/qttestlib-tutorial1-example.html
+QTEST_GUILESS_MAIN(PathUtilsTest)
