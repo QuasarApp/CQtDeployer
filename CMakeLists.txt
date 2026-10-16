@@ -86,6 +86,17 @@ set(LIEF_USE_CCACHE ON)
 add_subdirectory(submodules/LIEF)
 add_subdirectory(submodules/zip)
 
+# ccache cannot cache compilations that use precompiled headers (it falls back
+# to a plain compiler run and marks the call as uncacheable). LIEF enables a
+# precompiled header for every LIEF and mbedtls source file, which made almost
+# the whole LIEF build uncacheable in CI (issue #553). When ccache is used,
+# drop the precompiled headers so that every LIEF compilation unit can be
+# cached. The first (cold) build is slightly slower, but every following build
+# with a warm ccache is much faster.
+if(CCACHE_PROGRAM)
+  set_target_properties(LIB_LIEF PROPERTIES PRECOMPILE_HEADERS "")
+endif()
+
 add_subdirectory(src/Deploy)
 
 if (DEFINED CQT_DEPLOYER_TOOL)
