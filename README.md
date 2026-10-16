@@ -121,7 +121,7 @@ See https://github.com/marketplace/actions/setup-cqtdeployer
 ***
 
 ## Thanks
- * many thanks [Trail of Bits](https://github.com/trailofbits) for their library [pe-parser](https://github.com/trailofbits/pe-parse). Everything works perfectly.
+ * many thanks [LIEF](https://lief-project.github.io) for their [LIEF library](https://github.com/lief-project/LIEF) that is used to parse the PE, ELF and Mach-O binaries. Everything works perfectly.
 
 ***************************
 

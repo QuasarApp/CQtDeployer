@@ -31,12 +31,6 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
 set(TEST_CLASSES DeployConfig DeployCore DistroModule DistroStruct Envirement
     FileManager IgnoreRule LibInfo PathUtils Pe TargetInfo ZipCompresser)
 
-# Path to the PE fixture (example.exe) from the pe-parse submodule. It is
-# used by PeTest to parse a real PE file. The definition is only added when
-# the fixture exists, so the PE tests are gracefully skipped (QSKIP) in
-# source trees without the pe-parse test assets.
-set(PE_EXAMPLE_EXE "${CMAKE_CURRENT_SOURCE_DIR}/../submodules/pe-parse/tests/assets/example.exe")
-
 # The deploy step of the test targets runs the cqtdeployer tool with the
 # qmake taken from the QT_QMAKE_EXECUTABLE variable. The Qt CMake packages
 # do not set this variable, so resolve qmake from the PATH when it is empty.
@@ -66,11 +60,6 @@ foreach (TEST_CLASS ${TEST_CLASSES})
 
     add_executable(${TEST_EXEC} ${TEST_CLASS_LOWER}test.cpp ${TEST_CLASS_LOWER}test.h)
     target_link_libraries(${TEST_EXEC} PRIVATE Qt${QT_VERSION_MAJOR}::Test Deploy)
-
-    if (TEST_CLASS STREQUAL "Pe" AND EXISTS "${PE_EXAMPLE_EXE}")
-        target_compile_definitions(${TEST_EXEC} PRIVATE PE_EXAMPLE_EXE="${PE_EXAMPLE_EXE}")
-    endif()
-
 
     # Register the test executable with the QuasarApp CI test targets.
     addTestsArg(${TEST_CLASS} ${TEST_EXEC} "-o;test_report.txt;-txt")

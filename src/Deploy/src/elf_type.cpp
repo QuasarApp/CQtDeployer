@@ -6,107 +6,81 @@
 //#
 
 #include "elf_type.h"
-#include <cmath>
 #include <QFileInfo>
 #include <quasarapp.h>
+
+#include <LIEF/ELF.hpp>
+
+namespace {
+
+/// Extract the runtime library search path (DT_RUNPATH takes precedence over
+/// DT_RPATH, like the dynamic loader). The path list is filtered to absolute
+/// entries and transported to the snap root, like the rest of the deployer.
+QString extractRPath(const LIEF::ELF::Binary &elf) {
+    QString rpath;
+    QString runpath;
+
+    for (const auto &entry : elf.dynamic_entries()) {
+        if (const auto *runPath = entry.cast<LIEF::ELF::DynamicEntryRunPath>()) {
+            runpath = QString::fromStdString(runPath->runpath());
+        } else if (const auto *rPath = entry.cast<LIEF::ELF::DynamicEntryRpath>()) {
+            rpath = QString::fromStdString(rPath->rpath());
+        }
+    }
+
+    const QString &selected = runpath.isEmpty() ? rpath : runpath;
+    if (selected.isEmpty()) {
+        return {};
+    }
+
+    QStringList result;
+    for (const auto &path : selected.split(DeployCore::getEnvSeparator())) {
+        if (path.contains("/")) {
+            result.append(QuasarAppUtils::PlatformUtils::transportPathToSnapRoot(path));
+        }
+    }
+
+    return result.join(QString(DeployCore::getEnvSeparator()));
+}
+
+} // namespace
 
 ELF::ELF()
 {
 
 }
 
-QByteArrayList ELF::getDynamicString(ElfReader& reader) const {
-    auto headers = reader.readHeaders();
-
-    for (const auto &sectionHeader : std::as_const(headers.sectionHeaders)) {
-        if (sectionHeader.name == ".dynstr") {
-            auto arr = reader.readSection(sectionHeader.name).split(0);
-            return arr;
-        }
-    }
-
-    return {};
-}
-
-int ELF::getVersionOfTag(const QByteArray& tag, QByteArray& source) const {
-    auto versions = source.replace(tag, "").split('.');
-
-    int step = static_cast<int>(pow(100, 4));
-    int ver = 0;
-    auto it = versions.begin();
-
-    while (it != versions.end()) {
-        bool ok;
-        int curVer = it->toInt(&ok);
-
-        if (!ok) {
-            return -1;
-        }
-        ver += curVer * step;
-        step /= 100;
-        it++;
-    }
-
-    return ver;
-}
-
-QString ELF::extractRPath(ElfReader& reader) const {
-
-    QString result;
-    if (!QuasarAppUtils::Params::isEndable("noCheckRPATH")) {
-        auto dynStr = getDynamicString(reader);
-
-        for (auto i = dynStr.rbegin(); i != dynStr.rend(); ++i) {
-
-            if (i->contains("end_")) {
-                return result;
-            }
-
-            const auto pathes = i->split(DeployCore::getEnvSeparator());
-            for (const auto &path: pathes) {
-                if (path.contains("/")) {
-                    if (result.size()) {
-                        result += DeployCore::getEnvSeparator() +
-                                  QuasarAppUtils::PlatformUtils::transportPathToSnapRoot(path);
-                    } else {
-                        result += QuasarAppUtils::PlatformUtils::transportPathToSnapRoot(path);
-                    }
-                }
-            }
-
-            if (result.size())
-                return result;
-        }
-    }
-
-    return result;
-}
-
 bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
-    ElfReader reader(lib);
+    QFileInfo infolib(lib);
+    if (!infolib.exists()) {
+        return false;
+    }
 
-    auto headers = reader.readHeaders();
+    auto elf = LIEF::ELF::Parser::parse(infolib.absoluteFilePath().toStdString());
+    if (elf == nullptr) {
+        return false;
+    }
 
-    const int Elf_EM_ARM64  = 0xb7;
+    const auto machine = elf->header().machine_type();
+    const bool is64 = elf->header().identity_class() == LIEF::ELF::Header::CLASS::ELF64;
 
-    if (headers.elfmachine == ElfMachine::Elf_EM_ARM ||
-           static_cast<int>(headers.elfmachine) == Elf_EM_ARM64 ) {
+    if (machine == LIEF::ELF::ARCH::ARM || machine == LIEF::ELF::ARCH::AARCH64) {
 
-        if (headers.elfclass == ElfClass::Elf_ELFCLASS32) {
-            info.setPlatform(Unix_ARM_32);
+        if (is64) {
+            info.setPlatform(Unix_ARM_64);
 
         } else {
-            info.setPlatform(Unix_ARM_64);
+            info.setPlatform(Unix_ARM_32);
         }
 
-    } else if (headers.elfmachine == ElfMachine::Elf_EM_X86_64 ||
-               headers.elfmachine == ElfMachine::Elf_EM_386) {
+    } else if (machine == LIEF::ELF::ARCH::X86_64 ||
+               machine == LIEF::ELF::ARCH::I386) {
 
-        if (headers.elfclass == ElfClass::Elf_ELFCLASS32) {
-            info.setPlatform(Unix_x86_32);
+        if (is64) {
+            info.setPlatform(Unix_x86_64);
 
         } else {
-            info.setPlatform(Unix_x86_64);
+            info.setPlatform(Unix_x86_32);
         }
 
     } else {
@@ -114,14 +88,20 @@ bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
         return false;
     }
 
-    QFileInfo infolib(lib);
     info.setName(infolib.fileName());
     info.setPath(infolib.absolutePath());
-    info.setRPath(extractRPath(reader));
 
-    auto dep = reader.dependencies();
-    for (const auto &i : dep) {
-        info.addDependncies(i);
+    if (!QuasarAppUtils::Params::isEndable("noCheckRPATH")) {
+        info.setRPath(extractRPath(*elf));
+    }
+
+    for (const auto &entry : elf->dynamic_entries()) {
+        if (const auto *needed = entry.cast<LIEF::ELF::DynamicEntryLibrary>()) {
+            const auto &name = needed->name();
+            if (!name.empty()) {
+                info.addDependncies(QString::fromStdString(name));
+            }
+        }
     }
 
     return true;

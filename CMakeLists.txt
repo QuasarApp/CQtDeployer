@@ -70,11 +70,9 @@ make_directory(Distro)
 
 initAll()
 add_subdirectory(submodules/QuasarAppLib)
-add_subdirectory(src/QtELFReader)
 
-# disable command line tool of pe-parse
-option(BUILD_COMMAND_LINE_TOOLS "Build Command Line Tools" OFF)
-add_subdirectory(submodules/pe-parse)
+# LIEF is used to parse PE, ELF and Mach-O binaries.
+add_subdirectory(submodules/LIEF)
 add_subdirectory(submodules/zip)
 
 add_subdirectory(src/Deploy)

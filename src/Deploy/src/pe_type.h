@@ -10,6 +10,7 @@
 
 #include <QFile>
 #include <QString>
+#include <QSet>
 #include <QVector>
 #include "igetlibinfo.h"
 
@@ -21,15 +22,12 @@
 #define API_MS_WIN_SECURITY "-security-"
 #define API_MS_WIN_BASE "-base-"
 
-namespace peparse {
-struct parsed_pe_internal;
-}
 class DEPLOYSHARED_EXPORT PE : public IGetLibInfo {
 
 private:
 
-    bool getDep(peparse::parsed_pe_internal *, LibInfo &res) const;
-    void refineWindowsPlatform(peparse::parsed_pe_internal *, const QString &libName, LibInfo &res) const;
+    bool getDep(const QSet<QString> &imports, LibInfo &res) const;
+    void refineWindowsPlatform(const QSet<QString> &imports, const QString &libName, LibInfo &res) const;
     QHash<WinAPI, QSet<QString>> _winAPI;
 
 public:

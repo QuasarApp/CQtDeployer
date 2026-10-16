@@ -81,6 +81,11 @@ enum Platform {
     Unix_ARM        = Unix_x86_32 | Unix_x86_64,
     Unix            = Unix_x86 | Unix_ARM,
 
+    // macOS (issue #553). Mach-O binaries are parsed with LIEF.
+    Mac_X86_64      = 0x4000,
+    Mac_ARM_64      = 0x8000,
+    Mac             = Mac_X86_64 | Mac_ARM_64,
+
     // Other
 
     // Web

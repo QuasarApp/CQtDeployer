@@ -52,6 +52,15 @@ void QtDir::setLibs(const QString &value) {
     } else if (qtLibs.contains("libQt6Core.so")) {
         _qtVersion = QtMajorVersion::Qt6;
         _platform = Unix;
+    } else if (qtLibs.contains("libQt4Core.dylib", Qt::CaseInsensitive)) {
+        _qtVersion = QtMajorVersion::Qt4;
+        _platform = Mac;
+    } else if (qtLibs.contains("libQt5Core.dylib", Qt::CaseInsensitive)) {
+        _qtVersion = QtMajorVersion::Qt5;
+        _platform = Mac;
+    } else if (qtLibs.contains("libQt6Core.dylib", Qt::CaseInsensitive)) {
+        _qtVersion = QtMajorVersion::Qt6;
+        _platform = Mac;
     }
 }
 
