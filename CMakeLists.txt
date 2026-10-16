@@ -81,6 +81,8 @@ set(LIEF_C_API    OFF CACHE BOOL "C API" FORCE)
 set(LIEF_TESTS    OFF CACHE BOOL "Enable tests" FORCE)
 set(LIEF_INSTALL  OFF CACHE BOOL "Generate the install target." FORCE)
 set(LIEF_USE_MELKOR OFF CACHE BOOL "Build Melkor for testing" FORCE)
+set(LIEF_USE_CCACHE ON)
+
 add_subdirectory(submodules/LIEF)
 add_subdirectory(submodules/zip)
 
