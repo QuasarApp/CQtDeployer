@@ -72,6 +72,15 @@ initAll()
 add_subdirectory(submodules/QuasarAppLib)
 
 # LIEF is used to parse PE, ELF and Mach-O binaries.
+# Only the LIEF library itself is needed, so everything else is disabled:
+# examples are not built because the LIEF C examples use C++-only compiler
+# built-ins (__has_cpp_attribute) that break the build on MinGW/GCC (see
+# issue #553, Windows CI failure).
+set(LIEF_EXAMPLES OFF CACHE BOOL "Build LIEF C++ examples" FORCE)
+set(LIEF_C_API    OFF CACHE BOOL "C API" FORCE)
+set(LIEF_TESTS    OFF CACHE BOOL "Enable tests" FORCE)
+set(LIEF_INSTALL  OFF CACHE BOOL "Generate the install target." FORCE)
+set(LIEF_USE_MELKOR OFF CACHE BOOL "Build Melkor for testing" FORCE)
 add_subdirectory(submodules/LIEF)
 add_subdirectory(submodules/zip)
 
