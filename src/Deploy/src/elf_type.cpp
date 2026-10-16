@@ -30,7 +30,7 @@ QString extractRPath(const LIEF::ELF::Binary &elf) {
 
     const QString &selected = runpath.isEmpty() ? rpath : runpath;
     if (selected.isEmpty()) {
-        return {};
+        return {}; // 
     }
 
     QStringList result;
