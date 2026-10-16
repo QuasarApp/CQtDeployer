@@ -38,7 +38,6 @@ private slots:
     void parseInvalidFile();
     void parseViaDeployWrapper();
     void parseDelayImports();
-    void parseImportAndExportSymbols();
 
     void classifyMinGWFlavors();
     void classifyMSVCFlavor();

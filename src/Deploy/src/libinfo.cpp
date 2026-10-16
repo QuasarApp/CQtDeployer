@@ -80,42 +80,6 @@ void LibInfo::setDependncies(const QSet<QString> &value) {
     _dependncies = value;
 }
 
-const QSet<QString> &LibInfo::getRequiredSymbols() const {
-    return _requiredSymbols;
-}
-
-void LibInfo::addRequiredSymbol(const QString &value) {
-    _requiredSymbols.insert(value);
-}
-
-void LibInfo::addRequiredSymbols(const QSet<QString> &value) {
-    _requiredSymbols += value;
-}
-
-const QSet<QString> &LibInfo::getProvidedSymbols() const {
-    return _providedSymbols;
-}
-
-void LibInfo::addProvidedSymbol(const QString &value) {
-    _providedSymbols.insert(value);
-}
-
-void LibInfo::addProvidedSymbols(const QSet<QString> &value) {
-    _providedSymbols += value;
-}
-
-const QSet<QString> &LibInfo::getProvidedVersions() const {
-    return _providedVersions;
-}
-
-void LibInfo::addProvidedVersion(const QString &value) {
-    _providedVersions.insert(value);
-}
-
-void LibInfo::addProvidedVersions(const QSet<QString> &value) {
-    _providedVersions += value;
-}
-
 LibPriority LibInfo::getPriority() const {
     return _priority;
 }
@@ -179,9 +143,6 @@ void LibInfo::clear() {
     _rpath = "";
     _platform = Platform::UnknownPlatform;
     _dependncies.clear();
-    _requiredSymbols.clear();
-    _providedSymbols.clear();
-    _providedVersions.clear();
     _allDep.clear();
 }
 

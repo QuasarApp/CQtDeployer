@@ -167,28 +167,6 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
         while (dep != libs.end() &&
                !DeployCore::isPlatformCompatible(dep.value()._platform, lib._platform)) dep++;
 
-        // Symbol and version aware candidate selection (feedback on PR #863):
-        // when several platform-compatible candidates share the file name,
-        // prefer the one that actually provides the symbols this library
-        // requires. If no candidate provides any required symbol, the
-        // selection falls back to the existing (priority, path) order.
-        if (dep != libs.end() && !lib.getRequiredSymbols().isEmpty()) {
-            int bestScore = 0;
-            auto best = dep;
-            for (auto it = dep; it != libs.end(); ++it) {
-                const int score = DeployCore::symbolMatchScore(
-                        lib.getRequiredSymbols(),
-                        it.value().getProvidedSymbols(),
-                        it.value().getProvidedVersions());
-                if (score > bestScore) {
-                    bestScore = score;
-                    best = it;
-                }
-            }
-            if (bestScore > 0)
-                dep = best;
-        }
-
         if (dep != libs.end() && !res.contains(*dep)) {
             res.insert(*dep);
 

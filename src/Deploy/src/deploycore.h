@@ -9,7 +9,6 @@
 #define DEPLOYUTILS_H
 
 #include <QStringList>
-#include <QSet>
 #include <QDebug>
 #include <QFileInfo>
 #include "deploy_global.h"
@@ -283,58 +282,6 @@ public:
      * with MinGW and MSVC applications.
      */
     static bool isPlatformCompatible(Platform candidate, Platform wanted);
-
-    /**
-     * @brief splitSymbolVersion Splits a stored symbol string into its name
-     * and version parts. Symbols are stored as "name" for unversioned
-     * symbols and as "name@version" for versioned ones (ELF symbol
-     * versions, e.g. "__cxa_allocate_exception@GLIBCXX_3.4.31").
-     * @param symbol The stored symbol string
-     * @param name Receives the symbol name
-     * @param version Receives the symbol version, empty for unversioned symbols
-     */
-    static void splitSymbolVersion(const QString &symbol, QString &name, QString &version);
-
-    /**
-     * @brief symbolVersionCompatible This method returns true if a symbol
-     * defined with the @a definedVersion can satisfy a requirement for the
-     * @a requiredVersion. A definition satisfies the requirement if it is
-     * the same version or an older version of the same version family (the
-     * symbol must have existed when the requiring binary was built), e.g. a
-     * definition at "GLIBCXX_3.4.29" satisfies a requirement of
-     * "GLIBCXX_3.4.31", but "GLIBCXX_3.4.33" does not and
-     * "GLIBC_2.2.5" never satisfies "GLIBCXX_3.4.31".
-     */
-    static bool symbolVersionCompatible(const QString &requiredVersion,
-                                        const QString &definedVersion);
-
-    /**
-     * @brief providesSymbol This method returns true if a library providing
-     * the @a providedSymbols (and defining the @a providedVersions version
-     * nodes, ELF only) satisfies the @a requiredSymbol.
-     *
-     * An unversioned requirement is satisfied by any definition of the
-     * symbol. A versioned requirement "sym@VER" is satisfied if the library
-     * defines the VER version node (or the exact "sym@VER" symbol) and the
-     * symbol is defined at VER or at an older version of the same family.
-     * This makes the deployer able to pick a library that really provides
-     * the required symbol version instead of matching by name and platform
-     * only (issue #553).
-     */
-    static bool providesSymbol(const QSet<QString> &providedSymbols,
-                               const QSet<QString> &providedVersions,
-                               const QString &requiredSymbol);
-
-    /**
-     * @brief symbolMatchScore This method returns the number of symbols from
-     * @a requiredSymbols that the library providing @a providedSymbols
-     * (with the @a providedVersions version nodes) satisfies. Used by the
-     * dependencies scanner to choose between several candidates with the
-     * same file name.
-     */
-    static int symbolMatchScore(const QSet<QString> &requiredSymbols,
-                                const QSet<QString> &providedSymbols,
-                                const QSet<QString> &providedVersions);
 
     static char getEnvSeparator();
 

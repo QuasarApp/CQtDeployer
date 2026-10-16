@@ -12,7 +12,6 @@
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
-#include <QHash>
 #include <QLibraryInfo>
 #include <QProcess>
 #include <configparser.h>
@@ -1028,118 +1027,6 @@ bool DeployCore::isPlatformCompatible(Platform candidate, Platform wanted) {
         return (int(wanted) & ~flavors) == int(candidate);
 
     return false;
-}
-
-namespace {
-/// Parse an ELF version node name like "GLIBCXX_3.4.31" into its family
-/// ("GLIBCXX_") and its numeric parts (3, 4, 31). A version without
-/// numbers (e.g. "CXXABIV1") keeps only its family.
-void parseSymbolVersion(const QString &version, QString &family, QList<int> &numbers) {
-    const int sep = version.lastIndexOf('_');
-    if (sep < 0) {
-        family = version;
-        return;
-    }
-
-    family = version.left(sep + 1);
-    for (const QString &part : version.mid(sep + 1).split('.')) {
-        bool ok = false;
-        const int value = part.toInt(&ok);
-        if (!ok) {
-            numbers.clear();
-            return;
-        }
-        numbers.append(value);
-    }
-}
-
-/// True if the required family and numbers are a prefix of the defined
-/// family and numbers (i.e. the definition is the same or an older version
-/// of the same family).
-bool isOlderOrEqualVersion(const QString &required, const QString &defined) {
-    QString reqFamily, defFamily;
-    QList<int> reqNumbers, defNumbers;
-    parseSymbolVersion(required, reqFamily, reqNumbers);
-    parseSymbolVersion(defined, defFamily, defNumbers);
-
-    if (reqFamily != defFamily || reqNumbers.isEmpty() || defNumbers.isEmpty())
-        return false;
-
-    const int common = qMin(reqNumbers.size(), defNumbers.size());
-    for (int i = 0; i < common; ++i) {
-        if (reqNumbers.at(i) != defNumbers.at(i))
-            return false;
-    }
-
-    // The definition may not be newer than the requirement.
-    return defNumbers.size() <= reqNumbers.size();
-}
-} // namespace
-
-void DeployCore::splitSymbolVersion(const QString &symbol, QString &name, QString &version) {
-    const int at = symbol.indexOf(QLatin1Char('@'));
-    if (at > 0) {
-        name = symbol.left(at);
-        version = symbol.mid(at + 1);
-    } else {
-        name = symbol;
-        version.clear();
-    }
-}
-
-bool DeployCore::symbolVersionCompatible(const QString &requiredVersion,
-                                         const QString &definedVersion) {
-    if (requiredVersion.isEmpty() || requiredVersion == definedVersion)
-        return true;
-
-    return isOlderOrEqualVersion(requiredVersion, definedVersion);
-}
-
-bool DeployCore::providesSymbol(const QSet<QString> &providedSymbols,
-                                const QSet<QString> &providedVersions,
-                                const QString &requiredSymbol) {
-    if (providedSymbols.isEmpty() || requiredSymbol.isEmpty())
-        return false;
-
-    QString requiredName, requiredVersion;
-    splitSymbolVersion(requiredSymbol, requiredName, requiredVersion);
-
-    QHash<QString, QSet<QString>> defined; // symbol name -> definition versions
-    for (const QString &provided : providedSymbols) {
-        QString name, version;
-        splitSymbolVersion(provided, name, version);
-        defined[name].insert(version);
-    }
-
-    const auto it = defined.find(requiredName);
-    if (it == defined.end())
-        return false;
-
-    if (requiredVersion.isEmpty())
-        return true;
-
-    // The library must define the required version node (or the exact
-    // versioned symbol), otherwise the dynamic loader would reject it.
-    if (!providedVersions.contains(requiredVersion) && !it.value().contains(requiredVersion))
-        return false;
-
-    for (const QString &definedVersion : it.value()) {
-        if (symbolVersionCompatible(requiredVersion, definedVersion))
-            return true;
-    }
-
-    return false;
-}
-
-int DeployCore::symbolMatchScore(const QSet<QString> &requiredSymbols,
-                                 const QSet<QString> &providedSymbols,
-                                 const QSet<QString> &providedVersions) {
-    int score = 0;
-    for (const QString &symbol : requiredSymbols) {
-        if (providesSymbol(providedSymbols, providedVersions, symbol))
-            ++score;
-    }
-    return score;
 }
 
 QChar DeployCore::getSeparator(int lvl) {
