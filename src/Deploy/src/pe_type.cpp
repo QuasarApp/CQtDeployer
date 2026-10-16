@@ -37,6 +37,60 @@ QSet<QString> collectImports(const LIEF::PE::Binary *pe) {
     return modules;
 }
 
+/// Collect all imported symbol names (the standard import table plus the
+/// delay import directory). Imports by ordinal carry no name and are
+/// skipped - they can only be matched by their ordinal, not by symbol.
+QSet<QString> collectImportSymbols(const LIEF::PE::Binary *pe) {
+    QSet<QString> symbols;
+
+    for (const auto &import : pe->imports()) {
+        for (const auto &entry : import.entries()) {
+            if (entry.is_ordinal()) {
+                continue;
+            }
+
+            if (!entry.name().empty()) {
+                symbols.insert(QString::fromStdString(entry.name()));
+            }
+        }
+    }
+
+    for (const auto &delayImport : pe->delay_imports()) {
+        for (const auto &entry : delayImport.entries()) {
+            if (entry.is_ordinal()) {
+                continue;
+            }
+
+            if (!entry.name().empty()) {
+                symbols.insert(QString::fromStdString(entry.name()));
+            }
+        }
+    }
+
+    return symbols;
+}
+
+/// Collect all exported symbol names of the PE export table. Exports by
+/// ordinal carry no name and are skipped.
+QSet<QString> collectExportSymbols(const LIEF::PE::Binary *pe) {
+    QSet<QString> symbols;
+
+    if (!pe->has_exports()) {
+        return symbols;
+    }
+
+    for (const auto &entry : pe->get_export()->entries()) {
+        // Exports by ordinal carry no name and are skipped.
+        if (entry.name().empty()) {
+            continue;
+        }
+
+        symbols.insert(QString::fromStdString(entry.name()));
+    }
+
+    return symbols;
+}
+
 } // namespace
 
 bool PE::getDep(const QSet<QString> &imports, LibInfo &res) const {
@@ -188,6 +242,13 @@ bool PE::getLibInfo(const QString &lib, LibInfo &info) const {
     info.setPath(infolib.absolutePath());
 
     auto imports = collectImports(pe.get());
+
+    // Symbol-level information: what this binary imports (standard and
+    // delay imported symbols) and what it exports. Used by the dependencies
+    // scanner to pick the right candidate when several libraries with the
+    // same name exist in the environment (symbol + version matching).
+    info.addRequiredSymbols(collectImportSymbols(pe.get()));
+    info.addProvidedSymbols(collectExportSymbols(pe.get()));
 
     refineWindowsPlatform(imports, info.getName(), info);
 

@@ -41,6 +41,29 @@ public:
     void addDependncies(const QSet<QString> &value);
     void removeDependncies(const QString &value);
 
+    /// Symbols imported by this library (from the import table / delay
+    /// import table of a PE, the undefined dynamic symbols of an ELF or the
+    /// imported symbols of a Mach-O binary). A versioned symbol is stored
+    /// as "symbol@version" (ELF symbol versions, e.g.
+    /// "__cxa_allocate_exception@GLIBCXX_3.4.31"), an unversioned symbol as
+    /// its plain name.
+    const QSet<QString>& getRequiredSymbols() const;
+    void addRequiredSymbol(const QString &value);
+    void addRequiredSymbols(const QSet<QString> &value);
+
+    /// Symbols exported by this library (PE export table, defined ELF
+    /// dynamic symbols, defined Mach-O symbols). Same "symbol@version"
+    /// format as getRequiredSymbols().
+    const QSet<QString>& getProvidedSymbols() const;
+    void addProvidedSymbol(const QString &value);
+    void addProvidedSymbols(const QSet<QString> &value);
+
+    /// Version nodes defined by this library (ELF only, the
+    /// `.gnu.version_d` / DT_VERDEF names, e.g. "GLIBCXX_3.4.31").
+    const QSet<QString>& getProvidedVersions() const;
+    void addProvidedVersion(const QString &value);
+    void addProvidedVersions(const QSet<QString> &value);
+
     LibPriority getPriority() const;
     void setPriority(const LibPriority &value);
     const QString& getRPath() const;
@@ -60,6 +83,9 @@ private:
     QString _name;
     QString _path;
     QSet<QString> _dependncies;
+    QSet<QString> _requiredSymbols;
+    QSet<QString> _providedSymbols;
+    QSet<QString> _providedVersions;
     bool _dependsOfGui;
     QString _rpath;
     LibPriority _priority = NotFile;

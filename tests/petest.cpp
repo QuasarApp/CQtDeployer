@@ -37,14 +37,16 @@ struct PeBytes {
  * @brief buildTestPe Generates a minimal valid PE32/PE32+ file with a single
  * ".text" section containing an import table with the given DLL module names
  * (one "func" import per module). Optionally a delay import directory with
- * the given delay DLL module names is added.
+ * the given delay DLL module names is added. Optionally a named export
+ * directory with the given export names is added.
  */
 QByteArray buildTestPe(const QStringList &dllNames, bool pe64,
-                       const QStringList &delayNames = {}) {
+                       const QStringList &delayNames = {},
+                       const QStringList &exportNames = {}) {
     static const int eLfanew = 0x80;
     static const int headersSize = 0x200;
     static const int secRva = 0x1000;
-    static const int secRawSize = 0x200;
+    static const int secRawSize = 0x400;
     static const int secRawOff = 0x200;
 
     const int n = dllNames.size();
@@ -84,7 +86,33 @@ QByteArray buildTestPe(const QStringList &dllNames, bool pe64,
         delayOffs.push_back({cur, cur + 7}); // hint(2) + "func\0"
         cur += 7 + name.toUtf8().size() + 1;
     }
-    Q_ASSERT(cur < secRawSize);
+
+    // Export directory layout (named exports only)
+    const int k = exportNames.size();
+    int expDirOff = 0;
+    int expNameOff = 0;
+    int funcTabOff = 0;
+    int nameTabOff = 0;
+    int ordTabOff = 0;
+    int expTotal = 0;
+    QVector<int> expNameStrOffs;
+    if (k > 0) {
+        expDirOff = cur;
+        expNameOff = expDirOff + 40; // IMAGE_EXPORT_DIRECTORY size
+        cur = expNameOff + 10;       // "mylib.dll\0"
+        for (const QString &name : exportNames) {
+            expNameStrOffs.push_back(cur);
+            cur += name.toUtf8().size() + 1;
+        }
+        funcTabOff = cur;
+        cur += k * 4;
+        nameTabOff = cur;
+        cur += k * 4;
+        ordTabOff = cur;
+        cur += k * 2;
+        expTotal = cur - expDirOff;
+    }
+    Q_ASSERT(cur <= secRawSize);
 
     auto rva = [](int off) { return secRva + off; };
 
@@ -143,7 +171,10 @@ QByteArray buildTestPe(const QStringList &dllNames, bool pe64,
     b.w32(0);                     // LoaderFlags
     b.w32(16);                    // NumberOfRvaAndSizes
     for (int i = 0; i < 16; ++i) {
-        if (i == 1) {            // Import data directory
+        if (i == 0 && k > 0) { // Export data directory
+            b.w32(rva(expDirOff));
+            b.w32(expTotal);
+        } else if (i == 1) {   // Import data directory
             b.w32(rva(descsOff));
             b.w32(descsSize);
         } else if (i == 13 && m > 0) { // Delay import data directory
@@ -224,6 +255,32 @@ QByteArray buildTestPe(const QStringList &dllNames, bool pe64,
             b.data.append(names[i].toUtf8());
             b.data.append('\0');
         }
+    }
+    // Export directory (named exports only)
+    if (k > 0) {
+        b.w32(0);                           // Characteristics
+        b.w32(0);                           // TimeDateStamp
+        b.w16(0); b.w16(1);                 // Major/MinorVersion
+        b.w32(rva(expNameOff));             // Name
+        b.w32(1);                           // BaseOfOrdinal
+        b.w32(k);                           // NumberOfFunctions
+        b.w32(k);                           // NumberOfNames
+        b.w32(rva(funcTabOff));             // AddressOfFunctions
+        b.w32(rva(nameTabOff));             // AddressOfNames
+        b.w32(rva(ordTabOff));              // AddressOfNameOrdinals
+        b.data.append(QByteArray("mylib.dll\0", 10)); // Export table file name
+        for (const QString &name : exportNames) {
+            b.data.append(name.toUtf8());
+            b.data.append('\0');
+        }
+        for (int i = 0; i < k; ++i)
+            b.w32(0x2000);                 // Function RVAs (outside the
+                                           // section range, so LIEF does not
+                                           // treat them as forwarders)
+        for (int i = 0; i < k; ++i)
+            b.w32(rva(expNameStrOffs[i]));  // Export name RVAs
+        for (int i = 0; i < k; ++i)
+            b.w16(i);                       // Name ordinals
     }
     b.padTo(secRawOff + secRawSize);
 
@@ -412,6 +469,37 @@ void PeTest::parseDelayImports() {
     QVERIFY(peParser.getLibInfo(path, info));
     QVERIFY(info.getDependncies().contains("KERNEL32.dll"));
     QVERIFY(info.getDependncies().contains("ADVAPI32.dll"));
+}
+
+void PeTest::parseImportAndExportSymbols() {
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+
+    // A PE32+ DLL with one standard import, one delay import and two named
+    // exports.
+    const QString path = dir.filePath("mylib.dll");
+    {
+        QFile f(path);
+        QVERIFY(f.open(QIODevice::WriteOnly));
+        const QByteArray pe =
+                buildTestPe({"KERNEL32.dll"}, true, {"ADVAPI32.dll"},
+                            {"DllMain", "MyExport"});
+        QCOMPARE(f.write(pe), qint64(pe.size()));
+        f.close();
+    }
+
+    PE peParser;
+    LibInfo info;
+    QVERIFY(peParser.getLibInfo(path, info));
+    QVERIFY(info.isValid());
+
+    // The import table and the delay import table both contribute their
+    // named symbols (both import the symbol "func" here).
+    QCOMPARE(info.getRequiredSymbols(), (QSet<QString>{"func"}));
+
+    // The named exports are collected from the export directory.
+    QCOMPARE(info.getProvidedSymbols(),
+             (QSet<QString>{"DllMain", "MyExport"}));
 }
 
 void PeTest::parseInvalidFile() {

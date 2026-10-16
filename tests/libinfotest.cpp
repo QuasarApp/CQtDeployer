@@ -125,6 +125,9 @@ void LibInfoTest::clear() {
     lib.setRPath("$ORIGIN");
     lib.setWinApi(WinAPI::Core);
     lib.addDependncies("liba.so");
+    lib.addRequiredSymbol("memcpy@GLIBC_2.2.5");
+    lib.addProvidedSymbol("myexport@MYLIB_1.0");
+    lib.addProvidedVersion("MYLIB_1.0");
 
     // clear() resets name, path, rpath, platform and the dependencies.
     // It does not touch the priority and the WinAPI state
@@ -138,7 +141,51 @@ void LibInfoTest::clear() {
     QCOMPARE(lib.getWinApi(), WinAPI::Core);
     QVERIFY(lib.getRPath().isEmpty());
     QVERIFY(lib.getDependncies().isEmpty());
+    QVERIFY(lib.getRequiredSymbols().isEmpty());
+    QVERIFY(lib.getProvidedSymbols().isEmpty());
+    QVERIFY(lib.getProvidedVersions().isEmpty());
     QVERIFY(!lib.isValid());
+}
+
+void LibInfoTest::symbols() {
+    LibInfo lib;
+    QVERIFY(lib.getRequiredSymbols().isEmpty());
+    QVERIFY(lib.getProvidedSymbols().isEmpty());
+    QVERIFY(lib.getProvidedVersions().isEmpty());
+
+    // Single inserts, duplicates are ignored (set semantics)
+    lib.addRequiredSymbol("printf");
+    lib.addRequiredSymbol("printf");
+    lib.addRequiredSymbol("memcpy@GLIBC_2.2.5");
+    lib.addProvidedSymbol("myexport@MYLIB_1.0");
+    lib.addProvidedVersion("MYLIB_1.0");
+    QCOMPARE(lib.getRequiredSymbols().size(), 2);
+    QCOMPARE(lib.getProvidedSymbols().size(), 1);
+    QCOMPARE(lib.getProvidedVersions().size(), 1);
+
+    // Bulk inserts, the union with the existing entries
+    lib.addRequiredSymbols({"qDebug", "memcpy@GLIBC_2.2.5", "snprintf"});
+    lib.addProvidedSymbols({"myexport@MYLIB_1.0", "other"});
+    lib.addProvidedVersions({"MYLIB_1.0", "MYLIB_2.0"});
+    QCOMPARE(lib.getRequiredSymbols().size(), 4);
+    QVERIFY(lib.getRequiredSymbols().contains("printf"));
+    QVERIFY(lib.getRequiredSymbols().contains("memcpy@GLIBC_2.2.5"));
+    QVERIFY(lib.getRequiredSymbols().contains("qDebug"));
+    QVERIFY(lib.getRequiredSymbols().contains("snprintf"));
+    QCOMPARE(lib.getProvidedSymbols(),
+             (QSet<QString>{"myexport@MYLIB_1.0", "other"}));
+    QCOMPARE(lib.getProvidedVersions(),
+             (QSet<QString>{"MYLIB_1.0", "MYLIB_2.0"}));
+
+    // The three sets are independent of each other
+    QVERIFY(!lib.getProvidedSymbols().contains("printf"));
+    QVERIFY(!lib.getRequiredSymbols().contains("MYLIB_1.0"));
+
+    // clear() removes the symbol state
+    lib.clear();
+    QVERIFY(lib.getRequiredSymbols().isEmpty());
+    QVERIFY(lib.getProvidedSymbols().isEmpty());
+    QVERIFY(lib.getProvidedVersions().isEmpty());
 }
 
 void LibInfoTest::compare() {
