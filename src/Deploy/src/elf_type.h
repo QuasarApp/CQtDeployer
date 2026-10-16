@@ -9,7 +9,7 @@
 #define ELF_H
 #include "igetlibinfo.h"
 
-class ELF : public IGetLibInfo
+class DEPLOYSHARED_EXPORT ELF : public IGetLibInfo
 {
 
 public:

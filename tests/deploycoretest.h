@@ -26,6 +26,11 @@ private slots:
 
     void platformCompatibility();
     void platformStrings();
+
+    void symbolSplitting();
+    void symbolVersionCompatibility();
+    void symbolProvides();
+    void symbolMatchScore();
 };
 
 #endif // DEPLOYCORETEST_H

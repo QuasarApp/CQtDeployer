@@ -43,6 +43,22 @@ QString extractRPath(const LIEF::ELF::Binary &elf) {
     return result.join(QString(DeployCore::getEnvSeparator()));
 }
 
+/// Format a symbol the way the deployer stores it: plain name for
+/// unversioned symbols and "name@version" for versioned ones (the ELF
+/// symbol version, e.g. "GLIBCXX_3.4.31").
+QString formatSymbol(const LIEF::ELF::Symbol &symbol) {
+    QString name = QString::fromStdString(symbol.name());
+
+    if (symbol.has_version() && symbol.symbol_version()->has_auxiliary_version()) {
+        const auto &version = symbol.symbol_version()->symbol_version_auxiliary()->name();
+        if (!version.empty()) {
+            name += QStringLiteral("@") + QString::fromStdString(version);
+        }
+    }
+
+    return name;
+}
+
 } // namespace
 
 ELF::ELF()
@@ -100,6 +116,27 @@ bool ELF::getLibInfo(const QString &lib, LibInfo &info) const {
             const auto &name = needed->name();
             if (!name.empty()) {
                 info.addDependncies(QString::fromStdString(name));
+            }
+        }
+    }
+
+    // Symbol-level information: the undefined dynamic symbols this library
+    // requires (with their symbol versions, e.g. "GLIBCXX_3.4.31"), the
+    // dynamic symbols it provides and the version nodes it defines. Used by
+    // the dependencies scanner to pick the right candidate when several
+    // libraries with the same name exist in the environment.
+    for (const auto &symbol : elf->imported_symbols()) {
+        info.addRequiredSymbol(formatSymbol(symbol));
+    }
+
+    for (const auto &symbol : elf->exported_symbols()) {
+        info.addProvidedSymbol(formatSymbol(symbol));
+    }
+
+    for (const auto &definition : elf->symbols_version_definition()) {
+        for (const auto &aux : definition.symbols_aux()) {
+            if (!aux.name().empty()) {
+                info.addProvidedVersion(QString::fromStdString(aux.name()));
             }
         }
     }

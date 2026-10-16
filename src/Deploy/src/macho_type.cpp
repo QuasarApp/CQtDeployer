@@ -65,5 +65,22 @@ bool MachO::getLibInfo(const QString &lib, LibInfo &info) const {
         info.addDependncies(QString::fromStdString(name));
     }
 
+    // Symbol-level information: the symbols this slice imports (bound to a
+    // dylib through the two-level namespace) and the symbols it defines.
+    // Mach-O has no per-symbol versions, so plain names are stored. Used by
+    // the dependencies scanner to pick the right candidate when several
+    // dylibs with the same name exist in the environment.
+    for (const auto &symbol : slice->imported_symbols()) {
+        if (!symbol.name().empty()) {
+            info.addRequiredSymbol(QString::fromStdString(symbol.name()));
+        }
+    }
+
+    for (const auto &symbol : slice->exported_symbols()) {
+        if (!symbol.name().empty()) {
+            info.addProvidedSymbol(QString::fromStdString(symbol.name()));
+        }
+    }
+
     return true;
 }

@@ -28,8 +28,8 @@ cmake_minimum_required(VERSION 3.18)
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
 
-set(TEST_CLASSES DeployConfig DeployCore DistroModule DistroStruct Envirement
-    FileManager IgnoreRule LibInfo PathUtils Pe TargetInfo ZipCompresser)
+set(TEST_CLASSES DeployConfig DeployCore DistroModule DistroStruct Elf Envirement
+    FileManager IgnoreRule LibInfo Macho PathUtils Pe TargetInfo ZipCompresser)
 
 # The deploy step of the test targets runs the cqtdeployer tool with the
 # qmake taken from the QT_QMAKE_EXECUTABLE variable. The Qt CMake packages

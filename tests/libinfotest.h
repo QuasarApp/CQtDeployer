@@ -33,6 +33,7 @@ private slots:
     void winApi();
     void clear();
     void compare();
+    void symbols();
 };
 
 #endif // LIBINFOTEST_H
