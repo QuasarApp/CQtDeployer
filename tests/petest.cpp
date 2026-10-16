@@ -6,22 +6,13 @@
 //
 
 #include "petest.h"
+#include "dependenciesscanner.h"
 #include "libinfo.h"
+#include "macho_type.h"
 #include "pe_type.h"
-#include <pe-parse/parse.h>
+#include <LIEF/PE.hpp>
 
 namespace {
-
-int sectionCb(void *cbd, const peparse::VA &, const std::string &, const peparse::image_section_header &, const peparse::bounded_buffer *) {
-    *static_cast<int *>(cbd) += 1;
-    return 0;
-}
-
-int importCb(void *cbd, const peparse::VA &, const std::string &moduleName, const std::string &) {
-    auto *modules = static_cast<QSet<QString> *>(cbd);
-    *modules << QString::fromStdString(moduleName);
-    return 0;
-}
 
 struct PeBytes {
     QByteArray data;
@@ -45,9 +36,11 @@ struct PeBytes {
 /**
  * @brief buildTestPe Generates a minimal valid PE32/PE32+ file with a single
  * ".text" section containing an import table with the given DLL module names
- * (one "func" import per module).
+ * (one "func" import per module). Optionally a delay import directory with
+ * the given delay DLL module names is added.
  */
-QByteArray buildTestPe(const QStringList &dllNames, bool pe64) {
+QByteArray buildTestPe(const QStringList &dllNames, bool pe64,
+                       const QStringList &delayNames = {}) {
     static const int eLfanew = 0x80;
     static const int headersSize = 0x200;
     static const int secRva = 0x1000;
@@ -55,6 +48,7 @@ QByteArray buildTestPe(const QStringList &dllNames, bool pe64) {
     static const int secRawOff = 0x200;
 
     const int n = dllNames.size();
+    const int m = delayNames.size();
     const int entrySize = pe64 ? 8 : 4;
     const int optSize = pe64 ? 240 : 224;
 
@@ -65,16 +59,29 @@ QByteArray buildTestPe(const QStringList &dllNames, bool pe64) {
     const int iltSize = (n + 1) * entrySize;
     const int iatOff = iltOff + iltSize;
     const int iatSize = iltSize;
-    const int strOff = iatOff + iatSize;
+    const int delayDescsOff = iatOff + iatSize;
+    const int delayDescsSize = (m > 0) ? (m + 1) * 32 : 0;
+    const int delayIltOff = delayDescsOff + delayDescsSize;
+    const int delayIltSize = (m > 0) ? (m + 1) * entrySize : 0;
+    const int delayIatOff = delayIltOff + delayIltSize;
+    const int delayIatSize = (m > 0) ? (m + 1) * entrySize : 0;
+    const int delayHandleOff = delayIatOff + delayIatSize;
+    const int delayHandleSize = (m > 0) ? entrySize : 0;
+    const int strOff = delayHandleOff + delayHandleSize;
 
     struct StrOffs {
         int importByName;
         int dllName;
     };
     QVector<StrOffs> offs;
+    QVector<StrOffs> delayOffs;
     int cur = strOff;
     for (const QString &name : dllNames) {
         offs.push_back({cur, cur + 7}); // hint(2) + "func\0"
+        cur += 7 + name.toUtf8().size() + 1;
+    }
+    for (const QString &name : delayNames) {
+        delayOffs.push_back({cur, cur + 7}); // hint(2) + "func\0"
         cur += 7 + name.toUtf8().size() + 1;
     }
     Q_ASSERT(cur < secRawSize);
@@ -104,7 +111,7 @@ QByteArray buildTestPe(const QStringList &dllNames, bool pe64) {
     b.w32(secRawSize);            // SizeOfCode
     b.w32(0);                     // SizeOfInitializedData
     b.w32(0);                     // SizeOfUninitializedData
-    b.w32(0);                     // AddressOfEntryPoint
+    b.w32(secRva);                // AddressOfEntryPoint
     b.w32(secRva);                // BaseOfCode
     if (!pe64)
         b.w32(secRva);            // BaseOfData (PE32 only)
@@ -139,6 +146,9 @@ QByteArray buildTestPe(const QStringList &dllNames, bool pe64) {
         if (i == 1) {            // Import data directory
             b.w32(rva(descsOff));
             b.w32(descsSize);
+        } else if (i == 13 && m > 0) { // Delay import data directory
+            b.w32(rva(delayDescsOff));
+            b.w32(delayDescsSize);
         } else {
             b.w32(0);
             b.w32(0);
@@ -179,15 +189,88 @@ QByteArray buildTestPe(const QStringList &dllNames, bool pe64) {
         else b.w32(rva(offs[i].importByName));
     }
     if (pe64) b.w64(0); else b.w32(0);
+    // Delay import descriptors (IMAGE_DELAYLOAD_INFO, 8 dwords each)
+    if (m > 0) {
+        for (int i = 0; i < m; ++i) {
+            b.w32(0);                         // Attributes
+            b.w32(rva(delayOffs[i].dllName)); // Name
+            b.w32(rva(delayHandleOff));       // ModuleHandle
+            b.w32(rva(delayIatOff));          // ProcedureTable (delay IAT)
+            b.w32(rva(delayIltOff));          // DelayImportNameTable (delay ILT)
+            b.w32(0); b.w32(0); b.w32(0);     // Bound tables + Unk3
+        }
+        for (int i = 0; i < 8; ++i)
+            b.w32(0);                         // null descriptor
+        // Delay import lookup table
+        for (int i = 0; i < m; ++i) {
+            if (pe64) b.w64(rva(delayOffs[i].importByName));
+            else b.w32(rva(delayOffs[i].importByName));
+        }
+        if (pe64) b.w64(0); else b.w32(0);
+        // Delay import address table
+        for (int i = 0; i < m; ++i) {
+            if (pe64) b.w64(rva(delayOffs[i].importByName));
+            else b.w32(rva(delayOffs[i].importByName));
+        }
+        if (pe64) b.w64(0); else b.w32(0);
+        // Module handle slot
+        if (pe64) b.w64(0); else b.w32(0);
+    }
     // Strings
-    for (int i = 0; i < n; ++i) {
-        b.w16(0);                       // Hint
-        b.data.append(QByteArray("func\0", 5));
-        b.data.append(dllNames[i].toUtf8());
-        b.data.append('\0');
+    for (const QStringList &names : {dllNames, delayNames}) {
+        for (int i = 0; i < names.size(); ++i) {
+            b.w16(0);                       // Hint
+            b.data.append(QByteArray("func\0", 5));
+            b.data.append(names[i].toUtf8());
+            b.data.append('\0');
+        }
     }
     b.padTo(secRawOff + secRawSize);
 
+    return b.data;
+}
+
+/**
+ * @brief buildTestMachO Generates a minimal valid Mach-O 64-bit binary
+ * (mach_header_64) with one LC_LOAD_DYLIB load command per given dylib name.
+ */
+QByteArray buildTestMachO(const QStringList &dylibs, bool arm64) {
+    static const int headerSize = 32;
+
+    PeBytes b;
+    // mach_header_64
+    b.w32(0xFEEDFACF);                          // magic (MH_MAGIC_64)
+    b.w32(arm64 ? 0x0100000C : 0x01000007);     // cputype (ARM64 / X86_64)
+    b.w32(0);                                   // cpusubtype
+    b.w32(2);                                   // filetype (MH_DYLIB)
+    b.w32(dylibs.size());                       // ncmds
+    int sizeofcmds = 0;
+    for (const QString &dylib : dylibs)
+        sizeofcmds += 24 + ((dylib.toUtf8().size() + 1 + 7) / 8) * 8;
+    b.w32(sizeofcmds);                          // sizeofcmds
+    b.w32(0);                                   // flags
+    b.w32(0);                                   // reserved
+
+    // Load commands (LC_LOAD_DYLIB)
+    for (const QString &dylib : dylibs) {
+        const int nameSize = dylib.toUtf8().size() + 1;
+        const int cmdsize = 24 + ((nameSize + 7) / 8) * 8;
+        const int cmdStart = b.data.size();
+
+        b.w32(0x0000000C);      // cmd (LC_LOAD_DYLIB)
+        b.w32(cmdsize);         // cmdsize
+        b.w32(24);              // name offset (relative to the command)
+        b.w32(0);               // timestamp
+        b.w32(0x00010000);      // current_version (1.0.0)
+        b.w32(0x00000001);      // compat_version (0.0.1)
+        b.data.append(dylib.toUtf8());
+        b.data.append('\0');
+
+        while (b.data.size() - cmdStart < cmdsize)
+            b.data.append('\0');
+    }
+
+    Q_ASSERT(b.data.size() == headerSize + sizeofcmds);
     return b.data;
 }
 
@@ -217,61 +300,118 @@ bool scanPlatform(const QTemporaryDir &dir,
     return true;
 }
 
+// Writes a generated Mach-O fixture into @p dir and returns its path.
+QString writeMachO(const QTemporaryDir &dir, const QString &fileName,
+                   const QStringList &dylibs, bool arm64) {
+    const QString path = dir.filePath(fileName);
+    QFile f(path);
+    if (!f.open(QIODevice::WriteOnly))
+        return {};
+    const QByteArray macho = buildTestMachO(dylibs, arm64);
+    if (f.write(macho) != macho.size())
+        return {};
+    f.close();
+    return path;
+}
+
 } // namespace
 
-void PeTest::initTestCase() {
-#ifdef PE_EXAMPLE_EXE
-    m_exampleExe = QString(PE_EXAMPLE_EXE);
-#else
-    QSKIP("PE_EXAMPLE_EXE is not provided by CMake");
-#endif
-    if (!QFile::exists(m_exampleExe))
-        QSKIP(qPrintable("PE fixture not found: " + m_exampleExe));
-}
-
-void PeTest::cleanupTestCase() {
-}
-
 void PeTest::parseValidFile() {
-    auto *pe = peparse::ParsePEFromFile(m_exampleExe.toLatin1());
-    QVERIFY2(pe != nullptr, qPrintable(QString::fromStdString(peparse::GetPEErrString())));
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+
+    const QString path = dir.filePath("app.exe");
+    {
+        QFile f(path);
+        QVERIFY(f.open(QIODevice::WriteOnly));
+        const QByteArray pe = buildTestPe({"KERNEL32.dll", "USER32.dll"}, true);
+        QCOMPARE(f.write(pe), qint64(pe.size()));
+        f.close();
+    }
+
+    auto pe = LIEF::PE::Parser::parse(path.toStdString());
+    QVERIFY2(pe != nullptr, "LIEF was unable to parse the generated PE fixture");
     if (pe == nullptr)
         return;
 
-    // example.exe is a PE32+ x86-64 console application.
-    QCOMPARE(QString(peparse::GetMachineAsString(pe)), QString("x64"));
-    QCOMPARE(static_cast<unsigned int>(pe->peHeader.nt.FileHeader.Machine),
-             static_cast<unsigned int>(peparse::IMAGE_FILE_MACHINE_AMD64));
+    // The fixture is a PE32+ x86-64 binary.
+    QCOMPARE(static_cast<int>(pe->header().machine()),
+             static_cast<int>(LIEF::PE::Header::MACHINE_TYPES::AMD64));
+    QCOMPARE(pe->optional_header().magic(), LIEF::PE::PE_TYPE::PE32_PLUS);
 
-    int sections = 0;
-    peparse::IterSec(pe, sectionCb, &sections);
-    QVERIFY(sections > 0);
+    // The section table contains the single .text section.
+    QCOMPARE(pe->sections().size(), 1u);
+    QCOMPARE(pe->sections()[0].name(), QString(".text"));
 
+    // The import table lists the imported modules.
     QSet<QString> modules;
-    peparse::IterImpVAString(pe, importCb, &modules);
-    QVERIFY(modules.size() > 0);
-    // The fixture import table lists the module with the .DLL suffix.
-    QVERIFY(modules.contains("KERNEL32.DLL"));
+    for (const auto &import : pe->imports()) {
+        modules.insert(QString::fromStdString(import.name()));
+    }
+    QVERIFY(modules.contains("KERNEL32.dll"));
+    QVERIFY(modules.contains("USER32.dll"));
 
-    peparse::VA entry = 0;
-    QVERIFY(peparse::GetEntryPoint(pe, entry));
-    QVERIFY(entry > 0);
-
-    peparse::DestructParsedPE(pe);
+    QCOMPARE(pe->entrypoint(), 0x140001000ull); // imagebase + offset
 }
 
 void PeTest::parseViaDeployWrapper() {
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+
+    const QString path = dir.filePath("app.exe");
+    {
+        QFile f(path);
+        QVERIFY(f.open(QIODevice::WriteOnly));
+        const QByteArray pe = buildTestPe({"KERNEL32.dll"}, true);
+        QCOMPARE(f.write(pe), qint64(pe.size()));
+        f.close();
+    }
+
     PE peParser;
     LibInfo info;
-    QVERIFY(peParser.getLibInfo(m_exampleExe, info));
+    QVERIFY(peParser.getLibInfo(path, info));
 
     QVERIFY(info.isValid());
-    QCOMPARE(info.getName(), QString("example.exe"));
+    QCOMPARE(info.getName(), QString("app.exe"));
     QCOMPARE(info.getPlatform(), Win64);
     QCOMPARE(info.getWinApi(), WinAPI::NoWinAPI);
 
-    // The fixture imports KERNEL32 (the module name keeps the .DLL suffix).
-    QVERIFY(info.getDependncies().contains("KERNEL32.DLL"));
+    // The fixture imports KERNEL32.
+    QVERIFY(info.getDependncies().contains("KERNEL32.dll"));
+}
+
+void PeTest::parseDelayImports() {
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+
+    const QString path = dir.filePath("delay.exe");
+    {
+        QFile f(path);
+        QVERIFY(f.open(QIODevice::WriteOnly));
+        const QByteArray pe = buildTestPe({"KERNEL32.dll"}, true, {"ADVAPI32.dll"});
+        QCOMPARE(f.write(pe), qint64(pe.size()));
+        f.close();
+    }
+
+    // LIEF exposes the delay import directory separately from the standard
+    // import table.
+    auto pe = LIEF::PE::Parser::parse(path.toStdString());
+    QVERIFY2(pe != nullptr, "LIEF was unable to parse the delay import PE fixture");
+    if (pe != nullptr) {
+        QSet<QString> delay;
+        for (const auto &delayImport : pe->delay_imports()) {
+            delay.insert(QString::fromStdString(delayImport.name()));
+        }
+        QCOMPARE(delay.size(), 1u);
+        QVERIFY(delay.contains("ADVAPI32.dll"));
+    }
+
+    // The deployer merges the delay imported modules into the dependencies.
+    PE peParser;
+    LibInfo info;
+    QVERIFY(peParser.getLibInfo(path, info));
+    QVERIFY(info.getDependncies().contains("KERNEL32.dll"));
+    QVERIFY(info.getDependncies().contains("ADVAPI32.dll"));
 }
 
 void PeTest::parseInvalidFile() {
@@ -280,8 +420,69 @@ void PeTest::parseInvalidFile() {
     tmp.write("this is not a PE file");
     tmp.close();
 
-    auto *pe = peparse::ParsePEFromFile(tmp.fileName().toLatin1());
+    auto pe = LIEF::PE::Parser::parse(tmp.fileName().toStdString());
     QVERIFY(pe == nullptr);
+
+    PE peParser;
+    LibInfo info;
+    QVERIFY(!peParser.getLibInfo(tmp.fileName(), info));
+}
+
+void PeTest::parseMachO() {
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+
+    const QStringList dylibs{"/usr/lib/libSystem.B.dylib", "libQt6Core.dylib"};
+
+    // x86-64 slice
+    const QString x64Path = writeMachO(dir, "libtest.dylib", dylibs, false);
+    QVERIFY(!x64Path.isEmpty());
+
+    MachO machoParser;
+    LibInfo info;
+    QVERIFY(machoParser.getLibInfo(x64Path, info));
+    QVERIFY(info.isValid());
+    QCOMPARE(info.getName(), QString("libtest.dylib"));
+    QCOMPARE(info.getPlatform(), Mac_X86_64);
+    for (const QString &dylib : dylibs)
+        QVERIFY(info.getDependncies().contains(dylib));
+
+    // ARM 64 slice
+    const QString armPath = writeMachO(dir, "libtest_arm.dylib", dylibs, true);
+    QVERIFY(!armPath.isEmpty());
+
+    info.clear();
+    QVERIFY(machoParser.getLibInfo(armPath, info));
+    QCOMPARE(info.getPlatform(), Mac_ARM_64);
+    for (const QString &dylib : dylibs)
+        QVERIFY(info.getDependncies().contains(dylib));
+}
+
+void PeTest::parseMachORouting() {
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+
+    // .dylib files are routed to the Mach-O scanner by the dependencies scanner
+    const QString path = writeMachO(dir, "libtest.dylib",
+                                    {"/usr/lib/libSystem.B.dylib"}, false);
+    QVERIFY(!path.isEmpty());
+
+    DependenciesScanner scanner;
+    LibInfo info;
+    QVERIFY(scanner.fillLibInfo(info, path));
+    QCOMPARE(info.getPlatform(), Mac_X86_64);
+    QVERIFY(info.getDependncies().contains("/usr/lib/libSystem.B.dylib"));
+}
+
+void PeTest::parseInvalidMachO() {
+    QTemporaryFile tmp;
+    QVERIFY(tmp.open());
+    tmp.write("this is not a Mach-O file");
+    tmp.close();
+
+    MachO machoParser;
+    LibInfo info;
+    QVERIFY(!machoParser.getLibInfo(tmp.fileName(), info));
 }
 void PeTest::classifyMinGWFlavors() {
     QTemporaryDir dir;

@@ -13,51 +13,35 @@
 #include <QVector>
 #include <quasarapp.h>
 
-#include <set>
+#include <LIEF/PE.hpp>
 
-#ifndef DISABLE_PE
-#include <pe-parse/parse.h>
+namespace {
 
-namespace peparse {
+/// Collect all imported module names (the standard import table plus the
+/// delay import directory).
+QSet<QString> collectImports(const LIEF::PE::Binary *pe) {
+    QSet<QString> modules;
 
-class section;
+    for (const auto &import : pe->imports()) {
+        if (!import.name().empty()) {
+            modules.insert(QString::fromStdString(import.name()));
+        }
+    }
 
+    for (const auto &delayImport : pe->delay_imports()) {
+        if (!delayImport.name().empty()) {
+            modules.insert(QString::fromStdString(delayImport.name()));
+        }
+    }
 
-struct importent {
-  VA addr;
-  std::string symbolName;
-  std::string moduleName;
-};
-
-struct exportent {
-  VA addr;
-  std::string symbolName;
-  std::string moduleName;
-};
-
-class reloc;
-class symbol;
-
-struct parsed_pe_internal {
-  std::vector<section> secs;
-  std::vector<resource> rsrcs;
-  std::vector<importent> imports;
-  std::vector<reloc> relocs;
-  std::vector<exportent> exports;
-  std::vector<symbol> symbols;
-};
-
+    return modules;
 }
 
-bool PE::getDep(peparse::parsed_pe_internal * internal, LibInfo &res) const {
-    auto imports = internal->imports;
-    std::set<std::string> filter;
+} // namespace
 
-    for ( auto &i : imports) {
-        if (!filter.count(i.moduleName)) {
-            filter.insert(i.moduleName);
-            res.addDependncies(QString::fromStdString(i.moduleName));
-        }
+bool PE::getDep(const QSet<QString> &imports, LibInfo &res) const {
+    for (const auto &module : imports) {
+        res.addDependncies(module);
     }
 
     if (res.getWinApi() != WinAPI::NoWinAPI) {
@@ -67,7 +51,7 @@ bool PE::getDep(peparse::parsed_pe_internal * internal, LibInfo &res) const {
     return res.getDependncies().size() || !imports.size();
 }
 
-void PE::refineWindowsPlatform(peparse::parsed_pe_internal *internal,
+void PE::refineWindowsPlatform(const QSet<QString> &imports,
                                const QString &libName,
                                LibInfo &res) const {
     auto platform = res.getPlatform();
@@ -95,8 +79,7 @@ void PE::refineWindowsPlatform(peparse::parsed_pe_internal *internal,
     bool importUcrt = false;
     bool importMinGW = false;
     bool importMsvcCrt = false;
-    for (const auto &i : internal->imports) {
-        const QString mod = QString::fromStdString(i.moduleName);
+    for (const auto &mod : imports) {
         if (!importMsvcrt && mod.compare(msvcrtCrt, Qt::CaseInsensitive) == 0)
             importMsvcrt = true;
         if (!importUcrt && mod.startsWith(ucrtPrefix, Qt::CaseInsensitive))
@@ -130,7 +113,6 @@ void PE::refineWindowsPlatform(peparse::parsed_pe_internal *internal,
         res.setPlatform(platform == Win64 ? Win64_MSVC : Win32_MSVC);
     }
 }
-#endif
 
 QHash<WinAPI, QSet<QString> > PE::getWinAPI() const {
     return _winAPI;
@@ -178,59 +160,44 @@ PE::PE(): IGetLibInfo () {
 }
 
 bool PE::getLibInfo(const QString &lib, LibInfo &info) const {
-#ifndef DISABLE_PE
-    auto parsedPeLib = peparse::ParsePEFromFile(lib.toLatin1());
-
-    if (!parsedPeLib)
+    QFileInfo infolib(lib);
+    if (!infolib.exists()) {
         return false;
+    }
 
-    if (parsedPeLib->peHeader.nt.FileHeader.Machine == peparse::IMAGE_FILE_MACHINE_ARM ||
-        parsedPeLib->peHeader.nt.FileHeader.Machine == peparse::IMAGE_FILE_MACHINE_ARM64 ||
-        parsedPeLib->peHeader.nt.FileHeader.Machine == peparse::IMAGE_FILE_MACHINE_ARMNT) {
+    auto pe = LIEF::PE::Parser::parse(infolib.absoluteFilePath().toStdString());
+    if (pe == nullptr) {
+        return false;
+    }
 
-        if (parsedPeLib->peHeader.nt.OptionalMagic == peparse::NT_OPTIONAL_32_MAGIC) {
-            info.setPlatform(Win_ARM_32);
+    const auto machine = pe->header().machine();
+    const bool is64 = pe->optional_header().magic() == LIEF::PE::PE_TYPE::PE32_PLUS;
 
-        } else {
-            info.setPlatform(Win_ARM_64);
-        }
+    if (LIEF::PE::Header::is_arm(machine) || LIEF::PE::Header::is_arm64(machine)) {
+        info.setPlatform(is64 ? Win_ARM_64 : Win_ARM_32);
 
-    } else if (parsedPeLib->peHeader.nt.FileHeader.Machine == peparse::IMAGE_FILE_MACHINE_I386 ||
-               parsedPeLib->peHeader.nt.FileHeader.Machine == peparse::IMAGE_FILE_MACHINE_AMD64) {
-
-        if (parsedPeLib->peHeader.nt.OptionalMagic == peparse::NT_OPTIONAL_32_MAGIC) {
-            info.setPlatform(Win32);
-
-        } else {
-            info.setPlatform(Win64);
-        }
+    } else if (LIEF::PE::Header::x86(machine) || LIEF::PE::Header::x86_64(machine)) {
+        info.setPlatform(is64 ? Win64 : Win32);
 
     } else {
         info.setPlatform(UnknownPlatform);
         return false;
     }
-    QFileInfo infolib(lib);
+
     info.setName(infolib.fileName());
     info.setPath(infolib.absolutePath());
 
-    refineWindowsPlatform(parsedPeLib->internal, info.getName(), info);
+    auto imports = collectImports(pe.get());
+
+    refineWindowsPlatform(imports, info.getName(), info);
 
     info.setWinApi(getAPIModule(info.getName()));
 
-    if (!getDep(parsedPeLib->internal, info)) {
-        peparse::DestructParsedPE(parsedPeLib);
+    if (!getDep(imports, info)) {
         return false;
     }
 
-    peparse::DestructParsedPE(parsedPeLib);
-
-
     return info.isValid();
-#else
-    Q_UNUSED(lib)
-    Q_UNUSED(info)
-    return false;
-#endif
 }
 
 PE::~PE(){

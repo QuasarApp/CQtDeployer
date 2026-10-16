@@ -52,7 +52,7 @@ bool Extracter::extractWebEngine() {
         if (isWebEngine(package)) {
             auto webEngeneBin = cnf->qtDir.getLibexecs();
 
-            if (cnf->qtDir.getQtPlatform() & Platform::Unix) {
+            if (cnf->qtDir.getQtPlatform() & (Platform::Unix | Platform::Mac)) {
                 webEngeneBin += "/QtWebEngineProcess";
             } else if (cnf->qtDir.getQtPlatform() & Platform::Win) {
                 webEngeneBin += "/QtWebEngineProcess.exe";

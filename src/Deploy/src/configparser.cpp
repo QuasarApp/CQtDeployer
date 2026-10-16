@@ -1386,7 +1386,7 @@ bool ConfigParser::setQtDir(const QString &value) {
         _config.qtDir.setPlugins(info.absoluteFilePath() + ("/plugins"));
     }
 
-    if (_config.qtDir.getQtPlatform() & Unix) {
+    if (_config.qtDir.getQtPlatform() & (Unix | Mac)) {
         if (!QFile::exists(info.absoluteFilePath() + ("/libexec"))) {
             qDebug () << "get qt libexec failed!";
 

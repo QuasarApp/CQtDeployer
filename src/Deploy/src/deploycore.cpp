@@ -958,12 +958,14 @@ QString DeployCore::platformToString(Platform platform) {
         {Platform::Unix_x86_64, "linux_x86_64"},
         {Platform::Unix_ARM_32, "linux_ARM"},
         {Platform::Unix_ARM_64, "linux_ARM64"},
+        {Platform::Mac_X86_64, "mac_x86_64"},
+        {Platform::Mac_ARM_64, "mac_arm64"},
         {Platform::WebGl, "WebGl"},
         {Platform::WebRemote, "WebRemote"},
         {Platform::GeneralFile, "GeneralFile"}
     };
 
-    while (platformVal <= Platform::MSVC) {
+    while (platformVal <= Platform::Mac_ARM_64) {
 
         if (platformVal & platform) {
             result.push_back((result.size()? ", " : "") + platformsMap.value(platformVal, " Unknown"));
@@ -998,6 +1000,8 @@ Platform DeployCore::getPlatformFromString(const QString &platformName) {
         {"linux_x86_64", Platform::Unix_x86_64},
         {"linux_ARM", Platform::Unix_ARM_32},
         {"linux_ARM64", Platform::Unix_ARM_64},
+        {"mac_x86_64", Platform::Mac_X86_64},
+        {"mac_arm64", Platform::Mac_ARM_64},
         {"WebGl", Platform::WebGl},
         {"WebRemote", Platform::WebRemote},
         {"GeneralFile", Platform::GeneralFile}
@@ -1104,6 +1108,8 @@ QString DeployCore::getPlatformLibPrefix(Platform plarform) {
     } else if (plarform & Platform::Win_ARM_64) {
         return "";
     } else if (plarform & Platform::Win_ARM_32) {
+        return "";
+    } else if (plarform & Platform::Mac) {
         return "";
     }
 

@@ -33,6 +33,8 @@ PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
         return PrivateScaner::PE;
     } else if (sufix.isEmpty() || sufix.contains("so", Qt::CaseSensitive)) {
         return PrivateScaner::ELF;
+    } else if (sufix.contains("dylib", Qt::CaseSensitive)) {
+        return PrivateScaner::MACHO;
     }
 
     return PrivateScaner::UNKNOWN;
@@ -115,6 +117,10 @@ bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) const 
 
     case PrivateScaner::ELF: {
         return _elfScaner.getLibInfo(file, info);
+    }
+
+    case PrivateScaner::MACHO: {
+        return _machoScaner.getLibInfo(file, info);
     }
 
     default:

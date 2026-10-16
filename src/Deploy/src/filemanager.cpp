@@ -19,6 +19,7 @@
 #include "pathutils.h"
 #include <QRegularExpression>
 #include <cmath>
+#include <LIEF/PE.hpp>
 
 #ifdef Q_OS_WIN
 #include "windows.h"
@@ -135,10 +136,6 @@ void FileManager::saveDeploymendFiles(const QString& targetDir) {
 
 bool FileManager::strip(const QString &dir) const {
 
-#ifdef Q_OS_WIN
-    Q_UNUSED(dir)
-    return true;
-#else
     QFileInfo info(dir);
 
     if (!info.exists()) {
@@ -158,6 +155,38 @@ bool FileManager::strip(const QString &dir) const {
         return res;
     } else {
 
+#ifdef Q_OS_WIN
+        // There is no `strip` tool on Windows, so the PE binaries are
+        // stripped in-process with LIEF (the debug information is removed
+        // and the binary is rebuilt).
+        const auto sufix = info.completeSuffix();
+        if (!sufix.contains("dll") && !sufix.contains("exe")) {
+            return true;
+        }
+
+        auto pe = LIEF::PE::Parser::parse(info.absoluteFilePath().toStdString());
+        if (pe == nullptr) {
+            QuasarAppUtils::Params::log("Unable to parse PE file for strip: " + dir,
+                                        QuasarAppUtils::Error);
+            return false;
+        }
+
+        if (!pe->has_debug()) {
+            return true;
+        }
+
+        pe->clear_debug();
+
+        LIEF::PE::Builder builder(*pe, LIEF::PE::Builder::config_t());
+        if (!LIEF::is_ok(builder.build())) {
+            QuasarAppUtils::Params::log("Unable to rebuild stripped PE file: " + dir,
+                                        QuasarAppUtils::Error);
+            return false;
+        }
+
+        builder.write(info.absoluteFilePath().toStdString());
+        return true;
+#else
         auto sufix = info.completeSuffix();
         if (!sufix.contains("so") && !sufix.contains("dll")) {
             return true;
@@ -174,8 +203,8 @@ bool FileManager::strip(const QString &dir) const {
             return false;
 
         return P.exitCode() == 0;
-    }
 #endif
+    }
 }
 
 

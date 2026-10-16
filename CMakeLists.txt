@@ -70,12 +70,32 @@ make_directory(Distro)
 
 initAll()
 add_subdirectory(submodules/QuasarAppLib)
-add_subdirectory(src/QtELFReader)
 
-# disable command line tool of pe-parse
-option(BUILD_COMMAND_LINE_TOOLS "Build Command Line Tools" OFF)
-add_subdirectory(submodules/pe-parse)
+# LIEF is used to parse PE, ELF and Mach-O binaries.
+# Only the LIEF library itself is needed, so everything else is disabled:
+# examples are not built because the LIEF C examples use C++-only compiler
+# built-ins (__has_cpp_attribute) that break the build on MinGW/GCC (see
+# issue #553, Windows CI failure).
+set(LIEF_EXAMPLES OFF CACHE BOOL "Build LIEF C++ examples" FORCE)
+set(LIEF_C_API    OFF CACHE BOOL "C API" FORCE)
+set(LIEF_TESTS    OFF CACHE BOOL "Enable tests" FORCE)
+set(LIEF_INSTALL  OFF CACHE BOOL "Generate the install target." FORCE)
+set(LIEF_USE_MELKOR OFF CACHE BOOL "Build Melkor for testing" FORCE)
+set(LIEF_USE_CCACHE ON)
+
+add_subdirectory(submodules/LIEF)
 add_subdirectory(submodules/zip)
+
+# ccache cannot cache compilations that use precompiled headers (it falls back
+# to a plain compiler run and marks the call as uncacheable). LIEF enables a
+# precompiled header for every LIEF and mbedtls source file, which made almost
+# the whole LIEF build uncacheable in CI (issue #553). When ccache is used,
+# drop the precompiled headers so that every LIEF compilation unit can be
+# cached. The first (cold) build is slightly slower, but every following build
+# with a warm ccache is much faster.
+if(CCACHE_PROGRAM)
+  set_target_properties(LIB_LIEF PROPERTIES PRECOMPILE_HEADERS "")
+endif()
 
 add_subdirectory(src/Deploy)
 

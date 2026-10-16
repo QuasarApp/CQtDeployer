@@ -246,12 +246,10 @@ void FileManagerTest::strip() {
     // operation is reported as success.
     QVERIFY(fm.strip(dir));
 
-#ifndef Q_OS_WIN
-    // A missing dir is an error on non Windows platforms.
+    // A missing dir is an error on all platforms. On Windows the PE
+    // binaries are stripped in-process with LIEF (issue #553), so the
+    // old no-op behavior (always true) no longer applies.
     QVERIFY(!fm.strip(m_dir.path() + "/does-not-exist"));
-#else
-    QVERIFY(fm.strip(m_dir.path() + "/does-not-exist"));
-#endif
 }
 
 void FileManagerTest::saveLoad() {
