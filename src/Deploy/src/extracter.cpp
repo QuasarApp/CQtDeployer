@@ -104,9 +104,20 @@ Extracter::MacOFileChanges Extracter::planMacOChanges(
     // LIEF submodule of CQtDeployer maps LC_RPATH to a different load
     // command constant than the macOS ABI (0x1C01), so the LIEF rpaths()
     // accessor would not find the real entries (see machORPaths).
+    // The LC_RPATH strings are compared after stripping the trailing
+    // slashes, because install_name_tool treats "@executable_path/.." and
+    // "@executable_path/../" as the same path, while the raw strings stored
+    // in the binary can differ (issue #166).
+    auto normalizeRPath = [](QString rpath) {
+        while (rpath.endsWith('/')) {
+            rpath.chop(1);
+        }
+        return rpath;
+    };
+
     QSet<QString> rpaths;
-    for (const auto &rpath : machORPaths(file)) {
-        rpaths.insert(rpath);
+    for (auto rpath : machORPaths(file)) {
+        rpaths.insert(normalizeRPath(rpath));
     }
 
     // A fat (universal) binary contains several architecture slices, so
@@ -155,7 +166,7 @@ Extracter::MacOFileChanges Extracter::planMacOChanges(
                 ? QStringLiteral("@executable_path")
                 : QStringLiteral("@executable_path/") + relPath;
 
-        if (!rpaths.contains(rpath)) {
+        if (!rpaths.contains(normalizeRPath(rpath))) {
             changes.addedRPaths << rpath;
         }
     }
@@ -214,7 +225,7 @@ bool Extracter::fixMachOWithInstallNameTool(
 
     for (const auto &rpath : std::as_const(changes.addedRPaths)) {
         if (!runTool("/usr/bin/install_name_tool", {"-add_rpath", rpath},
-                     QStringLiteral("already has rpath"))) {
+                     QStringLiteral("already has LC_RPATH"))) {
             ok = false;
         }
     }

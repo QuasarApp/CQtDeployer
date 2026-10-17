@@ -187,7 +187,11 @@ if (APPLE)
             COMMAND ${CMAKE_COMMAND} -E remove_directory "${DMG_STAGE_DIR}"
             COMMAND ${CMAKE_COMMAND} -E make_directory "${DMG_STAGE_DIR}/CQtDeployer.app/Contents/MacOS"
             COMMAND ${CMAKE_COMMAND} -E copy_directory
-                "${CMAKE_SOURCE_DIR}/Distro/CQtDeployer"
+                # The deployed package is named by the "targetPackage"
+                # entries of Deploy/CQtDeployer.json.in (the versioned
+                # "CQtDeployer.1_6" package), not by a plain
+                # "CQtDeployer" directory (issue #166).
+                "${CMAKE_SOURCE_DIR}/Distro/CQtDeployer.1_6"
                 "${DMG_STAGE_DIR}/CQtDeployer.app/Contents/MacOS"
             COMMAND ${CMAKE_COMMAND} -E copy
                 "${CMAKE_BINARY_DIR}/CQtDeployer.app/Info.plist"
