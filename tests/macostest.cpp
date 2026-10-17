@@ -122,22 +122,36 @@ std::vector<unsigned char> makeThinMachODylib(
 
 /**
  * @brief makeFatMachO This function build a fat (universal) Mach-O binary
- *  from the given architecture slices. The fat header and the fat_arch
- *  entries are little endian (FAT_CIGAM).
+ *  from the given architecture slices. By default the fat header and the
+ *  fat_arch entries are big endian (FAT_MAGIC), the layout that lipo writes.
+ *  With @a cigam the header is written in the FAT_CIGAM form (little
+ *  endian), which is also a valid on-disk representation.
  */
-std::vector<unsigned char> makeFatMachO(const QList<QByteArray> &slices) {
+std::vector<unsigned char> makeFatMachO(const QList<QByteArray> &slices,
+                                        bool cigam = false) {
     std::vector<unsigned char> f;
 
-    put32le(f, 0xBEBAFECAu); // FAT_CIGAM
-    put32le(f, static_cast<uint32_t>(slices.size())); // nfat_arch
+    auto put32 = [&](uint32_t x) {
+        if (cigam) {
+            put32le(f, x);
+        } else {
+            put32be(f, x);
+        }
+    };
+
+    // The magic value is the same for both byte orders, only the byte order
+    // of the storage differs (put32 handles it): FAT_MAGIC is big endian and
+    // FAT_CIGAM is the little endian (byte swapped) form.
+    put32(0xCAFEBABEu); // FAT_MAGIC / FAT_CIGAM
+    put32(static_cast<uint32_t>(slices.size())); // nfat_arch
 
     uint32_t offset = 8u + 20u * static_cast<uint32_t>(slices.size());
     for (const auto &slice : slices) {
-        put32le(f, 7u); // cputype
-        put32le(f, 3u); // cpusubtype
-        put32le(f, offset);
-        put32le(f, static_cast<uint32_t>(slice.size()));
-        put32le(f, 12u); // align
+        put32(7u); // cputype
+        put32(3u); // cpusubtype
+        put32(offset);
+        put32(static_cast<uint32_t>(slice.size()));
+        put32(12u); // align
         offset += static_cast<uint32_t>(slice.size());
     }
 
@@ -224,9 +238,11 @@ void MacOSTest::frameworkHelpers() {
     QCOMPARE(DeployCore::macOSFrameworkRoot(framework), framework);
     QVERIFY(DeployCore::macOSFrameworkRoot(dir + "/plain/libfoo.dylib").isEmpty());
 
-    // The real binary of the bundle is found over the Current symlink.
+    // The real binary of the bundle is found in the real version directory
+    // (not through the Current symlink), because the dyld install names of
+    // the Qt frameworks are based on that path.
     QCOMPARE(DeployCore::macOSFrameworkBinary(framework),
-             framework + "/Versions/Current/QtCore");
+             framework + "/Versions/A/QtCore");
     QVERIFY(DeployCore::macOSFrameworkBinary(dir + "/plain").isEmpty());
 
     // The dyld reference keeps the Name.framework/Versions/V/Name tail.
@@ -288,7 +304,8 @@ void MacOSTest::machORPathsCheck() {
     QVERIFY(Extracter::isMachOFile(beFile));
 
     // Fat binary with one little endian and one big endian slice. The
-    // rpaths of both slices are expected.
+    // rpaths of both slices are expected. The fat header uses the canonical
+    // FAT_MAGIC layout (big endian fields).
     auto fat = makeFatMachO({toBytes(le), toBytes(be)});
     auto fatFile = dir + "/fat.dylib";
     QVERIFY(writeFile(fatFile, toBytes(fat)));
@@ -298,6 +315,13 @@ void MacOSTest::machORPathsCheck() {
     QVERIFY(fatRpaths.contains(QStringLiteral("/usr/lib")));
     QCOMPARE(fatRpaths.size(), 3);
     QVERIFY(Extracter::isMachOFile(fatFile));
+
+    // The same fat binary in the FAT_CIGAM form (little endian fields).
+    auto fatCigam = makeFatMachO({toBytes(le), toBytes(be)}, true);
+    auto fatCigamFile = dir + "/fatCigam.dylib";
+    QVERIFY(writeFile(fatCigamFile, toBytes(fatCigam)));
+    QCOMPARE(Extracter::machORPaths(fatCigamFile), fatRpaths);
+    QVERIFY(Extracter::isMachOFile(fatCigamFile));
 
     // No rpaths at all.
     auto noRpath = makeThinMachODylib("/opt/Qt/6.10.3/macos/lib/QtCore",

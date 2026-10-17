@@ -395,6 +395,30 @@ public:
     static bool isMacOSFrameworkBinary(const QFileInfo &file);
 
     /**
+     * @brief isMacOBinary This method return true if the @a file is a Mach-O
+     *  binary (32/64-bit thin binaries in both byte orders and fat/universal
+     *  binaries). The check is based on the magic number in the first bytes
+     *  of the file, so the file does not need to be parseable by LIEF and the
+     *  file suffix is not required (issue #166).
+     * @param file This is the file that will be checked.
+     * @return true if the file is a Mach-O binary else false.
+     */
+    static bool isMacOBinary(const QFileInfo &file);
+
+    /**
+     * @brief machORPaths This method return the list of the runtime search
+     *  paths (LC_RPATH entries) of all architecture slices of the Mach-O
+     *  binary @a file (issue #166). The entries are read directly from the
+     *  binary, because the LIEF submodule of CQtDeployer maps LC_RPATH to a
+     *  different load command constant than the macOS ABI (0x1C01), so the
+     *  LIEF rpath() accessor does not find the real entries.
+     * @param file This is the path to the Mach-O binary.
+     * @return The list of the LC_RPATH entries (empty if the file is not a
+     *  Mach-O binary or has no rpaths).
+     */
+    static QStringList machORPaths(const QString &file);
+
+    /**
      * @brief macOSFrameworkRoot This method return the absolute path of the
      *  .framework bundle that contains the @a path. The path can point to the
      *  bundle itself, to the binary inside the bundle or to any other file of
@@ -407,7 +431,10 @@ public:
 
     /**
      * @brief macOSFrameworkBinary This method return the path of the real
-     *  library binary of the .framework bundle (issue #166).
+     *  library binary of the .framework bundle (issue #166). If the bundle
+     *  uses the Name.framework/Versions/<V>/Name layout the binary of the
+     *  real version directory (for example Versions/A) is returned, because
+     *  the dyld install names of the Qt frameworks are based on that path.
      * @param frameworkDir This is the path to the .framework bundle.
      * @return Absolute path to the framework binary or an empty string if the
      *  bundle is invalid or the binary is not found.

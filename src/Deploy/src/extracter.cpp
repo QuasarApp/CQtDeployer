@@ -77,133 +77,14 @@ bool Extracter::deployMSVC() {
 }
 
 bool Extracter::isMachOFile(const QString &file) {
-    QFile f(file);
-    if (!f.open(QIODevice::ReadOnly)) {
-        return false;
-    }
-
-    QByteArray header = f.read(4);
-    f.close();
-
-    if (header.size() != 4) {
-        return false;
-    }
-
-    auto magic = *reinterpret_cast<const quint32 *>(header.constData());
-    // 32/64-bit Mach-O in both byte orders and fat (universal) binaries.
-    return magic == 0xFEEDFACEu || // MH_MAGIC (little endian)
-           magic == 0xFEEDFACFu || // MH_MAGIC_64 (little endian)
-           magic == 0xCEFAEDFEu || // MH_MAGIC (big endian)
-           magic == 0xCFFAEDFEu || // MH_MAGIC_64 (big endian)
-           magic == 0xBEBAFECAu || // FAT_CIGAM
-           magic == 0xCAFEBABEu;   // FAT_MAGIC
+    return DeployCore::isMacOBinary(QFileInfo(file));
 }
 
 QStringList Extracter::machORPaths(const QString &file) {
-    QStringList rpaths;
-    QSet<QString> seen;
-
-    QFile f(file);
-    if (!f.open(QIODevice::ReadOnly)) {
-        return rpaths;
-    }
-
-    auto data = f.readAll();
-    f.close();
-
-    const auto *b = reinterpret_cast<const quint8 *>(data.constData());
-    const auto size = static_cast<quint64>(data.size());
-
-    auto read32 = [&](quint64 off, bool littleEndian) -> quint32 {
-        if (off + 4 > size) {
-            return 0;
-        }
-        if (littleEndian) {
-            return quint32(b[off]) | (quint32(b[off + 1]) << 8)
-                 | (quint32(b[off + 2]) << 16) | (quint32(b[off + 3]) << 24);
-        }
-        return (quint32(b[off]) << 24) | (quint32(b[off + 1]) << 16)
-             | (quint32(b[off + 2]) << 8) | quint32(b[off + 3]);
-    };
-
-    // Collect the LC_RPATH entries (cmd 0x00001C01) of one thin slice.
-    auto scanSlice = [&](quint64 start) {
-        if (start + 32 > size) {
-            return;
-        }
-
-        // The byte order of the header fields is given by the magic.
-        const auto magicLE = read32(start, true);
-        bool littleEndian = (magicLE == 0xFEEDFACEu || magicLE == 0xFEEDFACFu);
-        if (!littleEndian) {
-            const auto magicBE = read32(start, false);
-            if (magicBE != 0xFEEDFACEu && magicBE != 0xFEEDFACFu) {
-                return;
-            }
-            littleEndian = false;
-        }
-
-        const auto is64 = read32(start, littleEndian) == 0xFEEDFACFu;
-        const auto ncmds = read32(start + 16, littleEndian);
-
-        // Guard against corrupted headers with a huge number of commands.
-        if (ncmds > 0x10000u) {
-            return;
-        }
-
-        for (quint64 off = start + (is64 ? 32 : 28), i = 0;
-                i < ncmds && off + 8 <= size; ++i) {
-            const auto cmd = read32(off, littleEndian);
-            const auto cmdSize = read32(off + 4, littleEndian);
-            if (cmdSize < 8 || off + cmdSize > size) {
-                break;
-            }
-
-            if (cmd == 0x00001C01u) { // LC_RPATH
-                QByteArray path;
-                for (quint64 p = off + 8; p < off + cmdSize && b[p] != 0; ++p) {
-                    path.append(static_cast<char>(b[p]));
-                }
-
-                auto rpath = QString::fromUtf8(path);
-                if (!rpath.isEmpty() && !seen.contains(rpath)) {
-                    seen.insert(rpath);
-                    rpaths << rpath;
-                }
-            }
-
-            off += cmdSize;
-        }
-    };
-
-    const auto magicLE = read32(0, true);
-    if (magicLE == 0xBEBAFECAu || magicLE == 0xCAFEBABEu) {
-        // Fat (universal) binary: scan every architecture slice.
-        const bool littleEndian = (magicLE == 0xBEBAFECAu);
-        const auto nfat = read32(4, littleEndian);
-
-        if (nfat > 0 && nfat <= 0x10000u) {
-            for (quint64 i = 0; i < nfat; ++i) {
-                const quint64 archOff = 8 + i * 20; // fat_arch is 20 bytes
-                if (archOff + 20 > size) {
-                    break;
-                }
-
-                const auto sliceOff = read32(archOff + 8, littleEndian);
-                const auto sliceSize = read32(archOff + 12, littleEndian);
-                if (sliceSize == 0 || sliceOff + sliceSize > size) {
-                    continue;
-                }
-
-                scanSlice(sliceOff);
-            }
-        }
-
-        return rpaths;
-    }
-
-    scanSlice(0);
-    return rpaths;
+    // The implementation lives in DeployCore::machORPaths(), because the
+    // rpaths are also needed by the scanner (macho_type.cpp), which has no
+    // access to the extracter (issue #166).
+    return DeployCore::machORPaths(file);
 }
 
 Extracter::MacOFileChanges Extracter::planMacOChanges(

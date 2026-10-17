@@ -6,6 +6,7 @@
 //#
 
 #include "macho_type.h"
+#include "deploycore.h"
 #include <QFileInfo>
 #include <quasarapp.h>
 
@@ -29,14 +30,34 @@ bool MachO::getLibInfo(const QString &lib, LibInfo &info) const {
         return false;
     }
 
-    // A Mach-O file can be a fat (universal) binary with several architecture
-    // slices. Prefer the slice with the same bitness as the running host,
-    // otherwise fall back to the first slice.
-    const LIEF::MachO::Binary *slice = macho->front();
+    // A fat (universal) binary contains one slice per architecture. dyld
+    // loads the slice of the running architecture, so the scanner uses the
+    // same slice: the first slice with the host CPU type (issue #166).
+#if defined(__aarch64__) || defined(__arm64__)
+    constexpr auto hostCpu = LIEF::MachO::Header::CPU_TYPE::ARM64;
+#elif defined(__x86_64__)
+    constexpr auto hostCpu = LIEF::MachO::Header::CPU_TYPE::X86_64;
+#else
+    constexpr auto hostCpu = LIEF::MachO::Header::CPU_TYPE::ANY;
+#endif
+
+    const LIEF::MachO::Binary *slice = nullptr;
     for (const LIEF::MachO::Binary &bin : *macho) {
-        if (bin.header().is_64bit() == (sizeof(void*) == 8)) {
+        if (bin.header().cpu_type() == hostCpu) {
             slice = &bin;
             break;
+        }
+    }
+
+    if (slice == nullptr) {
+        // No slice for the host architecture: fall back to the first slice
+        // with the same bitness as the host (or the first slice at all).
+        slice = macho->front();
+        for (const LIEF::MachO::Binary &bin : *macho) {
+            if (bin.header().is_64bit() == (sizeof(void*) == 8)) {
+                slice = &bin;
+                break;
+            }
         }
     }
 
@@ -66,22 +87,11 @@ bool MachO::getLibInfo(const QString &lib, LibInfo &info) const {
     }
 
     // Extract the runtime search paths (LC_RPATH). They are used to find
-    // the qmake of a Qt installation (issue #166).
-    QString rpath;
-    for (const LIEF::MachO::RPathCommand &rPath : slice->rpaths()) {
-        const auto &path = rPath.path();
-        if (path.empty()) {
-            continue;
-        }
-
-        if (!rpath.isEmpty()) {
-            rpath += ":";
-        }
-
-        rpath += QString::fromStdString(path);
-    }
-
-    info.setRPath(rpath);
+    // the qmake of a Qt installation (issue #166). The entries are read
+    // from the binary, because the LIEF submodule of CQtDeployer maps
+    // LC_RPATH to a different load command constant than the macOS ABI.
+    info.setRPath(DeployCore::machORPaths(infolib.absoluteFilePath())
+                     .join(QLatin1String(":")));
 
     return true;
 }
