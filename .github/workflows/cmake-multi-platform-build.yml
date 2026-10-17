@@ -148,11 +148,13 @@ jobs:
       # The deploy targets are created only if the cqtdeployer executable is
       # found at configure time. On macOS the tool is the one built from
       # source in this job, so re-run the CMake configuration with the
-      # CQTDEPLOYER variable pointing to it (issue #166).
+      # CQTDEPLOYER environment variable pointing to it (issue #166).
+      # NOTE: the folded block (>) keeps the whole invocation a single shell
+      # command; a literal block (|) would execute "-G Ninja" as a separate
+      # command and fail with "-G: command not found" (exit code 127).
       if: runner.os == 'macOS'
-      shell: bash
-      run: |
-        export CQTDEPLOYER="${{ github.workspace }}/build/src/CQtDeployer/CQtDeployer"
+      run: >
+        CQTDEPLOYER="${{ github.workspace }}/build/src/CQtDeployer/CQtDeployer"
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -G Ninja
         -DBUILD_SHARED_LIBS=ON
