@@ -157,7 +157,109 @@ LibPriority DeployCore::getLibPriority(const QString &lib) {
 
 bool DeployCore::containsModule(const QString& moduleLibrary, const QString& lib) {
     QRegularExpression erfexp(QString(moduleLibrary).replace("QtX", "Qt[4,5,6]"));
-    return lib.contains(erfexp);
+    if (lib.contains(erfexp)) {
+        return true;
+    }
+
+    // macOS frameworks do not contain the Qt major version in the library
+    // name (QtCore.framework instead of libQt6Core.dylib), so the
+    // version-less module name is matched as well (issue #166).
+    return lib.contains(QString(moduleLibrary).replace("QtX", "Qt"));
+}
+
+bool DeployCore::isMacOSFrameworkBinary(const QFileInfo &file) {
+    if (!file.isFile() || !file.completeSuffix().isEmpty()) {
+        return false;
+    }
+
+    auto root = macOSFrameworkRoot(file.absoluteFilePath());
+    return !root.isEmpty();
+}
+
+QString DeployCore::macOSFrameworkRoot(const QString &path) {
+    QFileInfo info(path);
+    auto full = info.isDir() ? info.absoluteFilePath() : info.absolutePath();
+
+    if (info.isDir() && info.fileName().endsWith(".framework", Qt::CaseSensitive)) {
+        return info.absoluteFilePath();
+    }
+
+    // Walk up the path components and return the first directory that has
+    // the .framework suffix. Works with relative paths (resolved against
+    // the current working dir) and with non existing files.
+    QDir dir(full);
+    while (!dir.isRoot()) {
+        if (dir.dirName().endsWith(".framework", Qt::CaseSensitive)) {
+            return dir.absolutePath();
+        }
+        dir.cdUp();
+    }
+
+    return {};
+}
+
+QString DeployCore::macOSFrameworkBinary(const QString &frameworkDir) {
+    QFileInfo fw(frameworkDir);
+    if (!fw.isDir() || !fw.fileName().endsWith(".framework", Qt::CaseSensitive)) {
+        return {};
+    }
+
+    auto baseName = QFileInfo(fw.fileName()).baseName();
+
+    // dyld resolves the "Versions/Current" symlink, so prefer it.
+    auto current = fw.absoluteFilePath() + "/Versions/Current/" + baseName;
+    if (QFileInfo(current).exists()) {
+        return current;
+    }
+
+    // Fallback: the first existing version of the bundle.
+    QDir versions(fw.absoluteFilePath() + "/Versions");
+    for (const auto &v : versions.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+        auto candidate = v.absoluteFilePath() + "/" + baseName;
+        if (QFileInfo(candidate).exists()) {
+            return candidate;
+        }
+    }
+
+    return {};
+}
+
+QString DeployCore::macOSFrameworkReference(const QString &path) {
+    QFileInfo info(path);
+    auto root = macOSFrameworkRoot(path);
+    if (root.isEmpty()) {
+        return info.fileName();
+    }
+
+    // Name.framework/Versions/<V>/Name
+    return QFileInfo(root).fileName() + "/" +
+            info.absoluteFilePath().mid(root.length() + 1);
+}
+
+QString DeployCore::normalizeMacOSLibName(const QString &name) {
+    auto n = name;
+
+    // Remove the dyld specific prefixes.
+    static const QStringList dyldPrefixes = {
+        "@rpath/", "@loader_path/", "@executable_path/", "@relocated/"
+    };
+    for (const auto &prefix : dyldPrefixes) {
+        if (n.startsWith(prefix, Qt::CaseSensitive)) {
+            n = n.mid(prefix.size());
+            break;
+        }
+    }
+
+    // Framework references keep the full Name.framework/... tail,
+    // because this is the layout that must exist in the deployed dir.
+    auto fwSuffix = n.indexOf(".framework", Qt::CaseSensitive);
+    if (fwSuffix != -1) {
+        auto start = n.lastIndexOf('/', fwSuffix);
+        return n.mid(start + 1);
+    }
+
+    // Plain dylibs are referenced by the file name only.
+    return QFileInfo(n).fileName();
 }
 
 #define C(X) QuasarAppUtils::Params::isEndable(X)
@@ -710,7 +812,11 @@ int DeployCore::find(const QString &str, const QStringList &list) {
 
 bool DeployCore::isLib(const QFileInfo &file) {
     return file.completeSuffix().contains("so", Qt::CaseInsensitive)
-            || file.completeSuffix().contains("dll", Qt::CaseInsensitive);
+            || file.completeSuffix().contains("dll", Qt::CaseInsensitive)
+            || file.completeSuffix().contains("dylib", Qt::CaseInsensitive)
+            // macOS framework binaries have no suffix
+            // (QtCore.framework/Versions/A/QtCore), see issue #166.
+            || isMacOSFrameworkBinary(file);
 }
 
 MSVCVersion DeployCore::getMSVC(const QString &_qtBin) {
@@ -854,6 +960,18 @@ QtMajorVersion DeployCore::isQtLibName(const QString &lib) {
         isQt = QtMajorVersion::Qt5;
     } else if (fileName.contains("Qt6", getCaseSensitivity(fileName))) {
         isQt = QtMajorVersion::Qt6;
+    }
+
+    if (!isQt) {
+        // macOS Qt frameworks do not contain the major version in the
+        // library name (QtCore.framework instead of libQt6Core.dylib), so
+        // the version of the configured Qt installation is used as a
+        // fallback (issue #166).
+        auto frameworkRoot = macOSFrameworkRoot(info.absoluteFilePath());
+        if (!frameworkRoot.isEmpty() && _config &&
+            _config->qtDir.getQtVersion() != QtMajorVersion::NoQt) {
+            isQt = _config->qtDir.getQtVersion();
+        }
     }
 
     if (isQt && QuasarAppUtils::Params::isEndable("noQt")) {

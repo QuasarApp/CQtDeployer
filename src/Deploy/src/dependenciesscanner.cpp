@@ -32,6 +32,11 @@ PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
             sufix.contains("exe", Qt::CaseSensitive)) {
         return PrivateScaner::PE;
     } else if (sufix.isEmpty() || sufix.contains("so", Qt::CaseSensitive)) {
+        // macOS framework binaries have no file suffix, so they must be
+        // checked before assuming an ELF library (issue #166).
+        if (DeployCore::isMacOSFrameworkBinary(info)) {
+            return PrivateScaner::MACHO;
+        }
         return PrivateScaner::ELF;
     } else if (sufix.contains("dylib", Qt::CaseSensitive)) {
         return PrivateScaner::MACHO;
@@ -43,7 +48,19 @@ PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
 QMultiMap<LibPriority, LibInfo> DependenciesScanner::getLibsFromEnvirement(
         const QString &libName) const {
 
-    const auto values = _EnvLibs.values(libName.toUpper());
+    auto values = _EnvLibs.values(libName.toUpper());
+
+    if (values.isEmpty()) {
+        // macOS dependencies are Mach-O install names (@rpath/...,
+        // /opt/homebrew/..., Name.framework/...) and do not match the
+        // plain file names that are registered in the environment, so
+        // the normalized name is tried as a fallback (issue #166).
+        auto normalized = DeployCore::normalizeMacOSLibName(libName).toUpper();
+        if (!normalized.isEmpty() && normalized != libName.toUpper()) {
+            values = _EnvLibs.values(normalized);
+        }
+    }
+
     QMultiMap<LibPriority, LibInfo> res;
 
     struct Candidate {
@@ -226,12 +243,26 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
         }
 
         auto list = dir.entryInfoList(QStringList() << "*.dll" << "*.DLL"
-                                      << "*.SO*" << "*.so*",
+                                      << "*.SO*" << "*.so*" << "*.dylib",
                                       QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
 
         for (const auto &i : std::as_const(list)) {
             addToWinAPI(i.fileName().toUpper(), winAPI);
             _EnvLibs.insert(i.fileName().toUpper(), i.absoluteFilePath());
+        }
+
+        // macOS .framework bundles are directories, so the real binary
+        // inside the bundle has to be registered separately under the
+        // bundle file name and under the dyld framework reference
+        // (Name.framework/Versions/<V>/Name) (issue #166).
+        for (const auto &fw : dir.entryInfoList({"*.framework"},
+                                                QDir::Dirs | QDir::NoDotAndDotDot)) {
+            auto bin = DeployCore::macOSFrameworkBinary(fw.absoluteFilePath());
+            if (bin.isEmpty()) {
+                continue;
+            }
+            _EnvLibs.insert(QFileInfo(bin).fileName().toUpper(), bin);
+            _EnvLibs.insert(DeployCore::normalizeMacOSLibName(bin).toUpper(), bin);
         }
     }
 

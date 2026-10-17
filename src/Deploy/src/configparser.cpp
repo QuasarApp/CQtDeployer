@@ -10,6 +10,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QProcess>
+#include <QVersionNumber>
 #include "dependenciesscanner.h"
 #include "deploycore.h"
 #include "filemanager.h"
@@ -17,6 +18,7 @@
 #include "pathutils.h"
 #include "pluginsparser.h"
 #include "defines.h"
+#include <algorithm>
 #include <cassert>
 #include <qaglobalutils.h>
 #include <Distributions/deb.h>
@@ -53,6 +55,77 @@ static void addQtToolchainEnv(DeployConfig &config) {
 
     config.envirement.addEnv(toolchain);
     config.extraPaths.addExtraPaths({toolchain});
+}
+
+/**
+ * This function finds the qmake executable of a Qt installation in the
+ * standard macOS locations (issue #166):
+ *   - the Homebrew (Apple Silicon) prefix: /opt/homebrew
+ *   - the Homebrew (Intel) prefix: /usr/local
+ *   - the aqtinstall / Qt online installer prefix: /opt/Qt
+ * The search is used only when the qmake option, the RPATH of the target
+ * and the PATH variable did not provide a qmake executable.
+ */
+static QString findMacOSQmake() {
+
+    struct Candidate {
+        QString qmake;
+        QVersionNumber version;
+    };
+
+    QList<Candidate> candidates;
+
+    auto add = [&candidates](const QString &qmake, const QString &versionText) {
+        if (!QFileInfo(qmake).isExecutable()) {
+            return;
+        }
+
+        auto version = QVersionNumber::fromString(versionText);
+        if (!version.isNull()) {
+            candidates.append(Candidate{qmake, version});
+        }
+    };
+
+    // Homebrew keeps the versions in <prefix>/Cellar/<name>/<version>
+    // directories (qt, qt@6 and qt@5 formulas).
+    for (const auto &prefix : {QStringLiteral("/opt/homebrew"),
+                               QStringLiteral("/usr/local")}) {
+        for (const auto &qtName : {QStringLiteral("qt"),
+                                   QStringLiteral("qt@6"),
+                                   QStringLiteral("qt@5")}) {
+
+            QDir cellar(prefix + "/Cellar/" + qtName);
+            for (const auto &entry :
+                     cellar.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+                add(cellar.filePath(entry + "/bin/qmake"), entry);
+            }
+        }
+    }
+
+    // The aqtinstall and Qt online installer layout:
+    // /opt/Qt/<version>/macos/bin/qmake
+    {
+        QDir qtRoot("/opt/Qt");
+        for (const auto &versionDir :
+                 qtRoot.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+            for (const auto &arch :
+                     {QStringLiteral("macos"),
+                      QStringLiteral("macos_aarch64"),
+                      QStringLiteral("clang_64")}) {
+                add(qtRoot.filePath(versionDir + "/" + arch + "/bin/qmake"),
+                    versionDir);
+            }
+        }
+    }
+
+    if (candidates.isEmpty()) {
+        return {};
+    }
+
+    std::sort(candidates.begin(), candidates.end(),
+              [](const auto &l, const auto &r) { return l.version > r.version; });
+
+    return candidates.first().qmake;
 }
 
 
@@ -1252,6 +1325,16 @@ bool ConfigParser::initQmake() {
                 auto proc = DeployCore::findProcess(env.value("PATH"), "qmake");
                 if (proc.isEmpty()) {
 
+                    // macOS: look for Qt in the standard Homebrew and
+                    // aqtinstall locations (issue #166).
+                    proc = findMacOSQmake();
+
+                    if (!proc.isEmpty()) {
+                        qInfo() << QString("The qmake was found in the standard "
+                                           "macOS location. qmake : %0").arg(proc);
+                        return initQmakePrivate(proc);
+                    }
+
                     qCritical() << "The deployment target requires Qt libraries,"
                                    " but initialize of Qt directories is failed."
                                    " Please use the qmake option to set a path to the qmake executable.";
@@ -1567,7 +1650,18 @@ QList<iDistribution *> ConfigParser::getDistribution() {
     }
 
     if (QuasarAppUtils::Params::isEndable("qif")) {
-        distros.push_back(new QIF(_fileManager));
+        auto qif = new QIF(_fileManager);
+        if (qif->isAvailable()) {
+            distros.push_back(qif);
+        } else {
+            QuasarAppUtils::Params::log("The binarycreator executable of the "
+                                        "Qt Installer Framework is not found, "
+                                        "the qif package will not be created. "
+                                        "Install the Qt Installer Framework "
+                                        "tools to enable this option.",
+                                        QuasarAppUtils::Warning);
+            delete qif;
+        }
     }
 
     if (distros.isEmpty()) {

@@ -26,6 +26,45 @@
 
 #include <fstream>
 
+#include <LIEF/MachO.hpp>
+
+namespace {
+
+/**
+ * @brief pathRelative This function return the relative path from the
+ *  directory @a fromDir to the file or directory @a to (POSIX style).
+ *  The result is "." if both paths are equal.
+ */
+static QString pathRelative(const QString &fromDir, const QString &to) {
+    auto fromList = fromDir.split('/', Qt::SkipEmptyParts);
+    auto toList = to.split('/', Qt::SkipEmptyParts);
+
+    int common = 0;
+    while (common < fromList.size() && common < toList.size()
+            && fromList.at(common) == toList.at(common)) {
+        ++common;
+    }
+
+    QStringList up;
+    for (int i = common; i < fromList.size(); ++i) {
+        up << "..";
+    }
+
+    auto rest = toList.mid(common);
+
+    if (up.isEmpty()) {
+        return rest.isEmpty() ? QStringLiteral(".") : rest.join("/");
+    }
+
+    if (rest.isEmpty()) {
+        return up.join("/");
+    }
+
+    return up.join("/") + "/" + rest.join("/");
+}
+
+} // namespace
+
 bool Extracter::deployMSVC() {
     QuasarAppUtils::Params::log("Trying to deploy msvc", QuasarAppUtils::Debug);
     auto msvcInstaller = DeployCore::getVCredist(DeployCore::_config->qtDir.getBins());
@@ -35,6 +74,333 @@ bool Extracter::deployMSVC() {
     }
 
     return _fileManager->copyFile(msvcInstaller, DeployCore::_config->getTargetDir());
+}
+
+bool Extracter::isMachOFile(const QString &file) {
+    QFile f(file);
+    if (!f.open(QIODevice::ReadOnly)) {
+        return false;
+    }
+
+    QByteArray header = f.read(4);
+    f.close();
+
+    if (header.size() != 4) {
+        return false;
+    }
+
+    auto magic = *reinterpret_cast<const quint32 *>(header.constData());
+    // 32/64-bit Mach-O in both byte orders and fat (universal) binaries.
+    return magic == 0xFEEDFACEu || // MH_MAGIC (little endian)
+           magic == 0xFEEDFACFu || // MH_MAGIC_64 (little endian)
+           magic == 0xCEFAEDFEu || // MH_MAGIC (big endian)
+           magic == 0xCFFAEDFEu || // MH_MAGIC_64 (big endian)
+           magic == 0xBEBAFECAu || // FAT_CIGAM
+           magic == 0xCAFEBABEu;   // FAT_MAGIC
+}
+
+QStringList Extracter::machORPaths(const QString &file) {
+    QStringList rpaths;
+    QSet<QString> seen;
+
+    QFile f(file);
+    if (!f.open(QIODevice::ReadOnly)) {
+        return rpaths;
+    }
+
+    auto data = f.readAll();
+    f.close();
+
+    const auto *b = reinterpret_cast<const quint8 *>(data.constData());
+    const auto size = static_cast<quint64>(data.size());
+
+    auto read32 = [&](quint64 off, bool littleEndian) -> quint32 {
+        if (off + 4 > size) {
+            return 0;
+        }
+        if (littleEndian) {
+            return quint32(b[off]) | (quint32(b[off + 1]) << 8)
+                 | (quint32(b[off + 2]) << 16) | (quint32(b[off + 3]) << 24);
+        }
+        return (quint32(b[off]) << 24) | (quint32(b[off + 1]) << 16)
+             | (quint32(b[off + 2]) << 8) | quint32(b[off + 3]);
+    };
+
+    // Collect the LC_RPATH entries (cmd 0x00001C01) of one thin slice.
+    auto scanSlice = [&](quint64 start) {
+        if (start + 32 > size) {
+            return;
+        }
+
+        // The byte order of the header fields is given by the magic.
+        const auto magicLE = read32(start, true);
+        bool littleEndian = (magicLE == 0xFEEDFACEu || magicLE == 0xFEEDFACFu);
+        if (!littleEndian) {
+            const auto magicBE = read32(start, false);
+            if (magicBE != 0xFEEDFACEu && magicBE != 0xFEEDFACFu) {
+                return;
+            }
+            littleEndian = false;
+        }
+
+        const auto is64 = read32(start, littleEndian) == 0xFEEDFACFu;
+        const auto ncmds = read32(start + 16, littleEndian);
+
+        // Guard against corrupted headers with a huge number of commands.
+        if (ncmds > 0x10000u) {
+            return;
+        }
+
+        for (quint64 off = start + (is64 ? 32 : 28), i = 0;
+                i < ncmds && off + 8 <= size; ++i) {
+            const auto cmd = read32(off, littleEndian);
+            const auto cmdSize = read32(off + 4, littleEndian);
+            if (cmdSize < 8 || off + cmdSize > size) {
+                break;
+            }
+
+            if (cmd == 0x00001C01u) { // LC_RPATH
+                QByteArray path;
+                for (quint64 p = off + 8; p < off + cmdSize && b[p] != 0; ++p) {
+                    path.append(static_cast<char>(b[p]));
+                }
+
+                auto rpath = QString::fromUtf8(path);
+                if (!rpath.isEmpty() && !seen.contains(rpath)) {
+                    seen.insert(rpath);
+                    rpaths << rpath;
+                }
+            }
+
+            off += cmdSize;
+        }
+    };
+
+    const auto magicLE = read32(0, true);
+    if (magicLE == 0xBEBAFECAu || magicLE == 0xCAFEBABEu) {
+        // Fat (universal) binary: scan every architecture slice.
+        const bool littleEndian = (magicLE == 0xBEBAFECAu);
+        const auto nfat = read32(4, littleEndian);
+
+        if (nfat > 0 && nfat <= 0x10000u) {
+            for (quint64 i = 0; i < nfat; ++i) {
+                const quint64 archOff = 8 + i * 20; // fat_arch is 20 bytes
+                if (archOff + 20 > size) {
+                    break;
+                }
+
+                const auto sliceOff = read32(archOff + 8, littleEndian);
+                const auto sliceSize = read32(archOff + 12, littleEndian);
+                if (sliceSize == 0 || sliceOff + sliceSize > size) {
+                    continue;
+                }
+
+                scanSlice(sliceOff);
+            }
+        }
+
+        return rpaths;
+    }
+
+    scanSlice(0);
+    return rpaths;
+}
+
+Extracter::MacOFileChanges Extracter::planMacOChanges(
+        const QString &file,
+        const QHash<QString, QString> &references,
+        const QString &libOutDir) {
+    MacOFileChanges changes;
+
+    auto macho = LIEF::MachO::Parser::parse(file.toStdString());
+    if (macho == nullptr || macho->empty()) {
+        return changes;
+    }
+
+    QSet<QString> seenChanges;
+
+    // The LC_RPATH entries are read directly from the binary, because the
+    // LIEF submodule of CQtDeployer maps LC_RPATH to a different load
+    // command constant than the macOS ABI (0x1C01), so the LIEF rpaths()
+    // accessor would not find the real entries (see machORPaths).
+    QSet<QString> rpaths;
+    for (const auto &rpath : machORPaths(file)) {
+        rpaths.insert(rpath);
+    }
+
+    // A fat (universal) binary contains several architecture slices, so
+    // the changes are collected from all of them (deduplicated by name).
+    for (const LIEF::MachO::Binary &slice : *macho) {
+
+        for (const LIEF::MachO::DylibCommand &dylib : slice.libraries()) {
+            auto name = QString::fromStdString(dylib.name());
+            if (name.isEmpty()) {
+                continue;
+            }
+
+            auto replacement = references.value(
+                        DeployCore::normalizeMacOSLibName(name).toUpper());
+            if (replacement.isEmpty() || replacement == name) {
+                continue;
+            }
+
+            auto key = name + "->" + replacement;
+            if (seenChanges.contains(key)) {
+                continue;
+            }
+
+            seenChanges.insert(key);
+            changes.changedLibs.append(qMakePair(name, replacement));
+        }
+
+        if (auto *idCmd = slice.get(LIEF::MachO::LoadCommand::TYPE::ID_DYLIB);
+                idCmd != nullptr) {
+            if (auto *id = idCmd->cast<LIEF::MachO::DylibCommand>()) {
+                auto oldId = QString::fromStdString(id->name());
+                auto newId = references.value(
+                            DeployCore::normalizeMacOSLibName(file).toUpper());
+                if (!newId.isEmpty() && newId != oldId) {
+                    changes.newInstallName = newId;
+                }
+            }
+        }
+    }
+
+    // Make sure the deployed libraries can be resolved: add an rpath that
+    // points from the binary to the deployed lib directory.
+    auto relPath = pathRelative(QFileInfo(file).absolutePath(), libOutDir);
+    if (!relPath.isEmpty()) {
+        auto rpath = (relPath == ".")
+                ? QStringLiteral("@executable_path")
+                : QStringLiteral("@executable_path/") + relPath;
+
+        if (!rpaths.contains(rpath)) {
+            changes.addedRPaths << rpath;
+        }
+    }
+
+    return changes;
+}
+
+bool Extracter::fixMachOWithInstallNameTool(
+        const QString &file, const MacOFileChanges &changes) {
+    QProcess proc;
+
+    auto runTool = [&](const QString &program, const QStringList &args,
+                       const QString &okIfErrorContains = QString()) -> bool {
+        auto commandArgs = args;
+        commandArgs << file;
+        proc.start(program, commandArgs);
+
+        if (!proc.waitForStarted() || !proc.waitForFinished()) {
+            QuasarAppUtils::Params::log(program + " failed to start: " + file,
+                                        QuasarAppUtils::Warning);
+            return false;
+        }
+
+        if (proc.exitStatus() != QProcess::NormalExit || proc.exitCode() != 0) {
+            auto error = QString::fromLocal8Bit(proc.readAllStandardError()).trimmed();
+
+            // An expected error (for example adding an rpath that already
+            // exists) is not a failure.
+            if (!okIfErrorContains.isEmpty() && error.contains(okIfErrorContains)) {
+                QuasarAppUtils::Params::log(program + ": " + error,
+                                            QuasarAppUtils::Debug);
+                return true;
+            }
+
+            QuasarAppUtils::Params::log(program + " failed: " + error,
+                                        QuasarAppUtils::Warning);
+            return false;
+        }
+
+        return true;
+    };
+
+    bool ok = true;
+
+    for (const auto &change : std::as_const(changes.changedLibs)) {
+        if (!runTool("/usr/bin/install_name_tool",
+                     {"-change", change.first, change.second})) {
+            ok = false;
+        }
+    }
+
+    if (!changes.newInstallName.isEmpty()
+            && !runTool("/usr/bin/install_name_tool", {"-id", changes.newInstallName})) {
+        ok = false;
+    }
+
+    for (const auto &rpath : std::as_const(changes.addedRPaths)) {
+        if (!runTool("/usr/bin/install_name_tool", {"-add_rpath", rpath},
+                     QStringLiteral("already has rpath"))) {
+            ok = false;
+        }
+    }
+
+    // install_name_tool invalidates the code signature, so the binary has
+    // to be signed again. An ad-hoc signature is enough for a local
+    // deployment.
+    if (ok && !runTool("/usr/bin/codesign", {"--force", "--sign", "-"})) {
+        ok = false;
+    }
+
+    return ok;
+}
+
+bool Extracter::deployMacOSRPaths() {
+
+    auto cnf = DeployCore::_config;
+    bool ok = true;
+
+    for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
+        const auto &package = i.key();
+        auto targetPath = cnf->getTargetDir() + "/" + package;
+        auto distro = cnf->getDistroFromPackage(package);
+        auto libOut = targetPath + distro.getLibOutDir();
+
+        // Build the map of the normalized library names to the dyld
+        // references that must exist in the deployed layout.
+        QHash<QString, QString> references;
+
+        auto addReference = [&references](const QString &sourceLib,
+                                          const QString &deployedRel) {
+            auto ref = "@rpath/" + deployedRel;
+            references.insert(DeployCore::normalizeMacOSLibName(sourceLib).toUpper(), ref);
+            references.insert(QFileInfo(sourceLib).fileName().toUpper(), ref);
+        };
+
+        for (const auto &lib : _packageDependencyes[package].neadedLibs()) {
+            addReference(lib, DeployCore::macOSFrameworkReference(lib));
+        }
+
+        if (QuasarAppUtils::Params::isEndable("deploySystem")) {
+            for (const auto &lib : _packageDependencyes[package].systemLibs()) {
+                addReference(lib, DeployCore::systemLibsFolderName() + "/" +
+                          QFileInfo(lib).fileName());
+            }
+        }
+
+        QDirIterator it(targetPath, QDir::Files, QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            auto file = it.next();
+            if (!isMachOFile(file)) {
+                continue;
+            }
+
+            auto changes = planMacOChanges(file, references, libOut);
+            if (changes.changedLibs.isEmpty() && changes.newInstallName.isEmpty()
+                    && changes.addedRPaths.isEmpty()) {
+                continue;
+            }
+
+            if (!fixMachOWithInstallNameTool(file, changes)) {
+                ok = false;
+            }
+        }
+    }
+
+    return ok;
 }
 
 bool Extracter::isWebEngine(const QString &package) const {
@@ -333,6 +699,14 @@ bool Extracter::deploy() {
 
     if (!deployMSVC()) {
         QuasarAppUtils::Params::log("Failed to deploy msvc", QuasarAppUtils::Debug);
+    }
+
+    // macOS: rewrite the Mach-O install names and rpaths of the deployed
+    // binaries so that the libraries are resolved from the deployed
+    // directory (issue #166).
+    if (!deployMacOSRPaths()) {
+        QuasarAppUtils::Params::log("Failed to fix the Mach-O install names and rpaths",
+                                    QuasarAppUtils::Warning);
     }
 
     _metaFileManager->createRunMetaFiles(_targetModules);

@@ -80,6 +80,15 @@ public:
      */
     static QString findMingwToolchainBin(const QString &qtBins);
 
+    /**
+     * @brief parsePlistVersion This method reads the major version of Qt
+     *  from an XML Info.plist of a macOS framework (the
+     *  CFBundleShortVersionString or the CFBundleVersion key).
+     * @param plistFile This is the path to the Info.plist file.
+     * @return 4, 5 or 6 if the version is found else -1.
+     */
+    static int parsePlistVersion(const QString &plistFile);
+
     QString toString() const override;
 };
 

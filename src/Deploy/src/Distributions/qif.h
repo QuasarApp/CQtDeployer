@@ -20,6 +20,7 @@ public:
     bool removeTemplate() const override;
     QProcessEnvironment processEnvirement() const override;
     QStringList outPutFiles() const override;
+    bool isAvailable() const override;
 
 protected:
     QString dataLocation(const DistroModule &module) const override;

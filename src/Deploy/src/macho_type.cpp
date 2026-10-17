@@ -65,5 +65,23 @@ bool MachO::getLibInfo(const QString &lib, LibInfo &info) const {
         info.addDependncies(QString::fromStdString(name));
     }
 
+    // Extract the runtime search paths (LC_RPATH). They are used to find
+    // the qmake of a Qt installation (issue #166).
+    QString rpath;
+    for (const LIEF::MachO::RPathCommand &rPath : slice->rpaths()) {
+        const auto &path = rPath.path();
+        if (path.empty()) {
+            continue;
+        }
+
+        if (!rpath.isEmpty()) {
+            rpath += ":";
+        }
+
+        rpath += QString::fromStdString(path);
+    }
+
+    info.setRPath(rpath);
+
     return true;
 }
