@@ -138,6 +138,16 @@ bool FileManager::strip(const QString &dir) const {
 
     QFileInfo info(dir);
 
+    // Never follow symbolic links. The deploy directory may contain links to
+    // the system Qt installation (deploySystem=false mode), and `strip`
+    // rewrites its target in place (the same inode is reused). Stripping
+    // through such a link would destroy the host Qt libraries while this
+    // very process is mapped against them, corrupting the running binary and
+    // causing a segfault in QProcess (issue #166).
+    if (info.isSymLink()) {
+        return true;
+    }
+
     if (!info.exists()) {
         QuasarAppUtils::Params::log(QString("Directory %0 does not exist!").arg(dir));
         return false;
