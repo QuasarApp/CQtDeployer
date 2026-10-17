@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2025, ubuntu-24.04]
+        os: [windows-2025, ubuntu-24.04, macos-14]
         build_type: [Release]
         c_compiler: [gcc]
 
@@ -33,6 +33,20 @@ jobs:
         version: '6.10.3'
         target: 'desktop'
         arch: 'linux_gcc_64'
+        cache: true
+        aqtversion: ==3.2.*
+
+    - name: Install Qt (macOS)
+      # The macOS Qt build is a universal binary (X86_64 + ARM64), so the
+      # clang_64 package works on both the Intel and the Apple Silicon
+      # runners (issue #166). The Qt Installer Framework tools are not
+      # available for macOS, therefore no extra tools are installed.
+      uses: jurplel/install-qt-action@v4.3.0
+      if: runner.os == 'macOS'
+      with:
+        version: '6.10.3'
+        target: 'desktop'
+        arch: 'clang_64'
         cache: true
         aqtversion: ==3.2.*
 
@@ -80,8 +94,27 @@ jobs:
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S ${{ github.workspace }}
 
+    - name: Configure CMake (macOS)
+      if: runner.os == 'macOS'
+      run: >
+        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        -G Ninja
+        -DBUILD_SHARED_LIBS=ON
+        -DCQT_DEPLOYER_TESTS=ON
+        -DCMAKE_PREFIX_PATH='${{ env.QT_ROOT_DIR }}'
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -S ${{ github.workspace }}
+
     - name: Build
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 16
+
+    - name: Add the built CQtDeployer to the PATH (macOS)
+      # The cqtdeployer-install-action does not support macOS, so the
+      # cqtdeployer tool required by the test deploy targets is the one
+      # built from source in this job (issue #166).
+      if: runner.os == 'macOS'
+      shell: bash
+      run: echo "${{ github.workspace }}/build/src/CQtDeployer" >> "$GITHUB_PATH"
 
     - name: Run unit tests
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 16 --target test

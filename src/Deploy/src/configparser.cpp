@@ -10,6 +10,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QProcess>
+#include <QVersionNumber>
 #include "dependenciesscanner.h"
 #include "deploycore.h"
 #include "filemanager.h"
@@ -17,6 +18,7 @@
 #include "pathutils.h"
 #include "pluginsparser.h"
 #include "defines.h"
+#include <algorithm>
 #include <cassert>
 #include <qaglobalutils.h>
 #include <Distributions/deb.h>
@@ -55,6 +57,77 @@ static void addQtToolchainEnv(DeployConfig &config) {
     config.extraPaths.addExtraPaths({toolchain});
 }
 
+/**
+ * This function finds the qmake executable of a Qt installation in the
+ * standard macOS locations (issue #166):
+ *   - the Homebrew (Apple Silicon) prefix: /opt/homebrew
+ *   - the Homebrew (Intel) prefix: /usr/local
+ *   - the aqtinstall / Qt online installer prefix: /opt/Qt
+ * The search is used only when the qmake option, the RPATH of the target
+ * and the PATH variable did not provide a qmake executable.
+ */
+static QString findMacOSQmake() {
+
+    struct Candidate {
+        QString qmake;
+        QVersionNumber version;
+    };
+
+    QList<Candidate> candidates;
+
+    auto add = [&candidates](const QString &qmake, const QString &versionText) {
+        if (!QFileInfo(qmake).isExecutable()) {
+            return;
+        }
+
+        auto version = QVersionNumber::fromString(versionText);
+        if (!version.isNull()) {
+            candidates.append(Candidate{qmake, version});
+        }
+    };
+
+    // Homebrew keeps the versions in <prefix>/Cellar/<name>/<version>
+    // directories (qt, qt@6 and qt@5 formulas).
+    for (const auto &prefix : {QStringLiteral("/opt/homebrew"),
+                               QStringLiteral("/usr/local")}) {
+        for (const auto &qtName : {QStringLiteral("qt"),
+                                   QStringLiteral("qt@6"),
+                                   QStringLiteral("qt@5")}) {
+
+            QDir cellar(prefix + "/Cellar/" + qtName);
+            for (const auto &entry :
+                     cellar.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+                add(cellar.filePath(entry + "/bin/qmake"), entry);
+            }
+        }
+    }
+
+    // The aqtinstall and Qt online installer layout:
+    // /opt/Qt/<version>/macos/bin/qmake
+    {
+        QDir qtRoot("/opt/Qt");
+        for (const auto &versionDir :
+                 qtRoot.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+            for (const auto &arch :
+                     {QStringLiteral("macos"),
+                      QStringLiteral("macos_aarch64"),
+                      QStringLiteral("clang_64")}) {
+                add(qtRoot.filePath(versionDir + "/" + arch + "/bin/qmake"),
+                    versionDir);
+            }
+        }
+    }
+
+    if (candidates.isEmpty()) {
+        return {};
+    }
+
+    std::sort(candidates.begin(), candidates.end(),
+              [](const auto &l, const auto &r) { return l.version > r.version; });
+
+    return candidates.first().qmake;
+}
+
 
 /**
  * this function init packages of project
@@ -62,21 +135,23 @@ static void addQtToolchainEnv(DeployConfig &config) {
  *                   patern : value;package
  * mainContainer - container for insert data, usually it is packages map.
  * seterFunc - this is method of item of mainConteiner for set value from inputParamsList
+ * defaultPackage - package name for the single level parameters,
+ *                  which have no explicit package selector.
  * important : package in inputParamsList must be second.
  */
-
-static QString defaultPackage = "";
 
 template<typename Container, typename Adder>
 bool parsePackagesPrivate(Container& mainContainer,
                           const QStringList &inputParamsList,
-                          Adder adder) {
+                          Adder adder,
+                          const QString& defaultPackage) {
 
     for (const auto& str: inputParamsList) {
         auto paramsList = str.split(DeployCore::getSeparator(1));
         auto first = paramsList.value(0, "");
-        if (paramsList.size() == 1)
+        if (paramsList.size() == 1) {
             (valueLink(mainContainer, defaultPackage, DistroModule{defaultPackage}).*adder)(first);
+        }
 
         else {
             bool skipError = QuasarAppUtils::Params::isEndable("allowEmptyPackages");
@@ -442,6 +517,7 @@ bool ConfigParser::initDistroStruct() {
     }
 
     auto &mainDistro = _config.packagesEdit();
+    const auto defaultPackage = _config.getDefaultPackage();
 
 #ifdef Q_OS_LINUX
 
@@ -501,97 +577,97 @@ bool ConfigParser::initDistroStruct() {
             split(DeployCore::getSeparator(0), splitbehavior);
 
 // init distro stucts for all targets
-    if (binOut.size() && !parsePackagesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir)) {
+    if (binOut.size() && !parsePackagesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir, defaultPackage)) {
         packagesErrorLog("binOut");
         return false;
     }
 
-    if (libOut.size() && !parsePackagesPrivate(mainDistro, libOut, &DistroModule::setLibOutDir)) {
+    if (libOut.size() && !parsePackagesPrivate(mainDistro, libOut, &DistroModule::setLibOutDir, defaultPackage)) {
         packagesErrorLog("libOut");
         return false;
     }
 
-    if (qmlOut.size() && !parsePackagesPrivate(mainDistro, qmlOut, &DistroModule::setQmlOutDir)) {
+    if (qmlOut.size() && !parsePackagesPrivate(mainDistro, qmlOut, &DistroModule::setQmlOutDir, defaultPackage)) {
         packagesErrorLog("qmlOut");
         return false;
     }
 
-    if (trOut.size() && !parsePackagesPrivate(mainDistro, trOut, &DistroModule::setTrOutDir)) {
+    if (trOut.size() && !parsePackagesPrivate(mainDistro, trOut, &DistroModule::setTrOutDir, defaultPackage)) {
         packagesErrorLog("trOut");
         return false;
     }
 
-    if (pluginOut.size() && !parsePackagesPrivate(mainDistro, pluginOut, &DistroModule::setPluginsOutDir)) {
+    if (pluginOut.size() && !parsePackagesPrivate(mainDistro, pluginOut, &DistroModule::setPluginsOutDir, defaultPackage)) {
         packagesErrorLog("pluginOut");
         return false;
     }
 
-    if (recOut.size() && !parsePackagesPrivate(mainDistro, recOut, &DistroModule::setResOutDir)) {
+    if (recOut.size() && !parsePackagesPrivate(mainDistro, recOut, &DistroModule::setResOutDir, defaultPackage)) {
         packagesErrorLog("recOut");
         return false;
     }
 
-    if (extraDataOut.size() && !parsePackagesPrivate(mainDistro, extraDataOut, &DistroModule::setExtraDataOutDir)) {
+    if (extraDataOut.size() && !parsePackagesPrivate(mainDistro, extraDataOut, &DistroModule::setExtraDataOutDir, defaultPackage)) {
         packagesErrorLog("extraDataOut");
         return false;
     }
 
-    if (name.size() && !parsePackagesPrivate(mainDistro, name, &DistroModule::setName)) {
+    if (name.size() && !parsePackagesPrivate(mainDistro, name, &DistroModule::setName, defaultPackage)) {
         packagesErrorLog("name");
         return false;
     }
 
-    if (description.size() && !parsePackagesPrivate(mainDistro, description, &DistroModule::setDescription)) {
+    if (description.size() && !parsePackagesPrivate(mainDistro, description, &DistroModule::setDescription, defaultPackage)) {
         packagesErrorLog("description");
         return false;
     }
 
-    if (deployVersion.size() && !parsePackagesPrivate(mainDistro, deployVersion, &DistroModule::setVersion)) {
+    if (deployVersion.size() && !parsePackagesPrivate(mainDistro, deployVersion, &DistroModule::setVersion, defaultPackage)) {
         packagesErrorLog("deployVersion");
         return false;
     }
 
-    if (releaseDate.size() && !parsePackagesPrivate(mainDistro, releaseDate, &DistroModule::setReleaseData)) {
+    if (releaseDate.size() && !parsePackagesPrivate(mainDistro, releaseDate, &DistroModule::setReleaseData, defaultPackage)) {
         packagesErrorLog("releaseDate");
         return false;
     }
 
-    if (publisher.size() && !parsePackagesPrivate(mainDistro, publisher, &DistroModule::setPublisher)) {
+    if (publisher.size() && !parsePackagesPrivate(mainDistro, publisher, &DistroModule::setPublisher, defaultPackage)) {
         packagesErrorLog("Publisher");
         return false;
     }
 
-    if (homepage.size() && !parsePackagesPrivate(mainDistro, homepage, &DistroModule::setHomePage)) {
+    if (homepage.size() && !parsePackagesPrivate(mainDistro, homepage, &DistroModule::setHomePage, defaultPackage)) {
         packagesErrorLog("homePage");
         return false;
     }
 
-    if (prefix.size() && !parsePackagesPrivate(mainDistro, prefix, &DistroModule::setPrefix)) {
+    if (prefix.size() && !parsePackagesPrivate(mainDistro, prefix, &DistroModule::setPrefix, defaultPackage)) {
         packagesErrorLog("prefix");
         return false;
     }
 
-    if (extraData.size() && !parsePackagesPrivate(mainDistro, extraData, &DistroModule::addExtraData)) {
+    if (extraData.size() && !parsePackagesPrivate(mainDistro, extraData, &DistroModule::addExtraData, defaultPackage)) {
         packagesErrorLog("extraData");
         return false;
     }
 
-    if (trData.size() && !parsePackagesPrivate(mainDistro, trData, &DistroModule::addTranslation)) {
+    if (trData.size() && !parsePackagesPrivate(mainDistro, trData, &DistroModule::addTranslation, defaultPackage)) {
         packagesErrorLog("tr");
         return false;
     }
 
-    if (installDirDeb.size() && !parsePackagesPrivate(mainDistro, installDirDeb, &DistroModule::setInstallDirDEB)) {
+    if (installDirDeb.size() && !parsePackagesPrivate(mainDistro, installDirDeb, &DistroModule::setInstallDirDEB, defaultPackage)) {
         packagesErrorLog("installDirDeb");
         return false;
     }
 
-    if (debOut.size() && !parsePackagesPrivate(mainDistro, debOut, &DistroModule::setDebOut)) {
+    if (debOut.size() && !parsePackagesPrivate(mainDistro, debOut, &DistroModule::setDebOut, defaultPackage)) {
         packagesErrorLog("debOut");
         return false;
     }
 
-    if (zipOut.size() && !parsePackagesPrivate(mainDistro, zipOut, &DistroModule::setZipOut)) {
+    if (zipOut.size() && !parsePackagesPrivate(mainDistro, zipOut, &DistroModule::setZipOut, defaultPackage)) {
         packagesErrorLog("zipOut");
         return false;
     }
@@ -600,7 +676,7 @@ bool ConfigParser::initDistroStruct() {
 }
 
 bool ConfigParser::initPackages() {
-    defaultPackage = "Application";
+    QString defaultPackage = "Application";
     QSet<QString> configuredTargets;
 
     if (QuasarAppUtils::Params::isEndable("targetPackage")) {
@@ -671,7 +747,8 @@ bool ConfigParser::initQmlInput() {
 // init distro stucts for all targets
     _config.deployQml = qmlDir.size();
 
-    if (qmlDir.size() && !parsePackagesPrivate(_config.packagesEdit(), qmlDir, &DistroModule::addQmlInput)) {
+    if (qmlDir.size() && !parsePackagesPrivate(_config.packagesEdit(), qmlDir, &DistroModule::addQmlInput,
+                                               _config.getDefaultPackage())) {
         packagesErrorLog("qmlDir");
         return false;
     }
@@ -1252,6 +1329,16 @@ bool ConfigParser::initQmake() {
                 auto proc = DeployCore::findProcess(env.value("PATH"), "qmake");
                 if (proc.isEmpty()) {
 
+                    // macOS: look for Qt in the standard Homebrew and
+                    // aqtinstall locations (issue #166).
+                    proc = findMacOSQmake();
+
+                    if (!proc.isEmpty()) {
+                        qInfo() << QString("The qmake was found in the standard "
+                                           "macOS location. qmake : %0").arg(proc);
+                        return initQmakePrivate(proc);
+                    }
+
                     qCritical() << "The deployment target requires Qt libraries,"
                                    " but initialize of Qt directories is failed."
                                    " Please use the qmake option to set a path to the qmake executable.";
@@ -1513,21 +1600,24 @@ bool ConfigParser::initPlugins() {
 
     if (listExtraPlugin.size() && !parsePackagesPrivate(_config.packagesEdit(),
                                                         listExtraPlugin,
-                                                        &DistroModule::addExtraPlugins)) {
+                                                        &DistroModule::addExtraPlugins,
+                                                        _config.getDefaultPackage())) {
         packagesErrorLog("extra plugins");
         return false;
     }
 
     if (listEnablePlugins.size() && !parsePackagesPrivate(_config.packagesEdit(),
                                                           listEnablePlugins,
-                                                          &DistroModule::addEnabledPlugins)) {
+                                                          &DistroModule::addEnabledPlugins,
+                                                          _config.getDefaultPackage())) {
         packagesErrorLog("enable plugins");
         return false;
     }
 
     if (listDisablePlugins.size() && !parsePackagesPrivate(_config.packagesEdit(),
                                                            listDisablePlugins,
-                                                           &DistroModule::addDisabledPlugins)) {
+                                                           &DistroModule::addDisabledPlugins,
+                                                           _config.getDefaultPackage())) {
         packagesErrorLog("disable plugins");
         return false;
     }
@@ -1567,7 +1657,18 @@ QList<iDistribution *> ConfigParser::getDistribution() {
     }
 
     if (QuasarAppUtils::Params::isEndable("qif")) {
-        distros.push_back(new QIF(_fileManager));
+        auto qif = new QIF(_fileManager);
+        if (qif->isAvailable()) {
+            distros.push_back(qif);
+        } else {
+            QuasarAppUtils::Params::log("The binarycreator executable of the "
+                                        "Qt Installer Framework is not found, "
+                                        "the qif package will not be created. "
+                                        "Install the Qt Installer Framework "
+                                        "tools to enable this option.",
+                                        QuasarAppUtils::Warning);
+            delete qif;
+        }
     }
 
     if (distros.isEmpty()) {

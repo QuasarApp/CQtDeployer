@@ -138,6 +138,16 @@ bool FileManager::strip(const QString &dir) const {
 
     QFileInfo info(dir);
 
+    // Never follow symbolic links. The deploy directory may contain links to
+    // the system Qt installation (deploySystem=false mode), and `strip`
+    // rewrites its target in place (the same inode is reused). Stripping
+    // through such a link would destroy the host Qt libraries while this
+    // very process is mapped against them, corrupting the running binary and
+    // causing a segfault in QProcess (issue #166).
+    if (info.isSymLink()) {
+        return true;
+    }
+
     if (!info.exists()) {
         QuasarAppUtils::Params::log(QString("Directory %0 does not exist!").arg(dir));
         return false;
@@ -188,7 +198,12 @@ bool FileManager::strip(const QString &dir) const {
         return true;
 #else
         auto sufix = info.completeSuffix();
-        if (!sufix.contains("so") && !sufix.contains("dll")) {
+        // macOS dylibs and framework binaries (no file suffix) are
+        // stripped as well. On a macOS host the system strip tool
+        // supports the Mach-O format (issue #166).
+        if (!sufix.contains("so") && !sufix.contains("dll")
+                && !sufix.contains("dylib", Qt::CaseInsensitive)
+                && !DeployCore::isMacOSFrameworkBinary(info)) {
             return true;
         }
 
@@ -260,6 +275,26 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
                                     QuasarAppUtils::Info);
     }
 
+    // macOS framework bundles contain symlinks (Versions/Current -> A).
+    // The link itself must be kept, otherwise dyld cannot resolve the
+    // bundle (issue #166).
+    if (!isMove && !QFileInfo::exists(tergetFile)) {
+        auto sourceInfo = QFileInfo(file);
+        if (sourceInfo.isSymLink()) {
+            auto linkTarget = sourceInfo.symLinkTarget();
+            if (QFile::link(linkTarget, tergetFile)) {
+                QuasarAppUtils::Params::log(operation + " (link) :" + file,
+                                            QuasarAppUtils::Info);
+                addToDeployed(tergetFile);
+                return true;
+            }
+
+            QuasarAppUtils::Params::log("Failed to create the symlink " + tergetFile +
+                                        " -> " + linkTarget +
+                                        ", fallback to a regular file copy",
+                                        QuasarAppUtils::Warning);
+        }
+    }
 
     QFile sourceFile(file);
     auto sourceFileAbsalutePath = QFileInfo(file).absoluteFilePath();
@@ -300,6 +335,30 @@ bool FileManager::smartCopyFile(const QString &file,
                                 QStringList *mask,
                                 bool ifFileTarget) {
     auto config = DeployCore::_config;
+
+    // macOS: a library that lives inside a .framework bundle must be
+    // deployed as the whole bundle, because dyld requires the
+    // Name.framework/Versions/<V>/Name layout (issue #166).
+    auto frameworkRoot = DeployCore::macOSFrameworkRoot(file);
+    if (!frameworkRoot.isEmpty()) {
+        auto targetFw = target + QDir::separator() + QFileInfo(frameworkRoot).fileName();
+
+        if (file.contains(config->getTargetDir(), DeployCore::getCaseSensitivity())) {
+            if (moveFolder(frameworkRoot, targetFw)) {
+                return true;
+            }
+
+            QuasarAppUtils::Params::log("Failed to move the framework. Trying to copy it");
+        }
+
+        if (!copyFolder(frameworkRoot, targetFw, {}, nullptr, mask, true)) {
+            QuasarAppUtils::Params::log("Failed to copy the framework " + frameworkRoot,
+                                        QuasarAppUtils::Error);
+            return false;
+        }
+
+        return true;
+    }
 
     if (file.contains(config->getTargetDir(), DeployCore::getCaseSensitivity())) {
         if (!moveFile(file, target, mask)) {

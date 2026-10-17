@@ -59,6 +59,26 @@ Envirement QIF::toolKitEnv() const {
     return result;
 }
 
+bool QIF::isAvailable() const {
+    // An explicit binarycreator argument (qmake option or the
+    // binarycreator parameter) always takes priority.
+    if (!QuasarAppUtils::Params::getArg("binarycreator").isEmpty()) {
+        return true;
+    }
+
+    // The "qifFromSystem" mode resolves the Qt Installer Framework from
+    // the user's Qt installation at deploy time, when the deploy
+    // configuration is available.
+    if (QuasarAppUtils::Params::isEndable("qifFromSystem")) {
+        return true;
+    }
+
+    auto binarycreator = DeployCore::findProcess(toolKitEnv().concatEnv(),
+                                                 "binarycreator");
+
+    return !binarycreator.isEmpty();
+}
+
 QList<SystemCommandData> QIF::runCmd() {
     SystemCommandData cmd;
 

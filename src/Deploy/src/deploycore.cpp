@@ -11,6 +11,7 @@
 
 #include <QDebug>
 #include <QDir>
+#include <QFile>
 #include <QFileInfo>
 #include <QLibraryInfo>
 #include <QProcess>
@@ -157,7 +158,303 @@ LibPriority DeployCore::getLibPriority(const QString &lib) {
 
 bool DeployCore::containsModule(const QString& moduleLibrary, const QString& lib) {
     QRegularExpression erfexp(QString(moduleLibrary).replace("QtX", "Qt[4,5,6]"));
-    return lib.contains(erfexp);
+    if (lib.contains(erfexp)) {
+        return true;
+    }
+
+    // macOS frameworks do not contain the Qt major version in the library
+    // name (QtCore.framework instead of libQt6Core.dylib), so the
+    // version-less module name is matched as well (issue #166).
+    return lib.contains(QString(moduleLibrary).replace("QtX", "Qt"));
+}
+
+bool DeployCore::isMacOSFrameworkBinary(const QFileInfo &file) {
+    if (!file.isFile() || !file.completeSuffix().isEmpty()) {
+        return false;
+    }
+
+    auto root = macOSFrameworkRoot(file.absoluteFilePath());
+    return !root.isEmpty();
+}
+
+bool DeployCore::isMacOBinary(const QFileInfo &file) {
+    if (!file.isFile()) {
+        return false;
+    }
+
+    QFile f(file.absoluteFilePath());
+    if (!f.open(QIODevice::ReadOnly)) {
+        return false;
+    }
+
+    auto header = f.read(4);
+    f.close();
+
+    if (header.size() != 4) {
+        return false;
+    }
+
+    // The magic values are stored in the host byte order of the machine that
+    // built the binary, so both byte orders of the canonical magic values are
+    // accepted. The byte order of the current host does not matter, because
+    // the header bytes are decoded as little endian explicitly.
+    const auto *b = reinterpret_cast<const uchar *>(header.constData());
+    const auto magic = quint32(b[0]) | (quint32(b[1]) << 8)
+            | (quint32(b[2]) << 16) | (quint32(b[3]) << 24);
+
+    return magic == 0xFEEDFACEu || // MH_MAGIC (32-bit)
+           magic == 0xCEFAEDFEu || // MH_CIGAM (32-bit, swapped)
+           magic == 0xFEEDFACFu || // MH_MAGIC_64
+           magic == 0xCFFAEDFEu || // MH_CIGAM_64 (swapped)
+           magic == 0xCAFEBABEu || // FAT_MAGIC (fat binary)
+           magic == 0xBEBAFECAu || // FAT_CIGAM (fat binary, swapped)
+           magic == 0xCAFEBABFu || // FAT_MAGIC_64 (fat64 binary)
+           magic == 0xBFBAFECAu;   // FAT64_CIGAM (fat64 binary, swapped)
+}
+
+QStringList DeployCore::machORPaths(const QString &file) {
+    QStringList rpaths;
+    QSet<QString> seen;
+
+    QFile f(file);
+    if (!f.open(QIODevice::ReadOnly)) {
+        return rpaths;
+    }
+
+    auto data = f.readAll();
+    f.close();
+
+    const auto *b = reinterpret_cast<const quint8 *>(data.constData());
+    const auto size = static_cast<quint64>(data.size());
+
+    auto read32 = [&](quint64 off, bool littleEndian) -> quint32 {
+        if (off + 4 > size) {
+            return 0;
+        }
+        if (littleEndian) {
+            return quint32(b[off]) | (quint32(b[off + 1]) << 8)
+                 | (quint32(b[off + 2]) << 16) | (quint32(b[off + 3]) << 24);
+        }
+        return (quint32(b[off]) << 24) | (quint32(b[off + 1]) << 16)
+             | (quint32(b[off + 2]) << 8) | quint32(b[off + 3]);
+    };
+
+    auto read64 = [&](quint64 off, bool littleEndian) -> quint64 {
+        return quint64(read32(off, littleEndian))
+                | (quint64(read32(off + 4, littleEndian)) << 32);
+    };
+
+    // The byte order of a thin header is given by the magic bytes. The
+    // canonical magic values are decoded as little endian, so both byte
+    // orders of the magic are checked explicitly.
+    auto thinMagicEndianness = [&](quint64 start) -> int {
+        // 1 = little endian, -1 = big endian, 0 = not a thin Mach-O magic.
+        if (start + 4 > size) {
+            return 0;
+        }
+        if (b[start] == 0xCEu && b[start + 1] == 0xFAu && b[start + 2] == 0xEDu
+                && b[start + 3] == 0xFEu) {
+            return 1; // MH_MAGIC (32-bit) little endian
+        }
+        if (b[start] == 0xCFu && b[start + 1] == 0xFAu && b[start + 2] == 0xEDu
+                && b[start + 3] == 0xFEu) {
+            return 1; // MH_MAGIC_64 little endian
+        }
+        if (b[start] == 0xFEu && b[start + 1] == 0xEDu && b[start + 2] == 0xFAu
+                && b[start + 3] == 0xCEu) {
+            return -1; // MH_MAGIC (32-bit) big endian
+        }
+        if (b[start] == 0xFEu && b[start + 1] == 0xEDu && b[start + 2] == 0xFAu
+                && b[start + 3] == 0xCFu) {
+            return -1; // MH_MAGIC_64 big endian
+        }
+        return 0;
+    };
+
+    // Collect the LC_RPATH entries (cmd 0x00001C01) of one thin slice.
+    auto scanSlice = [&](quint64 start) {
+        const auto endianness = thinMagicEndianness(start);
+        if (endianness == 0) {
+            return;
+        }
+        const bool littleEndian = (endianness > 0);
+
+        const auto is64 = read32(start, littleEndian) == 0xFEEDFACFu;
+        const auto ncmds = read32(start + 16, littleEndian);
+
+        // Guard against corrupted headers with a huge number of commands.
+        if (ncmds > 0x10000u) {
+            return;
+        }
+
+        for (quint64 off = start + (is64 ? 32 : 28), i = 0;
+                i < ncmds && off + 8 <= size; ++i) {
+            const auto cmd = read32(off, littleEndian);
+            const auto cmdSize = read32(off + 4, littleEndian);
+            if (cmdSize < 8 || off + cmdSize > size) {
+                break;
+            }
+
+            if (cmd == 0x00001C01u) { // LC_RPATH
+                QByteArray path;
+                for (quint64 p = off + 8; p < off + cmdSize && b[p] != 0; ++p) {
+                    path.append(static_cast<char>(b[p]));
+                }
+
+                auto rpath = QString::fromUtf8(path);
+                if (!rpath.isEmpty() && !seen.contains(rpath)) {
+                    seen.insert(rpath);
+                    rpaths << rpath;
+                }
+            }
+
+            off += cmdSize;
+        }
+    };
+
+    if (size < 8) {
+        return rpaths;
+    }
+
+    // The byte order of the fat header fields follows the magic bytes:
+    // FAT_MAGIC (CA FE BA BE) is big endian and FAT_CIGAM (BE BA FE CA)
+    // is little endian (mach-o/fat.h).
+    const auto fatMagic = read32(0, false); // decode the on-disk bytes
+    const bool isFat64 = (fatMagic == 0xCAFEBABFu || fatMagic == 0xBFBAFECAu);
+    const bool isFat = (fatMagic == 0xCAFEBABEu || fatMagic == 0xBEBAFECAu)
+            || isFat64;
+    if (isFat) {
+        const bool littleEndian = (fatMagic == 0xBEBAFECAu
+                                   || fatMagic == 0xBFBAFECAu);
+        const auto nfat = read32(4, littleEndian);
+        const auto entrySize = isFat64 ? 32u : 20u;
+
+        if (nfat > 0 && nfat <= 0x10000u) {
+            for (quint64 i = 0; i < nfat; ++i) {
+                const quint64 archOff = 8 + i * entrySize;
+                if (archOff + entrySize > size) {
+                    break;
+                }
+
+                const auto sliceOff = isFat64
+                        ? read64(archOff + 8, littleEndian)
+                        : read32(archOff + 8, littleEndian);
+                const auto sliceSize = isFat64
+                        ? read64(archOff + 16, littleEndian)
+                        : read32(archOff + 12, littleEndian);
+                if (sliceSize == 0 || sliceOff + sliceSize > size) {
+                    continue;
+                }
+
+                scanSlice(sliceOff);
+            }
+        }
+
+        return rpaths;
+    }
+
+    scanSlice(0);
+    return rpaths;
+}
+
+QString DeployCore::macOSFrameworkRoot(const QString &path) {
+    QFileInfo info(path);
+    auto full = info.isDir() ? info.absoluteFilePath() : info.absolutePath();
+
+    if (info.isDir() && info.fileName().endsWith(".framework", Qt::CaseSensitive)) {
+        return info.absoluteFilePath();
+    }
+
+    // Walk up the path components and return the first directory that has
+    // the .framework suffix. Works with relative paths (resolved against
+    // the current working dir) and with non existing files.
+    QDir dir(full);
+    while (!dir.isRoot()) {
+        if (dir.dirName().endsWith(".framework", Qt::CaseSensitive)) {
+            return dir.absolutePath();
+        }
+        dir.cdUp();
+    }
+
+    return {};
+}
+
+QString DeployCore::macOSFrameworkBinary(const QString &frameworkDir) {
+    QFileInfo fw(frameworkDir);
+    if (!fw.isDir() || !fw.fileName().endsWith(".framework", Qt::CaseSensitive)) {
+        return {};
+    }
+
+    auto baseName = QFileInfo(fw.fileName()).baseName();
+
+    // Prefer the binary of the real version directory (for example A). The
+    // Versions/Current symlink points to that directory, but the dyld
+    // install names of the Qt frameworks are built from the real version
+    // directory (QtCore.framework/Versions/A/QtCore), so the reference that
+    // is used for the deployment layout must use the real path (issue #166).
+    QDir versions(fw.absoluteFilePath() + "/Versions");
+    for (const auto &v : versions.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot
+                                                | QDir::System)) {
+        if (QFileInfo(v.absoluteFilePath()).isSymLink()) {
+            continue;
+        }
+        auto candidate = v.absoluteFilePath() + "/" + baseName;
+        if (QFileInfo(candidate).isFile()) {
+            return candidate;
+        }
+    }
+
+    // Fallback: the Versions/Current symlink (frameworks without a real
+    // version directory) or the bundle root itself.
+    auto current = fw.absoluteFilePath() + "/Versions/Current/" + baseName;
+    if (QFileInfo(current).isFile()) {
+        return current;
+    }
+
+    auto rootBin = fw.absoluteFilePath() + "/" + baseName;
+    if (QFileInfo(rootBin).isFile()) {
+        return rootBin;
+    }
+
+    return {};
+}
+
+QString DeployCore::macOSFrameworkReference(const QString &path) {
+    QFileInfo info(path);
+    auto root = macOSFrameworkRoot(path);
+    if (root.isEmpty()) {
+        return info.fileName();
+    }
+
+    // Name.framework/Versions/<V>/Name
+    return QFileInfo(root).fileName() + "/" +
+            info.absoluteFilePath().mid(root.length() + 1);
+}
+
+QString DeployCore::normalizeMacOSLibName(const QString &name) {
+    auto n = name;
+
+    // Remove the dyld specific prefixes.
+    static const QStringList dyldPrefixes = {
+        "@rpath/", "@loader_path/", "@executable_path/", "@relocated/"
+    };
+    for (const auto &prefix : dyldPrefixes) {
+        if (n.startsWith(prefix, Qt::CaseSensitive)) {
+            n = n.mid(prefix.size());
+            break;
+        }
+    }
+
+    // Framework references keep the full Name.framework/... tail,
+    // because this is the layout that must exist in the deployed dir.
+    auto fwSuffix = n.indexOf(".framework", Qt::CaseSensitive);
+    if (fwSuffix != -1) {
+        auto start = n.lastIndexOf('/', fwSuffix);
+        return n.mid(start + 1);
+    }
+
+    // Plain dylibs are referenced by the file name only.
+    return QFileInfo(n).fileName();
 }
 
 #define C(X) QuasarAppUtils::Params::isEndable(X)
@@ -710,7 +1007,11 @@ int DeployCore::find(const QString &str, const QStringList &list) {
 
 bool DeployCore::isLib(const QFileInfo &file) {
     return file.completeSuffix().contains("so", Qt::CaseInsensitive)
-            || file.completeSuffix().contains("dll", Qt::CaseInsensitive);
+            || file.completeSuffix().contains("dll", Qt::CaseInsensitive)
+            || file.completeSuffix().contains("dylib", Qt::CaseInsensitive)
+            // macOS framework binaries have no suffix
+            // (QtCore.framework/Versions/A/QtCore), see issue #166.
+            || isMacOSFrameworkBinary(file);
 }
 
 MSVCVersion DeployCore::getMSVC(const QString &_qtBin) {
@@ -854,6 +1155,18 @@ QtMajorVersion DeployCore::isQtLibName(const QString &lib) {
         isQt = QtMajorVersion::Qt5;
     } else if (fileName.contains("Qt6", getCaseSensitivity(fileName))) {
         isQt = QtMajorVersion::Qt6;
+    }
+
+    if (!isQt) {
+        // macOS Qt frameworks do not contain the major version in the
+        // library name (QtCore.framework instead of libQt6Core.dylib), so
+        // the version of the configured Qt installation is used as a
+        // fallback (issue #166).
+        auto frameworkRoot = macOSFrameworkRoot(info.absoluteFilePath());
+        if (!frameworkRoot.isEmpty() && _config &&
+            _config->qtDir.getQtVersion() != QtMajorVersion::NoQt) {
+            isQt = _config->qtDir.getQtVersion();
+        }
     }
 
     if (isQt && QuasarAppUtils::Params::isEndable("noQt")) {

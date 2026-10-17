@@ -289,6 +289,9 @@ public:
 
     /**
      * @brief containsModule This method compare lib name and module of qt.
+     *  The Qt major version is not required in the library name, because
+     *  macOS frameworks do not contain it (QtCore.framework instead of
+     *  libQt6Core.dylib) (issue #166).
      * @param moduleLibrary this is name of module library
      * @param lib This is library name
      * @return true if library has some module that as muduleIndex
@@ -379,6 +382,94 @@ public:
      * @return true if the @a qtRoot is debian system qt else false.
      */
     static bool isDebianQt(const QString& qtRoot);
+
+    /**
+     * @brief isMacOSFrameworkBinary This method return true if the @a file is
+     *  a binary of the macOS .framework bundle. macOS libraries are stored in
+     *  the Name.framework/Versions/<V>/Name layout, so the real library file
+     *  has no file suffix and the bundle name (with the .framework suffix)
+     *  lives in one of the parent directories (issue #166).
+     * @param file This is the file that will be checked.
+     * @return true if the file is a macOS framework binary else false.
+     */
+    static bool isMacOSFrameworkBinary(const QFileInfo &file);
+
+    /**
+     * @brief isMacOBinary This method return true if the @a file is a Mach-O
+     *  binary (32/64-bit thin binaries in both byte orders and fat/universal
+     *  binaries). The check is based on the magic number in the first bytes
+     *  of the file, so the file does not need to be parseable by LIEF and the
+     *  file suffix is not required (issue #166).
+     * @param file This is the file that will be checked.
+     * @return true if the file is a Mach-O binary else false.
+     */
+    static bool isMacOBinary(const QFileInfo &file);
+
+    /**
+     * @brief machORPaths This method return the list of the runtime search
+     *  paths (LC_RPATH entries) of all architecture slices of the Mach-O
+     *  binary @a file (issue #166). The entries are read directly from the
+     *  binary, because the LIEF submodule of CQtDeployer maps LC_RPATH to a
+     *  different load command constant than the macOS ABI (0x1C01), so the
+     *  LIEF rpath() accessor does not find the real entries.
+     * @param file This is the path to the Mach-O binary.
+     * @return The list of the LC_RPATH entries (empty if the file is not a
+     *  Mach-O binary or has no rpaths).
+     */
+    static QStringList machORPaths(const QString &file);
+
+    /**
+     * @brief macOSFrameworkRoot This method return the absolute path of the
+     *  .framework bundle that contains the @a path. The path can point to the
+     *  bundle itself, to the binary inside the bundle or to any other file of
+     *  the bundle (Info.plist, resources, symlinks, ...).
+     * @param path This is a file or directory path that is checked.
+     * @return Absolute path to the .framework bundle or an empty string if the
+     *  path is not part of a macOS framework (issue #166).
+     */
+    static QString macOSFrameworkRoot(const QString &path);
+
+    /**
+     * @brief macOSFrameworkBinary This method return the path of the real
+     *  library binary of the .framework bundle (issue #166). If the bundle
+     *  uses the Name.framework/Versions/<V>/Name layout the binary of the
+     *  real version directory (for example Versions/A) is returned, because
+     *  the dyld install names of the Qt frameworks are based on that path.
+     * @param frameworkDir This is the path to the .framework bundle.
+     * @return Absolute path to the framework binary or an empty string if the
+     *  bundle is invalid or the binary is not found.
+     */
+    static QString macOSFrameworkBinary(const QString &frameworkDir);
+
+    /**
+     * @brief macOSFrameworkReference This method return the dyld reference of
+     *  the library that is located at @a path relative to the directory that
+     *  contains the bundle (issue #166).
+     *  Examples :
+     *   /opt/qt/lib/QtCore.framework/Versions/A/QtCore -> QtCore.framework/Versions/A/QtCore
+     *   /opt/qt/lib/libfoo.dylib -> libfoo.dylib
+     * @param path This is the path to the library file.
+     * @return dyld reference of the library (file name or
+     *  Name.framework/Versions/<V>/Name).
+     */
+    static QString macOSFrameworkReference(const QString &path);
+
+    /**
+     * @brief normalizeMacOSLibName This method normalize a Mach-O install name
+     *  (LC_ID_DYLIB / LC_LOAD_DYLIB) to the name under which the library is
+     *  registered in the deployment environment (issue #166).
+     *  The dyld specific prefixes (@rpath/, @loader_path/, @executable_path/,
+     *  @relocated/) and absolute path prefixes are removed. Framework
+     *  references keep the full Name.framework/... tail, because this is the
+     *  layout that must exist in the deployed directory.
+     *  Examples :
+     *   @rpath/libQt6Core.6.dylib -> libQt6Core.6.dylib
+     *   /opt/homebrew/lib/QtCore.framework/Versions/A/QtCore -> QtCore.framework/Versions/A/QtCore
+     *   QtCore.framework/Versions/A/QtCore -> QtCore.framework/Versions/A/QtCore
+     * @param name This is the install name of the Mach-O library.
+     * @return normalized library name.
+     */
+    static QString normalizeMacOSLibName(const QString &name);
 };
 
 #define internalError() DeployCore::printInternalError(__FUNCTION__, __FILE__, __LINE__)
