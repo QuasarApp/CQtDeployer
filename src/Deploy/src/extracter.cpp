@@ -63,10 +63,11 @@ Extracter::MacOSFileChanges Extracter::planMacOSChanges(
 
     QSet<QString> seenChanges;
 
-    // The LC_RPATH entries are read directly from the binary, because the
-    // LIEF submodule of CQtDeployer maps LC_RPATH to a different load
-    // command constant than the macOS ABI (0x1C01), so the LIEF rpaths()
-    // accessor would not find the real entries (see machORPaths).
+    // The LC_RPATH entries are read via DeployCore::machORPaths(). Because
+    // the LIEF submodule of CQtDeployer maps LC_RPATH to a different load
+    // command constant than the macOS ABI (0x1C01), the LIEF rpaths()
+    // accessor does not find the real entries - the method reads them from
+    // the raw command data that LIEF keeps for the unknown commands.
     // The LC_RPATH strings are compared after stripping the trailing
     // slashes, because install_name_tool treats "@executable_path/.." and
     // "@executable_path/../" as the same path, while the raw strings stored

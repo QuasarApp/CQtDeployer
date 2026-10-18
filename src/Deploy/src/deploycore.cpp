@@ -11,13 +11,14 @@
 
 #include <QDebug>
 #include <QDir>
-#include <QFile>
 #include <QFileInfo>
 #include <QLibraryInfo>
 #include <QProcess>
 #include <configparser.h>
 #include <iostream>
 #include <qaplatformutils.h>
+
+#include <LIEF/MachO.hpp>
 
 //QString DeployCore::qtDir = "";
 //QStringList DeployCore::extraPaths = QStringList();
@@ -182,178 +183,91 @@ bool DeployCore::isMacOBinary(const QFileInfo &file) {
         return false;
     }
 
-    QFile f(file.absoluteFilePath());
-    if (!f.open(QIODevice::ReadOnly)) {
+    // Full file parsing on the LIEF backend (issue #166). The LIEF MachO
+    // parser accepts the thin (32/64-bit, both byte orders) and the
+    // fat/fat64 binaries and rejects every other file, so the file suffix
+    // is not required. The LIEF magic pre-filter runs first, because the
+    // parser logs an error message for every non Mach-O file and this
+    // method is called for every file of the dependency scan.
+    if (!LIEF::MachO::is_macho(file.absoluteFilePath().toStdString())) {
         return false;
     }
 
-    auto header = f.read(4);
-    f.close();
-
-    if (header.size() != 4) {
+    // The quick configuration skips the dyld opcode parsing that is not
+    // needed for the file type check.
+    auto macho = LIEF::MachO::Parser::parse(
+                file.absoluteFilePath().toStdString(),
+                LIEF::MachO::ParserConfig::quick());
+    if (macho == nullptr || macho->empty()) {
         return false;
     }
 
-    // The magic values are stored in the host byte order of the machine that
-    // built the binary, so both byte orders of the canonical magic values are
-    // accepted. The byte order of the current host does not matter, because
-    // the header bytes are decoded as little endian explicitly.
-    const auto *b = reinterpret_cast<const uchar *>(header.constData());
-    const auto magic = quint32(b[0]) | (quint32(b[1]) << 8)
-            | (quint32(b[2]) << 16) | (quint32(b[3]) << 24);
+    // LIEF 1.0.0 keeps a slice in the parse result even when its header
+    // could not be read (truncated file) - such slices have an UNKNOWN
+    // header magic and the file is not a valid Mach-O binary.
+    for (const auto &slice : *macho) {
+        if (slice.header().magic() == LIEF::MachO::MACHO_TYPES::UNKNOWN) {
+            return false;
+        }
+    }
 
-    return magic == 0xFEEDFACEu || // MH_MAGIC (32-bit)
-           magic == 0xCEFAEDFEu || // MH_CIGAM (32-bit, swapped)
-           magic == 0xFEEDFACFu || // MH_MAGIC_64
-           magic == 0xCFFAEDFEu || // MH_CIGAM_64 (swapped)
-           magic == 0xCAFEBABEu || // FAT_MAGIC (fat binary)
-           magic == 0xBEBAFECAu || // FAT_CIGAM (fat binary, swapped)
-           magic == 0xCAFEBABFu || // FAT_MAGIC_64 (fat64 binary)
-           magic == 0xBFBAFECAu;   // FAT64_CIGAM (fat64 binary, swapped)
+    return true;
 }
 
 QStringList DeployCore::machORPaths(const QString &file) {
     QStringList rpaths;
     QSet<QString> seen;
 
-    QFile f(file);
-    if (!f.open(QIODevice::ReadOnly)) {
+    // Full file parsing on the LIEF backend (issue #166). The parser
+    // handles the thin (both byte orders) and the fat/fat64 binaries, so
+    // the entries are collected from all architecture slices.
+    auto macho = LIEF::MachO::Parser::parse(file.toStdString(),
+                                            LIEF::MachO::ParserConfig::quick());
+    if (macho == nullptr || macho->empty()) {
         return rpaths;
     }
 
-    auto data = f.readAll();
-    f.close();
-
-    const auto *b = reinterpret_cast<const quint8 *>(data.constData());
-    const auto size = static_cast<quint64>(data.size());
-
-    auto read32 = [&](quint64 off, bool littleEndian) -> quint32 {
-        if (off + 4 > size) {
-            return 0;
-        }
-        if (littleEndian) {
-            return quint32(b[off]) | (quint32(b[off + 1]) << 8)
-                 | (quint32(b[off + 2]) << 16) | (quint32(b[off + 3]) << 24);
-        }
-        return (quint32(b[off]) << 24) | (quint32(b[off + 1]) << 16)
-             | (quint32(b[off + 2]) << 8) | quint32(b[off + 3]);
-    };
-
-    auto read64 = [&](quint64 off, bool littleEndian) -> quint64 {
-        return quint64(read32(off, littleEndian))
-                | (quint64(read32(off + 4, littleEndian)) << 32);
-    };
-
-    // The byte order of a thin header is given by the magic bytes. The
-    // canonical magic values are decoded as little endian, so both byte
-    // orders of the magic are checked explicitly.
-    auto thinMagicEndianness = [&](quint64 start) -> int {
-        // 1 = little endian, -1 = big endian, 0 = not a thin Mach-O magic.
-        if (start + 4 > size) {
-            return 0;
-        }
-        if (b[start] == 0xCEu && b[start + 1] == 0xFAu && b[start + 2] == 0xEDu
-                && b[start + 3] == 0xFEu) {
-            return 1; // MH_MAGIC (32-bit) little endian
-        }
-        if (b[start] == 0xCFu && b[start + 1] == 0xFAu && b[start + 2] == 0xEDu
-                && b[start + 3] == 0xFEu) {
-            return 1; // MH_MAGIC_64 little endian
-        }
-        if (b[start] == 0xFEu && b[start + 1] == 0xEDu && b[start + 2] == 0xFAu
-                && b[start + 3] == 0xCEu) {
-            return -1; // MH_MAGIC (32-bit) big endian
-        }
-        if (b[start] == 0xFEu && b[start + 1] == 0xEDu && b[start + 2] == 0xFAu
-                && b[start + 3] == 0xCFu) {
-            return -1; // MH_MAGIC_64 big endian
-        }
-        return 0;
-    };
-
-    // Collect the LC_RPATH entries (cmd 0x00001C01) of one thin slice.
-    auto scanSlice = [&](quint64 start) {
-        const auto endianness = thinMagicEndianness(start);
-        if (endianness == 0) {
-            return;
-        }
-        const bool littleEndian = (endianness > 0);
-
-        const auto is64 = read32(start, littleEndian) == 0xFEEDFACFu;
-        const auto ncmds = read32(start + 16, littleEndian);
-
-        // Guard against corrupted headers with a huge number of commands.
-        if (ncmds > 0x10000u) {
-            return;
+    for (const LIEF::MachO::Binary &slice : *macho) {
+        // The LIEF accessor is checked first, so this method keeps working
+        // without the raw data fallback if a future LIEF release maps
+        // LC_RPATH to the real 0x1C01 constant of the macOS ABI.
+        for (const LIEF::MachO::RPathCommand &rpath : slice.rpaths()) {
+            auto path = QString::fromStdString(rpath.path());
+            if (!path.isEmpty() && !seen.contains(path)) {
+                seen.insert(path);
+                rpaths << path;
+            }
         }
 
-        for (quint64 off = start + (is64 ? 32 : 28), i = 0;
-                i < ncmds && off + 8 <= size; ++i) {
-            const auto cmd = read32(off, littleEndian);
-            const auto cmdSize = read32(off + 4, littleEndian);
-            if (cmdSize < 8 || off + cmdSize > size) {
-                break;
+        // The LIEF 1.0.0 submodule maps LC_RPATH to 0x8000001C instead of
+        // the macOS ABI constant 0x1C01, so the real LC_RPATH commands are
+        // parsed as unknown commands. LIEF keeps the raw command bytes in
+        // data(), and the path string follows the 8 byte command header in
+        // both byte orders, so only the string itself is read here.
+        for (const LIEF::MachO::LoadCommand &cmd : slice.commands()) {
+            if (!LIEF::MachO::UnknownCommand::classof(&cmd)
+                    || static_cast<const LIEF::MachO::UnknownCommand &>(cmd)
+                       .original_command() != 0x1C01u) { // LC_RPATH
+                continue;
             }
 
-            if (cmd == 0x00001C01u) { // LC_RPATH
-                QByteArray path;
-                for (quint64 p = off + 8; p < off + cmdSize && b[p] != 0; ++p) {
-                    path.append(static_cast<char>(b[p]));
-                }
-
-                auto rpath = QString::fromUtf8(path);
-                if (!rpath.isEmpty() && !seen.contains(rpath)) {
-                    seen.insert(rpath);
-                    rpaths << rpath;
-                }
+            auto raw = cmd.data();
+            if (raw.size() <= 8) {
+                continue;
             }
 
-            off += cmdSize;
-        }
-    };
+            auto path = QString();
+            for (const auto *byte = raw.data() + 8; *byte != 0; ++byte) {
+                path.append(static_cast<QChar>(*byte));
+            }
 
-    if (size < 8) {
-        return rpaths;
+            if (!path.isEmpty() && !seen.contains(path)) {
+                seen.insert(path);
+                rpaths << path;
+            }
+        }
     }
 
-    // The byte order of the fat header fields follows the magic bytes:
-    // FAT_MAGIC (CA FE BA BE) is big endian and FAT_CIGAM (BE BA FE CA)
-    // is little endian (mach-o/fat.h).
-    const auto fatMagic = read32(0, false); // decode the on-disk bytes
-    const bool isFat64 = (fatMagic == 0xCAFEBABFu || fatMagic == 0xBFBAFECAu);
-    const bool isFat = (fatMagic == 0xCAFEBABEu || fatMagic == 0xBEBAFECAu)
-            || isFat64;
-    if (isFat) {
-        const bool littleEndian = (fatMagic == 0xBEBAFECAu
-                                   || fatMagic == 0xBFBAFECAu);
-        const auto nfat = read32(4, littleEndian);
-        const auto entrySize = isFat64 ? 32u : 20u;
-
-        if (nfat > 0 && nfat <= 0x10000u) {
-            for (quint64 i = 0; i < nfat; ++i) {
-                const quint64 archOff = 8 + i * entrySize;
-                if (archOff + entrySize > size) {
-                    break;
-                }
-
-                const auto sliceOff = isFat64
-                        ? read64(archOff + 8, littleEndian)
-                        : read32(archOff + 8, littleEndian);
-                const auto sliceSize = isFat64
-                        ? read64(archOff + 16, littleEndian)
-                        : read32(archOff + 12, littleEndian);
-                if (sliceSize == 0 || sliceOff + sliceSize > size) {
-                    continue;
-                }
-
-                scanSlice(sliceOff);
-            }
-        }
-
-        return rpaths;
-    }
-
-    scanSlice(0);
     return rpaths;
 }
 

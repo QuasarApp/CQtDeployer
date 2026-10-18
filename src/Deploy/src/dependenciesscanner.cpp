@@ -40,8 +40,8 @@ PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
 
         // macOS executables and dylibs without a file suffix are Mach-O
         // binaries, but the same layout (no suffix) is used by the Linux
-        // executables and the ELF cross-deployed from macOS. The file magic
-        // separates both formats (issue #166).
+        // executables and the ELF cross-deployed from macOS. The full file
+        // parsing on the LIEF backend separates both formats (issue #166).
         if (DeployCore::isMacOBinary(info)) {
             return PrivateScaner::MACHO;
         }

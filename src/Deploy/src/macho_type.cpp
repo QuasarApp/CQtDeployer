@@ -87,9 +87,11 @@ bool MachO::getLibInfo(const QString &lib, LibInfo &info) const {
     }
 
     // Extract the runtime search paths (LC_RPATH). They are used to find
-    // the qmake of a Qt installation (issue #166). The entries are read
-    // from the binary, because the LIEF submodule of CQtDeployer maps
-    // LC_RPATH to a different load command constant than the macOS ABI.
+    // the qmake of a Qt installation (issue #166). The entries are read via
+    // DeployCore::machORPaths(), which parses the binary on the LIEF backend
+    // and reads the entries from the raw command data, because the LIEF
+    // submodule maps LC_RPATH to a different load command constant than the
+    // macOS ABI.
     info.setRPath(DeployCore::machORPaths(infolib.absoluteFilePath())
                      .join(QLatin1String(":")));
 

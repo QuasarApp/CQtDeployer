@@ -122,36 +122,24 @@ std::vector<unsigned char> makeThinMachODylib(
 
 /**
  * @brief makeFatMachO This function build a fat (universal) Mach-O binary
- *  from the given architecture slices. By default the fat header and the
- *  fat_arch entries are big endian (FAT_MAGIC), the layout that lipo writes.
- *  With @a cigam the header is written in the FAT_CIGAM form (little
- *  endian), which is also a valid on-disk representation.
+ *  from the given architecture slices. The fat header and the fat_arch
+ *  entries are always big endian (FAT_MAGIC), the layout that lipo writes.
+ *  The little endian FAT_CIGAM form is not supported, because the LIEF
+ *  submodule only parses the canonical big endian fat layout.
  */
-std::vector<unsigned char> makeFatMachO(const QList<QByteArray> &slices,
-                                        bool cigam = false) {
+std::vector<unsigned char> makeFatMachO(const QList<QByteArray> &slices) {
     std::vector<unsigned char> f;
 
-    auto put32 = [&](uint32_t x) {
-        if (cigam) {
-            put32le(f, x);
-        } else {
-            put32be(f, x);
-        }
-    };
-
-    // The magic value is the same for both byte orders, only the byte order
-    // of the storage differs (put32 handles it): FAT_MAGIC is big endian and
-    // FAT_CIGAM is the little endian (byte swapped) form.
-    put32(0xCAFEBABEu); // FAT_MAGIC / FAT_CIGAM
-    put32(static_cast<uint32_t>(slices.size())); // nfat_arch
+    put32be(f, 0xCAFEBABEu); // FAT_MAGIC
+    put32be(f, static_cast<uint32_t>(slices.size())); // nfat_arch
 
     uint32_t offset = 8u + 20u * static_cast<uint32_t>(slices.size());
     for (const auto &slice : slices) {
-        put32(7u); // cputype
-        put32(3u); // cpusubtype
-        put32(offset);
-        put32(static_cast<uint32_t>(slice.size()));
-        put32(12u); // align
+        put32be(f, 7u); // cputype
+        put32be(f, 3u); // cpusubtype
+        put32be(f, offset);
+        put32be(f, static_cast<uint32_t>(slice.size()));
+        put32be(f, 12u); // align
         offset += static_cast<uint32_t>(slice.size());
     }
 
@@ -175,24 +163,46 @@ void MacOSTest::initTestCase() {
 void MacOSTest::cleanupTestCase() {
 }
 
-void MacOSTest::machOMagicCheck() {
+void MacOSTest::machODetectionCheck() {
     const auto dir = _tmp.path();
 
-    // All Mach-O magics in both byte orders and the fat magics.
-    const auto magicFiles = QList<QPair<QByteArray, bool>>{
-        {QByteArray::fromHex("feedface"), true}, // MH_MAGIC LE
-        {QByteArray::fromHex("feedfacf"), true}, // MH_MAGIC_64 LE
-        {QByteArray::fromHex("cefaedfe"), true}, // MH_MAGIC BE
-        {QByteArray::fromHex("cffaedfe"), true}, // MH_MAGIC_64 BE
-        {QByteArray::fromHex("cafebabe"), true}, // FAT_MAGIC
-        {QByteArray::fromHex("bebafeCA"), true}, // FAT_CIGAM
+    // Valid Mach-O binaries in the layouts the LIEF parser accepts:
+    // thin 64-bit in both byte orders and a fat binary with two slices.
+    auto leFile = dir + "/valid_le";
+    QVERIFY(writeFile(leFile, toBytes(makeThinMachODylib(
+                "@rpath/libLe.dylib", {}, {"/opt/le/lib"}))));
+    QVERIFY(Extracter::isMachOFile(leFile));
+
+    auto beFile = dir + "/valid_be";
+    QVERIFY(writeFile(beFile, toBytes(makeThinMachODylib(
+                "@rpath/libBe.dylib", {}, {"/opt/be/lib"}, true))));
+    QVERIFY(Extracter::isMachOFile(beFile));
+
+    auto fatFile = dir + "/valid_fat";
+    QVERIFY(writeFile(fatFile, toBytes(makeFatMachO({
+                toBytes(makeThinMachODylib(
+                        "@rpath/libLe.dylib", {}, {"/opt/le/lib"})),
+                toBytes(makeThinMachODylib(
+                        "@rpath/libBe.dylib", {}, {"/opt/be/lib"}, true))}))));
+    QVERIFY(Extracter::isMachOFile(fatFile));
+
+    // The detection is a full file parsing on the LIEF backend, so a file
+    // that only contains a Mach-O magic (without a valid header) is not a
+    // Mach-O binary anymore (issue #166).
+    const auto magicFiles = QList<QByteArray>{
+        QByteArray::fromHex("feedface"), // MH_MAGIC LE
+        QByteArray::fromHex("feedfacf"), // MH_MAGIC_64 LE
+        QByteArray::fromHex("cefaedfe"), // MH_MAGIC BE
+        QByteArray::fromHex("cffaedfe"), // MH_MAGIC_64 BE
+        QByteArray::fromHex("cafebabe"), // FAT_MAGIC
+        QByteArray::fromHex("bebafeCA"), // FAT_CIGAM
     };
 
     int i = 0;
-    for (const auto &entry : magicFiles) {
-        auto file = dir + "/magic_" + QString::number(i++);
-        QVERIFY(writeFile(file, entry.first + QByteArray(8, '\0')));
-        QCOMPARE(Extracter::isMachOFile(file), entry.second);
+    for (const auto &magic : magicFiles) {
+        auto file = dir + "/magic_only_" + QString::number(i++);
+        QVERIFY(writeFile(file, magic + QByteArray(8, '\0')));
+        QVERIFY(!Extracter::isMachOFile(file));
     }
 
     // Not a Mach-O file.
@@ -315,13 +325,6 @@ void MacOSTest::machORPathsCheck() {
     QVERIFY(fatRpaths.contains(QStringLiteral("/usr/lib")));
     QCOMPARE(fatRpaths.size(), 3);
     QVERIFY(Extracter::isMachOFile(fatFile));
-
-    // The same fat binary in the FAT_CIGAM form (little endian fields).
-    auto fatCigam = makeFatMachO({toBytes(le), toBytes(be)}, true);
-    auto fatCigamFile = dir + "/fatCigam.dylib";
-    QVERIFY(writeFile(fatCigamFile, toBytes(fatCigam)));
-    QCOMPARE(Extracter::machORPaths(fatCigamFile), fatRpaths);
-    QVERIFY(Extracter::isMachOFile(fatCigamFile));
 
     // No rpaths at all.
     auto noRpath = makeThinMachODylib("/opt/Qt/6.10.3/macos/lib/QtCore",

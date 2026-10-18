@@ -397,9 +397,9 @@ public:
     /**
      * @brief isMacOBinary This method return true if the @a file is a Mach-O
      *  binary (32/64-bit thin binaries in both byte orders and fat/universal
-     *  binaries). The check is based on the magic number in the first bytes
-     *  of the file, so the file does not need to be parseable by LIEF and the
-     *  file suffix is not required (issue #166).
+     *  binaries). The check is a full file parsing on the LIEF backend
+     *  (LIEF::MachO::Parser), so the file must be a valid parseable Mach-O
+     *  binary and the file suffix is not required (issue #166).
      * @param file This is the file that will be checked.
      * @return true if the file is a Mach-O binary else false.
      */
@@ -408,10 +408,11 @@ public:
     /**
      * @brief machORPaths This method return the list of the runtime search
      *  paths (LC_RPATH entries) of all architecture slices of the Mach-O
-     *  binary @a file (issue #166). The entries are read directly from the
-     *  binary, because the LIEF submodule of CQtDeployer maps LC_RPATH to a
-     *  different load command constant than the macOS ABI (0x1C01), so the
-     *  LIEF rpath() accessor does not find the real entries.
+     *  binary @a file (issue #166). The binary is parsed on the LIEF backend.
+     *  Because the LIEF 1.0.0 submodule maps LC_RPATH to a different load
+     *  command constant than the macOS ABI (0x1C01), the real entries are
+     *  read from the raw command data that LIEF keeps for the unknown
+     *  commands.
      * @param file This is the path to the Mach-O binary.
      * @return The list of the LC_RPATH entries (empty if the file is not a
      *  Mach-O binary or has no rpaths).
