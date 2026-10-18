@@ -547,6 +547,10 @@ void MacOSTest::dmgMultiPackageCheck() {
                  qPrintable("The bundle Info.plist is not found: " +
                             bundleDir + "/Contents/Info.plist"));
         const auto content = QString::fromUtf8(plistFile.readAll());
+        // The file must be closed before the removeTemplate step,
+        // Windows does not allow to delete a file with the open handle
+        // (issue #166).
+        plistFile.close();
         QVERIFY2(content.contains(name),
                  qPrintable("The bundle Info.plist has no package name: " +
                             bundleDir + "/Contents/Info.plist"));
@@ -566,6 +570,10 @@ void MacOSTest::dmgMultiPackageCheck() {
     QVERIFY2(docsPlist.open(QIODevice::ReadOnly),
              "The docs bundle Info.plist is not found");
     const auto docsContent = QString::fromUtf8(docsPlist.readAll());
+    // The file must be closed before the removeTemplate step,
+    // Windows does not allow to delete a file with the open handle
+    // (issue #166).
+    docsPlist.close();
     QVERIFY(!docsContent.contains("$CQT_BUNDLE_ID"));
     QVERIFY(!docsContent.contains("$CQT_BUNDLE_EXECUTABLE"));
     QVERIFY(docsContent.contains("docs"));
