@@ -13,6 +13,8 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QProcess>
+#include <QtEndian>
+#include <QtGlobal>
 #include <vector>
 
 #include <Distributions/dmg.h>
@@ -44,6 +46,30 @@ bool writeFile(const QString &path, const QByteArray &data) {
         return false;
     }
     return file.write(data) == data.size();
+}
+/**
+ * @brief udzoKolyHeaderOffset returns the offset of the 512-byte "koly"
+ *  header of the compressed (UDZO) disk image @a image. The hdiutil
+ *  create tool writes the zlib compressed partition data first and the
+ *  header last (at the file size minus the header size offset), the old
+ *  images can have the header at the beginning (issue #166). The header
+ *  must carry the "koly" magic, the version 4.0, the zlib compression
+ *  method (2, the "ZO" of the UDZO format) and the no-encryption (0)
+ *  fields, the same signature the 7-Zip DmgHandler checks.
+ *  Returns -1, when the image does not contain a valid UDZO koly header.
+ */
+qint64 udzoKolyHeaderOffset(const QByteArray &image) {
+    static const auto kSignature =
+            QByteArray::fromHex("6b6f6c790000000400000200");
+    static const auto kHeaderSize = 512;
+    if (image.size() < kHeaderSize) {
+        return -1;
+    }
+    if (image.startsWith(kSignature)) {
+        return 0;
+    }
+    const auto tail = image.size() - kHeaderSize;
+    return image.mid(tail, kSignature.size()) == kSignature ? tail : -1;
 }
 /**
  * @brief makeThinMachODylib This function build a minimal Mach-O 64-bit
@@ -424,26 +450,43 @@ void MacOSTest::dmgCreationCheck() {
     QVERIFY(dmgInfo.exists());
     QVERIFY(dmgInfo.size() > 0);
 
-    // The created image must be a compressed (UDZO) hybrid image: the
-    // DMG "koly" header carries the compression method (2 = zlib, the
-    // "ZO" of the UDZO format) and the image type (2 = hybrid, the
-    // "UD" of the UDZO format) fields (issue #166).
+    // The created image must be a compressed (UDZO) disk image: the
+    // hdiutil create tool writes the zlib compressed partition data
+    // first and the 512-byte "koly" header with the compression method
+    // field (2 = zlib, the "ZO" of the UDZO format) to the end of the
+    // file (the old images can have the header at the beginning,
+    // issue #166).
     QFile img(dmgFile);
     QVERIFY2(img.open(QIODevice::ReadOnly), "Failed to open the created DMG archive");
-    const auto header = img.read(32);
+    const auto image = img.readAll();
     img.close();
+
+    const auto headerOffset = udzoKolyHeaderOffset(image);
     QProcess fileCmd;
     fileCmd.start("file", {"-b", dmgFile});
     fileCmd.waitForFinished(-1);
     const auto fileType = QString::fromUtf8(fileCmd.readAllStandardOutput()).trimmed();
-    QVERIFY2(header.startsWith("koly"),
-             qPrintable("The DMG archive is not a koly image. "
-                        "size: " + QString::number(dmgInfo.size())
+    QVERIFY2(headerOffset >= 0,
+             qPrintable("The DMG archive is not a compressed (UDZO) koly image. "
+                        "size: " + QString::number(image.size())
                         + ", file: " + fileType
-                        + ", first 32 bytes: " + QString::fromLatin1(header.toHex())
+                        + ", first 12 bytes: " + QString::fromLatin1(image.left(12).toHex())
+                        + ", last 12 bytes: " + QString::fromLatin1(image.right(12).toHex())
                         + ", hdiutil: " + hdiLog));
-    QCOMPARE(static_cast<int>(header.at(9)), 2);  // zlib compression
-    QCOMPARE(static_cast<int>(header.at(11)), 2); // hybrid image type
+
+    // The data fork field of the koly header (the big-endian offset and
+    // length at the 0x18 offset of the header) describes the compressed
+    // data of the image, the first byte of the fork must be the "78"
+    // zlib magic (issue #166).
+    const auto *data = reinterpret_cast<const uchar *>(image.constData());
+    const auto forkOffset = qFromBigEndian<quint64>(data + headerOffset + 0x18);
+    const auto forkLength = qFromBigEndian<quint64>(data + headerOffset + 0x20);
+    QVERIFY2(forkLength > 0 && forkOffset + forkLength <= static_cast<quint64>(image.size()),
+             qPrintable("The data fork of the DMG koly header is invalid. "
+                        "fork offset: " + QString::number(forkOffset)
+                        + ", fork length: " + QString::number(forkLength)
+                        + ", image size: " + QString::number(image.size())));
+    QCOMPARE(static_cast<int>(data[forkOffset]), 0x78); // the zlib magic
 }
 
 
