@@ -70,6 +70,8 @@
     "qif": "./QIFWTemplate",
     "qifOut": "@INSTALLER_FULL_NAME@",
     "zip": false,
+    "dmg": @DMG_ENABLED@,
+    "dmgOut": "@DMG_NAME@",
     "ignoreEnv": [
          "@CMAKE_SOURCE_DIR@/Distro"
         ],

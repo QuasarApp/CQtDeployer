@@ -23,6 +23,7 @@
 #include <qaglobalutils.h>
 #include <Distributions/deb.h>
 #include <Distributions/defaultdistro.h>
+#include <Distributions/dmg.h>
 #include <Distributions/qif.h>
 #include <Distributions/ziparhive.h>
 #include <qaplatformutils.h>
@@ -576,6 +577,9 @@ bool ConfigParser::initDistroStruct() {
     auto zipOut = QuasarAppUtils::Params::getArg("zipOut").
             split(DeployCore::getSeparator(0), splitbehavior);
 
+    auto dmgOut = QuasarAppUtils::Params::getArg("dmgOut").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
 // init distro stucts for all targets
     if (binOut.size() && !parsePackagesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir, defaultPackage)) {
         packagesErrorLog("binOut");
@@ -669,6 +673,11 @@ bool ConfigParser::initDistroStruct() {
 
     if (zipOut.size() && !parsePackagesPrivate(mainDistro, zipOut, &DistroModule::setZipOut, defaultPackage)) {
         packagesErrorLog("zipOut");
+        return false;
+    }
+
+    if (dmgOut.size() && !parsePackagesPrivate(mainDistro, dmgOut, &DistroModule::setDmgOut, defaultPackage)) {
+        packagesErrorLog("dmgOut");
         return false;
     }
 
@@ -1668,6 +1677,20 @@ QList<iDistribution *> ConfigParser::getDistribution() {
                                         "tools to enable this option.",
                                         QuasarAppUtils::Warning);
             delete qif;
+        }
+    }
+
+    if (QuasarAppUtils::Params::isEndable("dmg")) {
+        auto dmg = new Dmg(_fileManager);
+        if (dmg->isAvailable()) {
+            distros.push_back(dmg);
+        } else {
+            QuasarAppUtils::Params::log("The DMG package is created only on "
+                                        "the macOS hosts with the hdiutil "
+                                        "tool, the dmg package will not be "
+                                        "created on this platform.",
+                                        QuasarAppUtils::Warning);
+            delete dmg;
         }
     }
 

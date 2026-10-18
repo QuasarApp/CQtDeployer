@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>CQtDeployer</string>
+    <string>$NAME</string>
     <key>CFBundleDisplayName</key>
-    <string>CQtDeployer</string>
+    <string>$NAME</string>
     <key>CFBundleIdentifier</key>
-    <string>org.quasarapp.cqtdeployer</string>
+    <string>$CQT_BUNDLE_ID</string>
     <key>CFBundleVersion</key>
-    <string>@CQT_DEPLOYER_VERSION@</string>
+    <string>$VERSION</string>
     <key>CFBundleShortVersionString</key>
-    <string>@CQT_DEPLOYER_VERSION@</string>
+    <string>$VERSION</string>
     <key>CFBundleExecutable</key>
-    <string>CQtDeployer</string>
+    <string>$CQT_BUNDLE_EXECUTABLE</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleSignature</key>

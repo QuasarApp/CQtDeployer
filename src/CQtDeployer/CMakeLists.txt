@@ -75,6 +75,21 @@ set(BASE_FULL_NAME "${BASE_NAME}_${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}"
 
 set(INSTALLER_FULL_NAME "${BASE_FULL_NAME}${INSTALLER_SUFIX}")
 
+# macOS: the deployed application is packed into a .app bundle and a
+# compressed DMG disk image by the cqtdeployer "dmg" distribution
+# (issue #166). The DMG name and the enabled flag are used in the
+# Deploy/CQtDeployer.json.in template.
+set(DMG_NAME "${BASE_FULL_NAME}.dmg")
+if (APPLE)
+    set(DMG_ENABLED true)
+else()
+    set(DMG_ENABLED false)
+endif()
+
+if(DEFINED ENV{GITHUB_ENV} AND APPLE)
+    file(APPEND $ENV{GITHUB_ENV} "DMG_NAME=${DMG_NAME}\n")
+endif()
+
 if(DEFINED ENV{GITHUB_ENV})
     file(APPEND $ENV{GITHUB_ENV} "INSTALLER_FULL_NAME=${INSTALLER_FULL_NAME}\n")
     file(APPEND $ENV{GITHUB_ENV} "BASE_FULL_NAME=${BASE_FULL_NAME}\n")
@@ -158,71 +173,4 @@ if (UNIX AND NOT APPLE)
     endif()
 
     addReleaseSnap(${CURRENT_PROJECT} latest/edge)
-endif()
-
-if (APPLE)
-    # macOS: the Qt Installer Framework tools (binarycreator) are not
-    # available on macOS, so the QIF installer package is skipped by the
-    # deployer. The deployed application is packed into a .app bundle and a
-    # DMG archive instead (issue #166).
-    set(DMG_NAME "${BASE_FULL_NAME}.dmg")
-
-    if(DEFINED ENV{GITHUB_ENV})
-        file(APPEND $ENV{GITHUB_ENV} "DMG_NAME=${DMG_NAME}\n")
-    endif()
-
-    configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/Info.plist.in"
-        "${CMAKE_BINARY_DIR}/CQtDeployer.app/Info.plist"
-        @ONLY
-    )
-
-    set(DMG_STAGE_DIR "${CMAKE_BINARY_DIR}/Distro/stage")
-
-    # The app bundle and the DMG are created only when the deploy target is
-    # available (the cqtdeployer executable was found at configure time).
-    if (TARGET deploy${CURRENT_PROJECT})
-
-        add_custom_target(appBundle${CURRENT_PROJECT}
-            COMMAND ${CMAKE_COMMAND} -E remove_directory "${DMG_STAGE_DIR}"
-            COMMAND ${CMAKE_COMMAND} -E make_directory "${DMG_STAGE_DIR}/CQtDeployer.app/Contents/MacOS"
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-                # The deployed package is named by the "targetPackage"
-                # entries of Deploy/CQtDeployer.json.in (the versioned
-                # "CQtDeployer.1_6" package), not by a plain
-                # "CQtDeployer" directory (issue #166).
-                "${CMAKE_SOURCE_DIR}/Distro/CQtDeployer.1_6"
-                "${DMG_STAGE_DIR}/CQtDeployer.app/Contents/MacOS"
-            # The deployer does not rewrite the Mach-O binaries (issue
-            # #166): the deployed executable keeps the build time install
-            # names (@rpath/...) and the Qt frameworks are deployed next
-            # to the executable in the app bundle (Contents/MacOS), so
-            # the @executable_path rpath makes the @rpath references
-            # resolvable.
-            COMMAND /usr/bin/install_name_tool -add_rpath "@executable_path"
-                "${DMG_STAGE_DIR}/CQtDeployer.app/Contents/MacOS/CQtDeployer"
-            COMMAND ${CMAKE_COMMAND} -E copy
-                "${CMAKE_BINARY_DIR}/CQtDeployer.app/Info.plist"
-                "${DMG_STAGE_DIR}/CQtDeployer.app/Contents/Info.plist"
-            COMMAND ${CMAKE_COMMAND} -E create_symlink
-                /Applications
-                "${DMG_STAGE_DIR}/Applications"
-            DEPENDS deploy${CURRENT_PROJECT}
-            COMMENT "Create the CQtDeployer.app bundle for the DMG archive"
-        )
-
-        add_custom_target(dmg${CURRENT_PROJECT}
-            COMMAND hdiutil create
-                -volname CQtDeployer
-                -srcfolder "${DMG_STAGE_DIR}"
-                -ov
-                -format UDZO
-                "${CMAKE_SOURCE_DIR}/Distro/${DMG_NAME}"
-            DEPENDS appBundle${CURRENT_PROJECT}
-            COMMENT "Create the ${DMG_NAME} archive"
-        )
-
-        add_dependencies(release dmg${CURRENT_PROJECT})
-
-    endif()
 endif()

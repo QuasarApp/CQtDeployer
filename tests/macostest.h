@@ -29,6 +29,9 @@ private slots:
     void machODetectionCheck();
     void frameworkHelpers();
     void machORPathsCheck();
+    void dmgDistributionCheck();
+    void dmgOutConfigCheck();
+    void dmgCreationCheck();
 
 private:
     QTemporaryDir _tmp;

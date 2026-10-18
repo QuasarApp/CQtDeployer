@@ -473,6 +473,12 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
 
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
+                            {"dmg"}, "",
+                            "Create the DMG disk image package for deployment programm."
+                            " The DMG package is created only on the macOS hosts "
+                            "with the hdiutil tool."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
                             {"deploySystem"}, "",
                             "Deploys all libraries."
                             " Not recomendet because there may be conflicts with system libraries"
@@ -770,6 +776,13 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-zipOut"}, "{package;nameOfOutputZipFile,nameOfOutputZipFile}",
                             "Sets name of the output zip arrhive. This option can be work with multiple packages"
+                        }});
+
+    group = "Part 9 dmg package options";
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-dmgOut"}, "{package;nameOfOutputDmgFile,nameOfOutputDmgFile}",
+                            "Sets name of the output DMG disk image. This option can be work with multiple packages"
                         }});
 
     return help;

@@ -15,6 +15,10 @@
 #include <QProcess>
 #include <vector>
 
+#include <Distributions/dmg.h>
+#include <distromodule.h>
+#include <filemanager.h>
+
 namespace {
 
 void put32le(std::vector<unsigned char> &v, uint32_t x) {
@@ -45,13 +49,15 @@ bool writeFile(const QString &path, const QByteArray &data) {
  * @brief makeThinMachODylib This function build a minimal Mach-O 64-bit
  *  dylib with one LC_ID_DYLIB install name, the LC_LOAD_DYLIB entries of
  *  @a libs and the LC_RPATH entries of @a rpaths. The layout is valid
- *  enough for the LIEF parser and for the machORPaths reader.
+ *  enough for the LIEF parser and for the machORPaths reader. The
+ *  @a fileType is the Mach-O file type (2 = MH_DYLIB, 1 = MH_EXECUTE).
  */
 std::vector<unsigned char> makeThinMachODylib(
         const QByteArray &idName,
         const QList<QByteArray> &libs,
         const QList<QByteArray> &rpaths,
-        bool bigEndian = false) {
+        bool bigEndian = false,
+        uint32_t fileType = 2u) {
     std::vector<unsigned char> f;
 
     auto put32 = [&](uint32_t x) {
@@ -74,7 +80,7 @@ std::vector<unsigned char> makeThinMachODylib(
     put32(0xFEEDFACFu); // MH_MAGIC_64
     put32(7u); // cputype (x86_64)
     put32(3u); // cpusubtype
-    put32(2u); // filetype (MH_DYLIB)
+    put32(fileType); // filetype (MH_DYLIB/MH_EXECUTE)
     put32(1u + static_cast<uint32_t>(libs.size())
           + static_cast<uint32_t>(rpaths.size())); // ncmds
     const size_t sizeofcmdsOff = f.size();
@@ -337,6 +343,86 @@ void MacOSTest::machORPathsCheck() {
     QVERIFY(Extracter::machORPaths(emptyFile).isEmpty());
 
     QVERIFY(Extracter::machORPaths(dir + "/missing").isEmpty());
+}
+
+void MacOSTest::dmgDistributionCheck() {
+    FileManager fm;
+    Dmg dmg(&fm);
+
+    // The Info.plist template of the application bundle is embedded in
+    // the resources of the Deploy library (issue #166).
+    QFile plist(":/Templates/DMG/Distributions/Templates/dmg/Contents/Info.plist");
+    QVERIFY(plist.exists());
+
+    // The DMG distribution is only available on the macOS hosts with
+    // the hdiutil tool (issue #166).
+#ifdef Q_OS_MACOS
+    QVERIFY(dmg.isAvailable());
+#else
+    QVERIFY(!dmg.isAvailable());
+#endif
+}
+
+void MacOSTest::dmgOutConfigCheck() {
+    DistroModule module("test");
+
+    // The DMG output name is empty by default, the Dmg distribution
+    // derives the default "<name>.dmg" file name in this case.
+    QVERIFY(module.dmgOut().isEmpty());
+
+    module.setDmgOut("custom.dmg");
+    QCOMPARE(module.dmgOut(), QStringLiteral("custom.dmg"));
+}
+
+void MacOSTest::dmgCreationCheck() {
+#ifndef Q_OS_MACOS
+    QSKIP("The DMG distribution is created only on the macOS hosts with the hdiutil tool");
+#endif
+    const auto dir = _tmp.path();
+    const auto stageDir = dir + "/stage";
+    const auto bundleDir = stageDir + "/MyApp.app";
+    const auto macosDir = bundleDir + "/Contents/MacOS";
+    const auto exe = macosDir + "/MyApp";
+    QDir().mkpath(macosDir);
+
+    // A minimal Mach-O executable (MH_EXECUTE) without rpath entries,
+    // the same layout the Dmg distribution stages in the bundle. The
+    // install_name_tool step below adds the @executable_path rpath to
+    // the bundle executable (the runCmd step of the Dmg distribution,
+    // issue #166).
+    auto macho = makeThinMachODylib("/MyApp", {}, {}, false, 1u);
+    QVERIFY(writeFile(exe, toBytes(macho)));
+
+    // The same commands the Dmg distribution runs (runCmd): the
+    // @executable_path rpath of the bundle executable and the
+    // compressed (UDZO) DMG archive (issue #166).
+    QProcess rpathProc;
+    rpathProc.start("install_name_tool", {"-add_rpath", "@executable_path", exe});
+    rpathProc.waitForFinished(-1);
+    QCOMPARE(rpathProc.exitCode(), 0);
+
+    const auto dmgFile = dir + "/MyApp.dmg";
+    QProcess hdi;
+    hdi.start("hdiutil", {"create",
+                          "-volname", "MyApp",
+                          "-srcfolder", stageDir,
+                          "-ov",
+                          "-format", "UDZO",
+                          dmgFile});
+    hdi.waitForFinished(-1);
+    QCOMPARE(hdi.exitCode(), 0);
+
+    QFileInfo dmgInfo(dmgFile);
+    QVERIFY(dmgInfo.exists());
+    QVERIFY(dmgInfo.size() > 0);
+
+    // The created image must be a compressed (UDZO) HFS image.
+    QProcess info;
+    info.start("hdiutil", {"imageinfo", "-format", "full", dmgFile});
+    info.waitForFinished(-1);
+    QCOMPARE(info.exitCode(), 0);
+    QVERIFY2(info.readAllStandardOutput().contains("UDZO"),
+             qPrintable("The DMG image is not compressed (UDZO)"));
 }
 
 
