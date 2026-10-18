@@ -385,13 +385,20 @@ void MacOSTest::dmgCreationCheck() {
     const auto exe = macosDir + "/MyApp";
     QDir().mkpath(macosDir);
 
-    // A minimal Mach-O executable (MH_EXECUTE) without rpath entries,
-    // the same layout the Dmg distribution stages in the bundle. The
-    // install_name_tool step below adds the @executable_path rpath to
-    // the bundle executable (the runCmd step of the Dmg distribution,
-    // issue #166).
-    auto macho = makeThinMachODylib("/MyApp", {}, {}, false, 1u);
-    QVERIFY(writeFile(exe, toBytes(macho)));
+    // A real Mach-O executable (MH_EXECUTE) without rpath entries, the
+    // same kind of binary the Dmg distribution stages in the bundle.
+    // The install_name_tool step below rewrites the file, so it needs
+    // a fully valid binary (the segment commands and the free header
+    // space to insert the new LC_RPATH load command) that a minimal
+    // hand built header does not provide. A copy of the system "true"
+    // executable is a real MH_EXECUTE of the host architecture without
+    // rpath entries (the runCmd step of the Dmg distribution, issue
+    // #166).
+    const auto systemExe = QStringLiteral("/usr/bin/true");
+    QVERIFY2(QFileInfo(systemExe).isReadable(),
+             "The DMG test requires the /usr/bin/true executable of the host");
+    QVERIFY(QFile::remove(exe));
+    QVERIFY(QFile::copy(systemExe, exe));
 
     // The same commands the Dmg distribution runs (runCmd): the
     // @executable_path rpath of the bundle executable and the
