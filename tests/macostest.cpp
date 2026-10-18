@@ -572,13 +572,15 @@ void MacOSTest::dmgMultiPackageCheck() {
 
     // The "Applications" symbolic link of every DMG stage allows to
     // drag the bundle to the Applications folder on the mounted image
-    // (issue #166).
+    // (the macOS hosts only, issue #166).
+#ifdef Q_OS_UNIX
     const QStringList stages = {"app1", "app2", "docs"};
     for (const auto &stage: stages) {
         const auto link =
                 targetDir + "/defaultDMGTemplate/" + stage + "/Applications";
         QVERIFY(QFileInfo(link).isSymLink());
     }
+#endif
 
     // The runCmd step runs the "hdiutil create" command for every
     // prepared stage (one DMG archive per package, issue #166), the

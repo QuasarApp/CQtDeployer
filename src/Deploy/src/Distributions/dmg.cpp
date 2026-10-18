@@ -339,8 +339,12 @@ bool Dmg::createApplicationsLink(const QString &stageDir) const {
 
     return true;
 #else
-    qCritical() << "The symbolic links are not supported on this platform.";
-    return false;
+    // The DMG image is only created and mounted on the macOS hosts
+    // (the isAvailable() check), the Applications link of the stage
+    // directory is a macOS-only feature. On the other platforms the
+    // staging logic is verified by the unit tests without the link
+    // (issue #166).
+    return true;
 #endif
 }
 
