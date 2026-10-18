@@ -14,7 +14,7 @@
 /**
  * @brief The PackageControl class - this is interface for move files for package
  */
-class PackageControl
+class DEPLOYSHARED_EXPORT PackageControl
 {
 public:
     PackageControl();
