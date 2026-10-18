@@ -397,7 +397,6 @@ void MacOSTest::dmgCreationCheck() {
     const auto systemExe = QStringLiteral("/usr/bin/true");
     QVERIFY2(QFileInfo(systemExe).isReadable(),
              "The DMG test requires the /usr/bin/true executable of the host");
-    QVERIFY(QFile::remove(exe));
     QVERIFY(QFile::copy(systemExe, exe));
 
     // The same commands the Dmg distribution runs (runCmd): the
