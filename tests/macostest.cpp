@@ -45,7 +45,7 @@ bool writeFile(const QString &path, const QByteArray &data) {
  * @brief makeThinMachODylib This function build a minimal Mach-O 64-bit
  *  dylib with one LC_ID_DYLIB install name, the LC_LOAD_DYLIB entries of
  *  @a libs and the LC_RPATH entries of @a rpaths. The layout is valid
- *  enough for the LIEF parser and for the machORPaths reader.
+ *  enough for the LIEF parser and for the macOSRPaths reader.
  */
 std::vector<unsigned char> makeThinMachODylib(
         const QByteArray &idName,
@@ -163,7 +163,7 @@ void MacOSTest::initTestCase() {
 void MacOSTest::cleanupTestCase() {
 }
 
-void MacOSTest::machODetectionCheck() {
+void MacOSTest::macOSDetectionCheck() {
     const auto dir = _tmp.path();
 
     // Valid Mach-O binaries in the layouts the LIEF parser accepts:
@@ -171,12 +171,12 @@ void MacOSTest::machODetectionCheck() {
     auto leFile = dir + "/valid_le";
     QVERIFY(writeFile(leFile, toBytes(makeThinMachODylib(
                 "@rpath/libLe.dylib", {}, {"/opt/le/lib"}))));
-    QVERIFY(Extracter::isMachOFile(leFile));
+    QVERIFY(Extracter::isMacOSFile(leFile));
 
     auto beFile = dir + "/valid_be";
     QVERIFY(writeFile(beFile, toBytes(makeThinMachODylib(
                 "@rpath/libBe.dylib", {}, {"/opt/be/lib"}, true))));
-    QVERIFY(Extracter::isMachOFile(beFile));
+    QVERIFY(Extracter::isMacOSFile(beFile));
 
     auto fatFile = dir + "/valid_fat";
     QVERIFY(writeFile(fatFile, toBytes(makeFatMachO({
@@ -184,7 +184,7 @@ void MacOSTest::machODetectionCheck() {
                         "@rpath/libLe.dylib", {}, {"/opt/le/lib"})),
                 toBytes(makeThinMachODylib(
                         "@rpath/libBe.dylib", {}, {"/opt/be/lib"}, true))}))));
-    QVERIFY(Extracter::isMachOFile(fatFile));
+    QVERIFY(Extracter::isMacOSFile(fatFile));
 
     // The detection is a full file parsing on the LIEF backend, so a file
     // that only contains a Mach-O magic (without a valid header) is not a
@@ -202,24 +202,24 @@ void MacOSTest::machODetectionCheck() {
     for (const auto &magic : magicFiles) {
         auto file = dir + "/magic_only_" + QString::number(i++);
         QVERIFY(writeFile(file, magic + QByteArray(8, '\0')));
-        QVERIFY(!Extracter::isMachOFile(file));
+        QVERIFY(!Extracter::isMacOSFile(file));
     }
 
     // Not a Mach-O file.
     auto elf = dir + "/elf";
     QVERIFY(writeFile(elf, QByteArray::fromHex("7f454c460000")));
-    QVERIFY(!Extracter::isMachOFile(elf));
+    QVERIFY(!Extracter::isMacOSFile(elf));
 
     // Too short / empty / missing files.
     auto shortFile = dir + "/short";
     QVERIFY(writeFile(shortFile, QByteArray("fee")));
-    QVERIFY(!Extracter::isMachOFile(shortFile));
+    QVERIFY(!Extracter::isMacOSFile(shortFile));
 
     auto emptyFile = dir + "/empty";
     QVERIFY(writeFile(emptyFile, QByteArray()));
-    QVERIFY(!Extracter::isMachOFile(emptyFile));
+    QVERIFY(!Extracter::isMacOSFile(emptyFile));
 
-    QVERIFY(!Extracter::isMachOFile(dir + "/missing"));
+    QVERIFY(!Extracter::isMacOSFile(dir + "/missing"));
 }
 
 void MacOSTest::frameworkHelpers() {
@@ -290,7 +290,7 @@ void MacOSTest::frameworkHelpers() {
              QStringLiteral("QtCore.framework/Versions/A/QtCore"));
 }
 
-void MacOSTest::machORPathsCheck() {
+void MacOSTest::macOSRPathsCheck() {
     const auto dir = _tmp.path();
 
     // Thin little endian dylib with two rpaths.
@@ -300,18 +300,18 @@ void MacOSTest::machORPathsCheck() {
                 {"/opt/Qt/6.10.3/macos/lib", "@executable_path"});
     auto leFile = dir + "/le.dylib";
     QVERIFY(writeFile(leFile, toBytes(le)));
-    QCOMPARE(Extracter::machORPaths(leFile),
+    QCOMPARE(Extracter::macOSRPaths(leFile),
              (QStringList{QStringLiteral("/opt/Qt/6.10.3/macos/lib"),
                           QStringLiteral("@executable_path")}));
-    QVERIFY(Extracter::isMachOFile(leFile));
+    QVERIFY(Extracter::isMacOSFile(leFile));
 
     // Thin big endian dylib.
     auto be = makeThinMachODylib("/opt/Qt/6.10.3/macos/lib/QtCore",
                                  {}, {"/usr/lib"}, true);
     auto beFile = dir + "/be.dylib";
     QVERIFY(writeFile(beFile, toBytes(be)));
-    QCOMPARE(Extracter::machORPaths(beFile), QStringList{QStringLiteral("/usr/lib")});
-    QVERIFY(Extracter::isMachOFile(beFile));
+    QCOMPARE(Extracter::macOSRPaths(beFile), QStringList{QStringLiteral("/usr/lib")});
+    QVERIFY(Extracter::isMacOSFile(beFile));
 
     // Fat binary with one little endian and one big endian slice. The
     // rpaths of both slices are expected. The fat header uses the canonical
@@ -319,30 +319,30 @@ void MacOSTest::machORPathsCheck() {
     auto fat = makeFatMachO({toBytes(le), toBytes(be)});
     auto fatFile = dir + "/fat.dylib";
     QVERIFY(writeFile(fatFile, toBytes(fat)));
-    auto fatRpaths = Extracter::machORPaths(fatFile);
+    auto fatRpaths = Extracter::macOSRPaths(fatFile);
     QVERIFY(fatRpaths.contains(QStringLiteral("/opt/Qt/6.10.3/macos/lib")));
     QVERIFY(fatRpaths.contains(QStringLiteral("@executable_path")));
     QVERIFY(fatRpaths.contains(QStringLiteral("/usr/lib")));
     QCOMPARE(fatRpaths.size(), 3);
-    QVERIFY(Extracter::isMachOFile(fatFile));
+    QVERIFY(Extracter::isMacOSFile(fatFile));
 
     // No rpaths at all.
     auto noRpath = makeThinMachODylib("/opt/Qt/6.10.3/macos/lib/QtCore",
                                       {"/usr/lib/libz.dylib"}, {});
     auto noRpathFile = dir + "/norpath.dylib";
     QVERIFY(writeFile(noRpathFile, toBytes(noRpath)));
-    QVERIFY(Extracter::machORPaths(noRpathFile).isEmpty());
+    QVERIFY(Extracter::macOSRPaths(noRpathFile).isEmpty());
 
     // Not a Mach-O file.
     auto elfFile = dir + "/elf";
     QVERIFY(writeFile(elfFile, QByteArray::fromHex("7f454c460000")));
-    QVERIFY(Extracter::machORPaths(elfFile).isEmpty());
+    QVERIFY(Extracter::macOSRPaths(elfFile).isEmpty());
 
     auto emptyFile = dir + "/empty";
     QVERIFY(writeFile(emptyFile, QByteArray()));
-    QVERIFY(Extracter::machORPaths(emptyFile).isEmpty());
+    QVERIFY(Extracter::macOSRPaths(emptyFile).isEmpty());
 
-    QVERIFY(Extracter::machORPaths(dir + "/missing").isEmpty());
+    QVERIFY(Extracter::macOSRPaths(dir + "/missing").isEmpty());
 }
 
 void MacOSTest::normalizeMacOSRPathCheck() {

@@ -178,34 +178,40 @@ bool DeployCore::isMacOSFrameworkBinary(const QFileInfo &file) {
     return !root.isEmpty();
 }
 
-bool DeployCore::isMacOBinary(const QFileInfo &file) {
-    if (!file.isFile()) {
-        return false;
+std::unique_ptr<LIEF::MachO::FatBinary>
+DeployCore::parseMacOSFile(const QString &file) {
+    QFileInfo info(file);
+    if (!info.isFile()) {
+        return nullptr;
+    }
+
+    // The LIEF magic pre-filter runs before the full file parsing, because
+    // the LIEF MachO parser logs an error message for every non Mach-O file
+    // and the parsed files are checked in the loops of the dependency scan
+    // and the deploy step (issue #166).
+    if (!LIEF::MachO::is_macho(info.absoluteFilePath().toStdString())) {
+        return nullptr;
     }
 
     // Full file parsing on the LIEF backend (issue #166). The LIEF MachO
     // parser accepts the thin (32/64-bit, both byte orders) and the
     // fat/fat64 binaries and rejects every other file, so the file suffix
-    // is not required. The LIEF magic pre-filter runs first, because the
-    // parser logs an error message for every non Mach-O file and this
-    // method is called for every file of the dependency scan.
-    if (!LIEF::MachO::is_macho(file.absoluteFilePath().toStdString())) {
-        return false;
-    }
-
-    // The quick configuration skips the dyld opcode parsing that is not
-    // needed for the file type check.
-    auto macho = LIEF::MachO::Parser::parse(
-                file.absoluteFilePath().toStdString(),
+    // is not required. The quick configuration skips the dyld opcode parsing
+    // that is not needed - the load commands are always parsed.
+    return LIEF::MachO::Parser::parse(
+                info.absoluteFilePath().toStdString(),
                 LIEF::MachO::ParserConfig::quick());
-    if (macho == nullptr || macho->empty()) {
+}
+
+bool DeployCore::isMacOSBinary(const LIEF::MachO::FatBinary *binary) {
+    if (binary == nullptr || binary->empty()) {
         return false;
     }
 
     // LIEF 1.0.0 keeps a slice in the parse result even when its header
     // could not be read (truncated file) - such slices have an UNKNOWN
     // header magic and the file is not a valid Mach-O binary.
-    for (const auto &slice : *macho) {
+    for (const auto &slice : *binary) {
         if (slice.header().magic() == LIEF::MachO::MACHO_TYPES::UNKNOWN) {
             return false;
         }
@@ -214,20 +220,21 @@ bool DeployCore::isMacOBinary(const QFileInfo &file) {
     return true;
 }
 
-QStringList DeployCore::machORPaths(const QString &file) {
+bool DeployCore::isMacOSBinary(const QFileInfo &file) {
+    return isMacOSBinary(parseMacOSFile(file.absoluteFilePath()).get());
+}
+
+QStringList DeployCore::macOSRPaths(const LIEF::MachO::FatBinary *binary) {
     QStringList rpaths;
     QSet<QString> seen;
 
-    // Full file parsing on the LIEF backend (issue #166). The parser
-    // handles the thin (both byte orders) and the fat/fat64 binaries, so
-    // the entries are collected from all architecture slices.
-    auto macho = LIEF::MachO::Parser::parse(file.toStdString(),
-                                            LIEF::MachO::ParserConfig::quick());
-    if (macho == nullptr || macho->empty()) {
+    if (!isMacOSBinary(binary)) {
         return rpaths;
     }
 
-    for (const LIEF::MachO::Binary &slice : *macho) {
+    // The parser handles the thin (both byte orders) and the fat/fat64
+    // binaries, so the entries are collected from all architecture slices.
+    for (const LIEF::MachO::Binary &slice : *binary) {
         // The LIEF accessor is checked first, so this method keeps working
         // without the raw data fallback if a future LIEF release maps
         // LC_RPATH to the real 0x1C01 constant of the macOS ABI.
@@ -269,6 +276,10 @@ QStringList DeployCore::machORPaths(const QString &file) {
     }
 
     return rpaths;
+}
+
+QStringList DeployCore::macOSRPaths(const QString &file) {
+    return macOSRPaths(parseMacOSFile(file).get());
 }
 
 QString DeployCore::macOSFrameworkRoot(const QString &path) {

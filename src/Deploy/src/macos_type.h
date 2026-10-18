@@ -5,24 +5,24 @@
 //# of this license document, but changing it is not allowed.
 //#
 
-#ifndef MACHO_H
-#define MACHO_H
+#ifndef MACOSTYPE_H
+#define MACOSTYPE_H
 
 #include "igetlibinfo.h"
 
 /**
- * @brief The MachO class
+ * @brief The MacOS class
  *
  * Mach-O (macOS) binary scanner. It parses the Mach-O load commands with
  * the LIEF library and extracts the linked dylibs (LC_LOAD_DYLIB) and the
  * binary platform (issue #553).
  */
-class DEPLOYSHARED_EXPORT MachO : public IGetLibInfo
+class DEPLOYSHARED_EXPORT MacOS : public IGetLibInfo
 {
 public:
-    MachO();
+    MacOS();
 
     bool getLibInfo(const QString &lib, LibInfo &info) const override;
 };
 
-#endif // MACHO_H
+#endif // MACOSTYPE_H

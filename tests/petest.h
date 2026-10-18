@@ -44,9 +44,9 @@ private slots:
     void classifyPrecedenceAndGeneric();
     void recognizeMinGWRuntimes();
 
-    void parseMachO();
-    void parseMachORouting();
-    void parseInvalidMachO();
+    void parseMacOS();
+    void parseMacOSRouting();
+    void parseInvalidMacOS();
 };
 
 #endif // PETEST_H

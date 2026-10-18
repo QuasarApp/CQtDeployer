@@ -39,32 +39,43 @@ bool Extracter::deployMSVC() {
     return _fileManager->copyFile(msvcInstaller, DeployCore::_config->getTargetDir());
 }
 
-bool Extracter::isMachOFile(const QString &file) {
-    return DeployCore::isMacOBinary(QFileInfo(file));
+bool Extracter::isMacOSFile(const QString &file) {
+    return DeployCore::isMacOSBinary(QFileInfo(file));
 }
 
-QStringList Extracter::machORPaths(const QString &file) {
-    // The implementation lives in DeployCore::machORPaths(), because the
-    // rpaths are also needed by the scanner (macho_type.cpp), which has no
+QStringList Extracter::macOSRPaths(const QString &file) {
+    // The implementation lives in DeployCore::macOSRPaths(), because the
+    // rpaths are also needed by the scanner (macos_type.cpp), which has no
     // access to the extracter (issue #166).
-    return DeployCore::machORPaths(file);
+    return DeployCore::macOSRPaths(file);
+}
+
+Extracter::MacOSFileChanges Extracter::planMacOSChanges(const QString &file,
+                                                        const QHash<QString, QString> &references,
+                                                        const QString &libOutDir) {
+    // The binary is parsed one time on the LIEF backend and the parse
+    // result is shared between the type check and the change planner (the
+    // full LIEF parsing is a heavy operation, issue #166).
+    auto binary = DeployCore::parseMacOSFile(file);
+    return planMacOSChanges(binary.get(), file, references, libOutDir);
 }
 
 Extracter::MacOSFileChanges Extracter::planMacOSChanges(
+        const LIEF::MachO::FatBinary *binary,
         const QString &file,
         const QHash<QString, QString> &references,
         const QString &libOutDir) {
     MacOSFileChanges changes;
 
-    auto macho = LIEF::MachO::Parser::parse(file.toStdString());
-    if (macho == nullptr || macho->empty()) {
+    if (!DeployCore::isMacOSBinary(binary)) {
         return changes;
     }
 
     QSet<QString> seenChanges;
 
-    // The LC_RPATH entries are read via DeployCore::machORPaths(). Because
-    // the LIEF submodule of CQtDeployer maps LC_RPATH to a different load
+    // The LC_RPATH entries are read from the same parse result that was
+    // used for the type check (no second parsing of the file). Because the
+    // LIEF submodule of CQtDeployer maps LC_RPATH to a different load
     // command constant than the macOS ABI (0x1C01), the LIEF rpaths()
     // accessor does not find the real entries - the method reads them from
     // the raw command data that LIEF keeps for the unknown commands.
@@ -74,13 +85,13 @@ Extracter::MacOSFileChanges Extracter::planMacOSChanges(
     // in the binary can differ (issue #166).
 
     QSet<QString> rpaths;
-    for (auto rpath : machORPaths(file)) {
+    for (auto rpath : DeployCore::macOSRPaths(binary)) {
         rpaths.insert(DeployCore::normalizeMacOSRPath(rpath));
     }
 
     // A fat (universal) binary contains several architecture slices, so
     // the changes are collected from all of them (deduplicated by name).
-    for (const LIEF::MachO::Binary &slice : *macho) {
+    for (const LIEF::MachO::Binary &slice : *binary) {
 
         for (const LIEF::MachO::DylibCommand &dylib : slice.libraries()) {
             auto name = QString::fromStdString(dylib.name());
@@ -138,7 +149,7 @@ Extracter::MacOSFileChanges Extracter::planMacOSChanges(
     return changes;
 }
 
-bool Extracter::fixMachOWithInstallNameTool(
+bool Extracter::fixMacOSWithInstallNameTool(
         const QString &file, const MacOSFileChanges &changes) {
     QProcess proc;
 
@@ -240,17 +251,24 @@ bool Extracter::deployMacOSRPaths() {
         QDirIterator it(targetPath, QDir::Files, QDirIterator::Subdirectories);
         while (it.hasNext()) {
             auto file = it.next();
-            if (!isMachOFile(file)) {
+
+            // The full LIEF parsing is a heavy operation, so the file is
+            // parsed only one time and the parse result is shared between
+            // the type check and the change planner (issue #166).
+            auto binary = DeployCore::parseMacOSFile(file);
+            if (!DeployCore::isMacOSBinary(binary.get())) {
                 continue;
             }
 
-            auto changes = planMacOSChanges(file, references, libOut);
+            auto changes = planMacOSChanges(binary.get(),
+                                            file,
+                                            references, libOut);
             if (changes.changedLibs.isEmpty() && changes.newInstallName.isEmpty()
                     && changes.addedRPaths.isEmpty()) {
                 continue;
             }
 
-            if (!fixMachOWithInstallNameTool(file, changes)) {
+            if (!fixMacOSWithInstallNameTool(file, changes)) {
                 ok = false;
             }
         }

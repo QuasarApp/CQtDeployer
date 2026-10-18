@@ -27,9 +27,9 @@ private slots:
     void initTestCase();
     void cleanupTestCase();
 
-    void machODetectionCheck();
+    void macOSDetectionCheck();
     void frameworkHelpers();
-    void machORPathsCheck();
+    void macOSRPathsCheck();
     void normalizeMacOSRPathCheck();
     void planMacOSChangesCheck();
 
