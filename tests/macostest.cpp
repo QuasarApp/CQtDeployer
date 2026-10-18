@@ -416,6 +416,8 @@ void MacOSTest::dmgCreationCheck() {
                           "-format", "UDZO",
                           dmgFile});
     hdi.waitForFinished(-1);
+    const auto hdiLog = QString::fromUtf8(hdi.readAllStandardOutput())
+                        + QString::fromUtf8(hdi.readAllStandardError());
     QCOMPARE(hdi.exitCode(), 0);
 
     QFileInfo dmgInfo(dmgFile);
@@ -428,9 +430,18 @@ void MacOSTest::dmgCreationCheck() {
     // "UD" of the UDZO format) fields (issue #166).
     QFile img(dmgFile);
     QVERIFY2(img.open(QIODevice::ReadOnly), "Failed to open the created DMG archive");
-    const auto header = img.read(12);
+    const auto header = img.read(32);
     img.close();
-    QVERIFY2(header.startsWith("koly"), "The DMG archive is not a koly image");
+    QProcess fileCmd;
+    fileCmd.start("file", {"-b", dmgFile});
+    fileCmd.waitForFinished(-1);
+    const auto fileType = QString::fromUtf8(fileCmd.readAllStandardOutput()).trimmed();
+    QVERIFY2(header.startsWith("koly"),
+             qPrintable("The DMG archive is not a koly image. "
+                        "size: " + QString::number(dmgInfo.size())
+                        + ", file: " + fileType
+                        + ", first 32 bytes: " + QString::fromLatin1(header.toHex())
+                        + ", hdiutil: " + hdiLog));
     QCOMPARE(static_cast<int>(header.at(9)), 2);  // zlib compression
     QCOMPARE(static_cast<int>(header.at(11)), 2); // hybrid image type
 }
