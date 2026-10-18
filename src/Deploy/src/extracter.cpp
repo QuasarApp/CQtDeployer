@@ -205,13 +205,6 @@ bool Extracter::fixMacOSWithInstallNameTool(
         }
     }
 
-    // install_name_tool invalidates the code signature, so the binary has
-    // to be signed again. An ad-hoc signature is enough for a local
-    // deployment.
-    if (ok && !runTool("/usr/bin/codesign", {"--force", "--sign", "-"})) {
-        ok = false;
-    }
-
     return ok;
 }
 

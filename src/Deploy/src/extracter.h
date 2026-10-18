@@ -159,16 +159,14 @@ private:
      *  (LC_ID_DYLIB / LC_LOAD_DYLIB) and the runtime search paths (LC_RPATH)
      *  of all deployed binaries so that the libraries are resolved from the
      *  deployed directory. On macOS the changes are applied with the
-     *  install_name_tool and the binaries are signed again with an ad-hoc
-     *  signature (issue #166).
+     *  install_name_tool (issue #166).
      * @return true if all Mach-O binaries are fixed else false.
      */
     bool deployMacOSRPaths();
 
     /**
      * @brief fixMacOSWithInstallNameTool This method apply the @a changes to
-     *  the Mach-O binary @a file with the install_name_tool and sign the
-     *  result with an ad-hoc signature (issue #166).
+     *  the Mach-O binary @a file with the install_name_tool (issue #166).
      * @param file This is the path to the Mach-O binary.
      * @param changes This is the list of the needed changes.
      * @return true if all changes are applied else false.
