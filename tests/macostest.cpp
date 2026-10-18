@@ -422,13 +422,17 @@ void MacOSTest::dmgCreationCheck() {
     QVERIFY(dmgInfo.exists());
     QVERIFY(dmgInfo.size() > 0);
 
-    // The created image must be a compressed (UDZO) HFS image.
-    QProcess info;
-    info.start("hdiutil", {"imageinfo", "-format", "full", dmgFile});
-    info.waitForFinished(-1);
-    QCOMPARE(info.exitCode(), 0);
-    QVERIFY2(info.readAllStandardOutput().contains("UDZO"),
-             qPrintable("The DMG image is not compressed (UDZO)"));
+    // The created image must be a compressed (UDZO) hybrid image: the
+    // DMG "koly" header carries the compression method (2 = zlib, the
+    // "ZO" of the UDZO format) and the image type (2 = hybrid, the
+    // "UD" of the UDZO format) fields (issue #166).
+    QFile img(dmgFile);
+    QVERIFY2(img.open(QIODevice::ReadOnly), "Failed to open the created DMG archive");
+    const auto header = img.read(12);
+    img.close();
+    QVERIFY2(header.startsWith("koly"), "The DMG archive is not a koly image");
+    QCOMPARE(static_cast<int>(header.at(9)), 2);  // zlib compression
+    QCOMPARE(static_cast<int>(header.at(11)), 2); // hybrid image type
 }
 
 
