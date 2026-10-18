@@ -30,10 +30,20 @@ public:
     void clear();
 
     /**
-     * @brief The MacOFileChanges struct This struct contain the list of
-     *  changes that must be applied to a Mach-O binary (issue #166).
+     * @brief The MacOSFileChanges struct This struct contain the list of
+     *  changes that must be applied to a Mach-O binary so that it resolves
+     *  its libraries from the deployed directory (issue #166):
+     *  1. the LC_LOAD_DYLIB references of the needed libraries are rewritten
+     *     from the original install names (for example the absolute paths of
+     *     the Qt installation) to the @rpath references of the deployed
+     *     layout (changedLibs),
+     *  2. the LC_ID_DYLIB install name of the binary itself is set to its
+     *     new @rpath location, when the binary is one of the deployed
+     *     libraries (newInstallName),
+     *  3. the LC_RPATH entries that make the @rpath references resolvable
+     *     are added (addedRPaths).
      */
-    struct MacOFileChanges {
+    struct MacOSFileChanges {
         /// The new LC_ID_DYLIB install name of the binary. Empty if unchanged.
         QString newInstallName;
 
@@ -68,7 +78,7 @@ public:
     static QStringList machORPaths(const QString &file);
 
     /**
-     * @brief planMacOChanges This method calculate the changes that are
+     * @brief planMacOSChanges This method calculate the changes that are
      *  needed to make the Mach-O binary @a file resolve its libraries from
      *  the deployed directory (issue #166).
      * @param file This is the path to the Mach-O binary.
@@ -80,9 +90,9 @@ public:
      * @return The list of the needed changes (empty if the file is not a
      *  valid Mach-O binary).
      */
-    static MacOFileChanges planMacOChanges(const QString &file,
-                                           const QHash<QString, QString> &references,
-                                           const QString &libOutDir);
+    static MacOSFileChanges planMacOSChanges(const QString &file,
+                                             const QHash<QString, QString> &references,
+                                             const QString &libOutDir);
 
 private:
 
@@ -132,7 +142,7 @@ private:
      * @param changes This is the list of the needed changes.
      * @return true if all changes are applied else false.
      */
-    bool fixMachOWithInstallNameTool(const QString &file, const MacOFileChanges &changes);
+    bool fixMachOWithInstallNameTool(const QString &file, const MacOSFileChanges &changes);
 
     /**
      * @brief angleGLLibs This method return the list of not dependent libs but needed wor working of web Engine (Windows only).

@@ -30,7 +30,8 @@ private slots:
     void machOMagicCheck();
     void frameworkHelpers();
     void machORPathsCheck();
-    void planMacOChangesCheck();
+    void normalizeMacOSRPathCheck();
+    void planMacOSChangesCheck();
 
 private:
     QTemporaryDir _tmp;

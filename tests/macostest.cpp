@@ -342,7 +342,20 @@ void MacOSTest::machORPathsCheck() {
     QVERIFY(Extracter::machORPaths(dir + "/missing").isEmpty());
 }
 
-void MacOSTest::planMacOChangesCheck() {
+void MacOSTest::normalizeMacOSRPathCheck() {
+    // The trailing slashes are removed, the rest of the path is untouched.
+    QCOMPARE(DeployCore::normalizeMacOSRPath(QStringLiteral("/usr/local/lib")),
+             QStringLiteral("/usr/local/lib"));
+    QCOMPARE(DeployCore::normalizeMacOSRPath(QStringLiteral("/usr/local/lib/")),
+             QStringLiteral("/usr/local/lib"));
+    QCOMPARE(DeployCore::normalizeMacOSRPath(QStringLiteral("@executable_path/")),
+             QStringLiteral("@executable_path"));
+    QCOMPARE(DeployCore::normalizeMacOSRPath(QStringLiteral("@loader_path/../bin//")),
+             QStringLiteral("@loader_path/../bin"));
+    QCOMPARE(DeployCore::normalizeMacOSRPath(QString()), QString());
+}
+
+void MacOSTest::planMacOSChangesCheck() {
     const auto dir = _tmp.path();
     const auto libDir = dir + "/lib";
     QVERIFY(QDir().mkpath(libDir));
@@ -371,7 +384,7 @@ void MacOSTest::planMacOChangesCheck() {
 
     // The libraries are deployed next to the binary, so the rpath is
     // @executable_path.
-    auto changes = Extracter::planMacOChanges(file, references, libDir);
+    auto changes = Extracter::planMacOSChanges(file, references, libDir);
     QCOMPARE(changes.newInstallName,
              QStringLiteral("@rpath/QtCore.framework/Versions/A/QtCore"));
     QCOMPARE(changes.changedLibs.size(), 1);
@@ -385,27 +398,27 @@ void MacOSTest::planMacOChangesCheck() {
                                      {"@executable_path"});
     auto file2 = libDir + "/QtCore2";
     QVERIFY(writeFile(file2, toBytes(bytes2)));
-    auto changes2 = Extracter::planMacOChanges(file2, references, libDir);
+    auto changes2 = Extracter::planMacOSChanges(file2, references, libDir);
     QCOMPARE(changes2.newInstallName,
              QStringLiteral("@rpath/QtCore2.framework/Versions/A/QtCore2"));
     QVERIFY(changes2.addedRPaths.isEmpty());
 
     // The library directory is a sibling of the binary directory, so the
     // rpath has to point there.
-    auto changes3 = Extracter::planMacOChanges(file, references, dir + "/lib2");
+    auto changes3 = Extracter::planMacOSChanges(file, references, dir + "/lib2");
     QCOMPARE(changes3.addedRPaths,
              QStringList{QStringLiteral("@executable_path/../lib2")});
 
     // A non Mach-O file does not produce any change.
     auto elfFile = dir + "/elf";
     QVERIFY(writeFile(elfFile, QByteArray::fromHex("7f454c460000")));
-    auto changes4 = Extracter::planMacOChanges(elfFile, references, libDir);
+    auto changes4 = Extracter::planMacOSChanges(elfFile, references, libDir);
     QVERIFY(changes4.newInstallName.isEmpty());
     QVERIFY(changes4.changedLibs.isEmpty());
     QVERIFY(changes4.addedRPaths.isEmpty());
 
     // A missing file does not produce any change.
-    auto changes5 = Extracter::planMacOChanges(dir + "/missing", references, libDir);
+    auto changes5 = Extracter::planMacOSChanges(dir + "/missing", references, libDir);
     QVERIFY(changes5.newInstallName.isEmpty());
     QVERIFY(changes5.changedLibs.isEmpty());
     QVERIFY(changes5.addedRPaths.isEmpty());

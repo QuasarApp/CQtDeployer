@@ -457,6 +457,14 @@ QString DeployCore::normalizeMacOSLibName(const QString &name) {
     return QFileInfo(n).fileName();
 }
 
+QString DeployCore::normalizeMacOSRPath(const QString &rpath) {
+    auto n = rpath;
+    while (n.endsWith('/')) {
+        n.chop(1);
+    }
+    return n;
+}
+
 #define C(X) QuasarAppUtils::Params::isEndable(X)
 RunMode DeployCore::getMode() {
     if (C("help") || C("h") || C("v") || C("version")) {

@@ -470,6 +470,17 @@ public:
      * @return normalized library name.
      */
     static QString normalizeMacOSLibName(const QString &name);
+
+    /**
+     * @brief normalizeMacOSRPath This method removes the trailing slashes from
+     *  the Mach-O runtime search path (LC_RPATH entry) @a rpath (issue #166).
+     *  The install_name_tool treats "@executable_path" and "@executable_path/"
+     *  as the same path, while the raw strings stored in the binary can
+     *  differ, so the comparison must use the normalized form.
+     * @param rpath This is the LC_RPATH entry to normalize.
+     * @return The rpath without the trailing slashes.
+     */
+    static QString normalizeMacOSRPath(const QString &rpath);
 };
 
 #define internalError() DeployCore::printInternalError(__FUNCTION__, __FILE__, __LINE__)

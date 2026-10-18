@@ -28,43 +28,6 @@
 
 #include <LIEF/MachO.hpp>
 
-namespace {
-
-/**
- * @brief pathRelative This function return the relative path from the
- *  directory @a fromDir to the file or directory @a to (POSIX style).
- *  The result is "." if both paths are equal.
- */
-static QString pathRelative(const QString &fromDir, const QString &to) {
-    auto fromList = fromDir.split('/', Qt::SkipEmptyParts);
-    auto toList = to.split('/', Qt::SkipEmptyParts);
-
-    int common = 0;
-    while (common < fromList.size() && common < toList.size()
-            && fromList.at(common) == toList.at(common)) {
-        ++common;
-    }
-
-    QStringList up;
-    for (int i = common; i < fromList.size(); ++i) {
-        up << "..";
-    }
-
-    auto rest = toList.mid(common);
-
-    if (up.isEmpty()) {
-        return rest.isEmpty() ? QStringLiteral(".") : rest.join("/");
-    }
-
-    if (rest.isEmpty()) {
-        return up.join("/");
-    }
-
-    return up.join("/") + "/" + rest.join("/");
-}
-
-} // namespace
-
 bool Extracter::deployMSVC() {
     QuasarAppUtils::Params::log("Trying to deploy msvc", QuasarAppUtils::Debug);
     auto msvcInstaller = DeployCore::getVCredist(DeployCore::_config->qtDir.getBins());
@@ -87,11 +50,11 @@ QStringList Extracter::machORPaths(const QString &file) {
     return DeployCore::machORPaths(file);
 }
 
-Extracter::MacOFileChanges Extracter::planMacOChanges(
+Extracter::MacOSFileChanges Extracter::planMacOSChanges(
         const QString &file,
         const QHash<QString, QString> &references,
         const QString &libOutDir) {
-    MacOFileChanges changes;
+    MacOSFileChanges changes;
 
     auto macho = LIEF::MachO::Parser::parse(file.toStdString());
     if (macho == nullptr || macho->empty()) {
@@ -108,16 +71,10 @@ Extracter::MacOFileChanges Extracter::planMacOChanges(
     // slashes, because install_name_tool treats "@executable_path/.." and
     // "@executable_path/../" as the same path, while the raw strings stored
     // in the binary can differ (issue #166).
-    auto normalizeRPath = [](QString rpath) {
-        while (rpath.endsWith('/')) {
-            rpath.chop(1);
-        }
-        return rpath;
-    };
 
     QSet<QString> rpaths;
     for (auto rpath : machORPaths(file)) {
-        rpaths.insert(normalizeRPath(rpath));
+        rpaths.insert(DeployCore::normalizeMacOSRPath(rpath));
     }
 
     // A fat (universal) binary contains several architecture slices, so
@@ -159,14 +116,20 @@ Extracter::MacOFileChanges Extracter::planMacOChanges(
     }
 
     // Make sure the deployed libraries can be resolved: add an rpath that
-    // points from the binary to the deployed lib directory.
-    auto relPath = pathRelative(QFileInfo(file).absolutePath(), libOutDir);
+    // points from the binary to the deployed lib directory. QFileInfo is
+    // used to resolve the directory of the binary and QDir::relativeFilePath
+    // calculates the relative path (it works for not existing directories
+    // and returns "." if both paths are equal). The result is normalized to
+    // the POSIX separators, because the rpath strings are used on macOS even
+    // when the deployment is done on another platform (issue #166).
+    auto relPath = QDir(QFileInfo(file).absolutePath()).relativeFilePath(libOutDir);
+    relPath.replace(QLatin1Char('\\'), QLatin1Char('/'));
     if (!relPath.isEmpty()) {
         auto rpath = (relPath == ".")
                 ? QStringLiteral("@executable_path")
                 : QStringLiteral("@executable_path/") + relPath;
 
-        if (!rpaths.contains(normalizeRPath(rpath))) {
+        if (!rpaths.contains(DeployCore::normalizeMacOSRPath(rpath))) {
             changes.addedRPaths << rpath;
         }
     }
@@ -175,7 +138,7 @@ Extracter::MacOFileChanges Extracter::planMacOChanges(
 }
 
 bool Extracter::fixMachOWithInstallNameTool(
-        const QString &file, const MacOFileChanges &changes) {
+        const QString &file, const MacOSFileChanges &changes) {
     QProcess proc;
 
     auto runTool = [&](const QString &program, const QStringList &args,
@@ -280,7 +243,7 @@ bool Extracter::deployMacOSRPaths() {
                 continue;
             }
 
-            auto changes = planMacOChanges(file, references, libOut);
+            auto changes = planMacOSChanges(file, references, libOut);
             if (changes.changedLibs.isEmpty() && changes.newInstallName.isEmpty()
                     && changes.addedRPaths.isEmpty()) {
                 continue;
