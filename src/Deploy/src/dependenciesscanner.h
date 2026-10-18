@@ -13,7 +13,7 @@
 #include "deploy_global.h"
 #include "pe_type.h"
 #include "elf_type.h"
-#include "macos_type.h"
+#include "macho_type.h"
 #include "libinfo.h"
 #include "generalfiles_type.h"
 
@@ -22,7 +22,7 @@ enum class PrivateScaner: unsigned char {
    UNKNOWN,
    PE,
    ELF,
-   MACOS
+   MACHO
 };
 
 class DEPLOYSHARED_EXPORT DependenciesScanner {
@@ -35,7 +35,7 @@ private:
 
     PE _peScaner;
     ELF _elfScaner;
-    MacOS _macOSScaner;
+    MachO _machoScaner;
     GeneralFiles _filesScaner;
 
     PrivateScaner getScaner(const QString& lib) const;

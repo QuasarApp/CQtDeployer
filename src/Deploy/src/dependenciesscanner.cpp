@@ -35,20 +35,20 @@ PrivateScaner DependenciesScanner::getScaner(const QString &lib) const {
         // macOS framework binaries have no file suffix, so they must be
         // checked before assuming an ELF library (issue #166).
         if (DeployCore::isMacOSFrameworkBinary(info)) {
-            return PrivateScaner::MACOS;
+            return PrivateScaner::MACHO;
         }
 
         // macOS executables and dylibs without a file suffix are Mach-O
         // binaries, but the same layout (no suffix) is used by the Linux
         // executables and the ELF cross-deployed from macOS. The full file
         // parsing on the LIEF backend separates both formats (issue #166).
-        if (DeployCore::isMacOSBinary(info)) {
-            return PrivateScaner::MACOS;
+        if (DeployCore::isMacOBinary(info)) {
+            return PrivateScaner::MACHO;
         }
 
         return PrivateScaner::ELF;
     } else if (sufix.contains("dylib", Qt::CaseSensitive)) {
-        return PrivateScaner::MACOS;
+        return PrivateScaner::MACHO;
     }
 
     return PrivateScaner::UNKNOWN;
@@ -145,8 +145,8 @@ bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) const 
         return _elfScaner.getLibInfo(file, info);
     }
 
-    case PrivateScaner::MACOS: {
-        return _macOSScaner.getLibInfo(file, info);
+    case PrivateScaner::MACHO: {
+        return _machoScaner.getLibInfo(file, info);
     }
 
     default:

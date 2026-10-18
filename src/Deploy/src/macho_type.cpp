@@ -5,19 +5,19 @@
 //# of this license document, but changing it is not allowed.
 //#
 
-#include "macos_type.h"
+#include "macho_type.h"
 #include "deploycore.h"
 #include <QFileInfo>
 #include <quasarapp.h>
 
 #include <LIEF/MachO.hpp>
 
-MacOS::MacOS()
+MachO::MachO()
 {
 
 }
 
-bool MacOS::getLibInfo(const QString &lib, LibInfo &info) const {
+bool MachO::getLibInfo(const QString &lib, LibInfo &info) const {
     QFileInfo infolib(lib);
     if (!infolib.exists()) {
         return false;
@@ -26,8 +26,8 @@ bool MacOS::getLibInfo(const QString &lib, LibInfo &info) const {
     // The binary is parsed only one time on the LIEF backend and the parse
     // result is shared between the platform/dylib extraction and the rpath
     // reader (the full LIEF parsing is a heavy operation, issue #166).
-    auto binary = DeployCore::parseMacOSFile(infolib.absoluteFilePath());
-    if (!DeployCore::isMacOSBinary(binary.get())) {
+    auto binary = DeployCore::parseMachOFile(infolib.absoluteFilePath());
+    if (!DeployCore::isMacOBinary(binary.get())) {
         QuasarAppUtils::Params::log("Unable to parse Mach-O file: " + infolib.absoluteFilePath(),
                                     QuasarAppUtils::Error);
         return false;
@@ -92,7 +92,7 @@ bool MacOS::getLibInfo(const QString &lib, LibInfo &info) const {
     // Extract the runtime search paths (LC_RPATH) from the same parse
     // result (no second parsing of the file). They are used to find the
     // qmake of a Qt installation (issue #166).
-    info.setRPath(DeployCore::macOSRPaths(binary.get())
+    info.setRPath(DeployCore::machORPaths(binary.get())
                      .join(QLatin1String(":")));
 
     return true;

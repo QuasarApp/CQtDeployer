@@ -15,10 +15,9 @@
  * @brief The MacOSTest class
  *
  * Unit tests for the macOS (Mach-O) deployment helpers (issue #166):
- * the Mach-O magic check, the LC_RPATH reader, the .framework layout
- * helpers of the DeployCore and the install name change planner of the
- * Extracter. The tests use hand built Mach-O binaries, so they run on
- * every platform.
+ * the Mach-O type detection, the LC_RPATH reader and the .framework
+ * layout helpers of the DeployCore. The tests use hand built Mach-O
+ * binaries, so they run on every platform.
  */
 class MacOSTest : public QObject
 {
@@ -27,11 +26,9 @@ private slots:
     void initTestCase();
     void cleanupTestCase();
 
-    void macOSDetectionCheck();
+    void machODetectionCheck();
     void frameworkHelpers();
-    void macOSRPathsCheck();
-    void normalizeMacOSRPathCheck();
-    void planMacOSChangesCheck();
+    void machORPathsCheck();
 
 private:
     QTemporaryDir _tmp;

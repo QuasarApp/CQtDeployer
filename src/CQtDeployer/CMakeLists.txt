@@ -193,6 +193,14 @@ if (APPLE)
                 # "CQtDeployer" directory (issue #166).
                 "${CMAKE_SOURCE_DIR}/Distro/CQtDeployer.1_6"
                 "${DMG_STAGE_DIR}/CQtDeployer.app/Contents/MacOS"
+            # The deployer does not rewrite the Mach-O binaries (issue
+            # #166): the deployed executable keeps the build time install
+            # names (@rpath/...) and the Qt frameworks are deployed next
+            # to the executable in the app bundle (Contents/MacOS), so
+            # the @executable_path rpath makes the @rpath references
+            # resolvable.
+            COMMAND /usr/bin/install_name_tool -add_rpath "@executable_path"
+                "${DMG_STAGE_DIR}/CQtDeployer.app/Contents/MacOS/CQtDeployer"
             COMMAND ${CMAKE_COMMAND} -E copy
                 "${CMAKE_BINARY_DIR}/CQtDeployer.app/Info.plist"
                 "${DMG_STAGE_DIR}/CQtDeployer.app/Contents/Info.plist"

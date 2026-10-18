@@ -17,16 +17,11 @@
 #include <QDirIterator>
 #include <QFile>
 #include <QFileInfo>
-#include <QProcess>
-#include <QRegularExpression>
 #include <quasarapp.h>
-#include <cstdio>
 #include <qaglobalutils.h>
 #include <cassert>
 
-#include <fstream>
 
-#include <LIEF/MachO.hpp>
 
 bool Extracter::deployMSVC() {
     QuasarAppUtils::Params::log("Trying to deploy msvc", QuasarAppUtils::Debug);
@@ -39,235 +34,15 @@ bool Extracter::deployMSVC() {
     return _fileManager->copyFile(msvcInstaller, DeployCore::_config->getTargetDir());
 }
 
-bool Extracter::isMacOSFile(const QString &file) {
-    return DeployCore::isMacOSBinary(QFileInfo(file));
+bool Extracter::isMachOFile(const QString &file) {
+    return DeployCore::isMacOBinary(QFileInfo(file));
 }
 
-QStringList Extracter::macOSRPaths(const QString &file) {
-    // The implementation lives in DeployCore::macOSRPaths(), because the
-    // rpaths are also needed by the scanner (macos_type.cpp), which has no
+QStringList Extracter::machORPaths(const QString &file) {
+    // The implementation lives in DeployCore::machORPaths(), because the
+    // rpaths are also needed by the scanner (macho_type.cpp), which has no
     // access to the extracter (issue #166).
-    return DeployCore::macOSRPaths(file);
-}
-
-Extracter::MacOSFileChanges Extracter::planMacOSChanges(const QString &file,
-                                                        const QHash<QString, QString> &references,
-                                                        const QString &libOutDir) {
-    // The binary is parsed one time on the LIEF backend and the parse
-    // result is shared between the type check and the change planner (the
-    // full LIEF parsing is a heavy operation, issue #166).
-    auto binary = DeployCore::parseMacOSFile(file);
-    return planMacOSChanges(binary.get(), file, references, libOutDir);
-}
-
-Extracter::MacOSFileChanges Extracter::planMacOSChanges(
-        const LIEF::MachO::FatBinary *binary,
-        const QString &file,
-        const QHash<QString, QString> &references,
-        const QString &libOutDir) {
-    MacOSFileChanges changes;
-
-    if (!DeployCore::isMacOSBinary(binary)) {
-        return changes;
-    }
-
-    QSet<QString> seenChanges;
-
-    // The LC_RPATH entries are read from the same parse result that was
-    // used for the type check (no second parsing of the file). Because the
-    // LIEF submodule of CQtDeployer maps LC_RPATH to a different load
-    // command constant than the macOS ABI (0x1C01), the LIEF rpaths()
-    // accessor does not find the real entries - the method reads them from
-    // the raw command data that LIEF keeps for the unknown commands.
-    // The LC_RPATH strings are compared after stripping the trailing
-    // slashes, because install_name_tool treats "@executable_path/.." and
-    // "@executable_path/../" as the same path, while the raw strings stored
-    // in the binary can differ (issue #166).
-
-    QSet<QString> rpaths;
-    for (auto rpath : DeployCore::macOSRPaths(binary)) {
-        rpaths.insert(DeployCore::normalizeMacOSRPath(rpath));
-    }
-
-    // A fat (universal) binary contains several architecture slices, so
-    // the changes are collected from all of them (deduplicated by name).
-    for (const LIEF::MachO::Binary &slice : *binary) {
-
-        for (const LIEF::MachO::DylibCommand &dylib : slice.libraries()) {
-            auto name = QString::fromStdString(dylib.name());
-            if (name.isEmpty()) {
-                continue;
-            }
-
-            auto replacement = references.value(
-                        DeployCore::normalizeMacOSLibName(name).toUpper());
-            if (replacement.isEmpty() || replacement == name) {
-                continue;
-            }
-
-            auto key = name + "->" + replacement;
-            if (seenChanges.contains(key)) {
-                continue;
-            }
-
-            seenChanges.insert(key);
-            changes.changedLibs.append(qMakePair(name, replacement));
-        }
-
-        if (auto *idCmd = slice.get(LIEF::MachO::LoadCommand::TYPE::ID_DYLIB);
-                idCmd != nullptr) {
-            if (auto *id = idCmd->cast<LIEF::MachO::DylibCommand>()) {
-                auto oldId = QString::fromStdString(id->name());
-                auto newId = references.value(
-                            DeployCore::normalizeMacOSLibName(file).toUpper());
-                if (!newId.isEmpty() && newId != oldId) {
-                    changes.newInstallName = newId;
-                }
-            }
-        }
-    }
-
-    // Make sure the deployed libraries can be resolved: add an rpath that
-    // points from the binary to the deployed lib directory. QFileInfo is
-    // used to resolve the directory of the binary and QDir::relativeFilePath
-    // calculates the relative path (it works for not existing directories
-    // and returns "." if both paths are equal). The result is normalized to
-    // the POSIX separators, because the rpath strings are used on macOS even
-    // when the deployment is done on another platform (issue #166).
-    auto relPath = QDir(QFileInfo(file).absolutePath()).relativeFilePath(libOutDir);
-    relPath.replace(QLatin1Char('\\'), QLatin1Char('/'));
-    if (!relPath.isEmpty()) {
-        auto rpath = (relPath == ".")
-                ? QStringLiteral("@executable_path")
-                : QStringLiteral("@executable_path/") + relPath;
-
-        if (!rpaths.contains(DeployCore::normalizeMacOSRPath(rpath))) {
-            changes.addedRPaths << rpath;
-        }
-    }
-
-    return changes;
-}
-
-bool Extracter::fixMacOSWithInstallNameTool(
-        const QString &file, const MacOSFileChanges &changes) {
-    QProcess proc;
-
-    auto runTool = [&](const QString &program, const QStringList &args,
-                       const QString &okIfErrorContains = QString()) -> bool {
-        auto commandArgs = args;
-        commandArgs << file;
-        proc.start(program, commandArgs);
-
-        if (!proc.waitForStarted() || !proc.waitForFinished()) {
-            QuasarAppUtils::Params::log(program + " failed to start: " + file,
-                                        QuasarAppUtils::Warning);
-            return false;
-        }
-
-        if (proc.exitStatus() != QProcess::NormalExit || proc.exitCode() != 0) {
-            auto error = QString::fromLocal8Bit(proc.readAllStandardError()).trimmed();
-
-            // An expected error (for example adding an rpath that already
-            // exists) is not a failure.
-            if (!okIfErrorContains.isEmpty() && error.contains(okIfErrorContains)) {
-                QuasarAppUtils::Params::log(program + ": " + error,
-                                            QuasarAppUtils::Debug);
-                return true;
-            }
-
-            QuasarAppUtils::Params::log(program + " failed: " + error,
-                                        QuasarAppUtils::Warning);
-            return false;
-        }
-
-        return true;
-    };
-
-    bool ok = true;
-
-    for (const auto &change : std::as_const(changes.changedLibs)) {
-        if (!runTool("/usr/bin/install_name_tool",
-                     {"-change", change.first, change.second})) {
-            ok = false;
-        }
-    }
-
-    if (!changes.newInstallName.isEmpty()
-            && !runTool("/usr/bin/install_name_tool", {"-id", changes.newInstallName})) {
-        ok = false;
-    }
-
-    for (const auto &rpath : std::as_const(changes.addedRPaths)) {
-        if (!runTool("/usr/bin/install_name_tool", {"-add_rpath", rpath},
-                     QStringLiteral("already has LC_RPATH"))) {
-            ok = false;
-        }
-    }
-
-    return ok;
-}
-
-bool Extracter::deployMacOSRPaths() {
-
-    auto cnf = DeployCore::_config;
-    bool ok = true;
-
-    for (auto i = cnf->packages().cbegin(); i != cnf->packages().cend(); ++i) {
-        const auto &package = i.key();
-        auto targetPath = cnf->getTargetDir() + "/" + package;
-        auto distro = cnf->getDistroFromPackage(package);
-        auto libOut = targetPath + distro.getLibOutDir();
-
-        // Build the map of the normalized library names to the dyld
-        // references that must exist in the deployed layout.
-        QHash<QString, QString> references;
-
-        auto addReference = [&references](const QString &sourceLib,
-                                          const QString &deployedRel) {
-            auto ref = "@rpath/" + deployedRel;
-            references.insert(DeployCore::normalizeMacOSLibName(sourceLib).toUpper(), ref);
-            references.insert(QFileInfo(sourceLib).fileName().toUpper(), ref);
-        };
-
-        for (const auto &lib : _packageDependencyes[package].neadedLibs()) {
-            addReference(lib, DeployCore::macOSFrameworkReference(lib));
-        }
-
-        if (QuasarAppUtils::Params::isEndable("deploySystem")) {
-            for (const auto &lib : _packageDependencyes[package].systemLibs()) {
-                addReference(lib, DeployCore::systemLibsFolderName() + "/" +
-                          QFileInfo(lib).fileName());
-            }
-        }
-
-        QDirIterator it(targetPath, QDir::Files, QDirIterator::Subdirectories);
-        while (it.hasNext()) {
-            auto file = it.next();
-
-            // The full LIEF parsing is a heavy operation, so the file is
-            // parsed only one time and the parse result is shared between
-            // the type check and the change planner (issue #166).
-            auto binary = DeployCore::parseMacOSFile(file);
-            if (!DeployCore::isMacOSBinary(binary.get())) {
-                continue;
-            }
-
-            auto changes = planMacOSChanges(binary.get(),
-                                            file,
-                                            references, libOut);
-            if (changes.changedLibs.isEmpty() && changes.newInstallName.isEmpty()
-                    && changes.addedRPaths.isEmpty()) {
-                continue;
-            }
-
-            if (!fixMacOSWithInstallNameTool(file, changes)) {
-                ok = false;
-            }
-        }
-    }
-
-    return ok;
+    return DeployCore::machORPaths(file);
 }
 
 bool Extracter::isWebEngine(const QString &package) const {
@@ -566,14 +341,6 @@ bool Extracter::deploy() {
 
     if (!deployMSVC()) {
         QuasarAppUtils::Params::log("Failed to deploy msvc", QuasarAppUtils::Debug);
-    }
-
-    // macOS: rewrite the Mach-O install names and rpaths of the deployed
-    // binaries so that the libraries are resolved from the deployed
-    // directory (issue #166).
-    if (!deployMacOSRPaths()) {
-        QuasarAppUtils::Params::log("Failed to fix the Mach-O install names and rpaths",
-                                    QuasarAppUtils::Warning);
     }
 
     _metaFileManager->createRunMetaFiles(_targetModules);

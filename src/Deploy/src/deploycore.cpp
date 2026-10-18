@@ -179,7 +179,7 @@ bool DeployCore::isMacOSFrameworkBinary(const QFileInfo &file) {
 }
 
 std::unique_ptr<LIEF::MachO::FatBinary>
-DeployCore::parseMacOSFile(const QString &file) {
+DeployCore::parseMachOFile(const QString &file) {
     QFileInfo info(file);
     if (!info.isFile()) {
         return nullptr;
@@ -203,7 +203,7 @@ DeployCore::parseMacOSFile(const QString &file) {
                 LIEF::MachO::ParserConfig::quick());
 }
 
-bool DeployCore::isMacOSBinary(const LIEF::MachO::FatBinary *binary) {
+bool DeployCore::isMacOBinary(const LIEF::MachO::FatBinary *binary) {
     if (binary == nullptr || binary->empty()) {
         return false;
     }
@@ -220,15 +220,15 @@ bool DeployCore::isMacOSBinary(const LIEF::MachO::FatBinary *binary) {
     return true;
 }
 
-bool DeployCore::isMacOSBinary(const QFileInfo &file) {
-    return isMacOSBinary(parseMacOSFile(file.absoluteFilePath()).get());
+bool DeployCore::isMacOBinary(const QFileInfo &file) {
+    return isMacOBinary(parseMachOFile(file.absoluteFilePath()).get());
 }
 
-QStringList DeployCore::macOSRPaths(const LIEF::MachO::FatBinary *binary) {
+QStringList DeployCore::machORPaths(const LIEF::MachO::FatBinary *binary) {
     QStringList rpaths;
     QSet<QString> seen;
 
-    if (!isMacOSBinary(binary)) {
+    if (!isMacOBinary(binary)) {
         return rpaths;
     }
 
@@ -278,8 +278,8 @@ QStringList DeployCore::macOSRPaths(const LIEF::MachO::FatBinary *binary) {
     return rpaths;
 }
 
-QStringList DeployCore::macOSRPaths(const QString &file) {
-    return macOSRPaths(parseMacOSFile(file).get());
+QStringList DeployCore::machORPaths(const QString &file) {
+    return machORPaths(parseMachOFile(file).get());
 }
 
 QString DeployCore::macOSFrameworkRoot(const QString &path) {
@@ -344,18 +344,6 @@ QString DeployCore::macOSFrameworkBinary(const QString &frameworkDir) {
     return {};
 }
 
-QString DeployCore::macOSFrameworkReference(const QString &path) {
-    QFileInfo info(path);
-    auto root = macOSFrameworkRoot(path);
-    if (root.isEmpty()) {
-        return info.fileName();
-    }
-
-    // Name.framework/Versions/<V>/Name
-    return QFileInfo(root).fileName() + "/" +
-            info.absoluteFilePath().mid(root.length() + 1);
-}
-
 QString DeployCore::normalizeMacOSLibName(const QString &name) {
     auto n = name;
 
@@ -380,14 +368,6 @@ QString DeployCore::normalizeMacOSLibName(const QString &name) {
 
     // Plain dylibs are referenced by the file name only.
     return QFileInfo(n).fileName();
-}
-
-QString DeployCore::normalizeMacOSRPath(const QString &rpath) {
-    auto n = rpath;
-    while (n.endsWith('/')) {
-        n.chop(1);
-    }
-    return n;
 }
 
 #define C(X) QuasarAppUtils::Params::isEndable(X)

@@ -8,7 +8,7 @@
 #include "petest.h"
 #include "dependenciesscanner.h"
 #include "libinfo.h"
-#include "macos_type.h"
+#include "macho_type.h"
 #include "pe_type.h"
 #include <LIEF/PE.hpp>
 
@@ -428,7 +428,7 @@ void PeTest::parseInvalidFile() {
     QVERIFY(!peParser.getLibInfo(tmp.fileName(), info));
 }
 
-void PeTest::parseMacOS() {
+void PeTest::parseMachO() {
     QTemporaryDir dir;
     QVERIFY(dir.isValid());
 
@@ -438,9 +438,9 @@ void PeTest::parseMacOS() {
     const QString x64Path = writeMachO(dir, "libtest.dylib", dylibs, false);
     QVERIFY(!x64Path.isEmpty());
 
-    MacOS macosParser;
+    MachO machoParser;
     LibInfo info;
-    QVERIFY(macosParser.getLibInfo(x64Path, info));
+    QVERIFY(machoParser.getLibInfo(x64Path, info));
     QVERIFY(info.isValid());
     QCOMPARE(info.getName(), QString("libtest.dylib"));
     QCOMPARE(info.getPlatform(), Mac_X86_64);
@@ -452,13 +452,13 @@ void PeTest::parseMacOS() {
     QVERIFY(!armPath.isEmpty());
 
     info.clear();
-    QVERIFY(macosParser.getLibInfo(armPath, info));
+    QVERIFY(machoParser.getLibInfo(armPath, info));
     QCOMPARE(info.getPlatform(), Mac_ARM_64);
     for (const QString &dylib : dylibs)
         QVERIFY(info.getDependncies().contains(dylib));
 }
 
-void PeTest::parseMacOSRouting() {
+void PeTest::parseMachORouting() {
     QTemporaryDir dir;
     QVERIFY(dir.isValid());
 
@@ -474,15 +474,15 @@ void PeTest::parseMacOSRouting() {
     QVERIFY(info.getDependncies().contains("/usr/lib/libSystem.B.dylib"));
 }
 
-void PeTest::parseInvalidMacOS() {
+void PeTest::parseInvalidMachO() {
     QTemporaryFile tmp;
     QVERIFY(tmp.open());
     tmp.write("this is not a Mach-O file");
     tmp.close();
 
-    MacOS macosParser;
+    MachO machoParser;
     LibInfo info;
-    QVERIFY(!macosParser.getLibInfo(tmp.fileName(), info));
+    QVERIFY(!machoParser.getLibInfo(tmp.fileName(), info));
 }
 void PeTest::classifyMinGWFlavors() {
     QTemporaryDir dir;

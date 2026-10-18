@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# This is default sh run script of The CQtDeployer project.
+# This file contains key word that will replaced after deploy project.
+#
+# ####################################################################
+#
+# All variables has the CQT_ prefix
+# BIN_PATH - are relative path to executable files of a deployed distribution.
+# LIB_PATH - are relative path to libraries of a deployed distribution.
+# QML_PATH - are relative path to qml libraries of a deployed distribution.
+# PLUGIN_PATH - are relative path to qt plugins of a deployed distribution.
+# BIN_PATH - are relative path to targets of a deployed distribution.
+
+# SYSTEM_LIB_PATH - are relative path to system v of a deployed distribution.
+# BASE_NAME - are base name of the executable that will be launched after run this script.
+# CUSTOM_SCRIPT_BLOCK - This is code from the customScript option
+# RUN_COMMAND - This is command for run application. Required BASE_DIR variable.
+#
+# ####################################################################
+#
+# The DYLD_FRAMEWORK_PATH and the DYLD_LIBRARY_PATH point the macOS
+# dynamic loader to the Qt frameworks and the dylibs of the deployed
+# distribution (issue #166), so the binaries keep their original install
+# names and are not rewritten.
+
+BASE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+export PATH="$BASE_DIR"CQT_BIN_PATH:$PATH
+export DYLD_FRAMEWORK_PATH="$BASE_DIR"CQT_LIB_PATH:$DYLD_FRAMEWORK_PATH
+export DYLD_LIBRARY_PATH="$BASE_DIR"CQT_LIB_PATH:$DYLD_LIBRARY_PATH
+export QML_IMPORT_PATH="$BASE_DIR"CQT_QML_PATH:$QML_IMPORT_PATH
+export QML2_IMPORT_PATH="$BASE_DIR"CQT_QML_PATH:$QML2_IMPORT_PATH
+export QT_PLUGIN_PATH="$BASE_DIR"CQT_PLUGIN_PATH:$QT_PLUGIN_PATH
+export QTWEBENGINEPROCESS_PATH="$BASE_DIR"CQT_BIN_PATH/QtWebEngineProcess
+export QTDIR="$BASE_DIR"
+export CQT_PKG_ROOT="$BASE_DIR"
+export CQT_RUN_FILE="$BASE_DIR/CQT_BASE_NAME.sh"
+
+export QT_QPA_PLATFORM_PLUGIN_PATH="$BASE_DIR"CQT_PLUGIN_PATH/platforms:$QT_QPA_PLATFORM_PLUGIN_PATH
+
+CQT_CUSTOM_SCRIPT_BLOCK
+
+CQT_RUN_COMMAND

@@ -402,24 +402,24 @@ public:
     static bool isMacOSFrameworkBinary(const QFileInfo &file);
 
     /**
-     * @brief parseMacOSFile This method parses the file @a file with the LIEF
+     * @brief parseMachOFile This method parses the file @a file with the LIEF
      *  Mach-O backend (issue #166). The LIEF magic pre-filter runs before the
      *  full file parsing, because the LIEF parser logs an error message for
      *  every non Mach-O file and this method is called for every file of the
      *  dependency scan.
      *  The parse result of this method must be shared between all the checks
-     *  that need the binary content (isMacOSBinary, macOSRPaths,
-     *  planMacOSChanges), because the full file parsing is a heavy operation
-     *  and every file must be parsed only one time (issue #166).
+     *  that need the binary content (isMacOBinary, machORPaths), because the
+     *  full file parsing is a heavy operation and every file must be parsed
+     *  only one time (issue #166).
      * @param file This is the path to the file.
      * @return The parsed binary (thin binaries are wrapped as a single slice
      *  fat binary) or nullptr if the file is not a valid Mach-O binary.
      */
     static std::unique_ptr<LIEF::MachO::FatBinary>
-        parseMacOSFile(const QString &file);
+        parseMachOFile(const QString &file);
 
     /**
-     * @brief isMacOSBinary This method return true if the @a file is a Mach-O
+     * @brief isMacOBinary This method return true if the @a file is a Mach-O
      *  binary (32/64-bit thin binaries in both byte orders and fat/universal
      *  binaries). The check is a full file parsing on the LIEF backend
      *  (LIEF::MachO::Parser), so the file must be a valid parseable Mach-O
@@ -427,23 +427,23 @@ public:
      * @param file This is the file that will be checked.
      * @return true if the file is a Mach-O binary else false.
      */
-    static bool isMacOSBinary(const QFileInfo &file);
+    static bool isMacOBinary(const QFileInfo &file);
 
     /**
-     * @brief isMacOSBinary This method return true if the @a binary is the
+     * @brief isMacOBinary This method return true if the @a binary is the
      *  valid parse result of a Mach-O file (issue #166). Use this overload
-     *  for the binaries parsed with parseMacOSFile(), so the file is not
+     *  for the binaries parsed with parseMachOFile(), so the file is not
      *  parsed a second time.
      * @param binary This is the parse result of the LIEF Mach-O parser.
      * @return true if the parse result is a valid Mach-O binary else false.
      */
-    static bool isMacOSBinary(const LIEF::MachO::FatBinary *binary);
+    static bool isMacOBinary(const LIEF::MachO::FatBinary *binary);
 
     /**
-     * @brief macOSRPaths This method return the list of the runtime search
+     * @brief machORPaths This method return the list of the runtime search
      *  paths (LC_RPATH entries) of all architecture slices of the Mach-O
      *  binary @a binary (issue #166). Use this overload for the binaries
-     *  parsed with parseMacOSFile(), so the file is not parsed a second time.
+     *  parsed with parseMachOFile(), so the file is not parsed a second time.
      *  Because the LIEF 1.0.0 submodule maps LC_RPATH to a different load
      *  command constant than the macOS ABI (0x1C01), the real entries are
      *  read from the raw command data that LIEF keeps for the unknown
@@ -452,18 +452,18 @@ public:
      * @return The list of the LC_RPATH entries (empty if the binary has no
      *  rpaths).
      */
-    static QStringList macOSRPaths(const LIEF::MachO::FatBinary *binary);
+    static QStringList machORPaths(const LIEF::MachO::FatBinary *binary);
 
     /**
-     * @brief macOSRPaths This method return the list of the runtime search
+     * @brief machORPaths This method return the list of the runtime search
      *  paths (LC_RPATH entries) of all architecture slices of the Mach-O
      *  binary @a file (issue #166). The binary is parsed one time on the LIEF
-     *  backend with parseMacOSFile().
+     *  backend with parseMachOFile().
      * @param file This is the path to the Mach-O binary.
      * @return The list of the LC_RPATH entries (empty if the file is not a
      *  Mach-O binary or has no rpaths).
      */
-    static QStringList macOSRPaths(const QString &file);
+    static QStringList machORPaths(const QString &file);
 
     /**
      * @brief macOSFrameworkRoot This method return the absolute path of the
@@ -489,19 +489,6 @@ public:
     static QString macOSFrameworkBinary(const QString &frameworkDir);
 
     /**
-     * @brief macOSFrameworkReference This method return the dyld reference of
-     *  the library that is located at @a path relative to the directory that
-     *  contains the bundle (issue #166).
-     *  Examples :
-     *   /opt/qt/lib/QtCore.framework/Versions/A/QtCore -> QtCore.framework/Versions/A/QtCore
-     *   /opt/qt/lib/libfoo.dylib -> libfoo.dylib
-     * @param path This is the path to the library file.
-     * @return dyld reference of the library (file name or
-     *  Name.framework/Versions/<V>/Name).
-     */
-    static QString macOSFrameworkReference(const QString &path);
-
-    /**
      * @brief normalizeMacOSLibName This method normalize a Mach-O install name
      *  (LC_ID_DYLIB / LC_LOAD_DYLIB) to the name under which the library is
      *  registered in the deployment environment (issue #166).
@@ -517,17 +504,6 @@ public:
      * @return normalized library name.
      */
     static QString normalizeMacOSLibName(const QString &name);
-
-    /**
-     * @brief normalizeMacOSRPath This method removes the trailing slashes from
-     *  the Mach-O runtime search path (LC_RPATH entry) @a rpath (issue #166).
-     *  The install_name_tool treats "@executable_path" and "@executable_path/"
-     *  as the same path, while the raw strings stored in the binary can
-     *  differ, so the comparison must use the normalized form.
-     * @param rpath This is the LC_RPATH entry to normalize.
-     * @return The rpath without the trailing slashes.
-     */
-    static QString normalizeMacOSRPath(const QString &rpath);
 };
 
 #define internalError() DeployCore::printInternalError(__FUNCTION__, __FILE__, __LINE__)

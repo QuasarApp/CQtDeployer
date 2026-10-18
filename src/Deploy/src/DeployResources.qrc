@@ -29,5 +29,6 @@
     <qresource prefix="/Scripts">
         <file>ScriptsTemplates/windows.bat</file>
         <file>ScriptsTemplates/linux.sh</file>
+        <file>ScriptsTemplates/macos.sh</file>
     </qresource>
 </RCC>
