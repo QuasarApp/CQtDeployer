@@ -21,6 +21,21 @@ chmod +x CQtDeployer_1.5.3.0_Installer_Linux64.run
 CQtDeployer_1.5.3.0_Installer_Win64.exe install
 ```
 
+##### macOS
+
+Open the DMG file and move the `CQtDeployer.app` bundle into the `Applications` folder.
+
+``` bash
+open CQtDeployer_*.dmg
+cp -R /Volumes/CQtDeployer/CQtDeployer.app /Applications/
+```
+
+To run cqtdeployer from the command line, add a symbolic link to the bundle binary:
+
+``` bash
+ln -s /Applications/CQtDeployer.app/Contents/MacOS/CQtDeployer /usr/local/bin/cqtdeployer
+```
+
 ### Deb
 
 ``` bash
@@ -171,6 +186,43 @@ sudo snap connect cqtdeployer:system-backup
     migw32-make deploy 
     ```
 
+## Build for macOS
+
+- install qt from [qt installer](https://www.qt.io/download-qt-installer?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f9bb77-7bb77-4bb77-4) (the `clang_64` desktop build is a universal binary and works on both the Intel and the Apple Silicon machines)
+- clone project 
+
+    ``` bash
+    git clone https://github.com/QuasarApp/CQtDeployer.git
+    git submodule update --init --recursive
+    cd CQtDeployer
+    ```
+    
+- create temp build directory
+
+    ``` bash
+    mkdir build 
+    cd build
+    ```
+    
+- run cmake 
+
+    ``` bash
+    cmake .. -DCMAKE_PREFIX_PATH=/path/to/qt/root/dir
+    ```
+    
+- build cqtdeployer 
+
+    ``` bash
+    cmake --build . --parallel 
+    ```
+    
+- create cqtdeployer executable.
+
+    ``` bash
+    make install 
+    ```
+
+The Qt Installer Framework tools are not published for macOS, so the QIF installer is not created. The deployment of the macOS application is done with the `zip` packager instead.
 
 ### Note 
 

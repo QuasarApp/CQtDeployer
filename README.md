@@ -13,7 +13,7 @@ CQtDeployer helps you to extract all libraries your executable depends on and to
 Key differences of this program:
 * Performance: this program deploys the application several times faster (up to 10 seconds)
 * Flexibility: this application has flags that help you to configure the deployment for your or your project's needs
-* Cross-deployment: this application supports Windows and Linux distributions. This means that you can deploy a project not only for the host platform, but also deploy a project for Windows target on Linux host and vice versa.
+* Cross-deployment: this application supports Windows, Linux and macOS distributions. This means that you can deploy a project not only for the host platform, but also deploy a project for Windows target on Linux host and vice versa.
 * Fast installers creation: Once the deployment is complete, you will receive a standalone installer for your distribution.
 
 ## Supported platforms:
@@ -26,6 +26,15 @@ Key differences of this program:
 * Windows 
     - raw binaries
     - installer
+* macOS
+    - DMG (app bundle)
+    - zip
+    - raw binaries
+
+> **Note:** the Qt Installer Framework (QIF) installer is not available on
+> macOS - the QIFW tools are not published for this platform, so the `qif`
+> option is skipped gracefully on macOS hosts. See the
+> [macOS documentation](md/en/macOS.md) for the details.
 
 ## Supported processors architectures:
 * x86
@@ -50,6 +59,9 @@ See the list of all options [here](md/en/Options.md)
  
  #windows
  cqtdeployer -bin Guitar.exe -qmake /path/to/qmake.exe
+
+ #macos
+ cqtdeployer -bin Guitar -qmake /path/to/Qt/6.10.3/macos/bin/qmake
 
 ```
 <p align="center"><img src="https://user-images.githubusercontent.com/12465465/81007195-7ab2e780-8e59-11ea-9793-1eeeb0025b96.png"  height="400"></p>

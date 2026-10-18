@@ -7,6 +7,12 @@ General rules for using Qt Installer Framwork
 The **Qt Installer Framework** (QIF) provides a set of tools and utilities to create installers for the supported desktop Qt platforms: Linux, Microsoft Windows, and OS X.
 In **CQtDeployer** QIF availabel in qif option.
 
+> **Note:** the Qt Installer Framework tools (binarycreator) are not published
+> for macOS. If you invoke the `qif` option on a macOS host, CQtDeployer skips
+> the QIF installer step gracefully and completes the rest of the deployment.
+> Use the `zip` packager to create a portable archive of the deployed
+> application. See the [CQtDeployer for macOS](macOS.md) page.
+
 ### How to use qif option
 
 The qif option invoke with path to custo qt installer template or with default installer template.
