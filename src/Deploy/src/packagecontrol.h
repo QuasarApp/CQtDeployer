@@ -9,7 +9,7 @@
 #define PACKAGECONTROL_H
 
 #include <QString>
-
+#include "deploy_global.h"
 
 /**
  * @brief The PackageControl class - this is interface for move files for package
