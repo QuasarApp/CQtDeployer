@@ -14,10 +14,16 @@
  * @brief The Dmg class
  *
  * Creates a macOS application bundle and a compressed DMG disk image
- * archive (issue #166). The bundle is staged in the target directory
- * (a copy of the deployed package with the executable files is placed
- * into the Contents/MacOS folder of the bundle) and the disk image is
- * created with the macOS "hdiutil" system tool.
+ * archive for every available package (issue #166), the same way the
+ * deb distribution creates a separate .deb file for every available
+ * package. Every bundle is staged in the target directory (a copy of
+ * the deployed package with the executable files is placed into the
+ * Contents/MacOS folder of the bundle) and every disk image is created
+ * with the macOS "hdiutil" system tool.
+ *
+ * The DMG output name of the package is the per-package "dmgOut" value
+ * or the default "<name>.dmg" file name (the same way as the "debOut"
+ * value of the deb distribution).
  *
  * The distribution is available only on the macOS hosts where the
  * "hdiutil" tool exists. On all other platforms the distribution is
@@ -70,28 +76,6 @@ private:
     QString bundleIdentifier(const QString &bundleName) const;
 
     /**
-     * @brief selectedBundlePackage This method selects the package that
-     *  is packed into the application bundle: the default package if it
-     *  has targets, otherwise the first package that owns a target
-     *  (issue #166). The extra-data packages (docs, licenses, ...) are
-     *  not part of the DMG archive.
-     * @param packages This is the list of the available package keys.
-     * @return the key of the selected package, empty string if there is
-     *  no package with the executable files
-     */
-    QString selectedBundlePackage(const QStringList &packages) const;
-
-    /**
-     * @brief dmgOutput This method return the output path of the DMG
-     *  archive. The output name is the per-package "dmgOut" value, the
-     *  global "dmgOut" option, or the default "<name>.dmg" file name.
-     * @param module This is the package object.
-     * @param info This is the collected package information.
-     * @return output file path
-     */
-    QString dmgOutput(const DistroModule &module, const TemplateInfo &info) const;
-
-    /**
      * @brief rpaths This method return the list of the rpath values that
      *  are added to the bundle executable with the install_name_tool
      *  (issue #166). The @executable_path rpath resolves the @rpath
@@ -139,8 +123,8 @@ private:
 
     /**
      * @brief The Stage struct This structure contains data of the
-     *  prepared DMG stage (the application bundle of the selected
-     *  package, issue #166).
+     *  prepared DMG stage (the application bundle of one package,
+     *  issue #166).
      */
     struct Stage {
         QString stageDir;    // the directory that will be packed into the DMG archive

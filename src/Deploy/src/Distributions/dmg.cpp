@@ -57,93 +57,97 @@ bool Dmg::isAvailable() const {
 bool Dmg::deployTemplate(PackageControl &pkg) {
     const DeployConfig *cfg = DeployCore::_config;
 
-    auto bundlePackage = selectedBundlePackage(pkg.availablePackages());
+    // A separate DMG archive is created for every available package,
+    // the same way the deb distribution creates a separate .deb file
+    // for every available package (issue #166).
+    auto list = pkg.availablePackages();
+    for (const auto &key: list) {
+        auto module = cfg->getDistroFromPackage(key);
 
-    if (bundlePackage.isEmpty()) {
-        QuasarAppUtils::Params::log("The DMG package will not be created, "
-                                    "because there is no package with the "
-                                    "executable files in the deployed "
-                                    "distribution.",
-                                    QuasarAppUtils::Warning);
-        return true;
+        TemplateInfo info;
+        if (!collectInfo(module, info)) {
+            return false;
+        }
+
+        auto stageDir = location(module);
+        auto bundleDir = stageDir + "/" + bundleName(module) + ".app";
+        auto dataLoc = dataLocation(module);
+
+        // The bundle works on a copy of the deployed package, the
+        // original package in the target directory is not changed
+        // (the deployer does not rewrite the binaries, issue #166).
+        if (!pkg.copyPackage(key, dataLoc)) {
+            return false;
+        }
+
+        const auto executableName = Dmg::executableName(module);
+        const auto hasExecutable = !module.targets().isEmpty();
+        auto executable = dataLoc + "/" + executableName;
+
+        // The CFBundleExecutable key must be the name of the executable
+        // file directly in the MacOS subfolder of the bundle (issue #166).
+        // The default macOS deploy layout keeps the executable in the
+        // package root, so on the custom binOut layout the executable is
+        // moved to the MacOS root of the bundle (on the bundle copy only).
+        if (hasExecutable) {
+            auto inPackage = dataLoc + module.getBinOutDir() + executableName;
+            if (inPackage != executable &&
+                !moveToBundleRoot(inPackage, executable)) {
+                return false;
+            }
+        }
+
+        if (!moveQConf(dataLoc, module)) {
+            return false;
+        }
+
+        info.Custom[kBundleIdPlaceHolder] =
+                bundleIdentifier(bundleName(module));
+        info.Custom[kBundleExecutablePlaceHolder] =
+                hasExecutable ? executableName : QString();
+
+        if (!unpackFile(QFileInfo(kPlistTemplate + "/Contents/Info.plist"),
+                        bundleDir + "/Contents", info, {"plist"})) {
+            return false;
+        }
+
+        if (!createApplicationsLink(stageDir)) {
+            return false;
+        }
+
+        // The DMG output name is the per-package "dmgOut" value or the
+        // default "<name>.dmg" file name (the same way as the "debOut"
+        // value of the deb distribution, issue #166).
+        _stages.push_back({
+            stageDir,
+            executable,
+            bundleName(module),
+            cfg->getTargetDir() + "/" + info.dmgOut,
+            rpaths(module)
+        });
     }
-
-    auto module = cfg->getDistroFromPackage(bundlePackage);
-
-    TemplateInfo info;
-    if (!collectInfo(module, info)) {
-        return false;
-    }
-
-    auto stageDir = location(module);
-    auto bundleDir = stageDir + "/" + bundleName(module) + ".app";
-    auto dataLoc = bundleDir + "/Contents/MacOS";
-
-    // The bundle works on a copy of the deployed package, the
-    // original package in the target directory is not changed
-    // (the deployer does not rewrite the binaries, issue #166).
-    if (!pkg.copyPackage(bundlePackage, dataLoc)) {
-        return false;
-    }
-
-    const auto executableName = Dmg::executableName(module);
-    auto executable = dataLoc + module.getBinOutDir() + executableName;
-    auto bundleExecutable = dataLoc + "/" + executableName;
-
-    // The CFBundleExecutable key must be the name of the executable
-    // file directly in the MacOS subfolder of the bundle (issue #166).
-    // The default macOS deploy layout keeps the executable in the
-    // package root, so on the custom binOut layout the executable is
-    // moved to the MacOS root of the bundle (on the bundle copy only).
-    if (executable != bundleExecutable &&
-        !moveToBundleRoot(executable, bundleExecutable)) {
-        return false;
-    }
-
-    if (!moveQConf(dataLoc, module)) {
-        return false;
-    }
-
-    info.Custom[kBundleIdPlaceHolder] =
-            bundleIdentifier(bundleName(module));
-    info.Custom[kBundleExecutablePlaceHolder] = executableName;
-
-    if (!unpackFile(QFileInfo(kPlistTemplate + "/Contents/Info.plist"),
-                    bundleDir + "/Contents", info, {"plist"})) {
-        return false;
-    }
-
-    if (!createApplicationsLink(stageDir)) {
-        return false;
-    }
-
-    _stages.push_back({
-        stageDir,
-        bundleExecutable,
-        bundleName(module),
-        dmgOutput(module, info),
-        rpaths(module)
-    });
 
     return true;
 }
 
 bool Dmg::deployRawTemplate(PackageControl &pkg) {
-    auto bundlePackage = selectedBundlePackage(pkg.availablePackages());
+    const DeployConfig *cfg = DeployCore::_config;
 
-    if (bundlePackage.isEmpty()) {
-        // There is no package with the executable files, so there is no
-        // application bundle template to extract (issue #166).
-        return true;
+    // The raw template is extracted into the bundle layout of every
+    // available package (the Info.plist file of the application bundle,
+    // the same way the raw template of the deb distribution is extracted
+    // into the layout of every package, issue #166).
+    auto list = pkg.availablePackages();
+    for (const auto &key: list) {
+        auto module = cfg->getDistroFromPackage(key);
+
+        const auto bundleDir = location(module) + "/" + bundleName(module) + ".app";
+        if (!unpackDir(kPlistTemplate, bundleDir, {}, {})) {
+            return false;
+        }
     }
 
-    auto module = DeployCore::_config->getDistroFromPackage(bundlePackage);
-
-    // The raw template is extracted into the same bundle layout the
-    // deployTemplate method stages (the Info.plist file of the
-    // application bundle, issue #166).
-    const auto bundleDir = location(module) + "/" + bundleName(module) + ".app";
-    return unpackDir(kPlistTemplate, bundleDir, {}, {});
+    return true;
 }
 
 bool Dmg::removeTemplate() const {
@@ -242,51 +246,6 @@ QString Dmg::bundleIdentifier(const QString &bundleName) const {
     }
 
     return id;
-}
-
-QString Dmg::selectedBundlePackage(const QStringList &packages) const {
-    const DeployConfig *cfg = DeployCore::_config;
-
-    // The application bundle contains the package with the executable
-    // files: the default package if it has targets, otherwise the first
-    // package that owns a target (issue #166). The extra-data packages
-    // (docs, licenses, ...) are not part of the DMG archive.
-    QString selected;
-    for (const auto &key: packages) {
-        auto module = cfg->getDistroFromPackage(key);
-
-        if (module.targets().isEmpty()) {
-            continue;
-        }
-
-        if (selected.isEmpty() || module.isDefaultModule()) {
-            selected = key;
-
-            if (module.isDefaultModule()) {
-                break;
-            }
-        }
-    }
-
-    return selected;
-}
-
-QString Dmg::dmgOutput(const DistroModule &module, const TemplateInfo &info) const {
-    const DeployConfig *cfg = DeployCore::_config;
-
-    // The DMG output name: the per-package "dmgOut" value, the global
-    // "dmgOut" option (the same way as the qifOut option of the QIF
-    // distribution), or the default "<name>.dmg" file name (issue #166).
-    auto out = module.dmgOut();
-    if (out.isEmpty()) {
-        out = QuasarAppUtils::Params::getArg("dmgOut");
-    }
-
-    if (out.isEmpty()) {
-        out = info.dmgOut;
-    }
-
-    return cfg->getTargetDir() + "/" + out;
 }
 
 QStringList Dmg::rpaths(const DistroModule &module) const {

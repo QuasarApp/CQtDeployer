@@ -10,6 +10,7 @@
 #include "extracter.h"
 
 #include <QDir>
+#include <QDirIterator>
 #include <QFile>
 #include <QFileInfo>
 #include <QProcess>
@@ -18,8 +19,10 @@
 #include <vector>
 
 #include <Distributions/dmg.h>
+#include <deployconfig.h>
 #include <distromodule.h>
 #include <filemanager.h>
+#include <packagecontrol.h>
 
 namespace {
 
@@ -47,6 +50,62 @@ bool writeFile(const QString &path, const QByteArray &data) {
     }
     return file.write(data) == data.size();
 }
+
+/**
+ * @brief TestPackageControl This is a PackageControl implementation for
+ *  the unit tests: it copies the package folders of the @a sourceDir
+ *  directory (one subfolder per package key) to the new location, the
+ *  same way the package data is staged by the real Packing class
+ *  (issue #166).
+ */
+class TestPackageControl: public PackageControl {
+public:
+    TestPackageControl(const QString &sourceDir,
+                       const QStringList &packages) :
+        _sourceDir(sourceDir),
+        _packages(packages)
+    {
+    }
+
+    bool movePackage(const QString &package,
+                     const QString &newLocation) override {
+        return copyPackage(package, newLocation);
+    }
+
+    bool copyPackage(const QString &package,
+                     const QString &newLocation) override {
+        const auto source = _sourceDir + "/" + package;
+        QDir targetDir(newLocation);
+        if (!targetDir.exists() && !targetDir.mkpath(".")) {
+            return false;
+        }
+
+        QDirIterator it(source, QDir::Files | QDir::Dirs | QDir::Hidden,
+                        QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            const auto file = QFileInfo(it.next());
+            const auto rel = file.absoluteFilePath().mid(source.size() + 1);
+            const auto dest = newLocation + "/" + rel;
+            if (file.isDir()) {
+                if (!QDir().mkpath(dest)) {
+                    return false;
+                }
+            } else if (!QFile::copy(file.absoluteFilePath(), dest)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    QStringList availablePackages() const override {
+        return _packages;
+    }
+
+private:
+    QString _sourceDir;
+    QStringList _packages;
+};
 /**
  * @brief udzoKolyHeaderOffset returns the offset of the 512-byte "koly"
  *  header of the compressed (UDZO) disk image @a image. The hdiutil
@@ -398,6 +457,152 @@ void MacOSTest::dmgOutConfigCheck() {
 
     module.setDmgOut("custom.dmg");
     QCOMPARE(module.dmgOut(), QStringLiteral("custom.dmg"));
+}
+
+void MacOSTest::dmgMultiPackageCheck() {
+    // The Dmg distribution creates a separate DMG archive for every
+    // available package, the same way the deb distribution creates a
+    // separate .deb file for every available package (issue #166).
+    const auto dir = _tmp.path();
+    const auto srcDir = dir + "/src";
+    const auto targetDir = dir + "/dist";
+
+    auto makePackage = [&](const char *key,
+                           const char *executable,
+                           const char *name) {
+        QDir().mkpath(srcDir + "/" + key);
+        writeFile(srcDir + "/" + key + "/" + executable,
+                  QByteArray("dummy"));
+
+        DistroModule module(key);
+        // The DMG distribution is created on the macOS hosts, where the
+        // default deploy layout keeps the files in the package root
+        // (the same layout the macOS DistroStruct defaults define).
+        module.setBinOutDir("/");
+        module.setLibOutDir("/");
+        module.setName(name);
+        module.addTarget(executable);
+
+        return module;
+    };
+
+    auto app1 = makePackage("app1", "App1", "First App");
+    auto app2 = makePackage("app2", "App2", "Second App");
+    app2.setDmgOut("custom2.dmg");
+
+    // The extra-data package (docs) has no executable files, but it is
+    // packed as a separate DMG archive too (the same way the extra-data
+    // packages get their own .deb files in the deb distribution, issue
+    // #166).
+    QDir().mkpath(srcDir + "/docs");
+    QVERIFY(writeFile(srcDir + "/docs/readme.txt", QByteArray("docs")));
+    DistroModule docs("docs");
+
+    DeployConfig cfg;
+    cfg.setTargetDir(targetDir);
+    cfg.packagesEdit().insert("app1", app1);
+    cfg.packagesEdit().insert("app2", app2);
+    cfg.packagesEdit().insert("docs", docs);
+
+    const auto previousConfig = DeployCore::_config;
+    DeployCore::_config = &cfg;
+
+    FileManager fm;
+    Dmg dmg(&fm);
+    TestPackageControl pkg(srcDir, {"app1", "app2", "docs"});
+
+    QVERIFY2(dmg.deployTemplate(pkg),
+             "The Dmg distribution failed to stage the multi-package deployment");
+
+    // A separate DMG archive for every available package: the default
+    // "<name>.dmg" file names and the per-package "dmgOut" value (the
+    // same way as the .deb output names of the deb distribution, issue
+    // #166).
+    const auto outFiles = dmg.outPutFiles();
+    QCOMPARE(outFiles.size(), 3);
+    QVERIFY(outFiles.contains(targetDir + "/First App.dmg"));
+    QVERIFY(outFiles.contains(targetDir + "/custom2.dmg"));
+    QVERIFY(outFiles.contains(targetDir + "/docs.dmg"));
+
+    // Every bundle is staged in its own folder of the DMG template
+    // directory: the executable in the MacOS folder of the bundle and
+    // the substituted Info.plist of the package (issue #166).
+    const QList<QStringList> bundles = {
+        {"app1", "App1", "First App"},
+        {"app2", "App2", "Second App"}
+    };
+    for (const auto &bundle: bundles) {
+        const auto key = bundle.value(0);
+        const auto exe = bundle.value(1);
+        const auto name = bundle.value(2);
+
+        const auto bundleDir =
+                targetDir + "/defaultDMGTemplate/" + key + "/" + exe + ".app";
+        QVERIFY2(QFileInfo(bundleDir + "/Contents/MacOS/" + exe).isFile(),
+                 qPrintable("The bundle executable is not found: " +
+                            bundleDir + "/Contents/MacOS/" + exe));
+
+        QFile plistFile(bundleDir + "/Contents/Info.plist");
+        QVERIFY2(plistFile.open(QIODevice::ReadOnly),
+                 qPrintable("The bundle Info.plist is not found: " +
+                            bundleDir + "/Contents/Info.plist"));
+        const auto content = QString::fromUtf8(plistFile.readAll());
+        QVERIFY2(content.contains(name),
+                 qPrintable("The bundle Info.plist has no package name: " +
+                            bundleDir + "/Contents/Info.plist"));
+        QVERIFY(!content.contains("$CQT_BUNDLE_ID"));
+        QVERIFY(!content.contains("$CQT_BUNDLE_EXECUTABLE"));
+        QVERIFY(content.contains("org.quasarapp." + exe.toLower()));
+        QVERIFY(content.contains(exe));
+    }
+
+    // The extra-data package is staged as a data only bundle: the data
+    // in the MacOS folder, the substituted Info.plist without the
+    // executable name (issue #166).
+    const auto docsBundle = targetDir + "/defaultDMGTemplate/docs/docs.app";
+    QVERIFY2(QFileInfo(docsBundle + "/Contents/MacOS/readme.txt").isFile(),
+             "The docs package data is not staged in the bundle");
+    QFile docsPlist(docsBundle + "/Contents/Info.plist");
+    QVERIFY2(docsPlist.open(QIODevice::ReadOnly),
+             "The docs bundle Info.plist is not found");
+    const auto docsContent = QString::fromUtf8(docsPlist.readAll());
+    QVERIFY(!docsContent.contains("$CQT_BUNDLE_ID"));
+    QVERIFY(!docsContent.contains("$CQT_BUNDLE_EXECUTABLE"));
+    QVERIFY(docsContent.contains("docs"));
+
+    // The "Applications" symbolic link of every DMG stage allows to
+    // drag the bundle to the Applications folder on the mounted image
+    // (issue #166).
+    const QStringList stages = {"app1", "app2", "docs"};
+    for (const auto &stage: stages) {
+        const auto link =
+                targetDir + "/defaultDMGTemplate/" + stage + "/Applications";
+        QVERIFY(QFileInfo(link).isSymLink());
+    }
+
+    // The runCmd step runs the "hdiutil create" command for every
+    // prepared stage (one DMG archive per package, issue #166), the
+    // install_name_tool step is run only for the bundles with the
+    // executable files.
+    int hdiutilCount = 0;
+    int rpathCount = 0;
+    for (const auto &cmd: dmg.runCmd()) {
+        if (cmd.command == "hdiutil" && cmd.arguments.value(0) == "create") {
+            ++hdiutilCount;
+        }
+        if (cmd.command == "install_name_tool") {
+            ++rpathCount;
+        }
+    }
+    QCOMPARE(hdiutilCount, 3);
+    QCOMPARE(rpathCount, 2);
+
+    // The removeTemplate step cleans the whole template directory
+    // (issue #166).
+    QVERIFY(dmg.removeTemplate());
+    QVERIFY(!QDir(targetDir + "/defaultDMGTemplate").exists());
+
+    DeployCore::_config = previousConfig;
 }
 
 void MacOSTest::dmgCreationCheck() {
