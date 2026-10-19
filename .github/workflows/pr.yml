@@ -64,15 +64,6 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Install CQtDeployer
-      # The macOS job installs the release CQtDeployer package with this
-      # action as well (issue #866). The release is pinned, because it is
-      # the first one that ships the macOS (Darwin arm64) assets, so the
-      # macOS job cannot rely on the latest stable release. The fork
-      # reference includes the macOS case-insensitive directory collision
-      # fix (commit 78602ce, QuasarApp/cqtdeployer-install-action PR #7)
-      # which is not part of the upstream v1.2.1 tag. After the PR is
-      # merged and tagged, switch the reference back to
-      # QuasarApp/cqtdeployer-install-action@<tag>.
       uses: QuasarApp/cqtdeployer-install-action@v1.2.2
       with:
         version: v1.6.2504.659185d
