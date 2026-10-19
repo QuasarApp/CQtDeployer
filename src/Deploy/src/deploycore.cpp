@@ -1250,22 +1250,21 @@ Platform DeployCore::getPlatformFromString(const QString &platformName) {
 }
 
 bool DeployCore::isPlatformCompatible(Platform candidate, Platform wanted) {
-    if (candidate == wanted)
-        return true;
-
-    const int flavors = int(Platform::MinGW_Msvcrt) | int(Platform::MinGW_Ucrt) | int(Platform::MSVC);
-    const int candFlavor = int(candidate) & flavors;
-    const int wantFlavor = int(wanted) & flavors;
-
-    // A runtime flavored platform matches the generic platform of the same
-    // bitness (and vice versa), but never a different runtime flavor.
-    if (candFlavor && !wantFlavor)
-        return (int(candidate) & ~flavors) == int(wanted);
-
-    if (wantFlavor && !candFlavor)
-        return (int(wanted) & ~flavors) == int(candidate);
-
-    return false;
+    // A candidate library can only satisfy a dependency when it is built for
+    // exactly the same platform as the requesting (parent) library.
+    //
+    // The runtime flavor is part of the platform identity: a MinGW Msvcrt
+    // library and a MinGW Ucrt library are different runtimes, and a generic
+    // (non flavored) Windows library of the same bitness is NOT a valid
+    // substitute for a flavored one. Matching a generic platform against a
+    // flavored one allowed the dependency scanner to resolve a foreign
+    // runtime set (for example the MinGW libraries shipped by Strawberry
+    // Perl) instead of the libraries of the target toolchain (the Qt MinGW
+    // installation), producing a broken deployed bundle (issue #870).
+    //
+    // Therefore the parent library and the candidate (child) library must be
+    // of exactly the same platform type; no flavor relaxation is applied.
+    return candidate == wanted;
 }
 
 QChar DeployCore::getSeparator(int lvl) {

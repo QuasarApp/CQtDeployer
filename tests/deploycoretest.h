@@ -25,6 +25,7 @@ private slots:
     void cleanupTestCase();
 
     void platformCompatibility();
+    void foreignRuntimeNotSelected();
     void platformStrings();
 };
 
