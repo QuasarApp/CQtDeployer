@@ -64,9 +64,13 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Install CQtDeployer
-      uses: QuasarApp/cqtdeployer-install-action@v1.2.2
+      uses: QuasarApp/cqtdeployer-install-action@main
       with:
         version: v1.6.2504.659185d
+
+    - name: Verify CQtDeployer version
+      # Check if cqtdeployer is accessible and print its version
+      run: cqtdeployer version
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
