@@ -8,6 +8,9 @@
 #include "pathutils.h"
 #include "qtdir.h"
 
+#include <QXmlStreamReader>
+#include <QRegularExpression>
+
 QtMajorVersion QtDir::getQtVersion() const {
     return _qtVersion;
 }
@@ -61,6 +64,30 @@ void QtDir::setLibs(const QString &value) {
     } else if (qtLibs.contains("libQt6Core.dylib", Qt::CaseInsensitive)) {
         _qtVersion = QtMajorVersion::Qt6;
         _platform = Mac;
+    }
+
+    // The macOS Qt installations ship the modules as .framework bundles
+    // (issue #166). The core framework is named "QtCore" in all Qt major
+    // versions, so the version is read from the Info.plist of the
+    // framework.
+    if (_qtVersion == NoQt) {
+        auto coreFramework = libs + "/QtCore.framework";
+
+        for (const auto &infoPlist :
+                 {coreFramework + "/Versions/A/Resources/Info.plist",
+                  coreFramework + "/Resources/Info.plist"}) {
+
+            auto major = parsePlistVersion(infoPlist);
+            switch (major) {
+                case 4: _qtVersion = QtMajorVersion::Qt4; break;
+                case 5: _qtVersion = QtMajorVersion::Qt5; break;
+                case 6: _qtVersion = QtMajorVersion::Qt6; break;
+                default: continue;
+            }
+
+            _platform = Mac;
+            break;
+        }
     }
 }
 
@@ -217,4 +244,52 @@ QString QtDir::findMingwToolchainBin(const QString &qtBins) {
     }
 
     return {};
+}
+
+int QtDir::parsePlistVersion(const QString &plistFile) {
+    QFile f(plistFile);
+    if (!f.open(QIODevice::ReadOnly)) {
+        return -1;
+    }
+
+    QXmlStreamReader xml(&f);
+
+    auto parseMajor = [](const QString &text) -> int {
+        auto match = QRegularExpression("^\\d+").match(text.trimmed());
+        if (!match.hasMatch()) {
+            return -1;
+        }
+
+        return match.captured(0).toInt();
+    };
+
+    QString lastKey;
+    int shortVersion = -1;
+    int bundleVersion = -1;
+
+    while (!xml.atEnd() && !xml.hasError()) {
+        auto token = xml.readNext();
+        if (token != QXmlStreamReader::StartElement) {
+            continue;
+        }
+
+        if (xml.name() == QLatin1String("key")) {
+            lastKey = xml.readElementText();
+            continue;
+        }
+
+        if (xml.name() != QLatin1String("string")) {
+            continue;
+        }
+
+        auto value = xml.readElementText();
+
+        if (lastKey == QLatin1String("CFBundleShortVersionString")) {
+            shortVersion = parseMajor(value);
+        } else if (lastKey == QLatin1String("CFBundleVersion")) {
+            bundleVersion = parseMajor(value);
+        }
+    }
+
+    return shortVersion != -1 ? shortVersion : bundleVersion;
 }

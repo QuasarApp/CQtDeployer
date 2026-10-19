@@ -6,6 +6,7 @@
 //#
 
 #include "macho_type.h"
+#include "deploycore.h"
 #include <QFileInfo>
 #include <quasarapp.h>
 
@@ -22,21 +23,44 @@ bool MachO::getLibInfo(const QString &lib, LibInfo &info) const {
         return false;
     }
 
-    auto macho = LIEF::MachO::Parser::parse(infolib.absoluteFilePath().toStdString());
-    if (macho == nullptr || macho->empty()) {
+    // The binary is parsed only one time on the LIEF backend and the parse
+    // result is shared between the platform/dylib extraction and the rpath
+    // reader (the full LIEF parsing is a heavy operation, issue #166).
+    auto binary = DeployCore::parseMachOFile(infolib.absoluteFilePath());
+    if (!DeployCore::isMacOBinary(binary.get())) {
         QuasarAppUtils::Params::log("Unable to parse Mach-O file: " + infolib.absoluteFilePath(),
                                     QuasarAppUtils::Error);
         return false;
     }
 
-    // A Mach-O file can be a fat (universal) binary with several architecture
-    // slices. Prefer the slice with the same bitness as the running host,
-    // otherwise fall back to the first slice.
-    const LIEF::MachO::Binary *slice = macho->front();
-    for (const LIEF::MachO::Binary &bin : *macho) {
-        if (bin.header().is_64bit() == (sizeof(void*) == 8)) {
+    // A fat (universal) binary contains one slice per architecture. dyld
+    // loads the slice of the running architecture, so the scanner uses the
+    // same slice: the first slice with the host CPU type (issue #166).
+    #if defined(__aarch64__) || defined(__arm64__)
+    constexpr auto hostCpu = LIEF::MachO::Header::CPU_TYPE::ARM64;
+    #elif defined(__x86_64__)
+    constexpr auto hostCpu = LIEF::MachO::Header::CPU_TYPE::X86_64;
+    #else
+    constexpr auto hostCpu = LIEF::MachO::Header::CPU_TYPE::ANY;
+    #endif
+
+    const LIEF::MachO::Binary *slice = nullptr;
+    for (const LIEF::MachO::Binary &bin : *binary) {
+        if (bin.header().cpu_type() == hostCpu) {
             slice = &bin;
             break;
+        }
+    }
+
+    if (slice == nullptr) {
+        // No slice for the host architecture: fall back to the first slice
+        // with the same bitness as the host (or the first slice at all).
+        slice = binary->front();
+        for (const LIEF::MachO::Binary &bin : *binary) {
+            if (bin.header().is_64bit() == (sizeof(void*) == 8)) {
+                slice = &bin;
+                break;
+            }
         }
     }
 
@@ -64,6 +88,12 @@ bool MachO::getLibInfo(const QString &lib, LibInfo &info) const {
 
         info.addDependncies(QString::fromStdString(name));
     }
+
+    // Extract the runtime search paths (LC_RPATH) from the same parse
+    // result (no second parsing of the file). They are used to find the
+    // qmake of a Qt installation (issue #166).
+    info.setRPath(DeployCore::machORPaths(binary.get())
+                     .join(QLatin1String(":")));
 
     return true;
 }

@@ -21,6 +21,7 @@
 * [Disable standard shortcuts ](DisableShortcats.md)
 * [Custom scripts](CustomScripts.md)
 * [CQtDeployer for arm](arm.md)
+* [CQtDeployer for macOS](macOS.md)
 
 
 ## Support the project

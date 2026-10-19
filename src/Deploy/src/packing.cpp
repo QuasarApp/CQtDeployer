@@ -228,15 +228,24 @@ bool Packing::collectPackages() {
             continue;
         }
 
-        if (!moveData(from, cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR + "/" + it.key())) {
+        auto to = cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR + "/" + it.key();
+
+        if (!moveData(from, to)) {
             qCritical() << "Fail to move " + from;
             return false;
         }
 
-        _packagesLocations.insert(it.key(), cfg->getTargetDir() + "/" + TMP_PACKAGE_DIR + "/" + it.key());
+        // Keep the original package location in _defaultPackagesLocations so
+        // that restorePackagesLocations() can move the data back after the
+        // distributions have finished using it. _packagesLocations is
+        // overwritten with the tmp_data location below, so the defaults must
+        // be recorded before that happens (issue #166: the deployed package
+        // was wiped together with tmp_data, breaking the appBundle step on
+        // macOS).
+        _defaultPackagesLocations.insert(it.key(), from);
+        _packagesLocations.insert(it.key(), to);
     }
 
-    _defaultPackagesLocations = _packagesLocations;
     return true;
 }
 
@@ -267,6 +276,7 @@ bool Packing::moveData(const QString &from, const QString &to, const QString &ig
 bool Packing::restorePackagesLocations() {
     for (auto it = _packagesLocations.begin(); it != _packagesLocations.end(); ++it) {
         if (!moveData(it.value(), _defaultPackagesLocations.value(it.key()))) {
+            qCritical() << QString("Failed to restore the location of the '%0' package.").arg(it.key());
             return false;
         }
     }

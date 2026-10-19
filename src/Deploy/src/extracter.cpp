@@ -17,14 +17,11 @@
 #include <QDirIterator>
 #include <QFile>
 #include <QFileInfo>
-#include <QProcess>
-#include <QRegularExpression>
 #include <quasarapp.h>
-#include <cstdio>
 #include <qaglobalutils.h>
 #include <cassert>
 
-#include <fstream>
+
 
 bool Extracter::deployMSVC() {
     QuasarAppUtils::Params::log("Trying to deploy msvc", QuasarAppUtils::Debug);
@@ -35,6 +32,17 @@ bool Extracter::deployMSVC() {
     }
 
     return _fileManager->copyFile(msvcInstaller, DeployCore::_config->getTargetDir());
+}
+
+bool Extracter::isMachOFile(const QString &file) {
+    return DeployCore::isMacOBinary(QFileInfo(file));
+}
+
+QStringList Extracter::machORPaths(const QString &file) {
+    // The implementation lives in DeployCore::machORPaths(), because the
+    // rpaths are also needed by the scanner (macho_type.cpp), which has no
+    // access to the extracter (issue #166).
+    return DeployCore::machORPaths(file);
 }
 
 bool Extracter::isWebEngine(const QString &package) const {

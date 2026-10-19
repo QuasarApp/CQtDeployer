@@ -48,6 +48,16 @@ public:
     virtual QList<SystemCommandData> runCmd() = 0;
     virtual QStringList outPutFiles() const = 0;
 
+    /**
+     * @brief isAvailable This method returns true if all tools needed to
+     *  create this type of distribution are available on the current host.
+     *  Distributions that are not available are skipped with a warning
+     *  instead of failing the whole deployment (for example the QIF package
+     *  on hosts without the Qt Installer Framework, issue #166).
+     * @return true if this distribution can be created on the current host
+     */
+    virtual bool isAvailable() const { return true; }
+
     virtual bool cb() const;
 
     QString getClassName() const;

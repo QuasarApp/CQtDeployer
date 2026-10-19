@@ -75,6 +75,21 @@ set(BASE_FULL_NAME "${BASE_NAME}_${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}"
 
 set(INSTALLER_FULL_NAME "${BASE_FULL_NAME}${INSTALLER_SUFIX}")
 
+# macOS: the deployed application is packed into a .app bundle and a
+# compressed DMG disk image by the cqtdeployer "dmg" distribution
+# (issue #166). The DMG name and the enabled flag are used in the
+# Deploy/CQtDeployer.json.in template.
+set(DMG_NAME "${BASE_FULL_NAME}.dmg")
+if (APPLE)
+    set(DMG_ENABLED true)
+else()
+    set(DMG_ENABLED false)
+endif()
+
+if(DEFINED ENV{GITHUB_ENV} AND APPLE)
+    file(APPEND $ENV{GITHUB_ENV} "DMG_NAME=${DMG_NAME}\n")
+endif()
+
 if(DEFINED ENV{GITHUB_ENV})
     file(APPEND $ENV{GITHUB_ENV} "INSTALLER_FULL_NAME=${INSTALLER_FULL_NAME}\n")
     file(APPEND $ENV{GITHUB_ENV} "BASE_FULL_NAME=${BASE_FULL_NAME}\n")
@@ -149,7 +164,7 @@ endif()
 
 
 
-if (UNIX)
+if (UNIX AND NOT APPLE)
     addDeploySnap(${CURRENT_PROJECT} "${CMAKE_SOURCE_DIR}/Distro/")
 
     if(TARGET snapcraft${CURRENT_PROJECT})

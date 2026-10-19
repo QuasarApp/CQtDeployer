@@ -8,6 +8,8 @@
 #ifndef EXTRACTER_H
 #define EXTRACTER_H
 #include <QDir>
+#include <QHash>
+#include <QPair>
 #include <QString>
 #include <QStringList>
 #include <dependenciesscanner.h>
@@ -26,6 +28,30 @@ public:
     explicit Extracter(FileManager *fileManager, PluginsParser* pluginsParser, ConfigParser * cqt, DependenciesScanner *_scaner);
     bool deploy();
     void clear();
+
+    /**
+     * @brief isMachOFile This method return true if the @a file is a Mach-O
+     *  binary (32/64-bit in both byte orders and fat/universal binaries).
+     *  The check is a full file parsing on the LIEF backend, so the file
+     *  must be a valid parseable Mach-O binary (issue #166).
+     * @param file This is the path to the checked file.
+     * @return true if the file is a Mach-O binary else false.
+     */
+    static bool isMachOFile(const QString &file);
+
+    /**
+     * @brief machORPaths This method return the list of the runtime search
+     *  paths (LC_RPATH entries) of all architecture slices of the Mach-O
+     *  binary @a file (issue #166). The binary is parsed one time on the
+     *  LIEF backend. Because the LIEF 1.0.0 submodule maps LC_RPATH to a
+     *  different load command constant than the macOS ABI (0x1C01), the real
+     *  entries are read from the raw command data that LIEF keeps for the
+     *  unknown commands.
+     * @param file This is the path to the Mach-O binary.
+     * @return The list of the LC_RPATH entries (empty if the file is not a
+     *  Mach-O binary or has no rpaths).
+     */
+    static QStringList machORPaths(const QString &file);
 
 private:
 
@@ -55,7 +81,6 @@ private:
 
     bool deployMSVC();
     bool extractWebEngine();
-
     /**
      * @brief angleGLLibs This method return the list of not dependent libs but needed wor working of web Engine (Windows only).
      *  @note see task 398 (https://github.com/QuasarApp/CQtDeployer/issues/398)

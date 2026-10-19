@@ -18,6 +18,8 @@
 #include <iostream>
 #include <qaplatformutils.h>
 
+#include <LIEF/MachO.hpp>
+
 //QString DeployCore::qtDir = "";
 //QStringList DeployCore::extraPaths = QStringList();
 
@@ -157,7 +159,215 @@ LibPriority DeployCore::getLibPriority(const QString &lib) {
 
 bool DeployCore::containsModule(const QString& moduleLibrary, const QString& lib) {
     QRegularExpression erfexp(QString(moduleLibrary).replace("QtX", "Qt[4,5,6]"));
-    return lib.contains(erfexp);
+    if (lib.contains(erfexp)) {
+        return true;
+    }
+
+    // macOS frameworks do not contain the Qt major version in the library
+    // name (QtCore.framework instead of libQt6Core.dylib), so the
+    // version-less module name is matched as well (issue #166).
+    return lib.contains(QString(moduleLibrary).replace("QtX", "Qt"));
+}
+
+bool DeployCore::isMacOSFrameworkBinary(const QFileInfo &file) {
+    if (!file.isFile() || !file.completeSuffix().isEmpty()) {
+        return false;
+    }
+
+    auto root = macOSFrameworkRoot(file.absoluteFilePath());
+    return !root.isEmpty();
+}
+
+std::unique_ptr<LIEF::MachO::FatBinary>
+DeployCore::parseMachOFile(const QString &file) {
+    QFileInfo info(file);
+    if (!info.isFile()) {
+        return nullptr;
+    }
+
+    // The LIEF magic pre-filter runs before the full file parsing, because
+    // the LIEF MachO parser logs an error message for every non Mach-O file
+    // and the parsed files are checked in the loops of the dependency scan
+    // and the deploy step (issue #166).
+    if (!LIEF::MachO::is_macho(info.absoluteFilePath().toStdString())) {
+        return nullptr;
+    }
+
+    // Full file parsing on the LIEF backend (issue #166). The LIEF MachO
+    // parser accepts the thin (32/64-bit, both byte orders) and the
+    // fat/fat64 binaries and rejects every other file, so the file suffix
+    // is not required. The quick configuration skips the dyld opcode parsing
+    // that is not needed - the load commands are always parsed.
+    return LIEF::MachO::Parser::parse(
+                info.absoluteFilePath().toStdString(),
+                LIEF::MachO::ParserConfig::quick());
+}
+
+bool DeployCore::isMacOBinary(const LIEF::MachO::FatBinary *binary) {
+    if (binary == nullptr || binary->empty()) {
+        return false;
+    }
+
+    // LIEF 1.0.0 keeps a slice in the parse result even when its header
+    // could not be read (truncated file) - such slices have an UNKNOWN
+    // header magic and the file is not a valid Mach-O binary.
+    for (const auto &slice : *binary) {
+        if (slice.header().magic() == LIEF::MachO::MACHO_TYPES::UNKNOWN) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool DeployCore::isMacOBinary(const QFileInfo &file) {
+    return isMacOBinary(parseMachOFile(file.absoluteFilePath()).get());
+}
+
+QStringList DeployCore::machORPaths(const LIEF::MachO::FatBinary *binary) {
+    QStringList rpaths;
+    QSet<QString> seen;
+
+    if (!isMacOBinary(binary)) {
+        return rpaths;
+    }
+
+    // The parser handles the thin (both byte orders) and the fat/fat64
+    // binaries, so the entries are collected from all architecture slices.
+    for (const LIEF::MachO::Binary &slice : *binary) {
+        // The LIEF accessor is checked first, so this method keeps working
+        // without the raw data fallback if a future LIEF release maps
+        // LC_RPATH to the real 0x1C01 constant of the macOS ABI.
+        for (const LIEF::MachO::RPathCommand &rpath : slice.rpaths()) {
+            auto path = QString::fromStdString(rpath.path());
+            if (!path.isEmpty() && !seen.contains(path)) {
+                seen.insert(path);
+                rpaths << path;
+            }
+        }
+
+        // The LIEF 1.0.0 submodule maps LC_RPATH to 0x8000001C instead of
+        // the macOS ABI constant 0x1C01, so the real LC_RPATH commands are
+        // parsed as unknown commands. LIEF keeps the raw command bytes in
+        // data(), and the path string follows the 8 byte command header in
+        // both byte orders, so only the string itself is read here.
+        for (const LIEF::MachO::LoadCommand &cmd : slice.commands()) {
+            if (!LIEF::MachO::UnknownCommand::classof(&cmd)
+                    || static_cast<const LIEF::MachO::UnknownCommand &>(cmd)
+                       .original_command() != 0x1C01u) { // LC_RPATH
+                continue;
+            }
+
+            auto raw = cmd.data();
+            if (raw.size() <= 8) {
+                continue;
+            }
+
+            auto path = QString();
+            for (const auto *byte = raw.data() + 8; *byte != 0; ++byte) {
+                path.append(static_cast<QChar>(*byte));
+            }
+
+            if (!path.isEmpty() && !seen.contains(path)) {
+                seen.insert(path);
+                rpaths << path;
+            }
+        }
+    }
+
+    return rpaths;
+}
+
+QStringList DeployCore::machORPaths(const QString &file) {
+    return machORPaths(parseMachOFile(file).get());
+}
+
+QString DeployCore::macOSFrameworkRoot(const QString &path) {
+    QFileInfo info(path);
+    auto full = info.isDir() ? info.absoluteFilePath() : info.absolutePath();
+
+    if (info.isDir() && info.fileName().endsWith(".framework", Qt::CaseSensitive)) {
+        return info.absoluteFilePath();
+    }
+
+    // Walk up the path components and return the first directory that has
+    // the .framework suffix. Works with relative paths (resolved against
+    // the current working dir) and with non existing files.
+    QDir dir(full);
+    while (!dir.isRoot()) {
+        if (dir.dirName().endsWith(".framework", Qt::CaseSensitive)) {
+            return dir.absolutePath();
+        }
+        dir.cdUp();
+    }
+
+    return {};
+}
+
+QString DeployCore::macOSFrameworkBinary(const QString &frameworkDir) {
+    QFileInfo fw(frameworkDir);
+    if (!fw.isDir() || !fw.fileName().endsWith(".framework", Qt::CaseSensitive)) {
+        return {};
+    }
+
+    auto baseName = QFileInfo(fw.fileName()).baseName();
+
+    // Prefer the binary of the real version directory (for example A). The
+    // Versions/Current symlink points to that directory, but the dyld
+    // install names of the Qt frameworks are built from the real version
+    // directory (QtCore.framework/Versions/A/QtCore), so the reference that
+    // is used for the deployment layout must use the real path (issue #166).
+    QDir versions(fw.absoluteFilePath() + "/Versions");
+    for (const auto &v : versions.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot
+                                                | QDir::System)) {
+        if (QFileInfo(v.absoluteFilePath()).isSymLink()) {
+            continue;
+        }
+        auto candidate = v.absoluteFilePath() + "/" + baseName;
+        if (QFileInfo(candidate).isFile()) {
+            return candidate;
+        }
+    }
+
+    // Fallback: the Versions/Current symlink (frameworks without a real
+    // version directory) or the bundle root itself.
+    auto current = fw.absoluteFilePath() + "/Versions/Current/" + baseName;
+    if (QFileInfo(current).isFile()) {
+        return current;
+    }
+
+    auto rootBin = fw.absoluteFilePath() + "/" + baseName;
+    if (QFileInfo(rootBin).isFile()) {
+        return rootBin;
+    }
+
+    return {};
+}
+
+QString DeployCore::normalizeMacOSLibName(const QString &name) {
+    auto n = name;
+
+    // Remove the dyld specific prefixes.
+    static const QStringList dyldPrefixes = {
+        "@rpath/", "@loader_path/", "@executable_path/", "@relocated/"
+    };
+    for (const auto &prefix : dyldPrefixes) {
+        if (n.startsWith(prefix, Qt::CaseSensitive)) {
+            n = n.mid(prefix.size());
+            break;
+        }
+    }
+
+    // Framework references keep the full Name.framework/... tail,
+    // because this is the layout that must exist in the deployed dir.
+    auto fwSuffix = n.indexOf(".framework", Qt::CaseSensitive);
+    if (fwSuffix != -1) {
+        auto start = n.lastIndexOf('/', fwSuffix);
+        return n.mid(start + 1);
+    }
+
+    // Plain dylibs are referenced by the file name only.
+    return QFileInfo(n).fileName();
 }
 
 #define C(X) QuasarAppUtils::Params::isEndable(X)
@@ -261,6 +471,12 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             " To get more information see documentation page "
                             "https://quasarapp.ddns.net:3031/docs/QuasarApp/CQtDeployer/latest/md_md_2en_2DEB.html"
 
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"dmg"}, "",
+                            "Create the DMG disk image package for deployment programm."
+                            " The DMG package is created only on the macOS hosts "
+                            "with the hdiutil tool."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"deploySystem"}, "",
@@ -562,6 +778,13 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             "Sets name of the output zip arrhive. This option can be work with multiple packages"
                         }});
 
+    group = "Part 9 dmg package options";
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-dmgOut"}, "{package;nameOfOutputDmgFile,nameOfOutputDmgFile}",
+                            "Sets name of the output DMG disk image. This option can be work with multiple packages"
+                        }});
+
     return help;
 }
 
@@ -710,7 +933,11 @@ int DeployCore::find(const QString &str, const QStringList &list) {
 
 bool DeployCore::isLib(const QFileInfo &file) {
     return file.completeSuffix().contains("so", Qt::CaseInsensitive)
-            || file.completeSuffix().contains("dll", Qt::CaseInsensitive);
+            || file.completeSuffix().contains("dll", Qt::CaseInsensitive)
+            || file.completeSuffix().contains("dylib", Qt::CaseInsensitive)
+            // macOS framework binaries have no suffix
+            // (QtCore.framework/Versions/A/QtCore), see issue #166.
+            || isMacOSFrameworkBinary(file);
 }
 
 MSVCVersion DeployCore::getMSVC(const QString &_qtBin) {
@@ -854,6 +1081,18 @@ QtMajorVersion DeployCore::isQtLibName(const QString &lib) {
         isQt = QtMajorVersion::Qt5;
     } else if (fileName.contains("Qt6", getCaseSensitivity(fileName))) {
         isQt = QtMajorVersion::Qt6;
+    }
+
+    if (!isQt) {
+        // macOS Qt frameworks do not contain the major version in the
+        // library name (QtCore.framework instead of libQt6Core.dylib), so
+        // the version of the configured Qt installation is used as a
+        // fallback (issue #166).
+        auto frameworkRoot = macOSFrameworkRoot(info.absoluteFilePath());
+        if (!frameworkRoot.isEmpty() && _config &&
+            _config->qtDir.getQtVersion() != QtMajorVersion::NoQt) {
+            isQt = _config->qtDir.getQtVersion();
+        }
     }
 
     if (isQt && QuasarAppUtils::Params::isEndable("noQt")) {

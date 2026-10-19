@@ -5,8 +5,8 @@
 //# of this license document, but changing it is not allowed.
 //#
 
-#ifndef MACHO_H
-#define MACHO_H
+#ifndef MACHOTYPE_H
+#define MACHOTYPE_H
 
 #include "igetlibinfo.h"
 
@@ -25,4 +25,4 @@ public:
     bool getLibInfo(const QString &lib, LibInfo &info) const override;
 };
 
-#endif // MACHO_H
+#endif // MACHOTYPE_H

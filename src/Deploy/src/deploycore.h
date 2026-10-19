@@ -11,8 +11,15 @@
 #include <QStringList>
 #include <QDebug>
 #include <QFileInfo>
+#include <memory>
 #include "deploy_global.h"
 #include <params.h>
+
+namespace LIEF {
+namespace MachO {
+class FatBinary;
+}
+}
 
 enum MSVCVersion: int {
     MSVC_Unknown =  0x0000,
@@ -289,6 +296,9 @@ public:
 
     /**
      * @brief containsModule This method compare lib name and module of qt.
+     *  The Qt major version is not required in the library name, because
+     *  macOS frameworks do not contain it (QtCore.framework instead of
+     *  libQt6Core.dylib) (issue #166).
      * @param moduleLibrary this is name of module library
      * @param lib This is library name
      * @return true if library has some module that as muduleIndex
@@ -379,6 +389,121 @@ public:
      * @return true if the @a qtRoot is debian system qt else false.
      */
     static bool isDebianQt(const QString& qtRoot);
+
+    /**
+     * @brief isMacOSFrameworkBinary This method return true if the @a file is
+     *  a binary of the macOS .framework bundle. macOS libraries are stored in
+     *  the Name.framework/Versions/<V>/Name layout, so the real library file
+     *  has no file suffix and the bundle name (with the .framework suffix)
+     *  lives in one of the parent directories (issue #166).
+     * @param file This is the file that will be checked.
+     * @return true if the file is a macOS framework binary else false.
+     */
+    static bool isMacOSFrameworkBinary(const QFileInfo &file);
+
+    /**
+     * @brief parseMachOFile This method parses the file @a file with the LIEF
+     *  Mach-O backend (issue #166). The LIEF magic pre-filter runs before the
+     *  full file parsing, because the LIEF parser logs an error message for
+     *  every non Mach-O file and this method is called for every file of the
+     *  dependency scan.
+     *  The parse result of this method must be shared between all the checks
+     *  that need the binary content (isMacOBinary, machORPaths), because the
+     *  full file parsing is a heavy operation and every file must be parsed
+     *  only one time (issue #166).
+     * @param file This is the path to the file.
+     * @return The parsed binary (thin binaries are wrapped as a single slice
+     *  fat binary) or nullptr if the file is not a valid Mach-O binary.
+     */
+    static std::unique_ptr<LIEF::MachO::FatBinary>
+        parseMachOFile(const QString &file);
+
+    /**
+     * @brief isMacOBinary This method return true if the @a file is a Mach-O
+     *  binary (32/64-bit thin binaries in both byte orders and fat/universal
+     *  binaries). The check is a full file parsing on the LIEF backend
+     *  (LIEF::MachO::Parser), so the file must be a valid parseable Mach-O
+     *  binary and the file suffix is not required (issue #166).
+     * @param file This is the file that will be checked.
+     * @return true if the file is a Mach-O binary else false.
+     */
+    static bool isMacOBinary(const QFileInfo &file);
+
+    /**
+     * @brief isMacOBinary This method return true if the @a binary is the
+     *  valid parse result of a Mach-O file (issue #166). Use this overload
+     *  for the binaries parsed with parseMachOFile(), so the file is not
+     *  parsed a second time.
+     * @param binary This is the parse result of the LIEF Mach-O parser.
+     * @return true if the parse result is a valid Mach-O binary else false.
+     */
+    static bool isMacOBinary(const LIEF::MachO::FatBinary *binary);
+
+    /**
+     * @brief machORPaths This method return the list of the runtime search
+     *  paths (LC_RPATH entries) of all architecture slices of the Mach-O
+     *  binary @a binary (issue #166). Use this overload for the binaries
+     *  parsed with parseMachOFile(), so the file is not parsed a second time.
+     *  Because the LIEF 1.0.0 submodule maps LC_RPATH to a different load
+     *  command constant than the macOS ABI (0x1C01), the real entries are
+     *  read from the raw command data that LIEF keeps for the unknown
+     *  commands.
+     * @param binary This is the parse result of the LIEF Mach-O parser.
+     * @return The list of the LC_RPATH entries (empty if the binary has no
+     *  rpaths).
+     */
+    static QStringList machORPaths(const LIEF::MachO::FatBinary *binary);
+
+    /**
+     * @brief machORPaths This method return the list of the runtime search
+     *  paths (LC_RPATH entries) of all architecture slices of the Mach-O
+     *  binary @a file (issue #166). The binary is parsed one time on the LIEF
+     *  backend with parseMachOFile().
+     * @param file This is the path to the Mach-O binary.
+     * @return The list of the LC_RPATH entries (empty if the file is not a
+     *  Mach-O binary or has no rpaths).
+     */
+    static QStringList machORPaths(const QString &file);
+
+    /**
+     * @brief macOSFrameworkRoot This method return the absolute path of the
+     *  .framework bundle that contains the @a path. The path can point to the
+     *  bundle itself, to the binary inside the bundle or to any other file of
+     *  the bundle (Info.plist, resources, symlinks, ...).
+     * @param path This is a file or directory path that is checked.
+     * @return Absolute path to the .framework bundle or an empty string if the
+     *  path is not part of a macOS framework (issue #166).
+     */
+    static QString macOSFrameworkRoot(const QString &path);
+
+    /**
+     * @brief macOSFrameworkBinary This method return the path of the real
+     *  library binary of the .framework bundle (issue #166). If the bundle
+     *  uses the Name.framework/Versions/<V>/Name layout the binary of the
+     *  real version directory (for example Versions/A) is returned, because
+     *  the dyld install names of the Qt frameworks are based on that path.
+     * @param frameworkDir This is the path to the .framework bundle.
+     * @return Absolute path to the framework binary or an empty string if the
+     *  bundle is invalid or the binary is not found.
+     */
+    static QString macOSFrameworkBinary(const QString &frameworkDir);
+
+    /**
+     * @brief normalizeMacOSLibName This method normalize a Mach-O install name
+     *  (LC_ID_DYLIB / LC_LOAD_DYLIB) to the name under which the library is
+     *  registered in the deployment environment (issue #166).
+     *  The dyld specific prefixes (@rpath/, @loader_path/, @executable_path/,
+     *  @relocated/) and absolute path prefixes are removed. Framework
+     *  references keep the full Name.framework/... tail, because this is the
+     *  layout that must exist in the deployed directory.
+     *  Examples :
+     *   @rpath/libQt6Core.6.dylib -> libQt6Core.6.dylib
+     *   /opt/homebrew/lib/QtCore.framework/Versions/A/QtCore -> QtCore.framework/Versions/A/QtCore
+     *   QtCore.framework/Versions/A/QtCore -> QtCore.framework/Versions/A/QtCore
+     * @param name This is the install name of the Mach-O library.
+     * @return normalized library name.
+     */
+    static QString normalizeMacOSLibName(const QString &name);
 };
 
 #define internalError() DeployCore::printInternalError(__FUNCTION__, __FILE__, __LINE__)

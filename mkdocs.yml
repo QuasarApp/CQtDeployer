@@ -98,6 +98,7 @@ nav:
       - ZIP: md/en/ZIP.md
       - DEB: md/en/DEB.md
       - arm machines: md/en/arm.md
+      - macOS: md/en/macOS.md
       - Compare features: md/en/CompareFeatures.md
       - Release reviews: md/en/ReleaseReviews.md
       - Change log: md/en/Changelog.md

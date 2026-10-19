@@ -6,6 +6,7 @@
 //#
 
 #include "targetinfo.h"
+#include "deploycore.h"
 
 TargetInfo::TargetInfo() {
 
@@ -59,6 +60,16 @@ QString TargetInfo::getRunScript() const {
         QFileInfo info(getName());
         if (info.suffix() == "exe") {
             return ":/Scripts/ScriptsTemplates/windows.bat";
+        }
+
+        // macOS executables have no file suffix, the same as the Linux
+        // executables, so the full file parsing on the LIEF backend
+        // separates both platforms (issue #166). The macOS run script
+        // points the dynamic loader to the deployed frameworks/dylibs
+        // with the DYLD_FRAMEWORK_PATH / DYLD_LIBRARY_PATH, so the
+        // binaries are not rewritten.
+        if (DeployCore::isMacOBinary(info)) {
+            return ":/Scripts/ScriptsTemplates/macos.sh";
         }
 
         return ":/Scripts/ScriptsTemplates/linux.sh";

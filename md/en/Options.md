@@ -172,4 +172,10 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |-----------------------------|-----------------------------------------------------------|
 |  -zipOut [package;nameOfOutputZipFile,nameOfOutputZipFile]| Sets name of the output zip archive. This option can be work with multiple packages |
 
+### DMG package options
+
+| Option                      | Description                                              |
+|-----------------------------|-----------------------------------------------------------|
+|  -dmgOut [package;nameOfOutputDmgFile,nameOfOutputDmgFile]| Sets name of the output DMG file. A separate DMG archive is created for every package. This option can be work with multiple packages |
+
 #### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.15.4/gcc_64/bin/qmake clear

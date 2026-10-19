@@ -64,6 +64,12 @@ cqtdeployer -bin myexecutable
 cqtdeployer -bin myexecutable.exe -qmake C:/Qt/5.15.0/min_gw/bin/qmake.exe
 ```
 
+* For macOS systems:
+
+```bash
+cqtdeployer -bin myexecutable -qmake /Users/<user>/Qt/6.10.3/macos/bin/qmake
+```
+
 * For crossplatform build (Linux -> Windows)
 
 ```bash

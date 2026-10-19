@@ -18,11 +18,6 @@
         ["CQtDeployer", "./../../../LICENSE"]
     ],
 
-    "extraDataOut": [
-        ["QIF", ""],
-        ["CQtDeployer", ""]
-    ],
-
     "bin": [
         "src/CQtDeployer/CQtDeployer",
         "src/CQtDeployer/CQtDeployer.exe"
@@ -75,6 +70,10 @@
     "qif": "./QIFWTemplate",
     "qifOut": "@INSTALLER_FULL_NAME@",
     "zip": false,
+    "dmg": @DMG_ENABLED@,
+    "dmgOut": [
+        ["CQtDeployer.1_6", "@DMG_NAME@"]
+    ],
     "ignoreEnv": [
          "@CMAKE_SOURCE_DIR@/Distro"
         ],

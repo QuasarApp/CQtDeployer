@@ -22,6 +22,12 @@ How to deploy project with cqtdeployer.
 
     * Windows [installer][1]
 
+    * macOS [DMG][1]: open the DMG file and move the `CQtDeployer.app` bundle into the `Applications` folder.
+    ``` bash
+    open CQtDeployer_*.dmg
+    cp -R /Volumes/CQtDeployer/CQtDeployer.app /Applications/
+    ```
+
 2. Build your project on release mode.
 3. Deploy yor executable file.
 
@@ -33,6 +39,11 @@ How to deploy project with cqtdeployer.
     * For Windows systems:
     ``` bash
     cqtdeployer -bin myexecutable.exe -qmake C:/Qt/5.15.0/min_gw/bin/qmake.exe
+    ```
+
+    * For macOS systems:
+    ``` bash
+    cqtdeployer -bin myexecutable -qmake /Users/<user>/Qt/6.10.3/macos/bin/qmake
     ```
 
     * For crossplatform build (Linux -> Windows)
@@ -57,10 +68,15 @@ If you application use qml, just add qmlDir option
 cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources
 ```
 
-If you want create simple installer for your application just add gif option.
+If you want create simple installer for your application just add qif option.
 ```
 cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qif
 ```
+
+> **Note:** the Qt Installer Framework tools (binarycreator) are not published
+> for macOS, so the `qif` option is skipped gracefully on macOS hosts. To
+> create a portable archive of your deployed macOS application use the `zip`
+> packager. See the [CQtDeployer for macOS](macOS.md) page.
 
 If you use system libraries from system PATH, just add deploySystem option. 
 
