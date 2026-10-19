@@ -64,7 +64,11 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Install CQtDeployer
-      uses: QuasarApp/cqtdeployer-install-action@v1.1.0
+      # The macOS job installs the release CQtDeployer package with this
+      # action as well (issue #866). After the action PR is merged and
+      # tagged, switch the reference back to
+      # QuasarApp/cqtdeployer-install-action@v1.2.0.
+      uses: QuasarAppCI/cqtdeployer-install-action@task_866
 
 
     - name: ccache
@@ -107,14 +111,6 @@ jobs:
 
     - name: Build
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 16
-
-    - name: Add the built CQtDeployer to the PATH (macOS)
-      # The cqtdeployer-install-action does not support macOS, so the
-      # cqtdeployer tool required by the test deploy targets is the one
-      # built from source in this job (issue #166).
-      if: runner.os == 'macOS'
-      shell: bash
-      run: echo "${{ github.workspace }}/build/src/CQtDeployer" >> "$GITHUB_PATH"
 
     - name: Run unit tests
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 16 --target test

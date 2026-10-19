@@ -94,9 +94,14 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Install CQtDeployer
-      uses: QuasarApp/cqtdeployer-install-action@v1.1.0
+      # The pinned release is the first one that ships the macOS (Darwin
+      # arm64) assets and contains the DMG distribution used by the macOS
+      # deploy/release targets (issue #866). After the action PR is merged
+      # and tagged, switch the reference back to
+      # QuasarApp/cqtdeployer-install-action@v1.2.0.
+      uses: QuasarAppCI/cqtdeployer-install-action@task_866
       with:
-        version: v1.6.2365
+        version: v1.6.2504.659185d
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
@@ -126,10 +131,9 @@ jobs:
         -S ${{ github.workspace }}
 
     - name: Configure CMake (macOS)
-      # The cqtdeployer executable is not available on macOS yet (the
-      # cqtdeployer-install-action does not support macOS), so the deploy
-      # targets are created by the re-configure step below, after the
-      # CQtDeployer tool has been built from source (issue #166).
+      # The cqtdeployer tool is installed by the cqtdeployer-install-action
+      # step above, so the deploy targets are created at the configure time
+      # as on the other platforms (issue #866).
       if: runner.os == 'macOS'
       run: >
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
@@ -143,25 +147,6 @@ jobs:
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 16
-
-    - name: Re-configure CMake with the built CQtDeployer (macOS)
-      # The deploy targets are created only if the cqtdeployer executable is
-      # found at configure time. On macOS the tool is the one built from
-      # source in this job, so re-run the CMake configuration with the
-      # CQTDEPLOYER environment variable pointing to it (issue #166).
-      # NOTE: the folded block (>) keeps the whole invocation a single shell
-      # command; a literal block (|) would execute "-G Ninja" as a separate
-      # command and fail with "-G: command not found" (exit code 127).
-      if: runner.os == 'macOS'
-      run: >
-        CQTDEPLOYER="${{ github.workspace }}/build/src/CQtDeployer/CQtDeployer"
-        cmake -B ${{ steps.strings.outputs.build-output-dir }}
-        -G Ninja
-        -DBUILD_SHARED_LIBS=ON
-        -DCQT_DEPLOYER_TESTS=OFF
-        -DCMAKE_PREFIX_PATH="${{ env.QT_ROOT_DIR }}"
-        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -S ${{ github.workspace }}
 
     - name: deploy
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
