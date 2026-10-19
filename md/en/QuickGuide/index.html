@@ -362,6 +362,8 @@
       
         
       
+        
+      
     
     
     
@@ -987,6 +989,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../macOS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    macOS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../CompareFeatures/" class="md-nav__link">
         
   
@@ -1089,10 +1119,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_21" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_22" >
         
           
-          <label class="md-nav__link" for="__nav_3_21" id="__nav_3_21_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_22" id="__nav_3_22_label" tabindex="0">
             
   
   
@@ -1110,8 +1140,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_21_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_21">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_22_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_22">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2088,6 +2118,12 @@ Or </li>
 <li>
 <p>Windows <a href="https://github.com/QuasarApp/CQtDeployer/releases">installer</a></p>
 </li>
+<li>
+<p>macOS <a href="https://github.com/QuasarApp/CQtDeployer/releases">DMG</a>: open the DMG file and move the <code>CQtDeployer.app</code> bundle into the <code>Applications</code> folder.
+<div class="highlight"><pre><span></span><code>open<span class="w"> </span>CQtDeployer_*.dmg
+cp<span class="w"> </span>-R<span class="w"> </span>/Volumes/CQtDeployer/CQtDeployer.app<span class="w"> </span>/Applications/
+</code></pre></div></p>
+</li>
 </ul>
 </li>
 <li>
@@ -2104,6 +2140,11 @@ Or </li>
 <li>
 <p>For Windows systems:
 <div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable.exe<span class="w"> </span>-qmake<span class="w"> </span>C:/Qt/5.15.0/min_gw/bin/qmake.exe
+</code></pre></div></p>
+</li>
+<li>
+<p>For macOS systems:
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable<span class="w"> </span>-qmake<span class="w"> </span>/Users/&lt;user&gt;/Qt/6.10.3/macos/bin/qmake
 </code></pre></div></p>
 </li>
 <li>
@@ -2124,9 +2165,15 @@ Or </li>
 <p>If you application use qml, just add qmlDir option
 <div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable<span class="w"> </span>-libDir<span class="w"> </span>/PathToMyExtraLibs<span class="w"> </span>-recursiveDepth<span class="w"> </span><span class="m">5</span><span class="w"> </span>-qmlDir<span class="w"> </span>/path/to/my/qml/sources
 </code></pre></div></p>
-<p>If you want create simple installer for your application just add gif option.
+<p>If you want create simple installer for your application just add qif option.
 <div class="highlight"><pre><span></span><code>cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qif
 </code></pre></div></p>
+<blockquote>
+<p><strong>Note:</strong> the Qt Installer Framework tools (binarycreator) are not published
+for macOS, so the <code>qif</code> option is skipped gracefully on macOS hosts. To
+create a portable archive of your deployed macOS application use the <code>zip</code>
+packager. See the <a href="../macOS/">CQtDeployer for macOS</a> page.</p>
+</blockquote>
 <p>If you use system libraries from system PATH, just add deploySystem option. </p>
 <h4 id="warning-snap-version-do-not-have-permision-to-system-files-to-deploy-system-libraries-use-the-cqtdeployer-version-from-the-installer">Warning: snap version do not have permision to system files. To deploy system libraries use the cqtdeployer version from the <a href="https://github.com/QuasarApp/CQtDeployer/releases">installer</a><a class="headerlink" href="#warning-snap-version-do-not-have-permision-to-system-files-to-deploy-system-libraries-use-the-cqtdeployer-version-from-the-installer" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qif deploySystem

@@ -368,6 +368,8 @@
       
         
       
+        
+      
     
     
     
@@ -896,6 +898,34 @@
   
   
     <li class="md-nav__item">
+      <a href="md/en/macOS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    macOS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="md/en/CompareFeatures/" class="md-nav__link">
         
   
@@ -998,10 +1028,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_21" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_22" >
         
           
-          <label class="md-nav__link" for="__nav_3_21" id="__nav_3_21_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_22" id="__nav_3_22_label" tabindex="0">
             
   
   
@@ -1019,8 +1049,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_21_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_21">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_22_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_22">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1925,7 +1955,7 @@
 <p>Key differences of this program:
 * Performance: this program deploys the application several times faster (up to 10 seconds)
 * Flexibility: this application has flags that help you to configure the deployment for your or your project's needs
-* Cross-deployment: this application supports Windows and Linux distributions. This means that you can deploy a project not only for the host platform, but also deploy a project for Windows target on Linux host and vice versa.
+* Cross-deployment: this application supports Windows, Linux and macOS distributions. This means that you can deploy a project not only for the host platform, but also deploy a project for Windows target on Linux host and vice versa.
 * Fast installers creation: Once the deployment is complete, you will receive a standalone installer for your distribution.</p>
 <h2 id="supported-platforms">Supported platforms:<a class="headerlink" href="#supported-platforms" title="Permanent link">&para;</a></h2>
 <ul>
@@ -1941,7 +1971,19 @@
 <li>installer</li>
 </ul>
 </li>
+<li>macOS<ul>
+<li>DMG (app bundle)</li>
+<li>zip</li>
+<li>raw binaries</li>
 </ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>Note:</strong> the Qt Installer Framework (QIF) installer is not available on
+macOS - the QIFW tools are not published for this platform, so the <code>qif</code>
+option is skipped gracefully on macOS hosts. See the
+<a href="md/en/macOS/">macOS documentation</a> for the details.</p>
+</blockquote>
 <h2 id="supported-processors-architectures">Supported processors architectures:<a class="headerlink" href="#supported-processors-architectures" title="Permanent link">&para;</a></h2>
 <ul>
 <li>x86</li>
@@ -1960,6 +2002,9 @@
 
 <span class="w"> </span><span class="c1">#windows</span>
 <span class="w"> </span>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>Guitar.exe<span class="w"> </span>-qmake<span class="w"> </span>/path/to/qmake.exe
+
+<span class="w"> </span><span class="c1">#macos</span>
+<span class="w"> </span>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>Guitar<span class="w"> </span>-qmake<span class="w"> </span>/path/to/Qt/6.10.3/macos/bin/qmake
 </code></pre></div>
 <p align="center"><img src="https://user-images.githubusercontent.com/12465465/81007195-7ab2e780-8e59-11ea-9793-1eeeb0025b96.png"  height="400"></p>
 
