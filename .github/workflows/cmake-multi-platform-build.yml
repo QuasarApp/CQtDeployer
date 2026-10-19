@@ -96,12 +96,76 @@ jobs:
     - name: Install CQtDeployer
       # The pinned release is the first one that ships the macOS (Darwin
       # arm64) assets and contains the DMG distribution used by the macOS
-      # deploy/release targets (issue #866). After the action PR is merged
-      # and tagged, switch the reference back to
-      # QuasarApp/cqtdeployer-install-action@v1.2.1.
-      uses: QuasarApp/cqtdeployer-install-action@v1.2.1
+      # deploy/release targets (issue #866). The fork reference includes
+      # the macOS case-insensitive directory collision fix (commit 78602ce,
+      # QuasarApp/cqtdeployer-install-action PR #7) which is not part of
+      # the upstream v1.2.1 tag. After the PR is merged and tagged, switch
+      # the reference back to QuasarApp/cqtdeployer-install-action@<tag>.
+      uses: QuasarAppCI/cqtdeployer-install-action@task_866
       with:
         version: v1.6.2504.659185d
+
+    - name: Align MinGW runtime libraries with the build toolchain (Windows)
+      # The release zip bundles the MinGW runtime libraries (libstdc++-6,
+      # libgcc_s_seh-1, libwinpthread-1) of the Qt kit that was used to
+      # build it, while the deployed binaries link against libLIEF.dll
+      # which is built with the newer toolchain GCC. When the stale
+      # libstdc++-6.dll copy is loaded first, the release cqtdeployer
+      # crashes with STATUS_ENTRYPOINT_NOT_FOUND (0xC0000139) (issue
+      # #861). Align the copies in the Qt kit bin directory and in the
+      # cqt/ directory with the toolchain runtime, so the deploy/release
+      # targets can run the release cqtdeployer.
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        # Pick the toolchain with the highest version number (the same
+        # selection rule as QtDir::findMingwToolchainBin, issue #861).
+        $toolchain = $null
+        $best = -1
+        foreach ($dir in Get-ChildItem (Join-Path $env:IQTA_TOOLS 'mingw*') -Directory) {
+            if (-not (Test-Path (Join-Path $dir.FullName 'bin\libstdc++-6.dll'))) {
+                continue
+            }
+            $digits = ($dir.Name -replace '^.*mingw', '' -replace '\D', '')
+            $version = if ($digits) { [int]$digits } else { 0 }
+            if ($version -gt $best) {
+                $best = $version
+                $toolchain = $dir.FullName
+            }
+        }
+        if (-not $toolchain) {
+            throw "The MinGW toolchain runtime was not found under $env:IQTA_TOOLS"
+        }
+        foreach ($lib in @('libstdc++-6.dll', 'libgcc_s_seh-1.dll', 'libwinpthread-1.dll')) {
+            $src = Join-Path $toolchain.FullName "bin\$lib"
+            foreach ($dst in @((Join-Path $env:QT_ROOT_DIR "bin\$lib"),
+                               (Join-Path $env:GITHUB_WORKSPACE "cqt\$lib"))) {
+                if (Test-Path $dst) {
+                    Copy-Item -Path $src -Destination $dst -Force
+                    Write-Host "Aligned $dst with $src"
+                }
+            }
+        }
+
+    - name: Make the Qt Installer Framework discoverable (Linux)
+      # The release cqtdeployer only looks for binarycreator next to its
+      # own installation (cqt/QIF/), while the Qt Installer Framework
+      # tools installed by the "Install Qt" step live under
+      # $IQTA_TOOLS/QtInstallerFramework. Without binarycreator the QIF
+      # .run distribution is silently skipped on Linux (issue #866).
+      # Link the tool into the cqt/ directory, so the deploy/release
+      # targets can find it.
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        ifw_bin="$(ls -d "${IQTA_TOOLS}/QtInstallerFramework"/*/bin/binarycreator 2>/dev/null | sort -V | tail -n 1)"
+        if [ -z "$ifw_bin" ]; then
+            echo "binarycreator was not found under ${IQTA_TOOLS}/QtInstallerFramework"
+            exit 1
+        fi
+        mkdir -p "${GITHUB_WORKSPACE}/cqt/QIF"
+        ln -sf "$ifw_bin" "${GITHUB_WORKSPACE}/cqt/QIF/binarycreator"
+        "${GITHUB_WORKSPACE}/cqt/QIF/binarycreator" --version
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
