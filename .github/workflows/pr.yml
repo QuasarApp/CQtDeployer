@@ -69,7 +69,7 @@ jobs:
       # tagged, switch the reference back to
       # QuasarApp/cqtdeployer-install-action@v1.2.0.
       uses: QuasarApp/cqtdeployer-install-action@v1.2.1
-      with 
+      with: 
         version: v1.6.2504.659185d
 
 
