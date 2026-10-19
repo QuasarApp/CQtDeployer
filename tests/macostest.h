@@ -17,7 +17,10 @@
  * Unit tests for the macOS (Mach-O) deployment helpers (issue #166):
  * the Mach-O type detection, the LC_RPATH reader and the .framework
  * layout helpers of the DeployCore. The tests use hand built Mach-O
- * binaries, so they run on every platform.
+ * binaries, so they run on every platform except the Windows hosts,
+ * where the macOS deployment (the cross deployment is supported from
+ * the Linux hosts only) is not possible and the tests are skipped
+ * (issue #166).
  */
 class MacOSTest : public QObject
 {

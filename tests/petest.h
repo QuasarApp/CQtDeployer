@@ -29,6 +29,11 @@
  *    platform; a MSVC toolchain binary imports the MSVC CRT (msvcr*.dll)
  *    and gets the *_MSVC platform; other binaries (including UCRT MSVC
  *    binaries) keep the generic platform.
+ *
+ * The cross deployment is supported from the Linux hosts only, so the
+ * tests of the target platform that can not be deployed from the current
+ * host are skipped: the PE (Windows) tests on the macOS hosts and the
+ * Mach-O (macOS) tests on the Windows hosts (issue #166).
  */
 class PeTest : public QObject
 {

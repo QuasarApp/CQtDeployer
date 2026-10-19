@@ -317,6 +317,12 @@ QString writeMachO(const QTemporaryDir &dir, const QString &fileName,
 } // namespace
 
 void PeTest::parseValidFile() {
+#if defined(Q_OS_MACOS)
+    // The cross deployment for the Windows targets is supported from
+    // the Linux hosts only, a macOS host can not deploy for the Windows
+    // targets, so the PE tests are not useful there (issue #166).
+    QSKIP("The Windows (PE) deployment tests are not supported on the macOS hosts");
+#endif
     QTemporaryDir dir;
     QVERIFY(dir.isValid());
 
@@ -355,6 +361,12 @@ void PeTest::parseValidFile() {
 }
 
 void PeTest::parseViaDeployWrapper() {
+#if defined(Q_OS_MACOS)
+    // The cross deployment for the Windows targets is supported from
+    // the Linux hosts only, a macOS host can not deploy for the Windows
+    // targets, so the PE tests are not useful there (issue #166).
+    QSKIP("The Windows (PE) deployment tests are not supported on the macOS hosts");
+#endif
     QTemporaryDir dir;
     QVERIFY(dir.isValid());
 
@@ -381,6 +393,12 @@ void PeTest::parseViaDeployWrapper() {
 }
 
 void PeTest::parseDelayImports() {
+#if defined(Q_OS_MACOS)
+    // The cross deployment for the Windows targets is supported from
+    // the Linux hosts only, a macOS host can not deploy for the Windows
+    // targets, so the PE tests are not useful there (issue #166).
+    QSKIP("The Windows (PE) deployment tests are not supported on the macOS hosts");
+#endif
     QTemporaryDir dir;
     QVERIFY(dir.isValid());
 
@@ -415,6 +433,12 @@ void PeTest::parseDelayImports() {
 }
 
 void PeTest::parseInvalidFile() {
+#if defined(Q_OS_MACOS)
+    // The cross deployment for the Windows targets is supported from
+    // the Linux hosts only, a macOS host can not deploy for the Windows
+    // targets, so the PE tests are not useful there (issue #166).
+    QSKIP("The Windows (PE) deployment tests are not supported on the macOS hosts");
+#endif
     QTemporaryFile tmp;
     QVERIFY(tmp.open());
     tmp.write("this is not a PE file");
@@ -429,6 +453,12 @@ void PeTest::parseInvalidFile() {
 }
 
 void PeTest::parseMachO() {
+#if defined(Q_OS_WIN)
+    // The cross deployment for the macOS targets is supported from the
+    // Linux hosts only, a Windows host can not deploy for the macOS
+    // targets, so the Mach-O tests are not useful there (issue #166).
+    QSKIP("The macOS (Mach-O) deployment tests are not supported on the Windows hosts");
+#endif
     QTemporaryDir dir;
     QVERIFY(dir.isValid());
 
@@ -459,6 +489,12 @@ void PeTest::parseMachO() {
 }
 
 void PeTest::parseMachORouting() {
+#if defined(Q_OS_WIN)
+    // The cross deployment for the macOS targets is supported from the
+    // Linux hosts only, a Windows host can not deploy for the macOS
+    // targets, so the Mach-O tests are not useful there (issue #166).
+    QSKIP("The macOS (Mach-O) deployment tests are not supported on the Windows hosts");
+#endif
     QTemporaryDir dir;
     QVERIFY(dir.isValid());
 
@@ -475,6 +511,12 @@ void PeTest::parseMachORouting() {
 }
 
 void PeTest::parseInvalidMachO() {
+#if defined(Q_OS_WIN)
+    // The cross deployment for the macOS targets is supported from the
+    // Linux hosts only, a Windows host can not deploy for the macOS
+    // targets, so the Mach-O tests are not useful there (issue #166).
+    QSKIP("The macOS (Mach-O) deployment tests are not supported on the Windows hosts");
+#endif
     QTemporaryFile tmp;
     QVERIFY(tmp.open());
     tmp.write("this is not a Mach-O file");
@@ -485,6 +527,12 @@ void PeTest::parseInvalidMachO() {
     QVERIFY(!machoParser.getLibInfo(tmp.fileName(), info));
 }
 void PeTest::classifyMinGWFlavors() {
+#if defined(Q_OS_MACOS)
+    // The cross deployment for the Windows targets is supported from
+    // the Linux hosts only, a macOS host can not deploy for the Windows
+    // targets, so the PE tests are not useful there (issue #166).
+    QSKIP("The Windows (PE) deployment tests are not supported on the macOS hosts");
+#endif
     QTemporaryDir dir;
     QVERIFY(dir.isValid());
 
@@ -512,6 +560,12 @@ void PeTest::classifyMinGWFlavors() {
 }
 
 void PeTest::classifyMSVCFlavor() {
+#if defined(Q_OS_MACOS)
+    // The cross deployment for the Windows targets is supported from
+    // the Linux hosts only, a macOS host can not deploy for the Windows
+    // targets, so the PE tests are not useful there (issue #166).
+    QSKIP("The Windows (PE) deployment tests are not supported on the macOS hosts");
+#endif
     QTemporaryDir dir;
     QVERIFY(dir.isValid());
 
@@ -535,6 +589,12 @@ void PeTest::classifyMSVCFlavor() {
 }
 
 void PeTest::classifyPrecedenceAndGeneric() {
+#if defined(Q_OS_MACOS)
+    // The cross deployment for the Windows targets is supported from
+    // the Linux hosts only, a macOS host can not deploy for the Windows
+    // targets, so the PE tests are not useful there (issue #166).
+    QSKIP("The Windows (PE) deployment tests are not supported on the macOS hosts");
+#endif
     QTemporaryDir dir;
     QVERIFY(dir.isValid());
 
@@ -565,6 +625,12 @@ void PeTest::classifyPrecedenceAndGeneric() {
 }
 
 void PeTest::recognizeMinGWRuntimes() {
+#if defined(Q_OS_MACOS)
+    // The cross deployment for the Windows targets is supported from
+    // the Linux hosts only, a macOS host can not deploy for the Windows
+    // targets, so the PE tests are not useful there (issue #166).
+    QSKIP("The Windows (PE) deployment tests are not supported on the macOS hosts");
+#endif
     QTemporaryDir dir;
     QVERIFY(dir.isValid());
 

@@ -248,6 +248,13 @@ std::vector<unsigned char> makeFatMachO(const QList<QByteArray> &slices) {
 } // namespace
 
 void MacOSTest::initTestCase() {
+#if defined(Q_OS_WIN)
+    // The cross deployment for the macOS targets is supported from the
+    // Linux hosts only (on the macOS hosts the deployment is native), a
+    // Windows host can not deploy for the macOS targets, so the tests
+    // of this class are not useful there (issue #166).
+    QSKIP("The macOS deployment tests are not supported on the Windows hosts");
+#endif
     QVERIFY(_tmp.isValid());
 }
 
