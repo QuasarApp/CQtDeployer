@@ -99,7 +99,7 @@ jobs:
       # deploy/release targets (issue #866). After the action PR is merged
       # and tagged, switch the reference back to
       # QuasarApp/cqtdeployer-install-action@v1.2.1.
-      uses: QuasarApp/cqtdeployer-install-action@@v1.2.1
+      uses: QuasarApp/cqtdeployer-install-action@v1.2.1
       with:
         version: v1.6.2504.659185d
 

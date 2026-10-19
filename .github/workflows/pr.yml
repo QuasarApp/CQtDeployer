@@ -68,7 +68,7 @@ jobs:
       # action as well (issue #866). After the action PR is merged and
       # tagged, switch the reference back to
       # QuasarApp/cqtdeployer-install-action@v1.2.0.
-      uses: QuasarApp/cqtdeployer-install-action@1.2.1
+      uses: QuasarApp/cqtdeployer-install-action@v1.2.1
 
 
     - name: ccache
