@@ -137,7 +137,7 @@ jobs:
             throw "The MinGW toolchain runtime was not found under $env:IQTA_TOOLS"
         }
         foreach ($lib in @('libstdc++-6.dll', 'libgcc_s_seh-1.dll', 'libwinpthread-1.dll')) {
-            $src = Join-Path $toolchain.FullName "bin\$lib"
+            $src = Join-Path $toolchain "bin\$lib"
             foreach ($dst in @((Join-Path $env:QT_ROOT_DIR "bin\$lib"),
                                (Join-Path $env:GITHUB_WORKSPACE "cqt\$lib"))) {
                 if (Test-Path $dst) {
