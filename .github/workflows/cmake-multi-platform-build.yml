@@ -98,25 +98,8 @@ jobs:
       with:
         version: v1.6.2504.659185d
 
-    - name: Make the Qt Installer Framework discoverable (Linux)
-      # The release cqtdeployer only looks for binarycreator next to its
-      # own installation (cqt/QIF/), while the Qt Installer Framework
-      # tools installed by the "Install Qt" step live under
-      # $IQTA_TOOLS/QtInstallerFramework. Without binarycreator the QIF
-      # .run distribution is silently skipped on Linux (issue #866).
-      # Link the tool into the cqt/ directory, so the deploy/release
-      # targets can find it.
-      if: runner.os == 'Linux'
-      shell: bash
-      run: |
-        ifw_bin="$(ls -d "${IQTA_TOOLS}/QtInstallerFramework"/*/bin/binarycreator 2>/dev/null | sort -V | tail -n 1)"
-        if [ -z "$ifw_bin" ]; then
-            echo "binarycreator was not found under ${IQTA_TOOLS}/QtInstallerFramework"
-            exit 1
-        fi
-        mkdir -p "${GITHUB_WORKSPACE}/cqt/QIF"
-        ln -sf "$ifw_bin" "${GITHUB_WORKSPACE}/cqt/QIF/binarycreator"
-        "${GITHUB_WORKSPACE}/cqt/QIF/binarycreator" --version
+
+
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
