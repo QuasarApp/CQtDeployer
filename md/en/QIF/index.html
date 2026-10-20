@@ -2079,11 +2079,11 @@
 <p>The <strong>Qt Installer Framework</strong> (QIF) provides a set of tools and utilities to create installers for the supported desktop Qt platforms: Linux, Microsoft Windows, and OS X.
 In <strong>CQtDeployer</strong> QIF availabel in qif option.</p>
 <blockquote>
-<p><strong>Note:</strong> the Qt Installer Framework tools (binarycreator) are not published
-for macOS. If you invoke the <code>qif</code> option on a macOS host, CQtDeployer skips
-the QIF installer step gracefully and completes the rest of the deployment.
-Use the <code>zip</code> packager to create a portable archive of the deployed
-application. See the <a href="../macOS/">CQtDeployer for macOS</a> page.</p>
+<p><strong>Note:</strong> the Qt Installer Framework tools (binarycreator and
+installerbase) are stored in the CQtDeployer repository for all supported
+platforms (including macOS), so the <code>qif</code> option works on macOS hosts as
+well. The release artifact for macOS is a DMG archive. See the
+<a href="../macOS/">CQtDeployer for macOS</a> page.</p>
 </blockquote>
 <h3 id="how-to-use-qif-option">How to use qif option<a class="headerlink" href="#how-to-use-qif-option" title="Permanent link">&para;</a></h3>
 <p>The qif option invoke with path to custo qt installer template or with default installer template.</p>

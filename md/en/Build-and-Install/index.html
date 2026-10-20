@@ -2382,7 +2382,7 @@ git<span class="w"> </span>submodule<span class="w"> </span>update<span class="w
 </code></pre></div>
 </li>
 </ul>
-<p>The Qt Installer Framework tools are not published for macOS, so the QIF installer is not created. The deployment of the macOS application is done with the <code>zip</code> packager instead.</p>
+<p>The Qt Installer Framework tools are stored in the CQtDeployer repository for all supported platforms (including macOS), so the QIF installer can be created on macOS as well. The release artifact for macOS is the DMG archive.</p>
 <h3 id="note">Note<a class="headerlink" href="#note" title="Permanent link">&para;</a></h3>
 <p>If you do not have installed cqtdeployer on your build machine, you can compile cqtdeployer tool as a static. For this, disable the BUILD_SHARED_LIBS option.</p>
 <div class="highlight"><pre><span></span><code>cmake<span class="w"> </span>..<span class="w"> </span>-DBUILD_SHARED_LIBS<span class="o">=</span><span class="m">0</span>
