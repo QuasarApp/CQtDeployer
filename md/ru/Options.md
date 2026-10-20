@@ -83,6 +83,7 @@ cqtdeployer -option1 value1 -option2 list,of,values flag1 flag2 flag3
 |  -qmlDir [params]           | Папка qml. пример -qmlDir ~/my/project/qml                |
 |  -qmake  [params]           | Путь к qmake. пример                                      |
 |                             | -qmake ~/Qt/5.14.0/gcc_64/bin/qmake                       |
+|  -qtRootDir [params]        | Корневой путь установки Qt. Пример -qtRootDir ~/Qt/6.5.2/gcc_64. CQtDeployer попытается найти исполняемый файл qmake или qmake6 в этом пути и использовать его для определения расположения модулей Qt. Если исполняемый файл qmake не найден, пути Qt будут реконструированы из корневого пути. |
 |  -ignore [list,params]      | Список библиотек для игнорирования                        |
 |                             | Пример -ignore libicudata.so.56,libicudata2.so.56         |
 |  -ignoreEnv [list,params]   | Список путей для игнорирования.                           |

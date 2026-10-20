@@ -87,6 +87,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   -qmlDir [params]          | Qml data dir. For example -qmlDir ~/my/project/qml              |
 |   -qmake  [params]          | Qmake path. For example                                         |
 |                             | -qmake ~/Qt/5.14.0/gcc_64/bin/qmake                             |
+|   -qtRootDir [params]       | Root path of the Qt installation. For example -qtRootDir ~/Qt/6.5.2/gcc_64. CQtDeployer will try to detect the qmake or qmake6 executable from this path and use it to parse the Qt module locations. If the qmake executable is not found the Qt paths are reconstructed from the root path. |
 |   -ignore [list,params]     | The list of libs to ignore.                                     |
 |                             | For example -ignore libicudata.so.56,libicudata2.so.56          |
 |   -ignoreEnv [list,params]  | The list of the environment to ignore.                          |

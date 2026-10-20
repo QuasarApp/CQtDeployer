@@ -331,6 +331,19 @@ public:
                                           int lastLvl = 2);
     static QString findProcess(const QString& env, const QString& proc, bool ignoreSymLinks = false);
 
+    /**
+     * @brief findQmakeInQtRoot This method finds the qmake or qmake6
+     *  executable in the bin directory of a Qt installation root directory
+     *  (issue #788). The expected layout is <qtRootDir>/bin/qmake
+     *  (or <qtRootDir>/bin/qmake6, with the .exe suffix on Windows).
+     * @param qtRootDir This is the root directory of a Qt installation,
+     *  for example ~/Qt/6.5.2/gcc_64 or D:/Qt/6.5.2/mingw_64.
+     * @return the path of the found qmake executable or an empty string
+     *  when the root directory does not exist or the bin directory of the
+     *  root does not contain a qmake or qmake6 executable.
+     */
+    static QString findQmakeInQtRoot(const QString &qtRootDir);
+
     static QStringList debugExtensions();
     static bool isDebugFile(const QString& file);
 

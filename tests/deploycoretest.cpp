@@ -10,6 +10,11 @@
 #include "deployconfig.h"
 #include "libinfo.h"
 
+#include <QTemporaryDir>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+
 void DeployCoreTest::initTestCase() {
 }
 
@@ -149,6 +154,66 @@ void DeployCoreTest::platformStrings() {
              Platform::Win32_MSVC);
     QCOMPARE(DeployCore::getPlatformFromString("win_x86_64"),
              Platform::Win64);
+}
+
+void DeployCoreTest::qtRootDirQmakeDetection() {
+    // The qtRootDir option (issue #788): CQtDeployer detects the
+    // qmake/qmake6 executable from the bin directory of the Qt
+    // installation root and uses it to parse the Qt module locations.
+
+    QTemporaryDir tmp;
+    QVERIFY(tmp.isValid());
+
+    auto makeExec = [](const QString &path) {
+        auto file = QFile(path);
+        QVERIFY(file.open(QIODevice::WriteOnly));
+        file.close();
+        QVERIFY(QFile::setPermissions(path,
+                                      QFileInfo(path).permissions()
+                                      | QFileDevice::ExeOwner
+                                      | QFileDevice::ExeGroup
+                                      | QFileDevice::ExeOther));
+    };
+
+    // Qt 5 layout: <root>/bin/qmake
+    const auto qt5Root = tmp.path() + "/qt5";
+    QVERIFY(QDir(qt5Root + "/bin").mkpath(qt5Root + "/bin"));
+    const auto qt5Qmake = qt5Root + "/bin/qmake";
+    makeExec(qt5Qmake);
+    QCOMPARE(DeployCore::findQmakeInQtRoot(qt5Root), qt5Qmake);
+
+    // Qt 6 layout: <root>/bin/qmake6 (no qmake)
+    const auto qt6Root = tmp.path() + "/qt6";
+    QVERIFY(QDir(qt6Root + "/bin").mkpath(qt6Root + "/bin"));
+    const auto qt6Qmake = qt6Root + "/bin/qmake6";
+    makeExec(qt6Qmake);
+    QCOMPARE(DeployCore::findQmakeInQtRoot(qt6Root), qt6Qmake);
+
+    // When both executables exist the qmake is preferred
+    const auto bothRoot = tmp.path() + "/both";
+    QVERIFY(QDir(bothRoot + "/bin").mkpath(bothRoot + "/bin"));
+    const auto bothQmake = bothRoot + "/bin/qmake";
+    const auto bothQmake6 = bothRoot + "/bin/qmake6";
+    makeExec(bothQmake);
+    makeExec(bothQmake6);
+    QCOMPARE(DeployCore::findQmakeInQtRoot(bothRoot), bothQmake);
+
+    // A passed bin directory (without the bin sub-directory) is found too
+    QCOMPARE(DeployCore::findQmakeInQtRoot(qt5Root + "/bin"), qt5Qmake);
+
+    // A non-existing directory returns an empty path
+    QCOMPARE(DeployCore::findQmakeInQtRoot(tmp.path() + "/no-such-dir"),
+             QString());
+
+    // A root without a bin directory and without qmake returns empty
+    const auto emptyRoot = tmp.path() + "/empty";
+    QVERIFY(QDir(emptyRoot).mkpath(emptyRoot));
+    QCOMPARE(DeployCore::findQmakeInQtRoot(emptyRoot), QString());
+
+    // A root with an empty bin directory returns empty
+    const auto noQmakeRoot = tmp.path() + "/noqmake";
+    QVERIFY(QDir(noQmakeRoot + "/bin").mkpath(noQmakeRoot + "/bin"));
+    QCOMPARE(DeployCore::findQmakeInQtRoot(noQmakeRoot), QString());
 }
 
 // Standard stand-alone QTest entry point, see the Qt test tutorial:

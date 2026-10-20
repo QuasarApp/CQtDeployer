@@ -1312,6 +1312,30 @@ bool ConfigParser::initQmakePrivate(const QString &qmake) {
     return true;
 }
 
+bool ConfigParser::initQmakeFromQtRoot(const QString &qtRootDir) {
+    QFileInfo info(qtRootDir);
+
+    if (!info.isDir()) {
+        qCritical() << "The qtRootDir option points to a non-existing directory: "
+                    + info.absoluteFilePath();
+        return false;
+    }
+
+    auto qmake = DeployCore::findQmakeInQtRoot(info.absoluteFilePath());
+
+    if (!qmake.isEmpty()) {
+        qInfo() << "The qmake was found in the qtRootDir option. qmake : " + qmake
+                  << ". The Qt module locations are parsed from the qmake executable.";
+        return initQmakePrivate(qmake);
+    }
+
+    qWarning() << "The qmake or qmake6 executable was not found in the qtRootDir "
+                 "directory: " + info.absoluteFilePath() +
+                 ". Reconstruct the Qt paths from the root path.";
+
+    return setQtDir(info.absoluteFilePath());
+}
+
 bool ConfigParser::initQmake() {
 
 
@@ -1326,6 +1350,16 @@ bool ConfigParser::initQmake() {
         QuasarAppUtils::Params::getArg("qmake"));
 
     QFileInfo info(qmake);
+
+    // The qtRootDir option (issue #788) takes priority over the automatic
+    // RPATH and PATH searches: the user has explicitly selected the Qt
+    // installation that has to be deployed. A valid qmake option file
+    // always wins, because it is a more direct input.
+    const auto qtRootDir = QuasarAppUtils::PlatformUtils::transportPathToSnapRoot(
+        QuasarAppUtils::Params::getArg("qtRootDir"));
+    if (!qtRootDir.isEmpty() && !info.isFile()) {
+        return initQmakeFromQtRoot(qtRootDir);
+    }
 
     if (!info.isFile()) {
 

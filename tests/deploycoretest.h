@@ -27,6 +27,7 @@ private slots:
     void platformCompatibility();
     void foreignRuntimeNotSelected();
     void platformStrings();
+    void qtRootDirQmakeDetection();
 };
 
 #endif // DEPLOYCORETEST_H
