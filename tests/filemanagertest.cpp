@@ -135,24 +135,26 @@ void FileManagerTest::symlinkCopy() {
     QVERIFY(fm.copyFile(link, m_target));
 
     const auto dst = m_target + "/lib.so.1";
-    QVERIFY(QFile::exists(dst));
+    // The deployed entry is a regular file (Linux) or a symlink (macOS).
+    // On macOS the link target file is not part of this flat copy, so the
+    // link is dangling and has to be checked without following it.
+    const auto dstInfo = QFileInfo(dst);
+    QVERIFY(dstInfo.isSymLink() || dstInfo.isFile());
 
 #ifdef Q_OS_MACOS
     // On macOS the link itself is kept, because the framework bundles
     // (Versions/Current -> A) must stay resolvable by dyld (issue #166).
     // The target is stored relative to the created link when it points
     // inside the source directory (issue #825).
-    const auto info = QFileInfo(dst);
-    QVERIFY(info.isSymLink());
-    QCOMPARE(info.readSymLink(), QByteArray("lib.so.1.0"));
+    QVERIFY(dstInfo.isSymLink());
+    QCOMPARE(dstInfo.readSymLink(), QByteArray("lib.so.1.0"));
 #else
     // On Linux the deployed bundle must be self-contained (issue #825):
     // the symlink is copied as a regular file with the content of the
     // resolved target, because a created link would point to the source
     // machine.
-    const auto info = QFileInfo(dst);
-    QVERIFY(!info.isSymLink());
-    QVERIFY(info.isFile());
+    QVERIFY(!dstInfo.isSymLink());
+    QVERIFY(dstInfo.isFile());
     {
         QFile f(dst);
         QVERIFY(f.open(QIODevice::ReadOnly));
