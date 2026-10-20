@@ -14,6 +14,7 @@
 #include <quasarapp.h>
 #include <filemanager.h>
 
+#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -273,9 +274,8 @@ bool Dmg::moveToBundleRoot(const QString &from, const QString &to) const {
     }
 
     if (!QFile::rename(from, to)) {
-        QuasarAppUtils::Params::log("Failed to move the executable file "
-                                    "to the application bundle: " + from,
-                                    QuasarAppUtils::Error);
+        qCritical() << "Failed to move the executable file "
+                                    "to the application bundle: " + from;
         return false;
     }
 

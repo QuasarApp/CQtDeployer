@@ -7,6 +7,7 @@
 
 #include "deployconfig.h"
 #include "pluginsparser.h"
+#include <QDebug>
 #include <QDir>
 #include <dependenciesscanner.h>
 #include <qaglobalutils.h>
@@ -219,7 +220,7 @@ void PluginsParser::scanPlatforms(const QString& package, QList<QString>& disabl
         auto pluginPlatform = platformForPlugin(getPluginNameFromFile(plugin.baseName()));
         if (!(platform & pluginPlatform)) {
 
-            QuasarAppUtils::Params::log("platform : " + plugin.baseName() + " is disabled", QuasarAppUtils::Info);
+            qInfo() << "platform : " + plugin.baseName() + " is disabled";
             disabledPlugins += getPluginNameFromFile(plugin.baseName());
         }
     }

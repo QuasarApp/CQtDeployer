@@ -6,6 +6,7 @@
  */
 
 #include "ignorerule.h"
+#include <QDebug>
 #include <quasarapp.h>
 
 bool IgnoreRule::checkOnlytext(const QString &lib) {
@@ -28,7 +29,7 @@ void IgnoreRule::addRule(const IgnoreData &rule) {
 
 bool IgnoreRule::check(const LibInfo &info, const QString& ignoreLabel) const {
     if (info.fullPath().contains(ignoreLabel, DeployCore::getCaseSensitivity())) {
-        QuasarAppUtils::Params::log(info.fullPath() + " ignored by filter" + ignoreLabel);
+        qDebug() << info.fullPath() + " ignored by filter" + ignoreLabel;
         return true;
     }
 

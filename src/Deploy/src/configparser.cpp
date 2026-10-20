@@ -50,9 +50,8 @@ static void addQtToolchainEnv(DeployConfig &config) {
         return;
     }
 
-    QuasarAppUtils::Params::log("Use the MinGW toolchain from " + toolchain
-                                + " for the C++ runtime libraries.",
-                                QuasarAppUtils::Debug);
+    qDebug() << "Use the MinGW toolchain from " + toolchain
+                                + " for the C++ runtime libraries.";
 
     config.envirement.addEnv(toolchain);
     config.extraPaths.addExtraPaths({toolchain});
@@ -1654,9 +1653,8 @@ QList<iDistribution *> ConfigParser::getDistribution() {
 #ifdef Q_OS_LINUX
         distros.push_back(new Deb(_fileManager));
 #else
-        QuasarAppUtils::Params::log("The deb option availabel only on Linux host palatforms,"
-                                    " please remove this options from your deploy command",
-                                    QuasarAppUtils::Warning);
+        qWarning() << "The deb option availabel only on Linux host palatforms,"
+                                    " please remove this options from your deploy command";
 
 #endif
     }
@@ -1670,12 +1668,11 @@ QList<iDistribution *> ConfigParser::getDistribution() {
         if (qif->isAvailable()) {
             distros.push_back(qif);
         } else {
-            QuasarAppUtils::Params::log("The binarycreator executable of the "
+            qWarning() << "The binarycreator executable of the "
                                         "Qt Installer Framework is not found, "
                                         "the qif package will not be created. "
                                         "Install the Qt Installer Framework "
-                                        "tools to enable this option.",
-                                        QuasarAppUtils::Warning);
+                                        "tools to enable this option.";
             delete qif;
         }
     }
@@ -1685,11 +1682,10 @@ QList<iDistribution *> ConfigParser::getDistribution() {
         if (dmg->isAvailable()) {
             distros.push_back(dmg);
         } else {
-            QuasarAppUtils::Params::log("The DMG package is created only on "
+            qWarning() << "The DMG package is created only on "
                                         "the macOS hosts with the hdiutil "
                                         "tool, the dmg package will not be "
-                                        "created on this platform.",
-                                        QuasarAppUtils::Warning);
+                                        "created on this platform.";
             delete dmg;
         }
     }
