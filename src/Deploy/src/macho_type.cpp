@@ -7,6 +7,7 @@
 
 #include "macho_type.h"
 #include "deploycore.h"
+#include <QDebug>
 #include <QFileInfo>
 #include <quasarapp.h>
 
@@ -28,8 +29,7 @@ bool MachO::getLibInfo(const QString &lib, LibInfo &info) const {
     // reader (the full LIEF parsing is a heavy operation, issue #166).
     auto binary = DeployCore::parseMachOFile(infolib.absoluteFilePath());
     if (!DeployCore::isMacOBinary(binary.get())) {
-        QuasarAppUtils::Params::log("Unable to parse Mach-O file: " + infolib.absoluteFilePath(),
-                                    QuasarAppUtils::Error);
+        qCritical() << "Unable to parse Mach-O file: " + infolib.absoluteFilePath();
         return false;
     }
 

@@ -11,6 +11,7 @@
 #include <QFileInfo>
 #include <QList>
 #include <deploy.h>
+#include <qalogger.h>
 
 int main(int argc, char *argv[]) {
 
@@ -23,6 +24,12 @@ int main(int argc, char *argv[]) {
         qWarning() << "Wrong parameters. Please use the 'help' of 'h' option to show the help page.";
         exit(4);
     }
+
+    // Route all qt log messages (qDebug, qInfo, qWarning, qCritical) through
+    // the QALogger handler, which filters them according to the verbose
+    // level (issue #875).
+    QuasarAppUtils::QALogger logger;
+    logger.init();
 
     Deploy deploy;
 

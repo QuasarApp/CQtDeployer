@@ -9,6 +9,7 @@
 #include "envirement.h"
 #include "pathutils.h"
 
+#include <QDebug>
 #include <QDir>
 #include <QFileInfo>
 
@@ -65,20 +66,17 @@ void Envirement::addEnv(const QStringList &listDirs) {
         auto path = PathUtils::fixPath(QFileInfo(i).absoluteFilePath());
 
         if (isIgnore(i)) {
-            QuasarAppUtils::Params::log(QString("The %0 path is ignored and not added to a search list!!").arg(i),
-                                        QuasarAppUtils::Debug);
+            qDebug() << QString("The %0 path is ignored and not added to a search list!!").arg(i);
             continue;
         }
 
         if (!QFileInfo(path).isDir()) {
-            QuasarAppUtils::Params::log(QString("%0 is not a directory!! ").arg(path),
-                                        QuasarAppUtils::Debug);
+            qDebug() << QString("%0 is not a directory!! ").arg(path);
             continue;
         }
 
         if (_dataEnvironment.contains(path)) {
-            QuasarAppUtils::Params::log (QString("Path %0 is already added").arg(path),
-                                         QuasarAppUtils::Debug);
+            qDebug() << QString("Path %0 is already added").arg(path);
             continue;
         }
 

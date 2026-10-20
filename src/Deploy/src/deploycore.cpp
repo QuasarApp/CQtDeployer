@@ -107,13 +107,11 @@ DeployCore::QtModule DeployCore::getQtModule(const QString& path) {
 
 void DeployCore::addQtModule(DeployCore::QtModule &module, const QString &path) {
 
-    QuasarAppUtils::Params::log("Current module " + QString::number(module),
-                                QuasarAppUtils::Debug);
+    qDebug() << "Current module " + QString::number(module);
 
     auto mod = getQtModule(path);
-    QuasarAppUtils::Params::log("Add new module from path " + path  +
-                                " module value " + QString::number(mod),
-                                QuasarAppUtils::Debug);
+    qDebug() << "Add new module from path " + path  +
+                                " module value " + QString::number(mod);
 
 
     module = static_cast<DeployCore::QtModule>(
@@ -1000,19 +998,19 @@ MSVCVersion DeployCore::getMSVC(const QString &_qtBin) {
     QDir dir = QFileInfo(_qtBin).absoluteFilePath();
 
     if (!dir.cdUp()) {
-        QuasarAppUtils::Params::log("is not a standard qt repo", QuasarAppUtils::Debug);
+        qDebug() << "is not a standard qt repo";
         return static_cast<MSVCVersion>(res);
     }
 
     auto msvcPath = dir.absolutePath();
 
     if (!(dir.cdUp() && dir.cdUp())) {
-        QuasarAppUtils::Params::log("is not a standard qt repo", QuasarAppUtils::Debug);
+        qDebug() << "is not a standard qt repo";
         return static_cast<MSVCVersion>(res);
     }
 
     if (!msvcPath.contains("msvc")) {
-        QuasarAppUtils::Params::log("vcredist not defined", QuasarAppUtils::Debug);
+        qDebug() << "vcredist not defined";
         return static_cast<MSVCVersion>(res);
     }
 
@@ -1056,7 +1054,7 @@ QString DeployCore::getVCredist(const QString &_qtbinDir) {
     QDir dir = _qtbinDir;
 
     if (!(dir.cdUp() && dir.cdUp() && dir.cdUp() && dir.cd("vcredist"))) {
-        QuasarAppUtils::Params::log("vcredist not found!");
+        qDebug() << "vcredist not found!";
         return "";
     }
 
@@ -1326,12 +1324,10 @@ char DeployCore::getEnvSeparator() {
 }
 
 void DeployCore::printInternalError(const char * function, const char* file, int line ) {
-    QuasarAppUtils::Params::log(QString("Internal error ocurred in %0 (%1:%2).").arg(function, file).arg(line),
-                                QuasarAppUtils::Error);
-    QuasarAppUtils::Params::log(QString("If you see this message please create a new issue"
+    qCritical() << QString("Internal error ocurred in %0 (%1:%2).").arg(function, file).arg(line);
+    qCritical() << QString("If you see this message please create a new issue"
                                         " about this problem on the official github page"
-                                        " https://github.com/QuasarApp/CQtDeployer/issues/new/choose. "),
-                                QuasarAppUtils::Error);
+                                        " https://github.com/QuasarApp/CQtDeployer/issues/new/choose. ");
 }
 
 QFileInfo DeployCore::findItem(const QString &bin) {

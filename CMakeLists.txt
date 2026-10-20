@@ -86,6 +86,26 @@ set(LIEF_USE_CCACHE ON)
 add_subdirectory(submodules/LIEF)
 add_subdirectory(submodules/zip)
 
+# LIEF is third-party code (see submodules/LIEF) and its sources are not
+# modified by this project. GCC/Clang emit two warnings for it
+# (-Wshift-negative-value in BinaryStream.cpp and -Wunused-variable in
+# PE/Builder.cpp), silence them so the build of CQtDeployer is
+# warning-free (issue #875).
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  target_compile_options(LIB_LIEF PRIVATE
+    -Wno-shift-negative-value
+    -Wno-unused-variable)
+endif()
+
+# LIEF contains no Qt code, turn off the inherited CMAKE_AUTOMOC/AUTOUIC/
+# AUTORCC for its targets, otherwise the Qt AUTOUIC tool warns that the
+# empty LIEF source file (src/MachO/IndirectBindingInfo.cpp) "is empty"
+# (issue #875).
+set_target_properties(LIB_LIEF LIB_LIEF_RUNTIME PROPERTIES
+  AUTOMOC OFF
+  AUTOUIC OFF
+  AUTORCC OFF)
+
 # ccache cannot cache compilations that use precompiled headers (it falls back
 # to a plain compiler run and marks the call as uncacheable). LIEF enables a
 # precompiled header for every LIEF and mbedtls source file, which made almost

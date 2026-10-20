@@ -7,6 +7,7 @@
 
 #include "qmlqt6.h"
 
+#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include "defines.h"
@@ -158,8 +159,8 @@ bool QMLQt6::deployPath(const QString &path, QStringList &res) {
 
     for (const auto &info : std::as_const(infoList)) {
         if (DeployCore::isDebugFile(info.fileName())) {
-            QuasarAppUtils::Params::log("Skip debug library " +
-                                        info.absoluteFilePath());
+            qDebug() << "Skip debug library " +
+                        info.absoluteFilePath();
             continue;
         }
 
