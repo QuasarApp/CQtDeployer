@@ -38,7 +38,7 @@ jobs:
         target: 'desktop'
         arch: 'win64_mingw'
         cache: true
-        tools: 'tools_mingw1310 tools_ifw'
+        tools: 'tools_mingw1310'
         # modules: 'qtquick3d qtquick3dphysics qtmultimedia qtquicktimeline qtshadertools'
         aqtversion: ==3.2.*
 
@@ -50,7 +50,6 @@ jobs:
         target: 'desktop'
         arch: 'linux_gcc_64'
         cache: true
-        tools: 'tools_ifw'
 
         # modules: 'qtquick3d qtquick3dphysics qtmultimedia  qtquicktimeline qtshadertools'
         aqtversion: ==3.2.*
@@ -58,8 +57,9 @@ jobs:
     - name: Install Qt (macOS)
       # The macOS Qt build is a universal binary (X86_64 + ARM64), so the
       # clang_64 package works on both the Intel and the Apple Silicon
-      # runners (issue #166). The Qt Installer Framework tools are not
-      # available for macOS, therefore no extra tools are installed.
+      # runners (issue #166). No extra tools are installed: the Qt
+      # Installer Framework binaries are stored in the repository
+      # (src/CQtDeployer/Deploy/QIFW/binaries, issue #867).
       uses: jurplel/install-qt-action@v4.3.0
       if: runner.os == 'macOS'
       with:
@@ -150,9 +150,10 @@ jobs:
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target release --parallel 1
 
     - name: Create Release and Upload Assets Installer
-      # The QIF installer package is not available on macOS (the Qt
-      # Installer Framework tools are not published for macOS), the DMG
-      # archive is uploaded instead (issue #166).
+      # The QIF installer is not uploaded on macOS: the DMG archive is
+      # the installer artifact for macOS (issue #166). The Qt Installer
+      # Framework binaries are stored in the repository
+      # (src/CQtDeployer/Deploy/QIFW/binaries, issue #867).
       if: runner.os != 'macOS'
       uses: svenstaro/upload-release-action@v2
       with:

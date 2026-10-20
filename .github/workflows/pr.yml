@@ -39,8 +39,9 @@ jobs:
     - name: Install Qt (macOS)
       # The macOS Qt build is a universal binary (X86_64 + ARM64), so the
       # clang_64 package works on both the Intel and the Apple Silicon
-      # runners (issue #166). The Qt Installer Framework tools are not
-      # available for macOS, therefore no extra tools are installed.
+      # runners (issue #166). No extra tools are installed: the Qt
+      # Installer Framework binaries are stored in the repository
+      # (src/CQtDeployer/Deploy/QIFW/binaries, issue #867).
       uses: jurplel/install-qt-action@v4.3.0
       if: runner.os == 'macOS'
       with:
