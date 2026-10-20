@@ -2,6 +2,7 @@
 #include "deploycore.h"
 #include "deployconfig.h"
 
+#include <QDebug>
 #include <QDateTime>
 #include <QProcess>
 #include <deploycore.h>
@@ -132,8 +133,7 @@ QList<SystemCommandData> QIF::runCmd() {
 bool QIF::deployTemplate(PackageControl &pkg) {
     if (!initDefaultConfiguratuin()) {
 
-        QuasarAppUtils::Params::log("Failed to init the default configuration of qif installer.",
-                                    QuasarAppUtils::Error);
+        qCritical() << "Failed to init the default configuration of qif installer.";
         return false;
     }
 
@@ -150,8 +150,7 @@ bool QIF::deployTemplate(PackageControl &pkg) {
     QHash<QString, QString> pakcagesTemplates;
 
     if (!customTemplate.isEmpty()) {
-        QuasarAppUtils::Params::log("Using custom template for installer: " + customTemplate,
-                                    QuasarAppUtils::Info);
+        qInfo() << "Using custom template for installer: " + customTemplate;
 
         auto availablePacakages = QDir(customTemplate + "/packages").entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
 
@@ -264,8 +263,7 @@ QString QIF::getStyle(const QString& input) const {
     auto list = resurces.entryInfoList(QDir::Files | QDir::Hidden);
     for (const auto& style : list) {
         if (input == style.baseName()) {
-            QuasarAppUtils::Params::log(QString("Use the %0 installer style").arg(style.baseName()),
-                                        QuasarAppUtils::Info);
+            qInfo() << QString("Use the %0 installer style").arg(style.baseName());
             return style.absoluteFilePath();
         }
     }
@@ -273,18 +271,15 @@ QString QIF::getStyle(const QString& input) const {
     QFileInfo f(input);
 
     if (f.isFile()) {
-        QuasarAppUtils::Params::log("Use custom installer style",
-                                    QuasarAppUtils::Info);
+        qInfo() << "Use custom installer style";
         return f.absoluteFilePath();
     }
 
     if (input.size()) {
-        QuasarAppUtils::Params::log(QString("The %0 style is not exits").arg(input),
-                                    QuasarAppUtils::Error);
+        qCritical() << QString("The %0 style is not exits").arg(input);
     }
 
-    QuasarAppUtils::Params::log("Use a default installer style",
-                                QuasarAppUtils::Info);
+    qInfo() << "Use a default installer style";
 
     return "";
 }
