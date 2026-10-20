@@ -121,46 +121,77 @@ set(QIF_DESTINATION_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW/QIF")
 
 addDeployFromCustomFile(${CURRENT_PROJECT}Single "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployerSingle.json")
 
-if (NOT DEFINED IQTA_TOOLS)
-    set(IQTA_TOOLS $ENV{IQTA_TOOLS})
+# The Qt Installer Framework binaries (binarycreator + installerbase) are
+# stored in the repository for every supported platform
+# (Deploy/QIFW/binaries/<platform>) because aqtinstall does not provide
+# IFW 4.8+ (miurahr/aqtinstall#792, QuasarApp/CQtDeployer#867). The target
+# below copies the platform-matching pair into the QIF destination folder,
+# which is bundled into the installer (the "QIF" package) and into the flat
+# zip packages. The QIF folder itself is tracked in the repository (so any
+# change to the staged binaries is visible in the git diff), therefore the
+# stale content of a previous build for another platform is removed before
+# the copy. Provenance of the binaries: Deploy/QIFW/binaries/README.md.
+set(QIF_BINARIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW/binaries")
 
-    if(NOT "${IQTA_TOOLS}" STREQUAL "")
+if (WIN32)
+    set(QIF_PLATFORM_DIR windows)
+    set(QIF_BIN_SUFFIX ".exe")
 
-        if (WIN32)
-            set(QIF_SOURCE_BIN_PATH "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin/binarycreator.exe")
-            set(QIF_OUT_BIN_PATH "${QIF_DESTINATION_PATH}/binarycreator.exe")
+elseif (APPLE)
+    # one universal binary (x86_64 + arm64) covers both macOS architectures
+    set(QIF_PLATFORM_DIR mac)
+    set(QIF_BIN_SUFFIX "")
 
-            set(QIF_SOURCE_BIN_PATH_B "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin/installerbase.exe")
-            set(QIF_OUT_BIN_PATH_B "${QIF_DESTINATION_PATH}/installerbase.exe")
+elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64")
+    set(QIF_PLATFORM_DIR linux-arm64)
+    set(QIF_BIN_SUFFIX "")
 
-        else()
-            set(QIF_SOURCE_BIN_PATH "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin/binarycreator")
-            set(QIF_OUT_BIN_PATH "${QIF_DESTINATION_PATH}/binarycreator")
+else()
+    set(QIF_PLATFORM_DIR linux-x86_64)
+    set(QIF_BIN_SUFFIX "")
 
-            set(QIF_SOURCE_BIN_PATH_B "${IQTA_TOOLS}/QtInstallerFramework/${QIFW_VERSION}/bin/installerbase")
-            set(QIF_OUT_BIN_PATH_B "${QIF_DESTINATION_PATH}/installerbase")
-
-        endif()
-
-
-        add_custom_target(
-            downloadQIFW
-            COMMAND ${CMAKE_COMMAND} -E make_directory "${QIF_DESTINATION_PATH}"
-            COMMAND ${CMAKE_COMMAND} -E copy
-                "${QIF_SOURCE_BIN_PATH}"
-                "${QIF_OUT_BIN_PATH}"
-            COMMAND ${CMAKE_COMMAND} -E copy
-                "${QIF_SOURCE_BIN_PATH_B}"
-                "${QIF_OUT_BIN_PATH_B}"
-
-            COMMENT "Copy QIFW binaries to build directory"
-        )
-
-        add_dependencies(deploy${CURRENT_PROJECT} downloadQIFW)
-        add_dependencies(deploy${CURRENT_PROJECT}Single downloadQIFW)
-
-    endif()
 endif()
+
+set(QIF_SOURCE_BIN_PATH "${QIF_BINARIES_DIR}/${QIF_PLATFORM_DIR}/binarycreator${QIF_BIN_SUFFIX}")
+set(QIF_SOURCE_BIN_PATH_B "${QIF_BINARIES_DIR}/${QIF_PLATFORM_DIR}/installerbase${QIF_BIN_SUFFIX}")
+
+set(QIF_OUT_BIN_PATH "${QIF_DESTINATION_PATH}/binarycreator${QIF_BIN_SUFFIX}")
+set(QIF_OUT_BIN_PATH_B "${QIF_DESTINATION_PATH}/installerbase${QIF_BIN_SUFFIX}")
+
+# The QIF tools are also copied next to the built executable so that a
+# development build of cqtdeployer finds them at runtime (the QIF
+# distribution searches <executable dir>/QIF, see
+# src/Deploy/src/Distributions/qif.cpp).
+set(QIF_DEV_DIR "${CMAKE_BINARY_DIR}/src/CQtDeployer/QIF")
+set(QIF_DEV_OUT_BIN_PATH "${QIF_DEV_DIR}/binarycreator${QIF_BIN_SUFFIX}")
+set(QIF_DEV_OUT_BIN_PATH_B "${QIF_DEV_DIR}/installerbase${QIF_BIN_SUFFIX}")
+
+add_custom_target(
+    copyQIFW
+    # Remove the stale content first: the QIF folder is tracked in the
+    # repository, so a checkout may contain the binaries of another
+    # platform which must not end up in the package.
+    COMMAND ${CMAKE_COMMAND} -E rm -rf "${QIF_DESTINATION_PATH}"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${QIF_DESTINATION_PATH}"
+    COMMAND ${CMAKE_COMMAND} -E copy
+        "${QIF_SOURCE_BIN_PATH}"
+        "${QIF_OUT_BIN_PATH}"
+    COMMAND ${CMAKE_COMMAND} -E copy
+        "${QIF_SOURCE_BIN_PATH_B}"
+        "${QIF_OUT_BIN_PATH_B}"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${QIF_DEV_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E copy
+        "${QIF_SOURCE_BIN_PATH}"
+        "${QIF_DEV_OUT_BIN_PATH}"
+    COMMAND ${CMAKE_COMMAND} -E copy
+        "${QIF_SOURCE_BIN_PATH_B}"
+        "${QIF_DEV_OUT_BIN_PATH_B}"
+
+    COMMENT "Copy the Qt Installer Framework ${QIFW_VERSION} binaries (${QIF_PLATFORM_DIR}) to ${QIF_DESTINATION_PATH}"
+)
+
+add_dependencies(deploy${CURRENT_PROJECT} copyQIFW)
+add_dependencies(deploy${CURRENT_PROJECT}Single copyQIFW)
 
 
 

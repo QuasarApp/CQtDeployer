@@ -73,10 +73,11 @@ If you want create simple installer for your application just add qif option.
 cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qif
 ```
 
-> **Note:** the Qt Installer Framework tools (binarycreator) are not published
-> for macOS, so the `qif` option is skipped gracefully on macOS hosts. To
-> create a portable archive of your deployed macOS application use the `zip`
-> packager. See the [CQtDeployer for macOS](macOS.md) page.
+> **Note:** the Qt Installer Framework tools (binarycreator and
+> installerbase) are stored in the CQtDeployer repository for all supported
+> platforms (including macOS), so the `qif` option is also available on
+> macOS hosts. The release artifact for macOS is a DMG archive. See the
+> [CQtDeployer for macOS](macOS.md) page.
 
 If you use system libraries from system PATH, just add deploySystem option. 
 

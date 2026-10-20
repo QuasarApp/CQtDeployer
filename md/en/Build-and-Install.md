@@ -222,7 +222,7 @@ sudo snap connect cqtdeployer:system-backup
     make install 
     ```
 
-The Qt Installer Framework tools are not published for macOS, so the QIF installer is not created. The deployment of the macOS application is done with the `zip` packager instead.
+The Qt Installer Framework tools are stored in the CQtDeployer repository for all supported platforms (including macOS), so the QIF installer can be created on macOS as well. The release artifact for macOS is the DMG archive.
 
 ### Note 
 
