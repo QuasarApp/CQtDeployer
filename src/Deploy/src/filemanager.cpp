@@ -275,14 +275,44 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
                                     QuasarAppUtils::Info);
     }
 
-    // macOS framework bundles contain symlinks (Versions/Current -> A).
-    // The link itself must be kept, otherwise dyld cannot resolve the
-    // bundle (issue #166).
+    // Symbolic links are handled separately from a regular file copy:
+    // - a link to a directory must be recreated as a link, because a
+    //   directory content cannot be copied as a file;
+    // - on macOS the links of the framework bundles (Versions/Current -> A)
+    //   must be kept, otherwise dyld cannot resolve the bundle (issue #166);
+    // - on Linux the deployed bundle must be self-contained (issue #825):
+    //   a symlinked library (for example the CUDA
+    //   libcudart.so.12 -> libcudart.so.12.3.10 pair) is copied as a
+    //   regular file with the content of the resolved target, because a
+    //   created link would store a target that points to the source
+    //   machine and dangles as soon as the app is run on another host.
     if (!isMove && !QFileInfo::exists(tergetFile)) {
         auto sourceInfo = QFileInfo(file);
         if (sourceInfo.isSymLink()) {
             auto linkTarget = sourceInfo.symLinkTarget();
-            if (QFile::link(linkTarget, tergetFile)) {
+
+            // Qt 6's symLinkTarget() resolves the stored link target to an
+            // absolute path, while Qt 5 returns the stored (possibly
+            // relative) target. Normalize both to an absolute path
+            // (issue #825).
+            if (!linkTarget.isEmpty() && !QFileInfo(linkTarget).isAbsolute()) {
+                linkTarget = sourceInfo.absoluteDir().filePath(linkTarget);
+            }
+
+            // When the target is inside the source directory it is stored
+            // relative to the created link, so the deployed bundle stays
+            // self-contained (issue #825).
+            auto storedTarget = linkTarget;
+            const auto linkDir = sourceInfo.absolutePath() + QDir::separator();
+            if (!linkTarget.isEmpty() && linkTarget.startsWith(linkDir)) {
+                storedTarget = linkTarget.mid(linkDir.size());
+            }
+
+#ifdef Q_OS_MACOS
+            // macOS framework bundles contain symlinks (Versions/Current ->
+            // A). The link itself must be kept, otherwise dyld cannot
+            // resolve the bundle (issue #166).
+            if (QFile::link(storedTarget, tergetFile)) {
                 QuasarAppUtils::Params::log(operation + " (link) :" + file,
                                             QuasarAppUtils::Info);
                 addToDeployed(tergetFile);
@@ -290,9 +320,34 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
             }
 
             QuasarAppUtils::Params::log("Failed to create the symlink " + tergetFile +
-                                        " -> " + linkTarget +
+                                        " -> " + storedTarget +
                                         ", fallback to a regular file copy",
                                         QuasarAppUtils::Warning);
+#else
+            const auto targetInfo = QFileInfo(linkTarget);
+            if (!targetInfo.isFile()) {
+                // A link to a directory or a broken link is recreated as a
+                // link, the regular copy below cannot follow it.
+                if (QFile::link(storedTarget, tergetFile)) {
+                    QuasarAppUtils::Params::log(operation + " (link) :" + file,
+                                                QuasarAppUtils::Info);
+                    addToDeployed(tergetFile);
+                    return true;
+                }
+
+                QuasarAppUtils::Params::log("Failed to create the symlink " + tergetFile +
+                                            " -> " + storedTarget +
+                                            ", fallback to a regular file copy",
+                                            QuasarAppUtils::Warning);
+            } else {
+                // The regular copy below follows the symlink and copies the
+                // content of the resolved target, so the deployed library is
+                // a self-contained regular file (issue #825).
+                QuasarAppUtils::Params::log("Skip the symlink " + file + " -> " + linkTarget +
+                                            ", copy the target content instead",
+                                            QuasarAppUtils::VerboseLvl::Debug);
+            }
+#endif
         }
     }
 

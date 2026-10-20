@@ -122,6 +122,66 @@ void FileManagerTest::copyFolder() {
     QVERIFY(QFile::exists(dest + "/sub/nested.txt"));
 }
 
+void FileManagerTest::symlinkCopy() {
+    // The same layout as the CUDA lib64 dir: a real versioned library
+    // and a relative symlink to it (issue #825).
+    QVERIFY(createFile(m_source + "/lib.so.1.0", "lib-content"));
+    const auto link = m_source + "/lib.so.1";
+    if (!QFile::link("lib.so.1.0", link) || !QFileInfo(link).isSymLink()) {
+        QSKIP("Symbolic links are not supported on this system");
+    }
+
+    FileManager fm;
+    QVERIFY(fm.copyFile(link, m_target));
+
+    const auto dst = m_target + "/lib.so.1";
+    QVERIFY(QFile::exists(dst));
+
+#ifdef Q_OS_MACOS
+    // On macOS the link itself is kept, because the framework bundles
+    // (Versions/Current -> A) must stay resolvable by dyld (issue #166).
+    // The target is stored relative to the created link when it points
+    // inside the source directory (issue #825).
+    const auto info = QFileInfo(dst);
+    QVERIFY(info.isSymLink());
+    QCOMPARE(info.readSymLink(), QByteArray("lib.so.1.0"));
+#else
+    // On Linux the deployed bundle must be self-contained (issue #825):
+    // the symlink is copied as a regular file with the content of the
+    // resolved target, because a created link would point to the source
+    // machine.
+    const auto info = QFileInfo(dst);
+    QVERIFY(!info.isSymLink());
+    QVERIFY(info.isFile());
+    {
+        QFile f(dst);
+        QVERIFY(f.open(QIODevice::ReadOnly));
+        QCOMPARE(f.readAll(), QByteArray("lib-content"));
+    }
+#endif
+
+    // A link to a directory is recreated as a link on all platforms,
+    // because a directory content cannot be copied as a file.
+    QVERIFY(QDir(m_source).mkpath("realdir"));
+    const auto dirLink = m_source + "/dirlink";
+    if (!QFile::link("realdir", dirLink) || !QFileInfo(dirLink).isSymLink()) {
+        QSKIP("Symbolic links are not supported on this system");
+    }
+
+    FileManager fm2;
+    QVERIFY(fm2.copyFile(dirLink, m_target));
+
+    const auto dstDir = m_target + "/dirlink";
+    const auto dirInfo = QFileInfo(dstDir);
+    QVERIFY(dirInfo.isSymLink());
+
+    // The target of a dir link inside the source dir is stored relative
+    // to the created link (issue #825).
+    const auto rawTarget = dirInfo.readSymLink();
+    QVERIFY(!rawTarget.isEmpty());
+    QVERIFY(!rawTarget.startsWith('/') || rawTarget.startsWith(m_dir.path()));
+}
+
 void FileManagerTest::cp() {
     QVERIFY(createFile(m_source + "/file1.txt", "one"));
     QVERIFY(QDir().mkpath(m_source + "/sub"));
