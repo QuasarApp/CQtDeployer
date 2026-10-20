@@ -81,7 +81,6 @@ src/CQtDeployer/Deploy/CQtDeployer.json
 src/CQtDeployer/Deploy/QIFWTemplate/packages/CQtDeployer/meta/package.xml
 src/CQtDeployer/Deploy/QIFWTemplate/packages/CQtDeployer.1_6/meta/package.xml
 src/CQtDeployer/Deploy/QIFWTemplate/packages/QIF/meta/package.xml
-src/CQtDeployer/Deploy/QIFW/QIF/
 src/CQtDeployer/Deploy/CQtDeployerSingle.json
 src/CQtDeployer/Deploy/QIFWTemplate/config/config.xml
 snap/snapcraft.yaml

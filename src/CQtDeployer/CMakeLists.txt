@@ -127,7 +127,10 @@ addDeployFromCustomFile(${CURRENT_PROJECT}Single "${CMAKE_CURRENT_SOURCE_DIR}/De
 # IFW 4.8+ (miurahr/aqtinstall#792, QuasarApp/CQtDeployer#867). The target
 # below copies the platform-matching pair into the QIF destination folder,
 # which is bundled into the installer (the "QIF" package) and into the flat
-# zip packages. Provenance of the binaries: Deploy/QIFW/binaries/README.md.
+# zip packages. The QIF folder itself is tracked in the repository (so any
+# change to the staged binaries is visible in the git diff), therefore the
+# stale content of a previous build for another platform is removed before
+# the copy. Provenance of the binaries: Deploy/QIFW/binaries/README.md.
 set(QIF_BINARIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/QIFW/binaries")
 
 if (WIN32)
@@ -165,6 +168,10 @@ set(QIF_DEV_OUT_BIN_PATH_B "${QIF_DEV_DIR}/installerbase${QIF_BIN_SUFFIX}")
 
 add_custom_target(
     copyQIFW
+    # Remove the stale content first: the QIF folder is tracked in the
+    # repository, so a checkout may contain the binaries of another
+    # platform which must not end up in the package.
+    COMMAND ${CMAKE_COMMAND} -E rm -rf "${QIF_DESTINATION_PATH}"
     COMMAND ${CMAKE_COMMAND} -E make_directory "${QIF_DESTINATION_PATH}"
     COMMAND ${CMAKE_COMMAND} -E copy
         "${QIF_SOURCE_BIN_PATH}"

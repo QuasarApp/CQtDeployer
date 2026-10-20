@@ -6,9 +6,16 @@ Framework **4.11.0** for every platform CQtDeployer is released for.
 Since aqtinstall does not know IFW 4.8+ (miurahr/aqtinstall#792), these
 binaries are stored in the repository instead of being downloaded at build
 time (QuasarApp/CQtDeployer#867). The CMake build
-(`src/CQtDeployer/CMakeLists.txt`, target `downloadQIFW`) simply copies the
+(`src/CQtDeployer/CMakeLists.txt`, target `copyQIFW`) simply copies the
 platform-matching pair from this folder into `Deploy/QIFW/QIF`, which is
 bundled into the installer (package `QIF`) and the flat zip packages.
+
+The `Deploy/QIFW/QIF` folder is tracked in the repository (it is NOT
+git-ignored), so changes of the staged binaries are visible in the git
+diff. It currently mirrors the `linux-x86_64` pair; on every build the
+`copyQIFW` target first removes its stale content and then stages the
+binaries of the platform being built, so the packaged artifacts always
+contain the matching platform pair.
 
 ## Files
 
