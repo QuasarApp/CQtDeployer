@@ -543,6 +543,16 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             "-qmake ~/Qt/bin/qmake or -qmake ~/Qt/bin/qmake.exe"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-qtRootDir"}, "{params}",
+                            "Sets the root path of the Qt installation. "
+                            "CQtDeployer will try to detect the qmake or qmake6 "
+                            "executable from this path and use it to parse the Qt "
+                            "module locations. If the qmake executable is not found "
+                            "the Qt paths are reconstructed from the root path.",
+                            "-qtRootDir ~/Qt/6.5.2/gcc_64 or "
+                            "-qtRootDir D:/Qt/6.5.2/mingw_64"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
                             {"-ignore"}, "{list,params}",
                             "Sets the list of libs to ignore.",
                             "-ignore libicudata.so.56,libicudata2.so.56"
@@ -900,6 +910,50 @@ QString DeployCore::findProcess(const QString &env, const QString& proc, bool ig
                 if (bin.baseName().compare(proc, DeployCore::getCaseSensitivity()) == 0) {
                     return bin.absoluteFilePath();
                 }
+            }
+        }
+    }
+
+    return "";
+}
+
+QString DeployCore::findQmakeInQtRoot(const QString &qtRootDir) {
+    QFileInfo rootInfo(qtRootDir);
+    if (!rootInfo.isDir()) {
+        return "";
+    }
+
+    // Qt 5 kits provide the `qmake` executable and Qt 6 kits the `qmake6`
+    // executable. On Windows the executables have the .exe suffix
+    // (issue #788).
+    static const QStringList qmakeNames = {"qmake", "qmake6",
+                                           "qmake.exe", "qmake6.exe"};
+
+    // The qmake executable lives in <qtRootDir>/bin. If the given
+    // directory has no bin sub-directory, the user most likely passed
+    // the bin directory itself, so it is checked as a fallback.
+    const QStringList dirs = {rootInfo.absoluteFilePath() + "/bin",
+                              rootInfo.absoluteFilePath()};
+
+    for (const auto &dirPath : dirs) {
+        QDir dir(dirPath);
+        if (!dir.exists()) {
+            continue;
+        }
+
+        // First pass: executable qmake files (the normal case).
+        // Second pass: any regular qmake file (for example a qmake of
+        // the snap root FS, that cannot be executed directly).
+        for (int pass = 0; pass < 2; ++pass) {
+            for (const auto &name : qmakeNames) {
+                auto file = QFileInfo(dir.filePath(name));
+                if (!file.isFile()) {
+                    continue;
+                }
+                if (pass == 0 && !file.isExecutable()) {
+                    continue;
+                }
+                return file.absoluteFilePath();
             }
         }
     }

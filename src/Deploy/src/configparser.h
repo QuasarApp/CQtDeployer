@@ -73,6 +73,7 @@ private:
 
     QString getPathFrmoQmakeLine(const QString& in) const;
     bool initQmakePrivate(const QString& qmake);
+    bool initQmakeFromQtRoot(const QString& qtRootDir);
     bool initQmake();
     bool initQmlInput();
 
