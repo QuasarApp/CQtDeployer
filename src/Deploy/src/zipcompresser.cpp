@@ -77,16 +77,14 @@ bool ZipCompresser::add(const QString& root, const QString& path, zip_t * zip) c
             return false;
         }
 
-        QFile src(info.absoluteFilePath());
-        if (!src.open(QIODevice::ReadOnly)) {
-            return false;
-        }
-        auto data = src.readAll();
-        if (zip_entry_write(zip, data.data(), data.size()) != 0) {
-            return false;
-        }
+        // zip_entry_fwrite() stats the source file and stores its Unix
+        // mode into the zip entry, so the executable bit of files like
+        // QIF/binarycreator is preserved in the archive (issue #872).
+        std::string absFile = info.absoluteFilePath().toStdString();
 
-        src.close();
+        if (zip_entry_fwrite(zip, absFile.c_str()) != 0) {
+            return false;
+        }
 
         return zip_entry_close(zip) == 0;
     }

@@ -47,6 +47,10 @@ Envirement QIF::toolKitEnv() const {
     // SNAP
     result.addEnv(AppPath + "/../QIF/");
 
+    // Flat package layout: the QIF tools are bundled next to the
+    // executable, e.g. cqt/CQtDeployer + cqt/QIF (issue #872).
+    result.addEnv(AppPath + "/QIF/");
+
     //Installer nad zip
 #ifdef Q_OS_LINUX
     result.addEnvRec(AppPath + "/../../QIF/", 2);
