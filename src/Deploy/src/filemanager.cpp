@@ -318,6 +318,18 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
         return false;
     }
 
+    if (!isMove) {
+        // QFile::copy() creates the target file with the default
+        // permissions (on Unix the executable bit is lost). Restore the
+        // source permissions so that deployed executables, e.g. the
+        // bundled QIF/binarycreator, stay executable (issue #872).
+        QFile targetFile(tergetFile);
+        if (!targetFile.setPermissions(QFileInfo(file).permissions())) {
+            QuasarAppUtils::Params::log("Failed to set permissions for " + tergetFile,
+                                        QuasarAppUtils::VerboseLvl::Warning);
+        }
+    }
+
     if (isMove) {
         removeFromDeployed(sourceFileAbsalutePath);
     }
