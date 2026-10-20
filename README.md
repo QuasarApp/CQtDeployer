@@ -34,7 +34,7 @@ Key differences of this program:
 > **Note:** the Qt Installer Framework (QIF) installer is not available on
 > macOS - the QIFW tools are not published for this platform, so the `qif`
 > option is skipped gracefully on macOS hosts. See the
-> [macOS documentation](md/en/macOS.md) for the details.
+> [macOS documentation](md/macOS.md) for the details.
 
 ## Supported processors architectures:
 * x86
@@ -46,7 +46,7 @@ Key differences of this program:
 
 #### Example: `cqtdeployer <-bin    [params]> [options]`
 
-See the list of all options [here](md/en/Options.md)
+See the list of all options [here](md/Options.md)
 
 
 #### Example: `cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/6.3.1/gcc_64/bin/qmake clear`
@@ -102,7 +102,7 @@ See the list of all options [here](md/en/Options.md)
 <p align="center"><img src="https://user-images.githubusercontent.com/12465465/78639716-17b04e00-78b7-11ea-9002-a8b45a43807f.png"  height="400"></p>
 
 ## Build and install
-See building and installation instructions on wiki [page](md/en/Build-and-Install.md)
+See building and installation instructions on wiki [page](md/Build-and-Install.md)
 
 ### Available in GitHub Actions
 See https://github.com/marketplace/actions/setup-cqtdeployer

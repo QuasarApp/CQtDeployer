@@ -78,57 +78,35 @@ nav:
   # source of truth and the generated copy is not committed.
   - Home: index.md
   # The wiki landing page (md/README.md) offers the language choice.
-  - Documentation: md/README.md
-  # The English documentation (md/en/).
+  - Documentation: md/Home.md
+  # The English documentation (md/).
   - English:
-      - Welcome: md/en/Home.md
-      - What is CQtDeployer: md/en/Description.md
-      - Quick guide: md/en/QuickGuide.md
-      - How to deploy: md/en/Guide.md
-      - Install CQtDeployer: md/en/Build-and-Install.md
-      - Options: md/en/Options.md
-      - Deployment file: md/en/DeployConfigFile.md
-      - Qt Installer Framework: md/en/QIF.md
-      - Environment variables: md/en/EnvironmentVariables.md
-      - Custom scripts: md/en/CustomScripts.md
-      - Extra files: md/en/ExtraFiles.md
-      - Default templates: md/en/ExtractDefaultsTemplates.md
-      - Disabling shortcuts: md/en/DisableShortcats.md
-      - Packaging: md/en/Packing.md
-      - ZIP: md/en/ZIP.md
-      - DEB: md/en/DEB.md
-      - arm machines: md/en/arm.md
-      - macOS: md/en/macOS.md
-      - Compare features: md/en/CompareFeatures.md
-      - Release reviews: md/en/ReleaseReviews.md
-      - Change log: md/en/Changelog.md
+      - Welcome: md/Home.md
+      - What is CQtDeployer: md/Description.md
+      - Quick guide: md/QuickGuide.md
+      - How to deploy: md/Guide.md
+      - Install CQtDeployer: md/Build-and-Install.md
+      - Options: md/Options.md
+      - Deployment file: md/DeployConfigFile.md
+      - Qt Installer Framework: md/QIF.md
+      - Environment variables: md/EnvironmentVariables.md
+      - Custom scripts: md/CustomScripts.md
+      - Extra files: md/ExtraFiles.md
+      - Default templates: md/ExtractDefaultsTemplates.md
+      - Disabling shortcuts: md/DisableShortcats.md
+      - Packaging: md/Packing.md
+      - ZIP: md/ZIP.md
+      - DEB: md/DEB.md
+      - arm machines: md/arm.md
+      - macOS: md/macOS.md
+      - Compare features: md/CompareFeatures.md
+      - Release reviews: md/ReleaseReviews.md
+      - Change log: md/Changelog.md
       - Releases:
-          - 1.6: md/en/1_6.md
-          - 1.5: md/en/1_5.md
-          - 1.4: md/en/1_4.md
-  # The Russian documentation (md/ru/).
-  - Русский:
-      - Добро пожаловать: md/ru/Home.md
-      - Что такое CQtDeployer: md/ru/Description.md
-      - Быстрый гайд: md/ru/QuickGuide.md
-      - Как развернуть: md/ru/Guide.md
-      - Использование параметров: md/ru/Options.md
-      - Файл развертывания: md/ru/DeployConfigFile.md
-      - Qt Installer Framework: md/ru/QIF.md
-      - Переменные окружения: md/ru/EnvironmentVariables.md
-      - Пользовательские скрипты: md/ru/CustomScripts.md
-      - Дополнительные данные: md/ru/ExtraFiles.md
-      - Шаблоны по умолчанию: md/ru/ExtractDefaultsTemplates.md
-      - Отключение ярлыков: md/ru/DisableShortcats.md
-      - Упаковка: md/ru/Packing.md
-      - ZIP: md/ru/ZIP.md
-      - DEB: md/ru/DEB.md
-      - Сравнение особенностей: md/ru/CompareFeatures.md
-      - Обзоры на релизы: md/ru/ReleaseReviews.md
-      - Журнал изменений: md/ru/Changelog.md
-      - Релизы:
-          - 1.5: md/ru/1_5.md
-          - 1.4: md/ru/1_4.md
+          - 1.6: md/1_6.md
+          - 1.5: md/1_5.md
+          - 1.4: md/1_4.md
+
   # The Marketplace page (md/Marketplace/) describes how to obtain the
   # application.
   - Marketplace: md/Marketplace/Marketplace.md
