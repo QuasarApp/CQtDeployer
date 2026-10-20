@@ -78,7 +78,7 @@ nav:
   # source of truth and the generated copy is not committed.
   - Home: index.md
   # The wiki landing page (md/README.md) offers the language choice.
-  - Documentation: md/README.md
+  - Documentation: md/Home.md
   # The English documentation (md/).
   - English:
       - Welcome: md/Home.md
