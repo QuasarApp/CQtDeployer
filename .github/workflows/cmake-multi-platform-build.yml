@@ -95,11 +95,6 @@ jobs:
 
     - name: Install CQtDeployer
       uses: QuasarApp/cqtdeployer-install-action@main
-      with:
-        version: v1.6.2504.659185d
-
-
-
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
