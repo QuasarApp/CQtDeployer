@@ -65,8 +65,6 @@ jobs:
 
     - name: Install CQtDeployer
       uses: QuasarApp/cqtdeployer-install-action@main
-      with:
-        version: v1.6.2504.659185d
 
     - name: Verify CQtDeployer version
       # Check if cqtdeployer is accessible and print its version
