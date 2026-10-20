@@ -1250,22 +1250,8 @@ Platform DeployCore::getPlatformFromString(const QString &platformName) {
 }
 
 bool DeployCore::isPlatformCompatible(Platform candidate, Platform wanted) {
-    if (candidate == wanted)
-        return true;
-
-    const int flavors = int(Platform::MinGW_Msvcrt) | int(Platform::MinGW_Ucrt) | int(Platform::MSVC);
-    const int candFlavor = int(candidate) & flavors;
-    const int wantFlavor = int(wanted) & flavors;
-
-    // A runtime flavored platform matches the generic platform of the same
-    // bitness (and vice versa), but never a different runtime flavor.
-    if (candFlavor && !wantFlavor)
-        return (int(candidate) & ~flavors) == int(wanted);
-
-    if (wantFlavor && !candFlavor)
-        return (int(wanted) & ~flavors) == int(candidate);
-
-    return false;
+    // The library must be fully compatible with the platform; see issue #870
+    return candidate == wanted;
 }
 
 QChar DeployCore::getSeparator(int lvl) {

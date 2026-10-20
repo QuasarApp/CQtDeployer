@@ -281,12 +281,14 @@ public:
      * @a candidate platform can satisfy the dependencies of a library with the
      * @a wanted platform.
      *
-     * Runtime flavored platforms (Win32/Win64_MinGW_Msvcrt, Win32/Win64_MinGW_Ucrt
-     * and Win32/Win64_MSVC) only match the identical platform or a generic
-     * (non flavored) platform of the same bitness, and never another runtime
-     * flavor. This prevents mixing incompatible runtime sets in one deployed
-     * bundle (issue #855), while keeping generic Windows libraries compatible
-     * with MinGW and MSVC applications.
+     * A candidate is compatible only when it is built for exactly the same
+     * platform as the wanted (parent) library. The runtime flavor (MinGW
+     * Msvcrt/Ucrt, MSVC) is part of the platform identity, and a generic
+     * (non flavored) Windows platform of the same bitness is NOT a valid
+     * substitute for a flavored one (and vice versa). This strong comparison
+     * prevents the dependency scanner from resolving a foreign runtime set
+     * (for example the MinGW libraries shipped by Strawberry Perl) instead of
+     * the libraries of the target toolchain (issue #870).
      */
     static bool isPlatformCompatible(Platform candidate, Platform wanted);
 
