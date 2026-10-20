@@ -1,13 +1,28 @@
-# CQtDeployer
+# Welcome to the "C Qt Deployer"!
+# ![Logo](https://user-images.githubusercontent.com/12465465/84260958-99289480-ab23-11ea-8aab-374368a545dc.png)
 
-Here you can find documentation for the CQtDeployer in different languages. It describes:
+***************************
 
-* Information on how to use this deployment Tool. (How to create installers with cqtdeployer)
-* Main description (description of the functionality and capabilities of the program)
-* Description of recent changes (changelog)
+# Main sections
+
+* [Description CQtDeployer](Description.md)
+* [Options](Options.md)
+* [Guide](Guide.md)
+* [Quick guide](QuickGuide.md)
+* [Build and Install](Build-and-Install.md)
+* [Deploy file](DeployConfigFile.md)
+* [Packing](Packing.md)
+* [Change log page](Changelog.md)
+* [Reviews](ReleaseReviews.md)
+* [Compare Features](CompareFeatures.md)
+* [Adding extra files](ExtraFiles.md)
+* [Retrieving packaging templates](ExtractDefaultsTemplates.md)
+* [Default Environment Variables](EnvironmentVariables.md)
+* [Disable standard shortcuts ](DisableShortcats.md)
+* [Custom scripts](CustomScripts.md)
+* [CQtDeployer for arm](arm.md)
+* [CQtDeployer for macOS](macOS.md)
 
 
-## Сhoose your language to read the CQtDeployer documentation:
-
-* [Документация на русском языке](ru/Home.md)
-* [English language documentation](en/Home.md)
+## Support the project
+If you like what we do and it benefits you, you can support the project on the official page [QuasarApp in Patreon](https://www.patreon.com/QuasarApp)
