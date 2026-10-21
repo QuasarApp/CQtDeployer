@@ -66,7 +66,7 @@ File without using enumerated parameters
     "binOut": "bin",
     "recOut": "rec",
     "verbose": 3,
-    "qif": false,
+    "qtifw": false,
     "noCheckRPATH": false,
     "noCheckPATH": false,
     "name": "mainApplication",
@@ -129,7 +129,7 @@ File Using Enumerated Parameters
     "binOut": "bin",
     "recOut": "rec",
     "verbose": 3,
-    "qif": false,
+    "qtifw": false,
     "noCheckRPATH": false,
     "noCheckPATH": false,
     "name": [

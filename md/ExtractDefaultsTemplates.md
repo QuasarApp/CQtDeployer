@@ -6,13 +6,13 @@ Fot this you can use the getDefaultTemplate option. This option extracts your di
 ### Example:
 
 ``` bash 
-cqtdeployer -bin myExecutable getDefaultTemplate qif
+cqtdeployer -bin myExecutable getDefaultTemplate qtifw
 ```
 This command generate template for qt installer framework into DistributionKit folder for your "myExecutable" programm.
 
 If you want change target location just add the targetDir option 
 ``` bash
-cqtdeployer -bin myExecutable getDefaultTemplate qif -targetDir "/distanation/Dir"
+cqtdeployer -bin myExecutable getDefaultTemplate qtifw -targetDir "/distanation/Dir"
 
 ``` 
 
@@ -40,7 +40,7 @@ This option support the configFile.json
 ```
 
 ```bash
-cqtdeployer getDefaultTemplate qif -confFile "path/to/configFile.json"
+cqtdeployer getDefaultTemplate qtifw -confFile "path/to/configFile.json"
 ```
 
 

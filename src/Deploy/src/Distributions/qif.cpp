@@ -137,7 +137,10 @@ bool QIF::deployTemplate(PackageControl &pkg) {
         return false;
     }
 
-    auto customTemplate = QuasarAppUtils::Params::getArg("qif", "");
+    // The 'qif' option was renamed to 'qtifw' (issue #738); the old name is
+    // still accepted for backward compatibility.
+    auto customTemplate = QuasarAppUtils::Params::getArg(
+        "qtifw", QuasarAppUtils::Params::getArg("qif", ""));
     const DeployConfig *cfg = DeployCore::_config;
 
     QStringList sufixes = {

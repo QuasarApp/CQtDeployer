@@ -98,13 +98,13 @@ cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlD
 
 If you want create simple installer for your application just add gif option.
 ```
-cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qif
+cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qtifw
 ```
 
 If cqtdeployer not found qmake then add the -qmake option to an invoke command.
 
 ```
-cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qif -qmake /path/to/my/qmake
+cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qtifw -qmake /path/to/my/qmake
 
 ```
 
@@ -204,19 +204,19 @@ If you built the project using qtCreator, your executable file will be found one
 For Linux:
 
 ```bash 
-cqtdeployer -bin animation -qmlDir . qif -qmake ~/Qt/5.15.2/gcc_64/bin/qmake
+cqtdeployer -bin animation -qmlDir . qtifw -qmake ~/Qt/5.15.2/gcc_64/bin/qmake
 ```
 
 For Windows:
 
 ```bash 
-cqtdeployer -bin animation -qmlDir . qif -qmake ~/Qt/5.15.2/mingw_810_64/bin/qmake.exe
+cqtdeployer -bin animation -qmlDir . qtifw -qmake ~/Qt/5.15.2/mingw_810_64/bin/qmake.exe
 ```
 
 Deploy log:
 
 ```bash
-andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ cqtdeployer -bin animation -qmlDir . qif -qmake ~/Qt/5.15.2/gcc_64/bin/qmake
+andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$ cqtdeployer -bin animation -qmlDir . qtifw -qmake ~/Qt/5.15.2/gcc_64/bin/qmake
 Info: Deploy ...
 Info: flag targetDir not  used. use default target dir :/home/andrei/Qt/Examples/Qt-5.15.2/quick/animation/DistributionKit
 Info: target deploy started!!
@@ -462,7 +462,7 @@ contains(QMAKE_HOST.os, Linux):{
     QMAKE_BIN= $$QT_DIR/qmake
 }
 
-deploy.commands= cqtdeployer -bin $$DESTDIR/$$TARGET -qmake $$QMAKE_BIN -libDir $$PWD -qmlDir $$PWD -recursiveDepth 5  qif
+deploy.commands= cqtdeployer -bin $$DESTDIR/$$TARGET -qmake $$QMAKE_BIN -libDir $$PWD -qmlDir $$PWD -recursiveDepth 5  qtifw
 
 QMAKE_EXTRA_TARGETS += deploy
 
@@ -490,7 +490,7 @@ QMAKE_EXTRA_TARGETS += deploy
 
 The **libDir** parameter is used to set the paths to the directory paths contain dependencies of your application, and the **qmlDir** parameter is used to set the directory paths contain the qml files required by your application. In this example, the application source code root is selected by these two options.
 The **recursiveDepth** parameter is used to set the search depth of **libDir** and **qmlDir**. 
-The **qif** parameter is used to create a installer using Qt Installer Framework.
+The **qtifw** parameter is used to create a installer using Qt Installer Framework.
 
 
 ## Integration example 
@@ -531,7 +531,7 @@ contains(QMAKE_HOST.os, Linux):{
 
 DESTDIR=$$PWD/Build
 
-deploy.commands= cqtdeployer -bin $$DESTDIR/$$TARGET -qmake $$QMAKE_BIN -libDir $$PWD -qmlDir $$PWD -recursiveDepth 5  qif
+deploy.commands= cqtdeployer -bin $$DESTDIR/$$TARGET -qmake $$QMAKE_BIN -libDir $$PWD -qmlDir $$PWD -recursiveDepth 5  qtifw
 
 QMAKE_EXTRA_TARGETS += deploy
 

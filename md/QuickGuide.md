@@ -68,14 +68,14 @@ If you application use qml, just add qmlDir option
 cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources
 ```
 
-If you want create simple installer for your application just add qif option.
+If you want create simple installer for your application just add qtifw option.
 ```
-cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qif
+cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qtifw
 ```
 
 > **Note:** the Qt Installer Framework tools (binarycreator and
 > installerbase) are stored in the CQtDeployer repository for all supported
-> platforms (including macOS), so the `qif` option is also available on
+> platforms (including macOS), so the `qtifw` option is also available on
 > macOS hosts. The release artifact for macOS is a DMG archive. See the
 > [CQtDeployer for macOS](macOS.md) page.
 
@@ -84,7 +84,7 @@ If you use system libraries from system PATH, just add deploySystem option.
 #### Warning: snap version do not have permision to system files. To deploy system libraries use the cqtdeployer version from the [installer][1]
 
 ```
-cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qif deploySystem
+cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qtifw deploySystem
 ```
 
 
