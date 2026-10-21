@@ -29,7 +29,7 @@ cmake_minimum_required(VERSION 3.18)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
 
 set(TEST_CLASSES DeployConfig DeployCore DistroModule DistroStruct Envirement
-    FileManager IgnoreRule LibInfo MacOS PathUtils Pe TargetInfo ZipCompresser)
+    FileManager IgnoreRule LibInfo MacOS PathUtils Pe Qifw TargetInfo ZipCompresser)
 
 # The deploy step of the test targets runs the cqtdeployer tool with the
 # qmake taken from the QT_QMAKE_EXECUTABLE variable. The Qt CMake packages
@@ -66,5 +66,21 @@ foreach (TEST_CLASS ${TEST_CLASSES})
 
     add_dependencies(deployTest${TEST_CLASS} ${TEST_EXEC} prepareTestDir)
 endforeach()
+
+# The Qifw test runs the cqtdeployer executable of the current build tree
+# (not the stable release installed by the CI action), so it verifies the
+# code under review. The build tree executable and the qmake of the
+# toolchain are passed to the test as compile definitions (issue #738).
+target_compile_definitions(${PROJECT_NAME}-tests-Qifw PRIVATE
+    QIFW_TEST_CQT_DEPLOYER_EXE="$<TARGET_FILE:${PROJECT_NAME}>"
+    QIFW_TEST_QMAKE="${QT_QMAKE_EXECUTABLE}")
+
+# The cqtdeployer of the build tree finds the Qt Installer Framework tools
+# next to itself: the copyQIFW target stages the platform pair from the
+# repository (issue #867). The copyQIFW target is not part of the `all`
+# target and the CI runs the `test` target separately, so the Qifw test
+# target depends on it explicitly - the qtifw distribution is then tested
+# on every platform, including the macOS hosts (issue #738).
+add_dependencies(testQifw copyQIFW)
 
 initTests()
