@@ -11,9 +11,11 @@
 
 #include <QCoreApplication>
 #include <QDir>
+#include <QFile>
 #include <QFileInfo>
 #include <QProcess>
 #include <QStandardPaths>
+#include <QTextStream>
 
 namespace {
 
@@ -79,8 +81,8 @@ QString QifwTest::installerName() const {
 #endif
 }
 
-void QifwTest::runDeployer(const QStringList &distroOptions, int *exitCode,
-                           QString *output) {
+void QifwTest::runDeployer(const QStringList &distroOptions, const QString &runName,
+                           int *exitCode, QString *output) {
     if (exitCode != nullptr) {
         *exitCode = -1;
     }
@@ -110,6 +112,19 @@ void QifwTest::runDeployer(const QStringList &distroOptions, int *exitCode,
 
     QProcess proc;
     proc.setProcessChannelMode(QProcess::MergedChannels);
+
+    // The deprecation warning of the qif alias is printed by the cqtdeployer
+    // while it parses the command line options - before the QALogger handler
+    // of the cqtdeployer main() is installed (issue #875). Until that point
+    // the default Qt message handler is active and on the Windows hosts it
+    // routes the messages to the debugger instead of the console, so the
+    // warning (and the working options table) would be lost in the captured
+    // process output. QT_LOGGING_TO_CONSOLE=1 makes the default handler use
+    // the console (it is ignored on the non-Windows platforms) (issue #738).
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    env.insert("QT_LOGGING_TO_CONSOLE", "1");
+    proc.setProcessEnvironment(env);
+
     proc.start(_deployerExe, args);
     QVERIFY2(proc.waitForStarted(30000), "Failed to start the cqtdeployer");
     QVERIFY2(proc.waitForFinished(5 * 60 * 1000),
@@ -120,6 +135,31 @@ void QifwTest::runDeployer(const QStringList &distroOptions, int *exitCode,
     if (output != nullptr) {
         *output = QString::fromLocal8Bit(proc.readAll());
     }
+
+    // The QtTest report truncates the long failure messages, so the full
+    // cqtdeployer output of every run is stored in a separate file next to
+    // the test report. The CI uploads all the test_report.txt* files of the
+    // test directories, so the full output is available for the failed runs
+    // (issue #738).
+    QFile dump(QStringLiteral("test_report.txt.") + runName);
+    if (dump.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
+        QTextStream stream(&dump);
+        stream << *output;
+    }
+}
+
+QString QifwTest::distDirListing() const {
+    QDir dir(_tmp.path() + "/dist");
+    QStringList lines;
+    const auto entries = dir.entryInfoList(
+        QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
+    for (const auto &entry: entries) {
+        const QString size = entry.isDir()
+            ? QStringLiteral("<dir>")
+            : QString::number(entry.size());
+        lines << QStringLiteral("%1 (%2)").arg(entry.fileName(), size);
+    }
+    return lines.join(QStringLiteral(", "));
 }
 
 void QifwTest::optionTableCheck() {
@@ -171,12 +211,15 @@ void QifwTest::qtifwInstallerCheck() {
 
     int exitCode = -1;
     QString output;
-    runDeployer({"qtifw"}, &exitCode, &output);
+    runDeployer({"qtifw"}, QStringLiteral("qtifw"), &exitCode, &output);
     QCOMPARE(exitCode, 0);
 
     const QFileInfo installer(_tmp.path() + "/dist/" + installerName());
     QVERIFY2(installer.exists() && installer.size() > 0,
-             qPrintable("The qtifw installer is not created. The cqtdeployer output:\n" + output));
+             qPrintable("The qtifw installer is not created. The dist dir content: ["
+                        + distDirListing()
+                        + "]. The cqtdeployer output (the full output is stored in "
+                          "test_report.txt.qtifw):\n" + output));
 }
 
 void QifwTest::qifDeprecatedAliasCheck() {
@@ -189,17 +232,23 @@ void QifwTest::qifDeprecatedAliasCheck() {
 
     int exitCode = -1;
     QString output;
-    runDeployer({"qif"}, &exitCode, &output);
+    runDeployer({"qif"}, QStringLiteral("qif"), &exitCode, &output);
     QCOMPARE(exitCode, 0);
 
     const QFileInfo installer(_tmp.path() + "/dist/" + installerName());
     QVERIFY2(installer.exists() && installer.size() > 0,
-             qPrintable("The qif (deprecated alias) installer is not created. The cqtdeployer output:\n" + output));
+             qPrintable("The qif (deprecated alias) installer is not created. "
+                        "The dist dir content: [" + distDirListing()
+                        + "]. The cqtdeployer output (the full output is stored in "
+                          "test_report.txt.qif):\n" + output));
 
     QVERIFY2(output.contains("deprecated"),
-             qPrintable("The deprecation warning is not printed. The cqtdeployer output:\n" + output));
+             qPrintable("The deprecation warning is not printed. The cqtdeployer output "
+                        "(the full output is stored in test_report.txt.qif):\n" + output));
     QVERIFY2(output.contains("renamed to 'qtifw'"),
-             qPrintable("The deprecation warning does not point to the qtifw option. The cqtdeployer output:\n" + output));
+             qPrintable("The deprecation warning does not point to the qtifw option. "
+                        "The cqtdeployer output (the full output is stored in "
+                          "test_report.txt.qif):\n" + output));
 }
 
 // Standard stand-alone QTest entry point, see the Qt test tutorial:

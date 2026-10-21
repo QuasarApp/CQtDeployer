@@ -37,8 +37,9 @@ private slots:
 
 private:
     QString installerName() const;
-    void runDeployer(const QStringList &distroOptions, int *exitCode,
-                     QString *output);
+    void runDeployer(const QStringList &distroOptions, const QString &runName,
+                     int *exitCode, QString *output);
+    QString distDirListing() const;
 
     QTemporaryDir _tmp;
     QString _deployerExe;
