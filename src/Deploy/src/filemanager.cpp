@@ -286,15 +286,8 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
     if (!isMove && !QFileInfo::exists(tergetFile)) {
         auto sourceInfo = QFileInfo(file);
         if (sourceInfo.isSymLink()) {
+            // symLinkTarget() returns the absolute target (Qt 6).
             auto linkTarget = sourceInfo.symLinkTarget();
-
-            // Qt 6's symLinkTarget() resolves the stored link target to an
-            // absolute path, while Qt 5 returns the stored (possibly
-            // relative) target. Normalize both to an absolute path
-            // (issue #825).
-            if (!linkTarget.isEmpty() && !QFileInfo(linkTarget).isAbsolute()) {
-                linkTarget = sourceInfo.absoluteDir().filePath(linkTarget);
-            }
 
             // When the target is inside the source directory it is stored
             // relative to the created link, so the deployed bundle stays
