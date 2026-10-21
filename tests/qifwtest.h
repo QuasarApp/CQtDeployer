@@ -11,6 +11,8 @@
 #include <QtTest>
 #include <QTemporaryDir>
 
+class QFileInfo;
+
 /**
  * @brief The QifwTest class
  *
@@ -37,6 +39,7 @@ private slots:
 
 private:
     QString installerName() const;
+    QFileInfo installerInfo() const;
     void runDeployer(const QStringList &distroOptions, const QString &runName,
                      int *exitCode, QString *output);
     QString distDirListing() const;

@@ -49,6 +49,22 @@ QString findDeployerExe() {
     return QString();
 }
 
+/**
+ * @brief installerIsNotEmpty Returns true when the created installer
+ *  artifact contains data. The Qt Installer Framework binarycreator
+ *  creates a single executable file on the Windows and the Linux hosts,
+ *  but on the macOS hosts it creates the installer as an .app bundle - a
+ *  directory with the ".app" suffix appended to the qifOut name - so a
+ *  non-empty check has to work for files and for directories (issue #738).
+ */
+bool installerIsNotEmpty(const QFileInfo &installer) {
+    if (installer.isDir()) {
+        return !QDir(installer.filePath()).entryList(QDir::NoDotAndDotDot)
+            .isEmpty();
+    }
+    return installer.isFile() && installer.size() > 0;
+}
+
 } // namespace
 
 void QifwTest::initTestCase() {
@@ -78,6 +94,22 @@ QString QifwTest::installerName() const {
     return QStringLiteral("QifwTestInstaller.run");
 #else
     return QStringLiteral("QifwTestInstaller.exe");
+#endif
+}
+
+QFileInfo QifwTest::installerInfo() const {
+    // On the macOS hosts the Qt Installer Framework binarycreator creates
+    // the installer as an .app bundle - a directory with the ".app" suffix
+    // appended to the qifOut name (the captured output of the macOS CI
+    // hosts shows the "QifwTestInstaller.exe.app" directory next to the
+    // deployed "Application" directory, issue #738). On the Windows and
+    // the Linux hosts the installer is a single executable file with the
+    // qifOut name.
+    const QString base = _tmp.path() + "/dist/";
+#ifdef Q_OS_MACOS
+    return QFileInfo(base + installerName() + QStringLiteral(".app"));
+#else
+    return QFileInfo(base + installerName());
 #endif
 }
 
@@ -214,8 +246,8 @@ void QifwTest::qtifwInstallerCheck() {
     runDeployer({"qtifw"}, QStringLiteral("qtifw"), &exitCode, &output);
     QCOMPARE(exitCode, 0);
 
-    const QFileInfo installer(_tmp.path() + "/dist/" + installerName());
-    QVERIFY2(installer.exists() && installer.size() > 0,
+    const QFileInfo installer = installerInfo();
+    QVERIFY2(installer.exists() && installerIsNotEmpty(installer),
              qPrintable("The qtifw installer is not created. The dist dir content: ["
                         + distDirListing()
                         + "]. The cqtdeployer output (the full output is stored in "
@@ -235,8 +267,8 @@ void QifwTest::qifDeprecatedAliasCheck() {
     runDeployer({"qif"}, QStringLiteral("qif"), &exitCode, &output);
     QCOMPARE(exitCode, 0);
 
-    const QFileInfo installer(_tmp.path() + "/dist/" + installerName());
-    QVERIFY2(installer.exists() && installer.size() > 0,
+    const QFileInfo installer = installerInfo();
+    QVERIFY2(installer.exists() && installerIsNotEmpty(installer),
              qPrintable("The qif (deprecated alias) installer is not created. "
                         "The dist dir content: [" + distDirListing()
                         + "]. The cqtdeployer output (the full output is stored in "
