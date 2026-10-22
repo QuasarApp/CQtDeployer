@@ -281,11 +281,12 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
     //   content cannot be copied as a file;
     // - on macOS the links of the framework bundles (Versions/Current -> A)
     //   must be kept, otherwise dyld cannot resolve the bundle (issue #166);
-    // - a link to a regular file is deployed as a regular file with the
-    //   content of the resolved target, so the deployed bundle is
+    // - on Linux a link to a regular file is deployed as a regular file with
+    //   the content of the resolved target, so the deployed bundle is
     //   self-contained (issue #825): the CUDA libcudart.so.12 ->
     //   libcudart.so.12.3.10 pair is deployed as a real file, not as a
-    //   link to the source machine.
+    //   link to the source machine; on macOS the same is done for a file
+    //   link whose target is outside of the source directory.
     if (!isMove && !QFileInfo::exists(tergetFile)) {
         auto sourceInfo = QFileInfo(file);
         if (sourceInfo.isSymLink()) {
@@ -314,12 +315,20 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
             }
 
 #ifdef Q_OS_MACOS
-            if (!linkTargetIsFile) {
-                // macOS framework bundles contain symlinks (Versions/Current
-                // -> A). The link itself must be kept, otherwise dyld cannot
-                // resolve the bundle (issue #166). The target is inside of
-                // the source directory here, so the created link is
-                // self-contained (issue #825).
+            if (linkTargetIsFile && storedTarget == linkTarget) {
+                // A link to a regular file outside of the source dir is
+                // deployed as a regular file: the regular copy below
+                // follows the link, so the deployed bundle does not
+                // reference a path that does not exist on the target host
+                // (issue #825).
+                qDebug() << "Deploy the symlink " + file + " -> " + linkTarget +
+                        " as a regular file";
+            } else {
+                // The link itself is kept: the framework bundles
+                // (Versions/Current -> A) must stay resolvable by dyld
+                // (issue #166), and the target is inside of the source
+                // directory, so the created link is self-contained
+                // (issue #825).
                 if (QFile::link(storedTarget, tergetFile)) {
                     qInfo() << operation + " (link) :" + file;
                     addToDeployed(tergetFile);
@@ -329,13 +338,6 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
                 qWarning() << "Failed to create the symlink " + tergetFile +
                         " -> " + storedTarget +
                         ", fallback to a regular file copy";
-            } else {
-                // A link to a regular file is deployed as a regular file:
-                // the regular copy below follows the link, so the deployed
-                // bundle does not depend on the target location (issues
-                // #166, #825).
-                qDebug() << "Deploy the symlink " + file + " -> " + linkTarget +
-                        " as a regular file";
             }
 #else
             if (!linkTargetIsFile) {
