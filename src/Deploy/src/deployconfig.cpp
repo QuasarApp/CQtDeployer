@@ -151,6 +151,11 @@ void DeployConfig::setCustomPlatform(Platform newCustomPlatform) {
     _customPlatform = newCustomPlatform;
 }
 
+void DeployConfig::addPlatform(const LibInfo &lib) {
+    dependencies.insert(lib);
+    platform = platform | lib.getPlatform();
+}
+
 const QHash<QString, TargetInfo> &DeployConfig::targets() const {
     return _targets;
 }

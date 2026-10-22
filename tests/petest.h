@@ -48,6 +48,7 @@ private slots:
     void classifyMSVCFlavor();
     void classifyPrecedenceAndGeneric();
     void recognizeMinGWRuntimes();
+    void genericDependencySelection();
 
     void parseMachO();
     void parseMachORouting();

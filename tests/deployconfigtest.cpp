@@ -178,6 +178,63 @@ void DeployConfigTest::customPlatform() {
     QCOMPARE(config.customPlatform(), Unix_x86_64);
 }
 
+void DeployConfigTest::packagePlatforms() {
+    DeployConfig config;
+
+    // The platform of the one package (app bundle) is a simple `platform`
+    // property of the DeployConfig object (our collected information about
+    // the state of the one package, issue #889): a single Platform bit mask
+    // that is empty (UnknownPlatform) by default and the list of the
+    // dependencies is empty.
+    QCOMPARE(config.platform, UnknownPlatform);
+    QVERIFY(config.dependencies.isEmpty());
+
+    // The addPlatform() function adds the library to the list of the
+    // dependencies and updates the platform property with the | bit
+    // operation.
+    LibInfo app;
+    app.setName("app");
+    app.setPath("/opt/apps/app");
+    app.setPlatform(Win64_MinGW_Msvcrt);
+    config.addPlatform(app);
+    QCOMPARE(config.platform, Win64_MinGW_Msvcrt);
+    QCOMPARE(config.dependencies.size(), 1);
+
+    LibInfo libzip;
+    libzip.setName("libzip.dll");
+    libzip.setPath("/opt/foreign/libzip.dll");
+    libzip.setPlatform(Win64);
+    config.addPlatform(libzip);
+    QCOMPARE(config.platform,
+             static_cast<Platform>(Win64_MinGW_Msvcrt | Win64));
+    QCOMPARE(config.dependencies.size(), 2);
+
+    LibInfo msvcLib;
+    msvcLib.setName("msvc.dll");
+    msvcLib.setPath("/opt/toolchain/msvc.dll");
+    msvcLib.setPlatform(Win64_MSVC);
+    config.addPlatform(msvcLib);
+    QCOMPARE(config.platform,
+             static_cast<Platform>(Win64_MinGW_Msvcrt |
+                                   Win64 | Win64_MSVC));
+    QCOMPARE(config.dependencies.size(), 3);
+
+    // The addPlatform() function is idempotent: the same library (the same
+    // full path) is added to the list of the dependencies one time and the
+    // platform property is not changed a second time.
+    config.addPlatform(libzip);
+    QCOMPARE(config.platform,
+             static_cast<Platform>(Win64_MinGW_Msvcrt |
+                                   Win64 | Win64_MSVC));
+    QCOMPARE(config.dependencies.size(), 3);
+
+    // The reset of the whole config clears the platform property and the
+    // list of the dependencies as well.
+    config.reset();
+    QCOMPARE(config.platform, UnknownPlatform);
+    QVERIFY(config.dependencies.isEmpty());
+}
+
 void DeployConfigTest::reset() {
     DeployConfig config;
     config.setTargetDir("/dist");

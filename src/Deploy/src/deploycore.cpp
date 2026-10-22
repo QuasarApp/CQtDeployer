@@ -24,7 +24,7 @@
 //QStringList DeployCore::extraPaths = QStringList();
 
 
-const DeployConfig* DeployCore::_config = nullptr;
+DeployConfig* DeployCore::_config = nullptr;
 
 QtModuleEntry DeployCore::qtModuleEntries[] = {
     { QtBluetoothModule, "bluetooth", "QtXBluetooth", nullptr },
@@ -1310,9 +1310,70 @@ Platform DeployCore::getPlatformFromString(const QString &platformName) {
     return platformsMap.value(platformName, Platform(0));
 }
 
+namespace {
+    // The concrete platform types that can be the members of the package
+    // platform pool. The Platform enum is a bit mask, so the pool is a
+    // single Platform type that is a result of the | bit operation over
+    // these concrete values (issue #855, #889).
+    const Platform packagePoolPlatforms[] = {
+        Platform::Win32, Platform::Win64,
+        Platform::Win_ARM_32, Platform::Win_ARM_64,
+        Platform::Win32_MinGW_Msvcrt, Platform::Win64_MinGW_Msvcrt,
+        Platform::Win32_MinGW_Ucrt, Platform::Win64_MinGW_Ucrt,
+        Platform::Win32_MSVC, Platform::Win64_MSVC,
+        static_cast<Platform>(Platform::Win_ARM_32 | Platform::MinGW_Msvcrt),
+        static_cast<Platform>(Platform::Win_ARM_32 | Platform::MinGW_Ucrt),
+        static_cast<Platform>(Platform::Win_ARM_32 | Platform::MSVC),
+        static_cast<Platform>(Platform::Win_ARM_64 | Platform::MinGW_Msvcrt),
+        static_cast<Platform>(Platform::Win_ARM_64 | Platform::MinGW_Ucrt),
+        static_cast<Platform>(Platform::Win_ARM_64 | Platform::MSVC),
+        Platform::Unix_x86_32, Platform::Unix_x86_64,
+        Platform::Unix_ARM_32, Platform::Unix_ARM_64,
+        Platform::Mac_X86_64, Platform::Mac_ARM_64,
+        Platform::WebGl, Platform::WebRemote,
+        Platform::GeneralFile
+    };
+
+    // The single platform comparison: the library must be fully compatible
+    // with the platform, see issue #870. A plain (non flavored) Windows
+    // library is compatible with a flavored platform of the same base
+    // platform (issue #889): a library without a MinGW/MSVC runtime marker
+    // in its import table (for example the plain C library libzip.dll) has
+    // no runtime of its own and runs next to every Windows runtime set of
+    // the same bitness, so a dependency that only has a generic candidate
+    // must not be dropped by the comparison. Flavored candidates keep the
+    // strict exact-match semantics, so a foreign flavored runtime set
+    // (issue #870) is never a substitute for the library of the target
+    // toolchain.
+    bool isPlatformCompatibleSingle(Platform candidate, Platform wanted) {
+        if (candidate == wanted) {
+            return true;
+        }
+
+        const int winBase = Win32 | Win64 | Win_ARM_32 | Win_ARM_64;
+        const int winFlavor = MinGW_Msvcrt | MinGW_Ucrt | MSVC;
+
+        return (candidate & ~winBase) == 0 &&   // plain Windows library
+               (wanted & winFlavor) != 0 &&      // flavored pool platform
+               (wanted & winBase) == candidate;  // same base platform
+    }
+}
+
 bool DeployCore::isPlatformCompatible(Platform candidate, Platform wanted) {
-    // The library must be fully compatible with the platform; see issue #870
-    return candidate == wanted;
+    // `wanted` is the pool of the platform types of the whole package (app
+    // bundle) - a single Platform bit mask (the Platform enum is a bit mask,
+    // so the pool is accessed with the & bit operation and grown with the |
+    // bit operation, issue #889). The candidate is compatible when it is
+    // compatible with at least one platform of the pool; a single platform
+    // is just a pool with one element.
+    for (const auto &platform : packagePoolPlatforms) {
+        if ((wanted & platform) == platform &&
+            isPlatformCompatibleSingle(candidate, platform)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 QChar DeployCore::getSeparator(int lvl) {

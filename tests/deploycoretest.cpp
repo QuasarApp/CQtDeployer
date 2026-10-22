@@ -42,24 +42,31 @@ void DeployCoreTest::platformCompatibility() {
                                               Platform::Win64_MinGW_Msvcrt), false);
     QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MinGW_Msvcrt,
                                               Platform::Win64_MinGW_Ucrt), false);
-    // A generic (non flavored) platform is NOT a valid substitute for a
-    // flavored one, and vice versa. This is the regression from issue #870:
-    // matching a generic Windows platform against a flavored one allowed the
-    // scanner to pick a foreign runtime set (Strawberry Perl) instead of the
-    // target toolchain (Qt MinGW).
+    // A flavored candidate never substitutes a generic (or different)
+    // flavored platform: this stays the strong comparison of issue #870.
     QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MinGW_Msvcrt,
                                               Platform::Win64), false);
-    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64,
-                                              Platform::Win64_MinGW_Msvcrt), false);
-    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64,
-                                              Platform::Win64_MinGW_Ucrt), false);
     // The MSVC family does not match the generic platform of the same bitness
     QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MSVC,
                                               Platform::Win64), false);
-    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64,
-                                              Platform::Win64_MSVC), false);
     QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win32_MSVC,
                                               Platform::Win32), false);
+    // A plain (non flavored) Windows library IS a valid candidate for a
+    // flavored parent of the same base platform (issue #889): a plain C
+    // dependency (for example libzip.dll) has no runtime of its own and runs
+    // next to every Windows runtime set of the same bitness. The #870
+    // protection (a foreign generic runtime set is not selected while the
+    // toolchain library exists) is provided by the library priority ordering
+    // of the dependency scanner, see PeTest::genericDependencySelection.
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64,
+                                              Platform::Win64_MinGW_Msvcrt), true);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64,
+                                              Platform::Win64_MinGW_Ucrt), true);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64,
+                                              Platform::Win64_MSVC), true);
+    // Different base bitness stays incompatible
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win32,
+                                              Platform::Win64_MinGW_Msvcrt), false);
     // MSVC and MinGW runtime sets must never be mixed
     QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MinGW_Msvcrt,
                                               Platform::Win64_MSVC), false);
@@ -92,10 +99,17 @@ void DeployCoreTest::foreignRuntimeNotSelected() {
     //
     // The dependency scanner filters the candidates with
     // DeployCore::isPlatformCompatible(candidate, wanted) where `wanted` is
-    // the platform of the parent library (the application) and `candidate` is
-    // the platform of each candidate. With the strong platform comparison the
-    // only compatible candidate is the one from the Qt toolchain, so the
-    // foreign library is never selected.
+    // one of the platform types of the whole package (app bundle) pool
+    // (which contains the platform of the parent library, the application)
+    // and `candidate` is the platform of each candidate. The flavored
+    // toolchain library is the only candidate the platform comparison
+    // accepts unconditionally; the generic Strawberry Perl library is
+    // accepted as a plain Windows candidate (issue #889), so it is excluded
+    // from the selection by the library priority ordering
+    // (toolchain/extra libraries rank above system libraries), see
+    // PeTest::genericDependencySelection. A foreign library with a
+    // different MinGW flavor is rejected by the platform comparison
+    // itself.
     DeployConfig config;
     DeployCore::_config = &config;
 
@@ -117,9 +131,12 @@ void DeployCoreTest::foreignRuntimeNotSelected() {
     // The Qt toolchain library is compatible with the target application.
     QCOMPARE(DeployCore::isPlatformCompatible(qtToolchainLib.getPlatform(),
                                               targetPlatform), true);
-    // The Strawberry Perl library must NOT be selected for the target.
+    // The Strawberry Perl library is a plain (generic) Windows library, so
+    // the platform comparison accepts it as a candidate (issue #889). It is
+    // not selected in the #870 scenario by the priority ordering, not by
+    // this comparison.
     QCOMPARE(DeployCore::isPlatformCompatible(perlLib.getPlatform(),
-                                              targetPlatform), false);
+                                              targetPlatform), true);
 
     // A foreign library with a different MinGW flavor (Msvcrt) is rejected as
     // well.
@@ -131,6 +148,150 @@ void DeployCoreTest::foreignRuntimeNotSelected() {
                                               targetPlatform), false);
 
     DeployCore::_config = nullptr;
+}
+
+void DeployCoreTest::genericWindowsFallback() {
+    // The strong platform comparison (DeployCore::isPlatformCompatible)
+    // accepts a plain (non flavored) Windows candidate for a flavored parent
+    // of the same base platform (issue #889), so a plain C dependency (for
+    // example libzip.dll, classified as a generic Win64 library) is not
+    // silently dropped. Flavored candidates and non-Windows platforms keep
+    // the exact-match semantics (issue #870).
+    //
+    // Generic candidate for a flavored parent of the same bitness.
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64,
+                                              Platform::Win64_MinGW_Msvcrt),
+             true);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64,
+                                              Platform::Win64_MinGW_Ucrt),
+             true);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64,
+                                              Platform::Win64_MSVC),
+             true);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win32,
+                                              Platform::Win32_MinGW_Msvcrt),
+             true);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win32,
+                                              Platform::Win32_MinGW_Ucrt),
+             true);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win32,
+                                              Platform::Win32_MSVC),
+             true);
+    // Different base bitness is never compatible.
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win32,
+                                              Platform::Win64_MinGW_Msvcrt),
+             false);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64,
+                                              Platform::Win32_MinGW_Ucrt),
+             false);
+    // A generic candidate of the same base platform is compatible also for
+    // the (currently unused) flavored ARM platforms.
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win_ARM_64,
+                                              static_cast<Platform>(
+                                                  Platform::Win_ARM_64 |
+                                                  Platform::MinGW_Msvcrt)),
+             true);
+    // Flavored candidates keep the exact-match semantics (issue #870).
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MinGW_Msvcrt,
+                                              Platform::Win64_MinGW_Ucrt),
+             false);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MSVC,
+                                              Platform::Win64_MinGW_Msvcrt),
+             false);
+    // A flavored candidate never matches a generic (non flavored) parent.
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MinGW_Msvcrt,
+                                              Platform::Win64),
+             false);
+    // Non-Windows and unknown platforms never match a flavored parent.
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Mac_ARM_64,
+                                              Platform::Mac_X86_64),
+             false);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::UnknownPlatform,
+                                              Platform::Win64_MinGW_Msvcrt),
+             false);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Unix_x86_64,
+                                              Platform::Win64_MinGW_Msvcrt),
+             false);
+}
+
+void DeployCoreTest::platformCompatibilityPool() {
+    // The candidate is compared against the pool of the platform types of
+    // the whole package (app bundle) and is accepted when it is compatible
+    // with at least one of the pool platforms (issue #889). The pool is a
+    // single Platform bit mask (the Platform enum is a bit mask), so the
+    // pool platforms are combined with the | bit operation and accessed
+    // with the & bit operation.
+    //
+    // An empty pool never accepts a candidate.
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MinGW_Msvcrt,
+                                              Platform::UnknownPlatform), false);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64,
+                                              Platform::UnknownPlatform), false);
+    // Exact match with one of the pool platforms.
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MinGW_Msvcrt,
+                                              Platform::Win64_MinGW_Msvcrt),
+             true);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MSVC,
+                                              static_cast<Platform>(
+                                                  Platform::Win64_MSVC |
+                                                  Platform::Win64_MinGW_Msvcrt)),
+             true);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MinGW_Msvcrt,
+                                              static_cast<Platform>(
+                                                  Platform::Win64 |
+                                                  Platform::Win64_MinGW_Msvcrt)),
+             true);
+    // A plain (non flavored) Windows candidate is accepted through a
+    // flavored pool platform of the same base platform (issue #889).
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64,
+                                              Platform::Win64_MinGW_Msvcrt),
+             true);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win32,
+                                              Platform::Win32_MSVC),
+             true);
+    // A flavored candidate never matches a generic (non flavored) pool: a
+    // neutral package does not pull a foreign runtime set into it
+    // (issue #870).
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MinGW_Msvcrt,
+                                              Platform::Win64),
+             false);
+    // A flavored candidate of another runtime family is rejected while the
+    // pool contains the platform of the target toolchain (issue #870).
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MinGW_Ucrt,
+                                              static_cast<Platform>(
+                                                  Platform::Win64_MinGW_Msvcrt |
+                                                  Platform::Win64)),
+             false);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MSVC,
+                                              Platform::Win64_MinGW_Msvcrt),
+             false);
+    // A different base bitness is never compatible.
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win32,
+                                              Platform::Win64_MinGW_Msvcrt),
+             false);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64,
+                                              Platform::Win32_MinGW_Msvcrt),
+             false);
+    // A flavored candidate of a runtime family that is not in the pool is
+    // rejected even when the pool contains flavored platforms of other
+    // runtime families (issue #870).
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64_MinGW_Ucrt,
+                                              static_cast<Platform>(
+                                                  Platform::Win64_MSVC |
+                                                  Platform::Win32_MinGW_Msvcrt)),
+             false);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Win64,
+                                              static_cast<Platform>(
+                                                  Platform::Win64_MSVC |
+                                                  Platform::Win32_MinGW_Msvcrt)),
+             true);
+    // Non Windows candidates never match a Windows pool.
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Unix_x86_64,
+                                              Platform::Win64_MinGW_Msvcrt),
+             false);
+    QCOMPARE(DeployCore::isPlatformCompatible(Platform::Mac_ARM_64,
+                                              Platform::Win64),
+             false);
 }
 
 void DeployCoreTest::platformStrings() {
