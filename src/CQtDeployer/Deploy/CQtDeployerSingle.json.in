@@ -9,7 +9,7 @@
     "binPrefix": "@CMAKE_BINARY_DIR@",
     "libDir": [
         "@CMAKE_SOURCE_DIR@",
-        "@CMAKE_PREFIX_PATH@",
+        "@CQT_DEPLOYER_QT_LIB_DIR@",
         "@CMAKE_BINARY_DIR@"
     ],
 
