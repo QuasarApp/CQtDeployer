@@ -36,6 +36,7 @@ private slots:
     void dmgOutConfigCheck();
     void dmgCreationCheck();
     void dmgMultiPackageCheck();
+    void dmgQifToolsCheck();
 
 private:
     QTemporaryDir _tmp;
