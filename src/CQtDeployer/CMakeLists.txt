@@ -98,6 +98,28 @@ if(DEFINED ENV{GITHUB_ENV})
 
 endif()
 
+# The libDir entry of the self-deploy configuration points explicitly
+# to the library directory of the Qt installation (the libDir path
+# within QT_ROOT), not to the whole Qt prefix. Registering the entire
+# prefix in the deploy environment puts every file of the Qt
+# installation (headers, QML modules, mkspecs, documentation) into the
+# dependency scan, and cqtdeployer can pull those extraneous files into
+# the release package. The explicit lib path also keeps the Qt-bundled
+# system libraries (e.g. ICU) as ExtraLib candidates, so they are
+# preferred over the system copies (review note on PR #886).
+if (QT_QMAKE_EXECUTABLE)
+    get_filename_component(CQT_DEPLOYER_QT_BIN_DIR "${QT_QMAKE_EXECUTABLE}" DIRECTORY)
+    get_filename_component(CQT_DEPLOYER_QT_ROOT "${CQT_DEPLOYER_QT_BIN_DIR}" DIRECTORY)
+    if (WIN32)
+        # Qt for Windows keeps its DLLs in the bin directory of the kit.
+        set(CQT_DEPLOYER_QT_LIB_DIR "${CQT_DEPLOYER_QT_ROOT}/bin")
+    else()
+        set(CQT_DEPLOYER_QT_LIB_DIR "${CQT_DEPLOYER_QT_ROOT}/lib")
+    endif()
+else()
+    set(CQT_DEPLOYER_QT_LIB_DIR "${CMAKE_PREFIX_PATH}")
+endif()
+
 configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployer.json")
 configure_file_in(${CURRENT_PROJECT} "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/CQtDeployerSingle.json")
 
