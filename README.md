@@ -66,25 +66,25 @@ See the list of all options [here](md/Options.md)
 ```
 <p align="center"><img src="https://user-images.githubusercontent.com/12465465/81007195-7ab2e780-8e59-11ea-9793-1eeeb0025b96.png"  height="400"></p>
 
-#### Project installer after deployment with the `qif` option.
+#### Project installer after deployment with the `qtifw` option.
 ``` bash
  #linux
- cqtdeployer -bin Application qif
+ cqtdeployer -bin Application qtifw
  
  #windows
- cqtdeployer -bin Application.exe -qmake /path/to/qmake.exe qif
+ cqtdeployer -bin Application.exe -qmake /path/to/qmake.exe qtifw
 
 ```
 <p align="center"><img src="https://user-images.githubusercontent.com/12465465/78639719-197a1180-78b7-11ea-9e82-a03dd43f4bd2.png"  height="400"></p>
 
-#### Project installer after deployment with the `qif` and `qifStyle` options.
+#### Project installer after deployment with the `qtifw` and `qifStyle` options.
 
 ``` bash
  #linux
- cqtdeployer -bin Application qif -qifStyle quasar
+ cqtdeployer -bin Application qtifw -qifStyle quasar
  
  #windows
- cqtdeployer -bin Application.exe -qmake /path/to/qmake.exe qif -qifStyle quasar
+ cqtdeployer -bin Application.exe -qmake /path/to/qmake.exe qtifw -qifStyle quasar
 
 ```
 
@@ -92,10 +92,10 @@ See the list of all options [here](md/Options.md)
 
 ``` bash
  #linux
- cqtdeployer -bin Application qif -qifStyle path/to/myStyle.css
+ cqtdeployer -bin Application qtifw -qifStyle path/to/myStyle.css
  
  #windows
- cqtdeployer -bin Application.exe -qmake /path/to/qmake.exe qif -qifStyle path/to/myStyle.css
+ cqtdeployer -bin Application.exe -qmake /path/to/qmake.exe qtifw -qifStyle path/to/myStyle.css
 
 ```
 

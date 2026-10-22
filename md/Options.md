@@ -58,10 +58,10 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   noCheckPATH               | Disables automatic search of paths to qmake in system PATH.     |
 |   noRecursiveiIgnoreEnv     | Disables recursive ignore for ignoreEnv option.                 |
 |   v / version               | Shows compiled version                                          |
-|   qif                       | Create the QIF installer for deployment program"              |
-|                             | Example: cqtdeployer qif" },                              |
+|   qtifw                     | Create the QIF installer for deployment program"              |
+|                             | Example: cqtdeployer qtifw" },                              |
 |                             | Starting with CQtDeployer 1.5 you can specify the path to your own installer template. |
-|                             | Examples: cqtdeployer -qif path/to/myCustom/qif. More details can be found [here](QIF.md) |
+|                             | Examples: cqtdeployer -qtifw path/to/myCustom/qifw. More details can be found [here](QIF.md) |
 |   deb                       | Create the deb package for deployment programm"              |
 |                             | Example: cqtdeployer deb" },                              |
 |                             | you can specify the path to your own DEBIAN template. |
@@ -69,7 +69,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   deploySystem              | Deploys all libraries not recommended because there may be conflicts with system libraries  |
 |   noQt                      | Ignores the error of initialize of a qmake. Use only if your application does not use the qt framework. |
 |   allowEmptyPackages        | Allows configure the empty packages.                            |
-|   getDefaultTemplate        | Extracts defaults deb or qif templates. For more information see the  extracting default templates [page](ExtractDefaultsTemplates.md)       |
+|   getDefaultTemplate        | Extracts defaults deb or qtifw templates. For more information see the  extracting default templates [page](ExtractDefaultsTemplates.md)       |
 |   noHashSum                 | Disable computation of a packages hash sum               |
 
 

@@ -85,7 +85,7 @@ So you need to create your template and add tehe path to you template for a pack
 Example
 
 ```
-cqtdeployer ... -qif /path/to/my/template/installer
+cqtdeployer ... -qtifw /path/to/my/template/installer
 ```
 
 The /path/to/my/template/installer folder must be contains a folder with the package name.

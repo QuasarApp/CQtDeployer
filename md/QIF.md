@@ -5,27 +5,34 @@ General rules for using Qt Installer Framwork
 ### What is Qt Installer Framwork
 
 The **Qt Installer Framework** (QIF) provides a set of tools and utilities to create installers for the supported desktop Qt platforms: Linux, Microsoft Windows, and OS X.
-In **CQtDeployer** QIF availabel in qif option.
+In **CQtDeployer** QIF availabel in the qtifw option.
 
 > **Note:** the Qt Installer Framework tools (binarycreator and
 > installerbase) are stored in the CQtDeployer repository for all supported
-> platforms (including macOS), so the `qif` option works on macOS hosts as
+> platforms (including macOS), so the `qtifw` option works on macOS hosts as
 > well. The release artifact for macOS is a DMG archive. See the
 > [CQtDeployer for macOS](macOS.md) page.
 
-### How to use qif option
+> **Note (macOS):** on the macOS hosts the Qt Installer Framework
+> binarycreator creates the installer as an **.app bundle** (a directory).
+> The bundle name is the `qifOut` name with the `.app` suffix - CQtDeployer
+> adds the suffix to the `qifOut` value (or to the default installer name)
+> when it is missing, e.g. `-qifOut MyInstaller` creates
+> `MyInstaller.app` in the target directory.
 
-The qif option invoke with path to custo qt installer template or with default installer template.
+### How to use qtifw option
+
+The qtifw option invoke with path to custo qt installer template or with default installer template.
 
 #### For example:
 
 ```bash
-    cqtdeployer ... qif
+    cqtdeployer ... qtifw
 ```
 
 Where:
 * **...** - is list of other options.
-* **qif** - option for use qt installer framework with default template.
+* **qtifw** - option for use qt installer framework with default template.
 
 
 By default, cqtdeployer will create an installation file with one package in which your entire distribution kit will lie.
@@ -54,15 +61,15 @@ Or you can describe packages in [configuration file](DeployConfigFile.md)
 
 # Custom Template for QIF
 
-Starting with CQtDeployer Version 1.5 you can use your own installer template. To do this, you must pass the path to your template to the qif parameter.
+Starting with CQtDeployer Version 1.5 you can use your own installer template. To do this, you must pass the path to your template to the qtifw parameter.
 
 ```bash
-cqtdeployer ... -qif /path/to/my/custom/qif/template
+cqtdeployer ... -qtifw /path/to/my/custom/qif/template
 ```
 
 ### Template
 
-The qif template should contain 2 folders:
+The QIF template should contain 2 folders:
 * packages
 * config
 
@@ -101,7 +108,7 @@ If the folder names do not match the package names then CQtDeployer will use the
 If you have only one package then you can use the **name** option for set name the application.
 
 ```bash
-cqtdeployer ... -qif /path/to/my/custom/qif/template -name myCustomInstaller
+cqtdeployer ... -qtifw /path/to/my/custom/qif/template -name myCustomInstaller
 ```
 
 #### Do not forget to rename the your package folder to the packaga name of the name option.
@@ -132,7 +139,7 @@ The getDefaultTemplate option extract default template of the cqtdeployer. This 
 ### Getting default qt installer framwork template. 
 
 ```bash
-cqtdeployer getDefaultTemplate qif
+cqtdeployer getDefaultTemplate qtifw
 ```
 
 
@@ -148,13 +155,13 @@ If you create multi packages distribution then you need to configure your packag
 Extracting template with packages:
 
 ```bash
-cqtdeployer getDefaultTemplate qif -bin myExecutable
+cqtdeployer getDefaultTemplate qtifw -bin myExecutable
 ```
 
 Extracting template for multi packages distribution
 
 ```bash
-cqtdeployer getDefaultTemplate qif -bin myExecutable1,myExecutable2 -targetPackage p1;myExecutable1,p2;myExecutable2
+cqtdeployer getDefaultTemplate qtifw -bin myExecutable1,myExecutable2 -targetPackage p1;myExecutable1,p2;myExecutable2
 ```
 
 You also can use the config file for configure templates.
@@ -163,7 +170,7 @@ Config.json
 
 ```json
 {
-    "qif": true,
+    "qtifw": true,
     "bin": [
         "myExecutable1",
         "myExecutable2"

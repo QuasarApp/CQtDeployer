@@ -6,6 +6,7 @@
 
 * Added macOS (ARM64) support: Mach-O binary scanning with the LIEF backend, a DYLD-based run script without binary rewriting, macOS (ARM64) CI/CD on GitHub Actions, the DMG packaging of the CQtDeployer.app bundle and the graceful QIF skip (the QIFW tools are not published for macOS) by @EndrII in https://github.com/QuasarApp/CQtDeployer/pull/864
 * Added the macOS documentation: the "CQtDeployer for macOS" article, the macOS usage examples and the platform support notes in https://github.com/QuasarApp/CQtDeployer/pull/864
+* Renamed the `qif` option to `qtifw` (issue #738); the old `qif`/`-qif` names and the `"qif"` key in the JSON config file are kept as a deprecated alias for backward compatibility
 
 
 ## CQtDeployer v1.6.2265

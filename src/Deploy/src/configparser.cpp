@@ -1697,14 +1697,18 @@ QList<iDistribution *> ConfigParser::getDistribution() {
         distros.push_back(new ZipArhive(_fileManager));
     }
 
-    if (QuasarAppUtils::Params::isEndable("qif")) {
+    // The 'qif' option was renamed to 'qtifw' (issue #738). The old name is
+    // still accepted for backward compatibility; it is marked as deprecated
+    // in the help (see DeployCore::avilableOptions()).
+    if (QuasarAppUtils::Params::isEndable("qtifw") ||
+        QuasarAppUtils::Params::isEndable("qif")) {
         auto qif = new QIF(_fileManager);
         if (qif->isAvailable()) {
             distros.push_back(qif);
         } else {
             qWarning() << "The binarycreator executable of the "
                                         "Qt Installer Framework is not found, "
-                                        "the qif package will not be created. "
+                                        "the qtifw package will not be created. "
                                         "Install the Qt Installer Framework "
                                         "tools to enable this option.";
             delete qif;

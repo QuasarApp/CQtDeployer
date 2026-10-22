@@ -445,10 +445,19 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             " You can add any another option to a command line for show help about using options"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
-                            {"qif","-qif"}, "",
+                            {"qtifw","-qtifw"}, "",
                             "Create the QIF installer for deployment programm"
                             " You can specify the path to your own installer template.",
-                            "Examples: cqtdeployer -qif path/to/myCustom/qif."
+                            "Examples: cqtdeployer -qtifw path/to/myCustom/qifw."
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"qif","-qif"}, "",
+                            "Create the QIF installer for deployment programm"
+                            " (DEPRECATED, use the qtifw option).",
+                            "",
+                            "The 'qif' option has been renamed to 'qtifw'. "
+                            "Please use the 'qtifw' option instead. "
+                            "The 'qif' option will be removed in a future release."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"qifFromSystem"}, "",
@@ -492,10 +501,10 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"getDefaultTemplate"}, "",
-                            "Extracts defaults deb or qif templates."
+                            "Extracts defaults deb or qtifw templates."
                             " All templates extract into targetDirectory."
                             " For change target directory use the targetDir option.",
-                            "cqtdeployer -bin myExecutable getDefaultTemplate qif deb."
+                            "cqtdeployer -bin myExecutable getDefaultTemplate qtifw deb."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"noHashSum"}, "",
