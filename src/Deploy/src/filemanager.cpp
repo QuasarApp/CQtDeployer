@@ -272,22 +272,96 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
         qInfo() << operation + " :" + file;
     }
 
-    // macOS framework bundles contain symlinks (Versions/Current -> A).
-    // The link itself must be kept, otherwise dyld cannot resolve the
-    // bundle (issue #166).
+    // Symbolic links are handled separately from a regular file copy:
+    // - a link to a directory (or a broken link) with a target outside of
+    //   the source directory is skipped, because the created link would
+    //   reference a folder that does not exist on the target host;
+    // - a link to a directory (or a broken link) with a target inside the
+    //   source directory is recreated as a link, because a directory
+    //   content cannot be copied as a file;
+    // - on macOS the links of the framework bundles (Versions/Current -> A)
+    //   must be kept, otherwise dyld cannot resolve the bundle (issue #166);
+    // - on Linux a link to a regular file is deployed as a regular file with
+    //   the content of the resolved target, so the deployed bundle is
+    //   self-contained (issue #825): the CUDA libcudart.so.12 ->
+    //   libcudart.so.12.3.10 pair is deployed as a real file, not as a
+    //   link to the source machine; on macOS the same is done for a file
+    //   link whose target is outside of the source directory.
     if (!isMove && !QFileInfo::exists(tergetFile)) {
         auto sourceInfo = QFileInfo(file);
         if (sourceInfo.isSymLink()) {
+            // symLinkTarget() returns the absolute target (Qt 6), even for
+            // a broken link.
             auto linkTarget = sourceInfo.symLinkTarget();
-            if (QFile::link(linkTarget, tergetFile)) {
-                qInfo() << operation + " (link) :" + file;
-                addToDeployed(tergetFile);
+
+            // When the target is inside the source directory it is stored
+            // relative to the created link, so the deployed bundle stays
+            // self-contained (issue #825).
+            auto storedTarget = linkTarget;
+            const auto linkDir = sourceInfo.absolutePath() + QDir::separator();
+            if (!linkTarget.isEmpty() && linkTarget.startsWith(linkDir)) {
+                storedTarget = linkTarget.mid(linkDir.size());
+            }
+
+            const auto linkTargetIsFile = QFileInfo(linkTarget).isFile();
+            if (!linkTargetIsFile && storedTarget == linkTarget) {
+                // A directory or broken link with a target outside of the
+                // source directory is not deployed: the created link would
+                // reference a folder that does not exist on the target host
+                // (issue #825).
+                qWarning() << "Skip the symlink " + file + " -> " + linkTarget +
+                        ": the target is outside of the source directory";
                 return true;
             }
 
-            qWarning() << "Failed to create the symlink " + tergetFile +
-                                        " -> " + linkTarget +
-                                        ", fallback to a regular file copy";
+#ifdef Q_OS_MACOS
+            if (linkTargetIsFile && storedTarget == linkTarget) {
+                // A link to a regular file outside of the source dir is
+                // deployed as a regular file: the regular copy below
+                // follows the link, so the deployed bundle does not
+                // reference a path that does not exist on the target host
+                // (issue #825).
+                qDebug() << "Deploy the symlink " + file + " -> " + linkTarget +
+                        " as a regular file";
+            } else {
+                // The link itself is kept: the framework bundles
+                // (Versions/Current -> A) must stay resolvable by dyld
+                // (issue #166), and the target is inside of the source
+                // directory, so the created link is self-contained
+                // (issue #825).
+                if (QFile::link(storedTarget, tergetFile)) {
+                    qInfo() << operation + " (link) :" + file;
+                    addToDeployed(tergetFile);
+                    return true;
+                }
+
+                qWarning() << "Failed to create the symlink " + tergetFile +
+                        " -> " + storedTarget +
+                        ", fallback to a regular file copy";
+            }
+#else
+            if (!linkTargetIsFile) {
+                // A link to a directory or a broken link is recreated as a
+                // link, the regular copy below cannot follow it. The target
+                // is inside of the source directory here, so the created
+                // link is self-contained (issue #825).
+                if (QFile::link(storedTarget, tergetFile)) {
+                    qInfo() << operation + " (link) :" + file;
+                    addToDeployed(tergetFile);
+                    return true;
+                }
+
+                qWarning() << "Failed to create the symlink " + tergetFile +
+                        " -> " + storedTarget +
+                        ", fallback to a regular file copy";
+            } else {
+                // The regular copy below follows the symlink and copies the
+                // content of the resolved target, so the deployed library is
+                // a self-contained regular file (issue #825).
+                qDebug() << "Deploy the symlink " + file + " -> " + linkTarget +
+                        " as a regular file";
+            }
+#endif
         }
     }
 
