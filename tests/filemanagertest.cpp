@@ -162,8 +162,9 @@ void FileManagerTest::symlinkCopy() {
     }
 #endif
 
-    // A link to a directory is recreated as a link on all platforms,
-    // because a directory content cannot be copied as a file.
+    // A link to a directory inside the source dir is recreated as a link
+    // on all platforms, because a directory content cannot be copied as a
+    // file.
     QVERIFY(QDir(m_source).mkpath("realdir"));
     const auto dirLink = m_source + "/dirlink";
     if (!QFile::link("realdir", dirLink) || !QFileInfo(dirLink).isSymLink()) {
@@ -179,9 +180,58 @@ void FileManagerTest::symlinkCopy() {
 
     // The target of a dir link inside the source dir is stored relative
     // to the created link (issue #825).
-    const auto rawTarget = dirInfo.readSymLink();
-    QVERIFY(!rawTarget.isEmpty());
-    QVERIFY(!rawTarget.startsWith('/') || rawTarget.startsWith(m_dir.path()));
+    QCOMPARE(dirInfo.readSymLink(), QByteArray("realdir"));
+
+    // A link to a directory outside of the source dir is not deployed:
+    // the created link would reference a folder that does not exist on
+    // the target host, so the bundle would not be self-contained
+    // (issue #825).
+    const auto outside = m_dir.path() + "/outside";
+    QVERIFY(QDir().mkpath(outside));
+    const auto outsideLink = m_source + "/outlink";
+    QVERIFY(QFile::link(outside, outsideLink));
+    QVERIFY(QFileInfo(outsideLink).isSymLink());
+
+    FileManager fm3;
+    QVERIFY(fm3.copyFile(outsideLink, m_target));
+    QVERIFY(!QFileInfo(m_target + "/outlink").exists());
+
+    // A link to a regular file outside of the source dir is deployed as a
+    // regular file with the content of the resolved target: the created
+    // link would reference a path that does not exist on the target host,
+    // the copied content makes the bundle self-contained (issue #825).
+    QVERIFY(createFile(outside + "/extern.so", "extern-content"));
+    const auto outsideFileLink = m_source + "/extern-link.so";
+    QVERIFY(QFile::link(outside + "/extern.so", outsideFileLink));
+    QVERIFY(QFileInfo(outsideFileLink).isSymLink());
+
+    FileManager fm4;
+    QVERIFY(fm4.copyFile(outsideFileLink, m_target));
+
+    const auto dstExt = m_target + "/extern-link.so";
+    const auto extInfo = QFileInfo(dstExt);
+    QVERIFY(!extInfo.isSymLink());
+    QVERIFY(extInfo.isFile());
+    {
+        QFile f(dstExt);
+        QVERIFY(f.open(QIODevice::ReadOnly));
+        QCOMPARE(f.readAll(), QByteArray("extern-content"));
+    }
+
+    // A broken link with a relative target inside the source dir is
+    // recreated as a (dangling) link on all platforms: there is nothing
+    // to copy and the relative target stays self-contained (issue #825).
+    const auto brokenLink = m_source + "/broken.so";
+    QVERIFY(QFile::link("missing-target.so", brokenLink));
+    QVERIFY(QFileInfo(brokenLink).isSymLink());
+
+    FileManager fm5;
+    QVERIFY(fm5.copyFile(brokenLink, m_target));
+
+    const auto dstBroken = m_target + "/broken.so";
+    const auto brokenInfo = QFileInfo(dstBroken);
+    QVERIFY(brokenInfo.isSymLink());
+    QCOMPARE(brokenInfo.readSymLink(), QByteArray("missing-target.so"));
 }
 
 void FileManagerTest::cp() {
