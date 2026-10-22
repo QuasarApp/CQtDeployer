@@ -147,15 +147,33 @@ jobs:
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target deploy --parallel 1
 
+    - name: Create the QIFW installer (macOS)
+      # The cqtdeployer installed by the cqtdeployer-install-action step
+      # (the last stable release) cannot create the QIFW installer on the
+      # macOS hosts: the macOS release zip does not bundle the Qt
+      # Installer Framework tools, and the installed release predates the
+      # macOS ".app" bundle fix (issue #738). Use the freshly built
+      # cqtdeployer instead: the copyQIFW target staged the universal IFW
+      # binaries (src/CQtDeployer/Deploy/QIFW/binaries, issue #867) next to
+      # the build-tree executable, so its qtifw distribution finds
+      # binarycreator and creates the "run file" (issue #884).
+      if: runner.os == 'macOS'
+      run: >
+        ${{ steps.strings.outputs.build-output-dir }}/src/CQtDeployer/CQtDeployer
+        -qmake ${{ env.QT_ROOT_DIR }}/bin/qmake
+        -binPrefix ${{ steps.strings.outputs.build-output-dir }}
+        -confFile src/CQtDeployer/Deploy/CQtDeployer.json
+
     - name: release
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target release --parallel 1
 
     - name: Create Release and Upload Assets Installer
-      # The QIF installer is not uploaded on macOS: the DMG archive is
-      # the installer artifact for macOS (issue #166). The Qt Installer
-      # Framework binaries are stored in the repository
-      # (src/CQtDeployer/Deploy/QIFW/binaries, issue #867).
+      # The Linux and Windows QIF installers are uploaded here; the macOS
+      # QIFW installer ("run file") is created and uploaded separately as
+      # an .app bundle (issue #884). The Qt Installer Framework binaries
+      # are stored in the repository (src/CQtDeployer/Deploy/QIFW/binaries,
+      # issue #867).
       if: runner.os != 'macOS'
       uses: svenstaro/upload-release-action@v2
       with:
@@ -200,6 +218,28 @@ jobs:
         file: Distro/${{ env.DMG_NAME }}
         prerelease: true
         asset_name: ${{ env.DMG_NAME }}
+        overwrite: true
+        body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
+
+    - name: Pack the QIFW installer (macOS)
+      # The Qt Installer Framework binarycreator creates the macOS
+      # installer as an .app bundle; pack the bundle so the release
+      # action can upload it as a single asset (issue #884).
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        cd Distro
+        zip -r -q "${INSTALLER_FULL_NAME}.app.zip" "${INSTALLER_FULL_NAME}.app"
+
+    - name: Create Release and Upload Assets QIFW Installer (macOS)
+      if: runner.os == 'macOS'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        tag: v${{ env.CQT_DEPLOYER_VERSION }}
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: Distro/${{ env.INSTALLER_FULL_NAME }}.app.zip
+        prerelease: true
+        asset_name: ${{ env.INSTALLER_FULL_NAME }}.app.zip
         overwrite: true
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
