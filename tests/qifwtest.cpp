@@ -10,6 +10,7 @@
 #include <deploycore.h>
 
 #include <QCoreApplication>
+#include <QDateTime>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -56,11 +57,15 @@ QString findDeployerExe() {
  *  but on the macOS hosts it creates the installer as an .app bundle - a
  *  directory with the ".app" suffix appended to the qifOut name - so a
  *  non-empty check has to work for files and for directories (issue #738).
+ *  For the .app bundle the completeness criterion is the bundle executable
+ *  in Contents/MacOS - the standard .app layout the macOS binarycreator
+ *  creates (the staged IFW binary contains the "Contents/MacOS" and
+ *  "Contents/Info.plist" bundle paths).
  */
 bool installerIsNotEmpty(const QFileInfo &installer) {
     if (installer.isDir()) {
-        return !QDir(installer.filePath()).entryList(QDir::NoDotAndDotDot)
-            .isEmpty();
+        const QDir macosDir(installer.filePath() + "/Contents/MacOS");
+        return !macosDir.entryList(QDir::Files | QDir::NoDotAndDotDot).isEmpty();
     }
     return installer.isFile() && installer.size() > 0;
 }
@@ -195,12 +200,12 @@ QString QifwTest::distDirListing() const {
 }
 
 QString QifwTest::artifactListing() const {
-    // A listing of the installer artifact itself: for the file artifacts of
-    // the Windows and the Linux hosts the size, for the .app bundle of the
-    // macOS hosts the top-level entries (the "Contents" directory of a
-    // complete bundle). The listing goes into the failure messages, so an
-    // incomplete bundle (for example an empty ".app" directory) is visible
-    // in the CI log and in the uploaded test reports (issue #738).
+    // A listing of the installer artifact itself for the failure messages:
+    // the size for the file artifacts of the Windows and the Linux hosts,
+    // the top-level entries plus the "Contents" entries for the .app bundle
+    // of the macOS hosts. An incomplete bundle (for example an empty
+    // ".app" directory) is then visible in the CI log and in the uploaded
+    // test reports (issue #738).
     const QFileInfo artifact = installerInfo();
     if (!artifact.exists()) {
         return QStringLiteral("<missing>");
@@ -209,15 +214,44 @@ QString QifwTest::artifactListing() const {
         return QString::number(artifact.size());
     }
     QStringList lines;
-    const auto entries = QDir(artifact.filePath()).entryInfoList(
-        QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
-    for (const auto &entry: entries) {
-        const QString size = entry.isDir()
-            ? QStringLiteral("<dir>")
-            : QString::number(entry.size());
-        lines << QStringLiteral("%1 (%2)").arg(entry.fileName(), size);
+    const auto appendLevel = [&lines](const QDir &dir, const QString &prefix) {
+        const auto entries = dir.entryInfoList(
+            QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
+        for (const auto &entry: entries) {
+            const QString size = entry.isDir()
+                ? QStringLiteral("<dir>")
+                : QString::number(entry.size());
+            lines << QStringLiteral("%1%2 (%3)").arg(prefix, entry.fileName(), size);
+        }
+    };
+    appendLevel(QDir(artifact.filePath()), QString());
+    const QDir contentsDir(artifact.filePath() + "/Contents");
+    if (contentsDir.exists()) {
+        appendLevel(contentsDir, QStringLiteral("Contents/"));
     }
     return lines.join(QStringLiteral(", "));
+}
+
+bool QifwTest::waitForInstaller(int timeoutMs) {
+    // The .app bundle of the macOS hosts is populated by a background step
+    // of the binarycreator that outlives the cqtdeployer process (on the
+    // macOS CI hosts the "Contents" directory appears in the milliseconds
+    // after the cqtdeployer exit, issue #738), so the installer artifact is
+    // polled until it is complete instead of being checked once right after
+    // the process exit. On the Windows and the Linux hosts the file
+    // artifact is complete when the process exits, the first poll returns
+    // and the wait is a no-op.
+    const qint64 deadline = QDateTime::currentMSecsSinceEpoch() + timeoutMs;
+    for (;;) {
+        const QFileInfo installer = installerInfo();
+        if (installer.exists() && installerIsNotEmpty(installer)) {
+            return true;
+        }
+        if (QDateTime::currentMSecsSinceEpoch() >= deadline) {
+            return false;
+        }
+        QTest::qWait(250);
+    }
 }
 
 void QifwTest::optionTableCheck() {
@@ -273,9 +307,9 @@ void QifwTest::qtifwInstallerCheck() {
     QCOMPARE(exitCode, 0);
 
     const QFileInfo installer = installerInfo();
-    QVERIFY2(installer.exists() && installerIsNotEmpty(installer),
-             qPrintable("The qtifw installer is not created. The dist dir content: ["
-                        + distDirListing()
+    QVERIFY2(waitForInstaller(5 * 60 * 1000),
+             qPrintable("The qtifw installer is not created (the wait timed out). "
+                        "The dist dir content: [" + distDirListing()
                         + "]. The installer artifact (" + installer.filePath() + ") content: ["
                         + artifactListing()
                         + "]. The cqtdeployer output (the full output is stored in "
@@ -296,9 +330,9 @@ void QifwTest::qifDeprecatedAliasCheck() {
     QCOMPARE(exitCode, 0);
 
     const QFileInfo installer = installerInfo();
-    QVERIFY2(installer.exists() && installerIsNotEmpty(installer),
-             qPrintable("The qif (deprecated alias) installer is not created. "
-                        "The dist dir content: [" + distDirListing()
+    QVERIFY2(waitForInstaller(5 * 60 * 1000),
+             qPrintable("The qif (deprecated alias) installer is not created (the wait "
+                        "timed out). The dist dir content: [" + distDirListing()
                         + "]. The installer artifact (" + installer.filePath() + ") content: ["
                         + artifactListing()
                         + "]. The cqtdeployer output (the full output is stored in "

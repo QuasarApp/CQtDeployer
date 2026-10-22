@@ -44,6 +44,7 @@ private:
                      int *exitCode, QString *output);
     QString distDirListing() const;
     QString artifactListing() const;
+    bool waitForInstaller(int timeoutMs);
 
     QTemporaryDir _tmp;
     QString _deployerExe;
