@@ -70,6 +70,29 @@ bool installerIsNotEmpty(const QFileInfo &installer) {
     return installer.isFile() && installer.size() > 0;
 }
 
+/**
+ * @brief findFileRecursive Returns the file with the @a fileName found
+ *  recursively under the @a dir, or an empty QFileInfo when it is not
+ *  found there.
+ */
+QFileInfo findFileRecursive(const QDir &dir, const QString &fileName) {
+    const QFileInfoList entries = dir.entryInfoList(
+        QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
+    for (const QFileInfo &entry: entries) {
+        if (entry.isFile() && entry.fileName() == fileName) {
+            return entry;
+        }
+        if (entry.isDir()) {
+            const QFileInfo found = findFileRecursive(QDir(entry.absoluteFilePath()), fileName);
+            if (found.exists()) {
+                return found;
+            }
+        }
+    }
+
+    return QFileInfo();
+}
+
 } // namespace
 
 void QifwTest::initTestCase() {
@@ -90,19 +113,19 @@ void QifwTest::initTestCase() {
 void QifwTest::cleanupTestCase() {
 }
 
-QString QifwTest::installerName() const {
+QString QifwTest::installerName(const char *base) const {
     // The QIF::installerFile() method of the Deploy library uses the
     // ".run" suffix on the Linux hosts and the ".exe" suffix on every
     // other platform (including macOS). The qifOut option below overrides
     // the default name, the suffix must match the platform.
 #ifdef Q_OS_LINUX
-    return QStringLiteral("QifwTestInstaller.run");
+    return QString::fromLatin1(base) + QStringLiteral(".run");
 #else
-    return QStringLiteral("QifwTestInstaller.exe");
+    return QString::fromLatin1(base) + QStringLiteral(".exe");
 #endif
 }
 
-QFileInfo QifwTest::installerInfo() const {
+QFileInfo QifwTest::installerInfo(const char *base) const {
     // On the macOS hosts the Qt Installer Framework binarycreator creates
     // the installer as an .app bundle - a directory with the ".app" suffix
     // appended to the qifOut name (the captured output of the macOS CI
@@ -110,16 +133,34 @@ QFileInfo QifwTest::installerInfo() const {
     // deployed "Application" directory, issue #738). On the Windows and
     // the Linux hosts the installer is a single executable file with the
     // qifOut name.
-    const QString base = _tmp.path() + "/dist/";
+    const QString baseDir = _tmp.path() + "/dist/";
 #ifdef Q_OS_MACOS
-    return QFileInfo(base + installerName() + QStringLiteral(".app"));
+    return QFileInfo(baseDir + installerName(base) + QStringLiteral(".app"));
 #else
-    return QFileInfo(base + installerName());
+    return QFileInfo(baseDir + installerName(base));
 #endif
 }
 
 void QifwTest::runDeployer(const QStringList &distroOptions, const QString &runName,
                            int *exitCode, QString *output) {
+    QStringList args = {
+        "clear",
+        "-bin", _targetBinary,
+        "-targetDir", _tmp.path() + "/dist",
+        "-libDir", _targetLibDir,
+        "-recursiveDepth", "5",
+        "-qifOut", installerName()
+    };
+    if (!_qmake.isEmpty()) {
+        args << "-qmake" << _qmake;
+    }
+    args << distroOptions;
+
+    runDeployerProcess(args, runName, exitCode, output);
+}
+
+void QifwTest::runDeployerProcess(const QStringList &args, const QString &runName,
+                                  int *exitCode, QString *output) {
     if (exitCode != nullptr) {
         *exitCode = -1;
     }
@@ -133,19 +174,6 @@ void QifwTest::runDeployer(const QStringList &distroOptions, const QString &runN
         }
         return;
     }
-
-    QStringList args = {
-        "clear",
-        "-bin", _targetBinary,
-        "-targetDir", _tmp.path() + "/dist",
-        "-libDir", _targetLibDir,
-        "-recursiveDepth", "5",
-        "-qifOut", installerName()
-    };
-    if (!_qmake.isEmpty()) {
-        args << "-qmake" << _qmake;
-    }
-    args << distroOptions;
 
     QProcess proc;
     proc.setProcessChannelMode(QProcess::MergedChannels);
@@ -232,7 +260,7 @@ QString QifwTest::artifactListing() const {
     return lines.join(QStringLiteral(", "));
 }
 
-bool QifwTest::waitForInstaller(int timeoutMs) {
+bool QifwTest::waitForInstaller(int timeoutMs, const char *base) {
     // The .app bundle of the macOS hosts is populated by a background step
     // of the binarycreator that outlives the cqtdeployer process (on the
     // macOS CI hosts the "Contents" directory appears in the milliseconds
@@ -243,7 +271,7 @@ bool QifwTest::waitForInstaller(int timeoutMs) {
     // and the wait is a no-op.
     const qint64 deadline = QDateTime::currentMSecsSinceEpoch() + timeoutMs;
     for (;;) {
-        const QFileInfo installer = installerInfo();
+        const QFileInfo installer = installerInfo(base);
         if (installer.exists() && installerIsNotEmpty(installer)) {
             return true;
         }
@@ -252,6 +280,14 @@ bool QifwTest::waitForInstaller(int timeoutMs) {
         }
         QTest::qWait(250);
     }
+}
+
+QFileInfo QifwTest::findDistFile(const QString &fileName) const {
+    // A recursive search under the dist dir: the exact location of the
+    // target depends on the platform and the distro defaults (the bin
+    // output dir of the qtifw distro), so the check follows the file
+    // instead of the expected layout (issue #883).
+    return findFileRecursive(QDir(_tmp.path() + "/dist"), fileName);
 }
 
 void QifwTest::optionTableCheck() {
@@ -347,6 +383,62 @@ void QifwTest::qifDeprecatedAliasCheck() {
                           "test_report.txt.qif):\n" + output));
 }
 
+void QifwTest::noQtGeneralFileInstallerCheck() {
+    // A plain text file passed via the bin option cannot be parsed as a
+    // binary of a known format (the ELF/PE/MACHO scanners fail on it).
+    // The deployer must register such a target as a general file, copy
+    // the file to the target dir and create the installer with it
+    // (issue #883).
+    if (_deployerExe.isEmpty()) {
+        QSKIP("The cqtdeployer executable of the build tree is not found, the qtifw installer test cannot run");
+    }
+
+    const QString textFileName = QStringLiteral("clinerules");
+    const QDir srcDir(_tmp.path() + "/src");
+    QVERIFY2(srcDir.mkpath(QStringLiteral(".")), "Failed to create the source dir");
+
+    const QString textFilePath = srcDir.absolutePath() + "/" + textFileName;
+    {
+        QFile f(textFilePath);
+        QVERIFY2(f.open(QIODevice::WriteOnly | QIODevice::Text),
+                 "Failed to create the general text file");
+        f.write("A general text file used by the issue #883 regression test.\n");
+    }
+
+    int exitCode = -1;
+    QString output;
+    // The noQt and the qtifw options are flags without the "-" prefix:
+    // every option with the "-" prefix consumes the next token as its
+    // value (the QuasarApp Params parser), so "-noQt" would swallow the
+    // qtifw flag and no installer would be created (issue #883).
+    runDeployerProcess({
+        "clear",
+        "-bin", textFilePath,
+        "noQt",
+        "qtifw",
+        "-targetDir", _tmp.path() + "/dist",
+        "-qifOut", installerName("QifwGeneralFileInstaller")
+    }, QStringLiteral("noQtGeneralFile"), &exitCode, &output);
+    QCOMPARE(exitCode, 0);
+
+    const QFileInfo installer = installerInfo("QifwGeneralFileInstaller");
+    QVERIFY2(waitForInstaller(5 * 60 * 1000, "QifwGeneralFileInstaller"),
+             qPrintable("The qtifw installer of the general file target is not created "
+                        "(the wait timed out). The dist dir content: [" + distDirListing()
+                        + "]. The installer artifact (" + installer.filePath()
+                        + "): [" + artifactListing()
+                        + "]. The cqtdeployer output (the full output is stored in "
+                        "test_report.txt.noQtGeneralFile):\n" + output));
+
+    const QFileInfo deployedFile = findDistFile(textFileName);
+    QVERIFY2(deployedFile.exists(),
+             qPrintable("The general text file is not copied into the target dir. "
+                        "The dist dir content: [" + distDirListing()
+                        + "]. The cqtdeployer output (the full output is stored in "
+                        "test_report.txt.noQtGeneralFile):\n" + output));
+}
+
 // Standard stand-alone QTest entry point, see the Qt test tutorial:
+
 // https://doc.qt.io/qt-6/qttestlib-tutorial1-example.html
 QTEST_GUILESS_MAIN(QifwTest)

@@ -36,15 +36,22 @@ private slots:
     void optionTableCheck();
     void qtifwInstallerCheck();
     void qifDeprecatedAliasCheck();
+    void noQtGeneralFileInstallerCheck();
 
 private:
-    QString installerName() const;
-    QFileInfo installerInfo() const;
+    static constexpr const char *DEFAULT_INSTALLER_BASE = "QifwTestInstaller";
+
+    QString installerName(const char *base = DEFAULT_INSTALLER_BASE) const;
+    QFileInfo installerInfo(const char *base = DEFAULT_INSTALLER_BASE) const;
     void runDeployer(const QStringList &distroOptions, const QString &runName,
                      int *exitCode, QString *output);
+    void runDeployerProcess(const QStringList &args, const QString &runName,
+                            int *exitCode, QString *output);
     QString distDirListing() const;
     QString artifactListing() const;
-    bool waitForInstaller(int timeoutMs);
+    bool waitForInstaller(int timeoutMs,
+                          const char *base = DEFAULT_INSTALLER_BASE);
+    QFileInfo findDistFile(const QString &fileName) const;
 
     QTemporaryDir _tmp;
     QString _deployerExe;
