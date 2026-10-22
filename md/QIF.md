@@ -13,6 +13,13 @@ In **CQtDeployer** QIF availabel in the qtifw option.
 > well. The release artifact for macOS is a DMG archive. See the
 > [CQtDeployer for macOS](macOS.md) page.
 
+> **Note (macOS):** on the macOS hosts the Qt Installer Framework
+> binarycreator creates the installer as an **.app bundle** (a directory).
+> The bundle name is the `qifOut` name with the `.app` suffix - CQtDeployer
+> adds the suffix to the `qifOut` value (or to the default installer name)
+> when it is missing, e.g. `-qifOut MyInstaller` creates
+> `MyInstaller.app` in the target directory.
+
 ### How to use qtifw option
 
 The qtifw option invoke with path to custo qt installer template or with default installer template.

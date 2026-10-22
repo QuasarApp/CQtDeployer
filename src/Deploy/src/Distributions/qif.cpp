@@ -293,12 +293,25 @@ QString QIF::installerFile() const {
 #else
     QString sufix = ".exe";
 #endif
-    QString qifOut = QuasarAppUtils::Params::getArg("qifOut");
+    QString name;
+    const QString qifOut = QuasarAppUtils::Params::getArg("qifOut");
     if (qifOut.size()) {
-        return DeployCore::_config->getTargetDir() + "/" + qifOut;
+        name = qifOut;
+    } else {
+        name = "Installer" + generalInfo.Name + sufix;
     }
-
-    return DeployCore::_config->getTargetDir() + "/Installer" + generalInfo.Name + sufix;
+#ifdef Q_OS_MACOS
+    // The Qt Installer Framework binarycreator creates the installer on
+    // the macOS hosts as an .app bundle and expects the output name to end
+    // with the ".app" suffix: a name without the suffix (for example
+    // "Installer.exe") leaves an empty "<name>.app" directory in the target
+    // directory without the installer content (observed on the macOS CI
+    // hosts, issue #738).
+    if (!name.endsWith(QStringLiteral(".app"), Qt::CaseInsensitive)) {
+        name += QStringLiteral(".app");
+    }
+#endif
+    return DeployCore::_config->getTargetDir() + "/" + name;
 }
 
 bool QIF::deployPackage(const DistroModule& dist,

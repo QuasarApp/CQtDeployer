@@ -43,6 +43,7 @@ private:
     void runDeployer(const QStringList &distroOptions, const QString &runName,
                      int *exitCode, QString *output);
     QString distDirListing() const;
+    QString artifactListing() const;
 
     QTemporaryDir _tmp;
     QString _deployerExe;

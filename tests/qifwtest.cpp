@@ -194,6 +194,32 @@ QString QifwTest::distDirListing() const {
     return lines.join(QStringLiteral(", "));
 }
 
+QString QifwTest::artifactListing() const {
+    // A listing of the installer artifact itself: for the file artifacts of
+    // the Windows and the Linux hosts the size, for the .app bundle of the
+    // macOS hosts the top-level entries (the "Contents" directory of a
+    // complete bundle). The listing goes into the failure messages, so an
+    // incomplete bundle (for example an empty ".app" directory) is visible
+    // in the CI log and in the uploaded test reports (issue #738).
+    const QFileInfo artifact = installerInfo();
+    if (!artifact.exists()) {
+        return QStringLiteral("<missing>");
+    }
+    if (!artifact.isDir()) {
+        return QString::number(artifact.size());
+    }
+    QStringList lines;
+    const auto entries = QDir(artifact.filePath()).entryInfoList(
+        QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
+    for (const auto &entry: entries) {
+        const QString size = entry.isDir()
+            ? QStringLiteral("<dir>")
+            : QString::number(entry.size());
+        lines << QStringLiteral("%1 (%2)").arg(entry.fileName(), size);
+    }
+    return lines.join(QStringLiteral(", "));
+}
+
 void QifwTest::optionTableCheck() {
     const auto options = DeployCore::avilableOptions();
 
@@ -250,6 +276,8 @@ void QifwTest::qtifwInstallerCheck() {
     QVERIFY2(installer.exists() && installerIsNotEmpty(installer),
              qPrintable("The qtifw installer is not created. The dist dir content: ["
                         + distDirListing()
+                        + "]. The installer artifact (" + installer.filePath() + ") content: ["
+                        + artifactListing()
                         + "]. The cqtdeployer output (the full output is stored in "
                           "test_report.txt.qtifw):\n" + output));
 }
@@ -271,6 +299,8 @@ void QifwTest::qifDeprecatedAliasCheck() {
     QVERIFY2(installer.exists() && installerIsNotEmpty(installer),
              qPrintable("The qif (deprecated alias) installer is not created. "
                         "The dist dir content: [" + distDirListing()
+                        + "]. The installer artifact (" + installer.filePath() + ") content: ["
+                        + artifactListing()
                         + "]. The cqtdeployer output (the full output is stored in "
                           "test_report.txt.qif):\n" + output));
 
