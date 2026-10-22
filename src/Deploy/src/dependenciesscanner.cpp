@@ -190,8 +190,30 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
 
         auto dep = libs.begin();
 
+        // First pass: the strong platform comparison (issue #870). A
+        // candidate with the exact platform of the parent wins, so a
+        // foreign runtime set (for example a generic Strawberry Perl
+        // MinGW runtime) can never satisfy the dependency while the
+        // library of the target toolchain is present in the environment.
         while (dep != libs.end() &&
-               !DeployCore::isPlatformCompatible(dep.value()._platform, lib._platform)) dep++;
+               !DeployCore::isPlatformCompatible(dep.value()._platform,
+                                                 lib._platform))
+            dep++;
+
+        if (dep == libs.end()) {
+            // Second pass: when no candidate with the exact platform
+            // exists, a generic Windows library of the same base platform
+            // is the only valid choice and must not be silently dropped.
+            // Plain C libraries without MinGW runtime imports (for
+            // example libzip.dll) are classified as a generic Win64
+            // library, but they are hard dependencies of flavored
+            // applications (issue #889).
+            dep = libs.begin();
+            while (dep != libs.end() &&
+                   !DeployCore::isGenericWindowsFallback(dep.value()._platform,
+                                                         lib._platform))
+                dep++;
+        }
 
         if (dep != libs.end() && !res.contains(*dep)) {
             res.insert(*dep);

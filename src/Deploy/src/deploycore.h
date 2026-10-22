@@ -292,6 +292,24 @@ public:
      */
     static bool isPlatformCompatible(Platform candidate, Platform wanted);
 
+    /**
+     * @brief isGenericWindowsFallback This method returns true if a generic
+     * (non flavored) Windows library with the @a candidate platform can be
+     * used as a fallback candidate for the dependencies of a flavored library
+     * with the @a wanted platform.
+     *
+     * The runtime flavor (MinGW Msvcrt/Ucrt, MSVC) marks the CRT family the
+     * binary itself was linked against; a plain Windows library without a
+     * runtime flavor in its import table (for example a C library such as
+     * libzip.dll) runs next to every Windows runtime set of the same base
+     * platform. The fallback is used only when no candidate with the exact
+     * platform exists (see DependenciesScanner::recursiveDep), so a foreign
+     * flavored runtime set is still rejected by the strict
+     * isPlatformCompatible comparison (issue #870), while a dependency that
+     * has only a generic candidate is not silently dropped (issue #889).
+     */
+    static bool isGenericWindowsFallback(Platform candidate, Platform wanted);
+
     static char getEnvSeparator();
 
     static LibPriority getLibPriority(const QString &lib);

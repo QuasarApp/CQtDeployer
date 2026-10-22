@@ -1315,6 +1315,26 @@ bool DeployCore::isPlatformCompatible(Platform candidate, Platform wanted) {
     return candidate == wanted;
 }
 
+bool DeployCore::isGenericWindowsFallback(Platform candidate, Platform wanted) {
+    const Platform base =
+        static_cast<Platform>(Win32 | Win64 | Win_ARM_32 | Win_ARM_64);
+    const Platform flavor =
+        static_cast<Platform>(MinGW_Msvcrt | MinGW_Ucrt | MSVC);
+
+    // Only a flavored Windows parent (for example Win64_MinGW_Msvcrt) can
+    // fall back to a generic library, and only to the generic platform of
+    // the same base bitness (issue #889).
+    if ((wanted & base) == 0 || (wanted & flavor) == 0) {
+        return false;
+    }
+
+    // The candidate must be exactly the base platform without any flavor
+    // bits: a foreign flavored runtime (for example a Strawberry Perl
+    // MinGW library) is not a valid fallback (issue #870).
+    return (candidate & base) == (wanted & base) &&
+           (candidate & ~base) == 0;
+}
+
 QChar DeployCore::getSeparator(int lvl) {
     switch (lvl) {
     case 0:  return ',';

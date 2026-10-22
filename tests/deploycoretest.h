@@ -26,6 +26,7 @@ private slots:
 
     void platformCompatibility();
     void foreignRuntimeNotSelected();
+    void genericWindowsFallback();
     void platformStrings();
     void qtRootDirQmakeDetection();
 };

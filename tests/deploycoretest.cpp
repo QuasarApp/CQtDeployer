@@ -133,6 +133,77 @@ void DeployCoreTest::foreignRuntimeNotSelected() {
     DeployCore::_config = nullptr;
 }
 
+void DeployCoreTest::genericWindowsFallback() {
+    // The generic Windows fallback (issue #889) is used only for a
+    // flavored parent and only for the generic platform of the same base
+    // bitness, so a plain C dependency (for example libzip.dll, classified
+    // as a generic Win64 library) is not silently dropped by the strong
+    // platform comparison. A foreign flavored runtime is never a valid
+    // fallback (issue #870).
+    //
+    // Generic candidate for a flavored parent of the same bitness.
+    QCOMPARE(DeployCore::isGenericWindowsFallback(Platform::Win64,
+                                                  Platform::Win64_MinGW_Msvcrt),
+             true);
+    QCOMPARE(DeployCore::isGenericWindowsFallback(Platform::Win64,
+                                                  Platform::Win64_MinGW_Ucrt),
+             true);
+    QCOMPARE(DeployCore::isGenericWindowsFallback(Platform::Win64,
+                                                  Platform::Win64_MSVC),
+             true);
+    QCOMPARE(DeployCore::isGenericWindowsFallback(Platform::Win32,
+                                                  Platform::Win32_MinGW_Msvcrt),
+             true);
+    QCOMPARE(DeployCore::isGenericWindowsFallback(Platform::Win32,
+                                                  Platform::Win32_MinGW_Ucrt),
+             true);
+    QCOMPARE(DeployCore::isGenericWindowsFallback(Platform::Win32,
+                                                  Platform::Win32_MSVC),
+             true);
+    // Different base bitness is never a fallback.
+    QCOMPARE(DeployCore::isGenericWindowsFallback(Platform::Win32,
+                                                  Platform::Win64_MinGW_Msvcrt),
+             false);
+    QCOMPARE(DeployCore::isGenericWindowsFallback(Platform::Win64,
+                                                  Platform::Win32_MinGW_Ucrt),
+             false);
+    // A generic candidate of the same base platform is a valid fallback
+    // also for the (currently unused) flavored ARM platforms.
+    QCOMPARE(DeployCore::isGenericWindowsFallback(Platform::Win_ARM_64,
+                                                  static_cast<Platform>(
+                                                      Platform::Win_ARM_64 |
+                                                      Platform::MinGW_Msvcrt)),
+             true);
+    // A flavored candidate is never a "generic" fallback.
+    QCOMPARE(DeployCore::isGenericWindowsFallback(Platform::Win64_MinGW_Msvcrt,
+                                                  Platform::Win64_MinGW_Ucrt),
+             false);
+    QCOMPARE(DeployCore::isGenericWindowsFallback(Platform::Win64_MSVC,
+                                                  Platform::Win64_MinGW_Msvcrt),
+             false);
+    QCOMPARE(DeployCore::isGenericWindowsFallback(Platform::Win64_MinGW_Msvcrt,
+                                                  Platform::Win64_MinGW_Msvcrt),
+             false);
+    // A generic (non flavored) parent never uses the fallback: its
+    // candidates are selected by the exact comparison only.
+    QCOMPARE(DeployCore::isGenericWindowsFallback(Platform::Win64_MinGW_Msvcrt,
+                                                  Platform::Win64),
+             false);
+    QCOMPARE(DeployCore::isGenericWindowsFallback(Platform::Win64,
+                                                  Platform::Win64),
+             false);
+    // Non-Windows platforms never use the fallback.
+    QCOMPARE(DeployCore::isGenericWindowsFallback(Platform::Unix_x86_64,
+                                                  Platform::Unix_x86_64),
+             false);
+    QCOMPARE(DeployCore::isGenericWindowsFallback(Platform::Mac_ARM_64,
+                                                  Platform::Mac_X86_64),
+             false);
+    QCOMPARE(DeployCore::isGenericWindowsFallback(Platform::UnknownPlatform,
+                                                  Platform::Win64_MinGW_Msvcrt),
+             false);
+}
+
 void DeployCoreTest::platformStrings() {
     QCOMPARE(DeployCore::platformToString(Platform::Win64_MinGW_Msvcrt),
              QStringLiteral("win_x86_64, MinGW_Msvcrt"));
