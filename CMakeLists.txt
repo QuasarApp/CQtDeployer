@@ -35,11 +35,11 @@ endif()
 
 include(submodules/QuasarAppLib/CMake/QuasarApp.cmake)
 
-updateGitVarsWithHash(49b37c286b1474267552571a04a2896cc2d5dabc)
+updateGitVarsWithHash(2d98cd0e95cf77ead91766cde4a1807800956bb5)
 
 string(TIMESTAMP TODAY "%Y-%m-%d")
 set(CQT_DEPLOYER_VERSION_SHORT_PREFIX "1.7")
-set(CQT_DEPLOYER_VERSION "${CQT_DEPLOYER_VERSION_SHORT_PREFIX}.${GIT_COMMIT_COUNT}.${GIT_COMMIT_HASH}")
+set(CQT_DEPLOYER_VERSION "${CQT_DEPLOYER_VERSION_SHORT_PREFIX}.${GIT_COMMIT_COUNT_FROM}.${GIT_COMMIT_HASH}")
 set(QIFW_VERSION "4.11") # binaries are stored in the repository, see src/CQtDeployer/Deploy/QIFW/binaries/README.md (issue #867)
 
 if(DEFINED ENV{GITHUB_ENV})
