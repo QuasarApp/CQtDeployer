@@ -1478,10 +1478,10 @@ sudo snap connect cqtdeployer:system-backup
 <div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable<span class="w"> </span>-libDir<span class="w"> </span>/PathToMyExtraLibs<span class="w"> </span>-recursiveDepth<span class="w"> </span><span class="m">5</span><span class="w"> </span>-qmlDir<span class="w"> </span>/path/to/my/qml/sources
 </code></pre></div>
 <p>If you want create simple installer for your application just add gif option.
-<div class="highlight"><pre><span></span><code>cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qif
+<div class="highlight"><pre><span></span><code>cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qtifw
 </code></pre></div></p>
 <p>If cqtdeployer not found qmake then add the -qmake option to an invoke command.</p>
-<div class="highlight"><pre><span></span><code>cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qif -qmake /path/to/my/qmake
+<div class="highlight"><pre><span></span><code>cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qtifw -qmake /path/to/my/qmake
 </code></pre></div>
 <h1 id="using-a-live-animation-example-from-qt-examples">Using a live animation example from <a href="https://doc.qt.io/qt-5/qtquick-animation-example.html">Qt Examples</a><a class="headerlink" href="#using-a-live-animation-example-from-qt-examples" title="Permanent link">&para;</a></h1>
 <h2 id="build-the-project-as-a-release">Build the project as a release<a class="headerlink" href="#build-the-project-as-a-release" title="Permanent link">&para;</a></h2>
@@ -1556,13 +1556,13 @@ g++<span class="w"> </span>-Wl,-O1<span class="w"> </span>-Wl,-rpath,/home/andre
 </code></pre></div>
 <h2 id="call-cqtdeployer-to-form-the-base-distribution">Call cqtdeployer to form the base distribution<a class="headerlink" href="#call-cqtdeployer-to-form-the-base-distribution" title="Permanent link">&para;</a></h2>
 <p>For Linux:</p>
-<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>animation<span class="w"> </span>-qmlDir<span class="w"> </span>.<span class="w"> </span>qif<span class="w"> </span>-qmake<span class="w"> </span>~/Qt/5.15.2/gcc_64/bin/qmake
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>animation<span class="w"> </span>-qmlDir<span class="w"> </span>.<span class="w"> </span>qtifw<span class="w"> </span>-qmake<span class="w"> </span>~/Qt/5.15.2/gcc_64/bin/qmake
 </code></pre></div>
 <p>For Windows:</p>
-<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>animation<span class="w"> </span>-qmlDir<span class="w"> </span>.<span class="w"> </span>qif<span class="w"> </span>-qmake<span class="w"> </span>~/Qt/5.15.2/mingw_810_64/bin/qmake.exe
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>animation<span class="w"> </span>-qmlDir<span class="w"> </span>.<span class="w"> </span>qtifw<span class="w"> </span>-qmake<span class="w"> </span>~/Qt/5.15.2/mingw_810_64/bin/qmake.exe
 </code></pre></div>
 <p>Deploy log:</p>
-<div class="highlight"><pre><span></span><code>andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$<span class="w"> </span>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>animation<span class="w"> </span>-qmlDir<span class="w"> </span>.<span class="w"> </span>qif<span class="w"> </span>-qmake<span class="w"> </span>~/Qt/5.15.2/gcc_64/bin/qmake
+<div class="highlight"><pre><span></span><code>andrei@X570-GAMING-X:~/Qt/Examples/Qt-5.15.2/quick/animation$<span class="w"> </span>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>animation<span class="w"> </span>-qmlDir<span class="w"> </span>.<span class="w"> </span>qtifw<span class="w"> </span>-qmake<span class="w"> </span>~/Qt/5.15.2/gcc_64/bin/qmake
 Info:<span class="w"> </span>Deploy<span class="w"> </span>...
 Info:<span class="w"> </span>flag<span class="w"> </span>targetDir<span class="w"> </span>not<span class="w">  </span>used.<span class="w"> </span>use<span class="w"> </span>default<span class="w"> </span>target<span class="w"> </span>dir<span class="w"> </span>:/home/andrei/Qt/Examples/Qt-5.15.2/quick/animation/DistributionKit
 Info:<span class="w"> </span>target<span class="w"> </span>deploy<span class="w"> </span>started!!
@@ -1796,7 +1796,7 @@ contains(QMAKE_HOST.os, Linux):{
     QMAKE_BIN= $$QT_DIR/qmake
 }
 
-deploy.commands= cqtdeployer -bin $$DESTDIR/$$TARGET -qmake $$QMAKE_BIN -libDir $$PWD -qmlDir $$PWD -recursiveDepth 5  qif
+deploy.commands= cqtdeployer -bin $$DESTDIR/$$TARGET -qmake $$QMAKE_BIN -libDir $$PWD -qmlDir $$PWD -recursiveDepth 5  qtifw
 
 QMAKE_EXTRA_TARGETS += deploy
 </code></pre></div>
@@ -1819,7 +1819,7 @@ QMAKE_EXTRA_TARGETS += deploy
 </code></pre></div>
 <p>The <strong>libDir</strong> parameter is used to set the paths to the directory paths contain dependencies of your application, and the <strong>qmlDir</strong> parameter is used to set the directory paths contain the qml files required by your application. In this example, the application source code root is selected by these two options.
 The <strong>recursiveDepth</strong> parameter is used to set the search depth of <strong>libDir</strong> and <strong>qmlDir</strong>. 
-The <strong>qif</strong> parameter is used to create a installer using Qt Installer Framework.</p>
+The <strong>qtifw</strong> parameter is used to create a installer using Qt Installer Framework.</p>
 <h2 id="integration-example">Integration example<a class="headerlink" href="#integration-example" title="Permanent link">&para;</a></h2>
 <p>Create a test project </p>
 <div class="highlight"><pre><span></span><code>QT += quick
@@ -1855,7 +1855,7 @@ contains(QMAKE_HOST.os, Linux):{
 
 DESTDIR=$$PWD/Build
 
-deploy.commands= cqtdeployer -bin $$DESTDIR/$$TARGET -qmake $$QMAKE_BIN -libDir $$PWD -qmlDir $$PWD -recursiveDepth 5  qif
+deploy.commands= cqtdeployer -bin $$DESTDIR/$$TARGET -qmake $$QMAKE_BIN -libDir $$PWD -qmlDir $$PWD -recursiveDepth 5  qtifw
 
 QMAKE_EXTRA_TARGETS += deploy
 </code></pre></div>

@@ -1411,11 +1411,11 @@
 <p>Sometimes you need to create your own templates for installers or deb packages.
 Fot this you can use the getDefaultTemplate option. This option extracts your distribution's default template to the target directory. This option will generate a template according to your settings. If you use the targetPackage option then a template will be generated for each package you configured.</p>
 <h3 id="example">Example:<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
-<p><div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myExecutable<span class="w"> </span>getDefaultTemplate<span class="w"> </span>qif
+<p><div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myExecutable<span class="w"> </span>getDefaultTemplate<span class="w"> </span>qtifw
 </code></pre></div>
 This command generate template for qt installer framework into DistributionKit folder for your "myExecutable" programm.</p>
 <p>If you want change target location just add the targetDir option 
-<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myExecutable<span class="w"> </span>getDefaultTemplate<span class="w"> </span>qif<span class="w"> </span>-targetDir<span class="w"> </span><span class="s2">&quot;/distanation/Dir&quot;</span>
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myExecutable<span class="w"> </span>getDefaultTemplate<span class="w"> </span>qtifw<span class="w"> </span>-targetDir<span class="w"> </span><span class="s2">&quot;/distanation/Dir&quot;</span>
 </code></pre></div></p>
 <h2 id="work-with-multipackage-distribution">Work With multipackage distribution.<a class="headerlink" href="#work-with-multipackage-distribution" title="Permanent link">&para;</a></h2>
 <p>This option support the configFile.json </p>
@@ -1434,7 +1434,7 @@ This command generate template for qt installer framework into DistributionKit f
 <span class="w">    </span><span class="p">],</span>
 <span class="p">}</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>getDefaultTemplate<span class="w"> </span>qif<span class="w"> </span>-confFile<span class="w"> </span><span class="s2">&quot;path/to/configFile.json&quot;</span>
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>getDefaultTemplate<span class="w"> </span>qtifw<span class="w"> </span>-confFile<span class="w"> </span><span class="s2">&quot;path/to/configFile.json&quot;</span>
 </code></pre></div>
 <h2 id="note">Note<a class="headerlink" href="#note" title="Permanent link">&para;</a></h2>
 <p>This option support work with all packages except of zip.

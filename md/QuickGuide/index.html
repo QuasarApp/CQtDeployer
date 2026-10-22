@@ -1443,19 +1443,19 @@ cp<span class="w"> </span>-R<span class="w"> </span>/Volumes/CQtDeployer/CQtDepl
 <p>If you application use qml, just add qmlDir option
 <div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable<span class="w"> </span>-libDir<span class="w"> </span>/PathToMyExtraLibs<span class="w"> </span>-recursiveDepth<span class="w"> </span><span class="m">5</span><span class="w"> </span>-qmlDir<span class="w"> </span>/path/to/my/qml/sources
 </code></pre></div></p>
-<p>If you want create simple installer for your application just add qif option.
-<div class="highlight"><pre><span></span><code>cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qif
+<p>If you want create simple installer for your application just add qtifw option.
+<div class="highlight"><pre><span></span><code>cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qtifw
 </code></pre></div></p>
 <blockquote>
 <p><strong>Note:</strong> the Qt Installer Framework tools (binarycreator and
 installerbase) are stored in the CQtDeployer repository for all supported
-platforms (including macOS), so the <code>qif</code> option is also available on
+platforms (including macOS), so the <code>qtifw</code> option is also available on
 macOS hosts. The release artifact for macOS is a DMG archive. See the
 <a href="../macOS/">CQtDeployer for macOS</a> page.</p>
 </blockquote>
 <p>If you use system libraries from system PATH, just add deploySystem option. </p>
 <h4 id="warning-snap-version-do-not-have-permision-to-system-files-to-deploy-system-libraries-use-the-cqtdeployer-version-from-the-installer">Warning: snap version do not have permision to system files. To deploy system libraries use the cqtdeployer version from the <a href="https://github.com/QuasarApp/CQtDeployer/releases">installer</a><a class="headerlink" href="#warning-snap-version-do-not-have-permision-to-system-files-to-deploy-system-libraries-use-the-cqtdeployer-version-from-the-installer" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code>cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qif deploySystem
+<div class="highlight"><pre><span></span><code>cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qtifw deploySystem
 </code></pre></div>
 <h3 id="if-you-have-any-problems-with-use-cqtdeployer-then-ask-you-questions-on-the-official-github-issues-page">If you have any problems with use cqtdeployer then ask you questions on the official github issues <a href="https://github.com/QuasarApp/CQtDeployer/issues">page</a>.<a class="headerlink" href="#if-you-have-any-problems-with-use-cqtdeployer-then-ask-you-questions-on-the-official-github-issues-page" title="Permanent link">&para;</a></h3>
 <h3 id="for-more-options-of-cqtdeploye-see-oficial-documentation">For more options of CQtDeploye see oficial <a href="https://github.com/QuasarApp/CQtDeployer/blob/main/md/en/Options.md">documentation</a>.<a class="headerlink" href="#for-more-options-of-cqtdeploye-see-oficial-documentation" title="Permanent link">&para;</a></h3>

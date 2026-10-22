@@ -683,15 +683,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#how-to-use-qif-option" class="md-nav__link">
+  <a href="#how-to-use-qtifw-option" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How to use qif option
+        How to use qtifw option
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="How to use qif option">
+    <nav class="md-nav" aria-label="How to use qtifw option">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1304,15 +1304,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#how-to-use-qif-option" class="md-nav__link">
+  <a href="#how-to-use-qtifw-option" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How to use qif option
+        How to use qtifw option
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="How to use qif option">
+    <nav class="md-nav" aria-label="How to use qtifw option">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1355,22 +1355,28 @@
 <p>General rules for using Qt Installer Framwork</p>
 <h3 id="what-is-qt-installer-framwork">What is Qt Installer Framwork<a class="headerlink" href="#what-is-qt-installer-framwork" title="Permanent link">&para;</a></h3>
 <p>The <strong>Qt Installer Framework</strong> (QIF) provides a set of tools and utilities to create installers for the supported desktop Qt platforms: Linux, Microsoft Windows, and OS X.
-In <strong>CQtDeployer</strong> QIF availabel in qif option.</p>
+In <strong>CQtDeployer</strong> QIF availabel in the qtifw option.</p>
 <blockquote>
 <p><strong>Note:</strong> the Qt Installer Framework tools (binarycreator and
 installerbase) are stored in the CQtDeployer repository for all supported
-platforms (including macOS), so the <code>qif</code> option works on macOS hosts as
+platforms (including macOS), so the <code>qtifw</code> option works on macOS hosts as
 well. The release artifact for macOS is a DMG archive. See the
 <a href="../macOS/">CQtDeployer for macOS</a> page.</p>
+<p><strong>Note (macOS):</strong> on the macOS hosts the Qt Installer Framework
+binarycreator creates the installer as an <strong>.app bundle</strong> (a directory).
+The bundle name is the <code>qifOut</code> name with the <code>.app</code> suffix - CQtDeployer
+adds the suffix to the <code>qifOut</code> value (or to the default installer name)
+when it is missing, e.g. <code>-qifOut MyInstaller</code> creates
+<code>MyInstaller.app</code> in the target directory.</p>
 </blockquote>
-<h3 id="how-to-use-qif-option">How to use qif option<a class="headerlink" href="#how-to-use-qif-option" title="Permanent link">&para;</a></h3>
-<p>The qif option invoke with path to custo qt installer template or with default installer template.</p>
+<h3 id="how-to-use-qtifw-option">How to use qtifw option<a class="headerlink" href="#how-to-use-qtifw-option" title="Permanent link">&para;</a></h3>
+<p>The qtifw option invoke with path to custo qt installer template or with default installer template.</p>
 <h4 id="for-example">For example:<a class="headerlink" href="#for-example" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="w">    </span>cqtdeployer<span class="w"> </span>...<span class="w"> </span>qif
+<div class="highlight"><pre><span></span><code><span class="w">    </span>cqtdeployer<span class="w"> </span>...<span class="w"> </span>qtifw
 </code></pre></div>
 <p>Where:
 * <strong>...</strong> - is list of other options.
-* <strong>qif</strong> - option for use qt installer framework with default template.</p>
+* <strong>qtifw</strong> - option for use qt installer framework with default template.</p>
 <p>By default, cqtdeployer will create an installation file with one package in which your entire distribution kit will lie.
 If you want to configure it, you should use <a href="../Options/">Controll of packages options</a>
 To create a new package, use the -targetPackage [package; tar1] option</p>
@@ -1390,11 +1396,11 @@ To create a new package, use the -targetPackage [package; tar1] option</p>
 <span class="p">}</span>
 </code></pre></div>
 <h1 id="custom-template-for-qif">Custom Template for QIF<a class="headerlink" href="#custom-template-for-qif" title="Permanent link">&para;</a></h1>
-<p>Starting with CQtDeployer Version 1.5 you can use your own installer template. To do this, you must pass the path to your template to the qif parameter.</p>
-<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>...<span class="w"> </span>-qif<span class="w"> </span>/path/to/my/custom/qif/template
+<p>Starting with CQtDeployer Version 1.5 you can use your own installer template. To do this, you must pass the path to your template to the qtifw parameter.</p>
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>...<span class="w"> </span>-qtifw<span class="w"> </span>/path/to/my/custom/qif/template
 </code></pre></div>
 <h3 id="template">Template<a class="headerlink" href="#template" title="Permanent link">&para;</a></h3>
-<p>The qif template should contain 2 folders:
+<p>The QIF template should contain 2 folders:
 * packages
 * config</p>
 <h3 id="attention">Attention<a class="headerlink" href="#attention" title="Permanent link">&para;</a></h3>
@@ -1421,7 +1427,7 @@ To create a new package, use the -targetPackage [package; tar1] option</p>
 </code></pre></div>
 <p>If the folder names do not match the package names then CQtDeployer will use the standard QIF package.</p>
 <p>If you have only one package then you can use the <strong>name</strong> option for set name the application.</p>
-<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>...<span class="w"> </span>-qif<span class="w"> </span>/path/to/my/custom/qif/template<span class="w"> </span>-name<span class="w"> </span>myCustomInstaller
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>...<span class="w"> </span>-qtifw<span class="w"> </span>/path/to/my/custom/qif/template<span class="w"> </span>-name<span class="w"> </span>myCustomInstaller
 </code></pre></div>
 <h4 id="do-not-forget-to-rename-the-your-package-folder-to-the-packaga-name-of-the-name-option">Do not forget to rename the your package folder to the packaga name of the name option.<a class="headerlink" href="#do-not-forget-to-rename-the-your-package-folder-to-the-packaga-name-of-the-name-option" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>.
@@ -1441,7 +1447,7 @@ To create a new package, use the -targetPackage [package; tar1] option</p>
 The getDefaultTemplate option extract default template of the cqtdeployer. This is can be very convinion if you want override default behavior of the installer or anothe distribution package.</p>
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
 <h3 id="getting-default-qt-installer-framwork-template">Getting default qt installer framwork template.<a class="headerlink" href="#getting-default-qt-installer-framwork-template" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>getDefaultTemplate<span class="w"> </span>qif
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>getDefaultTemplate<span class="w"> </span>qtifw
 </code></pre></div>
 <h3 id="note">Note<a class="headerlink" href="#note" title="Permanent link">&para;</a></h3>
 <p>CQtDeployer will skip create a packages directory for the template because this commmnad do not contains any deploying data.
@@ -1449,15 +1455,15 @@ If you want to prepare template with packages configurations then you should add
 If you create multi packages distribution then you need to configure your packages in your deploying command.</p>
 <h4 id="example_1">Example:<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h4>
 <p>Extracting template with packages:</p>
-<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>getDefaultTemplate<span class="w"> </span>qif<span class="w"> </span>-bin<span class="w"> </span>myExecutable
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>getDefaultTemplate<span class="w"> </span>qtifw<span class="w"> </span>-bin<span class="w"> </span>myExecutable
 </code></pre></div>
 <p>Extracting template for multi packages distribution</p>
-<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>getDefaultTemplate<span class="w"> </span>qif<span class="w"> </span>-bin<span class="w"> </span>myExecutable1,myExecutable2<span class="w"> </span>-targetPackage<span class="w"> </span>p1<span class="p">;</span>myExecutable1,p2<span class="p">;</span>myExecutable2
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>getDefaultTemplate<span class="w"> </span>qtifw<span class="w"> </span>-bin<span class="w"> </span>myExecutable1,myExecutable2<span class="w"> </span>-targetPackage<span class="w"> </span>p1<span class="p">;</span>myExecutable1,p2<span class="p">;</span>myExecutable2
 </code></pre></div>
 <p>You also can use the config file for configure templates.</p>
 <p>Config.json</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;qif&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;qtifw&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;bin&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">        </span><span class="s2">&quot;myExecutable1&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="s2">&quot;myExecutable2&quot;</span>
