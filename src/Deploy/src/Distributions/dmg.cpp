@@ -38,6 +38,10 @@ namespace {
             QLatin1String("$CQT_BUNDLE_ID");
     constexpr auto kBundleExecutablePlaceHolder =
             QLatin1String("$CQT_BUNDLE_EXECUTABLE");
+
+    // The package key of the Qt Installer Framework tools (binarycreator
+    // + installerbase) of the self-deploy configuration (issue #885).
+    constexpr auto kQifToolsPackage = "QIF";
 }
 
 Dmg::Dmg(FileManager *fileManager) :
@@ -94,6 +98,23 @@ bool Dmg::deployTemplate(PackageControl &pkg) {
             auto inPackage = dataLoc + module.getBinOutDir() + executableName;
             if (inPackage != executable &&
                 !moveToBundleRoot(inPackage, executable)) {
+                return false;
+            }
+        }
+
+        // The Qt Installer Framework tools of the "QIF" package
+        // (binarycreator + installerbase) are staged into the QIF folder
+        // of the application bundle, so the executable of the DMG archive
+        // finds them in the <AppPath>/QIF search path of the QIF
+        // distribution (the toolKitEnv method, qif.cpp) when the user
+        // creates an installer on the macOS hosts (issue #885). The QIF
+        // package is copied (not moved) to the bundle stage, so the QIF
+        // distribution and the own DMG stage of the QIF package keep
+        // working.
+        if (hasExecutable &&
+            key != kQifToolsPackage &&
+            pkg.availablePackages().contains(kQifToolsPackage)) {
+            if (!pkg.copyPackage(kQifToolsPackage, dataLoc)) {
                 return false;
             }
         }

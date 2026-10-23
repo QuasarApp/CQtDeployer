@@ -85,9 +85,10 @@ add_dependencies(testQifw copyQIFW)
 
 # The self-deploy config of the build (the configured CQtDeployer.json of
 # the source tree, see the configure_file_in call of the CQtDeployer
-# project) is used by the MacOS test to check that the DMG source package
-# (CQtDeployer.1_6) bundles the Qt Installer Framework tools, so the DMG
-# archive contains binarycreator and installerbase (issue #885).
+# project) is used by the MacOS test to check that the self-deploy
+# config has the QIF package with the Qt Installer Framework tools and
+# the DMG output of the CQtDeployer.1_6 package, so the DMG archive
+# contains binarycreator and installerbase (issue #885).
 target_compile_definitions(${PROJECT_NAME}-tests-MacOS PRIVATE
     CQT_DEPLOYER_SELF_DEPLOY_CONFIG="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/CQtDeployer.json")
 

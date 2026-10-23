@@ -15,7 +15,6 @@
 
     "extraData": [
         ["QIF", "./QIFW/QIF"],
-        ["CQtDeployer.1_6", "./QIFW/QIF"],
         ["CQtDeployer", "./../../../LICENSE"]
     ],
 
