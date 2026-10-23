@@ -103,6 +103,18 @@ jobs:
       with:
         version: "v1.6.2571.7457e934"
 
+    - name: Make the QIF tools executable (macOS)
+      # The release-downloader extraction does not preserve the
+      # executable bit of the bundled Qt Installer Framework tools
+      # (the same issue as #872, handled by the cqtdeployer-install
+      # action on Linux): binarycreator must be executable, otherwise
+      # the installed tool skips the QIFW distribution and the
+      # installer is not created (issue #884).
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        chmod +x "${RUNNER_TEMP}/cqt/QIF/binarycreator" "${RUNNER_TEMP}/cqt/QIF/installerbase"
+
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
       with:
