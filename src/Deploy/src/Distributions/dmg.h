@@ -21,15 +21,6 @@
  * Contents/MacOS folder of the bundle) and every disk image is created
  * with the macOS "hdiutil" system tool.
  *
- * The Qt Installer Framework tools (binarycreator + installerbase) are
- * part of the DMG archive when the deploy config bundles them into the
- * same package as the executable (the "extraData" entry, the same way
- * the flat zip and deb artifacts of the self-deploy bundle the QIF
- * folder): the package content is copied into the MacOS folder of the
- * bundle, so the executable of the DMG archive finds the tools in the
- * <AppPath>/QIF search path of the QIF distribution when the user
- * creates an installer on the macOS hosts (issue #885).
- *
  * The DMG output name of the package is the per-package "dmgOut" value
  * or the default "<name>.dmg" file name (the same way as the "debOut"
  * value of the deb distribution).

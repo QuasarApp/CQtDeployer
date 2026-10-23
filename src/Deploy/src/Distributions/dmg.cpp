@@ -98,16 +98,7 @@ bool Dmg::deployTemplate(PackageControl &pkg) {
             }
         }
 
-        // The Qt Installer Framework tools (binarycreator + installerbase)
-        // are part of the package content when the deploy config bundles
-        // them into the same package as the executable (the "extraData"
-        // entry, the same way the flat zip and deb artifacts of the
-        // self-deploy bundle the QIF folder, issue #885): the Dmg
-        // distribution copies the package content into the MacOS folder
-        // of the bundle, so the tools are staged into the QIF folder of
-        // the DMG archive and the executable of the bundle finds them in
-        // the <AppPath>/QIF search path of the QIF distribution when the
-        // user creates an installer on the macOS hosts.
+
 
         if (!moveQConf(dataLoc, module)) {
             return false;
