@@ -54,23 +54,6 @@ bool writeFile(const QString &path, const QByteArray &data) {
 }
 
 /**
- * @brief extraDataSources This function returns the source paths of all
- *  "extraData" config entries of the @a package package of the @a config
- *  deploy config (the multi package config layout, issue #885).
- */
-QStringList extraDataSources(const QJsonObject &config, const QString &package) {
-    QStringList result;
-    for (const auto &entry: config.value("extraData").toArray()) {
-        const auto pair = entry.toArray();
-        if (pair.at(0).toString() == package) {
-            result << pair.at(1).toString();
-        }
-    }
-
-    return result;
-}
-
-/**
  * @brief TestPackageControl This is a PackageControl implementation for
  *  the unit tests: it copies the package folders of the @a sourceDir
  *  directory (one subfolder per package key) to the new location, the
@@ -642,135 +625,156 @@ void MacOSTest::dmgMultiPackageCheck() {
 }
 
 void MacOSTest::dmgQifToolsCheck() {
-    // The DMG archive of the CQtDeployer self-deployment is created from
-    // the "CQtDeployer.1_6" package (the per-package "dmgOut" value of
-    // the self-deploy config). The Qt Installer Framework tools
-    // (binarycreator + installerbase) are part of the separate "QIF"
-    // package of the self-deploy config and are staged by the Dmg
-    // distribution into the QIF folder of the application bundle, so
-    // the DMG archive contains the tools and the executable of the
-    // bundle finds them in the <AppPath>/QIF search path of the QIF
-    // distribution when the user creates an installer on the macOS
-    // hosts (issue #885).
-#ifdef CQT_DEPLOYER_SELF_DEPLOY_CONFIG
-    QFile configFile(CQT_DEPLOYER_SELF_DEPLOY_CONFIG);
+    // The DMG archive of the CQtDeployer self-deploy is created from the
+    // flat single package of the CQtDeployerSingle.json config: the
+    // "extraData" entry of that config bundles the Qt Installer
+    // Framework tools (the QIF folder with binarycreator + installerbase,
+    // staged by the copyQIFW CMake target, issue #867) into the same
+    // package as the executable - the same rule the flat zip and deb
+    // artifacts use (issue #885). The Dmg distribution copies the
+    // package content into the MacOS folder of the bundle, so the DMG
+    // archive contains the QIF folder with the tools and the executable
+    // of the bundle finds them in the <AppPath>/QIF search path of the
+    // QIF distribution when the user creates an installer on the macOS
+    // hosts.
+    //
+    // The multi-package self-deploy config (CQtDeployer.json) keeps the
+    // QIF tools in the separate "QIF" package (the Qt Installer
+    // Framework component of the installer) and does not create the DMG
+    // archive on its own: the DMG archive created from that config would
+    // lack the QIF tools (the reported bug, issue #885).
+#ifdef CQT_DEPLOYER_SELF_DEPLOY_SINGLE_CONFIG
+    // The flat single config: the QIF tools bundle (the extraData
+    // entry) and the DMG rules (the dmg flag + the dmgOut name).
+    QFile configFile(CQT_DEPLOYER_SELF_DEPLOY_SINGLE_CONFIG);
     QVERIFY2(configFile.open(QIODevice::ReadOnly),
-             "The self-deploy config of the build is not found");
+             "The single self-deploy config of the build is not found");
     const auto config = QJsonDocument::fromJson(configFile.readAll()).object();
     configFile.close();
     QVERIFY2(!config.isEmpty(),
-             "The self-deploy config of the build is not a valid JSON object");
+             "The single self-deploy config of the build is not a valid JSON object");
 
-    // The QIF tools are part of the separate "QIF" package of the
-    // self-deploy config (the extraData entry that bundles the QIF
-    // folder staged by the copyQIFW target, issue #867).
-    const auto sources = extraDataSources(config, QStringLiteral("QIF"));
-    QVERIFY2(sources.contains(QStringLiteral("./QIFW/QIF")),
-             qPrintable("The self-deploy config has no QIF package with the "
-                        "Qt Installer Framework tools, the DMG archive "
-                        "would lack binarycreator and installerbase (issue "
-                        "#885). QIF extraData sources: " + sources.join(", ")));
-
-    // The DMG archive is created from the CQtDeployer.1_6 package (the
-    // per-package "dmgOut" value of the self-deploy config).
-    bool dmgFromSourcePackage = false;
-    for (const auto &entry: config.value("dmgOut").toArray()) {
-        const auto pair = entry.toArray();
-        if (pair.at(0).toString() == QStringLiteral("CQtDeployer.1_6") &&
-            !pair.at(1).toString().isEmpty()) {
-            dmgFromSourcePackage = true;
+    // The QIF tools folder is bundled into the package of the flat
+    // config (the extraData entry, the same rule the flat zip and deb
+    // artifacts use, issue #885).
+    bool hasQifTools = false;
+    const auto extraData = config.value("extraData");
+    if (extraData.isString()) {
+        hasQifTools = extraData.toString() == QStringLiteral("./QIFW/QIF");
+    } else if (extraData.isArray()) {
+        for (const auto &entry: extraData.toArray()) {
+            const auto pair = entry.toArray();
+            for (int i = 1; i < pair.size(); ++i) {
+                if (pair.at(i).toString() == QStringLiteral("./QIFW/QIF")) {
+                    hasQifTools = true;
+                }
+            }
         }
     }
-    QVERIFY2(dmgFromSourcePackage,
-             "The self-deploy config has no DMG output for the "
-             "CQtDeployer.1_6 package (issue #885)");
+    QVERIFY2(hasQifTools,
+             "The single self-deploy config does not bundle the QIF tools "
+             "folder (./QIFW/QIF) into the flat package, the DMG archive "
+             "would lack binarycreator and installerbase (issue #885)");
+
+    // The DMG rules are part of the config (the CMake DMG_ENABLED
+    // placeholder is resolved per platform: enabled on the macOS hosts,
+    // disabled on all other platforms where the hdiutil tool does not
+    // exist, issue #166).
+    QVERIFY2(config.contains("dmg"),
+             "The single self-deploy config has no DMG rule (issue #885)");
+#ifdef Q_OS_MACOS
+    QVERIFY2(config.value("dmg").toBool(),
+             "The single self-deploy config does not enable the DMG "
+             "distribution on the macOS hosts (issue #885)");
+#endif
+    QVERIFY2(!config.value("dmgOut").toString().isEmpty(),
+             "The single self-deploy config has no DMG output name (issue #885)");
 #else
-    qInfo() << "The self-deploy config check is skipped, the "
+    qInfo() << "The single self-deploy config check is skipped, the "
+               "CQT_DEPLOYER_SELF_DEPLOY_SINGLE_CONFIG definition is not set";
+#endif
+
+#ifdef CQT_DEPLOYER_SELF_DEPLOY_CONFIG
+    // The multi-package config: the DMG distribution must not be
+    // enabled - the DMG archive is created from the flat single package
+    // that bundles the QIF tools (issue #885).
+    QFile multiConfigFile(CQT_DEPLOYER_SELF_DEPLOY_CONFIG);
+    QVERIFY2(multiConfigFile.open(QIODevice::ReadOnly),
+             "The self-deploy config of the build is not found");
+    const auto multiConfig =
+            QJsonDocument::fromJson(multiConfigFile.readAll()).object();
+    multiConfigFile.close();
+    QVERIFY2(!multiConfig.isEmpty(),
+             "The self-deploy config of the build is not a valid JSON object");
+    QVERIFY2(!multiConfig.value("dmg").toBool(),
+             "The multi-package self-deploy config must not create the DMG "
+             "archive, the DMG archive is created from the flat single "
+             "package that bundles the QIF tools (issue #885)");
+#else
+    qInfo() << "The multi self-deploy config check is skipped, the "
                "CQT_DEPLOYER_SELF_DEPLOY_CONFIG definition is not set";
 #endif
 
-    // The package layout the self-deploy creates in the target directory:
-    // the CQtDeployer.1_6 package with the executable and the separate
-    // QIF package with the Qt Installer Framework tools (the QIF folder,
-    // the extraData entry of the self-deploy config).
+    // The package layout the flat self-deploy creates in the target
+    // directory (the macOS deploy layout keeps the executable and the
+    // libraries in the package root, the same layout the macOS
+    // DistroStruct defaults define): the executable and the QIF tools
+    // folder (the extraData entry) in the same package (issue #885).
     const auto dir = _tmp.path();
     const auto srcDir = dir + "/src";
     const auto targetDir = dir + "/dist";
 
-    const auto packageDir = srcDir + "/CQtDeployer.1_6";
-    QDir().mkpath(packageDir);
+    const auto packageDir = srcDir + "/CQtDeployer";
+    QDir().mkpath(packageDir + "/QIF");
     QVERIFY(writeFile(packageDir + "/CQtDeployer", QByteArray("dummy")));
+    QVERIFY(writeFile(packageDir + "/QIF/binarycreator", QByteArray("dummy")));
+    QVERIFY(writeFile(packageDir + "/QIF/installerbase", QByteArray("dummy")));
 
-    const auto qifPackageDir = srcDir + "/QIF";
-    QDir().mkpath(qifPackageDir + "/QIF");
-    QVERIFY(writeFile(qifPackageDir + "/QIF/binarycreator", QByteArray("dummy")));
-    QVERIFY(writeFile(qifPackageDir + "/QIF/installerbase", QByteArray("dummy")));
-
-    DistroModule module("CQtDeployer.1_6");
-    // The DMG distribution is created on the macOS hosts, where the
-    // default deploy layout keeps the files in the package root (the
-    // same layout the macOS DistroStruct defaults define).
+    DistroModule module("CQtDeployer");
     module.setBinOutDir("/");
     module.setLibOutDir("/");
-    module.setName("CQtDeployer 1.6");
-    module.setDmgOut("CQtDeployer.1_6.dmg");
+    module.setName("CQtDeployer");
+    module.setDmgOut("CQtDeployer.dmg");
     module.addTarget("CQtDeployer");
-
-    // The QIF package has no executable files, it contains the Qt
-    // Installer Framework tools only (issue #885).
-    DistroModule qifModule("QIF");
-    qifModule.setName("QtInstallerFramework");
 
     DeployConfig cfg;
     cfg.setTargetDir(targetDir);
-    cfg.packagesEdit().insert("CQtDeployer.1_6", module);
-    cfg.packagesEdit().insert("QIF", qifModule);
+    cfg.packagesEdit().insert("CQtDeployer", module);
 
     const auto previousConfig = DeployCore::_config;
     DeployCore::_config = &cfg;
 
     FileManager fm;
     Dmg dmg(&fm);
-    TestPackageControl pkg(srcDir, {"CQtDeployer.1_6", "QIF"});
+    TestPackageControl pkg(srcDir, {"CQtDeployer"});
 
     QVERIFY2(dmg.deployTemplate(pkg),
-             "The Dmg distribution failed to stage the self-deploy packages");
+             "The Dmg distribution failed to stage the flat self-deploy package");
 
     // The QIF tools are staged into the MacOS folder of the bundle (the
     // QIF folder of the DMG archive), so the QIF distribution finds them
     // in the <AppPath>/QIF search path of the toolKitEnv method (issue
     // #885).
     const auto bundleMacOS =
-            targetDir + "/defaultDMGTemplate/CQtDeployer.1_6/CQtDeployer.app/Contents/MacOS";
+            targetDir + "/defaultDMGTemplate/CQtDeployer/CQtDeployer.app/Contents/MacOS";
     QVERIFY2(QFileInfo(bundleMacOS + "/CQtDeployer").isFile(),
              qPrintable("The bundle executable is not found: " +
-                        bundleMacOS + "/CQtDeployer"));
+                         bundleMacOS + "/CQtDeployer"));
     QVERIFY2(QFileInfo(bundleMacOS + "/QIF/binarycreator").isFile(),
              qPrintable("binarycreator is not staged into the DMG bundle "
-                        "(issue #885): " +
-                        bundleMacOS + "/QIF/binarycreator"));
+                         "(issue #885): " +
+                         bundleMacOS + "/QIF/binarycreator"));
     QVERIFY2(QFileInfo(bundleMacOS + "/QIF/installerbase").isFile(),
              qPrintable("installerbase is not staged into the DMG bundle "
-                        "(issue #885): " +
-                        bundleMacOS + "/QIF/installerbase"));
+                         "(issue #885): " +
+                         bundleMacOS + "/QIF/installerbase"));
 
-    // The own stage of the QIF package is staged as a data only bundle
-    // (issue #166).
-    const auto qifBundleMacOS =
-            targetDir + "/defaultDMGTemplate/QIF/QtInstallerFramework.app/Contents/MacOS";
-    QVERIFY2(QFileInfo(qifBundleMacOS + "/QIF/binarycreator").isFile(),
-             qPrintable("The QIF package data is not staged in its own "
-                        "bundle (issue #166): " +
-                        qifBundleMacOS + "/QIF/binarycreator"));
-
-    // The DMG outputs of the staged packages (issue #885, issue #166).
+    // The DMG output of the staged package (issue #885).
     const auto outFiles = dmg.outPutFiles();
-    QCOMPARE(outFiles.size(), 2);
-    QVERIFY(outFiles.contains(targetDir + "/CQtDeployer.1_6.dmg"));
-    QVERIFY(outFiles.contains(targetDir + "/QtInstallerFramework.dmg"));
+    QCOMPARE(outFiles.size(), 1);
+    QVERIFY(outFiles.contains(targetDir + "/CQtDeployer.dmg"));
 
-    // The removeTemplate step cleans the whole template directory
-    // (issue #166).
+    // The removeTemplate step cleans the whole template directory.
     QVERIFY(dmg.removeTemplate());
     QVERIFY(!QDir(targetDir + "/defaultDMGTemplate").exists());
 

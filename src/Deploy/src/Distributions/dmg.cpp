@@ -38,10 +38,6 @@ namespace {
             QLatin1String("$CQT_BUNDLE_ID");
     constexpr auto kBundleExecutablePlaceHolder =
             QLatin1String("$CQT_BUNDLE_EXECUTABLE");
-
-    // The package key of the Qt Installer Framework tools (binarycreator
-    // + installerbase) of the self-deploy configuration (issue #885).
-    constexpr auto kQifToolsPackage = "QIF";
 }
 
 Dmg::Dmg(FileManager *fileManager) :
@@ -102,22 +98,16 @@ bool Dmg::deployTemplate(PackageControl &pkg) {
             }
         }
 
-        // The Qt Installer Framework tools of the "QIF" package
-        // (binarycreator + installerbase) are staged into the QIF folder
-        // of the application bundle, so the executable of the DMG archive
-        // finds them in the <AppPath>/QIF search path of the QIF
-        // distribution (the toolKitEnv method, qif.cpp) when the user
-        // creates an installer on the macOS hosts (issue #885). The QIF
-        // package is copied (not moved) to the bundle stage, so the QIF
-        // distribution and the own DMG stage of the QIF package keep
-        // working.
-        if (hasExecutable &&
-            key != kQifToolsPackage &&
-            pkg.availablePackages().contains(kQifToolsPackage)) {
-            if (!pkg.copyPackage(kQifToolsPackage, dataLoc)) {
-                return false;
-            }
-        }
+        // The Qt Installer Framework tools (binarycreator + installerbase)
+        // are part of the package content when the deploy config bundles
+        // them into the same package as the executable (the "extraData"
+        // entry, the same way the flat zip and deb artifacts of the
+        // self-deploy bundle the QIF folder, issue #885): the Dmg
+        // distribution copies the package content into the MacOS folder
+        // of the bundle, so the tools are staged into the QIF folder of
+        // the DMG archive and the executable of the bundle finds them in
+        // the <AppPath>/QIF search path of the QIF distribution when the
+        // user creates an installer on the macOS hosts.
 
         if (!moveQConf(dataLoc, module)) {
             return false;
