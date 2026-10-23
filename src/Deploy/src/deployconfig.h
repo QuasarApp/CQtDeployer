@@ -66,18 +66,11 @@ public:
      * bit operation and grown with the | bit operation. The dependency
      * scanner seeds it with the platform of the application at the start of
      * the scan and the addPlatform() function updates it with every library
-     * that is added to the list of the dependencies, so by the time the
-     * platform check is performed the complete platform configuration of the
-     * package is already established.
+     * that is selected for the package, so by the time the platform check is
+     * performed the complete platform configuration of the package is
+     * already established.
      */
     Platform platform = Platform::UnknownPlatform;
-
-    /**
-     * @brief dependencies - the list of the dependencies (libraries) of the
-     * one package (app bundle) (issue #889). The addPlatform() function is
-     * the only way to add a library to this list.
-     */
-    QSet<LibInfo> dependencies;
 
     /**
      * @brief reset config file to default
@@ -170,9 +163,9 @@ public:
     void setCustomPlatform(Platform newCustomPlatform);
 
     /**
-     * @brief addPlatform This method adds the @a lib to the list of the
-     * dependencies of the one package (app bundle) and updates the platform
-     * property with the | bit operation (issue #889).
+     * @brief addPlatform This method updates the platform property of the
+     * one package (app bundle) with the platform of the @a lib that is
+     * selected for the package with the | bit operation (issue #889).
      */
     void addPlatform(const LibInfo &lib);
 

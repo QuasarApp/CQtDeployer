@@ -152,7 +152,6 @@ void DeployConfig::setCustomPlatform(Platform newCustomPlatform) {
 }
 
 void DeployConfig::addPlatform(const LibInfo &lib) {
-    dependencies.insert(lib);
     platform = platform | lib.getPlatform();
 }
 

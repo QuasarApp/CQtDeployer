@@ -200,8 +200,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res,
         // simple `platform` property of the DeployConfig object (our
         // collected information about the state of the one package) that is a
         // single Platform bit mask: it is updated by the addPlatform()
-        // function with every library that is added to the list of the
-        // dependencies, so by
+        // function with every library that is selected for the package, so by
         // the time the check is performed the complete platform configuration
         // of the package is already established.
         while (dep != libs.end() &&
@@ -313,10 +312,9 @@ void DependenciesScanner::scan(LibInfo &lib) {
     // property of the DeployConfig object (our collected information about
     // the state of the one package, issue #889): it is a single Platform bit
     // mask that starts with the platform of the application and is updated
-    // by the addPlatform() function with every library that is added to the
-    // list of the dependencies of the package, so a dependency candidate is
-    // compared
-    // against the whole bundle and not only against the parent library.
+    // by the addPlatform() function with every library that is selected for
+    // the package, so a dependency candidate is compared against the whole
+    // bundle and not only against the parent library.
     DeployCore::_config->platform = lib.getPlatform();
 
     recursiveDep(lib, lib._allDep , stack);

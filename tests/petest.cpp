@@ -806,9 +806,8 @@ void PeTest::genericDependencySelection() {
     // property of the DeployConfig object - our collected information about
     // the state of the one package (issue #889). It is a single Platform bit
     // mask that is seeded with the platform of the application and updated
-    // by the addPlatform() function with every library that is added to the
-    // list of the dependencies (the generic platform of the neutral
-    // libzip.dll).
+    // by the addPlatform() function with every library that is selected for
+    // the package (the generic platform of the neutral libzip.dll).
     const Platform packagePool = config.platform;
     QCOMPARE((packagePool & Platform::Win64_MinGW_Msvcrt),
              Platform::Win64_MinGW_Msvcrt);
