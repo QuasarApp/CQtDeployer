@@ -171,8 +171,27 @@ jobs:
         brew cleanup -s >/dev/null 2>&1 || true
         rm -rf ~/.cache ~/.npm 2>/dev/null || true
 
+    - name: deploy (macOS)
+      # The QIFW installer (the "qif" distribution of the self-deploy
+      # config) and the single package (zip + DMG) are deployed in two
+      # steps on the macOS hosts: the QIFW staging of the first step
+      # (the application bundle + the QIF tools) is removed before the
+      # second step to keep the runner disk usage below the limit
+      # (issue #884).
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        cmake --build ${{ steps.strings.outputs.build-output-dir }} --target deployCQtDeployer --parallel 1
+        cd Distro
+        shopt -s nullglob
+        for f in *; do
+          [ "$f" = "${INSTALLER_FULL_NAME}.app" ] || rm -rf "$f"
+        done
+        cmake --build ${{ steps.strings.outputs.build-output-dir }} --target deployCQtDeployerSingle --parallel 1
+
     - name: deploy
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
+      if: runner.os != 'macOS'
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target deploy --parallel 1
 
     - name: Clean the installed CQtDeployer (macOS)
