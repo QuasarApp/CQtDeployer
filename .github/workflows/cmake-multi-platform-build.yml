@@ -103,18 +103,6 @@ jobs:
       with:
         version: "v1.6.2571.7457e934"
 
-    - name: Make the QIF tools executable (macOS)
-      # The release-downloader extraction does not preserve the
-      # executable bit of the bundled Qt Installer Framework tools
-      # (the same issue as #872, handled by the cqtdeployer-install
-      # action on Linux): binarycreator must be executable, otherwise
-      # the installed tool skips the QIFW distribution and the
-      # installer is not created (issue #884).
-      if: runner.os == 'macOS'
-      shell: bash
-      run: |
-        chmod +x "${RUNNER_TEMP}/cqt/QIF/binarycreator" "${RUNNER_TEMP}/cqt/QIF/installerbase"
-
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
       with:
@@ -160,38 +148,8 @@ jobs:
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 16
 
-    - name: Free up disk space (macOS)
-      # The macOS job creates both the QIFW installer and the DMG in
-      # Distro (issue #884), which pushes the job close to the runner
-      # disk limit: clear the package manager and tool caches before
-      # the deploy step.
-      if: runner.os == 'macOS'
-      shell: bash
-      run: |
-        brew cleanup -s >/dev/null 2>&1 || true
-        rm -rf ~/.cache ~/.npm 2>/dev/null || true
-
-    - name: deploy (macOS)
-      # The QIFW installer (the "qif" distribution of the self-deploy
-      # config) and the single package (zip + DMG) are deployed in two
-      # steps on the macOS hosts: the QIFW staging of the first step
-      # (the application bundle + the QIF tools) is removed before the
-      # second step to keep the runner disk usage below the limit
-      # (issue #884).
-      if: runner.os == 'macOS'
-      shell: bash
-      run: |
-        cmake --build ${{ steps.strings.outputs.build-output-dir }} --target deployCQtDeployer --parallel 1
-        cd Distro
-        shopt -s nullglob
-        for f in *; do
-          [ "$f" = "${INSTALLER_FULL_NAME}.app" ] || rm -rf "$f"
-        done
-        cmake --build ${{ steps.strings.outputs.build-output-dir }} --target deployCQtDeployerSingle --parallel 1
-
     - name: deploy
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      if: runner.os != 'macOS'
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target deploy --parallel 1
 
     - name: Clean the installed CQtDeployer (macOS)
@@ -206,33 +164,19 @@ jobs:
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target release --parallel 1
 
-    - name: Prepare the QIFW installer for the release
-      # The deploy step creates the QIFW installer on every platform
-      # (the "qif" option of the self-deploy config points to the QIFW
-      # template). On the macOS hosts binarycreator produces the
-      # installer as an .app bundle (issue #738), which the
-      # upload-release action cannot upload directly: the bundle is
-      # packed into a zip archive (issue #884).
-      shell: bash
-      run: |
-        if [ "${{ runner.os }}" == "macOS" ]; then
-          cd Distro
-          zip -qry "${INSTALLER_FULL_NAME}.app.zip" "${INSTALLER_FULL_NAME}.app"
-          echo "QIF_INSTALLER=${INSTALLER_FULL_NAME}.app.zip" >> "$GITHUB_ENV"
-        else
-          echo "QIF_INSTALLER=${INSTALLER_FULL_NAME}" >> "$GITHUB_ENV"
-        fi
-
     - name: Create Release and Upload Assets Installer
-      # The QIFW installer is uploaded on every platform; on the macOS
-      # hosts it is the packed .app bundle of the installer (issue #884).
+      # The QIFW installer is uploaded on every platform (the "qtifw"
+      # option of the self-deploy config): a single self-extracting file
+      # with the INSTALLER_FULL_NAME name - the .run file on the Linux
+      # and the macOS hosts and the .exe file on the Windows host
+      # (issue #166, issue #884).
       uses: svenstaro/upload-release-action@v2
       with:
         tag: v${{ env.CQT_DEPLOYER_VERSION }}
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: Distro/${{ env.QIF_INSTALLER }}
+        file: Distro/${{ env.INSTALLER_FULL_NAME }}
         prerelease: true
-        asset_name: ${{ env.QIF_INSTALLER }}
+        asset_name: ${{ env.INSTALLER_FULL_NAME }}
         overwrite: true
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
