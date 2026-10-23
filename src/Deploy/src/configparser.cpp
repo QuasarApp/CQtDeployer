@@ -575,9 +575,6 @@ bool ConfigParser::initDistroStruct() {
     auto zipOut = QuasarAppUtils::Params::getArg("zipOut").
             split(DeployCore::getSeparator(0), splitbehavior);
 
-    auto dmgOut = QuasarAppUtils::Params::getArg("dmgOut").
-            split(DeployCore::getSeparator(0), splitbehavior);
-
 // init distro stucts for all targets
     if (binOut.size() && !parsePackagesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir, defaultPackage)) {
         packagesErrorLog("binOut");
@@ -671,11 +668,6 @@ bool ConfigParser::initDistroStruct() {
 
     if (zipOut.size() && !parsePackagesPrivate(mainDistro, zipOut, &DistroModule::setZipOut, defaultPackage)) {
         packagesErrorLog("zipOut");
-        return false;
-    }
-
-    if (dmgOut.size() && !parsePackagesPrivate(mainDistro, dmgOut, &DistroModule::setDmgOut, defaultPackage)) {
-        packagesErrorLog("dmgOut");
         return false;
     }
 

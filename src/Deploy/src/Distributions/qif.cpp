@@ -294,21 +294,16 @@ QString QIF::installerFile() const {
     QString sufix = ".exe";
 #endif
     QString name;
+    // The name of the installer is taken from the qifOut value of the
+    // deployment configuration (the dmg option is an alias for the qtifw
+    // option, issue #884, and uses the same name). The name must match
+    // the platform: the binarycreator of the Windows hosts appends the
+    // ".exe" suffix to the output name when it is missing, so the
+    // platform-specific suffix is part of the qifOut value (the
+    // INSTALLER_FULL_NAME naming of the self-deploy config).
     const QString qifOut = QuasarAppUtils::Params::getArg("qifOut");
     if (qifOut.size()) {
         name = qifOut;
-    } else if (QuasarAppUtils::Params::isEndable("dmg")) {
-        // The dmg option is an alias for the QtIFW installer (issue #884):
-        // the name of the installer is taken from the dmgOut value of the
-        // deployment configuration (the same way the old Dmg distribution
-        // used it), so the release workflow can keep the DMG_NAME naming.
-        const QString dmgOut = QuasarAppUtils::Params::getArg("dmgOut");
-        if (dmgOut.size()) {
-            name = dmgOut;
-        } else {
-            name = QStringLiteral("Installer") + generalInfo.Name
-                   + QStringLiteral(".dmg");
-        }
     } else {
         name = "Installer" + generalInfo.Name + sufix;
     }
@@ -321,15 +316,6 @@ QString QIF::installerFile() const {
     // hosts, issue #738).
     if (!name.endsWith(QStringLiteral(".app"), Qt::CaseInsensitive)) {
         name += QStringLiteral(".app");
-    }
-#endif
-#ifdef Q_OS_WIN32
-    // The binarycreator of the Windows hosts appends the ".exe" suffix to
-    // the output name when it is missing (for example the dmgOut value of
-    // the dmg alias, issue #884): the created file would not match the
-    // reported output name, so the suffix is added here.
-    if (!name.endsWith(QStringLiteral(".exe"), Qt::CaseInsensitive)) {
-        name += QStringLiteral(".exe");
     }
 #endif
     return DeployCore::_config->getTargetDir() + "/" + name;

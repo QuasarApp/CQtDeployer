@@ -34,7 +34,6 @@ private slots:
     void machODetectionCheck();
     void frameworkHelpers();
     void machORPathsCheck();
-    void dmgOutConfigCheck();
     void dmgQifToolsCheck();
     void macOsInstallScriptCheck();
 

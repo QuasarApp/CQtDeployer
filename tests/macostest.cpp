@@ -416,17 +416,6 @@ void MacOSTest::machORPathsCheck() {
     QVERIFY(Extracter::machORPaths(dir + "/missing").isEmpty());
 }
 
-void MacOSTest::dmgOutConfigCheck() {
-    DistroModule module("test");
-
-    // The DMG output name is empty by default, the Dmg distribution
-    // derives the default "<name>.dmg" file name in this case.
-    QVERIFY(module.dmgOut().isEmpty());
-
-    module.setDmgOut("custom.dmg");
-    QCOMPARE(module.dmgOut(), QStringLiteral("custom.dmg"));
-}
-
 void MacOSTest::dmgQifToolsCheck() {
     // The dmg option of the CQtDeployer self-deploy is an alias for the
     // qtifw option (issue #884): the flat single package of the
@@ -446,7 +435,7 @@ void MacOSTest::dmgQifToolsCheck() {
     // option on its own (issue #885).
 #ifdef CQT_DEPLOYER_SELF_DEPLOY_SINGLE_CONFIG
     // The flat single config: the QIF tools bundle (the extraData
-    // entry) and the DMG rules (the dmg flag + the dmgOut name).
+    // entry) and the DMG rules (the dmg flag + the qifOut name).
     QFile configFile(CQT_DEPLOYER_SELF_DEPLOY_SINGLE_CONFIG);
     QVERIFY2(configFile.open(QIODevice::ReadOnly),
              "The single self-deploy config of the build is not found");
@@ -480,7 +469,9 @@ void MacOSTest::dmgQifToolsCheck() {
     // The dmg rules are part of the config (the CMake DMG_ENABLED
     // placeholder is resolved per platform: enabled on the macOS hosts,
     // disabled on all other platforms where the dmg option of the flat
-    // config does not create the installer, issue #884).
+    // config does not create the installer, issue #884). The name of the
+    // installer is the qifOut value of the config (the dmg option is an
+    // alias for the qtifw option, issue #884).
     QVERIFY2(config.contains("dmg"),
              "The single self-deploy config has no DMG rule (issue #885)");
 #ifdef Q_OS_MACOS
@@ -488,8 +479,9 @@ void MacOSTest::dmgQifToolsCheck() {
              "The single self-deploy config does not enable the DMG "
              "(qtifw alias) option on the macOS hosts (issue #885)");
 #endif
-    QVERIFY2(!config.value("dmgOut").toString().isEmpty(),
-             "The single self-deploy config has no DMG output name (issue #885)");
+    QVERIFY2(!config.value("qifOut").toString().isEmpty(),
+             "The single self-deploy config has no QtIFW output name "
+             "(the qifOut value of the dmg alias, issue #885)");
 #else
     qInfo() << "The single self-deploy config check is skipped, the "
                "CQT_DEPLOYER_SELF_DEPLOY_SINGLE_CONFIG definition is not set";
@@ -566,9 +558,10 @@ void MacOSTest::dmgQifToolsCheck() {
     DeployCore::_config = &cfg;
 
     // The dmg alias: the name of the Qt Installer Framework installer
-    // is taken from the dmgOut value of the deployment parameters.
+    // is taken from the qifOut value of the deployment parameters
+    // (the same way the qtifw option names it, issue #884).
     QuasarAppUtils::Params::setEnable("dmg", true);
-    QuasarAppUtils::Params::setArg("dmgOut", "CQtDeployer.dmg");
+    QuasarAppUtils::Params::setArg("qifOut", "CQtDeployer.dmg");
 
     FileManager fm;
     QIF qif(&fm);
@@ -592,7 +585,7 @@ void MacOSTest::dmgQifToolsCheck() {
              qPrintable("installerbase is not staged into the package data "
                          "(issue #885): " + data + "/QIF/installerbase"));
 
-    // The dmg alias names the installer by the dmgOut value (on the
+    // The dmg alias names the installer by the qifOut value (on the
     // macOS hosts the binarycreator appends the .app suffix to the
     // installer name, issue #738).
     const auto outFiles = qif.outPutFiles();
@@ -608,17 +601,17 @@ void MacOSTest::dmgQifToolsCheck() {
     QVERIFY(!QDir(targetDir + "/defaultQIFWTemplate").exists());
 
     QuasarAppUtils::Params::setEnable("dmg", false);
-    QuasarAppUtils::Params::setArg("dmgOut", QString());
+    QuasarAppUtils::Params::setArg("qifOut", QString());
     DeployCore::_config = previousConfig;
 }
 
 void MacOSTest::macOsInstallScriptCheck() {
     // The installer template of the CQtDeployer self-deploy (the
-    // QIFWTemplate folder of the repository) installs the console
-    // utility into the /opt directory on the macOS hosts - the same
-    // pattern as on Linux (the deb package installs into /opt) - and
-    // creates the cqt + cqtdeployer symlinks of the private bin folder
+    // QIFWTemplate folder of the repository) creates the cqt +
+    // cqtdeployer symlinks of the private bin folder of the macOS hosts
     // so the commands are accessible from the macOS console (issue #884).
+    // The install target dir keeps the default of the installer
+    // template (the review of the PR #894).
 #ifdef CQT_DEPLOYER_QIFW_TEMPLATE_INSTALLSCRIPT
     QFile installScriptFile(CQT_DEPLOYER_QIFW_TEMPLATE_INSTALLSCRIPT);
     QVERIFY2(installScriptFile.open(QIODevice::ReadOnly),
@@ -654,29 +647,6 @@ void MacOSTest::macOsInstallScriptCheck() {
 #else
     qInfo() << "The installscript.js check is skipped, the "
                "CQT_DEPLOYER_QIFW_TEMPLATE_INSTALLSCRIPT definition is not set";
-#endif
-
-#ifdef CQT_DEPLOYER_QIFW_TEMPLATE_CONTROLSCRIPT
-    QFile controlScriptFile(CQT_DEPLOYER_QIFW_TEMPLATE_CONTROLSCRIPT);
-    QVERIFY2(controlScriptFile.open(QIODevice::ReadOnly),
-             "The controlScript.js of the QIFW template is not found");
-    const auto controlScript = QString::fromUtf8(controlScriptFile.readAll());
-    controlScriptFile.close();
-    QVERIFY2(!controlScript.isEmpty(),
-             "The controlScript.js of the QIFW template is empty");
-
-    // The macOS branch of the control script retargets the wizard
-    // default (the @HomeDir@/... of the config.xml template) into the
-    // /opt directory, the same pattern as on Linux (issue #884).
-    QVERIFY2(controlScript.contains(QStringLiteral("systemInfo.kernelType === \"osx\"")),
-             "The controlScript.js has no macOS (osx) branch, the /opt "
-             "target dir of the macOS hosts is not set (issue #884)");
-    QVERIFY2(controlScript.contains(QStringLiteral("/opt/")),
-             "The controlScript.js does not retarget the macOS target dir "
-             "into /opt (issue #884)");
-#else
-    qInfo() << "The controlScript.js check is skipped, the "
-               "CQT_DEPLOYER_QIFW_TEMPLATE_CONTROLSCRIPT definition is not set";
 #endif
 }
 

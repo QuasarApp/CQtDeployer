@@ -90,14 +90,12 @@ add_dependencies(testQifw copyQIFW)
 # option, issue #884) bundles the QIF tools folder into the package
 # (the extraData entry, the same rule the flat zip and deb artifacts
 # use) and that the multi-package config does not enable the dmg option
-# on its own (issue #885). The installer template scripts of the
-# repository (the QIFWTemplate folder) are used to check the macOS
-# install rules (the /opt target dir of the control script and the cqt +
-# cqtdeployer console symlinks of the install script, issue #884).
+# on its own (issue #885). The install script of the installer template
+# of the repository (the QIFWTemplate folder) is used to check the
+# cqt + cqtdeployer console symlinks of the macOS hosts (issue #884).
 target_compile_definitions(${PROJECT_NAME}-tests-MacOS PRIVATE
     CQT_DEPLOYER_SELF_DEPLOY_CONFIG="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/CQtDeployer.json"
     CQT_DEPLOYER_SELF_DEPLOY_SINGLE_CONFIG="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/CQtDeployerSingle.json"
-    CQT_DEPLOYER_QIFW_TEMPLATE_INSTALLSCRIPT="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/QIFWTemplate/packages/CQtDeployer.1_6/meta/installscript.js"
-    CQT_DEPLOYER_QIFW_TEMPLATE_CONTROLSCRIPT="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/QIFWTemplate/config/controlScript.js")
+    CQT_DEPLOYER_QIFW_TEMPLATE_INSTALLSCRIPT="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/QIFWTemplate/packages/CQtDeployer.1_6/meta/installscript.js")
 
 initTests()

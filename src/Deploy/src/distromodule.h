@@ -101,18 +101,6 @@ public:
      */
     void setZipOut(const QString &newZipOut);
 
-    /**
-     * @brief dmgOut This method return output filePath to DMG package
-     * @return output filePath to DMG package
-     */
-    const QString &dmgOut() const;
-
-    /**
-     * @brief setDmgOut This method sets new value of the DMG output path.
-     * @param newDmgOut This is new value of the DMG output
-     */
-    void setDmgOut(const QString &newDmgOut);
-
 protected:
     void setKey(const QString &key);
 
@@ -143,7 +131,6 @@ private:
     QString _installDirDEB;
     QString _debOut;
     QString _zipOut;
-    QString _dmgOut;
 
 };
 

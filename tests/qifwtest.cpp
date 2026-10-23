@@ -355,14 +355,25 @@ void QifwTest::qifDeprecatedAliasCheck() {
 void QifwTest::dmgAliasInstallerCheck() {
     // The dmg option is an alias for the QtIFW installer (issue #884):
     // the same binarycreator installer is created, the output name is
-    // taken from the dmgOut value (the extra .run/.exe suffix is not
-    // added; the .app suffix of the macOS hosts is appended by the QIF
-    // distribution, issue #738).
+    // taken from the qifOut value (the same way the qtifw option names
+    // it, the dmgOut option is removed). The name must match the
+    // platform: the binarycreator of the Windows hosts appends the ".exe"
+    // suffix to the output name when it is missing (the Windows installer
+    // builds always use the .exe name, no hardcode fix in the QIF
+    // distribution), the .app suffix of the macOS hosts is appended by
+    // the QIF distribution (issue #738).
     if (_deployerExe.isEmpty()) {
         QSKIP("The cqtdeployer executable of the build tree is not found, the dmg alias test cannot run");
     }
 
-    const QString dmgOut = QStringLiteral("QifwDmgAliasInstaller.dmg");
+#ifdef Q_OS_WIN32
+    // The .exe name: the binarycreator of the Windows hosts creates the
+    // file with the exact name (the ".exe" suffix is not appended a
+    // second time).
+    const QString qifOut = QStringLiteral("QifwDmgAliasInstaller.exe");
+#else
+    const QString qifOut = QStringLiteral("QifwDmgAliasInstaller.dmg");
+#endif
 
     int exitCode = -1;
     QString output;
@@ -373,7 +384,7 @@ void QifwTest::dmgAliasInstallerCheck() {
         "-libDir", _targetLibDir,
         "-recursiveDepth", "5",
         "dmg",
-        "-dmgOut", dmgOut
+        "-qifOut", qifOut
     };
     if (!_qmake.isEmpty()) {
         args << "-qmake" << _qmake;
@@ -391,17 +402,14 @@ void QifwTest::dmgAliasInstallerCheck() {
                         "option (issue #884). The cqtdeployer output (the full "
                         "output is stored in test_report.txt.dmgAlias):\n" + output));
 
-    // The dmgOut name of the installer (the .app bundle of the binarycreator
-    // on the macOS hosts, issue #738, the .exe suffix appended by the
-    // binarycreator on the Windows hosts, issue #884).
+    // The qifOut name of the installer (the .app bundle of the
+    // binarycreator on the macOS hosts, issue #738).
     const QString baseDir = _tmp.path() + "/dist/";
     const QFileInfo installer =
 #ifdef Q_OS_MACOS
-            QFileInfo(baseDir + dmgOut + QStringLiteral(".app"));
-#elif defined(Q_OS_WIN32)
-            QFileInfo(baseDir + dmgOut + QStringLiteral(".exe"));
+            QFileInfo(baseDir + qifOut + QStringLiteral(".app"));
 #else
-            QFileInfo(baseDir + dmgOut);
+            QFileInfo(baseDir + qifOut);
 #endif
 
     // The .app bundle of the macOS hosts is populated by a background step
@@ -417,7 +425,7 @@ void QifwTest::dmgAliasInstallerCheck() {
     }
 
     QVERIFY2(ready,
-             qPrintable("The dmg (qtifw alias) installer of the dmgOut name is "
+             qPrintable("The dmg (qtifw alias) installer of the qifOut name is "
                         "not created (the wait timed out). The dist dir content: ["
                         + distDirListing()
                         + "]. The installer artifact (" + installer.filePath()

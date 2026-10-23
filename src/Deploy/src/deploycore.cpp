@@ -485,7 +485,7 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             "(an alias for the qtifw option, issue #884). "
                             "The binarycreator of the Qt Installer Framework creates the "
                             "installer (the \"DMG\" file of the macOS hosts), the name of the "
-                            "installer is taken from the dmgOut value."
+                            "installer is taken from the qifOut value."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"deploySystem"}, "",
@@ -795,15 +795,6 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-zipOut"}, "{package;nameOfOutputZipFile,nameOfOutputZipFile}",
                             "Sets name of the output zip arrhive. This option can be work with multiple packages"
-                        }});
-
-    group = "Part 9 dmg package options";
-
-    help.insert(group, {QuasarAppUtils::OptionData{
-                            {"-dmgOut"}, "{package;nameOfOutputDmgFile,nameOfOutputDmgFile}",
-                            "Sets name of the output file of the Qt Installer Framework "
-                            "installer (the dmg option is an alias for the qtifw option, "
-                            "issue #884). This option can be work with multiple packages"
                         }});
 
     return help;
