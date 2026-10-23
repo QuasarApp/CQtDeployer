@@ -52,21 +52,13 @@ QString findDeployerExe() {
 
 /**
  * @brief installerIsNotEmpty Returns true when the created installer
- *  artifact contains data. The Qt Installer Framework binarycreator
- *  creates a single executable file on the Windows and the Linux hosts,
- *  but on the macOS hosts it creates the installer as an .app bundle - a
- *  directory with the ".app" suffix appended to the qifOut name - so a
- *  non-empty check has to work for files and for directories (issue #738).
- *  For the .app bundle the completeness criterion is the bundle executable
- *  in Contents/MacOS - the standard .app layout the macOS binarycreator
- *  creates (the staged IFW binary contains the "Contents/MacOS" and
- *  "Contents/Info.plist" bundle paths).
+ *  artifact contains data. The artifact is a single executable file on
+ *  every platform: a self-extracting .run file on the Linux and the
+ *  macOS hosts and an .exe file on the Windows host. On the macOS hosts
+ *  the .app bundle created by the binarycreator is packed into the .run
+ *  file by the second deploy command (issue #738, issue #884).
  */
 bool installerIsNotEmpty(const QFileInfo &installer) {
-    if (installer.isDir()) {
-        const QDir macosDir(installer.filePath() + "/Contents/MacOS");
-        return !macosDir.entryList(QDir::Files | QDir::NoDotAndDotDot).isEmpty();
-    }
     return installer.isFile() && installer.size() > 0;
 }
 
@@ -92,30 +84,25 @@ void QifwTest::cleanupTestCase() {
 
 QString QifwTest::installerName(const char *base) const {
     // The QIF::installerFile() method of the Deploy library uses the
-    // ".run" suffix on the Linux hosts and the ".exe" suffix on every
-    // other platform (including macOS). The qifOut option below overrides
-    // the default name, the suffix must match the platform.
-#ifdef Q_OS_LINUX
-    return QString::fromLatin1(base) + QStringLiteral(".run");
-#else
+    // ".run" suffix on the Linux and the macOS hosts and the ".exe"
+    // suffix on the Windows host. The qifOut option below overrides the
+    // default name, the suffix must match the platform (issue #738,
+    // issue #884).
+#ifdef Q_OS_WIN32
     return QString::fromLatin1(base) + QStringLiteral(".exe");
+#else
+    return QString::fromLatin1(base) + QStringLiteral(".run");
 #endif
 }
 
 QFileInfo QifwTest::installerInfo(const char *base) const {
-    // On the macOS hosts the Qt Installer Framework binarycreator creates
-    // the installer as an .app bundle - a directory with the ".app" suffix
-    // appended to the qifOut name (the captured output of the macOS CI
-    // hosts shows the "QifwTestInstaller.exe.app" directory next to the
-    // deployed "Application" directory, issue #738). On the Windows and
-    // the Linux hosts the installer is a single executable file with the
-    // qifOut name.
+    // The installer artifact is a single executable file with the qifOut
+    // name on every platform: a self-extracting .run file on the Linux
+    // and the macOS hosts and an .exe file on the Windows host. On the
+    // macOS hosts the .app bundle created by the binarycreator is packed
+    // into the .run file and removed (issue #738, issue #884).
     const QString baseDir = _tmp.path() + "/dist/";
-#ifdef Q_OS_MACOS
-    return QFileInfo(baseDir + installerName(base) + QStringLiteral(".app"));
-#else
     return QFileInfo(baseDir + installerName(base));
-#endif
 }
 
 void QifwTest::runDeployer(const QStringList &distroOptions, const QString &runName,
@@ -205,47 +192,23 @@ QString QifwTest::distDirListing() const {
 }
 
 QString QifwTest::artifactListing() const {
-    // A listing of the installer artifact itself for the failure messages:
-    // the size for the file artifacts of the Windows and the Linux hosts,
-    // the top-level entries plus the "Contents" entries for the .app bundle
-    // of the macOS hosts. An incomplete bundle (for example an empty
-    // ".app" directory) is then visible in the CI log and in the uploaded
-    // test reports (issue #738).
+    // The size of the installer artifact for the failure messages: the
+    // artifact is a single file on every platform (issue #738, issue #884).
     const QFileInfo artifact = installerInfo();
     if (!artifact.exists()) {
         return QStringLiteral("<missing>");
     }
-    if (!artifact.isDir()) {
-        return QString::number(artifact.size());
-    }
-    QStringList lines;
-    const auto appendLevel = [&lines](const QDir &dir, const QString &prefix) {
-        const auto entries = dir.entryInfoList(
-            QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
-        for (const auto &entry: entries) {
-            const QString size = entry.isDir()
-                ? QStringLiteral("<dir>")
-                : QString::number(entry.size());
-            lines << QStringLiteral("%1%2 (%3)").arg(prefix, entry.fileName(), size);
-        }
-    };
-    appendLevel(QDir(artifact.filePath()), QString());
-    const QDir contentsDir(artifact.filePath() + "/Contents");
-    if (contentsDir.exists()) {
-        appendLevel(contentsDir, QStringLiteral("Contents/"));
-    }
-    return lines.join(QStringLiteral(", "));
+    return QString::number(artifact.size());
 }
 
 bool QifwTest::waitForInstaller(int timeoutMs, const char *base) {
-    // The .app bundle of the macOS hosts is populated by a background step
-    // of the binarycreator that outlives the cqtdeployer process (on the
-    // macOS CI hosts the "Contents" directory appears in the milliseconds
-    // after the cqtdeployer exit, issue #738), so the installer artifact is
-    // polled until it is complete instead of being checked once right after
-    // the process exit. On the Windows and the Linux hosts the file
-    // artifact is complete when the process exits, the first poll returns
-    // and the wait is a no-op.
+    // The installer artifact is polled until it exists and is not empty
+    // instead of being checked once right after the process exit: on the
+    // macOS hosts the .run file is written by the second deploy command
+    // (the packing of the .app bundle into the self-extracting archive),
+    // and on the Windows and the Linux hosts the file artifact is complete
+    // when the process exits, the first poll returns and the wait is a
+    // no-op (issue #738, issue #884).
     const qint64 deadline = QDateTime::currentMSecsSinceEpoch() + timeoutMs;
     for (;;) {
         const QFileInfo installer = installerInfo(base);
@@ -319,6 +282,31 @@ void QifwTest::qtifwInstallerCheck() {
                         + artifactListing()
                         + "]. The cqtdeployer output (the full output is stored in "
                           "test_report.txt.qtifw):\n" + output));
+
+#ifdef Q_OS_MACOS
+    // The macOS artifact is the self-extracting .run file (issue #884):
+    // a POSIX shell header (the shebang, the comment, the unpack/launch
+    // script) followed by the gzip-compressed tar archive of the .app
+    // bundle. The bundle itself is removed after the packing into the
+    // .run file.
+    QFile runFile(installer.filePath());
+    QVERIFY2(runFile.open(QIODevice::ReadOnly),
+             "Failed to open the .run installer file for the structure check");
+    const QByteArray data = runFile.readAll();
+    runFile.close();
+    const QByteArray bundleName = installer.fileName().toUtf8() + ".app";
+    QVERIFY2(data.startsWith("#!/bin/sh"),
+             "The .run installer file does not start with the sh shebang");
+    QVERIFY2(data.contains("open -W \"$tmpDir/" + bundleName + "\""),
+             "The .run installer file does not start the installer bundle "
+             "(the .app name is missing from the shell header)");
+    QVERIFY2(QFile::permissions(installer.filePath()).testFlag(QFile::ExeOwner),
+             "The .run installer file is not executable");
+    QVERIFY2(!QFileInfo(installer.filePath() + ".app").exists(),
+             qPrintable("The .app bundle of the installer is not removed after the "
+                        "packing into the .run file. The dist dir content: ["
+                        + distDirListing() + "]"));
+#endif
 }
 
 void QifwTest::qifDeprecatedAliasCheck() {
