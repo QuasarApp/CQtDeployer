@@ -166,10 +166,10 @@ jobs:
 
     - name: Create Release and Upload Assets Installer
       # The QIFW installer is uploaded on every platform (the "qtifw"
-      # option of the self-deploy config): a single self-extracting file
-      # with the INSTALLER_FULL_NAME name - the .run file on the Linux
-      # and the macOS hosts and the .exe file on the Windows host
-      # (issue #166, issue #884).
+      # option of the self-deploy config): the general deploy step runs
+      # the installed CQtDeployer and the binarycreator of the release
+      # (the QIF tools, issue #885) is invoked from the environment,
+      # like on the other platforms (issue #166, issue #884).
       uses: svenstaro/upload-release-action@v2
       with:
         tag: v${{ env.CQT_DEPLOYER_VERSION }}

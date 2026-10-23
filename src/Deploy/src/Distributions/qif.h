@@ -30,7 +30,6 @@ private:
 
     QString getStyle(const QString &input) const;
     QString installerFile() const;
-    QString runFile() const;
 
     /**
      * @brief deployPackage - private method for deploy package of qt installer framework
