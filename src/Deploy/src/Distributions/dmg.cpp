@@ -98,6 +98,8 @@ bool Dmg::deployTemplate(PackageControl &pkg) {
             }
         }
 
+
+
         if (!moveQConf(dataLoc, module)) {
             return false;
         }

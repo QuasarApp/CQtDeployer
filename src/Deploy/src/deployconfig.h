@@ -59,6 +59,20 @@ public:
     Envirement envirement;
 
     /**
+     * @brief platform - the platform of the one package (app bundle)
+     * (issue #889): the bit mask of the platform types of all the libraries
+     * of the package. The Platform enum is a bit mask, so the pool of the
+     * platform types is a single Platform type that is accessed with the &
+     * bit operation and grown with the | bit operation. The dependency
+     * scanner seeds it with the platform of the application at the start of
+     * the scan and the addPlatform() function updates it with every library
+     * that is selected for the package, so by the time the platform check is
+     * performed the complete platform configuration of the package is
+     * already established.
+     */
+    Platform platform = Platform::UnknownPlatform;
+
+    /**
      * @brief reset config file to default
      */
     void reset();
@@ -147,6 +161,13 @@ public:
      * @param newCustomPlatform new custom platform.
      */
     void setCustomPlatform(Platform newCustomPlatform);
+
+    /**
+     * @brief addPlatform This method updates the platform property of the
+     * one package (app bundle) with the platform of the @a lib that is
+     * selected for the package with the | bit operation (issue #889).
+     */
+    void addPlatform(const LibInfo &lib);
 
 private:
 

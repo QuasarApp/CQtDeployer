@@ -154,7 +154,8 @@ bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) const 
     }
 }
 
-void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QString>& libStack) {
+void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res,
+                                       QSet<QString>& libStack) {
 
     qWarning() << "Get the recursive dependencies of " + lib.fullPath();
 
@@ -190,11 +191,25 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
 
         auto dep = libs.begin();
 
+        // The candidate is compared against the pool of the platform types of
+        // the whole package (app bundle) and not only against the platform of
+        // the parent library (issue #889): a neutral (generic) library that
+        // was selected for the package does not define the runtime of the
+        // bundle, so the candidates of its dependencies are matched against
+        // the runtime sets that the package already contains. The pool is a
+        // simple `platform` property of the DeployConfig object (our
+        // collected information about the state of the one package) that is a
+        // single Platform bit mask: it is updated by the addPlatform()
+        // function with every library that is selected for the package, so by
+        // the time the check is performed the complete platform configuration
+        // of the package is already established.
         while (dep != libs.end() &&
-               !DeployCore::isPlatformCompatible(dep.value()._platform, lib._platform)) dep++;
+               !DeployCore::isPlatformCompatible(dep.value()._platform,
+                                                 DeployCore::_config->platform)) dep++;
 
         if (dep != libs.end() && !res.contains(*dep)) {
             res.insert(*dep);
+            DeployCore::_config->addPlatform(*dep);
 
             LibInfo scanedLib = _scanedLibs.value(dep->fullPath());
 
@@ -292,6 +307,16 @@ LibInfo DependenciesScanner::scan(const QString &path) {
 
 void DependenciesScanner::scan(LibInfo &lib) {
     QSet<QString> stack;
+
+    // The platform of the one package (app bundle) is a simple `platform`
+    // property of the DeployConfig object (our collected information about
+    // the state of the one package, issue #889): it is a single Platform bit
+    // mask that starts with the platform of the application and is updated
+    // by the addPlatform() function with every library that is selected for
+    // the package, so a dependency candidate is compared against the whole
+    // bundle and not only against the parent library.
+    DeployCore::_config->platform = lib.getPlatform();
+
     recursiveDep(lib, lib._allDep , stack);
 }
 
