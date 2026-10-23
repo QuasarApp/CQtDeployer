@@ -51,7 +51,6 @@ private:
     QString artifactListing() const;
     bool waitForInstaller(int timeoutMs,
                           const char *base = DEFAULT_INSTALLER_BASE);
-    QFileInfo findDistFile(const QString &fileName) const;
 
     QTemporaryDir _tmp;
     QString _deployerExe;

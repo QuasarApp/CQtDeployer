@@ -70,29 +70,6 @@ bool installerIsNotEmpty(const QFileInfo &installer) {
     return installer.isFile() && installer.size() > 0;
 }
 
-/**
- * @brief findFileRecursive Returns the file with the @a fileName found
- *  recursively under the @a dir, or an empty QFileInfo when it is not
- *  found there.
- */
-QFileInfo findFileRecursive(const QDir &dir, const QString &fileName) {
-    const QFileInfoList entries = dir.entryInfoList(
-        QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
-    for (const QFileInfo &entry: entries) {
-        if (entry.isFile() && entry.fileName() == fileName) {
-            return entry;
-        }
-        if (entry.isDir()) {
-            const QFileInfo found = findFileRecursive(QDir(entry.absoluteFilePath()), fileName);
-            if (found.exists()) {
-                return found;
-            }
-        }
-    }
-
-    return QFileInfo();
-}
-
 } // namespace
 
 void QifwTest::initTestCase() {
@@ -282,14 +259,6 @@ bool QifwTest::waitForInstaller(int timeoutMs, const char *base) {
     }
 }
 
-QFileInfo QifwTest::findDistFile(const QString &fileName) const {
-    // A recursive search under the dist dir: the exact location of the
-    // target depends on the platform and the distro defaults (the bin
-    // output dir of the qtifw distro), so the check follows the file
-    // instead of the expected layout (issue #883).
-    return findFileRecursive(QDir(_tmp.path() + "/dist"), fileName);
-}
-
 void QifwTest::optionTableCheck() {
     const auto options = DeployCore::avilableOptions();
 
@@ -430,9 +399,23 @@ void QifwTest::noQtGeneralFileInstallerCheck() {
                         + "]. The cqtdeployer output (the full output is stored in "
                         "test_report.txt.noQtGeneralFile):\n" + output));
 
-    const QFileInfo deployedFile = findDistFile(textFileName);
+    // The smartMoveTargets() method of the ConfigParser copies every target
+    // to <targetDir>/<package><binOutDir>/. The package is the "Application"
+    // default package and the bin output dir is "/bin" on the Linux hosts
+    // and "/" on the other platforms (the DistroStruct defaults), so the
+    // general file target has an exact, known location in the target dir.
+    // CQtDeployer does not select general files from folders automatically,
+    // the test checks the expected path instead of a recursive search
+    // (issue #883).
+    QString expectedPath = _tmp.path() + QStringLiteral("/dist/Application");
+#ifdef Q_OS_LINUX
+    expectedPath += QStringLiteral("/bin");
+#endif
+    expectedPath += QStringLiteral("/") + textFileName;
+    const QFileInfo deployedFile(expectedPath);
     QVERIFY2(deployedFile.exists(),
-             qPrintable("The general text file is not copied into the target dir. "
+             qPrintable("The general text file is not copied into the target dir "
+                        "to the expected path " + expectedPath + ". "
                         "The dist dir content: [" + distDirListing()
                         + "]. The cqtdeployer output (the full output is stored in "
                         "test_report.txt.noQtGeneralFile):\n" + output));
