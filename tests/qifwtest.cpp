@@ -392,11 +392,14 @@ void QifwTest::dmgAliasInstallerCheck() {
                         "output is stored in test_report.txt.dmgAlias):\n" + output));
 
     // The dmgOut name of the installer (the .app bundle of the binarycreator
-    // on the macOS hosts, issue #738).
+    // on the macOS hosts, issue #738, the .exe suffix appended by the
+    // binarycreator on the Windows hosts, issue #884).
     const QString baseDir = _tmp.path() + "/dist/";
     const QFileInfo installer =
 #ifdef Q_OS_MACOS
             QFileInfo(baseDir + dmgOut + QStringLiteral(".app"));
+#elif defined(Q_OS_WIN32)
+            QFileInfo(baseDir + dmgOut + QStringLiteral(".exe"));
 #else
             QFileInfo(baseDir + dmgOut);
 #endif

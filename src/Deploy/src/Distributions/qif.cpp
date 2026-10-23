@@ -323,6 +323,15 @@ QString QIF::installerFile() const {
         name += QStringLiteral(".app");
     }
 #endif
+#ifdef Q_OS_WIN32
+    // The binarycreator of the Windows hosts appends the ".exe" suffix to
+    // the output name when it is missing (for example the dmgOut value of
+    // the dmg alias, issue #884): the created file would not match the
+    // reported output name, so the suffix is added here.
+    if (!name.endsWith(QStringLiteral(".exe"), Qt::CaseInsensitive)) {
+        name += QStringLiteral(".exe");
+    }
+#endif
     return DeployCore::_config->getTargetDir() + "/" + name;
 }
 
