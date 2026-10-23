@@ -481,9 +481,11 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"dmg"}, "",
-                            "Create the DMG disk image package for deployment programm."
-                            " The DMG package is created only on the macOS hosts "
-                            "with the hdiutil tool."
+                            "Create the Qt Installer Framework installer for deployment program "
+                            "(an alias for the qtifw option, issue #884). "
+                            "The binarycreator of the Qt Installer Framework creates the "
+                            "installer (the \"DMG\" file of the macOS hosts), the name of the "
+                            "installer is taken from the dmgOut value."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"deploySystem"}, "",
@@ -799,7 +801,9 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-dmgOut"}, "{package;nameOfOutputDmgFile,nameOfOutputDmgFile}",
-                            "Sets name of the output DMG disk image. This option can be work with multiple packages"
+                            "Sets name of the output file of the Qt Installer Framework "
+                            "installer (the dmg option is an alias for the qtifw option, "
+                            "issue #884). This option can be work with multiple packages"
                         }});
 
     return help;

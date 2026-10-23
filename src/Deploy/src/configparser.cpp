@@ -23,7 +23,6 @@
 #include <qaglobalutils.h>
 #include <Distributions/deb.h>
 #include <Distributions/defaultdistro.h>
-#include <Distributions/dmg.h>
 #include <Distributions/qif.h>
 #include <Distributions/ziparhive.h>
 #include <qaplatformutils.h>
@@ -1709,9 +1708,13 @@ QList<iDistribution *> ConfigParser::getDistribution() {
 
     // The 'qif' option was renamed to 'qtifw' (issue #738). The old name is
     // still accepted for backward compatibility; it is marked as deprecated
-    // in the help (see DeployCore::avilableOptions()).
+    // in the help (see DeployCore::avilableOptions()). The 'dmg' option is
+    // an alias for the QtIFW installer (issue #884): the binarycreator of
+    // the Qt Installer Framework creates the installer (the "DMG" file of
+    // the macOS hosts), so the QIF distribution is used for it.
     if (QuasarAppUtils::Params::isEndable("qtifw") ||
-        QuasarAppUtils::Params::isEndable("qif")) {
+        QuasarAppUtils::Params::isEndable("qif") ||
+        QuasarAppUtils::Params::isEndable("dmg")) {
         auto qif = new QIF(_fileManager);
         if (qif->isAvailable()) {
             distros.push_back(qif);
@@ -1722,19 +1725,6 @@ QList<iDistribution *> ConfigParser::getDistribution() {
                                         "Install the Qt Installer Framework "
                                         "tools to enable this option.";
             delete qif;
-        }
-    }
-
-    if (QuasarAppUtils::Params::isEndable("dmg")) {
-        auto dmg = new Dmg(_fileManager);
-        if (dmg->isAvailable()) {
-            distros.push_back(dmg);
-        } else {
-            qWarning() << "The DMG package is created only on "
-                                        "the macOS hosts with the hdiutil "
-                                        "tool, the dmg package will not be "
-                                        "created on this platform.";
-            delete dmg;
         }
     }
 

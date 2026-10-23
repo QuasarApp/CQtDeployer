@@ -297,6 +297,18 @@ QString QIF::installerFile() const {
     const QString qifOut = QuasarAppUtils::Params::getArg("qifOut");
     if (qifOut.size()) {
         name = qifOut;
+    } else if (QuasarAppUtils::Params::isEndable("dmg")) {
+        // The dmg option is an alias for the QtIFW installer (issue #884):
+        // the name of the installer is taken from the dmgOut value of the
+        // deployment configuration (the same way the old Dmg distribution
+        // used it), so the release workflow can keep the DMG_NAME naming.
+        const QString dmgOut = QuasarAppUtils::Params::getArg("dmgOut");
+        if (dmgOut.size()) {
+            name = dmgOut;
+        } else {
+            name = QStringLiteral("Installer") + generalInfo.Name
+                   + QStringLiteral(".dmg");
+        }
     } else {
         name = "Installer" + generalInfo.Name + sufix;
     }

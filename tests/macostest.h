@@ -20,7 +20,9 @@
  * binaries, so they run on every platform except the Windows hosts,
  * where the macOS deployment (the cross deployment is supported from
  * the Linux hosts only) is not possible and the tests are skipped
- * (issue #166).
+ * (issue #166). The dmg option is an alias for the QtIFW installer
+ * (issue #884): the self-deploy config rules and the installer template
+ * scripts of the macOS hosts are covered too.
  */
 class MacOSTest : public QObject
 {
@@ -32,11 +34,9 @@ private slots:
     void machODetectionCheck();
     void frameworkHelpers();
     void machORPathsCheck();
-    void dmgDistributionCheck();
     void dmgOutConfigCheck();
-    void dmgCreationCheck();
-    void dmgMultiPackageCheck();
     void dmgQifToolsCheck();
+    void macOsInstallScriptCheck();
 
 private:
     QTemporaryDir _tmp;
