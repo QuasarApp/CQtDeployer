@@ -160,9 +160,28 @@ jobs:
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel 16
 
+    - name: Free up disk space (macOS)
+      # The macOS job creates both the QIFW installer and the DMG in
+      # Distro (issue #884), which pushes the job close to the runner
+      # disk limit: clear the package manager and tool caches before
+      # the deploy step.
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        brew cleanup -s >/dev/null 2>&1 || true
+        rm -rf ~/.cache ~/.npm 2>/dev/null || true
+
     - name: deploy
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target deploy --parallel 1
+
+    - name: Clean the installed CQtDeployer (macOS)
+      # The installed tool is not needed after the deploy step; remove
+      # the extracted package (the bundled Qt frameworks are several
+      # hundred megabytes) to keep the runner disk usage low (issue #884).
+      if: runner.os == 'macOS'
+      shell: bash
+      run: rm -rf "${RUNNER_TEMP}/cqt"
 
     - name: release
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
