@@ -99,7 +99,11 @@ jobs:
       # package, so the installed tool finds the binarycreator and
       # creates the QIFW installer of the self-deploy config on the
       # macOS hosts (issue #884).
-      uses: QuasarApp/cqtdeployer-install-action@main
+      # The action is taken from the task_884 branch (PR
+      # QuasarApp/cqtdeployer-install-action#9): the zip extraction
+      # resets the executable bit of the bundled QIF tools, so the
+      # branch restores it on the macOS hosts (issue #884).
+      uses: QuasarApp/cqtdeployer-install-action@task_884
       with:
         version: "v1.6.2571.7457e934"
 
