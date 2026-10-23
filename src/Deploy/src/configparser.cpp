@@ -1101,10 +1101,20 @@ bool ConfigParser::setTargetsInDir(const QString &dir, bool recursive) {
 TargetData ConfigParser::createTarget(const QString &target) {
     TargetInfo libinfo;
     auto key = target;
-    if (_scaner->fillLibInfo(libinfo, key)) {
-        return {libinfo.fullPath(), libinfo};
+    if (!_scaner->fillLibInfo(libinfo, key)) {
+        // The target file cannot be parsed as a binary of a known format
+        // (for example a plain text file passed via the bin option).
+        // It is still a valid deploy target: register it as a general file
+        // (like the GeneralFiles scanner does for the files with an
+        // unknown suffix), so the deploy copies the file to the target
+        // dir and the installer is created (issue #883).
+        QFileInfo info(target);
+
+        libinfo.setPlatform(GeneralFile);
+        libinfo.setName(info.fileName());
+        libinfo.setPath(info.absolutePath());
     }
-    return {key, {}};
+    return {libinfo.fullPath(), libinfo};
 }
 
 QHash<QString, TargetInfo>
