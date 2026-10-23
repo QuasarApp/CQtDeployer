@@ -7,10 +7,13 @@
 
 #include "petest.h"
 #include "dependenciesscanner.h"
+#include "deployconfig.h"
 #include "libinfo.h"
 #include "macho_type.h"
+#include "pathutils.h"
 #include "pe_type.h"
 #include <LIEF/PE.hpp>
+#include <QDir>
 
 namespace {
 
@@ -309,6 +312,20 @@ QString writeMachO(const QTemporaryDir &dir, const QString &fileName,
         return {};
     const QByteArray macho = buildTestMachO(dylibs, arm64);
     if (f.write(macho) != macho.size())
+        return {};
+    f.close();
+    return path;
+}
+
+// Writes a generated PE fixture into @p dir and returns its path.
+QString writePe(const QTemporaryDir &dir, const QString &fileName,
+                const QStringList &dllNames, bool pe64) {
+    const QString path = dir.filePath(fileName);
+    QFile f(path);
+    if (!f.open(QIODevice::WriteOnly))
+        return {};
+    const QByteArray pe = buildTestPe(dllNames, pe64);
+    if (f.write(pe) != pe.size())
         return {};
     f.close();
     return path;
@@ -652,6 +669,153 @@ void PeTest::recognizeMinGWRuntimes() {
                          {"msvcrt.dll", "libgcc_s_seh-1.dll",
                           "libwinpthread-1.dll", "KERNEL32.dll"}, true, platform));
     QCOMPARE(platform, Platform::Win64_MinGW_Msvcrt);
+}
+
+void PeTest::genericDependencySelection() {
+#if defined(Q_OS_MACOS)
+    // The cross deployment for the Windows targets is supported from
+    // the Linux hosts only, a macOS host can not deploy for the Windows
+    // targets, so the PE tests are not useful there (issue #166).
+    QSKIP("The Windows (PE) deployment tests are not supported on the macOS hosts");
+#endif
+    // Regression test for the platform comparison of the dependency
+    // scanner (issue #889): a flavored application (MinGW MSVCRT) must
+    // still resolve a dependency whose only candidate in the environment
+    // is a generic (non flavored) Windows library, for example the plain C
+    // library libzip.dll of the CQtDeployer self-deploy. A dependency
+    // candidate is compared against the pool of the platform types of the
+    // whole package (app bundle) and not only against the platform of the
+    // parent library: the dependency of a neutral (generic) library is
+    // therefore resolved against the runtime sets that the package already
+    // contains. At the same time the selection of issue #870 is preserved:
+    // when an exact-flavor toolchain candidate exists next to a foreign
+    // generic one, the toolchain library is selected by the library
+    // priority (the toolchain directory is registered as an extra path and
+    // the foreign directory only as an allowed path, issue #861).
+    QTemporaryDir root;
+    QVERIFY(root.isValid());
+
+    QTemporaryDir genericDir;
+    QVERIFY(genericDir.isValid());
+    QTemporaryDir flavoredDir;
+    QVERIFY(flavoredDir.isValid());
+
+    // The target application: MinGW MSVCRT flavor (msvcrt.dll + MinGW
+    // runtime imports).
+    const QString appPath = writePe(root, "app.exe",
+                                    {"msvcrt.dll", "KERNEL32.dll",
+                                     "libgcc_s_seh-1.dll", "libstdc++-6.dll",
+                                     "libzip.dll"}, true);
+    QVERIFY(!appPath.isEmpty());
+
+    // libzip.dll: a plain C library without MinGW runtime imports, so it
+    // is classified as a generic Win64 library (issue #889). It has a
+    // plain C dependency libfoo.dll of its own.
+    const QString libzipPath = writePe(genericDir, "libzip.dll",
+                                       {"KERNEL32.dll", "msvcrt.dll",
+                                        "libfoo.dll"}, true);
+    QVERIFY(!libzipPath.isEmpty());
+
+    // libfoo.dll: the generic candidate in the foreign directory.
+    const QString genericFooPath = writePe(genericDir, "libfoo.dll",
+                                           {"KERNEL32.dll", "ucrtbase.dll"}, true);
+    QVERIFY(!genericFooPath.isEmpty());
+
+    // libfoo.dll of the target (Qt MinGW) toolchain: exact flavor.
+    const QString toolchainFooPath = writePe(flavoredDir, "libfoo.dll",
+                                             {"msvcrt.dll", "KERNEL32.dll",
+                                              "libgcc_s_seh-1.dll"}, true);
+    QVERIFY(!toolchainFooPath.isEmpty());
+
+    // libstdc++-6.dll: a foreign candidate (for example the MinGW runtime
+    // shipped by Strawberry Perl) that is only a generic Win64 library.
+    const QString foreignStdPath = writePe(genericDir, "libstdc++-6.dll",
+                                           {"KERNEL32.dll", "ucrtbase.dll"}, true);
+    QVERIFY(!foreignStdPath.isEmpty());
+
+    // The libstdc++-6.dll of the target (Qt MinGW) toolchain: exact flavor.
+    const QString toolchainStdPath = writePe(flavoredDir, "libstdc++-6.dll",
+                                             {"msvcrt.dll", "KERNEL32.dll",
+                                              "libgcc_s_seh-1.dll"}, true);
+    QVERIFY(!toolchainStdPath.isEmpty());
+
+    // libgcc_s_seh-1.dll of the target toolchain: recognized by its name.
+    const QString libgccPath = writePe(flavoredDir, "libgcc_s_seh-1.dll",
+                                       {"msvcrt.dll", "KERNEL32.dll"}, true);
+    QVERIFY(!libgccPath.isEmpty());
+
+    // The toolchain directory is registered as an extra path (ExtraLib
+    // priority) and the foreign directory only as an allowed path
+    // (AllowedLib priority), so the toolchain libraries always win the
+    // candidate selection by the library priority (issue #861, #870).
+    DeployConfig config;
+    config.extraPaths.addExtraPaths({PathUtils::fixPath(flavoredDir.path())});
+    config.allowedPaths.addExtraPaths({PathUtils::fixPath(genericDir.path())});
+    DeployCore::_config = &config;
+
+    DependenciesScanner scanner;
+    scanner.setEnvironment({genericDir.path(),
+                            flavoredDir.path()});
+
+    LibInfo app = scanner.scan(appPath);
+    QVERIFY(app.isValid());
+    QCOMPARE(app.getPlatform(), Platform::Win64_MinGW_Msvcrt);
+
+    const QSet<LibInfo> allDep = app.getAllDep();
+
+    auto selectedPath = [&allDep](const QString &name) -> QString {
+        for (const auto &dep : allDep) {
+            if (dep.getName() == name)
+                return dep.fullPath();
+        }
+        return {};
+    };
+
+    // Normalized (case and separator independent) path comparison, the
+    // test runs on the Linux and the Windows hosts.
+    auto normalized = [](const QString &path) {
+        return path.toLower().replace('\\', '/');
+    };
+
+    // The MinGW runtime of the toolchain is resolved by the exact
+    // platform comparison.
+    QCOMPARE(normalized(selectedPath("libgcc_s_seh-1.dll")),
+             normalized(libgccPath));
+
+    // A dependency with a single generic candidate is NOT dropped by the
+    // platform comparison (issue #889).
+    QCOMPARE(normalized(selectedPath("libzip.dll")), normalized(libzipPath));
+
+    // The exact-flavor toolchain library wins over the foreign generic
+    // candidate: the toolchain directory has the extra path (ExtraLib)
+    // priority and the foreign directory only the allowed path
+    // (AllowedLib) priority (issue #870, #861).
+    QCOMPARE(normalized(selectedPath("libstdc++-6.dll")),
+             normalized(toolchainStdPath));
+
+    // The dependency of the neutral (generic) libzip.dll is compared
+    // against the pool of the platform types of the whole package and not
+    // only against the generic platform of the neutral parent: the
+    // exact-flavor toolchain library is a candidate for the package and
+    // wins by the library priority, the generic copy of the foreign
+    // directory is not selected (issue #889).
+    QCOMPARE(normalized(selectedPath("libfoo.dll")),
+             normalized(toolchainFooPath));
+
+    // The platform of the one package (app bundle) is a simple `platform`
+    // property of the DeployConfig object - our collected information about
+    // the state of the one package (issue #889). It is a single Platform bit
+    // mask that is seeded with the platform of the application and updated
+    // by the addPlatform() function with every library that is selected for
+    // the package (the generic platform of the neutral libzip.dll).
+    const Platform packagePool = config.platform;
+    QCOMPARE((packagePool & Platform::Win64_MinGW_Msvcrt),
+             Platform::Win64_MinGW_Msvcrt);
+    QCOMPARE((packagePool & Platform::Win64), Platform::Win64);
+    QCOMPARE((packagePool & Platform::Unix_x86_64), 0);
+    QCOMPARE((packagePool & Platform::Mac_ARM_64), 0);
+
+    DeployCore::_config = nullptr;
 }
 
 // Standard stand-alone QTest entry point, see the Qt test tutorial:

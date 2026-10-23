@@ -178,6 +178,54 @@ void DeployConfigTest::customPlatform() {
     QCOMPARE(config.customPlatform(), Unix_x86_64);
 }
 
+void DeployConfigTest::packagePlatforms() {
+    DeployConfig config;
+
+    // The platform of the one package (app bundle) is a simple `platform`
+    // property of the DeployConfig object (our collected information about
+    // the state of the one package, issue #889): a single Platform bit mask
+    // that is empty (UnknownPlatform) by default.
+    QCOMPARE(config.platform, UnknownPlatform);
+
+    // The addPlatform() function updates the platform property with the |
+    // bit operation.
+    LibInfo app;
+    app.setName("app");
+    app.setPath("/opt/apps/app");
+    app.setPlatform(Win64_MinGW_Msvcrt);
+    config.addPlatform(app);
+    QCOMPARE(config.platform, Win64_MinGW_Msvcrt);
+
+    LibInfo libzip;
+    libzip.setName("libzip.dll");
+    libzip.setPath("/opt/foreign/libzip.dll");
+    libzip.setPlatform(Win64);
+    config.addPlatform(libzip);
+    QCOMPARE(config.platform,
+             static_cast<Platform>(Win64_MinGW_Msvcrt | Win64));
+
+    LibInfo msvcLib;
+    msvcLib.setName("msvc.dll");
+    msvcLib.setPath("/opt/toolchain/msvc.dll");
+    msvcLib.setPlatform(Win64_MSVC);
+    config.addPlatform(msvcLib);
+    QCOMPARE(config.platform,
+             static_cast<Platform>(Win64_MinGW_Msvcrt |
+                                   Win64 | Win64_MSVC));
+
+    // The addPlatform() function is idempotent for the platform property:
+    // the same library (the same full path) does not change the bit mask a
+    // second time.
+    config.addPlatform(libzip);
+    QCOMPARE(config.platform,
+             static_cast<Platform>(Win64_MinGW_Msvcrt |
+                                   Win64 | Win64_MSVC));
+
+    // The reset of the whole config clears the platform property.
+    config.reset();
+    QCOMPARE(config.platform, UnknownPlatform);
+}
+
 void DeployConfigTest::reset() {
     DeployConfig config;
     config.setTargetDir("/dist");

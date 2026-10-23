@@ -31,6 +31,7 @@ private slots:
     void defaultPackage();
     void isNeededQt();
     void customPlatform();
+    void packagePlatforms();
     void reset();
 };
 
