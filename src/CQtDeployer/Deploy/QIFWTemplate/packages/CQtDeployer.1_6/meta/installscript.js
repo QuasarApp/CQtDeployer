@@ -137,6 +137,19 @@ function systemIntegration() {
                                            homeDir + "/.local/bin/cqtdeployer"],
                                "UNDOEXECUTE", ["rm", "-f", homeDir + "/.local/bin/cqtdeployer"] )
 
+        if (systemInfo.kernelType === "osx") {
+            // The macOS hosts: the cqt console command too (issue #884).
+            // The cqt wrapper script is staged into the package by the
+            // extraData entry of the self-deploy config, it is installed
+            // next to the CQtDeployer.sh launcher and linked into the
+            // private bin folder, the same way as on Linux.
+            const cqt = targetDir + "/" + VERSION + "/cqt";
+            component.addOperation('Execute', ["cp", targetDir + "/" + VERSION + "/cqt.sh", cqt],
+                                   "UNDOEXECUTE", ["rm", "-f", cqt]);
+            component.addOperation('Execute', ["chmod", "+x", cqt]);
+            component.addOperation('Execute', ["ln", "-sf", cqt, homeDir + "/.local/bin/cqt"],
+                                   "UNDOEXECUTE", ["rm", "-f", homeDir + "/.local/bin/cqt"]);
+        }
 
         generateShortCutCmd(VERSION + "/cqtdeployer", VERSION + "/icon.png");
 

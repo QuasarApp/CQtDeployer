@@ -11,6 +11,7 @@
 #include <QStringList>
 #include <QDebug>
 #include <QFileInfo>
+#include <QSet>
 #include <memory>
 #include "deploy_global.h"
 #include <params.h>
@@ -223,7 +224,7 @@ public:
 
     static QtModuleEntry qtModuleEntries[];
 
-    static const DeployConfig * _config;
+    static DeployConfig * _config;
 
     static MSVCVersion getMSVC(const QString & _qtBin);
     static QString getVCredist(const QString & _qtBin);
@@ -278,17 +279,31 @@ public:
 
     /**
      * @brief isPlatformCompatible This method returns true if a library with the
-     * @a candidate platform can satisfy the dependencies of a library with the
-     * @a wanted platform.
+     * @a candidate platform can satisfy the dependencies of a package with the
+     * @a wanted platforms.
      *
-     * A candidate is compatible only when it is built for exactly the same
-     * platform as the wanted (parent) library. The runtime flavor (MinGW
-     * Msvcrt/Ucrt, MSVC) is part of the platform identity, and a generic
-     * (non flavored) Windows platform of the same bitness is NOT a valid
-     * substitute for a flavored one (and vice versa). This strong comparison
-     * prevents the dependency scanner from resolving a foreign runtime set
-     * (for example the MinGW libraries shipped by Strawberry Perl) instead of
-     * the libraries of the target toolchain (issue #870).
+     * @a wanted is the pool of the platform types of the whole package (app
+     * bundle). The Platform enum is a bit mask, so the pool is a single
+     * Platform type that is accessed and grown with the | and & bit
+     * operations: a single platform is just a pool with one element (issue
+     * #889). The candidate is accepted when it is compatible with at least
+     * one platform of the pool, so a neutral (generic) library that is
+     * selected for the package does not define the runtime of the bundle: the
+     * candidates of its dependencies are compared against the runtime sets
+     * that the whole package contains and not only against the platform of
+     * the parent library.
+     *
+     * A flavored candidate (MinGW Msvcrt/Ucrt, MSVC) is compatible with a
+     * platform of the pool only when it is built for exactly the same
+     * platform, so a foreign flavored runtime set (for example the MinGW
+     * libraries shipped by Strawberry Perl) is never selected while the
+     * library of the target toolchain is present (issue #870). A plain (non
+     * flavored) Windows library is compatible with a flavored platform of the
+     * pool of the same base platform (issue #889): a library without a
+     * runtime marker in its import table (for example the plain C library
+     * libzip.dll) has no runtime of its own and runs next to every Windows
+     * runtime set of the same bitness, so a dependency that only has a
+     * generic candidate is not dropped.
      */
     static bool isPlatformCompatible(Platform candidate, Platform wanted);
 
