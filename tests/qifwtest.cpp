@@ -352,6 +352,89 @@ void QifwTest::qifDeprecatedAliasCheck() {
                           "test_report.txt.qif):\n" + output));
 }
 
+void QifwTest::dmgAliasInstallerCheck() {
+    // The dmg option is an alias for the QtIFW installer (issue #884):
+    // the same binarycreator installer is created, the output name is
+    // taken from the qifOut value (the same way the qtifw option names
+    // it, the dmgOut option is removed). The name must match the
+    // platform: the binarycreator of the Windows hosts appends the ".exe"
+    // suffix to the output name when it is missing (the Windows installer
+    // builds always use the .exe name, no hardcode fix in the QIF
+    // distribution), the .app suffix of the macOS hosts is appended by
+    // the QIF distribution (issue #738).
+    if (_deployerExe.isEmpty()) {
+        QSKIP("The cqtdeployer executable of the build tree is not found, the dmg alias test cannot run");
+    }
+
+#ifdef Q_OS_WIN32
+    // The .exe name: the binarycreator of the Windows hosts creates the
+    // file with the exact name (the ".exe" suffix is not appended a
+    // second time).
+    const QString qifOut = QStringLiteral("QifwDmgAliasInstaller.exe");
+#else
+    const QString qifOut = QStringLiteral("QifwDmgAliasInstaller.dmg");
+#endif
+
+    int exitCode = -1;
+    QString output;
+    QStringList args = {
+        "clear",
+        "-bin", _targetBinary,
+        "-targetDir", _tmp.path() + "/dist",
+        "-libDir", _targetLibDir,
+        "-recursiveDepth", "5",
+        "dmg",
+        "-qifOut", qifOut
+    };
+    if (!_qmake.isEmpty()) {
+        args << "-qmake" << _qmake;
+    }
+
+    runDeployerProcess(args, QStringLiteral("dmgAlias"), &exitCode, &output);
+    QCOMPARE(exitCode, 0);
+
+    // The old Dmg distribution warning must be gone: the dmg option is
+    // handled by the QIF distribution (the binarycreator) now, not by
+    // the hdiutil tool (issue #884).
+    QVERIFY2(!output.contains("hdiutil"),
+             qPrintable("The hdiutil warning of the removed Dmg distribution is "
+                        "printed, the dmg option is not an alias for the qtifw "
+                        "option (issue #884). The cqtdeployer output (the full "
+                        "output is stored in test_report.txt.dmgAlias):\n" + output));
+
+    // The qifOut name of the installer (the .app bundle of the
+    // binarycreator on the macOS hosts, issue #738).
+    const QString baseDir = _tmp.path() + "/dist/";
+    const QFileInfo installer =
+#ifdef Q_OS_MACOS
+            QFileInfo(baseDir + qifOut + QStringLiteral(".app"));
+#else
+            QFileInfo(baseDir + qifOut);
+#endif
+
+    // The .app bundle of the macOS hosts is populated by a background step
+    // of the binarycreator that outlives the cqtdeployer process (issue
+    // #738), so the installer artifact is polled until it is complete.
+    bool ready = false;
+    const qint64 deadline = QDateTime::currentMSecsSinceEpoch() + 5 * 60 * 1000;
+    while (!ready && QDateTime::currentMSecsSinceEpoch() < deadline) {
+        ready = installerIsNotEmpty(QFileInfo(installer.filePath()));
+        if (!ready) {
+            QTest::qWait(250);
+        }
+    }
+
+    QVERIFY2(ready,
+             qPrintable("The dmg (qtifw alias) installer of the qifOut name is "
+                        "not created (the wait timed out). The dist dir content: ["
+                        + distDirListing()
+                        + "]. The installer artifact (" + installer.filePath()
+                        + "): [" + (installer.exists() ? QString::number(installer.size())
+                                                       : QStringLiteral("<missing>"))
+                        + "]. The cqtdeployer output (the full output is stored in "
+                        "test_report.txt.dmgAlias):\n" + output));
+}
+
 void QifwTest::noQtGeneralFileInstallerCheck() {
     // A plain text file passed via the bin option cannot be parsed as a
     // binary of a known format (the ELF/PE/MACHO scanners fail on it).

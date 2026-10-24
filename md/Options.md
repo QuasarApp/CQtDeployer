@@ -177,6 +177,6 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 
 | Option                      | Description                                              |
 |-----------------------------|-----------------------------------------------------------|
-|  -dmgOut [package;nameOfOutputDmgFile,nameOfOutputDmgFile]| Sets name of the output DMG file. A separate DMG archive is created for every package. This option can be work with multiple packages |
+|  -dmg | Creates the Qt Installer Framework installer for deployment program (an alias for the qtifw option, issue #884). The binarycreator of the Qt Installer Framework creates the installer (the "DMG" file of the macOS hosts), the name of the installer is taken from the qifOut value. |
 
 #### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.15.4/gcc_64/bin/qmake clear

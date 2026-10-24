@@ -86,12 +86,17 @@ add_dependencies(testQifw copyQIFW)
 # The self-deploy configs of the build (the configured CQtDeployer.json
 # and CQtDeployerSingle.json of the source tree, see the configure_file_in
 # call of the CQtDeployer project) are used by the MacOS test to check
-# that the DMG archive is created from the flat single package (the
-# extraData entry that bundles the QIF tools folder into the package,
-# the same rule the flat zip and deb artifacts use) and that the
-# multi-package config does not create the DMG on its own (issue #885).
+# that the multi-package config (the main QtIFW configuration for all
+# platforms: the 2 packages cqtdeployer and QIF into one target folder)
+# generates the Qt Installer Framework installer (the qif template + the
+# qifOut name, issue #884) and that the flat single config is the one
+# package version for DEB and ZIP only (no dmg option, no qifOut entry,
+# issue #884). The install script of the installer template
+# of the repository (the QIFWTemplate folder) is used to check the
+# cqt + cqtdeployer console symlinks of the macOS hosts (issue #884).
 target_compile_definitions(${PROJECT_NAME}-tests-MacOS PRIVATE
     CQT_DEPLOYER_SELF_DEPLOY_CONFIG="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/CQtDeployer.json"
-    CQT_DEPLOYER_SELF_DEPLOY_SINGLE_CONFIG="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/CQtDeployerSingle.json")
+    CQT_DEPLOYER_SELF_DEPLOY_SINGLE_CONFIG="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/CQtDeployerSingle.json"
+    CQT_DEPLOYER_QIFW_TEMPLATE_INSTALLSCRIPT="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/QIFWTemplate/packages/CQtDeployer.1_6/meta/installscript.js")
 
 initTests()

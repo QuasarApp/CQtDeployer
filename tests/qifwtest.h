@@ -36,6 +36,7 @@ private slots:
     void optionTableCheck();
     void qtifwInstallerCheck();
     void qifDeprecatedAliasCheck();
+    void dmgAliasInstallerCheck();
     void noQtGeneralFileInstallerCheck();
 
 private:

@@ -66,6 +66,13 @@ if (WIN32)
     set(INSTALLER_SUFIX ".exe")
     set(ApplicationsDir "@ApplicationsDir@")
 
+elseif (APPLE)
+    # The binarycreator of the macOS hosts creates the Qt Installer
+    # Framework installer as the .app bundle (issue #738), not the
+    # self-extracting .run file of the Linux hosts, so the .run suffix
+    # does not belong to the installer name: the release asset of the
+    # macOS hosts is <INSTALLER_FULL_NAME>.app.zip (issue #884).
+    set(INSTALLER_SUFIX "")
 endif()
 
 set(BASE_NAME "${CURRENT_PROJECT}_${CQT_DEPLOYER_VERSION}")
@@ -74,21 +81,6 @@ string(TOLOWER ${BASE_NAME} SNAP_BASE_NAME)
 set(BASE_FULL_NAME "${BASE_NAME}_${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}")
 
 set(INSTALLER_FULL_NAME "${BASE_FULL_NAME}${INSTALLER_SUFIX}")
-
-# macOS: the deployed application is packed into a .app bundle and a
-# compressed DMG disk image by the cqtdeployer "dmg" distribution
-# (issue #166). The DMG name and the enabled flag are used in the
-# Deploy/CQtDeployer.json.in template.
-set(DMG_NAME "${BASE_FULL_NAME}.dmg")
-if (APPLE)
-    set(DMG_ENABLED true)
-else()
-    set(DMG_ENABLED false)
-endif()
-
-if(DEFINED ENV{GITHUB_ENV} AND APPLE)
-    file(APPEND $ENV{GITHUB_ENV} "DMG_NAME=${DMG_NAME}\n")
-endif()
 
 if(DEFINED ENV{GITHUB_ENV})
     file(APPEND $ENV{GITHUB_ENV} "INSTALLER_FULL_NAME=${INSTALLER_FULL_NAME}\n")
