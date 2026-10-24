@@ -102,8 +102,6 @@ jobs:
       # restores the executable bit of the bundled QIF tools after the
       # zip extraction (QuasarApp/cqtdeployer-install-action#9).
       uses: QuasarApp/cqtdeployer-install-action@main
-      with:
-        version: "v1.6.2571.7457e934"
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
