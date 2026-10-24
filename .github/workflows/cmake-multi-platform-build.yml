@@ -160,17 +160,16 @@ jobs:
 
     - name: Prepare the QIFW installer archives (macOS)
       # The binarycreator of the macOS hosts creates the Qt Installer
-      # Framework installer (the "DMG" file, the dmg option is an alias
-      # for the qtifw option, issue #884) as the .app bundle - a
-      # directory with the ".app" suffix appended to the installer name
-      # (issue #738). The release upload action needs a file, so every
-      # bundle is packed into a zip archive (issue #884).
+      # Framework installer of the multi-package self-deploy config
+      # (the qifOut name, issue #884) as the .app bundle - a directory
+      # with the ".app" suffix appended to the installer name (issue
+      # 738). The release upload action needs a file, so the bundle is
+      # packed into a zip archive (issue #884).
       if: runner.os == 'macOS'
       shell: bash
       run: |
         cd Distro
         zip -r -y "${INSTALLER_FULL_NAME}.app.zip" "${INSTALLER_FULL_NAME}.app"
-        zip -r -y "${DMG_NAME}.app.zip" "${DMG_NAME}.app"
 
     - name: Create Release and Upload Assets Installer
       if: runner.os != 'macOS'
@@ -186,9 +185,9 @@ jobs:
 
     - name: Create Release and Upload Assets Installer (macOS)
       # The Qt Installer Framework installer of the macOS hosts is the
-      # .app bundle of the binarycreator (the "DMG" file of the
-      # multi-package self-deploy config), packed into a zip archive by
-      # the prepare step (issue #884).
+      # .app bundle of the binarycreator of the multi-package
+      # self-deploy config, packed into a zip archive by the prepare
+      # step (issue #884).
       if: runner.os == 'macOS'
       uses: svenstaro/upload-release-action@v2
       with:
@@ -221,23 +220,6 @@ jobs:
         file: Distro/${{ env.BASE_FULL_NAME }}.zip
         prerelease: true
         asset_name: ${{ env.BASE_FULL_NAME }}.zip
-        overwrite: true
-        body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
-
-    - name: Create Release and Upload Assets DMG
-      # The dmg option of the single self-deploy config is an alias for
-      # the qtifw option (issue #884): the flat single package is
-      # deployed as the Qt Installer Framework installer (the .app
-      # bundle of the binarycreator, the qifOut name), packed into a zip
-      # archive by the prepare step (issue #884).
-      if: runner.os == 'macOS'
-      uses: svenstaro/upload-release-action@v2
-      with:
-        tag: v${{ env.CQT_DEPLOYER_VERSION }}
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: Distro/${{ env.DMG_NAME }}.app.zip
-        prerelease: true
-        asset_name: ${{ env.DMG_NAME }}.app.zip
         overwrite: true
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 

@@ -75,24 +75,6 @@ set(BASE_FULL_NAME "${BASE_NAME}_${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}"
 
 set(INSTALLER_FULL_NAME "${BASE_FULL_NAME}${INSTALLER_SUFIX}")
 
-# macOS: the "dmg" option of the self-deploy config is an alias for the
-# Qt Installer Framework installer (issue #884): the binarycreator creates
-# the installer (the "DMG" file) as the .app bundle of the qifOut name
-# (the <DMG_NAME> value) on the macOS hosts, the release workflow packs
-# the bundle into a zip archive and uploads it to the release. The DMG
-# name and the enabled flag are used in the Deploy/CQtDeployerSingle.json.in
-# template.
-set(DMG_NAME "${BASE_FULL_NAME}.dmg")
-if (APPLE)
-    set(DMG_ENABLED true)
-else()
-    set(DMG_ENABLED false)
-endif()
-
-if(DEFINED ENV{GITHUB_ENV} AND APPLE)
-    file(APPEND $ENV{GITHUB_ENV} "DMG_NAME=${DMG_NAME}\n")
-endif()
-
 if(DEFINED ENV{GITHUB_ENV})
     file(APPEND $ENV{GITHUB_ENV} "INSTALLER_FULL_NAME=${INSTALLER_FULL_NAME}\n")
     file(APPEND $ENV{GITHUB_ENV} "BASE_FULL_NAME=${BASE_FULL_NAME}\n")

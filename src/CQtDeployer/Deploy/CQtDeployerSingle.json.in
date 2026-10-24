@@ -24,10 +24,8 @@
     "deb": true,
     "qif": false,
     "zip": true,
-    "dmg": @DMG_ENABLED@,
     "debOut": "@BASE_FULL_NAME@.deb",
     "zipOut": "@BASE_FULL_NAME@.zip",
-    "qifOut": "@DMG_NAME@",
     "ignoreEnv": [
          "@CMAKE_SOURCE_DIR@/Distro"
         ],
