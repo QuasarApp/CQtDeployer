@@ -66,6 +66,13 @@ if (WIN32)
     set(INSTALLER_SUFIX ".exe")
     set(ApplicationsDir "@ApplicationsDir@")
 
+elseif (APPLE)
+    # The binarycreator of the macOS hosts creates the Qt Installer
+    # Framework installer as the .app bundle (issue #738), not the
+    # self-extracting .run file of the Linux hosts, so the .run suffix
+    # does not belong to the installer name: the release asset of the
+    # macOS hosts is <INSTALLER_FULL_NAME>.app.zip (issue #884).
+    set(INSTALLER_SUFIX "")
 endif()
 
 set(BASE_NAME "${CURRENT_PROJECT}_${CQT_DEPLOYER_VERSION}")
