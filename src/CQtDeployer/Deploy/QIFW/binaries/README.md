@@ -54,6 +54,35 @@ files are the source of truth.
 Only `bin/binarycreator[.exe]` and `bin/installerbase[.exe]` of each archive
 are stored here (the full IFW tree is not needed by CQtDeployer).
 
+## macOS architecture and code signature state (verified 2026-10-26, issue #896)
+
+The `mac/` binaries are universal (x86_64 + arm64) Mach-O binaries, verified
+by the `qifMacBinariesArmCheck` test of the MacOS unit test class (the test
+parses the fat header and the `mach_header_64` of every slice of the staged
+binaries, so the Apple Silicon support is enforced on every build):
+
+| Binary | Slices | x86_64 slice | arm64 slice |
+|---|---|---|---|
+| `binarycreator` | 2 | offset 4096, size 45644744, align 12 | offset 45678592, size 42451536, align 15 |
+| `installerbase` | 2 | offset 4096, size 42940144, align 12 | offset 42958848, size 40005936, align 14 |
+
+Code signature state per slice (as published by the Qt project in
+`ifw-mac-universal.7z`):
+
+* `arm64` slices: code signature present (SHA-256 hash type, identifier
+  `main-arm64.out`, no embedded X.509 certificate - a build time signature,
+  not an Apple Developer ID signature, no notarization).
+* `x86_64` slices: no code signature.
+
+Consequence for the macOS users: the Intel (x86_64) hosts run the unsigned
+slices fine, but on the Apple Silicon (M2) hosts a downloaded (quarantined)
+installer of this kind is rejected by Gatekeeper with the "binary is damaged"
+message, because the binaries are not signed with an Apple Developer ID
+certificate and not notarized (issue #896). The unit test requires the code
+signature of the arm64 slice (the Apple Silicon processors do not run
+unsigned arm64 binaries), the signature state of the x86_64 slice is
+informational only.
+
 ## Updating the binaries
 
 To refresh the binaries to a newer IFW release:

@@ -36,6 +36,7 @@ private slots:
     void machORPathsCheck();
     void dmgQifToolsCheck();
     void macOsInstallScriptCheck();
+    void qifMacBinariesArmCheck();
 
 private:
     QTemporaryDir _tmp;

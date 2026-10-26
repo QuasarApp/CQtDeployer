@@ -224,6 +224,173 @@ std::vector<unsigned char> makeFatMachO(const QList<QByteArray> &slices) {
 
 
 
+/**
+ * @brief FatSlice This struct is one parsed fat_arch entry of a fat
+ *  (universal) Mach-O binary (issue #896).
+ */
+struct FatSlice {
+    uint32_t cputype = 0;
+    uint32_t cpusubtype = 0;
+    quint64 offset = 0;
+    quint64 size = 0;
+};
+
+/**
+ * @brief SliceInfo This struct is the parsed mach_header_64 state of one
+ *  fat slice (issue #896): the architecture, the load command walk and
+ *  the code signature state (the LC_CODE_SIGNATURE /
+ *  LC_CODE_SIGNATURE_LOOSE load command presence).
+ */
+struct SliceInfo {
+    bool valid = false;
+    bool littleEndian = true;
+    uint32_t cputype = 0;
+    uint32_t ncmds = 0;
+    bool codeSignature = false;
+};
+
+/**
+ * @brief parseFatMachO This function parses the fat (universal) Mach-O
+ *  header of @a data into @p slices. The fat header and the fat_arch
+ *  entries are always big endian. The canonical 64 bit FAT_MAGIC layout
+ *  uses the 32 byte fat_arch entries, but some producers (the Qt
+ *  Installer Framework binaries of the Qt online repository, issue
+ *  #896) write the 20 byte fat_arch entries after the 64 bit magic, so
+ *  the 32 byte layout is tried first and the 20 byte layout is used when
+ *  the parsed offsets do not fit into the file. The function returns
+ *  false when @a data does not hold a consistent fat Mach-O header.
+ */
+bool parseFatMachO(const QByteArray &data, QList<FatSlice> *slices) {
+    if (data.size() < 8) {
+        return false;
+    }
+    const auto *p = reinterpret_cast<const unsigned char *>(data.constData());
+    const uint32_t magic = qFromBigEndian<quint32>(p);
+    const bool fat64 = (magic == 0xCAFEBABEu);
+    if (!fat64 && magic != 0xCAFEBABFu) {
+        return false;
+    }
+    const uint32_t n = qFromBigEndian<quint32>(p + 4);
+    if (n < 1 || n > 16 || data.size() < 8 + static_cast<qsizetype>(n) * 20) {
+        return false;
+    }
+
+    auto readEntry = [&](quint32 i, size_t stride, FatSlice *s) {
+        const auto *e = p + 8 + static_cast<qsizetype>(i) * static_cast<qsizetype>(stride);
+        s->cputype = qFromBigEndian<quint32>(e);
+        s->cpusubtype = qFromBigEndian<quint32>(e + 4);
+        if (stride == 32) {
+            s->offset = qFromBigEndian<quint64>(e + 8);
+            s->size = qFromBigEndian<quint64>(e + 20);
+        } else {
+            s->offset = qFromBigEndian<quint32>(e + 8);
+            s->size = qFromBigEndian<quint32>(e + 12);
+        }
+    };
+
+    auto consistent = [&data](const QList<FatSlice> &list) {
+        for (const auto &s : list) {
+            if (s.cputype == 0 || s.offset < 8
+                    || s.offset + s.size > quint64(data.size())) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    QList<FatSlice> parsed;
+    parsed.reserve(n);
+    if (fat64) {
+        for (quint32 i = 0; i < n; ++i) {
+            FatSlice s;
+            readEntry(i, 32, &s);
+            parsed.append(s);
+        }
+        if (consistent(parsed)) {
+            *slices = parsed;
+            return true;
+        }
+        parsed.clear();
+    }
+
+    for (quint32 i = 0; i < n; ++i) {
+        FatSlice s;
+        readEntry(i, 20, &s);
+        parsed.append(s);
+    }
+    if (!consistent(parsed)) {
+        return false;
+    }
+    *slices = parsed;
+    return true;
+}
+
+/**
+ * @brief parseMachO64Slice This function parses the mach_header_64 of the
+ *  fat @a slice of the fat Mach-O @a data and walks its load command area
+ *  to detect the code signature (the LC_CODE_SIGNATURE 0x1D and the
+ *  LC_CODE_SIGNATURE_LOOSE 0x3B load commands). The walk must cover the
+ *  command area exactly (the ncmds count and the sizeofcmds size),
+ *  otherwise the header is not trusted and the function returns false.
+ *  The slice offsets of the fat binaries are relative to the slice start
+ *  (not to the file start), the slice magic is MH_MAGIC_64 in both byte
+ *  orders (issue #896).
+ */
+bool parseMachO64Slice(const QByteArray &data, const FatSlice &slice, SliceInfo *info) {
+    if (slice.offset + slice.size < 32
+            || slice.offset + slice.size > quint64(data.size())) {
+        return false;
+    }
+    const auto *p = reinterpret_cast<const unsigned char *>(data.constData()) + slice.offset;
+    const uint32_t magicLe = quint32(p[0]) | (quint32(p[1]) << 8)
+            | (quint32(p[2]) << 16) | (quint32(p[3]) << 24);
+    const uint32_t magicBe = (quint32(p[0]) << 24) | (quint32(p[1]) << 16)
+            | (quint32(p[2]) << 8) | quint32(p[3]);
+    if (magicLe == 0xFEEDFACFu) {
+        info->littleEndian = true;
+    } else if (magicBe == 0xFEEDFACFu) {
+        info->littleEndian = false;
+    } else {
+        return false;
+    }
+
+    auto rd = [&](size_t off) -> quint32 {
+        const auto *q = p + off;
+        if (info->littleEndian) {
+            return quint32(q[0]) | (quint32(q[1]) << 8)
+                    | (quint32(q[2]) << 16) | (quint32(q[3]) << 24);
+        }
+        return (quint32(q[0]) << 24) | (quint32(q[1]) << 16)
+                | (quint32(q[2]) << 8) | quint32(q[3]);
+    };
+
+    info->cputype = rd(4);
+    info->ncmds = rd(16);
+    const uint32_t sizeofcmds = rd(20);
+
+    size_t off = 32; // the mach_header_64 size
+    uint32_t walked = 0;
+    uint32_t seen = 0;
+    while (off + 8 <= slice.size) {
+        const uint32_t cmd = rd(off);
+        const uint32_t cmdsize = rd(off + 4);
+        if (cmdsize < 8 || off + cmdsize > slice.size) {
+            break;
+        }
+        if (cmd == 0x1Du || cmd == 0x3Bu) {
+            info->codeSignature = true;
+        }
+        off += cmdsize;
+        walked += cmdsize;
+        ++seen;
+        if (seen > 0x400u) {
+            break; // a sane binary has far fewer load commands
+        }
+    }
+    info->valid = seen == info->ncmds && walked == sizeofcmds && sizeofcmds >= 16;
+    return info->valid;
+}
+
 } // namespace
 
 void MacOSTest::initTestCase() {
@@ -675,6 +842,91 @@ void MacOSTest::macOsInstallScriptCheck() {
 #else
     qInfo() << "The installscript.js check is skipped, the "
                "CQT_DEPLOYER_QIFW_TEMPLATE_INSTALLSCRIPT definition is not set";
+#endif
+}
+
+void MacOSTest::qifMacBinariesArmCheck() {
+#ifdef CQT_DEPLOYER_QIFW_MAC_BINARIES_DIR
+    // The Qt Installer Framework binaries of the macOS hosts are stored
+    // in the repository (issue #867) and must be universal Mach-O
+    // binaries with an intact arm64 slice: the binaryCreator runs and the
+    // generated installers (the installerbase base binary) of the macOS
+    // hosts fail on the Apple Silicon (M2) processors with "binary is
+    // damaged" when the arm support or the code signature of the arm64
+    // slice is missing (issue #896). The check parses the fat headers and
+    // the mach_header_64 of every slice of the staged binaries, so it
+    // runs on every platform that builds the tests (the Windows hosts
+    // skip the class, see the initTestCase) and does not execute the
+    // macOS binaries.
+    const QStringList names = {
+        QStringLiteral("binarycreator"),
+        QStringLiteral("installerbase")
+    };
+
+    for (const auto &name : names) {
+        const QString path =
+                QStringLiteral(CQT_DEPLOYER_QIFW_MAC_BINARIES_DIR) + "/" + name;
+        QFile file(path);
+        QVERIFY2(file.open(QIODevice::ReadOnly),
+                 qPrintable("The Qt Installer Framework mac binary is not found: " + path));
+        const QByteArray data = file.readAll();
+        file.close();
+        QVERIFY2(data.size() > 64,
+                 qPrintable("The Qt Installer Framework mac binary is empty or "
+                            "truncated: " + path));
+
+        QList<FatSlice> slices;
+        QVERIFY2(parseFatMachO(data, &slices),
+                 qPrintable("The Qt Installer Framework mac binary is not a valid "
+                            "universal (fat) Mach-O binary: " + path));
+
+        const FatSlice *x86 = nullptr;
+        const FatSlice *arm = nullptr;
+        for (const auto &s : slices) {
+            if (s.cputype == 0x01000007u) { // CPU_TYPE_X86_64
+                x86 = &s;
+            } else if (s.cputype == 0x0100000Cu) { // CPU_TYPE_ARM64
+                arm = &s;
+            }
+        }
+        QVERIFY2(x86 != nullptr,
+                 qPrintable("The Qt Installer Framework mac binary has no x86_64 "
+                            "slice: " + path));
+        QVERIFY2(arm != nullptr,
+                 qPrintable("The Qt Installer Framework mac binary has no arm64 "
+                            "slice, the Apple Silicon (M2) processors are not "
+                            "supported (issue #896): " + path));
+
+        SliceInfo x86Info;
+        QVERIFY2(parseMachO64Slice(data, *x86, &x86Info) &&
+                 x86Info.cputype == 0x01000007u,
+                 qPrintable("The x86_64 slice of the Qt Installer Framework mac "
+                            "binary is not a valid mach_header_64 binary: " + path));
+        SliceInfo armInfo;
+        QVERIFY2(parseMachO64Slice(data, *arm, &armInfo) &&
+                 armInfo.cputype == 0x0100000Cu,
+                 qPrintable("The arm64 slice of the Qt Installer Framework mac "
+                            "binary is not a valid mach_header_64 binary: " + path));
+
+        // The arm64 slice must carry a code signature: the Apple Silicon
+        // processors do not run unsigned arm64 binaries and the
+        // quarantined (downloaded) installers are rejected with "binary is
+        // damaged" without it (issue #896). The signature state of the
+        // x86_64 slice is informational only: the Intel processors run the
+        // unsigned x86_64 binaries and the Qt online repository publishes
+        // the x86_64 slices without a code signature (issue #896).
+        QVERIFY2(armInfo.codeSignature,
+                 qPrintable("The arm64 slice of the Qt Installer Framework mac "
+                            "binary has no code signature, the binary is rejected "
+                            "on the Apple Silicon hosts (issue #896): " + path));
+        qInfo() << "The Qt Installer Framework mac binary" << name
+                << "is a universal binary (" << slices.size() << " slices), the "
+                "arm64 slice is code signed, the x86_64 slice code signature "
+                "state is" << (x86Info.codeSignature ? "signed" : "unsigned");
+    }
+#else
+    qInfo() << "The QIFW mac binaries check is skipped, the "
+               "CQT_DEPLOYER_QIFW_MAC_BINARIES_DIR definition is not set";
 #endif
 }
 

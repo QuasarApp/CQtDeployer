@@ -97,6 +97,7 @@ add_dependencies(testQifw copyQIFW)
 target_compile_definitions(${PROJECT_NAME}-tests-MacOS PRIVATE
     CQT_DEPLOYER_SELF_DEPLOY_CONFIG="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/CQtDeployer.json"
     CQT_DEPLOYER_SELF_DEPLOY_SINGLE_CONFIG="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/CQtDeployerSingle.json"
-    CQT_DEPLOYER_QIFW_TEMPLATE_INSTALLSCRIPT="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/QIFWTemplate/packages/CQtDeployer.1_6/meta/installscript.js")
+    CQT_DEPLOYER_QIFW_TEMPLATE_INSTALLSCRIPT="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/QIFWTemplate/packages/CQtDeployer.1_6/meta/installscript.js"
+    CQT_DEPLOYER_QIFW_MAC_BINARIES_DIR="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/QIFW/binaries/mac")
 
 initTests()
