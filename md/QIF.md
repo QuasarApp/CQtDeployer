@@ -19,6 +19,16 @@ In **CQtDeployer** QIF availabel in the qtifw option.
 > adds the suffix to the `qifOut` value (or to the default installer name)
 > when it is missing, e.g. `-qifOut MyInstaller` creates
 > `MyInstaller.app` in the target directory.
+>
+> **Note (macOS, code signing):** the Mach-O rewrite of the deployed
+> binaries (issue #166) invalidates the code signature of the generated
+> installer, so the app bundle must be signed before the release. The
+> `qifSign` option passes the code signing identity to the `-s` option of
+> the Qt Installer Framework binarycreator: the generated app bundle is
+> signed with the specified identity (e.g. the "Developer ID Application"
+> identity). Use the `-` identity value for the ad-hoc signature (no
+> signing certificate required). The option is available on the macOS hosts
+> only (issue #865).
 
 ### How to use qtifw option
 

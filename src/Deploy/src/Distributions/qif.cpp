@@ -125,6 +125,29 @@ QList<SystemCommandData> QIF::runCmd() {
         cmd.arguments.push_back(customFormat);
     }
 
+#ifdef Q_OS_MACOS
+    // The Qt Installer Framework binarycreator signs the generated app
+    // bundle of the macOS hosts with the code signing identity of the
+    // -s option (issue #865): the Mach-O rewrite of the deployed
+    // binaries (issue #166) invalidates the original code signature, so
+    // the installer bundle is signed by the binarycreator with the
+    // specified identity. The "-" identity value creates the ad-hoc
+    // signature without the signing certificate.
+    const QString signIdentity = QuasarAppUtils::Params::getArg("qifSign");
+    if (signIdentity.size()) {
+        cmd.arguments.push_back("-s");
+        cmd.arguments.push_back(signIdentity);
+    }
+#else
+    // The -s (signing identity) option of the binarycreator is available
+    // on the macOS hosts only, the option is ignored on the other
+    // platforms (issue #865).
+    if (!QuasarAppUtils::Params::getArg("qifSign").isEmpty()) {
+        qWarning() << "The qifSign option is available on the macOS hosts only, "
+                    "the option is ignored on the current platform (issue #865).";
+    }
+#endif
+
     cmd.arguments += "-v";
 
     return {cmd};

@@ -38,6 +38,7 @@ private slots:
     void qifDeprecatedAliasCheck();
     void dmgAliasInstallerCheck();
     void noQtGeneralFileInstallerCheck();
+    void qifSignIdentityCheck();
 
 private:
     static constexpr const char *DEFAULT_INSTALLER_BASE = "QifwTestInstaller";
