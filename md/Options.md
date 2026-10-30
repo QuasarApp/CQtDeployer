@@ -66,6 +66,9 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |                             | Example: cqtdeployer deb" },                              |
 |                             | you can specify the path to your own DEBIAN template. |
 |                             | Examples: cqtdeployer -deb path/to/myCustom/DEBIAN. More details can be found [here](DEB.md) |
+|   appimage                  | Create the AppImage package for deployment programm (Linux only, issue #898) |
+|                             | The AppImage packages are created with the appimagetool, which is bundled within the CQtDeployer package or installed on the system. |
+|                             | Example: cqtdeployer appimage. More details can be found [here](AppImage.md) |
 |   deploySystem              | Deploys all libraries not recommended because there may be conflicts with system libraries  |
 |   noQt                      | Ignores the error of initialize of a qmake. Use only if your application does not use the qt framework. |
 |   allowEmptyPackages        | Allows configure the empty packages.                            |
@@ -172,6 +175,12 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 | Option                      | Description                                              |
 |-----------------------------|-----------------------------------------------------------|
 |  -zipOut [package;nameOfOutputZipFile,nameOfOutputZipFile]| Sets name of the output zip archive. This option can be work with multiple packages |
+
+### AppImage package options
+
+| Option                      | Description                                              |
+|-----------------------------|-----------------------------------------------------------|
+|  -appimageOut [package;nameOfOutputAppImageFile,nameOfOutputAppImageFile]| Sets name of the output AppImage file. This option can be work with multiple packages |
 
 ### DMG package options
 

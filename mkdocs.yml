@@ -97,6 +97,7 @@ nav:
       - Packaging: md/Packing.md
       - ZIP: md/ZIP.md
       - DEB: md/DEB.md
+      - AppImage: md/AppImage.md
       - arm machines: md/arm.md
       - macOS: md/macOS.md
       - Compare features: md/CompareFeatures.md

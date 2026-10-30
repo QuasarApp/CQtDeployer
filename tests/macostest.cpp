@@ -622,15 +622,31 @@ void MacOSTest::dmgQifToolsCheck() {
     // config (the extraData entry, the same rule the flat zip and deb
     // artifacts use, issue #885).
     bool hasQifTools = false;
+    bool hasAppImageTools = false;
     const auto extraData = config.value("extraData");
     if (extraData.isString()) {
         hasQifTools = extraData.toString() == QStringLiteral("./QIFW/QIF");
     } else if (extraData.isArray()) {
         for (const auto &entry: extraData.toArray()) {
+            if (entry.isString()) {
+                // A plain string entry belongs to the default package of
+                // the one package flat config (the AppImage tools entry
+                // of issue #898 uses this syntax).
+                if (entry.toString() == QStringLiteral("./QIFW/QIF")) {
+                    hasQifTools = true;
+                }
+                if (entry.toString() == QStringLiteral("./AppImage")) {
+                    hasAppImageTools = true;
+                }
+                continue;
+            }
             const auto pair = entry.toArray();
             for (int i = 1; i < pair.size(); ++i) {
                 if (pair.at(i).toString() == QStringLiteral("./QIFW/QIF")) {
                     hasQifTools = true;
+                }
+                if (pair.at(i).toString() == QStringLiteral("./AppImage")) {
+                    hasAppImageTools = true;
                 }
             }
         }
@@ -640,6 +656,15 @@ void MacOSTest::dmgQifToolsCheck() {
              "folder (./QIFW/QIF) into the flat package, the deb and zip "
              "artifacts would lack binarycreator and installerbase "
              "(issue #885)");
+
+    // The AppImage tools folder is bundled into the package of the flat
+    // config (the extraData entry), so the deb and zip artifacts contain
+    // the appimagetool and the appimage option works out of the box
+    // (issue #898).
+    QVERIFY2(hasAppImageTools,
+             "The single self-deploy config does not bundle the AppImage "
+             "tools folder (./AppImage) into the flat package, the deb "
+             "and zip artifacts would lack the appimagetool (issue #898)");
 
     // The flat single package is the one package version for DEB and ZIP
     // only (issue #884): the deb + zip options are enabled...
@@ -704,6 +729,7 @@ void MacOSTest::dmgQifToolsCheck() {
     // it to the cqt name and links it into the private bin folder of the
     // macOS hosts (issue #884).
     bool hasCqtWrapper = false;
+    bool multiHasAppImageTools = false;
     const auto multiExtraData = multiConfig.value("extraData");
     if (multiExtraData.isArray()) {
         for (const auto &entry: multiExtraData.toArray()) {
@@ -713,6 +739,11 @@ void MacOSTest::dmgQifToolsCheck() {
                 pair.at(1).toString() == QStringLiteral("./QIFWTemplate/res/cqt.sh")) {
                 hasCqtWrapper = true;
             }
+            if (pair.size() >= 2 &&
+                pair.at(0).toString() == QStringLiteral("QIF") &&
+                pair.at(1).toString() == QStringLiteral("./AppImage")) {
+                multiHasAppImageTools = true;
+            }
         }
     }
     QVERIFY2(hasCqtWrapper,
@@ -720,6 +751,16 @@ void MacOSTest::dmgQifToolsCheck() {
              "wrapper script (./QIFWTemplate/res/cqt.sh) into the "
              "CQtDeployer.1_6 package, the cqt console command of the "
              "macOS hosts is not created (issue #884)");
+
+    // The AppImage tools folder is bundled into the "QIF" package of the
+    // multi-package config (the extraData entry), so the installed
+    // cqtdeployer finds the appimagetool in the <exeDir>/../AppImage
+    // search path (issue #898).
+    QVERIFY2(multiHasAppImageTools,
+             "The multi-package self-deploy config does not bundle the "
+             "AppImage tools folder (./AppImage) into the QIF package, "
+             "the installed cqtdeployer would lack the appimagetool "
+             "(issue #898)");
 #else
     qInfo() << "The multi self-deploy config check is skipped, the "
                "CQT_DEPLOYER_SELF_DEPLOY_CONFIG definition is not set";

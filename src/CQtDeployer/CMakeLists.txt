@@ -207,6 +207,56 @@ add_custom_target(
 add_dependencies(deploy${CURRENT_PROJECT} copyQIFW)
 add_dependencies(deploy${CURRENT_PROJECT}Single copyQIFW)
 
+# The appimagetool AppImage (issue #898) is stored in the repository for
+# every Linux platform (Deploy/AppImage/binaries/<platform>) because the
+# tool must be available on the hosts where the AppImage tools are not
+# installed by default (much like the Qt Installer Framework binaries of
+# issue #867). The target below stages the platform-matching binary and
+# the wrapper script into the AppImage destination folder, which is
+# bundled into the installer (the "QIF" package) and into the flat
+# packages. The AppImage folder itself is tracked in the repository (so
+# any change to the staged binaries is visible in the git diff), therefore
+# the stale staged content of a previous build for another platform is
+# removed before the copy. The binaries/ subfolder (the source of the
+# staged content) is not removed. Provenance of the binaries:
+# Deploy/AppImage/binaries/README.md.
+set(APPIMAGE_DESTINATION_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/AppImage")
+set(APPIMAGE_BINARIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Deploy/AppImage/binaries")
+set(APPIMAGE_WRAPPER_SOURCE "${APPIMAGE_BINARIES_DIR}/appimagetool")
+
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64")
+    set(APPIMAGE_PLATFORM_DIR linux-aarch64)
+else()
+    set(APPIMAGE_PLATFORM_DIR linux-x86_64)
+endif()
+
+set(APPIMAGE_SOURCE_BIN_PATH "${APPIMAGE_BINARIES_DIR}/${APPIMAGE_PLATFORM_DIR}/appimagetool.AppImage")
+set(APPIMAGE_OUT_BIN_PATH "${APPIMAGE_DESTINATION_PATH}/appimagetool.AppImage")
+set(APPIMAGE_OUT_WRAPPER "${APPIMAGE_DESTINATION_PATH}/appimagetool")
+
+# The AppImage tool is also staged next to the built executable so that a
+# development build of cqtdeployer finds it at runtime (the AppImage
+# distribution searches <executable dir>/AppImage, see
+# src/Deploy/src/Distributions/appimage.cpp).
+set(APPIMAGE_DEV_DIR "${CMAKE_BINARY_DIR}/src/CQtDeployer/AppImage")
+set(APPIMAGE_DEV_BIN_PATH "${APPIMAGE_DEV_DIR}/appimagetool.AppImage")
+set(APPIMAGE_DEV_WRAPPER "${APPIMAGE_DEV_DIR}/appimagetool")
+
+add_custom_target(
+    copyAppImage
+    COMMAND ${CMAKE_COMMAND} -E rm -f "${APPIMAGE_OUT_BIN_PATH}" "${APPIMAGE_OUT_WRAPPER}"
+    COMMAND ${CMAKE_COMMAND} -E copy "${APPIMAGE_SOURCE_BIN_PATH}" "${APPIMAGE_OUT_BIN_PATH}"
+    COMMAND ${CMAKE_COMMAND} -E copy "${APPIMAGE_WRAPPER_SOURCE}" "${APPIMAGE_OUT_WRAPPER}"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${APPIMAGE_DEV_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E copy "${APPIMAGE_SOURCE_BIN_PATH}" "${APPIMAGE_DEV_BIN_PATH}"
+    COMMAND ${CMAKE_COMMAND} -E copy "${APPIMAGE_WRAPPER_SOURCE}" "${APPIMAGE_DEV_WRAPPER}"
+
+    COMMENT "Stage the appimagetool AppImage (${APPIMAGE_PLATFORM_DIR}) to ${APPIMAGE_DESTINATION_PATH}"
+)
+
+add_dependencies(deploy${CURRENT_PROJECT} copyAppImage)
+add_dependencies(deploy${CURRENT_PROJECT}Single copyAppImage)
+
 
 
 if (UNIX AND NOT APPLE)

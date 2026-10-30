@@ -20,6 +20,7 @@ struct DEPLOYSHARED_EXPORT TemplateInfo
     QString InstallDirDEB;
     QString zipOut;
     QString debOut;
+    QString appimageOut;
 
     QString InstallDeirQIFW() const;
 

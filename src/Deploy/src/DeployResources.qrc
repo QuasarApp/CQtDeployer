@@ -22,6 +22,10 @@
         <file>Distributions/Templates/deb/DEBIAN/control</file>
         <file>Distributions/Templates/deb/DEBIAN/postinst</file>
     </qresource>
+    <qresource prefix="/Templates/AppImage">
+        <file>Distributions/Templates/appimage/app.desktop</file>
+        <file>Distributions/Templates/appimage/AppRun</file>
+    </qresource>
     <qresource prefix="/shared">
         <file>Distributions/Templates/Icon.png</file>
         <file>Distributions/Templates/Icon.ico</file>

@@ -213,6 +213,10 @@ bool iDistribution::collectInfo(const DistroModule& pkg,
     if (!pkg.zipOut().isEmpty())
         info.zipOut = pkg.zipOut();
 
+    info.appimageOut = info.Name + ".AppImage";
+    if (!pkg.appimageOut().isEmpty())
+        info.appimageOut = pkg.appimageOut();
+
     info.Prefix = releativeLocation(pkg);
 
     QString cmdArray = "[";

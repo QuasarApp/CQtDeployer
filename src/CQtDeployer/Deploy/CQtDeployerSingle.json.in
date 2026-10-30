@@ -1,5 +1,5 @@
 {
-    "extraData": "./QIFW/QIF",
+    "extraData": ["./QIFW/QIF", "./AppImage"],
     "bin": [
         "src/CQtDeployer/CQtDeployer",
         "src/CQtDeployer/CQtDeployer.exe"
