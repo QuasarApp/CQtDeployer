@@ -364,6 +364,8 @@
       
         
       
+        
+      
     
     
     
@@ -738,6 +740,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#appimage-package-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AppImage package options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#dmg-package-options" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1066,6 +1079,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../AppImage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AppImage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../arm/" class="md-nav__link">
         
   
@@ -1224,10 +1265,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_22" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_23" >
         
           
-          <label class="md-nav__link" for="__nav_3_22" id="__nav_3_22_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_23" id="__nav_3_23_label" tabindex="0">
             
   
   
@@ -1245,8 +1286,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_22_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_22">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_23_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_23">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1531,6 +1572,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#appimage-package-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AppImage package options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#dmg-package-options" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1715,6 +1767,18 @@
 <tr>
 <td></td>
 <td>Examples: cqtdeployer -deb path/to/myCustom/DEBIAN. More details can be found <a href="../DEB/">here</a></td>
+</tr>
+<tr>
+<td>appimage</td>
+<td>Create the AppImage package for deployment programm (Linux only, issue #898)</td>
+</tr>
+<tr>
+<td></td>
+<td>The AppImage packages are created with the appimagetool, which is bundled within the CQtDeployer package or installed on the system.</td>
+</tr>
+<tr>
+<td></td>
+<td>Example: cqtdeployer appimage. More details can be found <a href="../AppImage/">here</a></td>
 </tr>
 <tr>
 <td>deploySystem</td>
@@ -2072,6 +2136,21 @@
 <tr>
 <td>-zipOut [package;nameOfOutputZipFile,nameOfOutputZipFile]</td>
 <td>Sets name of the output zip archive. This option can be work with multiple packages</td>
+</tr>
+</tbody>
+</table>
+<h3 id="appimage-package-options">AppImage package options<a class="headerlink" href="#appimage-package-options" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-appimageOut [package;nameOfOutputAppImageFile,nameOfOutputAppImageFile]</td>
+<td>Sets name of the output AppImage file. This option can be work with multiple packages</td>
 </tr>
 </tbody>
 </table>
