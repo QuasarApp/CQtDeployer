@@ -28,7 +28,7 @@ cmake_minimum_required(VERSION 3.18)
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
 
-set(TEST_CLASSES DeployConfig DeployCore DistroModule DistroStruct Envirement
+set(TEST_CLASSES AppImage DeployConfig DeployCore DistroModule DistroStruct Envirement
     FileManager IgnoreRule LibInfo MacOS PathUtils Pe Qifw TargetInfo ZipCompresser)
 
 # The deploy step of the test targets runs the cqtdeployer tool with the
@@ -82,6 +82,23 @@ target_compile_definitions(${PROJECT_NAME}-tests-Qifw PRIVATE
 # target depends on it explicitly - the qtifw distribution is then tested
 # on every platform, including the macOS hosts (issue #738).
 add_dependencies(testQifw copyQIFW)
+
+# The AppImage test runs the cqtdeployer executable of the current build
+# tree (not the stable release installed by the CI action), so it
+# verifies the code under review (issue #898). The build tree executable
+# and the qmake of the toolchain are passed to the test as compile
+# definitions.
+target_compile_definitions(${PROJECT_NAME}-tests-AppImage PRIVATE
+    APPIMAGE_TEST_CQT_DEPLOYER_EXE="$<TARGET_FILE:${PROJECT_NAME}>"
+    APPIMAGE_TEST_QMAKE="${QT_QMAKE_EXECUTABLE}")
+
+# The cqtdeployer of the build tree finds the appimagetool next to itself:
+# the copyAppImage target stages the platform binary and the wrapper
+# script from the repository (issue #898). The copyAppImage target is not
+# part of the `all` target and the CI runs the `test` target separately,
+# so the AppImage test target depends on it explicitly - the appimage
+# distribution is then tested on every Linux host.
+add_dependencies(testAppImage copyAppImage)
 
 # The self-deploy configs of the build (the configured CQtDeployer.json
 # and CQtDeployerSingle.json of the source tree, see the configure_file_in

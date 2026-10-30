@@ -101,6 +101,18 @@ public:
      */
     void setZipOut(const QString &newZipOut);
 
+    /**
+     * @brief appimageOut This method return output filePath to the AppImage package
+     * @return output filePath to the AppImage package
+     */
+    const QString &appimageOut() const;
+
+    /**
+     * @brief setAppimageOut This method sets new value of the AppImage output path.
+     * @param newAppimageOut This is new value of the AppImage output
+     */
+    void setAppimageOut(const QString &newAppimageOut);
+
 protected:
     void setKey(const QString &key);
 
@@ -131,6 +143,7 @@ private:
     QString _installDirDEB;
     QString _debOut;
     QString _zipOut;
+    QString _appimageOut;
 
 };
 

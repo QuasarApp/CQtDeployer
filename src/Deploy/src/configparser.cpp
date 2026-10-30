@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <cassert>
 #include <qaglobalutils.h>
+#include <Distributions/appimage.h>
 #include <Distributions/deb.h>
 #include <Distributions/defaultdistro.h>
 #include <Distributions/qif.h>
@@ -575,6 +576,9 @@ bool ConfigParser::initDistroStruct() {
     auto zipOut = QuasarAppUtils::Params::getArg("zipOut").
             split(DeployCore::getSeparator(0), splitbehavior);
 
+    auto appimageOut = QuasarAppUtils::Params::getArg("appimageOut").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
 // init distro stucts for all targets
     if (binOut.size() && !parsePackagesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir, defaultPackage)) {
         packagesErrorLog("binOut");
@@ -668,6 +672,11 @@ bool ConfigParser::initDistroStruct() {
 
     if (zipOut.size() && !parsePackagesPrivate(mainDistro, zipOut, &DistroModule::setZipOut, defaultPackage)) {
         packagesErrorLog("zipOut");
+        return false;
+    }
+
+    if (appimageOut.size() && !parsePackagesPrivate(mainDistro, appimageOut, &DistroModule::setAppimageOut, defaultPackage)) {
+        packagesErrorLog("appimageOut");
         return false;
     }
 
@@ -1696,6 +1705,34 @@ QList<iDistribution *> ConfigParser::getDistribution() {
 
     if (QuasarAppUtils::Params::isEndable("zip")) {
         distros.push_back(new ZipArhive(_fileManager));
+    }
+
+    // The "appimage" option (issue #898): the AppImage packages are
+    // created with the appimagetool, which is bundled within the
+    // CQtDeployer package (the AppImage folder next to the executable,
+    // see the copyAppImage target of the CMake build) or installed on
+    // the system (for example the "appimage" package of the Debian
+    // distributions). Like the "deb" option the AppImage packages are
+    // created only on the Linux hosts, and like the "qtifw" option the
+    // package is skipped with a warning if no appimagetool is found on
+    // the current host.
+    if (QuasarAppUtils::Params::isEndable("appimage")) {
+#ifdef Q_OS_LINUX
+        auto appImage = new AppImage(_fileManager);
+        if (appImage->isAvailable()) {
+            distros.push_back(appImage);
+        } else {
+            qWarning() << "The appimagetool executable is not found, "
+                                "the appimage package will not be created. "
+                                "Install the AppImage tools (for example "
+                                "the appimage package of the Debian "
+                                "distributions) to enable this option.";
+            delete appImage;
+        }
+#else
+        qWarning() << "The appimage option is available only on the Linux host platform, "
+                                "please remove this option from your deploy command";
+#endif
     }
 
     // The 'qif' option was renamed to 'qtifw' (issue #738). The old name is
