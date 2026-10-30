@@ -658,13 +658,23 @@ void MacOSTest::dmgQifToolsCheck() {
              "(issue #885)");
 
     // The AppImage tools folder is bundled into the package of the flat
-    // config (the extraData entry), so the deb and zip artifacts contain
-    // the appimagetool and the appimage option works out of the box
-    // (issue #898).
+    // config (the extraData entry) on the Linux hosts only - the
+    // AppImage tool is a Linux-only tool (the "appimage" option is
+    // available on the Linux host platforms only), so the deb and zip
+    // artifacts of the Linux hosts contain the appimagetool and the
+    // appimage option works out of the box, the non-Linux packages must
+    // not bundle the Linux tool (issue #898).
+#ifdef Q_OS_LINUX
     QVERIFY2(hasAppImageTools,
              "The single self-deploy config does not bundle the AppImage "
              "tools folder (./AppImage) into the flat package, the deb "
              "and zip artifacts would lack the appimagetool (issue #898)");
+#else
+    QVERIFY2(!hasAppImageTools,
+             "The single self-deploy config of the non-Linux host bundles "
+             "the Linux-only AppImage tools folder (./AppImage) into the "
+             "flat package (issue #898)");
+#endif
 
     // The flat single package is the one package version for DEB and ZIP
     // only (issue #884): the deb + zip options are enabled...
@@ -753,14 +763,24 @@ void MacOSTest::dmgQifToolsCheck() {
              "macOS hosts is not created (issue #884)");
 
     // The AppImage tools folder is bundled into the "QIF" package of the
-    // multi-package config (the extraData entry), so the installed
-    // cqtdeployer finds the appimagetool in the <exeDir>/../AppImage
-    // search path (issue #898).
+    // multi-package config (the extraData entry) on the Linux hosts only
+    // - the AppImage tool is a Linux-only tool (the "appimage" option is
+    // available on the Linux host platforms only), so the installed
+    // cqtdeployer of the Linux hosts finds the appimagetool in the
+    // <exeDir>/../AppImage search path, the non-Linux packages must not
+    // bundle the Linux tool (issue #898).
+#ifdef Q_OS_LINUX
     QVERIFY2(multiHasAppImageTools,
              "The multi-package self-deploy config does not bundle the "
              "AppImage tools folder (./AppImage) into the QIF package, "
              "the installed cqtdeployer would lack the appimagetool "
              "(issue #898)");
+#else
+    QVERIFY2(!multiHasAppImageTools,
+             "The multi-package self-deploy config of the non-Linux host "
+             "bundles the Linux-only AppImage tools folder (./AppImage) "
+             "into the QIF package (issue #898)");
+#endif
 #else
     qInfo() << "The multi self-deploy config check is skipped, the "
                "CQT_DEPLOYER_SELF_DEPLOY_CONFIG definition is not set";

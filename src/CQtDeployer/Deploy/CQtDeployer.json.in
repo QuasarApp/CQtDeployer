@@ -15,7 +15,7 @@
 
     "extraData": [
         ["QIF", "./QIFW/QIF"],
-        ["QIF", "./AppImage"],
+@APPIMAGE_QIF_EXTRADATA@
         ["CQtDeployer.1_6", "./QIFWTemplate/res/cqt.sh"],
         ["CQtDeployer", "./../../../LICENSE"]
     ],
