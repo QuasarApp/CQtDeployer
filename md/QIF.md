@@ -35,7 +35,8 @@ In **CQtDeployer** QIF availabel in the qtifw option.
 > the cqtdeployer after the bundle is created (the same
 > `codesign --force --deep --sign - <bundle>` command the binarycreator
 > runs internally). The option is available on the macOS hosts only
-> (issue #865).
+> (issue #865). See the [code signing of the QtIFW installer](Signing.md)
+> article for the full description and the identity values.
 
 ### How to use qtifw option
 
