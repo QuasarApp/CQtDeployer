@@ -1291,15 +1291,23 @@ the code signature, so the generated installer must be signed before the
 release. The code signing is configured with the <code>qifSign</code> option
 (issue #865).</p>
 <h2 id="the-qifsign-option">The <code>qifSign</code> option<a class="headerlink" href="#the-qifsign-option" title="Permanent link">&para;</a></h2>
-<p>The <code>-qifSign</code> option (the <code>qtifw</code> options group) sets the code signing
+<p>The <code>qifSign</code> option (the <code>qtifw</code> options group) sets the code signing
 identity of the Qt Installer Framework <code>binarycreator</code> (the <code>-s</code> option).
 The option is available on the macOS hosts only: on the other platforms it
 prints a warning and is ignored.</p>
+<p>The option is given in two forms:</p>
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myApp<span class="w"> </span>qtifw<span class="w"> </span>qifSign
+</code></pre></div>
+<p>The single <code>qifSign</code> option without the identity value creates the ad-hoc
+signature (no signing certificate required - the only signing form of the
+macOS CI hosts without the Developer ID certificate).</p>
 <div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myApp<span class="w"> </span>qtifw<span class="w"> </span>-qifSign<span class="w"> </span><span class="s1">&#39;Developer ID Application: MyCompany (ABC1234)&#39;</span>
 </code></pre></div>
-<p>The option requires the identity value: the command line without the value
-exits with the <code>Missing argument for -qifSign</code> error (the exit code 4, the
-same rule of the options parser for all the string options).</p>
+<p>The <code>-qifSign</code> option with the identity value signs the bundle with the
+specified identity. The command line parser of the cqtdeployer rejects
+the option values with the leading <code>-</code> character (the single <code>-</code> token),
+so the ad-hoc identity is not passed as the option value: use the single
+<code>qifSign</code> form for the ad-hoc signature.</p>
 <h2 id="the-signing-identity-values">The signing identity values<a class="headerlink" href="#the-signing-identity-values" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -1334,10 +1342,13 @@ identities of the current host:</p>
 <p>The identity without the leading <code>-</code> character is passed to the <code>-s</code> option
 of the <code>binarycreator</code>: the tool signs the generated app bundle with the
 <code>codesign --force --deep --sign &lt;identity&gt; &lt;bundle&gt;</code> command. The ad-hoc <code>-</code>
-identity is created by the codesign step of the CQtDeployer after the bundle
-is created: the command line parser of the <code>binarycreator</code> rejects the
-identity values that start with the <code>-</code> character (the upstream Qt Installer
-Framework limitation, documented in the <a href="../QIF/">QIF</a> note).</p>
+identity (the single <code>qifSign</code> form) is created by the codesign step of the
+CQtDeployer after the bundle is created: the command line parser of the
+<code>binarycreator</code> rejects the identity values that start with the <code>-</code>
+character (the upstream Qt Installer Framework limitation, documented in
+the <a href="../QIF/">QIF</a> note), and the command line parser of the cqtdeployer
+rejects the option values with the leading <code>-</code> character too (the single
+<code>-</code> token).</p>
 <h2 id="the-verification-of-the-signature">The verification of the signature<a class="headerlink" href="#the-verification-of-the-signature" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>codesign<span class="w"> </span>-v<span class="w"> </span>--verbose<span class="o">=</span><span class="m">2</span><span class="w"> </span>&lt;path/to/the/installer&gt;.app
 </code></pre></div>

@@ -2104,8 +2104,8 @@
 <td>Sets the format used when packaging new component data archives. If you omit this option, the 7z format will be used as a default.</td>
 </tr>
 <tr>
-<td>-qifSign [code-signing-identity]</td>
-<td>Sets the code signing identity of the Qt Installer Framework binarycreator (the -s option). Available only on the macOS hosts: the generated app bundle of the installer is signed with the specified identity (issue #865). Use the - value for the ad-hoc signature (no signing certificate required): the binarycreator command line parser rejects the identity values with the leading - character, so the ad-hoc signature is created by the codesign step of the cqtdeployer after the bundle is created.</td>
+<td>qifSign / -qifSign [code-signing-identity]</td>
+<td>Sets the code signing identity of the Qt Installer Framework binarycreator (the -s option). Available only on the macOS hosts: the generated app bundle of the installer is signed with the specified identity (issue #865). The single qifSign option without the value creates the ad-hoc signature (no signing certificate required): the binarycreator command line parser rejects the identity values with the leading - character, so the ad-hoc signature is created by the codesign step of the cqtdeployer after the bundle is created (issue #908).</td>
 </tr>
 <tr>
 <td>-binarycreator [binarycreator command]</td>
