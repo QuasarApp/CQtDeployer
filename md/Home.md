@@ -22,6 +22,7 @@
 * [Custom scripts](CustomScripts.md)
 * [CQtDeployer for arm](arm.md)
 * [CQtDeployer for macOS](macOS.md)
+* [Code signing of the QtIFW installer](Signing.md)
 
 
 ## Support the project

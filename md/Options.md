@@ -162,6 +162,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -qifPackages [path/to/packagesFodoler] | Sets a custom path to the packages directories. By default it is qif/packages. Note This path sets relative target folder (sets by TargetDir option). |
 |  -qifResources [path/to/resources1.qrc,path/to/resources2.qrc] | Sets a custom path to the resources files. By default this option is skipped. Note This path sets relative target folder (sets by TargetDir option). |
 |  -qifArchiveFormat [7z,zip,tar,tar.gz,tar.bz2,tar.xz] | Sets the format used when packaging new component data archives. If you omit this option, the 7z format will be used as a default. |
+|  -qifSign [code-signing-identity] | Sets the code signing identity of the Qt Installer Framework binarycreator (the -s option). Available only on the macOS hosts: the generated app bundle of the installer is signed with the specified identity (issue #865). Use the - value for the ad-hoc signature (no signing certificate required): the binarycreator command line parser rejects the identity values with the leading - character, so the ad-hoc signature is created by the codesign step of the cqtdeployer after the bundle is created. |
 |  -binarycreator [binarycreator command] | Sets new binarycreator command. Example : cqtdeployer -bin my.exe qifw -binarycreator 'wine path/to/binarycreator.exe'|
 
 ### Deb package options
