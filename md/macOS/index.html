@@ -1497,6 +1497,18 @@ cp<span class="w"> </span>-R<span class="w"> </span>/Volumes/CQtDeployer/CQtDepl
 <p>To create a portable archive of the deployed application, add the <code>zip</code> packager option:</p>
 <div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myApp<span class="w"> </span>-qmake<span class="w"> </span>/Users/&lt;user&gt;/Qt/6.10.3/macos/bin/qmake<span class="w"> </span>-qmlDir<span class="w"> </span>/path/to/my/qml/sources<span class="w"> </span>zip
 </code></pre></div>
+<p>To create a distributable DMG package of the deployed application (the
+standard macOS distribution format: the volume with the ready-to-use
+application, the application icon, the README file with the package
+information and the Applications symbolic link of the drag-to-install
+UX), add the <code>dmg</code> packager option:</p>
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myApp<span class="w"> </span>-qmake<span class="w"> </span>/Users/&lt;user&gt;/Qt/6.10.3/macos/bin/qmake<span class="w"> </span>-qmlDir<span class="w"> </span>/path/to/my/qml/sources<span class="w"> </span>dmg
+</code></pre></div>
+<p>The DMG package is created with the <code>hdiutil</code> tool of the macOS system,
+the name of the volume is the name of the package (the <code>name</code> option),
+the name of the output file is the <code>dmgOut</code> option
+(<code>&lt;name&gt;.dmg</code> by default). For more info see the
+<a href="../DMG/">DMG documentation</a>.</p>
 <h2 id="how-the-macos-deployment-works">How the macOS deployment works<a class="headerlink" href="#how-the-macos-deployment-works" title="Permanent link">&para;</a></h2>
 <ul>
 <li>CQtDeployer detects the Mach-O binaries (thin and fat binaries are supported) with the full file parsing on the LIEF backend and extracts the linked dylibs and the Qt frameworks.</li>
@@ -1505,7 +1517,8 @@ cp<span class="w"> </span>-R<span class="w"> </span>/Volumes/CQtDeployer/CQtDepl
 </ul>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
 <ul>
-<li>The Qt Installer Framework (QIF) installer is not available on macOS - the QIFW tools (binarycreator) are not published for this platform. If you run cqtdeployer with the <code>qif</code> option on a macOS host, the QIF step is skipped gracefully and the remaining deployment steps are executed. Use the <code>zip</code> packager to create a portable archive of the deployed application.</li>
+<li>The <code>dmg</code> packager is available only on the macOS hosts (the DMG packages are created with the <code>hdiutil</code> tool of the macOS system), the <code>deb</code> packager only on the Linux hosts and the <code>appimage</code> packager only on the Linux hosts: on the other host platforms the options are skipped with a warning.</li>
+<li>The Qt Installer Framework (QIF) installer of the macOS hosts is the <code>.app</code> bundle of the binarycreator (issue #738): the QIFW tools are stored in the repository for the macOS platform (issue #867) and the arm64 slice of the staged binaries is code signed, so the Apple Silicon hosts are supported (issue #896).</li>
 </ul>
 
 
