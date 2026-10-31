@@ -590,11 +590,17 @@ void MacOSTest::dmgQifToolsCheck() {
     // of this will be installed into one target folder, only this config
     // must generate the installer (the qif template + the qifOut name).
     //
-    // The CQtDeployerSingle.json is the one package version for DEB and
-    // ZIP only (issue #884): it must NOT generate the Qt Installer
-    // Framework installer. The "extraData" entry of that config bundles
-    // the Qt Installer Framework tools (the QIF folder with binarycreator
-    // + installerbase, staged by the copyQIFW CMake target, issue #867)
+    // The CQtDeployerSingle.json is the one package version for DEB, ZIP
+    // and DMG only (issue #884, issue #899): it must NOT generate the Qt
+    // Installer Framework installer. The dmg option is enabled in the flat
+    // config (issue #899): the deploy command creates the DMG package of
+    // the flat package on the macOS hosts (the hdiutil tool of the macOS
+    // system, the .dmg file of the Distro folder), on the other host
+    // platforms the option is skipped with a warning (the same rule as the
+    // deb and the zip options). The "extraData" entry of that config
+    // bundles the Qt Installer Framework tools (the QIF folder with
+    // binarycreator + installerbase, staged by the copyQIFW CMake target,
+    // issue #867)
     // into the same package as the executable - the same rule the flat
     // zip and deb artifacts use (issue #885), so the installed tool
     // finds the binarycreator in the <AppPath>/QIF search path of the
@@ -606,10 +612,9 @@ void MacOSTest::dmgQifToolsCheck() {
     // option on its own (issue #885).
 #ifdef CQT_DEPLOYER_SELF_DEPLOY_SINGLE_CONFIG
     // The flat single config: the QIF tools bundle (the extraData entry),
-    // the deb + zip rules. The dmg option and the qifOut entry must not
-    // be part of the config - the flat single package is the one package
-    // version for DEB and ZIP only, it must not generate the Qt Installer
-    // Framework installer (issue #884).
+    // the deb + zip + dmg rules. The qif and the qifOut entries must not
+    // be part of the config - the flat single package must not generate
+    // the Qt Installer Framework installer (issue #884).
     QFile configFile(CQT_DEPLOYER_SELF_DEPLOY_SINGLE_CONFIG);
     QVERIFY2(configFile.open(QIODevice::ReadOnly),
              "The single self-deploy config of the build is not found");
@@ -666,23 +671,30 @@ void MacOSTest::dmgQifToolsCheck() {
              "tools folder (./AppImage) into the flat package, the deb "
              "and zip artifacts would lack the appimagetool (issue #898)");
 
-    // The flat single package is the one package version for DEB and ZIP
-    // only (issue #884): the deb + zip options are enabled...
+    // The flat single package is the one package version for DEB, ZIP and
+    // DMG (issue #884, issue #899): the deb + zip + dmg options are
+    // enabled...
     QVERIFY2(config.value("deb").toBool(),
              "The single self-deploy config does not enable the deb option "
-             "(the one package version for DEB and ZIP, issue #884)");
+             "(the one package version for DEB, ZIP and DMG, issue #884)");
     QVERIFY2(config.value("zip").toBool(),
              "The single self-deploy config does not enable the zip option "
-             "(the one package version for DEB and ZIP, issue #884)");
+             "(the one package version for DEB, ZIP and DMG, issue #884)");
+    QVERIFY2(config.value("dmg").toBool(),
+             "The single self-deploy config does not enable the dmg option, "
+             "the deploy command must create the DMG package of the flat "
+             "package on the macOS hosts (issue #899)");
+    QVERIFY2(!config.value("dmgOut").toString().isEmpty(),
+             "The single self-deploy config does not set the dmgOut entry, "
+             "the name of the output DMG file (issue #899)");
 
     // ...and the Qt Installer Framework installer must not be generated
-    // from the flat config: the dmg option and the qifOut entry are not
-    // part of the config (issue #884). The installer is generated only
-    // from the multi-package config (the CQtDeployer.json).
-    QVERIFY2(!config.contains("dmg"),
-             "The single self-deploy config must not contain the dmg "
-             "option, the flat single package is the DEB and ZIP version "
-             "only (issue #884)");
+    // from the flat config: the qif and the qifOut entries are not part
+    // of the config (issue #884). The installer is generated only from
+    // the multi-package config (the CQtDeployer.json). The dmg option of
+    // the flat config creates the DMG package of the DMG backend (the
+    // hdiutil tool of the macOS system, issue #899), not the Qt Installer
+    // Framework installer.
     QVERIFY2(!config.contains("qifOut"),
              "The single self-deploy config must not contain the qifOut "
              "entry, the Qt Installer Framework installer is generated "

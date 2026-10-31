@@ -152,25 +152,6 @@ jobs:
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target deploy --parallel 1
 
-    - name: Create the DMG package (macOS)
-      # The macOS release asset is the DMG package of the flat single
-      # self-deploy config (the same package the deb/zip flat artifacts
-      # use on the other platforms, issue #899). The DMG is created with
-      # the cqtdeployer executable of the build tree (the cqtdeployer of
-      # the cqtdeployer-install-action is the previous release and has
-      # no DMG backend yet, issue #899): the dmg option of the DMG
-      # backend of the build tree packs the deployed package into the
-      # .dmg file with the hdiutil tool of the macOS system.
-      if: runner.os == 'macOS'
-      shell: bash
-      run: |
-        ./build/src/CQtDeployer/CQtDeployer \
-          -qmake "$(which qmake)" \
-          -binPrefix "${{ steps.strings.outputs.build-output-dir }}" \
-          -confFile src/CQtDeployer/Deploy/CQtDeployerSingle.json \
-          dmg \
-          -dmgOut "${BASE_FULL_NAME}.dmg"
-
     - name: release
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target release --parallel 1
@@ -220,9 +201,11 @@ jobs:
       # The DMG package of the flat single self-deploy config (the
       # ready-to-use CQtDeployer application: the executable, the QIF
       # tools, the AppImage tools and the libraries), created by the
-      # "Create the DMG package (macOS)" step with the dmg option of the
-      # DMG backend of the build tree (issue #899). The md/macOS.md
-      # page documents the download of this CQtDeployer_*_dmg asset.
+      # deploy command with the dmg option of the DMG backend of the
+      # self-deploy config (the hdiutil tool of the macOS system, the
+      # .dmg file of the Distro folder, the same way the deb/zip
+      # artifacts are created, issue #899). The md/macOS.md page
+      # documents the download of this CQtDeployer_*_dmg asset.
       if: runner.os == 'macOS'
       uses: svenstaro/upload-release-action@v2
       with:

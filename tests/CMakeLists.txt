@@ -117,8 +117,10 @@ target_compile_definitions(${PROJECT_NAME}-tests-Dmg PRIVATE
 # platforms: the 2 packages cqtdeployer and QIF into one target folder)
 # generates the Qt Installer Framework installer (the qif template + the
 # qifOut name, issue #884) and that the flat single config is the one
-# package version for DEB and ZIP only (no dmg option, no qifOut entry,
-# issue #884). The install script of the installer template
+# package version for DEB, ZIP and DMG (the dmg option is enabled: the
+# deploy command creates the DMG package on the macOS hosts, issue #899;
+# no qif and no qifOut entry, issue #884). The install script of the
+# installer template
 # of the repository (the QIFWTemplate folder) is used to check the
 # cqt + cqtdeployer console symlinks of the macOS hosts (issue #884).
 target_compile_definitions(${PROJECT_NAME}-tests-MacOS PRIVATE
