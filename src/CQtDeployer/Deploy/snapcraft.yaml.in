@@ -33,6 +33,25 @@ apps:
     command: bin/bash $SNAP/cqt.sh
     plugs: [home, removable-media, process-control, system-backup]
 
+lint:
+  ignore:
+    # issue #903: the snap keeps the full set of its stage-packages,
+    # including the mesa GPU stack (team lead decision: the snap must
+    # save all of the libraries it ships). The gpu linter wants the GPU
+    # libraries from a content interface - this snap intentionally keeps
+    # the bundled mesa stack, so the gpu linter is disabled. The library
+    # linter reports the not-linked mesa/icu/wayland/xcb libraries as
+    # unused - the warnings are suppressed for exactly these files
+    # (https://documentation.ubuntu.com/snapcraft/stable/how-to/debugging/disable-a-linter).
+    - gpu
+    - library:
+      - usr/lib/x86_64-linux-gnu/libGL.so.1*
+      - usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0*
+      - usr/lib/x86_64-linux-gnu/libicuio.so*
+      - usr/lib/x86_64-linux-gnu/libicutest.so*
+      - usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0*
+      - usr/lib/x86_64-linux-gnu/libxcb-xinerama.so.0*
+
 parts:
   cqtdeployer:
     # See 'snapcraft plugins'
@@ -41,32 +60,35 @@ parts:
     source: Distro/CQtDeployer_@CQT_DEPLOYER_VERSION@_@CMAKE_SYSTEM_NAME@_@CMAKE_SYSTEM_PROCESSOR@.zip
 
     stage-packages:
-      # The stage-packages cover only the runtime dependencies of the QIF
-      # GUI tools (binarycreator + installerbase, see QIF/) and of the
-      # console app. No GPU libraries are staged: the GPU support of the
-      # snap must be provided by a content interface, not by the bundled
-      # mesa drivers (issue #903, https://ubuntu.com/frame/docs/22/how-to/use-snap-graphics/).
-      # libwayland-cursor0, libxcb-xinerama0, libxcb-glx0 and libxext6 are
-      # not linked by any file of the snap and were reported as unused
-      # libraries by the linter (issue #903).
+      # The full set of libraries of the snap is kept (issue #903, team
+      # lead decision): the runtime dependencies of the QIF GUI tools
+      # (binarycreator + installerbase, see QIF/) and of the console app,
+      # plus the mesa stack (libgl1-mesa-glx). The linter warnings of the
+      # intentionally staged mesa/wayland/xcb libraries are suppressed in
+      # the lint section above instead of removing the libraries.
       - bash
       - libfreetype6
       - libpng16-16
       - dpkg
+      - libwayland-cursor0
       - libxcb-icccm4
       - libxcb-image0
       - libxcb-keysyms1
       - libxcb-render-util0
+      - libxcb-xinerama0
       - libfontconfig1
+      - libxcb-glx0
       - libx11-xcb1
       - libxcb-randr0
       - libxcb-shape0
       - libxcb-sync1
       - libxcb-xfixes0
       - libxcb-xkb1
+      - libxext6
       - libx11-6
       - libxkbcommon-x11-0
       - libxkbcommon0
+      - libgl1-mesa-glx
 
     after: [ cqt-meta ]
 
