@@ -771,12 +771,13 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             "Sets a custom path to the resources files. By default this option is skipped. Note This path sets releative target folder (sets by TargetDir option)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
-                            {"-qifSign"}, "{code-signing-identity}",
+                            {"qifSign", "-qifSign"}, "{code-signing-identity}",
                             "Sets the code signing identity of the Qt Installer Framework "
                             "binarycreator (the -s option). Available only on the macOS hosts: "
                             "the generated app bundle of the installer is signed with the "
-                            "specified identity (issue #865). Use the '-' identity value for "
-                            "the ad-hoc signature (no signing certificate required).",
+                            "specified identity (issue #865). The single qifSign option "
+                            "without the identity value creates the ad-hoc signature (no "
+                            "signing certificate required, issue #908).",
                             "cqtdeployer -bin myApp qtifw -qifSign 'Developer ID Application: "
                             "QuasarApp (ABC1234)'"
                         }});
