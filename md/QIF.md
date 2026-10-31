@@ -23,11 +23,12 @@ In **CQtDeployer** QIF availabel in the qtifw option.
 > **Note (macOS, code signing):** the Mach-O rewrite of the deployed
 > binaries (issue #166) invalidates the code signature of the generated
 > installer, so the app bundle must be signed before the release. The
-> `qifSign` option passes the code signing identity to the `-s` option of
-> the Qt Installer Framework binarycreator: the generated app bundle is
-> signed with the specified identity (e.g. the "Developer ID Application"
-> identity). Use the `-` identity value for the ad-hoc signature (no
-> signing certificate required): the command line parser of the
+> `qifSign` option is given in two forms (issue #865, #908): the single
+> `qifSign` option without the value creates the ad-hoc signature (no
+> signing certificate required) and the `-qifSign <identity>` option signs
+> the bundle with the specified identity (e.g. the "Developer ID
+> Application" identity): the identity is passed to the `-s` option of the
+> Qt Installer Framework binarycreator. The command line parser of the
 > binarycreator rejects the identity values with the leading `-` character
 > (the `startsWith('-')` guard of the binarycreator of the
 > qtproject/installer-framework repository, present in all the released

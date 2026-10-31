@@ -141,7 +141,23 @@ QList<SystemCommandData> QIF::runCmd() {
     // "codesign --force --deep --sign <identity> <bundle>" command the
     // binarycreator runs internally (issue #865). The "-" identity value
     // creates the ad-hoc signature without the signing certificate.
-    const QString signIdentity = QuasarAppUtils::Params::getArg("qifSign");
+    // The qifSign option is given in two forms (issue #865, #908): the
+    // single qifSign option without the identity value ("cqtdeployer ...
+    // qtifw qifSign") and the "-qifSign <identity>" option with the
+    // value. The single option without the value creates the ad-hoc
+    // signature: the "-" identity of the codesign tool (no signing
+    // certificate required, the only signing form of the macOS CI hosts
+    // without the Developer ID certificate). The command line parser
+    // rejects the identity values with the leading "-" character (the
+    // single "-" token), so the ad-hoc identity is not passed as the
+    // option value (the team lead decision of the QuasarAppLib PR #68,
+    // the issue #67 of the QuasarAppLib repository).
+    QString signIdentity = QuasarAppUtils::Params::getArg("qifSign");
+    if (QuasarAppUtils::Params::isEndable("qifSign") && signIdentity.isEmpty()) {
+        // The single qifSign option without the identity value: the
+        // ad-hoc signature (issue #908).
+        signIdentity = QStringLiteral("-");
+    }
 #ifdef Q_OS_MACOS
     if (signIdentity.size() && !signIdentity.startsWith(QLatin1Char('-'))) {
         // The identity without the leading "-" character is passed to
