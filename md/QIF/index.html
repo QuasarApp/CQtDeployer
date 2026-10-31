@@ -1398,6 +1398,23 @@ The bundle name is the <code>qifOut</code> name with the <code>.app</code> suffi
 adds the suffix to the <code>qifOut</code> value (or to the default installer name)
 when it is missing, e.g. <code>-qifOut MyInstaller</code> creates
 <code>MyInstaller.app</code> in the target directory.</p>
+<p><strong>Note (macOS, code signing):</strong> the Mach-O rewrite of the deployed
+binaries (issue #166) invalidates the code signature of the generated
+installer, so the app bundle must be signed before the release. The
+<code>qifSign</code> option passes the code signing identity to the <code>-s</code> option of
+the Qt Installer Framework binarycreator: the generated app bundle is
+signed with the specified identity (e.g. the "Developer ID Application"
+identity). Use the <code>-</code> identity value for the ad-hoc signature (no
+signing certificate required): the command line parser of the
+binarycreator rejects the identity values with the leading <code>-</code> character
+(the <code>startsWith('-')</code> guard of the binarycreator of the
+qtproject/installer-framework repository, present in all the released
+versions), so the ad-hoc signature is created by the codesign step of
+the cqtdeployer after the bundle is created (the same
+<code>codesign --force --deep --sign - &lt;bundle&gt;</code> command the binarycreator
+runs internally). The option is available on the macOS hosts only
+(issue #865). See the <a href="../Signing/">code signing of the QtIFW installer</a>
+article for the full description and the identity values.</p>
 </blockquote>
 <h3 id="how-to-use-qtifw-option">How to use qtifw option<a class="headerlink" href="#how-to-use-qtifw-option" title="Permanent link">&para;</a></h3>
 <p>The qtifw option invoke with path to custo qt installer template or with default installer template.</p>
