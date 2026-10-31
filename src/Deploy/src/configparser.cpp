@@ -24,6 +24,7 @@
 #include <Distributions/appimage.h>
 #include <Distributions/deb.h>
 #include <Distributions/defaultdistro.h>
+#include <Distributions/dmg.h>
 #include <Distributions/qif.h>
 #include <Distributions/ziparhive.h>
 #include <qaplatformutils.h>
@@ -579,6 +580,9 @@ bool ConfigParser::initDistroStruct() {
     auto appimageOut = QuasarAppUtils::Params::getArg("appimageOut").
             split(DeployCore::getSeparator(0), splitbehavior);
 
+    auto dmgOut = QuasarAppUtils::Params::getArg("dmgOut").
+            split(DeployCore::getSeparator(0), splitbehavior);
+
 // init distro stucts for all targets
     if (binOut.size() && !parsePackagesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir, defaultPackage)) {
         packagesErrorLog("binOut");
@@ -677,6 +681,11 @@ bool ConfigParser::initDistroStruct() {
 
     if (appimageOut.size() && !parsePackagesPrivate(mainDistro, appimageOut, &DistroModule::setAppimageOut, defaultPackage)) {
         packagesErrorLog("appimageOut");
+        return false;
+    }
+
+    if (dmgOut.size() && !parsePackagesPrivate(mainDistro, dmgOut, &DistroModule::setDmgOut, defaultPackage)) {
+        packagesErrorLog("dmgOut");
         return false;
     }
 
@@ -1737,13 +1746,9 @@ QList<iDistribution *> ConfigParser::getDistribution() {
 
     // The 'qif' option was renamed to 'qtifw' (issue #738). The old name is
     // still accepted for backward compatibility; it is marked as deprecated
-    // in the help (see DeployCore::avilableOptions()). The 'dmg' option is
-    // an alias for the QtIFW installer (issue #884): the binarycreator of
-    // the Qt Installer Framework creates the installer (the "DMG" file of
-    // the macOS hosts), so the QIF distribution is used for it.
+    // in the help (see DeployCore::avilableOptions()).
     if (QuasarAppUtils::Params::isEndable("qtifw") ||
-        QuasarAppUtils::Params::isEndable("qif") ||
-        QuasarAppUtils::Params::isEndable("dmg")) {
+        QuasarAppUtils::Params::isEndable("qif")) {
         auto qif = new QIF(_fileManager);
         if (qif->isAvailable()) {
             distros.push_back(qif);
@@ -1755,6 +1760,36 @@ QList<iDistribution *> ConfigParser::getDistribution() {
                                         "tools to enable this option.";
             delete qif;
         }
+    }
+
+    // The "dmg" option (issue #899): the DMG packages are created with
+    // the hdiutil tool of the macOS system (much like the "deb" option
+    // uses the dpkg-deb tool of the Linux system). Like the "deb"
+    // option the DMG packages are created only on the macOS hosts, and
+    // like the "appimage" option the package is skipped with a warning
+    // if no hdiutil tool is found on the current host. The "dmg"
+    // option was an alias for the "qtifw" option before (issue #884),
+    // now it creates the real DMG packages (issue #899).
+    if (QuasarAppUtils::Params::isEndable("dmg")) {
+#ifdef Q_OS_MACOS
+        auto dmg = new Dmg(_fileManager);
+        if (dmg->isAvailable()) {
+            distros.push_back(dmg);
+        } else {
+            qWarning() << "The hdiutil executable of the macOS system "
+                                "is not found, the dmg package will not be "
+                                "created. The hdiutil is a standard tool "
+                                "of the macOS system, the dmg option is "
+                                "available only on the macOS host platforms.";
+            delete dmg;
+        }
+#else
+        qWarning() << "The dmg option is available only on the macOS host "
+                                "platform (the DMG packages are created with "
+                                "the hdiutil tool of the macOS system), "
+                                "please remove this option from your deploy "
+                                "command (issue #899)";
+#endif
     }
 
     if (distros.isEmpty()) {

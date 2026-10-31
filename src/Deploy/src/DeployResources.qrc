@@ -26,6 +26,9 @@
         <file>Distributions/Templates/appimage/app.desktop</file>
         <file>Distributions/Templates/appimage/AppRun</file>
     </qresource>
+    <qresource prefix="/Templates/DMG">
+        <file>Distributions/Templates/dmg/README</file>
+    </qresource>
     <qresource prefix="/shared">
         <file>Distributions/Templates/Icon.png</file>
         <file>Distributions/Templates/Icon.ico</file>

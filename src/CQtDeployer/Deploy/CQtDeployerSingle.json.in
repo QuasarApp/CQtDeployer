@@ -24,9 +24,11 @@
     "deb": true,
     "qif": false,
     "zip": true,
+    "dmg": true,
     "appimage": true,
     "debOut": "@BASE_FULL_NAME@.deb",
     "zipOut": "@BASE_FULL_NAME@.zip",
+    "dmgOut": "@BASE_FULL_NAME@.dmg",
     "appimageOut": "@BASE_FULL_NAME@.AppImage",
     "ignoreEnv": [
          "@CMAKE_SOURCE_DIR@/Distro"

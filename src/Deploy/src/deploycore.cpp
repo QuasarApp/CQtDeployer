@@ -492,11 +492,22 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"dmg"}, "",
-                            "Create the Qt Installer Framework installer for deployment program "
-                            "(an alias for the qtifw option, issue #884). "
-                            "The binarycreator of the Qt Installer Framework creates the "
-                            "installer (the \"DMG\" file of the macOS hosts), the name of the "
-                            "installer is taken from the qifOut value."
+                            "Create the DMG package for deployment programm (issue #899). "
+                            "The DMG packages are created with the hdiutil tool "
+                            "of the macOS system (the same way the deb backend "
+                            "uses the dpkg-deb tool of the Linux system). "
+                            "The DMG volume contains the deployed package (the "
+                            "ready-to-use application), the application icon, "
+                            "the README file with the name/description/version/"
+                            "publisher of the package and the Applications "
+                            "symbolic link of the standard drag-to-install UX. "
+                            "The name of the volume is the name of the package "
+                            "(the name option), the name of the output file is "
+                            "set by the dmgOut option. "
+                            "This option is available only on the macOS host "
+                            "platforms. "
+                            "For more info see documentation page "
+                            "https://quasarapp.github.io/CQtDeployer/md/DMG/"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"deploySystem"}, "",
@@ -824,6 +835,13 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-appimageOut"}, "{package;nameOfOutputAppImageFile,nameOfOutputAppImageFile}",
                             "Sets name of the output AppImage file. This option can be work with multiple packages"
+                        }});
+
+    group = "Part 10 DMG package options";
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-dmgOut"}, "{package;nameOfOutputDmgFile,nameOfOutputDmgFile}",
+                            "Sets name of the output DMG file. This option can be work with multiple packages"
                         }});
 
     return help;

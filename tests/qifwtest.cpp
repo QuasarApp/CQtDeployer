@@ -370,28 +370,23 @@ void QifwTest::qifDeprecatedAliasCheck() {
                           "test_report.txt.qif):\n" + output));
 }
 
-void QifwTest::dmgAliasInstallerCheck() {
-    // The dmg option is an alias for the QtIFW installer (issue #884):
-    // the same binarycreator installer is created, the output name is
-    // taken from the qifOut value (the same way the qtifw option names
-    // it, the dmgOut option is removed). The name must match the
-    // platform: the binarycreator of the Windows hosts appends the ".exe"
-    // suffix to the output name when it is missing (the Windows installer
-    // builds always use the .exe name, no hardcode fix in the QIF
-    // distribution), the .app suffix of the macOS hosts is appended by
-    // the QIF distribution (issue #738).
+void QifwTest::dmgOptionNotQifCheck() {
+    // The dmg option is not an alias for the QtIFW installer anymore
+    // (issue #884): the dmg option creates the DMG packages with the
+    // hdiutil tool of the macOS system (the Dmg distribution, issue
+    // #899) and does not trigger the QIF distribution. The qifOut name
+    // must not be used by the dmg option, so the Qt Installer Framework
+    // installer of the qifOut value is not created for the dmg option
+    // on every platform (on the macOS hosts the dmg option creates the
+    // real DMG package instead, on the other host platforms the option
+    // is skipped with a warning, issue #899).
     if (_deployerExe.isEmpty()) {
-        QSKIP("The cqtdeployer executable of the build tree is not found, the dmg alias test cannot run");
+        QSKIP("The cqtdeployer executable of the build tree is not found, the dmg option test cannot run");
     }
 
-#ifdef Q_OS_WIN32
-    // The .exe name: the binarycreator of the Windows hosts creates the
-    // file with the exact name (the ".exe" suffix is not appended a
-    // second time).
-    const QString qifOut = QStringLiteral("QifwDmgAliasInstaller.exe");
-#else
+    // The qifOut name of the old dmg (qtifw alias) installer (the .app
+    // bundle of the binarycreator on the macOS hosts, issue #738).
     const QString qifOut = QStringLiteral("QifwDmgAliasInstaller.dmg");
-#endif
 
     int exitCode = -1;
     QString output;
@@ -408,20 +403,9 @@ void QifwTest::dmgAliasInstallerCheck() {
         args << "-qmake" << _qmake;
     }
 
-    runDeployerProcess(args, QStringLiteral("dmgAlias"), &exitCode, &output);
+    runDeployerProcess(args, QStringLiteral("dmgNotQif"), &exitCode, &output);
     QCOMPARE(exitCode, 0);
 
-    // The old Dmg distribution warning must be gone: the dmg option is
-    // handled by the QIF distribution (the binarycreator) now, not by
-    // the hdiutil tool (issue #884).
-    QVERIFY2(!output.contains("hdiutil"),
-             qPrintable("The hdiutil warning of the removed Dmg distribution is "
-                        "printed, the dmg option is not an alias for the qtifw "
-                        "option (issue #884). The cqtdeployer output (the full "
-                        "output is stored in test_report.txt.dmgAlias):\n" + output));
-
-    // The qifOut name of the installer (the .app bundle of the
-    // binarycreator on the macOS hosts, issue #738).
     const QString baseDir = _tmp.path() + "/dist/";
     const QFileInfo installer =
 #ifdef Q_OS_MACOS
@@ -430,27 +414,39 @@ void QifwTest::dmgAliasInstallerCheck() {
             QFileInfo(baseDir + qifOut);
 #endif
 
-    // The .app bundle of the macOS hosts is populated by a background step
-    // of the binarycreator that outlives the cqtdeployer process (issue
-    // #738), so the installer artifact is polled until it is complete.
-    bool ready = false;
-    const qint64 deadline = QDateTime::currentMSecsSinceEpoch() + 5 * 60 * 1000;
-    while (!ready && QDateTime::currentMSecsSinceEpoch() < deadline) {
-        ready = installerIsNotEmpty(QFileInfo(installer.filePath()));
-        if (!ready) {
-            QTest::qWait(250);
+    // The Qt Installer Framework installer of the qifOut value is not
+    // created for the dmg option (issue #899). The .app bundle of the
+    // macOS hosts is populated by a background step of the binarycreator
+    // that outlives the cqtdeployer process (issue #738), so a short
+    // wait is needed before the absence check on the macOS hosts.
+    const qint64 deadline = QDateTime::currentMSecsSinceEpoch() + 30 * 1000;
+    while (QDateTime::currentMSecsSinceEpoch() < deadline) {
+        if (!installer.exists()) {
+            break;
         }
+        QTest::qWait(250);
     }
 
-    QVERIFY2(ready,
-             qPrintable("The dmg (qtifw alias) installer of the qifOut name is "
-                        "not created (the wait timed out). The dist dir content: ["
-                        + distDirListing()
+    QVERIFY2(!installerIsNotEmpty(QFileInfo(installer.filePath())),
+             qPrintable("The Qt Installer Framework installer of the qifOut "
+                        "name is created for the dmg option, the dmg option "
+                        "is not routed to the DMG distribution (issue #899). "
+                        "The dist dir content: [" + distDirListing()
                         + "]. The installer artifact (" + installer.filePath()
-                        + "): [" + (installer.exists() ? QString::number(installer.size())
-                                                       : QStringLiteral("<missing>"))
-                        + "]. The cqtdeployer output (the full output is stored in "
-                        "test_report.txt.dmgAlias):\n" + output));
+                        + "): [" + artifactListing()
+                        + "]. The cqtdeployer output (the full output is "
+                        "stored in test_report.txt.dmgNotQif):\n" + output));
+
+#ifndef Q_OS_MACOS
+    // On the non-macOS host platforms the dmg option is skipped with a
+    // warning (the DMG packages are created only on the macOS hosts,
+    // issue #899).
+    QVERIFY2(output.contains("The dmg option is available only on the macOS host platform"),
+             qPrintable("The warning of the dmg option (the macOS host "
+                        "platforms only, issue #899) is not printed. The "
+                        "cqtdeployer output (the full output is stored "
+                        "in test_report.txt.dmgNotQif):\n" + output));
+#endif
 }
 
 void QifwTest::noQtGeneralFileInstallerCheck() {

@@ -28,7 +28,7 @@ cmake_minimum_required(VERSION 3.18)
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
 
-set(TEST_CLASSES AppImage DeployConfig DeployCore DistroModule DistroStruct Envirement
+set(TEST_CLASSES AppImage DeployConfig DeployCore Dmg DistroModule DistroStruct Envirement
     FileManager IgnoreRule LibInfo MacOS PathUtils Pe Qifw TargetInfo ZipCompresser)
 
 # The deploy step of the test targets runs the cqtdeployer tool with the
@@ -104,6 +104,16 @@ if (UNIX AND NOT APPLE)
     add_dependencies(testAppImage copyAppImage)
 endif()
 
+# The Dmg test runs the cqtdeployer executable of the current build
+# tree (not the stable release installed by the CI action), so it
+# verifies the code under review (issue #899). The DMG packages are
+# created with the hdiutil tool of the macOS system (no bundled tools,
+# the copy targets are not needed), on the other host platforms the
+# test verifies the warning of the skipped option only.
+target_compile_definitions(${PROJECT_NAME}-tests-Dmg PRIVATE
+    DMG_TEST_CQT_DEPLOYER_EXE="$<TARGET_FILE:${PROJECT_NAME}>"
+    DMG_TEST_QMAKE="${QT_QMAKE_EXECUTABLE}")
+
 # The self-deploy configs of the build (the configured CQtDeployer.json
 # and CQtDeployerSingle.json of the source tree, see the configure_file_in
 # call of the CQtDeployer project) are used by the MacOS test to check
@@ -111,8 +121,10 @@ endif()
 # platforms: the 2 packages cqtdeployer and QIF into one target folder)
 # generates the Qt Installer Framework installer (the qif template + the
 # qifOut name, issue #884) and that the flat single config is the one
-# package version for DEB and ZIP only (no dmg option, no qifOut entry,
-# issue #884). The install script of the installer template
+# package version for DEB, ZIP and DMG (the dmg option is enabled: the
+# deploy command creates the DMG package on the macOS hosts, issue #899;
+# no qif and no qifOut entry, issue #884). The install script of the
+# installer template
 # of the repository (the QIFWTemplate folder) is used to check the
 # cqt + cqtdeployer console symlinks of the macOS hosts (issue #884).
 target_compile_definitions(${PROJECT_NAME}-tests-MacOS PRIVATE

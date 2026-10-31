@@ -69,6 +69,9 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   appimage                  | Create the AppImage package for deployment programm (Linux only, issue #898) |
 |                             | The AppImage packages are created with the appimagetool, which is bundled within the CQtDeployer package or installed on the system. |
 |                             | Example: cqtdeployer appimage. More details can be found [here](AppImage.md) |
+|   dmg                       | Create the DMG package for deployment programm (macOS only, issue #899) |
+|                             | The DMG packages are created with the hdiutil tool of the macOS system. |
+|                             | Example: cqtdeployer dmg. More details can be found [here](DMG.md) |
 |   deploySystem              | Deploys all libraries not recommended because there may be conflicts with system libraries  |
 |   noQt                      | Ignores the error of initialize of a qmake. Use only if your application does not use the qt framework. |
 |   allowEmptyPackages        | Allows configure the empty packages.                            |
@@ -187,6 +190,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 
 | Option                      | Description                                              |
 |-----------------------------|-----------------------------------------------------------|
-|  -dmg | Creates the Qt Installer Framework installer for deployment program (an alias for the qtifw option, issue #884). The binarycreator of the Qt Installer Framework creates the installer (the "DMG" file of the macOS hosts), the name of the installer is taken from the qifOut value. |
+|  -dmgOut [package;nameOfOutputDmgFile,nameOfOutputDmgFile]| Sets name of the output DMG file. This option can be work with multiple packages |
+|  dmg | Creates the DMG package for deployment programm (macOS only, issue #899). The DMG packages are created with the hdiutil tool of the macOS system (the same way the deb backend uses the dpkg-deb tool of the Linux system). The DMG volume contains the deployed package (the ready-to-use application), the application icon, the README file with the name/description/version/publisher of the package and the Applications symbolic link of the standard drag-to-install UX. The name of the volume is the name of the package (the name option), the name of the output file is set by the dmgOut option. The dmg option was an alias for the qtifw option before (issue #884), now it creates the real DMG packages (issue #899). More details can be found [here](DMG.md) |
 
 #### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.15.4/gcc_64/bin/qmake clear

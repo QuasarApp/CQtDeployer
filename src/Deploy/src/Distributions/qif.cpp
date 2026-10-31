@@ -367,12 +367,11 @@ QString QIF::installerFile() const {
 #endif
     QString name;
     // The name of the installer is taken from the qifOut value of the
-    // deployment configuration (the dmg option is an alias for the qtifw
-    // option, issue #884, and uses the same name). The name must match
-    // the platform: the binarycreator of the Windows hosts appends the
-    // ".exe" suffix to the output name when it is missing, so the
-    // platform-specific suffix is part of the qifOut value (the
-    // INSTALLER_FULL_NAME naming of the self-deploy config).
+    // deployment configuration. The name must match the platform: the
+    // binarycreator of the Windows hosts appends the ".exe" suffix to
+    // the output name when it is missing, so the platform-specific
+    // suffix is part of the qifOut value (the INSTALLER_FULL_NAME
+    // naming of the self-deploy config).
     const QString qifOut = QuasarAppUtils::Params::getArg("qifOut");
     if (qifOut.size()) {
         name = qifOut;

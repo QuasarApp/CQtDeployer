@@ -113,6 +113,18 @@ public:
      */
     void setAppimageOut(const QString &newAppimageOut);
 
+    /**
+     * @brief dmgOut This method return output filePath to the DMG package
+     * @return output filePath to the DMG package
+     */
+    const QString &dmgOut() const;
+
+    /**
+     * @brief setDmgOut This method sets new value of the DMG output path.
+     * @param newDmgOut This is new value of the DMG output
+     */
+    void setDmgOut(const QString &newDmgOut);
+
 protected:
     void setKey(const QString &key);
 
@@ -144,6 +156,7 @@ private:
     QString _debOut;
     QString _zipOut;
     QString _appimageOut;
+    QString _dmgOut;
 
 };
 
