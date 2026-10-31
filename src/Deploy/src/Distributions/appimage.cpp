@@ -35,6 +35,25 @@ bool isElfFile(const QString &file) {
     return f.read(4) == QByteArray("\x7f" "ELF", 4);
 }
 
+/**
+ * @brief findAppImageTool This method returns the path of the
+ *  appimagetool executable of the @a env environment (issue #898).
+ *  The appimagetool wrapper script is preferred; when the wrapper is
+ *  missing or is not executable (for example the executable bit was
+ *  lost during the archive extraction of the CQtDeployer package) the
+ *  appimagetool.AppImage AppImage of the AppImage folder is used
+ *  directly (the AppImage runtime requires the FUSE support of the
+ *  host, the wrapper script provides the FUSE-less fallback).
+ */
+QString findAppImageTool(const Envirement &env) {
+    const auto tool = DeployCore::findProcess(env.concatEnv(), "appimagetool");
+    if (!tool.isEmpty()) {
+        return tool;
+    }
+
+    return DeployCore::findProcess(env.concatEnv(), "appimagetool.AppImage");
+}
+
 } // namespace
 
 AppImage::AppImage(FileManager *fileManager)
@@ -233,8 +252,7 @@ Envirement AppImage::toolKitEnv() const {
 }
 
 bool AppImage::isAvailable() const {
-    auto tool = DeployCore::findProcess(toolKitEnv().concatEnv(), "appimagetool");
-    return !tool.isEmpty();
+    return !findAppImageTool(toolKitEnv()).isEmpty();
 }
 
 QProcessEnvironment AppImage::processEnvirement() const {
@@ -245,7 +263,7 @@ QList<SystemCommandData> AppImage::runCmd() {
     QList<SystemCommandData> res;
     for (const auto &inout: std::as_const(inouts)) {
 
-        auto tool = DeployCore::findProcess(toolKitEnv().concatEnv(), "appimagetool");
+        auto tool = findAppImageTool(toolKitEnv());
         if (tool.isEmpty()) {
             tool = "appimagetool";
         }

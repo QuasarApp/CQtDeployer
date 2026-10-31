@@ -93,3 +93,9 @@ host has no FUSE support (for example the minimal container images), the
 wrapper script runs the tool in the `--appimage-extract-and-run` mode of
 the AppImage runtime: the tool is extracted to a temporary directory and
 executed from there.
+
+When the wrapper script is missing or is not executable (for example the
+executable bit was lost during the extraction of the CQtDeployer package
+archive), the cqtdeployer falls back to the `appimagetool.AppImage` tool
+of the `AppImage` folder directly (the FUSE support of the host is
+required in this case).
