@@ -241,23 +241,23 @@ jobs:
         overwrite: true
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
-    - name: Create Release and Upload Assets AppImage
-      # The appimage option of the flat self-deploy config
-      # (CQtDeployerSingle.json) creates the AppImage package of the
-      # CQtDeployer self package with the bundled appimagetool (issue
-      # #898). The appimage option is available on the Linux host
-      # platforms only, so the AppImage asset exists on the Linux
-      # runners only.
-      if: runner.os == 'Linux'
-      uses: svenstaro/upload-release-action@v2
-      with:
-        tag: v${{ env.CQT_DEPLOYER_VERSION }}
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: Distro/${{ env.BASE_FULL_NAME }}.AppImage
-        prerelease: true
-        asset_name: ${{ env.BASE_FULL_NAME }}.AppImage
-        overwrite: true
-        body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
+    # - name: Create Release and Upload Assets AppImage
+    #   # The appimage option of the flat self-deploy config
+    #   # (CQtDeployerSingle.json) creates the AppImage package of the
+    #   # CQtDeployer self package with the bundled appimagetool (issue
+    #   # #898). The appimage option is available on the Linux host
+    #   # platforms only, so the AppImage asset exists on the Linux
+    #   # runners only.
+    #   if: runner.os == 'Linux'
+    #   uses: svenstaro/upload-release-action@v2
+    #   with:
+    #     tag: v${{ env.CQT_DEPLOYER_VERSION }}
+    #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+    #     file: Distro/${{ env.BASE_FULL_NAME }}.AppImage
+    #     prerelease: true
+    #     asset_name: ${{ env.BASE_FULL_NAME }}.AppImage
+    #     overwrite: true
+    #     body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
     - name: Create Release and Upload Assets Snap
       if: runner.os == 'Linux'
