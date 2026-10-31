@@ -125,16 +125,28 @@ QList<SystemCommandData> QIF::runCmd() {
         cmd.arguments.push_back(customFormat);
     }
 
-#ifdef Q_OS_MACOS
-    // The Qt Installer Framework binarycreator signs the generated app
-    // bundle of the macOS hosts with the code signing identity of the
-    // -s option (issue #865): the Mach-O rewrite of the deployed
-    // binaries (issue #166) invalidates the original code signature, so
-    // the installer bundle is signed by the binarycreator with the
-    // specified identity. The "-" identity value creates the ad-hoc
-    // signature without the signing certificate.
+    // The code signing of the generated app bundle of the macOS hosts
+    // (issue #865): the Mach-O rewrite of the deployed binaries
+    // (issue #166) invalidates the original code signature, so the
+    // installer bundle is signed with the identity of the qifSign
+    // option. The Qt Installer Framework binarycreator signs the bundle
+    // with the -s (signing identity) option, but its command line parser
+    // rejects the identity values that start with the "-" character (the
+    // "startsWith('-')" guard of the binarycreator main function of the
+    // qtproject/installer-framework repository, present in all the
+    // released versions including the latest): the ad-hoc codesign
+    // identity "-" cannot be passed to the binarycreator, so the bundle
+    // with the ad-hoc identity is signed by the cqtdeployer with the
+    // codesign tool after the bundle is created - the same
+    // "codesign --force --deep --sign <identity> <bundle>" command the
+    // binarycreator runs internally (issue #865). The "-" identity value
+    // creates the ad-hoc signature without the signing certificate.
     const QString signIdentity = QuasarAppUtils::Params::getArg("qifSign");
-    if (signIdentity.size()) {
+#ifdef Q_OS_MACOS
+    if (signIdentity.size() && !signIdentity.startsWith(QLatin1Char('-'))) {
+        // The identity without the leading "-" character is passed to
+        // the -s (signing identity) option of the binarycreator
+        // (issue #865).
         cmd.arguments.push_back("-s");
         cmd.arguments.push_back(signIdentity);
     }
@@ -142,7 +154,7 @@ QList<SystemCommandData> QIF::runCmd() {
     // The -s (signing identity) option of the binarycreator is available
     // on the macOS hosts only, the option is ignored on the other
     // platforms (issue #865).
-    if (!QuasarAppUtils::Params::getArg("qifSign").isEmpty()) {
+    if (signIdentity.size()) {
         qWarning() << "The qifSign option is available on the macOS hosts only, "
                     "the option is ignored on the current platform (issue #865).";
     }
@@ -150,7 +162,28 @@ QList<SystemCommandData> QIF::runCmd() {
 
     cmd.arguments += "-v";
 
-    return {cmd};
+    QList<SystemCommandData> commands = {cmd};
+
+#ifdef Q_OS_MACOS
+    if (signIdentity.size() && signIdentity.startsWith(QLatin1Char('-'))) {
+        // The identity with the leading "-" character (the ad-hoc "-"
+        // value of the codesign tool) cannot be passed to the binarycreator
+        // (its command line parser rejects it, issue #865), the bundle is
+        // signed by the codesign step after the binarycreator.
+        SystemCommandData signCmd;
+        signCmd.command = QStringLiteral("codesign");
+        signCmd.arguments = {
+            QStringLiteral("--force"),
+            QStringLiteral("--deep"),
+            QStringLiteral("--sign"),
+            signIdentity,
+            installerFile()
+        };
+        commands.append(signCmd);
+    }
+#endif
+
+    return commands;
 }
 
 bool QIF::deployTemplate(PackageControl &pkg) {
