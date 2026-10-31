@@ -766,11 +766,10 @@ void MacOSTest::dmgQifToolsCheck() {
                "CQT_DEPLOYER_SELF_DEPLOY_CONFIG definition is not set";
 #endif
 
-    // The package layout the QIF distribution (the dmg option is an
-    // alias for the qtifw option, issue #884) stages in the target
-    // directory for the flat self-deploy package: the executable and
-    // the QIF tools folder (the extraData entry) in the same package
-    // (issue #885).
+    // The package layout the QIF distribution (the qtifw option)
+    // stages in the target directory for the flat self-deploy package:
+    // the executable and the QIF tools folder (the extraData entry) in
+    // the same package (issue #885).
     const auto dir = _tmp.path();
     const auto srcDir = dir + "/src";
     const auto targetDir = dir + "/dist";
@@ -793,10 +792,12 @@ void MacOSTest::dmgQifToolsCheck() {
     const auto previousConfig = DeployCore::_config;
     DeployCore::_config = &cfg;
 
-    // The dmg alias: the name of the Qt Installer Framework installer
-    // is taken from the qifOut value of the deployment parameters
-    // (the same way the qtifw option names it, issue #884).
-    QuasarAppUtils::Params::setEnable("dmg", true);
+    // The qtifw option: the name of the Qt Installer Framework
+    // installer is taken from the qifOut value of the deployment
+    // parameters. The dmg option is the DMG backend (the hdiutil tool
+    // of the macOS system) now, the old alias for the qtifw option
+    // (issue #884) is removed (issue #899).
+    QuasarAppUtils::Params::setEnable("qtifw", true);
     QuasarAppUtils::Params::setArg("qifOut", "CQtDeployer.dmg");
 
     FileManager fm;
@@ -821,9 +822,9 @@ void MacOSTest::dmgQifToolsCheck() {
              qPrintable("installerbase is not staged into the package data "
                          "(issue #885): " + data + "/QIF/installerbase"));
 
-    // The dmg alias names the installer by the qifOut value (on the
-    // macOS hosts the binarycreator appends the .app suffix to the
-    // installer name, issue #738).
+    // The QIF distribution names the installer by the qifOut value of
+    // the deployment parameters (on the macOS hosts the binarycreator
+    // appends the .app suffix to the installer name, issue #738).
     const auto outFiles = qif.outPutFiles();
     QCOMPARE(outFiles.size(), 1);
 #ifdef Q_OS_MACOS
@@ -836,7 +837,7 @@ void MacOSTest::dmgQifToolsCheck() {
     QVERIFY(qif.removeTemplate());
     QVERIFY(!QDir(targetDir + "/defaultQIFWTemplate").exists());
 
-    QuasarAppUtils::Params::setEnable("dmg", false);
+    QuasarAppUtils::Params::setEnable("qtifw", false);
     QuasarAppUtils::Params::setArg("qifOut", QString());
     DeployCore::_config = previousConfig;
 }

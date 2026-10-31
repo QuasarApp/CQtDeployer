@@ -28,7 +28,7 @@ cmake_minimum_required(VERSION 3.18)
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
 
-set(TEST_CLASSES AppImage DeployConfig DeployCore DistroModule DistroStruct Envirement
+set(TEST_CLASSES AppImage DeployConfig DeployCore Dmg DistroModule DistroStruct Envirement
     FileManager IgnoreRule LibInfo MacOS PathUtils Pe Qifw TargetInfo ZipCompresser)
 
 # The deploy step of the test targets runs the cqtdeployer tool with the
@@ -99,6 +99,16 @@ target_compile_definitions(${PROJECT_NAME}-tests-AppImage PRIVATE
 # so the AppImage test target depends on it explicitly - the appimage
 # distribution is then tested on every Linux host.
 add_dependencies(testAppImage copyAppImage)
+
+# The Dmg test runs the cqtdeployer executable of the current build
+# tree (not the stable release installed by the CI action), so it
+# verifies the code under review (issue #899). The DMG packages are
+# created with the hdiutil tool of the macOS system (no bundled tools,
+# the copy targets are not needed), on the other host platforms the
+# test verifies the warning of the skipped option only.
+target_compile_definitions(${PROJECT_NAME}-tests-Dmg PRIVATE
+    DMG_TEST_CQT_DEPLOYER_EXE="$<TARGET_FILE:${PROJECT_NAME}>"
+    DMG_TEST_QMAKE="${QT_QMAKE_EXECUTABLE}")
 
 # The self-deploy configs of the build (the configured CQtDeployer.json
 # and CQtDeployerSingle.json of the source tree, see the configure_file_in
