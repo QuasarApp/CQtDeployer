@@ -206,16 +206,16 @@ jobs:
       # .dmg file of the Distro folder, the same way the deb/zip
       # artifacts are created, issue #899). The md/macOS.md page
       # documents the download of this CQtDeployer_*_dmg asset.
-      if: runner.os == 'macOS'
-      uses: svenstaro/upload-release-action@v2
-      with:
-        tag: v${{ env.CQT_DEPLOYER_VERSION }}
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: Distro/${{ env.BASE_FULL_NAME }}.dmg
-        prerelease: true
-        asset_name: ${{ env.BASE_FULL_NAME }}.dmg
-        overwrite: true
-        body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
+      # if: runner.os == 'macOS'
+      # uses: svenstaro/upload-release-action@v2
+      # with:
+      #   tag: v${{ env.CQT_DEPLOYER_VERSION }}
+      #   repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #   file: Distro/${{ env.BASE_FULL_NAME }}.dmg
+      #   prerelease: true
+      #   asset_name: ${{ env.BASE_FULL_NAME }}.dmg
+      #   overwrite: true
+      #   body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
     - name: Create Release and Upload Assets Deb
       if: runner.os == 'Linux'
