@@ -197,7 +197,7 @@ jobs:
         overwrite: true
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
-    - name: Create Release and Upload Assets DMG (macOS)
+      # - name: Create Release and Upload Assets DMG (macOS)
       # The DMG package of the flat single self-deploy config (the
       # ready-to-use CQtDeployer application: the executable, the QIF
       # tools, the AppImage tools and the libraries), created by the
