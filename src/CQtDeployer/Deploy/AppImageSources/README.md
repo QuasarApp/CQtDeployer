@@ -23,12 +23,13 @@ the type-2 based builds), so it cannot create the AppImage packages.
 
 The CMake build (`src/CQtDeployer/CMakeLists.txt`, target `copyAppImage`)
 copies the platform-matching `appimagetool.AppImage` from this folder and
-the wrapper script (`binaries/appimagetool`) into `Deploy/AppImage`, which
-is bundled into the installer (package `QIF`) and the flat zip packages,
-and into the build tree next to the built executable (development builds).
-The wrapper script starts the AppImage directly and falls back to the
-`--appimage-extract-and-run` mode of the AppImage runtime when the host
-has no FUSE support, so the tool works on the FUSE-less hosts as well.
+the wrapper script (`appimagetool`) into `Deploy/AppImage`, which is
+bundled into the installer (package `QIF`) and the flat zip packages on
+the Linux hosts only, and into the build tree next to the built
+executable (development builds). The wrapper script starts the AppImage
+directly and falls back to the `--appimage-extract-and-run` mode of the
+AppImage runtime when the host has no FUSE support, so the tool works on
+the FUSE-less hosts as well.
 
 The `Deploy/AppImage` folder is tracked in the repository (it is NOT
 git-ignored), so changes of the staged binaries are visible in the git

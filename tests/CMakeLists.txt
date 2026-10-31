@@ -97,8 +97,12 @@ target_compile_definitions(${PROJECT_NAME}-tests-AppImage PRIVATE
 # script from the repository (issue #898). The copyAppImage target is not
 # part of the `all` target and the CI runs the `test` target separately,
 # so the AppImage test target depends on it explicitly - the appimage
-# distribution is then tested on every Linux host.
-add_dependencies(testAppImage copyAppImage)
+# distribution is then tested on every Linux host (the AppImage tool is
+# a Linux-only tool, the copyAppImage target exists on the Linux hosts
+# only, issue #898).
+if (UNIX AND NOT APPLE)
+    add_dependencies(testAppImage copyAppImage)
+endif()
 
 # The self-deploy configs of the build (the configured CQtDeployer.json
 # and CQtDeployerSingle.json of the source tree, see the configure_file_in

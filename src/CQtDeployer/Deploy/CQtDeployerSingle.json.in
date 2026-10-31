@@ -1,5 +1,5 @@
 {
-    "extraData": ["./QIFW/QIF", "./AppImage"],
+    "extraData": ["@DEPLOY_EXTRA_DATA@"],
     "bin": [
         "src/CQtDeployer/CQtDeployer",
         "src/CQtDeployer/CQtDeployer.exe"
@@ -24,8 +24,10 @@
     "deb": true,
     "qif": false,
     "zip": true,
+    "appimage": true,
     "debOut": "@BASE_FULL_NAME@.deb",
     "zipOut": "@BASE_FULL_NAME@.zip",
+    "appimageOut": "@BASE_FULL_NAME@.AppImage",
     "ignoreEnv": [
          "@CMAKE_SOURCE_DIR@/Distro"
         ],
