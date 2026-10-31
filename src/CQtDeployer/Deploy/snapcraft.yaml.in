@@ -7,12 +7,18 @@
 
 name: cqtdeployer # you probably want to 'snapcraft register <name>'
 version: '@CQT_DEPLOYER_VERSION@'
+title: CQtDeployer
 summary: deploy your qt or c/c++ projects # 79 char long summary
 description: |
   Console app for deploy qt libs.
   Key differences of this program
   Performance-this program deploys the application several times faster (up to 10 seconds)
   Flexibility-this application has flags that will help you configure the deployment as you need and your project
+contact: https://github.com/QuasarApp/CQtDeployer
+issues: https://github.com/QuasarApp/CQtDeployer/issues
+source-code: https://github.com/QuasarApp/CQtDeployer
+website: https://quasarapp.github.io/CQtDeployer/
+license: LGPL-3.0
 
 grade: stable # must be 'stable' to release into candidate/stable channels
 confinement: strict # use 'strict' once you have the right plugs and slots
@@ -35,29 +41,32 @@ parts:
     source: Distro/CQtDeployer_@CQT_DEPLOYER_VERSION@_@CMAKE_SYSTEM_NAME@_@CMAKE_SYSTEM_PROCESSOR@.zip
 
     stage-packages:
+      # The stage-packages cover only the runtime dependencies of the QIF
+      # GUI tools (binarycreator + installerbase, see QIF/) and of the
+      # console app. No GPU libraries are staged: the GPU support of the
+      # snap must be provided by a content interface, not by the bundled
+      # mesa drivers (issue #903, https://ubuntu.com/frame/docs/22/how-to/use-snap-graphics/).
+      # libwayland-cursor0, libxcb-xinerama0, libxcb-glx0 and libxext6 are
+      # not linked by any file of the snap and were reported as unused
+      # libraries by the linter (issue #903).
       - bash
       - libfreetype6
       - libpng16-16
       - dpkg
-      - libwayland-cursor0
       - libxcb-icccm4
       - libxcb-image0
       - libxcb-keysyms1
       - libxcb-render-util0
-      - libxcb-xinerama0
       - libfontconfig1
-      - libxcb-glx0
       - libx11-xcb1
       - libxcb-randr0
       - libxcb-shape0
       - libxcb-sync1
       - libxcb-xfixes0
       - libxcb-xkb1
-      - libxext6
       - libx11-6
       - libxkbcommon-x11-0
       - libxkbcommon0
-      - libgl1-mesa-glx
 
     after: [ cqt-meta ]
 
