@@ -47,6 +47,7 @@ private:
                             int *exitCode, QString *output);
     QString distDirListing() const;
     static bool appImageIsValid(const QFileInfo &appImage);
+    QString extractAppImageDir(const QFileInfo &appImage, const QString &dir) const;
 
     QTemporaryDir _tmp;
     QString _deployerExe;
