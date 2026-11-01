@@ -94,34 +94,9 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Install CQtDeployer
-      # The release bundles the Qt Installer Framework tools (the QIF
-      # folder next to the executable, issue #885) into the macOS
-      # package, so the installed tool finds the binarycreator and
-      # creates the QIFW installer of the self-deploy config on the
-      # macOS hosts (issue #884). The main branch of the action also
-      # restores the executable bit of the bundled QIF tools after the
-      # zip extraction (QuasarApp/cqtdeployer-install-action#9).
-      #
-      # TEMPORARY (issue #910): the deploy step needs a cqtdeployer with
-      # the DMG and the AppImage backends (issues #898, #899) to create
-      # the .dmg and the .AppImage packages of the flat self-deploy
-      # config, but the latest stable release (the v1.6.x line) does not
-      # contain these backends, so the step installs the 1.7 pre-release
-      # (the "version" input of the action) instead of the latest stable
-      # release. The node-stream-zip extraction of the
-      # release-downloader strips the executable bit of every file (the
-      # extraction is 0644), so the step also uses the task_898 branch
-      # of the action, which restores the executable bit of the bundled
-      # AppImage tools (QuasarApp/cqtdeployer-install-action#10) -
-      # without this fix the appimage distribution is skipped and the
-      # .AppImage asset is not created. After the 1.7 line is merged
-      # into the stable line and the PR is merged into the main branch
-      # of the action, go back to the
-      # QuasarApp/cqtdeployer-install-action@main without the "version"
-      # and the "latest" inputs.
       uses: QuasarApp/cqtdeployer-install-action@task_898
       with:
-        version: v1.7.66.f63da3f9
+        version: v1.7.67.7de4fd33
         latest: false
 
     - name: ccache
