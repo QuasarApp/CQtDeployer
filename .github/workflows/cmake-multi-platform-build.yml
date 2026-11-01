@@ -96,7 +96,7 @@ jobs:
     - name: Install CQtDeployer
       uses: QuasarApp/cqtdeployer-install-action@task_898
       with:
-        version: v1.7.67.7de4fd33
+        version: v1.7.72.edd53600
         latest: false
 
     - name: ccache
