@@ -101,7 +101,28 @@ jobs:
       # macOS hosts (issue #884). The main branch of the action also
       # restores the executable bit of the bundled QIF tools after the
       # zip extraction (QuasarApp/cqtdeployer-install-action#9).
-      uses: QuasarApp/cqtdeployer-install-action@main
+      #
+      # TEMPORARY (issue #910): the deploy step needs a cqtdeployer with
+      # the DMG and the AppImage backends (issues #898, #899) to create
+      # the .dmg and the .AppImage packages of the flat self-deploy
+      # config, but the latest stable release (the v1.6.x line) does not
+      # contain these backends, so the step installs the 1.7 pre-release
+      # (the "version" input of the action) instead of the latest stable
+      # release. The node-stream-zip extraction of the
+      # release-downloader strips the executable bit of every file (the
+      # extraction is 0644), so the step also uses the task_898 branch
+      # of the action, which restores the executable bit of the bundled
+      # AppImage tools (QuasarApp/cqtdeployer-install-action#10) -
+      # without this fix the appimage distribution is skipped and the
+      # .AppImage asset is not created. After the 1.7 line is merged
+      # into the stable line and the PR is merged into the main branch
+      # of the action, go back to the
+      # QuasarApp/cqtdeployer-install-action@main without the "version"
+      # and the "latest" inputs.
+      uses: QuasarApp/cqtdeployer-install-action@task_898
+      with:
+        version: v1.7.66.f63da3f9
+        latest: false
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
@@ -197,7 +218,7 @@ jobs:
         overwrite: true
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
-      # - name: Create Release and Upload Assets DMG (macOS)
+    - name: Create Release and Upload Assets DMG (macOS)
       # The DMG package of the flat single self-deploy config (the
       # ready-to-use CQtDeployer application: the executable, the QIF
       # tools, the AppImage tools and the libraries), created by the
@@ -206,16 +227,16 @@ jobs:
       # .dmg file of the Distro folder, the same way the deb/zip
       # artifacts are created, issue #899). The md/macOS.md page
       # documents the download of this CQtDeployer_*_dmg asset.
-      # if: runner.os == 'macOS'
-      # uses: svenstaro/upload-release-action@v2
-      # with:
-      #   tag: v${{ env.CQT_DEPLOYER_VERSION }}
-      #   repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #   file: Distro/${{ env.BASE_FULL_NAME }}.dmg
-      #   prerelease: true
-      #   asset_name: ${{ env.BASE_FULL_NAME }}.dmg
-      #   overwrite: true
-      #   body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
+      if: runner.os == 'macOS'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        tag: v${{ env.CQT_DEPLOYER_VERSION }}
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: Distro/${{ env.BASE_FULL_NAME }}.dmg
+        prerelease: true
+        asset_name: ${{ env.BASE_FULL_NAME }}.dmg
+        overwrite: true
+        body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
     - name: Create Release and Upload Assets Deb
       if: runner.os == 'Linux'
@@ -241,23 +262,23 @@ jobs:
         overwrite: true
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
-    # - name: Create Release and Upload Assets AppImage
-    #   # The appimage option of the flat self-deploy config
-    #   # (CQtDeployerSingle.json) creates the AppImage package of the
-    #   # CQtDeployer self package with the bundled appimagetool (issue
-    #   # #898). The appimage option is available on the Linux host
-    #   # platforms only, so the AppImage asset exists on the Linux
-    #   # runners only.
-    #   if: runner.os == 'Linux'
-    #   uses: svenstaro/upload-release-action@v2
-    #   with:
-    #     tag: v${{ env.CQT_DEPLOYER_VERSION }}
-    #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-    #     file: Distro/${{ env.BASE_FULL_NAME }}.AppImage
-    #     prerelease: true
-    #     asset_name: ${{ env.BASE_FULL_NAME }}.AppImage
-    #     overwrite: true
-    #     body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
+    - name: Create Release and Upload Assets AppImage
+      # The appimage option of the flat self-deploy config
+      # (CQtDeployerSingle.json) creates the AppImage package of the
+      # CQtDeployer self package with the bundled appimagetool (issue
+      # #898). The appimage option is available on the Linux host
+      # platforms only, so the AppImage asset exists on the Linux
+      # runners only.
+      if: runner.os == 'Linux'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        tag: v${{ env.CQT_DEPLOYER_VERSION }}
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: Distro/${{ env.BASE_FULL_NAME }}.AppImage
+        prerelease: true
+        asset_name: ${{ env.BASE_FULL_NAME }}.AppImage
+        overwrite: true
+        body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
     - name: Create Release and Upload Assets Snap
       if: runner.os == 'Linux'
