@@ -62,6 +62,8 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |                             | Example: cqtdeployer qtifw" },                              |
 |                             | Starting with CQtDeployer 1.5 you can specify the path to your own installer template. |
 |                             | Examples: cqtdeployer -qtifw path/to/myCustom/qifw. More details can be found [here](QIF.md) |
+|   qif                       | DEPRECATED alias of the qtifw option (issue #738). The 'qif' option has been renamed to 'qtifw', please use the 'qtifw' option instead. The 'qif' option will be removed in a future release. |
+|   qifFromSystem             | Force the use of the system binarycreator tool of the Qt Installer Framework (from the PATH or from the Qt installation of the qmake) instead of the bundled QIF tools of the CQtDeployer package. |
 |   deb                       | Create the deb package for deployment programm"              |
 |                             | Example: cqtdeployer deb" },                              |
 |                             | you can specify the path to your own DEBIAN template. |
@@ -72,6 +74,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |   dmg                       | Create the DMG package for deployment programm (macOS only, issue #899) |
 |                             | The DMG packages are created with the hdiutil tool of the macOS system. |
 |                             | Example: cqtdeployer dmg. More details can be found [here](DMG.md) |
+|   zip                       | Create the ZIP archive for deployment program. More details can be found [here](ZIP.md) |
 |   deploySystem              | Deploys all libraries not recommended because there may be conflicts with system libraries  |
 |   noQt                      | Ignores the error of initialize of a qmake. Use only if your application does not use the qt framework. |
 |   allowEmptyPackages        | Allows configure the empty packages.                            |
@@ -89,7 +92,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |                             | Using this file, you can add the necessary options, |
 |                             | thereby simplifying  in the command invocation the console. |
 |                             | However, the parameters in Kansol have a higher priority than in the file.|
-|                             | For more info about this flag see [wiki](DeployConfigFile)                           |
+|                             | For more info about this flag see [wiki](DeployConfigFile.md)                           |
 |   -qmlDir [params]          | Qml data dir. For example -qmlDir ~/my/project/qml              |
 |   -qmake  [params]          | Qmake path. For example                                         |
 |                             | -qmake ~/Qt/5.14.0/gcc_64/bin/qmake                             |

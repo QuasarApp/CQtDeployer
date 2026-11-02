@@ -9,24 +9,24 @@ In this article i describe deploy processes of c++/qt application with cqtdeploy
 If you want maximum stability of your distribution and you want to run your application on different Distributions with a different versions then you need to use Qt from official [build](https://www.qt.io/download-open-source?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5).
 
 ## Case 
-In this case we deploy Qt GUI Application for Ubuntu 16.04,Ubuntu 18.04 and Ubuntu 20.04 ++.
+In this case we deploy a Qt GUI application for Ubuntu 20.04, Ubuntu 22.04 and Ubuntu 24.04.
 
-**If you want support all distributions begin from Ubuntu 16.04 you need build and deploy you application on the older distribution (in my case it is 16.04)**
+**If you want to support all the listed distributions you need to build and deploy your application on the oldest one (in my case it is 20.04).**
 
 ## Install CQtDeployer 
-If you want use system qt from your OS then install [classic](https://github.com/QuasarApp/CQtDeployer/releases/download/1.4.7/LinuxInstaller.run) version of the cqtdeployer.
+See the [Build and Install](Build-and-Install.md) page for the full installation instructions (the QIF installer, the AppImage, the deb and the snap packages and the GitHub Actions action).
+
+The quick way - download the [latest release](https://github.com/QuasarApp/CQtDeployer/releases) of the CQtDeployer installer and run it:
 
 ```bash
-wget https://github.com/QuasarApp/CQtDeployer/releases/download/1.4.7/LinuxInstaller.run
+wget https://github.com/QuasarApp/CQtDeployer/releases/download/<release-tag>/CQtDeployer_<version>_Linux_x86_64.run
+chmod +x CQtDeployer_<version>_Linux_x86_64.run
+./CQtDeployer_<version>_Linux_x86_64.run
 ```
 
-```
-chmod +x LinuxInstaller.run
-./LinuxInstaller.run
-```
 ![CQtDeployer Setup](https://user-images.githubusercontent.com/12465465/100077575-9280a600-2e53-11eb-8d9d-d184341cfa7c.png)
 
-Select latest stable version (1.4)
+Select the latest stable version.
 
 ![Screenshot from 2020-11-24 12-50-54](https://user-images.githubusercontent.com/12465465/100077707-bb08a000-2e53-11eb-9838-6f896af33105.png)
 
@@ -61,7 +61,7 @@ cqtdeployer -bin myexecutable
 * For Windows systems:
 
 ```bash
-cqtdeployer -bin myexecutable.exe -qmake C:/Qt/5.15.0/min_gw/bin/qmake.exe
+cqtdeployer -bin myexecutable.exe -qmake C:/Qt/6.10.3/mingw_64/bin/qmake.exe
 ```
 
 * For macOS systems:
@@ -73,7 +73,7 @@ cqtdeployer -bin myexecutable -qmake /Users/<user>/Qt/6.10.3/macos/bin/qmake
 * For crossplatform build (Linux -> Windows)
 
 ```bash
-cqtdeployer -bin myexecutable.exe -qmake ~/crossbuildet-Qt/5.15.0/min_gw/bin/qmake
+cqtdeployer -bin myexecutable.exe -qmake ~/crossbuild-Qt/6.10.3/win64_mingw/bin/qmake
 ```
 
 ## Extra options
@@ -96,7 +96,7 @@ If you application use qml, just add qmlDir option
 cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources
 ```
 
-If you want create simple installer for your application just add gif option.
+If you want create simple installer for your application just add qtifw option.
 ```
 cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qtifw
 ```

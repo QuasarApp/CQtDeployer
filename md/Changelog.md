@@ -389,7 +389,7 @@ Change log for all versions of the CQtDeployer.
 ## CQtDeployer 1.3.1
 - Fixed a task #191 (ignore command for plugins)
 - Fixed a task #192  (invalid paths when creating) 
-- Fixed absalute pathes of deployement file (see [confFile](DeployConfigFile))
+- Fixed absalute pathes of deployement file (see [confFile](DeployConfigFile.md))
 ---
 
 ## CQtDeployer 1.3.0
