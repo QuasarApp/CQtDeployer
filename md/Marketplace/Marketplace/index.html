@@ -362,6 +362,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -554,6 +560,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../GitHubActions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Actions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../Options/" class="md-nav__link">
         
   
@@ -674,6 +708,34 @@
     
   
     Custom scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Signing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code signing of the QtIFW installer
   
 
     
@@ -890,6 +952,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../DMG/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DMG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../arm/" class="md-nav__link">
         
   
@@ -1048,10 +1138,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_23" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_26" >
         
           
-          <label class="md-nav__link" for="__nav_3_23" id="__nav_3_23_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_26" id="__nav_3_26_label" tabindex="0">
             
   
   
@@ -1069,8 +1159,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_23_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_23">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_26_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_26">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1287,10 +1377,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#discription" class="md-nav__link">
+  <a href="#macos" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Discription
+        macOS:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#description" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Description
       
     </span>
   </a>
@@ -1391,10 +1492,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#discription" class="md-nav__link">
+  <a href="#macos" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Discription
+        macOS:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#description" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Description
       
     </span>
   </a>
@@ -1444,24 +1556,27 @@
 <p>Key differences of this program:
 * Performance: this program deploys the application several times faster (up to 10 seconds)
 * Flexibility: this application's got flags that help you to configure the deployment for your or your project's needs
-* Crossdeploy: this application's support windows and linux distrebutives, This means that you can use it not only to deploy a project for your platform, but also to deploy a project on Linux for Windows and vice versa.</p>
+* Crossdeploy: this application's support Windows, Linux and macOS distributions. This means that you can use it not only to deploy a project for your platform, but also to deploy a project on Linux for Windows and vice versa.</p>
 <h2 id="how-to-use">How to use<a class="headerlink" href="#how-to-use" title="Permanent link">&para;</a></h2>
 <p>Deploying a Qt or QML application is easy!
 To do this, simply install cqtdeployer on your computer and enter the following line:</p>
 <h4 id="linux">Linux:<a class="headerlink" href="#linux" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myApp<span class="w"> </span>-qmake<span class="w"> </span>/media/D/Qt/5.12.3/gcc_64/bin/qmake<span class="w"> </span>-qmlDir<span class="w"> </span>./
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myApp<span class="w"> </span>-qmake<span class="w"> </span>/path/to/Qt/6.10.3/gcc_64/bin/qmake<span class="w"> </span>-qmlDir<span class="w"> </span>./
 </code></pre></div>
 <h4 id="windows">Windows:<a class="headerlink" href="#windows" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code>%cqtdeployer%<span class="w"> </span>-bin<span class="w"> </span>myApp.exe<span class="w"> </span>-qmake<span class="w"> </span>/media/D/Qt/5.12.3/gcc_64/bin/qmake.exe<span class="w"> </span>-qmlDir<span class="w"> </span>./
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myApp.exe<span class="w"> </span>-qmake<span class="w"> </span>C:/Qt/6.10.3/mingw_64/bin/qmake.exe<span class="w"> </span>-qmlDir<span class="w"> </span>./
 </code></pre></div>
-<h4 id="discription">Discription<a class="headerlink" href="#discription" title="Permanent link">&para;</a></h4>
+<h4 id="macos">macOS:<a class="headerlink" href="#macos" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myApp<span class="w"> </span>-qmake<span class="w"> </span>/Users/&lt;user&gt;/Qt/6.10.3/macos/bin/qmake<span class="w"> </span>-qmlDir<span class="w"> </span>./
+</code></pre></div>
+<h4 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h4>
 <ul>
 <li>-bin -  this is option for set the path to executable files.</li>
 <li>-qmake - this is option for set the path to qmake with which the application was created.</li>
 <li>-qmlDir - this is option for set the path to folder with qml files of application.</li>
 </ul>
 <h2 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h2>
-<p>You can download the latest version of the CQtDeployer <a href="https://github.com/QuasarApp/CQtDeployer/releases">here</a> for Windows and linux platforms.
+<p>You can download the latest version of the CQtDeployer <a href="https://github.com/QuasarApp/CQtDeployer/releases">here</a> for the Windows, Linux and macOS platforms.
 Or use the snap version for servers without gui.</p>
 <p><a href="https://snapcraft.io/cqtdeployer"><img alt="Get it from the Snap Store" src="https://snapcraft.io/static/images/badges/en/snap-store-black.svg" /></a></p>
 

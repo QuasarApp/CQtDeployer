@@ -372,6 +372,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -564,6 +570,34 @@
   
   
     <li class="md-nav__item">
+      <a href="md/GitHubActions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Actions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="md/Options/" class="md-nav__link">
         
   
@@ -684,6 +718,34 @@
     
   
     Custom scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="md/Signing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code signing of the QtIFW installer
   
 
     
@@ -900,6 +962,34 @@
   
   
     <li class="md-nav__item">
+      <a href="md/DMG/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DMG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="md/arm/" class="md-nav__link">
         
   
@@ -1058,10 +1148,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_23" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_26" >
         
           
-          <label class="md-nav__link" for="__nav_3_23" id="__nav_3_23_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_26" id="__nav_3_26_label" tabindex="0">
             
   
   
@@ -1079,8 +1169,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_23_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_23">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_26_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_26">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1270,6 +1360,7 @@
 <li>Linux <ul>
 <li>deb</li>
 <li>snap</li>
+<li>AppImage</li>
 <li>raw binaries</li>
 <li>installer</li>
 </ul>
@@ -1287,10 +1378,13 @@
 </li>
 </ul>
 <blockquote>
-<p><strong>Note:</strong> the Qt Installer Framework (QIF) installer is not available on
-macOS - the QIFW tools are not published for this platform, so the <code>qif</code>
-option is skipped gracefully on macOS hosts. See the
-<a href="md/macOS/">macOS documentation</a> for the details.</p>
+<p><strong>Note:</strong> the Qt Installer Framework tools are not published for macOS by
+the Qt company, but the CQtDeployer package bundles them for all supported
+platforms (the QIFW binaries are stored in the CQtDeployer repository,
+issue #867), so the <code>qtifw</code> option works on the macOS hosts as well (the
+installer is created as a <code>.app</code> bundle, it can be signed with the
+<code>qifSign</code> option). See the <a href="md/macOS/">macOS documentation</a> for the
+details.</p>
 </blockquote>
 <h2 id="supported-processors-architectures">Supported processors architectures:<a class="headerlink" href="#supported-processors-architectures" title="Permanent link">&para;</a></h2>
 <ul>
@@ -1345,10 +1439,17 @@ option is skipped gracefully on macOS hosts. See the
 <h2 id="build-and-install">Build and install<a class="headerlink" href="#build-and-install" title="Permanent link">&para;</a></h2>
 <p>See building and installation instructions on wiki <a href="md/Build-and-Install/">page</a></p>
 <h3 id="available-in-github-actions">Available in GitHub Actions<a class="headerlink" href="#available-in-github-actions" title="Permanent link">&para;</a></h3>
-<p>See https://github.com/marketplace/actions/setup-cqtdeployer</p>
+<p>CQtDeployer can be installed in your CI pipelines with the
+<a href="https://github.com/QuasarApp/cqtdeployer-install-action">cqtdeployer-install-action</a>
+action of the QuasarApp organization (the Linux x64/ARM64, the Windows x64
+and the macOS ARM64 runners; the latest stable release is installed by
+default):</p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install CQtDeployer</span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">QuasarApp/setup-cqtdeployer@v1.0.0</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">QuasarApp/cqtdeployer-install-action@v1.2.3</span>
 </code></pre></div>
+<p>To pin a specific release, set the <code>version</code> input to the desired release
+tag (for example <code>v1.6.2588</code>). See the <a href="md/GitHubActions/">GitHub Actions documentation</a>
+for the full description and the complete workflow example.</p>
 <h2 id="projects-using-cqtdeployer">Projects using CQtDeployer:<a class="headerlink" href="#projects-using-cqtdeployer" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="https://github.com/QAmigo/QAmigo">QAmigo</a> - Qt cross-platform serial port socket assistant for visualizing data.</li>
@@ -1362,7 +1463,7 @@ option is skipped gracefully on macOS hosts. See the
 <li><a href="https://github.com/MaxMalts/Online_Board">Online_Board</a> - This is a board that you can share with others.</li>
 </ul>
 <hr />
-<h3 id="check-out-our-documentation-for-more-information-here">Check out our documentation for more information: <a href="https://quasarapp.ddns.net:3031/docs/QuasarApp/CQtDeployer/latest/">here</a><a class="headerlink" href="#check-out-our-documentation-for-more-information-here" title="Permanent link">&para;</a></h3>
+<h3 id="check-out-our-documentation-for-more-information-here">Check out our documentation for more information: <a href="https://quasarapp.github.io/CQtDeployer/">here</a><a class="headerlink" href="#check-out-our-documentation-for-more-information-here" title="Permanent link">&para;</a></h3>
 <hr />
 <h2 id="thanks">Thanks<a class="headerlink" href="#thanks" title="Permanent link">&para;</a></h2>
 <ul>

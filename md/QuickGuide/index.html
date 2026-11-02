@@ -366,6 +366,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -568,10 +574,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#for-more-options-of-cqtdeploye-see-oficial-documentation" class="md-nav__link">
+  <a href="#for-more-options-of-cqtdeployer-see-the-official-documentation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        For more options of CQtDeploye see oficial documentation.
+        For more options of CQtDeployer see the official documentation.
       
     </span>
   </a>
@@ -635,6 +641,34 @@
     
   
     Install CQtDeployer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GitHubActions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Actions
   
 
     
@@ -775,6 +809,34 @@
     
   
     Custom scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Signing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code signing of the QtIFW installer
   
 
     
@@ -991,6 +1053,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../DMG/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DMG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../arm/" class="md-nav__link">
         
   
@@ -1149,10 +1239,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_23" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_26" >
         
           
-          <label class="md-nav__link" for="__nav_3_23" id="__nav_3_23_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_26" id="__nav_3_26_label" tabindex="0">
             
   
   
@@ -1170,8 +1260,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_23_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_23">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_26_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_26">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1368,10 +1458,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#for-more-options-of-cqtdeploye-see-oficial-documentation" class="md-nav__link">
+  <a href="#for-more-options-of-cqtdeployer-see-the-official-documentation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        For more options of CQtDeploye see oficial documentation.
+        For more options of CQtDeployer see the official documentation.
       
     </span>
   </a>
@@ -1438,7 +1528,7 @@ cp<span class="w"> </span>-R<span class="w"> </span>/Volumes/CQtDeployer/CQtDepl
 <p>Build your project on release mode.</p>
 </li>
 <li>
-<p>Deploy yor executable file.</p>
+<p>Deploy your executable file.</p>
 <ul>
 <li>
 <p>For Linux systems:
@@ -1447,7 +1537,7 @@ cp<span class="w"> </span>-R<span class="w"> </span>/Volumes/CQtDeployer/CQtDepl
 </li>
 <li>
 <p>For Windows systems:
-<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable.exe<span class="w"> </span>-qmake<span class="w"> </span>C:/Qt/5.15.0/min_gw/bin/qmake.exe
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable.exe<span class="w"> </span>-qmake<span class="w"> </span>C:/Qt/6.10.3/mingw_64/bin/qmake.exe
 </code></pre></div></p>
 </li>
 <li>
@@ -1457,7 +1547,7 @@ cp<span class="w"> </span>-R<span class="w"> </span>/Volumes/CQtDeployer/CQtDepl
 </li>
 <li>
 <p>For crossplatform build (Linux -&gt; Windows)
-<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable.exe<span class="w"> </span>-qmake<span class="w"> </span>~/crossbuildet-Qt/5.15.0/min_gw/bin/qmake
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable.exe<span class="w"> </span>-qmake<span class="w"> </span>~/crossbuild-Qt/6.10.3/win64_mingw/bin/qmake
 </code></pre></div></p>
 </li>
 </ul>
@@ -1488,7 +1578,7 @@ macOS hosts. The release artifact for macOS is a DMG archive. See the
 <div class="highlight"><pre><span></span><code>cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qtifw deploySystem
 </code></pre></div>
 <h3 id="if-you-have-any-problems-with-use-cqtdeployer-then-ask-you-questions-on-the-official-github-issues-page">If you have any problems with use cqtdeployer then ask you questions on the official github issues <a href="https://github.com/QuasarApp/CQtDeployer/issues">page</a>.<a class="headerlink" href="#if-you-have-any-problems-with-use-cqtdeployer-then-ask-you-questions-on-the-official-github-issues-page" title="Permanent link">&para;</a></h3>
-<h3 id="for-more-options-of-cqtdeploye-see-oficial-documentation">For more options of CQtDeploye see oficial <a href="https://github.com/QuasarApp/CQtDeployer/blob/main/md/en/Options.md">documentation</a>.<a class="headerlink" href="#for-more-options-of-cqtdeploye-see-oficial-documentation" title="Permanent link">&para;</a></h3>
+<h3 id="for-more-options-of-cqtdeployer-see-the-official-documentation">For more options of CQtDeployer see the official <a href="https://quasarapp.github.io/CQtDeployer/md/Options/">documentation</a>.<a class="headerlink" href="#for-more-options-of-cqtdeployer-see-the-official-documentation" title="Permanent link">&para;</a></h3>
 
 
 

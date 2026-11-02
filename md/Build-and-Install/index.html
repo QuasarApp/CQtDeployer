@@ -16,7 +16,7 @@
         <link rel="prev" href="../Guide/">
       
       
-        <link rel="next" href="../Options/">
+        <link rel="next" href="../GitHubActions/">
       
       
         
@@ -366,6 +366,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -657,6 +663,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#appimage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AppImage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#deb" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -695,10 +712,49 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#github-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GitHub Actions
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GitHubActions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Actions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -831,6 +887,34 @@
     
   
     Custom scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Signing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code signing of the QtIFW installer
   
 
     
@@ -1047,6 +1131,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../DMG/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DMG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../arm/" class="md-nav__link">
         
   
@@ -1205,10 +1317,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_23" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_26" >
         
           
-          <label class="md-nav__link" for="__nav_3_23" id="__nav_3_23_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_26" id="__nav_3_26_label" tabindex="0">
             
   
   
@@ -1226,8 +1338,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_23_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_23">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_26_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_26">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1457,6 +1569,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#appimage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AppImage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#deb" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1495,6 +1618,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#github-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GitHub Actions
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1517,28 +1651,107 @@
 
 <h1 id="install-cqtdeployer">Install CQtDeployer<a class="headerlink" href="#install-cqtdeployer" title="Permanent link">&para;</a></h1>
 <p>You can download the latest version of the application <a href="https://github.com/QuasarApp/CQtDeployer/releases">here</a>.</p>
+<p>The release assets follow the naming convention <code>CQtDeployer_&lt;version&gt;_&lt;platform&gt;.&lt;extension&gt;</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Platform</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CQtDeployer_&lt;version&gt;_Linux_x86_64.run</code></td>
+<td>Linux</td>
+<td>The Qt Installer Framework installer of the CQtDeployer distribution</td>
+</tr>
+<tr>
+<td><code>CQtDeployer_&lt;version&gt;_Windows_AMD64.exe</code></td>
+<td>Windows</td>
+<td>The Qt Installer Framework installer of the CQtDeployer distribution</td>
+</tr>
+<tr>
+<td><code>CQtDeployer_&lt;version&gt;_Linux_x86_64.AppImage</code></td>
+<td>Linux</td>
+<td>The AppImage of the CQtDeployer distribution (starting with CQtDeployer 1.7)</td>
+</tr>
+<tr>
+<td><code>CQtDeployer_&lt;version&gt;_Linux_x86_64.deb</code></td>
+<td>Linux</td>
+<td>The Debian package of the CQtDeployer distribution</td>
+</tr>
+<tr>
+<td><code>CQtDeployer_&lt;version&gt;_Linux_x86_64.snap</code></td>
+<td>Linux</td>
+<td>The Snap package of the CQtDeployer distribution</td>
+</tr>
+<tr>
+<td><code>CQtDeployer_&lt;version&gt;_Linux_x86_64.zip</code></td>
+<td>Linux</td>
+<td>The raw binary distribution of CQtDeployer (the executable, the QIF tools, the AppImage tools and the libraries)</td>
+</tr>
+<tr>
+<td><code>CQtDeployer_&lt;version&gt;_Windows_AMD64.zip</code></td>
+<td>Windows</td>
+<td>The raw binary distribution of CQtDeployer</td>
+</tr>
+<tr>
+<td><code>CQtDeployer_&lt;version&gt;_Darwin_arm64.dmg</code></td>
+<td>macOS</td>
+<td>The DMG of the CQtDeployer distribution (starting with CQtDeployer 1.7, the previous releases used the <code>CQtDeployer_&lt;version&gt;_Darwin_arm64.app.zip</code> archive of the app bundle)</td>
+</tr>
+<tr>
+<td><code>CQtDeployer_&lt;version&gt;_Darwin_arm64.zip</code></td>
+<td>macOS</td>
+<td>The raw binary distribution of CQtDeployer</td>
+</tr>
+</tbody>
+</table>
+<p>The Qt Installer Framework tools and the AppImage tools are bundled within
+the CQtDeployer distribution for all supported platforms (the QIFW binaries
+are stored in the CQtDeployer repository, issue #867), so the <code>qtifw</code> option
+works on every host platform, the <code>appimage</code> option on the Linux hosts and
+the <code>dmg</code> option on the macOS hosts.</p>
 <h3 id="installer">Installer<a class="headerlink" href="#installer" title="Permanent link">&para;</a></h3>
 <ul>
-<li><a href="https://github.com/QuasarApp/CQtDeployer/releases">Download</a> CQtDeployer<em>.run or CQtDeployer</em>.exe</li>
+<li><a href="https://github.com/QuasarApp/CQtDeployer/releases">Download</a> <code>CQtDeployer_&lt;version&gt;_Linux_x86_64.run</code> or <code>CQtDeployer_&lt;version&gt;_Windows_AMD64.exe</code></li>
 </ul>
 <h4 id="install-without-gui">Install without gui<a class="headerlink" href="#install-without-gui" title="Permanent link">&para;</a></h4>
 <h5 id="linux">Linux<a class="headerlink" href="#linux" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code>chmod<span class="w"> </span>+x<span class="w"> </span>CQtDeployer_1.5.3.0_Installer_Linux64.run
-./CQtDeployer_1.5.3.0_Installer_Linux64.run<span class="w"> </span>install
+<div class="highlight"><pre><span></span><code>chmod<span class="w"> </span>+x<span class="w"> </span>CQtDeployer_&lt;version&gt;_Linux_x86_64.run
+./CQtDeployer_&lt;version&gt;_Linux_x86_64.run<span class="w"> </span>install
 </code></pre></div>
 <h5 id="windows">Windows<a class="headerlink" href="#windows" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code>CQtDeployer_1.5.3.0_Installer_Win64.exe<span class="w"> </span>install
+<div class="highlight"><pre><span></span><code>CQtDeployer_&lt;version&gt;_Windows_AMD64.exe<span class="w"> </span>install
 </code></pre></div>
 <h5 id="macos">macOS<a class="headerlink" href="#macos" title="Permanent link">&para;</a></h5>
-<p>Open the DMG file and move the <code>CQtDeployer.app</code> bundle into the <code>Applications</code> folder.</p>
-<div class="highlight"><pre><span></span><code>open<span class="w"> </span>CQtDeployer_*.dmg
+<p>Starting with CQtDeployer 1.7 the release asset for macOS is the DMG package
+(<code>CQtDeployer_&lt;version&gt;_Darwin_arm64.dmg</code>). Open the DMG file and move the
+<code>CQtDeployer.app</code> bundle into the <code>Applications</code> folder.</p>
+<div class="highlight"><pre><span></span><code>open<span class="w"> </span>CQtDeployer_&lt;version&gt;_Darwin_arm64.dmg
 cp<span class="w"> </span>-R<span class="w"> </span>/Volumes/CQtDeployer/CQtDeployer.app<span class="w"> </span>/Applications/
 </code></pre></div>
+<p>For the releases before 1.7 use the <code>CQtDeployer_&lt;version&gt;_Darwin_arm64.app.zip</code>
+archive: extract it and move the <code>CQtDeployer.app</code> bundle into the
+<code>Applications</code> folder.</p>
 <p>To run cqtdeployer from the command line, add a symbolic link to the bundle binary:</p>
 <div class="highlight"><pre><span></span><code>ln<span class="w"> </span>-s<span class="w"> </span>/Applications/CQtDeployer.app/Contents/MacOS/CQtDeployer<span class="w"> </span>/usr/local/bin/cqtdeployer
 </code></pre></div>
+<h3 id="appimage">AppImage<a class="headerlink" href="#appimage" title="Permanent link">&para;</a></h3>
+<p>Available from CQtDeployer 1.7. Extract the AppImage and run it directly:</p>
+<div class="highlight"><pre><span></span><code>chmod<span class="w"> </span>+x<span class="w"> </span>CQtDeployer_&lt;version&gt;_Linux_x86_64.AppImage
+./CQtDeployer_&lt;version&gt;_Linux_x86_64.AppImage
+</code></pre></div>
+<p>The AppImage requires the FUSE support of the host. On the hosts without the
+FUSE support (for example the minimal container images) extract the
+distribution and run the executable from the <code>bin</code> folder:</p>
+<div class="highlight"><pre><span></span><code>./CQtDeployer_&lt;version&gt;_Linux_x86_64.AppImage<span class="w"> </span>--appimage-extract
+<span class="nb">cd</span><span class="w"> </span>squashfs-root
+./bin/CQtDeployer
+</code></pre></div>
 <h3 id="deb">Deb<a class="headerlink" href="#deb" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>dpkg<span class="w"> </span>-i<span class="w"> </span>CQtDeployer_1.5.3.0_Linux64.deb
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>dpkg<span class="w"> </span>-i<span class="w"> </span>CQtDeployer_&lt;version&gt;_Linux_x86_64.deb
 </code></pre></div>
 <p><strong>Note</strong> the package name and links can be changed, please check <a href="https://github.com/QuasarApp/CQtDeployer/releases">Download</a> page before installation.</p>
 <h3 id="snap">Snap<a class="headerlink" href="#snap" title="Permanent link">&para;</a></h3>
@@ -1554,6 +1767,25 @@ Or starting with ubuntu 20.04 in the ubuntu application settings manager.</p>
 sudo<span class="w"> </span>snap<span class="w"> </span>connect<span class="w"> </span>cqtdeployer:removable-media
 sudo<span class="w"> </span>snap<span class="w"> </span>connect<span class="w"> </span>cqtdeployer:system-backup
 </code></pre></div>
+<h3 id="github-actions">GitHub Actions<a class="headerlink" href="#github-actions" title="Permanent link">&para;</a></h3>
+<p>To install CQtDeployer in the GitHub Actions pipelines use the
+<a href="https://github.com/QuasarApp/cqtdeployer-install-action">cqtdeployer-install-action</a>
+action of the QuasarApp organization. The action downloads the CQtDeployer
+release for the current runner (the Linux x64/ARM64, the Windows x64 and the
+macOS ARM64 runners), extracts it to a temporary folder and adds it to the
+<code>PATH</code> of the following steps:</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install CQtDeployer</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">QuasarApp/cqtdeployer-install-action@v1.2.3</span>
+</code></pre></div>
+<p>By default the latest stable release is installed. To pin a specific release,
+set the <code>version</code> input to the desired release tag:</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install a specific CQtDeployer version</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">QuasarApp/cqtdeployer-install-action@v1.2.3</span>
+<span class="w">  </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1.6.2588</span>
+</code></pre></div>
+<p>See the <a href="../GitHubActions/">GitHub Actions documentation</a> for the full
+description and the complete workflow example.</p>
 <hr />
 <h1 id="build-from-sources">Build from sources<a class="headerlink" href="#build-from-sources" title="Permanent link">&para;</a></h1>
 <h2 id="build-for-linux-using-official-qt-binaries">Build for Linux (using official qt binaries)<a class="headerlink" href="#build-for-linux-using-official-qt-binaries" title="Permanent link">&para;</a></h2>
@@ -1583,7 +1815,7 @@ git<span class="w"> </span>submodule<span class="w"> </span>update<span class="w
 </code></pre></div>
 </li>
 <li>
-<p>create installers and packages (requered installed cqtdeployer)</p>
+<p>create installers and packages (requires installed cqtdeployer)</p>
 <div class="highlight"><pre><span></span><code>make<span class="w"> </span>deploy<span class="w"> </span>
 </code></pre></div>
 </li>
@@ -1639,8 +1871,8 @@ git<span class="w"> </span>submodule<span class="w"> </span>update<span class="w
 <p><div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>build<span class="w"> </span>
 <span class="nb">cd</span><span class="w"> </span>build
 </code></pre></div>
-- SET PATH=C:/Qt/Tools/mingw810_64/bin;%PATH%
-- It is important to set up the qt environment.</p>
+- SET PATH=C:/Qt/Tools/mingw1310_64/bin;%PATH%
+- It is important to set up the qt environment (use the bin folder of the MinGW toolchain of your Qt installation, the CQtDeployer CI uses the <code>win64_mingw</code> build of Qt with the MinGW 13 toolchain).</p>
 </li>
 <li>
 <p>run cmake </p>
@@ -1649,12 +1881,12 @@ git<span class="w"> </span>submodule<span class="w"> </span>update<span class="w
 </li>
 <li>
 <p>build cqtdeployer </p>
-<div class="highlight"><pre><span></span><code>migw32-make<span class="w"> </span>-j8
+<div class="highlight"><pre><span></span><code>mingw32-make<span class="w"> </span>-j8
 </code></pre></div>
 </li>
 <li>
-<p>create installers and packages (requered installed cqtdeployer)</p>
-<div class="highlight"><pre><span></span><code>migw32-make<span class="w"> </span>deploy<span class="w"> </span>
+<p>create installers and packages (requires installed cqtdeployer)</p>
+<div class="highlight"><pre><span></span><code>mingw32-make<span class="w"> </span>deploy<span class="w"> </span>
 </code></pre></div>
 </li>
 </ul>
@@ -1753,13 +1985,13 @@ cmake<span class="w"> </span>..<span class="w"> </span>-DCMAKE_PREFIX_PATH<span 
         
         
           
-          <a href="../Options/" class="md-footer__link md-footer__link--next" aria-label="Next: Options">
+          <a href="../GitHubActions/" class="md-footer__link md-footer__link--next" aria-label="Next: GitHub Actions">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Options
+                GitHub Actions
               </div>
             </div>
             <div class="md-footer__button md-icon">

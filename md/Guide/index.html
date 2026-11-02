@@ -366,6 +366,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -677,6 +683,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../GitHubActions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Actions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../Options/" class="md-nav__link">
         
   
@@ -797,6 +831,34 @@
     
   
     Custom scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Signing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code signing of the QtIFW installer
   
 
     
@@ -1013,6 +1075,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../DMG/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DMG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../arm/" class="md-nav__link">
         
   
@@ -1171,10 +1261,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_23" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_26" >
         
           
-          <label class="md-nav__link" for="__nav_3_23" id="__nav_3_23_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_26" id="__nav_3_26_label" tabindex="0">
             
   
   
@@ -1192,8 +1282,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_23_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_23">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_26_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_26">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1453,17 +1543,17 @@
 <h2 id="recommendation">Recommendation<a class="headerlink" href="#recommendation" title="Permanent link">&para;</a></h2>
 <p>If you want maximum stability of your distribution and you want to run your application on different Distributions with a different versions then you need to use Qt from official <a href="https://www.qt.io/download-open-source?hsCtaTracking=9f6a2170-a938-42df-a8e2-a9f0b1d6cdce%7C6cb0de4f-9bb5-4778-ab02-bfb62735f3e5">build</a>.</p>
 <h2 id="case">Case<a class="headerlink" href="#case" title="Permanent link">&para;</a></h2>
-<p>In this case we deploy Qt GUI Application for Ubuntu 16.04,Ubuntu 18.04 and Ubuntu 20.04 ++.</p>
-<p><strong>If you want support all distributions begin from Ubuntu 16.04 you need build and deploy you application on the older distribution (in my case it is 16.04)</strong></p>
+<p>In this case we deploy a Qt GUI application for Ubuntu 20.04, Ubuntu 22.04 and Ubuntu 24.04.</p>
+<p><strong>If you want to support all the listed distributions you need to build and deploy your application on the oldest one (in my case it is 20.04).</strong></p>
 <h2 id="install-cqtdeployer">Install CQtDeployer<a class="headerlink" href="#install-cqtdeployer" title="Permanent link">&para;</a></h2>
-<p>If you want use system qt from your OS then install <a href="https://github.com/QuasarApp/CQtDeployer/releases/download/1.4.7/LinuxInstaller.run">classic</a> version of the cqtdeployer.</p>
-<div class="highlight"><pre><span></span><code>wget<span class="w"> </span>https://github.com/QuasarApp/CQtDeployer/releases/download/1.4.7/LinuxInstaller.run
+<p>See the <a href="../Build-and-Install/">Build and Install</a> page for the full installation instructions (the QIF installer, the AppImage, the deb and the snap packages and the GitHub Actions action).</p>
+<p>The quick way - download the <a href="https://github.com/QuasarApp/CQtDeployer/releases">latest release</a> of the CQtDeployer installer and run it:</p>
+<div class="highlight"><pre><span></span><code>wget<span class="w"> </span>https://github.com/QuasarApp/CQtDeployer/releases/download/&lt;release-tag&gt;/CQtDeployer_&lt;version&gt;_Linux_x86_64.run
+chmod<span class="w"> </span>+x<span class="w"> </span>CQtDeployer_&lt;version&gt;_Linux_x86_64.run
+./CQtDeployer_&lt;version&gt;_Linux_x86_64.run
 </code></pre></div>
-<p><div class="highlight"><pre><span></span><code>chmod +x LinuxInstaller.run
-./LinuxInstaller.run
-</code></pre></div>
-<img alt="CQtDeployer Setup" src="https://user-images.githubusercontent.com/12465465/100077575-9280a600-2e53-11eb-8d9d-d184341cfa7c.png" /></p>
-<p>Select latest stable version (1.4)</p>
+<p><img alt="CQtDeployer Setup" src="https://user-images.githubusercontent.com/12465465/100077575-9280a600-2e53-11eb-8d9d-d184341cfa7c.png" /></p>
+<p>Select the latest stable version.</p>
 <p><img alt="Screenshot from 2020-11-24 12-50-54" src="https://user-images.githubusercontent.com/12465465/100077707-bb08a000-2e53-11eb-9838-6f896af33105.png" /></p>
 <p>Done.</p>
 <p>If You use official qt build then you can use snap version of the cqtdeployer.</p>
@@ -1485,7 +1575,7 @@ sudo snap connect cqtdeployer:system-backup
 <ul>
 <li>For Windows systems:</li>
 </ul>
-<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable.exe<span class="w"> </span>-qmake<span class="w"> </span>C:/Qt/5.15.0/min_gw/bin/qmake.exe
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable.exe<span class="w"> </span>-qmake<span class="w"> </span>C:/Qt/6.10.3/mingw_64/bin/qmake.exe
 </code></pre></div>
 <ul>
 <li>For macOS systems:</li>
@@ -1495,7 +1585,7 @@ sudo snap connect cqtdeployer:system-backup
 <ul>
 <li>For crossplatform build (Linux -&gt; Windows)</li>
 </ul>
-<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable.exe<span class="w"> </span>-qmake<span class="w"> </span>~/crossbuildet-Qt/5.15.0/min_gw/bin/qmake
+<div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable.exe<span class="w"> </span>-qmake<span class="w"> </span>~/crossbuild-Qt/6.10.3/win64_mingw/bin/qmake
 </code></pre></div>
 <h2 id="extra-options">Extra options<a class="headerlink" href="#extra-options" title="Permanent link">&para;</a></h2>
 <p>If you use extra libraries, just add path for cqtdeployer to used libs.</p>
@@ -1507,7 +1597,7 @@ sudo snap connect cqtdeployer:system-backup
 <p>If you application use qml, just add qmlDir option</p>
 <div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>-bin<span class="w"> </span>myexecutable<span class="w"> </span>-libDir<span class="w"> </span>/PathToMyExtraLibs<span class="w"> </span>-recursiveDepth<span class="w"> </span><span class="m">5</span><span class="w"> </span>-qmlDir<span class="w"> </span>/path/to/my/qml/sources
 </code></pre></div>
-<p>If you want create simple installer for your application just add gif option.
+<p>If you want create simple installer for your application just add qtifw option.
 <div class="highlight"><pre><span></span><code>cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlDir /path/to/my/qml/sources qtifw
 </code></pre></div></p>
 <p>If cqtdeployer not found qmake then add the -qmake option to an invoke command.</p>

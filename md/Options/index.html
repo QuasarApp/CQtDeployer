@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://quasarapp.github.io/CQtDeployer/md/Options/">
       
       
-        <link rel="prev" href="../Build-and-Install/">
+        <link rel="prev" href="../GitHubActions/">
       
       
         <link rel="next" href="../DeployConfigFile/">
@@ -366,6 +366,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -538,6 +544,34 @@
     
   
     Install CQtDeployer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GitHubActions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Actions
   
 
     
@@ -911,6 +945,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../Signing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code signing of the QtIFW installer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../ExtraFiles/" class="md-nav__link">
         
   
@@ -1107,6 +1169,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../DMG/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DMG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../arm/" class="md-nav__link">
         
   
@@ -1265,10 +1355,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_23" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_26" >
         
           
-          <label class="md-nav__link" for="__nav_3_23" id="__nav_3_23_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_26" id="__nav_3_26_label" tabindex="0">
             
   
   
@@ -1286,8 +1376,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_23_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_23">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_26_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_26">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1753,6 +1843,14 @@
 <td>Examples: cqtdeployer -qtifw path/to/myCustom/qifw. More details can be found <a href="../QIF/">here</a></td>
 </tr>
 <tr>
+<td>qif</td>
+<td>DEPRECATED alias of the qtifw option (issue #738). The 'qif' option has been renamed to 'qtifw', please use the 'qtifw' option instead. The 'qif' option will be removed in a future release.</td>
+</tr>
+<tr>
+<td>qifFromSystem</td>
+<td>Force the use of the system binarycreator tool of the Qt Installer Framework (from the PATH or from the Qt installation of the qmake) instead of the bundled QIF tools of the CQtDeployer package.</td>
+</tr>
+<tr>
 <td>deb</td>
 <td>Create the deb package for deployment programm"</td>
 </tr>
@@ -1791,6 +1889,10 @@
 <tr>
 <td></td>
 <td>Example: cqtdeployer dmg. More details can be found <a href="../DMG/">here</a></td>
+</tr>
+<tr>
+<td>zip</td>
+<td>Create the ZIP archive for deployment program. More details can be found <a href="../ZIP/">here</a></td>
 </tr>
 <tr>
 <td>deploySystem</td>
@@ -1849,7 +1951,7 @@
 </tr>
 <tr>
 <td></td>
-<td>For more info about this flag see <a href="DeployConfigFile">wiki</a></td>
+<td>For more info about this flag see <a href="../DeployConfigFile/">wiki</a></td>
 </tr>
 <tr>
 <td>-qmlDir [params]</td>
@@ -2225,7 +2327,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../Build-and-Install/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Install CQtDeployer">
+          <a href="../GitHubActions/" class="md-footer__link md-footer__link--prev" aria-label="Previous: GitHub Actions">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2235,7 +2337,7 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Install CQtDeployer
+                GitHub Actions
               </div>
             </div>
           </a>
