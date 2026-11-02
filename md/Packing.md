@@ -15,7 +15,7 @@ By default the distribution have a one main package. You can configure it using 
 #### Example (Set new name for package)
 
 ```
-ctdeployer ... -name "MyPackage"
+cqtdeployer ... -name "MyPackage"
 ```
 
 If your distribution have a multiple executable files then you can be create a distribution with multiple package.
@@ -137,3 +137,5 @@ You can also extract the standard package template in order to override it if fo
 * [Qt Install Framework](QIF.md)
 * [ZIP Arhive](ZIP.md)
 * [DEB Package](DEB.md)
+* [AppImage Package](AppImage.md)
+* [DMG Package](DMG.md)

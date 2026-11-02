@@ -86,11 +86,13 @@ nav:
       - Quick guide: md/QuickGuide.md
       - How to deploy: md/Guide.md
       - Install CQtDeployer: md/Build-and-Install.md
+      - GitHub Actions: md/GitHubActions.md
       - Options: md/Options.md
       - Deployment file: md/DeployConfigFile.md
       - Qt Installer Framework: md/QIF.md
       - Environment variables: md/EnvironmentVariables.md
       - Custom scripts: md/CustomScripts.md
+      - Code signing of the QtIFW installer: md/Signing.md
       - Extra files: md/ExtraFiles.md
       - Default templates: md/ExtractDefaultsTemplates.md
       - Disabling shortcuts: md/DisableShortcats.md
@@ -98,6 +100,7 @@ nav:
       - ZIP: md/ZIP.md
       - DEB: md/DEB.md
       - AppImage: md/AppImage.md
+      - DMG: md/DMG.md
       - arm machines: md/arm.md
       - macOS: md/macOS.md
       - Compare features: md/CompareFeatures.md
