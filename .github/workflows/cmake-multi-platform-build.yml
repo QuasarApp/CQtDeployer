@@ -135,14 +135,11 @@ jobs:
       # x86_64).
       if: runner.os == 'Linux' && runner.arch == 'ARM64'
       shell: bash
+      # Each line of the literal run block is a separate shell command,
+      # the cmake configure arguments of the issue #918 bootstrap are
+      # therefore kept on the single line.
       run: |
-        cmake -B ${{ github.workspace }}/build-tool
-        -G Ninja
-        -DBUILD_SHARED_LIBS=ON
-        -DCQT_DEPLOYER_TESTS=OFF
-        -DCMAKE_PREFIX_PATH='${{ env.QT_ROOT_DIR }}'
-        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -S ${{ github.workspace }}
+        cmake -B ${{ github.workspace }}/build-tool -G Ninja -DBUILD_SHARED_LIBS=ON -DCQT_DEPLOYER_TESTS=OFF -DCMAKE_PREFIX_PATH='${{ env.QT_ROOT_DIR }}' -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }}
         cmake --build ${{ github.workspace }}/build-tool --config ${{ matrix.build_type }} --parallel 16
         mkdir -p ${{ runner.temp }}/cqt
         ln -sf ${{ github.workspace }}/build-tool/src/CQtDeployer/CQtDeployer ${{ runner.temp }}/cqt/cqtdeployer
