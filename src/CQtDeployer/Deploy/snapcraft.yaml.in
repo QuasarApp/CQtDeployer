@@ -59,7 +59,7 @@ parts:
     # See 'snapcraft plugins'
 
     plugin: dump
-    source: Distro/CQtDeployer_@CQT_DEPLOYER_VERSION@_@CMAKE_SYSTEM_NAME@_@CQT_DEPLOYER_ARCH@.zip
+    source: Distro/CQtDeployer_@CQT_DEPLOYER_VERSION@_@CMAKE_SYSTEM_NAME@_@CMAKE_SYSTEM_PROCESSOR@.zip
 
     stage-packages:
       # The full set of libraries of the snap is kept (issue #903, team

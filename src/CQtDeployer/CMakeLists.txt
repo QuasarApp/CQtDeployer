@@ -79,18 +79,13 @@ set(BASE_NAME "${CURRENT_PROJECT}_${CQT_DEPLOYER_VERSION}")
 string(TOLOWER ${BASE_NAME} SNAP_BASE_NAME)
 
 # The asset naming convention of the QuasarApp group is
-# CQtDeployer_<version>_<platform>_<arch>. The Linux ARM64 releases are
-# CQtDeployer_<version>_Linux_ARM64.* - the cqtdeployer-install-action
-# downloads the *_Linux_ARM64.zip asset on the ARM64 Linux runners
-# (QuasarApp/cqtdeployer-install-action), so the aarch64 processor name
-# of the ARM runners is normalized to ARM64 in the package names
-# (issue #918).
-set(CQT_DEPLOYER_ARCH "${CMAKE_SYSTEM_PROCESSOR}")
-if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64|arm64)$")
-    set(CQT_DEPLOYER_ARCH "ARM64")
-endif()
-
-set(BASE_FULL_NAME "${BASE_NAME}_${CMAKE_SYSTEM_NAME}_${CQT_DEPLOYER_ARCH}")
+# CQtDeployer_<version>_<platform>_<arch>. The default
+# CMAKE_SYSTEM_PROCESSOR name is kept in the arch part of the package
+# names, so the Linux ARM releases are
+# CQtDeployer_<version>_Linux_aarch64.* - the cqtdeployer-install-action
+# downloads the *_Linux_aarch64.zip asset on the ARM64 Linux runners
+# (QuasarApp/cqtdeployer-install-action, issue #918).
+set(BASE_FULL_NAME "${BASE_NAME}_${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}")
 
 set(INSTALLER_FULL_NAME "${BASE_FULL_NAME}${INSTALLER_SUFIX}")
 
@@ -228,8 +223,19 @@ add_custom_target(
     COMMENT "Copy the Qt Installer Framework ${QIFW_VERSION} binaries (${QIF_PLATFORM_DIR}) to ${QIF_DESTINATION_PATH}"
 )
 
-add_dependencies(deploy${CURRENT_PROJECT} copyQIFW)
-add_dependencies(deploy${CURRENT_PROJECT}Single copyQIFW)
+# The deploy targets are created by the addDeployFromCustomFile calls
+# above only when the cqtdeployer executable is on the PATH - without
+# the tool the function returns early and the targets do not exist (the
+# temporary ARM bootstrap of issue #918 configures the project before
+# the tool is built), so the dependencies are added only for the
+# existing targets.
+if(TARGET deploy${CURRENT_PROJECT})
+    add_dependencies(deploy${CURRENT_PROJECT} copyQIFW)
+endif()
+
+if(TARGET deploy${CURRENT_PROJECT}Single)
+    add_dependencies(deploy${CURRENT_PROJECT}Single copyQIFW)
+endif()
 
 # The appimagetool AppImage (issue #898) is stored in the repository for
 # every Linux platform (Deploy/AppImageSources/<platform>) because the
@@ -281,8 +287,15 @@ if (UNIX AND NOT APPLE)
         COMMENT "Stage the appimagetool AppImage (${APPIMAGE_PLATFORM_DIR}) to ${APPIMAGE_DESTINATION_PATH}"
     )
 
-    add_dependencies(deploy${CURRENT_PROJECT} copyAppImage)
-    add_dependencies(deploy${CURRENT_PROJECT}Single copyAppImage)
+    # The deploy targets exist only when the cqtdeployer executable is
+    # on the PATH (see the copyQIFW guard above, issue #918).
+    if(TARGET deploy${CURRENT_PROJECT})
+        add_dependencies(deploy${CURRENT_PROJECT} copyAppImage)
+    endif()
+
+    if(TARGET deploy${CURRENT_PROJECT}Single)
+        add_dependencies(deploy${CURRENT_PROJECT}Single copyAppImage)
+    endif()
 endif()
 
 
@@ -291,8 +304,14 @@ if (UNIX AND NOT APPLE)
     addDeploySnap(${CURRENT_PROJECT} "${CMAKE_SOURCE_DIR}/Distro/")
 
     if(TARGET snapcraft${CURRENT_PROJECT})
-        message("snap is depends of single deploy")
-        add_dependencies(snapcraft${CURRENT_PROJECT} "deploy${CURRENT_PROJECT}Single")
+        # The single deploy target exists only when the cqtdeployer
+        # executable is on the PATH (the temporary ARM bootstrap of
+        # issue #918 configures the project before the tool is built,
+        # the snapcraft target is created without it).
+        if(TARGET deploy${CURRENT_PROJECT}Single)
+            message("snap is depends of single deploy")
+            add_dependencies(snapcraft${CURRENT_PROJECT} "deploy${CURRENT_PROJECT}Single")
+        endif()
     endif()
 
     addReleaseSnap(${CURRENT_PROJECT} latest/edge)
