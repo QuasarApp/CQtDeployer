@@ -28,6 +28,7 @@ private slots:
     void copyFile();
     void copyFiles();
     void copyFolder();
+    void symlinkCopy();
     void saveLoad();
     void cp();
     void moveFile();
