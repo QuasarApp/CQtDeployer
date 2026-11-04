@@ -62,10 +62,19 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |                             | Example: cqtdeployer qtifw" },                              |
 |                             | Starting with CQtDeployer 1.5 you can specify the path to your own installer template. |
 |                             | Examples: cqtdeployer -qtifw path/to/myCustom/qifw. More details can be found [here](QIF.md) |
+|   qif                       | DEPRECATED alias of the qtifw option (issue #738). The 'qif' option has been renamed to 'qtifw', please use the 'qtifw' option instead. The 'qif' option will be removed in a future release. |
+|   qifFromSystem             | Force the use of the system binarycreator tool of the Qt Installer Framework (from the PATH or from the Qt installation of the qmake) instead of the bundled QIF tools of the CQtDeployer package. |
 |   deb                       | Create the deb package for deployment programm"              |
 |                             | Example: cqtdeployer deb" },                              |
 |                             | you can specify the path to your own DEBIAN template. |
 |                             | Examples: cqtdeployer -deb path/to/myCustom/DEBIAN. More details can be found [here](DEB.md) |
+|   appimage                  | Create the AppImage package for deployment programm (Linux only, issue #898) |
+|                             | The AppImage packages are created with the appimagetool, which is bundled within the CQtDeployer package or installed on the system. |
+|                             | Example: cqtdeployer appimage. More details can be found [here](AppImage.md) |
+|   dmg                       | Create the DMG package for deployment programm (macOS only, issue #899) |
+|                             | The DMG packages are created with the hdiutil tool of the macOS system. |
+|                             | Example: cqtdeployer dmg. More details can be found [here](DMG.md) |
+|   zip                       | Create the ZIP archive for deployment program. More details can be found [here](ZIP.md) |
 |   deploySystem              | Deploys all libraries not recommended because there may be conflicts with system libraries  |
 |   noQt                      | Ignores the error of initialize of a qmake. Use only if your application does not use the qt framework. |
 |   allowEmptyPackages        | Allows configure the empty packages.                            |
@@ -83,7 +92,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |                             | Using this file, you can add the necessary options, |
 |                             | thereby simplifying  in the command invocation the console. |
 |                             | However, the parameters in Kansol have a higher priority than in the file.|
-|                             | For more info about this flag see [wiki](DeployConfigFile)                           |
+|                             | For more info about this flag see [wiki](DeployConfigFile.md)                           |
 |   -qmlDir [params]          | Qml data dir. For example -qmlDir ~/my/project/qml              |
 |   -qmake  [params]          | Qmake path. For example                                         |
 |                             | -qmake ~/Qt/5.14.0/gcc_64/bin/qmake                             |
@@ -159,6 +168,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -qifPackages [path/to/packagesFodoler] | Sets a custom path to the packages directories. By default it is qif/packages. Note This path sets relative target folder (sets by TargetDir option). |
 |  -qifResources [path/to/resources1.qrc,path/to/resources2.qrc] | Sets a custom path to the resources files. By default this option is skipped. Note This path sets relative target folder (sets by TargetDir option). |
 |  -qifArchiveFormat [7z,zip,tar,tar.gz,tar.bz2,tar.xz] | Sets the format used when packaging new component data archives. If you omit this option, the 7z format will be used as a default. |
+|  qifSign / -qifSign [code-signing-identity] | Sets the code signing identity of the Qt Installer Framework binarycreator (the -s option). Available only on the macOS hosts: the generated app bundle of the installer is signed with the specified identity (issue #865). The single qifSign option without the value creates the ad-hoc signature (no signing certificate required): the binarycreator command line parser rejects the identity values with the leading - character, so the ad-hoc signature is created by the codesign step of the cqtdeployer after the bundle is created (issue #908). |
 |  -binarycreator [binarycreator command] | Sets new binarycreator command. Example : cqtdeployer -bin my.exe qifw -binarycreator 'wine path/to/binarycreator.exe'|
 
 ### Deb package options
@@ -173,10 +183,17 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |-----------------------------|-----------------------------------------------------------|
 |  -zipOut [package;nameOfOutputZipFile,nameOfOutputZipFile]| Sets name of the output zip archive. This option can be work with multiple packages |
 
+### AppImage package options
+
+| Option                      | Description                                              |
+|-----------------------------|-----------------------------------------------------------|
+|  -appimageOut [package;nameOfOutputAppImageFile,nameOfOutputAppImageFile]| Sets name of the output AppImage file. This option can be work with multiple packages |
+
 ### DMG package options
 
 | Option                      | Description                                              |
 |-----------------------------|-----------------------------------------------------------|
-|  -dmg | Creates the Qt Installer Framework installer for deployment program (an alias for the qtifw option, issue #884). The binarycreator of the Qt Installer Framework creates the installer (the "DMG" file of the macOS hosts), the name of the installer is taken from the qifOut value. |
+|  -dmgOut [package;nameOfOutputDmgFile,nameOfOutputDmgFile]| Sets name of the output DMG file. This option can be work with multiple packages |
+|  dmg | Creates the DMG package for deployment programm (macOS only, issue #899). The DMG packages are created with the hdiutil tool of the macOS system (the same way the deb backend uses the dpkg-deb tool of the Linux system). The DMG volume contains the deployed package (the ready-to-use application), the application icon, the README file with the name/description/version/publisher of the package and the Applications symbolic link of the standard drag-to-install UX. The name of the volume is the name of the package (the name option), the name of the output file is set by the dmgOut option. The dmg option was an alias for the qtifw option before (issue #884), now it creates the real DMG packages (issue #899). More details can be found [here](DMG.md) |
 
 #### Example: cqtdeployer -bin myApp -qmlDir ~/MyAppProject/qml -qmake ~/Qt/5.15.4/gcc_64/bin/qmake clear

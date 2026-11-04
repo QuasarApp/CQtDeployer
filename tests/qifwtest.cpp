@@ -264,12 +264,16 @@ void QifwTest::optionTableCheck() {
 
     const QuasarAppUtils::OptionData *qtifwOption = nullptr;
     const QuasarAppUtils::OptionData *qifOption = nullptr;
+    const QuasarAppUtils::OptionData *qifSignOption = nullptr;
     for (const auto &option: options) {
-        if (option.names().contains("qtifw")) {
+        if (option.names() == (QStringList() << "qtifw" << "-qtifw")) {
             qtifwOption = &option;
         }
-        if (option.names().contains("qif")) {
+        if (option.names() == (QStringList() << "qif" << "-qif")) {
             qifOption = &option;
+        }
+        if (option.names() == (QStringList() << "qifSign" << "-qifSign")) {
+            qifSignOption = &option;
         }
     }
 
@@ -293,6 +297,20 @@ void QifwTest::optionTableCheck() {
         QCOMPARE(qifOption->names(), (QStringList() << "qif" << "-qif"));
         QVERIFY(qifOption->isDepricated());
         QVERIFY(qifOption->depricatedMsg().contains("qtifw"));
+    }
+
+    // The code signing identity option is registered under the qifSign
+    // and the -qifSign names in the Qt Installer Framework options
+    // group: the single qifSign option without the value and the
+    // -qifSign option with the identity value (issue #865, #908).
+    QVERIFY2(qifSignOption != nullptr,
+             "The qifSign option is not registered in the options table");
+    if (qifSignOption != nullptr) {
+        QCOMPARE(qifSignOption->names(),
+                 (QStringList() << "qifSign" << "-qifSign"));
+        QVERIFY(!qifSignOption->isDepricated());
+        QVERIFY(qifSignOption->description().contains("macOS", Qt::CaseInsensitive));
+        QVERIFY(qifSignOption->example().contains("qifSign"));
     }
 }
 
@@ -352,28 +370,23 @@ void QifwTest::qifDeprecatedAliasCheck() {
                           "test_report.txt.qif):\n" + output));
 }
 
-void QifwTest::dmgAliasInstallerCheck() {
-    // The dmg option is an alias for the QtIFW installer (issue #884):
-    // the same binarycreator installer is created, the output name is
-    // taken from the qifOut value (the same way the qtifw option names
-    // it, the dmgOut option is removed). The name must match the
-    // platform: the binarycreator of the Windows hosts appends the ".exe"
-    // suffix to the output name when it is missing (the Windows installer
-    // builds always use the .exe name, no hardcode fix in the QIF
-    // distribution), the .app suffix of the macOS hosts is appended by
-    // the QIF distribution (issue #738).
+void QifwTest::dmgOptionNotQifCheck() {
+    // The dmg option is not an alias for the QtIFW installer anymore
+    // (issue #884): the dmg option creates the DMG packages with the
+    // hdiutil tool of the macOS system (the Dmg distribution, issue
+    // #899) and does not trigger the QIF distribution. The qifOut name
+    // must not be used by the dmg option, so the Qt Installer Framework
+    // installer of the qifOut value is not created for the dmg option
+    // on every platform (on the macOS hosts the dmg option creates the
+    // real DMG package instead, on the other host platforms the option
+    // is skipped with a warning, issue #899).
     if (_deployerExe.isEmpty()) {
-        QSKIP("The cqtdeployer executable of the build tree is not found, the dmg alias test cannot run");
+        QSKIP("The cqtdeployer executable of the build tree is not found, the dmg option test cannot run");
     }
 
-#ifdef Q_OS_WIN32
-    // The .exe name: the binarycreator of the Windows hosts creates the
-    // file with the exact name (the ".exe" suffix is not appended a
-    // second time).
-    const QString qifOut = QStringLiteral("QifwDmgAliasInstaller.exe");
-#else
+    // The qifOut name of the old dmg (qtifw alias) installer (the .app
+    // bundle of the binarycreator on the macOS hosts, issue #738).
     const QString qifOut = QStringLiteral("QifwDmgAliasInstaller.dmg");
-#endif
 
     int exitCode = -1;
     QString output;
@@ -390,20 +403,9 @@ void QifwTest::dmgAliasInstallerCheck() {
         args << "-qmake" << _qmake;
     }
 
-    runDeployerProcess(args, QStringLiteral("dmgAlias"), &exitCode, &output);
+    runDeployerProcess(args, QStringLiteral("dmgNotQif"), &exitCode, &output);
     QCOMPARE(exitCode, 0);
 
-    // The old Dmg distribution warning must be gone: the dmg option is
-    // handled by the QIF distribution (the binarycreator) now, not by
-    // the hdiutil tool (issue #884).
-    QVERIFY2(!output.contains("hdiutil"),
-             qPrintable("The hdiutil warning of the removed Dmg distribution is "
-                        "printed, the dmg option is not an alias for the qtifw "
-                        "option (issue #884). The cqtdeployer output (the full "
-                        "output is stored in test_report.txt.dmgAlias):\n" + output));
-
-    // The qifOut name of the installer (the .app bundle of the
-    // binarycreator on the macOS hosts, issue #738).
     const QString baseDir = _tmp.path() + "/dist/";
     const QFileInfo installer =
 #ifdef Q_OS_MACOS
@@ -412,27 +414,39 @@ void QifwTest::dmgAliasInstallerCheck() {
             QFileInfo(baseDir + qifOut);
 #endif
 
-    // The .app bundle of the macOS hosts is populated by a background step
-    // of the binarycreator that outlives the cqtdeployer process (issue
-    // #738), so the installer artifact is polled until it is complete.
-    bool ready = false;
-    const qint64 deadline = QDateTime::currentMSecsSinceEpoch() + 5 * 60 * 1000;
-    while (!ready && QDateTime::currentMSecsSinceEpoch() < deadline) {
-        ready = installerIsNotEmpty(QFileInfo(installer.filePath()));
-        if (!ready) {
-            QTest::qWait(250);
+    // The Qt Installer Framework installer of the qifOut value is not
+    // created for the dmg option (issue #899). The .app bundle of the
+    // macOS hosts is populated by a background step of the binarycreator
+    // that outlives the cqtdeployer process (issue #738), so a short
+    // wait is needed before the absence check on the macOS hosts.
+    const qint64 deadline = QDateTime::currentMSecsSinceEpoch() + 30 * 1000;
+    while (QDateTime::currentMSecsSinceEpoch() < deadline) {
+        if (!installer.exists()) {
+            break;
         }
+        QTest::qWait(250);
     }
 
-    QVERIFY2(ready,
-             qPrintable("The dmg (qtifw alias) installer of the qifOut name is "
-                        "not created (the wait timed out). The dist dir content: ["
-                        + distDirListing()
+    QVERIFY2(!installerIsNotEmpty(QFileInfo(installer.filePath())),
+             qPrintable("The Qt Installer Framework installer of the qifOut "
+                        "name is created for the dmg option, the dmg option "
+                        "is not routed to the DMG distribution (issue #899). "
+                        "The dist dir content: [" + distDirListing()
                         + "]. The installer artifact (" + installer.filePath()
-                        + "): [" + (installer.exists() ? QString::number(installer.size())
-                                                       : QStringLiteral("<missing>"))
-                        + "]. The cqtdeployer output (the full output is stored in "
-                        "test_report.txt.dmgAlias):\n" + output));
+                        + "): [" + artifactListing()
+                        + "]. The cqtdeployer output (the full output is "
+                        "stored in test_report.txt.dmgNotQif):\n" + output));
+
+#ifndef Q_OS_MACOS
+    // On the non-macOS host platforms the dmg option is skipped with a
+    // warning (the DMG packages are created only on the macOS hosts,
+    // issue #899).
+    QVERIFY2(output.contains("The dmg option is available only on the macOS host platform"),
+             qPrintable("The warning of the dmg option (the macOS host "
+                        "platforms only, issue #899) is not printed. The "
+                        "cqtdeployer output (the full output is stored "
+                        "in test_report.txt.dmgNotQif):\n" + output));
+#endif
 }
 
 void QifwTest::noQtGeneralFileInstallerCheck() {
@@ -502,6 +516,98 @@ void QifwTest::noQtGeneralFileInstallerCheck() {
                         "The dist dir content: [" + distDirListing()
                         + "]. The cqtdeployer output (the full output is stored in "
                         "test_report.txt.noQtGeneralFile):\n" + output));
+}
+
+void QifwTest::qifSignIdentityCheck() {
+    // The qifSign option sets the code signing identity of the Qt
+    // Installer Framework binarycreator (the -s signing identity option,
+    // issue #865). The option is given in two forms (issue #908): the
+    // single qifSign option without the value (the ad-hoc signature, the
+    // macOS CI hosts) and the -qifSign option with the identity value.
+    // The -s option is available on the macOS hosts only: on the other
+    // platforms the option is ignored and the deploy must succeed the
+    // same way.
+    if (_deployerExe.isEmpty()) {
+        QSKIP("The cqtdeployer executable of the build tree is not found, the qifSign test cannot run");
+    }
+
+#ifdef Q_OS_MACOS
+    // The ad-hoc signature: the single qifSign option without the
+    // identity value creates the ad-hoc signature (the "-" identity of
+    // the codesign tool) without the signing certificate, so the test
+    // can run on the macOS CI hosts without the Developer ID
+    // certificate (issue #865, #908). The command line parser rejects
+    // the identity values with the leading "-" character (the single
+    // "-" token), so the ad-hoc identity is not passed as the option
+    // value (the team lead decision of the QuasarAppLib PR #68).
+    QStringList signArgs = {"qifSign"};
+#else
+    // The identity with the value (the non-macOS platforms): the option
+    // is ignored with the warning, the deploy must succeed (issue #865).
+    const QString identity = QStringLiteral("Developer ID Application: QifwTest (ABC1234)");
+    QStringList signArgs = {"-qifSign", identity};
+#endif
+
+    int exitCode = -1;
+    QString output;
+    QStringList args = {
+        "clear",
+        "-bin", _targetBinary,
+        "-targetDir", _tmp.path() + "/dist",
+        "-libDir", _targetLibDir,
+        "-recursiveDepth", "5",
+        "qtifw"
+    };
+    args += signArgs;
+    args << "-qifOut" << installerName("QifwSignIdentity");
+    if (!_qmake.isEmpty()) {
+        args << "-qmake" << _qmake;
+    }
+
+    runDeployerProcess(args, QStringLiteral("qifSign"), &exitCode, &output);
+    QCOMPARE(exitCode, 0);
+
+    const QFileInfo installer = installerInfo("QifwSignIdentity");
+    QVERIFY2(waitForInstaller(5 * 60 * 1000, "QifwSignIdentity"),
+             qPrintable("The qtifw installer with the qifSign identity is not "
+                        "created (the wait timed out). The dist dir content: ["
+                        + distDirListing()
+                        + "]. The installer artifact (" + installer.filePath()
+                        + "): [" + artifactListing()
+                        + "]. The cqtdeployer output (the full output is stored in "
+                        "test_report.txt.qifSign):\n" + output));
+
+#ifdef Q_OS_MACOS
+    // The app bundle is signed with the ad-hoc identity: the command
+    // line parser of the binarycreator rejects the identity values with
+    // the leading "-" character, so the cqtdeployer signs the bundle
+    // with the codesign tool after the bundle is created (issue #865,
+    // #908): the code signature of the bundle must be valid after the
+    // deploy.
+    QProcess codesign;
+    codesign.setProcessChannelMode(QProcess::MergedChannels);
+    codesign.start(QStringLiteral("codesign"),
+                   {QStringLiteral("-v"), QStringLiteral("--verbose=2"),
+                    installer.filePath()});
+    QVERIFY2(codesign.waitForFinished(60 * 1000),
+             "Failed to run the codesign tool");
+    const QString codesignOutput = QString::fromLocal8Bit(codesign.readAll());
+    QVERIFY2(codesign.exitCode() == 0,
+             qPrintable("The code signature of the qtifw installer bundle is not "
+                        "valid after the deploy with the qifSign option (issue "
+                        "#865). The codesign output:\n" + codesignOutput
+                        + ". The cqtdeployer output (the full output is stored in "
+                        "test_report.txt.qifSign):\n" + output));
+#else
+    // The qifSign option is ignored on the non-macOS platforms (issue
+    // #865): the deploy prints the warning and the installer is created
+    // without the signing step.
+    QVERIFY2(output.contains("qifSign option is available on the macOS hosts only"),
+             qPrintable("The qifSign ignore warning is not printed on the "
+                        "non-macOS platform (issue #865). The cqtdeployer output "
+                        "(the full output is stored in test_report.txt.qifSign):\n"
+                        + output));
+#endif
 }
 
 // Standard stand-alone QTest entry point, see the Qt test tutorial:

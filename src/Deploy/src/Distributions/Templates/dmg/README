@@ -1,0 +1,18 @@
+$NAME
+=====
+
+$DESCRIPTION
+
+Version: $VERSION
+Publisher: $PUBLISHER
+Homepage: $HOMEPAGE
+Release date: $RELEASEDATA
+
+This DMG was created by the CQtDeployer "dmg" option (issue #899).
+
+How to use:
+1. Open this DMG file (double click on it in the Finder).
+2. Drag the "$NAME" folder into the Applications folder (the
+   Applications folder is available as a symbolic link in this window).
+3. Launch the application from the Applications folder (the run script
+   of the package starts the application with the right environment).

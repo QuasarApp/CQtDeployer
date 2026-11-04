@@ -101,6 +101,30 @@ public:
      */
     void setZipOut(const QString &newZipOut);
 
+    /**
+     * @brief appimageOut This method return output filePath to the AppImage package
+     * @return output filePath to the AppImage package
+     */
+    const QString &appimageOut() const;
+
+    /**
+     * @brief setAppimageOut This method sets new value of the AppImage output path.
+     * @param newAppimageOut This is new value of the AppImage output
+     */
+    void setAppimageOut(const QString &newAppimageOut);
+
+    /**
+     * @brief dmgOut This method return output filePath to the DMG package
+     * @return output filePath to the DMG package
+     */
+    const QString &dmgOut() const;
+
+    /**
+     * @brief setDmgOut This method sets new value of the DMG output path.
+     * @param newDmgOut This is new value of the DMG output
+     */
+    void setDmgOut(const QString &newDmgOut);
+
 protected:
     void setKey(const QString &key);
 
@@ -131,6 +155,8 @@ private:
     QString _installDirDEB;
     QString _debOut;
     QString _zipOut;
+    QString _appimageOut;
+    QString _dmgOut;
 
 };
 

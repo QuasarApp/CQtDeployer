@@ -125,9 +125,81 @@ QList<SystemCommandData> QIF::runCmd() {
         cmd.arguments.push_back(customFormat);
     }
 
+    // The code signing of the generated app bundle of the macOS hosts
+    // (issue #865): the Mach-O rewrite of the deployed binaries
+    // (issue #166) invalidates the original code signature, so the
+    // installer bundle is signed with the identity of the qifSign
+    // option. The Qt Installer Framework binarycreator signs the bundle
+    // with the -s (signing identity) option, but its command line parser
+    // rejects the identity values that start with the "-" character (the
+    // "startsWith('-')" guard of the binarycreator main function of the
+    // qtproject/installer-framework repository, present in all the
+    // released versions including the latest): the ad-hoc codesign
+    // identity "-" cannot be passed to the binarycreator, so the bundle
+    // with the ad-hoc identity is signed by the cqtdeployer with the
+    // codesign tool after the bundle is created - the same
+    // "codesign --force --deep --sign <identity> <bundle>" command the
+    // binarycreator runs internally (issue #865). The "-" identity value
+    // creates the ad-hoc signature without the signing certificate.
+    // The qifSign option is given in two forms (issue #865, #908): the
+    // single qifSign option without the identity value ("cqtdeployer ...
+    // qtifw qifSign") and the "-qifSign <identity>" option with the
+    // value. The single option without the value creates the ad-hoc
+    // signature: the "-" identity of the codesign tool (no signing
+    // certificate required, the only signing form of the macOS CI hosts
+    // without the Developer ID certificate). The command line parser
+    // rejects the identity values with the leading "-" character (the
+    // single "-" token), so the ad-hoc identity is not passed as the
+    // option value (the team lead decision of the QuasarAppLib PR #68,
+    // the issue #67 of the QuasarAppLib repository).
+    QString signIdentity = QuasarAppUtils::Params::getArg("qifSign");
+    if (QuasarAppUtils::Params::isEndable("qifSign") && signIdentity.isEmpty()) {
+        // The single qifSign option without the identity value: the
+        // ad-hoc signature (issue #908).
+        signIdentity = QStringLiteral("-");
+    }
+#ifdef Q_OS_MACOS
+    if (signIdentity.size() && !signIdentity.startsWith(QLatin1Char('-'))) {
+        // The identity without the leading "-" character is passed to
+        // the -s (signing identity) option of the binarycreator
+        // (issue #865).
+        cmd.arguments.push_back("-s");
+        cmd.arguments.push_back(signIdentity);
+    }
+#else
+    // The -s (signing identity) option of the binarycreator is available
+    // on the macOS hosts only, the option is ignored on the other
+    // platforms (issue #865).
+    if (signIdentity.size()) {
+        qWarning() << "The qifSign option is available on the macOS hosts only, "
+                    "the option is ignored on the current platform (issue #865).";
+    }
+#endif
+
     cmd.arguments += "-v";
 
-    return {cmd};
+    QList<SystemCommandData> commands = {cmd};
+
+#ifdef Q_OS_MACOS
+    if (signIdentity.size() && signIdentity.startsWith(QLatin1Char('-'))) {
+        // The identity with the leading "-" character (the ad-hoc "-"
+        // value of the codesign tool) cannot be passed to the binarycreator
+        // (its command line parser rejects it, issue #865), the bundle is
+        // signed by the codesign step after the binarycreator.
+        SystemCommandData signCmd;
+        signCmd.command = QStringLiteral("codesign");
+        signCmd.arguments = {
+            QStringLiteral("--force"),
+            QStringLiteral("--deep"),
+            QStringLiteral("--sign"),
+            signIdentity,
+            installerFile()
+        };
+        commands.append(signCmd);
+    }
+#endif
+
+    return commands;
 }
 
 bool QIF::deployTemplate(PackageControl &pkg) {
@@ -295,12 +367,11 @@ QString QIF::installerFile() const {
 #endif
     QString name;
     // The name of the installer is taken from the qifOut value of the
-    // deployment configuration (the dmg option is an alias for the qtifw
-    // option, issue #884, and uses the same name). The name must match
-    // the platform: the binarycreator of the Windows hosts appends the
-    // ".exe" suffix to the output name when it is missing, so the
-    // platform-specific suffix is part of the qifOut value (the
-    // INSTALLER_FULL_NAME naming of the self-deploy config).
+    // deployment configuration. The name must match the platform: the
+    // binarycreator of the Windows hosts appends the ".exe" suffix to
+    // the output name when it is missing, so the platform-specific
+    // suffix is part of the qifOut value (the INSTALLER_FULL_NAME
+    // naming of the self-deploy config).
     const QString qifOut = QuasarAppUtils::Params::getArg("qifOut");
     if (qifOut.size()) {
         name = qifOut;

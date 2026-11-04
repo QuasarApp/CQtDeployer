@@ -28,7 +28,7 @@ cmake_minimum_required(VERSION 3.18)
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
 
-set(TEST_CLASSES DeployConfig DeployCore DistroModule DistroStruct Envirement
+set(TEST_CLASSES AppImage DeployConfig DeployCore Dmg DistroModule DistroStruct Envirement
     FileManager IgnoreRule LibInfo MacOS PathUtils Pe Qifw TargetInfo ZipCompresser)
 
 # The deploy step of the test targets runs the cqtdeployer tool with the
@@ -83,6 +83,37 @@ target_compile_definitions(${PROJECT_NAME}-tests-Qifw PRIVATE
 # on every platform, including the macOS hosts (issue #738).
 add_dependencies(testQifw copyQIFW)
 
+# The AppImage test runs the cqtdeployer executable of the current build
+# tree (not the stable release installed by the CI action), so it
+# verifies the code under review (issue #898). The build tree executable
+# and the qmake of the toolchain are passed to the test as compile
+# definitions.
+target_compile_definitions(${PROJECT_NAME}-tests-AppImage PRIVATE
+    APPIMAGE_TEST_CQT_DEPLOYER_EXE="$<TARGET_FILE:${PROJECT_NAME}>"
+    APPIMAGE_TEST_QMAKE="${QT_QMAKE_EXECUTABLE}")
+
+# The cqtdeployer of the build tree finds the appimagetool next to itself:
+# the copyAppImage target stages the platform binary and the wrapper
+# script from the repository (issue #898). The copyAppImage target is not
+# part of the `all` target and the CI runs the `test` target separately,
+# so the AppImage test target depends on it explicitly - the appimage
+# distribution is then tested on every Linux host (the AppImage tool is
+# a Linux-only tool, the copyAppImage target exists on the Linux hosts
+# only, issue #898).
+if (UNIX AND NOT APPLE)
+    add_dependencies(testAppImage copyAppImage)
+endif()
+
+# The Dmg test runs the cqtdeployer executable of the current build
+# tree (not the stable release installed by the CI action), so it
+# verifies the code under review (issue #899). The DMG packages are
+# created with the hdiutil tool of the macOS system (no bundled tools,
+# the copy targets are not needed), on the other host platforms the
+# test verifies the warning of the skipped option only.
+target_compile_definitions(${PROJECT_NAME}-tests-Dmg PRIVATE
+    DMG_TEST_CQT_DEPLOYER_EXE="$<TARGET_FILE:${PROJECT_NAME}>"
+    DMG_TEST_QMAKE="${QT_QMAKE_EXECUTABLE}")
+
 # The self-deploy configs of the build (the configured CQtDeployer.json
 # and CQtDeployerSingle.json of the source tree, see the configure_file_in
 # call of the CQtDeployer project) are used by the MacOS test to check
@@ -90,13 +121,16 @@ add_dependencies(testQifw copyQIFW)
 # platforms: the 2 packages cqtdeployer and QIF into one target folder)
 # generates the Qt Installer Framework installer (the qif template + the
 # qifOut name, issue #884) and that the flat single config is the one
-# package version for DEB and ZIP only (no dmg option, no qifOut entry,
-# issue #884). The install script of the installer template
+# package version for DEB, ZIP and DMG (the dmg option is enabled: the
+# deploy command creates the DMG package on the macOS hosts, issue #899;
+# no qif and no qifOut entry, issue #884). The install script of the
+# installer template
 # of the repository (the QIFWTemplate folder) is used to check the
 # cqt + cqtdeployer console symlinks of the macOS hosts (issue #884).
 target_compile_definitions(${PROJECT_NAME}-tests-MacOS PRIVATE
     CQT_DEPLOYER_SELF_DEPLOY_CONFIG="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/CQtDeployer.json"
     CQT_DEPLOYER_SELF_DEPLOY_SINGLE_CONFIG="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/CQtDeployerSingle.json"
-    CQT_DEPLOYER_QIFW_TEMPLATE_INSTALLSCRIPT="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/QIFWTemplate/packages/CQtDeployer.1_6/meta/installscript.js")
+    CQT_DEPLOYER_QIFW_TEMPLATE_INSTALLSCRIPT="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/QIFWTemplate/packages/CQtDeployer.1_6/meta/installscript.js"
+    CQT_DEPLOYER_QIFW_MAC_BINARIES_DIR="${CMAKE_SOURCE_DIR}/src/CQtDeployer/Deploy/QIFW/binaries/mac")
 
 initTests()

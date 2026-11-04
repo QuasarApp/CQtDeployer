@@ -157,6 +157,22 @@ void DistroModule::setZipOut(const QString &newZipOut) {
     _zipOut = newZipOut;
 }
 
+const QString &DistroModule::appimageOut() const {
+    return _appimageOut;
+}
+
+void DistroModule::setAppimageOut(const QString &newAppimageOut) {
+    _appimageOut = newAppimageOut;
+}
+
+const QString &DistroModule::dmgOut() const {
+    return _dmgOut;
+}
+
+void DistroModule::setDmgOut(const QString &newDmgOut) {
+    _dmgOut = newDmgOut;
+}
+
 const QString &DistroModule::debOut() const {
     return _debOut;
 }

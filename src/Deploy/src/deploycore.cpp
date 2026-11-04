@@ -468,6 +468,17 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             "Create the ZIP arhive for deployment programm"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
+                            {"appimage"}, "",
+                            "Create the AppImage package for deployment programm (issue #898). "
+                            "The AppImage packages are created with the appimagetool, which is "
+                            "bundled within the CQtDeployer package (the AppImage folder next to "
+                            "the executable) or installed on the system (for example the appimage "
+                            "package of the Debian distributions). "
+                            "This option is available only on the Linux host platforms. "
+                            "For more info see documentation page "
+                            "https://quasarapp.github.io/CQtDeployer/md/AppImage/"
+                        }});
+    help.insert(group, {QuasarAppUtils::OptionData{
                             {"deb", "-deb"}, "",
                             "Create the deb package for deployment programm"
                             " You can specify the path to your own debian template.",
@@ -481,11 +492,22 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"dmg"}, "",
-                            "Create the Qt Installer Framework installer for deployment program "
-                            "(an alias for the qtifw option, issue #884). "
-                            "The binarycreator of the Qt Installer Framework creates the "
-                            "installer (the \"DMG\" file of the macOS hosts), the name of the "
-                            "installer is taken from the qifOut value."
+                            "Create the DMG package for deployment programm (issue #899). "
+                            "The DMG packages are created with the hdiutil tool "
+                            "of the macOS system (the same way the deb backend "
+                            "uses the dpkg-deb tool of the Linux system). "
+                            "The DMG volume contains the deployed package (the "
+                            "ready-to-use application), the application icon, "
+                            "the README file with the name/description/version/"
+                            "publisher of the package and the Applications "
+                            "symbolic link of the standard drag-to-install UX. "
+                            "The name of the volume is the name of the package "
+                            "(the name option), the name of the output file is "
+                            "set by the dmgOut option. "
+                            "This option is available only on the macOS host "
+                            "platforms. "
+                            "For more info see documentation page "
+                            "https://quasarapp.github.io/CQtDeployer/md/DMG/"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"deploySystem"}, "",
@@ -759,6 +781,17 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             {"-qifResources"}, "{path/to/resources1.qrc,path/to/resources2.qrc}",
                             "Sets a custom path to the resources files. By default this option is skipped. Note This path sets releative target folder (sets by TargetDir option)."
                         }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"qifSign", "-qifSign"}, "{code-signing-identity}",
+                            "Sets the code signing identity of the Qt Installer Framework "
+                            "binarycreator (the -s option). Available only on the macOS hosts: "
+                            "the generated app bundle of the installer is signed with the "
+                            "specified identity (issue #865). The single qifSign option "
+                            "without the identity value creates the ad-hoc signature (no "
+                            "signing certificate required, issue #908).",
+                            "cqtdeployer -bin myApp qtifw -qifSign 'Developer ID Application: "
+                            "QuasarApp (ABC1234)'"
+                        }});
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-targetDir"}, "{params}",
@@ -795,6 +828,20 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-zipOut"}, "{package;nameOfOutputZipFile,nameOfOutputZipFile}",
                             "Sets name of the output zip arrhive. This option can be work with multiple packages"
+                        }});
+
+    group = "Part 9 AppImage package options";
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-appimageOut"}, "{package;nameOfOutputAppImageFile,nameOfOutputAppImageFile}",
+                            "Sets name of the output AppImage file. This option can be work with multiple packages"
+                        }});
+
+    group = "Part 10 DMG package options";
+
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-dmgOut"}, "{package;nameOfOutputDmgFile,nameOfOutputDmgFile}",
+                            "Sets name of the output DMG file. This option can be work with multiple packages"
                         }});
 
     return help;

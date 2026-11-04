@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=$NAME
+Comment=$DESCRIPTION
+Exec=$EXEC
+Icon=$ICON
+Terminal=false
+Categories=Utility;
+StartupNotify=true
