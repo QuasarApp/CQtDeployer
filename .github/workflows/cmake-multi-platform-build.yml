@@ -112,7 +112,7 @@ jobs:
       # On the Linux ARM runners the prebuilt release assets do not exist
       # yet (issue #918), so the install action is skipped there and the
       # bootstrap step below builds the tool from source instead.
-      if: !(runner.os == 'Linux' && runner.arch == 'ARM64')
+      if: "!(runner.os == 'Linux' && runner.arch == 'ARM64')"
       uses: QuasarApp/cqtdeployer-install-action@task_898
       with:
         version: v1.7.72.edd53600
