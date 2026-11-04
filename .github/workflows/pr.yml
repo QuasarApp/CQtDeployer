@@ -10,7 +10,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2025, ubuntu-24.04, macos-15]
+        # The Linux ARM (aarch64) runner is the ARM64 build of the PR
+        # testing (issue #918). The Qt 6.10.3 aarch64 packages are built
+        # for Ubuntu 24.04, so the ARM leg uses ubuntu-24.04-arm.
+        os: [windows-2025, ubuntu-24.04, ubuntu-24.04-arm, macos-15]
         build_type: [Release]
         c_compiler: [gcc]
 
@@ -28,11 +31,23 @@ jobs:
 
     - name: Install Qt (Linux)
       uses: jurplel/install-qt-action@v4.3.0
-      if: runner.os == 'Linux'
+      if: runner.os == 'Linux' && runner.arch == 'X64'
       with:
         version: '6.10.3'
         target: 'desktop'
         arch: 'linux_gcc_64'
+        cache: true
+        aqtversion: ==3.2.*
+
+    - name: Install Qt (Linux ARM)
+      # The aarch64 host of the Qt repository (aqtinstall): the arch
+      # string is linux_gcc_arm64 (issue #918).
+      uses: jurplel/install-qt-action@v4.3.0
+      if: runner.os == 'Linux' && runner.arch == 'ARM64'
+      with:
+        version: '6.10.3'
+        target: 'desktop'
+        arch: 'linux_gcc_arm64'
         cache: true
         aqtversion: ==3.2.*
 
@@ -65,16 +80,45 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Install CQtDeployer
+      # On the Linux ARM runners the prebuilt release assets do not exist
+      # yet (issue #918), so the install action is skipped there and the
+      # bootstrap step below builds the tool from source instead.
+      if: !(runner.os == 'Linux' && runner.arch == 'ARM64')
       uses: QuasarApp/cqtdeployer-install-action@main
-
-    - name: Verify CQtDeployer version
-      # Check if cqtdeployer is accessible and print its version
-      run: cqtdeployer version
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
       with:
         key: ${{ matrix.os }}-${{ matrix.type }}
+
+    - name: Build CQtDeployer from source (Linux ARM, temporary)
+      # Temporary bootstrap of issue #918: the ARM runner builds
+      # cqtdeployer from source (a separate build tree, no tests) and
+      # puts the freshly built executable on the PATH under the
+      # "cqtdeployer" wrapper name of the CMake deploy and test targets.
+      # The build-tree executable is directly runnable: the CMake build
+      # rpath contains the build directories and the Qt library
+      # directory. This step is removed once the first Linux ARM64
+      # release exists (then the install action works on ARM like on
+      # x86_64).
+      if: runner.os == 'Linux' && runner.arch == 'ARM64'
+      shell: bash
+      run: |
+        cmake -B ${{ github.workspace }}/build-tool
+        -G Ninja
+        -DBUILD_SHARED_LIBS=ON
+        -DCQT_DEPLOYER_TESTS=OFF
+        -DCMAKE_PREFIX_PATH='${{ env.QT_ROOT_DIR }}'
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -S ${{ github.workspace }}
+        cmake --build ${{ github.workspace }}/build-tool --config ${{ matrix.build_type }} --parallel 16
+        mkdir -p ${{ runner.temp }}/cqt
+        ln -sf ${{ github.workspace }}/build-tool/src/CQtDeployer/CQtDeployer ${{ runner.temp }}/cqt/cqtdeployer
+        echo "${{ runner.temp }}/cqt" >> "$GITHUB_PATH"
+
+    - name: Verify CQtDeployer version
+      # Check if cqtdeployer is accessible and print its version
+      run: cqtdeployer version
 
     - name: Configure CMake (Windows)
       if: runner.os == 'Windows'
