@@ -78,13 +78,6 @@ endif()
 set(BASE_NAME "${CURRENT_PROJECT}_${CQT_DEPLOYER_VERSION}")
 string(TOLOWER ${BASE_NAME} SNAP_BASE_NAME)
 
-# The asset naming convention of the QuasarApp group is
-# CQtDeployer_<version>_<platform>_<arch>. The default
-# CMAKE_SYSTEM_PROCESSOR name is kept in the arch part of the package
-# names, so the Linux ARM releases are
-# CQtDeployer_<version>_Linux_aarch64.* - the cqtdeployer-install-action
-# downloads the *_Linux_aarch64.zip asset on the ARM64 Linux runners
-# (QuasarApp/cqtdeployer-install-action, issue #918).
 set(BASE_FULL_NAME "${BASE_NAME}_${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}")
 
 set(INSTALLER_FULL_NAME "${BASE_FULL_NAME}${INSTALLER_SUFIX}")
