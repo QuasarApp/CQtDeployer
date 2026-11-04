@@ -295,16 +295,6 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
             // a broken link.
             auto linkTarget = sourceInfo.symLinkTarget();
 
-            // Qt 6's symLinkTarget() resolves the stored link target to an
-            // absolute path, while Qt 5 returns the stored (possibly
-            // relative) target. Normalize both to an absolute path (issue
-            // #825). The v1.6 line is kept with the normalization, because
-            // it still supports the Qt 5 builds (the main line dropped it
-            // in the f07c11aa refactor, the tests are Qt 6 only).
-            if (!linkTarget.isEmpty() && !QFileInfo(linkTarget).isAbsolute()) {
-                linkTarget = sourceInfo.absoluteDir().filePath(linkTarget);
-            }
-
             // When the target is inside the source directory it is stored
             // relative to the created link, so the deployed bundle stays
             // self-contained (issue #825).
@@ -332,7 +322,7 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
                 // follows the link, so the deployed bundle does not
                 // reference a path that does not exist on the target host
                 // (issue #825).
-                qDebug() << "Deploy the symlink " + file + " -> " + linkTarget +
+                qInfo() << "Deploy the symlink " + file + " -> " + linkTarget +
                         " as a regular file";
             } else {
                 // The link itself is kept: the framework bundles
@@ -369,7 +359,7 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
                 // The regular copy below follows the symlink and copies the
                 // content of the resolved target, so the deployed library is
                 // a self-contained regular file (issue #825).
-                qDebug() << "Deploy the symlink " + file + " -> " + linkTarget +
+                qInfo() << "Deploy the symlink " + file + " -> " + linkTarget +
                         " as a regular file";
             }
 #endif
