@@ -141,6 +141,17 @@ jobs:
       run: |
         cmake -B ${{ github.workspace }}/build-tool -G Ninja -DBUILD_SHARED_LIBS=ON -DCQT_DEPLOYER_TESTS=OFF -DCMAKE_PREFIX_PATH='${{ env.QT_ROOT_DIR }}' -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }}
         cmake --build ${{ github.workspace }}/build-tool --config ${{ matrix.build_type }} --parallel 16
+        # The deploy targets of the main tree run with the bootstrap
+        # executable of the PATH, so the QIF and the AppImage tools
+        # must be staged next to it (the cqtdeployer tool searches
+        # <executable dir>/QIF and <executable dir>/AppImage, the
+        # copyQIFW and the copyAppImage targets of the build-tool tree
+        # stage them into build-tool/src/CQtDeployer). Without the
+        # staging the ARM release silently skips the .run installer
+        # and the .AppImage and the asset upload steps fail with the
+        # ENOENT error (issue #918).
+        cmake --build ${{ github.workspace }}/build-tool --target copyQIFW
+        cmake --build ${{ github.workspace }}/build-tool --target copyAppImage
         mkdir -p ${{ runner.temp }}/cqt
         ln -sf ${{ github.workspace }}/build-tool/src/CQtDeployer/CQtDeployer ${{ runner.temp }}/cqt/cqtdeployer
         echo "${{ runner.temp }}/cqt" >> "$GITHUB_PATH"
