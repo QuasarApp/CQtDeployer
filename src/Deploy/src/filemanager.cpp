@@ -283,10 +283,11 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
     //   must be kept, otherwise dyld cannot resolve the bundle (issue #166);
     // - on Linux a link to a regular file is deployed as a regular file with
     //   the content of the resolved target, so the deployed bundle is
-    //   self-contained (issue #825): the CUDA libcudart.so.12 ->
-    //   libcudart.so.12.3.10 pair is deployed as a real file, not as a
-    //   link to the source machine; on macOS the same is done for a file
-    //   link whose target is outside of the source directory.
+    //   self-contained (issue #825, backported to the v1.6 line in
+    //   issue #915): the Qt libQt6QuickControls2.so.6 ->
+    //   libQt6QuickControls2.so.6.10.3 pair is deployed as a real file, not
+    //   as a link to the source machine; on macOS the same is done for a
+    //   file link whose target is outside of the source directory.
     if (!isMove && !QFileInfo::exists(tergetFile)) {
         auto sourceInfo = QFileInfo(file);
         if (sourceInfo.isSymLink()) {
@@ -321,7 +322,7 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
                 // follows the link, so the deployed bundle does not
                 // reference a path that does not exist on the target host
                 // (issue #825).
-                qDebug() << "Deploy the symlink " + file + " -> " + linkTarget +
+                qInfo() << "Deploy the symlink " + file + " -> " + linkTarget +
                         " as a regular file";
             } else {
                 // The link itself is kept: the framework bundles
@@ -358,7 +359,7 @@ bool FileManager::fileActionPrivate(const QString &file, const QString &target,
                 // The regular copy below follows the symlink and copies the
                 // content of the resolved target, so the deployed library is
                 // a self-contained regular file (issue #825).
-                qDebug() << "Deploy the symlink " + file + " -> " + linkTarget +
+                qInfo() << "Deploy the symlink " + file + " -> " + linkTarget +
                         " as a regular file";
             }
 #endif
