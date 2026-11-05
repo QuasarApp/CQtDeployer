@@ -216,17 +216,8 @@ add_custom_target(
     COMMENT "Copy the Qt Installer Framework ${QIFW_VERSION} binaries (${QIF_PLATFORM_DIR}) to ${QIF_DESTINATION_PATH}"
 )
 
-# The deploy targets are created by the addDeployFromCustomFile calls
-# above only when the cqtdeployer executable is on the PATH - without
-# the tool the function returns early and the targets do not exist, so
-# the dependencies are added only for the existing targets (issue #918).
-if(TARGET deploy${CURRENT_PROJECT})
-    add_dependencies(deploy${CURRENT_PROJECT} copyQIFW)
-endif()
-
-if(TARGET deploy${CURRENT_PROJECT}Single)
-    add_dependencies(deploy${CURRENT_PROJECT}Single copyQIFW)
-endif()
+add_dependencies(deploy${CURRENT_PROJECT} copyQIFW)
+add_dependencies(deploy${CURRENT_PROJECT}Single copyQIFW)
 
 # The appimagetool AppImage (issue #898) is stored in the repository for
 # every Linux platform (Deploy/AppImageSources/<platform>) because the
@@ -278,15 +269,8 @@ if (UNIX AND NOT APPLE)
         COMMENT "Stage the appimagetool AppImage (${APPIMAGE_PLATFORM_DIR}) to ${APPIMAGE_DESTINATION_PATH}"
     )
 
-    # The deploy targets exist only when the cqtdeployer executable is
-    # on the PATH (see the copyQIFW guard above, issue #918).
-    if(TARGET deploy${CURRENT_PROJECT})
-        add_dependencies(deploy${CURRENT_PROJECT} copyAppImage)
-    endif()
-
-    if(TARGET deploy${CURRENT_PROJECT}Single)
-        add_dependencies(deploy${CURRENT_PROJECT}Single copyAppImage)
-    endif()
+    add_dependencies(deploy${CURRENT_PROJECT} copyAppImage)
+    add_dependencies(deploy${CURRENT_PROJECT}Single copyAppImage)
 endif()
 
 
@@ -295,13 +279,8 @@ if (UNIX AND NOT APPLE)
     addDeploySnap(${CURRENT_PROJECT} "${CMAKE_SOURCE_DIR}/Distro/")
 
     if(TARGET snapcraft${CURRENT_PROJECT})
-        # The single deploy target exists only when the cqtdeployer
-        # executable is on the PATH (the snapcraft target is created
-        # without it, issue #918).
-        if(TARGET deploy${CURRENT_PROJECT}Single)
-            message("snap is depends of single deploy")
-            add_dependencies(snapcraft${CURRENT_PROJECT} "deploy${CURRENT_PROJECT}Single")
-        endif()
+        message("snap is depends of single deploy")
+        add_dependencies(snapcraft${CURRENT_PROJECT} "deploy${CURRENT_PROJECT}Single")
     endif()
 
     addReleaseSnap(${CURRENT_PROJECT} latest/edge)
