@@ -21,6 +21,7 @@ Key differences of this program:
 * Linux 
     - deb
     - snap
+    - AppImage
     - raw binaries
     - installer
 * Windows 
@@ -31,10 +32,13 @@ Key differences of this program:
     - zip
     - raw binaries
 
-> **Note:** the Qt Installer Framework (QIF) installer is not available on
-> macOS - the QIFW tools are not published for this platform, so the `qif`
-> option is skipped gracefully on macOS hosts. See the
-> [macOS documentation](md/macOS.md) for the details.
+> **Note:** the Qt Installer Framework tools are not published for macOS by
+> the Qt company, but the CQtDeployer package bundles them for all supported
+> platforms (the QIFW binaries are stored in the CQtDeployer repository,
+> issue #867), so the `qtifw` option works on the macOS hosts as well (the
+> installer is created as a `.app` bundle, it can be signed with the
+> `qifSign` option). See the [macOS documentation](md/macOS.md) for the
+> details.
 
 ## Supported processors architectures:
 * x86
@@ -105,13 +109,21 @@ See the list of all options [here](md/Options.md)
 See building and installation instructions on wiki [page](md/Build-and-Install.md)
 
 ### Available in GitHub Actions
-See https://github.com/marketplace/actions/setup-cqtdeployer
+
+CQtDeployer can be installed in your CI pipelines with the
+[cqtdeployer-install-action](https://github.com/QuasarApp/cqtdeployer-install-action)
+action of the QuasarApp organization (the Linux x64/ARM64, the Windows x64
+and the macOS ARM64 runners; the latest stable release is installed by
+default):
 
 ```yaml
 - name: Install CQtDeployer
-  uses: QuasarApp/setup-cqtdeployer@v1.0.0
-
+  uses: QuasarApp/cqtdeployer-install-action@v1.2.3
 ```
+
+To pin a specific release, set the `version` input to the desired release
+tag (for example `v1.6.2588`). See the [GitHub Actions documentation](md/GitHubActions.md)
+for the full description and the complete workflow example.
 
 ## Projects using CQtDeployer:
 
@@ -128,7 +140,7 @@ See https://github.com/marketplace/actions/setup-cqtdeployer
 
 ***
 
-### Check out our documentation for more information: [here](https://quasarapp.ddns.net:3031/docs/QuasarApp/CQtDeployer/latest/)
+### Check out our documentation for more information: [here](https://quasarapp.github.io/CQtDeployer/)
 
 ***
 

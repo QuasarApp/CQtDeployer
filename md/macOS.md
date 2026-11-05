@@ -63,6 +63,22 @@ To create a portable archive of the deployed application, add the `zip` packager
 cqtdeployer -bin myApp -qmake /Users/<user>/Qt/6.10.3/macos/bin/qmake -qmlDir /path/to/my/qml/sources zip
 ```
 
+To create a distributable DMG package of the deployed application (the
+standard macOS distribution format: the volume with the ready-to-use
+application, the application icon, the README file with the package
+information and the Applications symbolic link of the drag-to-install
+UX), add the `dmg` packager option:
+
+``` bash
+cqtdeployer -bin myApp -qmake /Users/<user>/Qt/6.10.3/macos/bin/qmake -qmlDir /path/to/my/qml/sources dmg
+```
+
+The DMG package is created with the `hdiutil` tool of the macOS system,
+the name of the volume is the name of the package (the `name` option),
+the name of the output file is the `dmgOut` option
+(`<name>.dmg` by default). For more info see the
+[DMG documentation](DMG.md).
+
 ## How the macOS deployment works
 
 - CQtDeployer detects the Mach-O binaries (thin and fat binaries are supported) with the full file parsing on the LIEF backend and extracts the linked dylibs and the Qt frameworks.
@@ -71,4 +87,5 @@ cqtdeployer -bin myApp -qmake /Users/<user>/Qt/6.10.3/macos/bin/qmake -qmlDir /p
 
 ## Limitations
 
-- The Qt Installer Framework (QIF) installer is not available on macOS - the QIFW tools (binarycreator) are not published for this platform. If you run cqtdeployer with the `qif` option on a macOS host, the QIF step is skipped gracefully and the remaining deployment steps are executed. Use the `zip` packager to create a portable archive of the deployed application.
+- The `dmg` packager is available only on the macOS hosts (the DMG packages are created with the `hdiutil` tool of the macOS system), the `deb` packager only on the Linux hosts and the `appimage` packager only on the Linux hosts: on the other host platforms the options are skipped with a warning.
+- The Qt Installer Framework (QIF) installer of the macOS hosts is the `.app` bundle of the binarycreator (issue #738): the QIFW tools are stored in the repository for the macOS platform (issue #867) and the arm64 slice of the staged binaries is code signed, so the Apple Silicon hosts are supported (issue #896).

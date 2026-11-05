@@ -7,6 +7,8 @@
 * Added macOS (ARM64) support: Mach-O binary scanning with the LIEF backend, a DYLD-based run script without binary rewriting, macOS (ARM64) CI/CD on GitHub Actions, the DMG packaging of the CQtDeployer.app bundle and the graceful QIF skip (the QIFW tools are not published for macOS) by @EndrII in https://github.com/QuasarApp/CQtDeployer/pull/864
 * Added the macOS documentation: the "CQtDeployer for macOS" article, the macOS usage examples and the platform support notes in https://github.com/QuasarApp/CQtDeployer/pull/864
 * Renamed the `qif` option to `qtifw` (issue #738); the old `qif`/`-qif` names and the `"qif"` key in the JSON config file are kept as a deprecated alias for backward compatibility
+* Added the unit test of the staged macOS Qt Installer Framework binaries: the MacOS test verifies now that the `binarycreator` and the `installerbase` of the `binaries/mac` folder are universal Mach-O binaries with a valid x86_64 and arm64 slice pair and a code signature of the arm64 slice, so the Apple Silicon (M2) support of the staged QIFW tools is enforced on every build (issue #896)
+* Added the DMG backend (issue #899): the `dmg` option creates now the real DMG packages with the `hdiutil` tool of the macOS system (the same way the `deb` backend uses the `dpkg-deb` tool of the Linux system) - the DMG volume contains the deployed package (the ready-to-use application), the application icon, the README file with the name/description/version/publisher of the package and the `Applications -> /Applications` symbolic link of the standard drag-to-install UX - the `dmgOut` option sets the name of the output file (`<name>.dmg` by default), the macOS release asset is the DMG package of the flat single self-deploy config now (the `md/macOS.md` documentation of the `CQtDeployer_*_dmg` release asset is real), and the `dmg` option is not an alias for the `qtifw` option anymore (issue #884, the `qtifw`/`qif` options are unchanged)
 
 
 ## CQtDeployer v1.6.2265
@@ -387,7 +389,7 @@ Change log for all versions of the CQtDeployer.
 ## CQtDeployer 1.3.1
 - Fixed a task #191 (ignore command for plugins)
 - Fixed a task #192  (invalid paths when creating) 
-- Fixed absalute pathes of deployement file (see [confFile](DeployConfigFile))
+- Fixed absalute pathes of deployement file (see [confFile](DeployConfigFile.md))
 ---
 
 ## CQtDeployer 1.3.0

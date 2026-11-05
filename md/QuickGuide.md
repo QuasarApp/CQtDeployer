@@ -29,7 +29,7 @@ How to deploy project with cqtdeployer.
     ```
 
 2. Build your project on release mode.
-3. Deploy yor executable file.
+3. Deploy your executable file.
 
     * For Linux systems:
     ``` bash
@@ -38,7 +38,7 @@ How to deploy project with cqtdeployer.
 
     * For Windows systems:
     ``` bash
-    cqtdeployer -bin myexecutable.exe -qmake C:/Qt/5.15.0/min_gw/bin/qmake.exe
+    cqtdeployer -bin myexecutable.exe -qmake C:/Qt/6.10.3/mingw_64/bin/qmake.exe
     ```
 
     * For macOS systems:
@@ -48,7 +48,7 @@ How to deploy project with cqtdeployer.
 
     * For crossplatform build (Linux -> Windows)
     ``` bash
-    cqtdeployer -bin myexecutable.exe -qmake ~/crossbuildet-Qt/5.15.0/min_gw/bin/qmake
+    cqtdeployer -bin myexecutable.exe -qmake ~/crossbuild-Qt/6.10.3/win64_mingw/bin/qmake
     ```
 
 ## Extra options
@@ -90,9 +90,9 @@ cqtdeployer -bin myexecutable -libDir /PathToMyExtraLibs -recursiveDepth 5 -qmlD
 
 ### If you have any problems with use cqtdeployer then ask you questions on the official github issues [page][2].
 
-### For more options of CQtDeploye see oficial [documentation][3].
+### For more options of CQtDeployer see the official [documentation][3].
 
 [1]: https://github.com/QuasarApp/CQtDeployer/releases
 [2]: https://github.com/QuasarApp/CQtDeployer/issues
-[3]: https://github.com/QuasarApp/CQtDeployer/blob/main/md/en/Options.md
+[3]: https://quasarapp.github.io/CQtDeployer/md/Options/
 

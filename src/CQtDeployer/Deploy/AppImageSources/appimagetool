@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# Copyright (C) 2026 QuasarApp.
+# Distributed under the lgplv3 software license, see the accompanying
+# Everyone is permitted to copy and distribute verbatim copies
+# of this license document, but changing it is not allowed.
+#
+# Wrapper for the appimagetool AppImage that is bundled with CQtDeployer
+# (issue #898). The AppImage tool is started directly when the host
+# provides FUSE support; when FUSE (or the libfuse.so.2 library) is not
+# available, the AppImage runtime refuses to mount, so the tool is
+# retried in the --appimage-extract-and-run mode of the AppImage runtime:
+# the AppImage is extracted to a temporary directory and executed from
+# there, which works on the FUSE-less hosts (for example the minimal
+# container images).
+#
+DIR="$(cd "$(dirname "$0")" && pwd)"
+TOOL="$DIR/appimagetool.AppImage"
+
+"$TOOL" "$@"
+status=$?
+
+if [ $status -ne 0 ]; then
+    "$TOOL" --appimage-extract-and-run "$@"
+    status=$?
+fi
+
+exit $status

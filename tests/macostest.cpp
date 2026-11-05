@@ -224,6 +224,173 @@ std::vector<unsigned char> makeFatMachO(const QList<QByteArray> &slices) {
 
 
 
+/**
+ * @brief FatSlice This struct is one parsed fat_arch entry of a fat
+ *  (universal) Mach-O binary (issue #896).
+ */
+struct FatSlice {
+    uint32_t cputype = 0;
+    uint32_t cpusubtype = 0;
+    quint64 offset = 0;
+    quint64 size = 0;
+};
+
+/**
+ * @brief SliceInfo This struct is the parsed mach_header_64 state of one
+ *  fat slice (issue #896): the architecture, the load command walk and
+ *  the code signature state (the LC_CODE_SIGNATURE /
+ *  LC_CODE_SIGNATURE_LOOSE load command presence).
+ */
+struct SliceInfo {
+    bool valid = false;
+    bool littleEndian = true;
+    uint32_t cputype = 0;
+    uint32_t ncmds = 0;
+    bool codeSignature = false;
+};
+
+/**
+ * @brief parseFatMachO This function parses the fat (universal) Mach-O
+ *  header of @a data into @p slices. The fat header and the fat_arch
+ *  entries are always big endian. The canonical 64 bit FAT_MAGIC layout
+ *  uses the 32 byte fat_arch entries, but some producers (the Qt
+ *  Installer Framework binaries of the Qt online repository, issue
+ *  #896) write the 20 byte fat_arch entries after the 64 bit magic, so
+ *  the 32 byte layout is tried first and the 20 byte layout is used when
+ *  the parsed offsets do not fit into the file. The function returns
+ *  false when @a data does not hold a consistent fat Mach-O header.
+ */
+bool parseFatMachO(const QByteArray &data, QList<FatSlice> *slices) {
+    if (data.size() < 8) {
+        return false;
+    }
+    const auto *p = reinterpret_cast<const unsigned char *>(data.constData());
+    const uint32_t magic = qFromBigEndian<quint32>(p);
+    const bool fat64 = (magic == 0xCAFEBABEu);
+    if (!fat64 && magic != 0xCAFEBABFu) {
+        return false;
+    }
+    const uint32_t n = qFromBigEndian<quint32>(p + 4);
+    if (n < 1 || n > 16 || data.size() < 8 + static_cast<qsizetype>(n) * 20) {
+        return false;
+    }
+
+    auto readEntry = [&](quint32 i, size_t stride, FatSlice *s) {
+        const auto *e = p + 8 + static_cast<qsizetype>(i) * static_cast<qsizetype>(stride);
+        s->cputype = qFromBigEndian<quint32>(e);
+        s->cpusubtype = qFromBigEndian<quint32>(e + 4);
+        if (stride == 32) {
+            s->offset = qFromBigEndian<quint64>(e + 8);
+            s->size = qFromBigEndian<quint64>(e + 20);
+        } else {
+            s->offset = qFromBigEndian<quint32>(e + 8);
+            s->size = qFromBigEndian<quint32>(e + 12);
+        }
+    };
+
+    auto consistent = [&data](const QList<FatSlice> &list) {
+        for (const auto &s : list) {
+            if (s.cputype == 0 || s.offset < 8
+                    || s.offset + s.size > quint64(data.size())) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    QList<FatSlice> parsed;
+    parsed.reserve(n);
+    if (fat64) {
+        for (quint32 i = 0; i < n; ++i) {
+            FatSlice s;
+            readEntry(i, 32, &s);
+            parsed.append(s);
+        }
+        if (consistent(parsed)) {
+            *slices = parsed;
+            return true;
+        }
+        parsed.clear();
+    }
+
+    for (quint32 i = 0; i < n; ++i) {
+        FatSlice s;
+        readEntry(i, 20, &s);
+        parsed.append(s);
+    }
+    if (!consistent(parsed)) {
+        return false;
+    }
+    *slices = parsed;
+    return true;
+}
+
+/**
+ * @brief parseMachO64Slice This function parses the mach_header_64 of the
+ *  fat @a slice of the fat Mach-O @a data and walks its load command area
+ *  to detect the code signature (the LC_CODE_SIGNATURE 0x1D and the
+ *  LC_CODE_SIGNATURE_LOOSE 0x3B load commands). The walk must cover the
+ *  command area exactly (the ncmds count and the sizeofcmds size),
+ *  otherwise the header is not trusted and the function returns false.
+ *  The slice offsets of the fat binaries are relative to the slice start
+ *  (not to the file start), the slice magic is MH_MAGIC_64 in both byte
+ *  orders (issue #896).
+ */
+bool parseMachO64Slice(const QByteArray &data, const FatSlice &slice, SliceInfo *info) {
+    if (slice.offset + slice.size < 32
+            || slice.offset + slice.size > quint64(data.size())) {
+        return false;
+    }
+    const auto *p = reinterpret_cast<const unsigned char *>(data.constData()) + slice.offset;
+    const uint32_t magicLe = quint32(p[0]) | (quint32(p[1]) << 8)
+            | (quint32(p[2]) << 16) | (quint32(p[3]) << 24);
+    const uint32_t magicBe = (quint32(p[0]) << 24) | (quint32(p[1]) << 16)
+            | (quint32(p[2]) << 8) | quint32(p[3]);
+    if (magicLe == 0xFEEDFACFu) {
+        info->littleEndian = true;
+    } else if (magicBe == 0xFEEDFACFu) {
+        info->littleEndian = false;
+    } else {
+        return false;
+    }
+
+    auto rd = [&](size_t off) -> quint32 {
+        const auto *q = p + off;
+        if (info->littleEndian) {
+            return quint32(q[0]) | (quint32(q[1]) << 8)
+                    | (quint32(q[2]) << 16) | (quint32(q[3]) << 24);
+        }
+        return (quint32(q[0]) << 24) | (quint32(q[1]) << 16)
+                | (quint32(q[2]) << 8) | quint32(q[3]);
+    };
+
+    info->cputype = rd(4);
+    info->ncmds = rd(16);
+    const uint32_t sizeofcmds = rd(20);
+
+    size_t off = 32; // the mach_header_64 size
+    uint32_t walked = 0;
+    uint32_t seen = 0;
+    while (off + 8 <= slice.size) {
+        const uint32_t cmd = rd(off);
+        const uint32_t cmdsize = rd(off + 4);
+        if (cmdsize < 8 || off + cmdsize > slice.size) {
+            break;
+        }
+        if (cmd == 0x1Du || cmd == 0x3Bu) {
+            info->codeSignature = true;
+        }
+        off += cmdsize;
+        walked += cmdsize;
+        ++seen;
+        if (seen > 0x400u) {
+            break; // a sane binary has far fewer load commands
+        }
+    }
+    info->valid = seen == info->ncmds && walked == sizeofcmds && sizeofcmds >= 16;
+    return info->valid;
+}
+
 } // namespace
 
 void MacOSTest::initTestCase() {
@@ -423,11 +590,17 @@ void MacOSTest::dmgQifToolsCheck() {
     // of this will be installed into one target folder, only this config
     // must generate the installer (the qif template + the qifOut name).
     //
-    // The CQtDeployerSingle.json is the one package version for DEB and
-    // ZIP only (issue #884): it must NOT generate the Qt Installer
-    // Framework installer. The "extraData" entry of that config bundles
-    // the Qt Installer Framework tools (the QIF folder with binarycreator
-    // + installerbase, staged by the copyQIFW CMake target, issue #867)
+    // The CQtDeployerSingle.json is the one package version for DEB, ZIP
+    // and DMG only (issue #884, issue #899): it must NOT generate the Qt
+    // Installer Framework installer. The dmg option is enabled in the flat
+    // config (issue #899): the deploy command creates the DMG package of
+    // the flat package on the macOS hosts (the hdiutil tool of the macOS
+    // system, the .dmg file of the Distro folder), on the other host
+    // platforms the option is skipped with a warning (the same rule as the
+    // deb and the zip options). The "extraData" entry of that config
+    // bundles the Qt Installer Framework tools (the QIF folder with
+    // binarycreator + installerbase, staged by the copyQIFW CMake target,
+    // issue #867)
     // into the same package as the executable - the same rule the flat
     // zip and deb artifacts use (issue #885), so the installed tool
     // finds the binarycreator in the <AppPath>/QIF search path of the
@@ -439,10 +612,9 @@ void MacOSTest::dmgQifToolsCheck() {
     // option on its own (issue #885).
 #ifdef CQT_DEPLOYER_SELF_DEPLOY_SINGLE_CONFIG
     // The flat single config: the QIF tools bundle (the extraData entry),
-    // the deb + zip rules. The dmg option and the qifOut entry must not
-    // be part of the config - the flat single package is the one package
-    // version for DEB and ZIP only, it must not generate the Qt Installer
-    // Framework installer (issue #884).
+    // the deb + zip + dmg rules. The qif and the qifOut entries must not
+    // be part of the config - the flat single package must not generate
+    // the Qt Installer Framework installer (issue #884).
     QFile configFile(CQT_DEPLOYER_SELF_DEPLOY_SINGLE_CONFIG);
     QVERIFY2(configFile.open(QIODevice::ReadOnly),
              "The single self-deploy config of the build is not found");
@@ -455,15 +627,31 @@ void MacOSTest::dmgQifToolsCheck() {
     // config (the extraData entry, the same rule the flat zip and deb
     // artifacts use, issue #885).
     bool hasQifTools = false;
+    bool hasAppImageTools = false;
     const auto extraData = config.value("extraData");
     if (extraData.isString()) {
         hasQifTools = extraData.toString() == QStringLiteral("./QIFW/QIF");
     } else if (extraData.isArray()) {
         for (const auto &entry: extraData.toArray()) {
+            if (entry.isString()) {
+                // A plain string entry belongs to the default package of
+                // the one package flat config (the AppImage tools entry
+                // of issue #898 uses this syntax).
+                if (entry.toString() == QStringLiteral("./QIFW/QIF")) {
+                    hasQifTools = true;
+                }
+                if (entry.toString() == QStringLiteral("./AppImage")) {
+                    hasAppImageTools = true;
+                }
+                continue;
+            }
             const auto pair = entry.toArray();
             for (int i = 1; i < pair.size(); ++i) {
                 if (pair.at(i).toString() == QStringLiteral("./QIFW/QIF")) {
                     hasQifTools = true;
+                }
+                if (pair.at(i).toString() == QStringLiteral("./AppImage")) {
+                    hasAppImageTools = true;
                 }
             }
         }
@@ -474,23 +662,49 @@ void MacOSTest::dmgQifToolsCheck() {
              "artifacts would lack binarycreator and installerbase "
              "(issue #885)");
 
-    // The flat single package is the one package version for DEB and ZIP
-    // only (issue #884): the deb + zip options are enabled...
+    // The AppImage tools folder is bundled into the package of the flat
+    // config (the extraData entry) on the Linux hosts only - the
+    // AppImage tool is a Linux-only tool (the "appimage" option is
+    // available on the Linux host platforms only), so the deb and zip
+    // artifacts of the Linux hosts contain the appimagetool and the
+    // appimage option works out of the box, the non-Linux packages must
+    // not bundle the Linux tool (issue #898).
+#ifdef Q_OS_LINUX
+    QVERIFY2(hasAppImageTools,
+             "The single self-deploy config does not bundle the AppImage "
+             "tools folder (./AppImage) into the flat package, the deb "
+             "and zip artifacts would lack the appimagetool (issue #898)");
+#else
+    QVERIFY2(!hasAppImageTools,
+             "The single self-deploy config of the non-Linux host bundles "
+             "the Linux-only AppImage tools folder (./AppImage) into the "
+             "flat package (issue #898)");
+#endif
+
+    // The flat single package is the one package version for DEB, ZIP and
+    // DMG (issue #884, issue #899): the deb + zip + dmg options are
+    // enabled...
     QVERIFY2(config.value("deb").toBool(),
              "The single self-deploy config does not enable the deb option "
-             "(the one package version for DEB and ZIP, issue #884)");
+             "(the one package version for DEB, ZIP and DMG, issue #884)");
     QVERIFY2(config.value("zip").toBool(),
              "The single self-deploy config does not enable the zip option "
-             "(the one package version for DEB and ZIP, issue #884)");
+             "(the one package version for DEB, ZIP and DMG, issue #884)");
+    QVERIFY2(config.value("dmg").toBool(),
+             "The single self-deploy config does not enable the dmg option, "
+             "the deploy command must create the DMG package of the flat "
+             "package on the macOS hosts (issue #899)");
+    QVERIFY2(!config.value("dmgOut").toString().isEmpty(),
+             "The single self-deploy config does not set the dmgOut entry, "
+             "the name of the output DMG file (issue #899)");
 
     // ...and the Qt Installer Framework installer must not be generated
-    // from the flat config: the dmg option and the qifOut entry are not
-    // part of the config (issue #884). The installer is generated only
-    // from the multi-package config (the CQtDeployer.json).
-    QVERIFY2(!config.contains("dmg"),
-             "The single self-deploy config must not contain the dmg "
-             "option, the flat single package is the DEB and ZIP version "
-             "only (issue #884)");
+    // from the flat config: the qif and the qifOut entries are not part
+    // of the config (issue #884). The installer is generated only from
+    // the multi-package config (the CQtDeployer.json). The dmg option of
+    // the flat config creates the DMG package of the DMG backend (the
+    // hdiutil tool of the macOS system, issue #899), not the Qt Installer
+    // Framework installer.
     QVERIFY2(!config.contains("qifOut"),
              "The single self-deploy config must not contain the qifOut "
              "entry, the Qt Installer Framework installer is generated "
@@ -537,6 +751,7 @@ void MacOSTest::dmgQifToolsCheck() {
     // it to the cqt name and links it into the private bin folder of the
     // macOS hosts (issue #884).
     bool hasCqtWrapper = false;
+    bool multiHasAppImageTools = false;
     const auto multiExtraData = multiConfig.value("extraData");
     if (multiExtraData.isArray()) {
         for (const auto &entry: multiExtraData.toArray()) {
@@ -546,6 +761,11 @@ void MacOSTest::dmgQifToolsCheck() {
                 pair.at(1).toString() == QStringLiteral("./QIFWTemplate/res/cqt.sh")) {
                 hasCqtWrapper = true;
             }
+            if (pair.size() >= 2 &&
+                pair.at(0).toString() == QStringLiteral("QIF") &&
+                pair.at(1).toString() == QStringLiteral("./AppImage")) {
+                multiHasAppImageTools = true;
+            }
         }
     }
     QVERIFY2(hasCqtWrapper,
@@ -553,16 +773,35 @@ void MacOSTest::dmgQifToolsCheck() {
              "wrapper script (./QIFWTemplate/res/cqt.sh) into the "
              "CQtDeployer.1_6 package, the cqt console command of the "
              "macOS hosts is not created (issue #884)");
+
+    // The AppImage tools folder is bundled into the "QIF" package of the
+    // multi-package config (the extraData entry) on the Linux hosts only
+    // - the AppImage tool is a Linux-only tool (the "appimage" option is
+    // available on the Linux host platforms only), so the installed
+    // cqtdeployer of the Linux hosts finds the appimagetool in the
+    // <exeDir>/../AppImage search path, the non-Linux packages must not
+    // bundle the Linux tool (issue #898).
+#ifdef Q_OS_LINUX
+    QVERIFY2(multiHasAppImageTools,
+             "The multi-package self-deploy config does not bundle the "
+             "AppImage tools folder (./AppImage) into the QIF package, "
+             "the installed cqtdeployer would lack the appimagetool "
+             "(issue #898)");
+#else
+    QVERIFY2(!multiHasAppImageTools,
+             "The multi-package self-deploy config of the non-Linux host "
+             "bundles the Linux-only AppImage tools folder (./AppImage) "
+             "into the QIF package (issue #898)");
+#endif
 #else
     qInfo() << "The multi self-deploy config check is skipped, the "
                "CQT_DEPLOYER_SELF_DEPLOY_CONFIG definition is not set";
 #endif
 
-    // The package layout the QIF distribution (the dmg option is an
-    // alias for the qtifw option, issue #884) stages in the target
-    // directory for the flat self-deploy package: the executable and
-    // the QIF tools folder (the extraData entry) in the same package
-    // (issue #885).
+    // The package layout the QIF distribution (the qtifw option)
+    // stages in the target directory for the flat self-deploy package:
+    // the executable and the QIF tools folder (the extraData entry) in
+    // the same package (issue #885).
     const auto dir = _tmp.path();
     const auto srcDir = dir + "/src";
     const auto targetDir = dir + "/dist";
@@ -585,10 +824,12 @@ void MacOSTest::dmgQifToolsCheck() {
     const auto previousConfig = DeployCore::_config;
     DeployCore::_config = &cfg;
 
-    // The dmg alias: the name of the Qt Installer Framework installer
-    // is taken from the qifOut value of the deployment parameters
-    // (the same way the qtifw option names it, issue #884).
-    QuasarAppUtils::Params::setEnable("dmg", true);
+    // The qtifw option: the name of the Qt Installer Framework
+    // installer is taken from the qifOut value of the deployment
+    // parameters. The dmg option is the DMG backend (the hdiutil tool
+    // of the macOS system) now, the old alias for the qtifw option
+    // (issue #884) is removed (issue #899).
+    QuasarAppUtils::Params::setEnable("qtifw", true);
     QuasarAppUtils::Params::setArg("qifOut", "CQtDeployer.dmg");
 
     FileManager fm;
@@ -613,9 +854,9 @@ void MacOSTest::dmgQifToolsCheck() {
              qPrintable("installerbase is not staged into the package data "
                          "(issue #885): " + data + "/QIF/installerbase"));
 
-    // The dmg alias names the installer by the qifOut value (on the
-    // macOS hosts the binarycreator appends the .app suffix to the
-    // installer name, issue #738).
+    // The QIF distribution names the installer by the qifOut value of
+    // the deployment parameters (on the macOS hosts the binarycreator
+    // appends the .app suffix to the installer name, issue #738).
     const auto outFiles = qif.outPutFiles();
     QCOMPARE(outFiles.size(), 1);
 #ifdef Q_OS_MACOS
@@ -628,7 +869,7 @@ void MacOSTest::dmgQifToolsCheck() {
     QVERIFY(qif.removeTemplate());
     QVERIFY(!QDir(targetDir + "/defaultQIFWTemplate").exists());
 
-    QuasarAppUtils::Params::setEnable("dmg", false);
+    QuasarAppUtils::Params::setEnable("qtifw", false);
     QuasarAppUtils::Params::setArg("qifOut", QString());
     DeployCore::_config = previousConfig;
 }
@@ -675,6 +916,91 @@ void MacOSTest::macOsInstallScriptCheck() {
 #else
     qInfo() << "The installscript.js check is skipped, the "
                "CQT_DEPLOYER_QIFW_TEMPLATE_INSTALLSCRIPT definition is not set";
+#endif
+}
+
+void MacOSTest::qifMacBinariesArmCheck() {
+#ifdef CQT_DEPLOYER_QIFW_MAC_BINARIES_DIR
+    // The Qt Installer Framework binaries of the macOS hosts are stored
+    // in the repository (issue #867) and must be universal Mach-O
+    // binaries with an intact arm64 slice: the binaryCreator runs and the
+    // generated installers (the installerbase base binary) of the macOS
+    // hosts fail on the Apple Silicon (M2) processors with "binary is
+    // damaged" when the arm support or the code signature of the arm64
+    // slice is missing (issue #896). The check parses the fat headers and
+    // the mach_header_64 of every slice of the staged binaries, so it
+    // runs on every platform that builds the tests (the Windows hosts
+    // skip the class, see the initTestCase) and does not execute the
+    // macOS binaries.
+    const QStringList names = {
+        QStringLiteral("binarycreator"),
+        QStringLiteral("installerbase")
+    };
+
+    for (const auto &name : names) {
+        const QString path =
+                QStringLiteral(CQT_DEPLOYER_QIFW_MAC_BINARIES_DIR) + "/" + name;
+        QFile file(path);
+        QVERIFY2(file.open(QIODevice::ReadOnly),
+                 qPrintable("The Qt Installer Framework mac binary is not found: " + path));
+        const QByteArray data = file.readAll();
+        file.close();
+        QVERIFY2(data.size() > 64,
+                 qPrintable("The Qt Installer Framework mac binary is empty or "
+                            "truncated: " + path));
+
+        QList<FatSlice> slices;
+        QVERIFY2(parseFatMachO(data, &slices),
+                 qPrintable("The Qt Installer Framework mac binary is not a valid "
+                            "universal (fat) Mach-O binary: " + path));
+
+        const FatSlice *x86 = nullptr;
+        const FatSlice *arm = nullptr;
+        for (const auto &s : slices) {
+            if (s.cputype == 0x01000007u) { // CPU_TYPE_X86_64
+                x86 = &s;
+            } else if (s.cputype == 0x0100000Cu) { // CPU_TYPE_ARM64
+                arm = &s;
+            }
+        }
+        QVERIFY2(x86 != nullptr,
+                 qPrintable("The Qt Installer Framework mac binary has no x86_64 "
+                            "slice: " + path));
+        QVERIFY2(arm != nullptr,
+                 qPrintable("The Qt Installer Framework mac binary has no arm64 "
+                            "slice, the Apple Silicon (M2) processors are not "
+                            "supported (issue #896): " + path));
+
+        SliceInfo x86Info;
+        QVERIFY2(parseMachO64Slice(data, *x86, &x86Info) &&
+                 x86Info.cputype == 0x01000007u,
+                 qPrintable("The x86_64 slice of the Qt Installer Framework mac "
+                            "binary is not a valid mach_header_64 binary: " + path));
+        SliceInfo armInfo;
+        QVERIFY2(parseMachO64Slice(data, *arm, &armInfo) &&
+                 armInfo.cputype == 0x0100000Cu,
+                 qPrintable("The arm64 slice of the Qt Installer Framework mac "
+                            "binary is not a valid mach_header_64 binary: " + path));
+
+        // The arm64 slice must carry a code signature: the Apple Silicon
+        // processors do not run unsigned arm64 binaries and the
+        // quarantined (downloaded) installers are rejected with "binary is
+        // damaged" without it (issue #896). The signature state of the
+        // x86_64 slice is informational only: the Intel processors run the
+        // unsigned x86_64 binaries and the Qt online repository publishes
+        // the x86_64 slices without a code signature (issue #896).
+        QVERIFY2(armInfo.codeSignature,
+                 qPrintable("The arm64 slice of the Qt Installer Framework mac "
+                            "binary has no code signature, the binary is rejected "
+                            "on the Apple Silicon hosts (issue #896): " + path));
+        qInfo() << "The Qt Installer Framework mac binary" << name
+                << "is a universal binary (" << slices.size() << " slices), the "
+                "arm64 slice is code signed, the x86_64 slice code signature "
+                "state is" << (x86Info.codeSignature ? "signed" : "unsigned");
+    }
+#else
+    qInfo() << "The QIFW mac binaries check is skipped, the "
+               "CQT_DEPLOYER_QIFW_MAC_BINARIES_DIR definition is not set";
 #endif
 }
 

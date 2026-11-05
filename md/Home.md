@@ -10,8 +10,11 @@
 * [Guide](Guide.md)
 * [Quick guide](QuickGuide.md)
 * [Build and Install](Build-and-Install.md)
+* [GitHub Actions](GitHubActions.md)
 * [Deploy file](DeployConfigFile.md)
 * [Packing](Packing.md)
+* [AppImage](AppImage.md)
+* [DMG](DMG.md)
 * [Change log page](Changelog.md)
 * [Reviews](ReleaseReviews.md)
 * [Compare Features](CompareFeatures.md)
@@ -22,6 +25,7 @@
 * [Custom scripts](CustomScripts.md)
 * [CQtDeployer for arm](arm.md)
 * [CQtDeployer for macOS](macOS.md)
+* [Code signing of the QtIFW installer](Signing.md)
 
 
 ## Support the project
