@@ -218,10 +218,8 @@ add_custom_target(
 
 # The deploy targets are created by the addDeployFromCustomFile calls
 # above only when the cqtdeployer executable is on the PATH - without
-# the tool the function returns early and the targets do not exist (the
-# temporary ARM bootstrap of issue #918 configures the project before
-# the tool is built), so the dependencies are added only for the
-# existing targets.
+# the tool the function returns early and the targets do not exist, so
+# the dependencies are added only for the existing targets (issue #918).
 if(TARGET deploy${CURRENT_PROJECT})
     add_dependencies(deploy${CURRENT_PROJECT} copyQIFW)
 endif()
@@ -298,9 +296,8 @@ if (UNIX AND NOT APPLE)
 
     if(TARGET snapcraft${CURRENT_PROJECT})
         # The single deploy target exists only when the cqtdeployer
-        # executable is on the PATH (the temporary ARM bootstrap of
-        # issue #918 configures the project before the tool is built,
-        # the snapcraft target is created without it).
+        # executable is on the PATH (the snapcraft target is created
+        # without it, issue #918).
         if(TARGET deploy${CURRENT_PROJECT}Single)
             message("snap is depends of single deploy")
             add_dependencies(snapcraft${CURRENT_PROJECT} "deploy${CURRENT_PROJECT}Single")

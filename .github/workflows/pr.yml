@@ -80,48 +80,20 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Install CQtDeployer
-      # On the Linux ARM runners the prebuilt release assets do not exist
-      # yet (issue #918), so the install action is skipped there and the
-      # bootstrap step below builds the tool from source instead.
-      if: "!(runner.os == 'Linux' && runner.arch == 'ARM64')"
+      # The install action downloads the *_Linux_aarch64.zip asset on the
+      # Linux ARM (ARM64) runners (issue #918). The pinned version is the
+      # first release with the full asset set of every platform, including
+      # the Linux ARM (aarch64) packages (the "latest" stable release has
+      # no ARM assets yet).
       uses: QuasarApp/cqtdeployer-install-action@main
+      with:
+        version: v1.7.81.ca3a4436
+        latest: false
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
       with:
         key: ${{ matrix.os }}-${{ matrix.type }}
-
-    - name: Build CQtDeployer from source (Linux ARM, temporary)
-      # Temporary bootstrap of issue #918: the ARM runner builds
-      # cqtdeployer from source (a separate build tree, no tests) and
-      # puts the freshly built executable on the PATH under the
-      # "cqtdeployer" wrapper name of the CMake deploy and test targets.
-      # The build-tree executable is directly runnable: the CMake build
-      # rpath contains the build directories and the Qt library
-      # directory. This step is removed once the first Linux ARM64
-      # release exists (then the install action works on ARM like on
-      # x86_64).
-      if: runner.os == 'Linux' && runner.arch == 'ARM64'
-      shell: bash
-      # Each line of the literal run block is a separate shell command,
-      # the cmake configure arguments of the issue #918 bootstrap are
-      # therefore kept on the single line.
-      run: |
-        cmake -B ${{ github.workspace }}/build-tool -G Ninja -DBUILD_SHARED_LIBS=ON -DCQT_DEPLOYER_TESTS=OFF -DCMAKE_PREFIX_PATH='${{ env.QT_ROOT_DIR }}' -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }}
-        cmake --build ${{ github.workspace }}/build-tool --config ${{ matrix.build_type }} --parallel 16
-        # The deploy and the test targets of the main tree run with the
-        # bootstrap executable of the PATH, so the QIF and the AppImage
-        # tools must be staged next to it (the cqtdeployer tool searches
-        # <executable dir>/QIF and <executable dir>/AppImage, the
-        # copyQIFW and the copyAppImage targets of the build-tool tree
-        # stage them into build-tool/src/CQtDeployer). Without the
-        # staging the QIFW and the AppImage distributions are silently
-        # skipped by the cqtdeployer tool (issue #918).
-        cmake --build ${{ github.workspace }}/build-tool --target copyQIFW
-        cmake --build ${{ github.workspace }}/build-tool --target copyAppImage
-        mkdir -p ${{ runner.temp }}/cqt
-        ln -sf ${{ github.workspace }}/build-tool/src/CQtDeployer/CQtDeployer ${{ runner.temp }}/cqt/cqtdeployer
-        echo "${{ runner.temp }}/cqt" >> "$GITHUB_PATH"
 
     - name: Verify CQtDeployer version
       # Check if cqtdeployer is accessible and print its version
