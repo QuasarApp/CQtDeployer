@@ -10,7 +10,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2025, ubuntu-24.04, macos-15]
+        # The Linux ARM (aarch64) runner is the ARM64 build of the PR
+        # testing (issue #918). The Qt 6.10.3 aarch64 packages are built
+        # for Ubuntu 24.04, so the ARM leg uses ubuntu-24.04-arm.
+        os: [windows-2025, ubuntu-24.04, ubuntu-24.04-arm, macos-15]
         build_type: [Release]
         c_compiler: [gcc]
 
@@ -28,11 +31,23 @@ jobs:
 
     - name: Install Qt (Linux)
       uses: jurplel/install-qt-action@v4.3.0
-      if: runner.os == 'Linux'
+      if: runner.os == 'Linux' && runner.arch == 'X64'
       with:
         version: '6.10.3'
         target: 'desktop'
         arch: 'linux_gcc_64'
+        cache: true
+        aqtversion: ==3.2.*
+
+    - name: Install Qt (Linux ARM)
+      # The aarch64 host of the Qt repository (aqtinstall): the arch
+      # string is linux_gcc_arm64 (issue #918).
+      uses: jurplel/install-qt-action@v4.3.0
+      if: runner.os == 'Linux' && runner.arch == 'ARM64'
+      with:
+        version: '6.10.3'
+        target: 'desktop'
+        arch: 'linux_gcc_arm64'
         cache: true
         aqtversion: ==3.2.*
 
@@ -65,16 +80,24 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Install CQtDeployer
+      # The install action downloads the *_Linux_aarch64.zip asset on the
+      # Linux ARM (ARM64) runners (issue #918). The pinned version is the
+      # first release with the full asset set of every platform, including
+      # the Linux ARM (aarch64) packages (the "latest" stable release has
+      # no ARM assets yet).
       uses: QuasarApp/cqtdeployer-install-action@main
-
-    - name: Verify CQtDeployer version
-      # Check if cqtdeployer is accessible and print its version
-      run: cqtdeployer version
+      with:
+        version: v1.7.81.ca3a4436
+        latest: false
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
       with:
         key: ${{ matrix.os }}-${{ matrix.type }}
+
+    - name: Verify CQtDeployer version
+      # Check if cqtdeployer is accessible and print its version
+      run: cqtdeployer version
 
     - name: Configure CMake (Windows)
       if: runner.os == 'Windows'

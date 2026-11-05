@@ -44,13 +44,15 @@ lint:
     # unused - the warnings are suppressed for exactly these files
     # (https://documentation.ubuntu.com/snapcraft/stable/how-to/debugging/disable-a-linter).
     - gpu
+    # The library paths use the multiarch directory of the host
+    # (x86_64-linux-gnu or aarch64-linux-gnu, issue #918).
     - library:
-      - usr/lib/x86_64-linux-gnu/libGL.so.1*
-      - usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0*
-      - usr/lib/x86_64-linux-gnu/libicuio.so*
-      - usr/lib/x86_64-linux-gnu/libicutest.so*
-      - usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0*
-      - usr/lib/x86_64-linux-gnu/libxcb-xinerama.so.0*
+      - usr/lib/@CMAKE_LIBRARY_ARCHITECTURE@/libGL.so.1*
+      - usr/lib/@CMAKE_LIBRARY_ARCHITECTURE@/libGLX_mesa.so.0*
+      - usr/lib/@CMAKE_LIBRARY_ARCHITECTURE@/libicuio.so*
+      - usr/lib/@CMAKE_LIBRARY_ARCHITECTURE@/libicutest.so*
+      - usr/lib/@CMAKE_LIBRARY_ARCHITECTURE@/libwayland-cursor.so.0*
+      - usr/lib/@CMAKE_LIBRARY_ARCHITECTURE@/libxcb-xinerama.so.0*
 
 parts:
   cqtdeployer:
