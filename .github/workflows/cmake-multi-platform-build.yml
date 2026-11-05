@@ -109,11 +109,6 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Install CQtDeployer
-      # The install action downloads the *_Linux_aarch64.zip asset on the
-      # Linux ARM (ARM64) runners (issue #918). The pinned version is the
-      # first release with the full asset set of every platform, including
-      # the Linux ARM (aarch64) packages (the "latest" stable release has
-      # no ARM assets yet).
       uses: QuasarApp/cqtdeployer-install-action@main
       with:
         latest: true
@@ -172,12 +167,6 @@ jobs:
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target release --parallel 1
 
     - name: Prepare the QIFW installer archives (macOS)
-      # The binarycreator of the macOS hosts creates the Qt Installer
-      # Framework installer of the multi-package self-deploy config
-      # (the qifOut name, issue #884) as the .app bundle - a directory
-      # with the ".app" suffix appended to the installer name (issue
-      # 738). The release upload action needs a file, so the bundle is
-      # packed into a zip archive (issue #884).
       if: runner.os == 'macOS'
       shell: bash
       run: |
@@ -194,13 +183,11 @@ jobs:
         prerelease: true
         asset_name: ${{ env.INSTALLER_FULL_NAME }}
         overwrite: true
+        target_commit: ${{ github.head_ref }}
+
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
     - name: Create Release and Upload Assets Installer (macOS)
-      # The Qt Installer Framework installer of the macOS hosts is the
-      # .app bundle of the binarycreator of the multi-package
-      # self-deploy config, packed into a zip archive by the prepare
-      # step (issue #884).
       if: runner.os == 'macOS'
       uses: svenstaro/upload-release-action@v2
       with:
@@ -210,17 +197,11 @@ jobs:
         prerelease: true
         asset_name: ${{ env.INSTALLER_FULL_NAME }}.app.zip
         overwrite: true
+        target_commit: ${{ github.head_ref }}
+
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
     - name: Create Release and Upload Assets DMG (macOS)
-      # The DMG package of the flat single self-deploy config (the
-      # ready-to-use CQtDeployer application: the executable, the QIF
-      # tools, the AppImage tools and the libraries), created by the
-      # deploy command with the dmg option of the DMG backend of the
-      # self-deploy config (the hdiutil tool of the macOS system, the
-      # .dmg file of the Distro folder, the same way the deb/zip
-      # artifacts are created, issue #899). The md/macOS.md page
-      # documents the download of this CQtDeployer_*_dmg asset.
       if: runner.os == 'macOS'
       uses: svenstaro/upload-release-action@v2
       with:
@@ -230,6 +211,8 @@ jobs:
         prerelease: true
         asset_name: ${{ env.BASE_FULL_NAME }}.dmg
         overwrite: true
+        target_commit: ${{ github.head_ref }}
+
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
     - name: Create Release and Upload Assets Deb
@@ -243,6 +226,8 @@ jobs:
         prerelease: true
         asset_name: ${{ env.BASE_FULL_NAME }}.deb
         overwrite: true
+        target_commit: ${{ github.head_ref }}
+
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
     - name: Create Release and Upload Assets zip
@@ -254,15 +239,11 @@ jobs:
         prerelease: true
         asset_name: ${{ env.BASE_FULL_NAME }}.zip
         overwrite: true
+        target_commit: ${{ github.head_ref }}
+
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
     - name: Create Release and Upload Assets AppImage
-      # The appimage option of the flat self-deploy config
-      # (CQtDeployerSingle.json) creates the AppImage package of the
-      # CQtDeployer self package with the bundled appimagetool (issue
-      # #898). The appimage option is available on the Linux host
-      # platforms only, so the AppImage asset exists on the Linux
-      # runners only.
       if: runner.os == 'Linux'
       uses: svenstaro/upload-release-action@v2
       with:
@@ -272,6 +253,8 @@ jobs:
         prerelease: true
         asset_name: ${{ env.BASE_FULL_NAME }}.AppImage
         overwrite: true
+        target_commit: ${{ github.head_ref }}
+
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
     - name: Create Release and Upload Assets Snap
@@ -287,12 +270,10 @@ jobs:
         prerelease: true
         asset_name: ${{ env.BASE_FULL_NAME }}.snap
         overwrite: true
+        target_commit: ${{ github.head_ref }}
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
     - name: Create Release and Upload Assets Snap (ARM)
-      # The snapcraft of the ARM runners names the package
-      # <name>_<version>_arm64.snap (the arm64 architecture name of
-      # snapd, issue #918).
       if: runner.os == 'Linux' && runner.arch == 'ARM64'
       uses: svenstaro/upload-release-action@v2
       with:
@@ -302,5 +283,7 @@ jobs:
         prerelease: true
         asset_name: ${{ env.BASE_FULL_NAME }}.snap
         overwrite: true
+        target_commit: ${{ github.head_ref }}
+
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
