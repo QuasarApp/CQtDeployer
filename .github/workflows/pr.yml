@@ -87,8 +87,7 @@ jobs:
       # no ARM assets yet).
       uses: QuasarApp/cqtdeployer-install-action@main
       with:
-        version: v1.7.81.ca3a4436
-        latest: false
+        latest: true
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
