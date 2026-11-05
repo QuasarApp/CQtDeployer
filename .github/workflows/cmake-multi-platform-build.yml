@@ -94,16 +94,8 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Install CQtDeployer
-      # The release bundles the Qt Installer Framework tools (the QIF
-      # folder next to the executable, issue #885) into the macOS
-      # package, so the installed tool finds the binarycreator and
-      # creates the QIFW installer of the self-deploy config on the
-      # macOS hosts (issue #884). The main branch of the action also
-      # restores the executable bit of the bundled QIF tools after the
-      # zip extraction (QuasarApp/cqtdeployer-install-action#9).
       uses: QuasarApp/cqtdeployer-install-action@main
-      with:
-        version: "v1.6.2571.7457e934"
+
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
