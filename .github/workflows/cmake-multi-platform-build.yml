@@ -23,7 +23,7 @@ jobs:
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
-        os: [windows-2025, ubuntu-22.04, macos-14]
+        os: [windows-2025, ubuntu-22.04, macos-15]
         build_type: [Release]
         c_compiler: [gcc]
 
@@ -173,6 +173,8 @@ jobs:
         prerelease: true
         asset_name: ${{ env.INSTALLER_FULL_NAME }}
         overwrite: true
+        target_commit: ${{ github.head_ref }}
+
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
     - name: Create Release and Upload Assets Installer (macOS)
@@ -189,6 +191,8 @@ jobs:
         prerelease: true
         asset_name: ${{ env.INSTALLER_FULL_NAME }}.app.zip
         overwrite: true
+        target_commit: ${{ github.head_ref }}
+
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
     - name: Create Release and Upload Assets Deb
@@ -202,6 +206,8 @@ jobs:
         prerelease: true
         asset_name: ${{ env.BASE_FULL_NAME }}.deb
         overwrite: true
+        target_commit: ${{ github.head_ref }}
+
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
     - name: Create Release and Upload Assets zip
@@ -213,6 +219,8 @@ jobs:
         prerelease: true
         asset_name: ${{ env.BASE_FULL_NAME }}.zip
         overwrite: true
+        target_commit: ${{ github.head_ref }}
+
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
     - name: Create Release and Upload Assets Snap
@@ -226,5 +234,6 @@ jobs:
         prerelease: true
         asset_name: ${{ env.BASE_FULL_NAME }}.snap
         overwrite: true
+        target_commit: ${{ github.head_ref }}
         body: CQtDeployer ${{ env.CQT_DEPLOYER_VERSION }}
 
