@@ -57,8 +57,8 @@
   DebTest: 4/4 passed; the smoke run of the created installer shows the
   `License "LICENSE" accepted by user` line of the installation log)
 - [x] Run the git diff check
-- [ ] Push the task_456 branch and create the PR
-- [ ] Set the waiting-for-review label and post the result comment
+- [x] Push the task_456 branch and create the PR (https://github.com/QuasarApp/CQtDeployer/pull/926)
+- [x] Set the waiting-for-review label and post the result comment
 
 ## Blockers / Questions
 
