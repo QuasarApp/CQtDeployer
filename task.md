@@ -23,10 +23,12 @@
 - [x] Collect the contribution workflow (CONTRIBUTING.md, CI, PR process)
 - [x] Collect the build and testing instructions (CMake options, Qt version, test suites)
 - [x] Write the AGENTS.md file with all 5 required sections
-- [ ] Run the build and the test suite to verify the documented commands
-- [ ] Run the git diff check and verify the content
-- [ ] Push the task_925 branch and create the PR
-- [ ] Set the waiting-for-review label and post the result comment
+- [x] Run the build and the test suite to verify the documented commands
+  (Qt 6.10.3 Linux host: the configure + build succeeded, the full test
+  suite of the 16 test classes ran with 0 failed tests)
+- [x] Run the git diff check and verify the content
+- [x] Push the task_925 branch and create the PR (https://github.com/QuasarApp/CQtDeployer/pull/927)
+- [x] Set the waiting-for-review label and post the result comment
 
 ## Blockers / Questions
 
