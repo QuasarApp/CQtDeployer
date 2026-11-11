@@ -4,6 +4,7 @@
 #include <pathutils.h>
 #include <packagecontrol.h>
 #include <quasarapp.h>
+#include <QFileInfo>
 
 Deb::Deb(FileManager *fileManager):
     iDistribution(fileManager)
@@ -62,6 +63,10 @@ bool Deb::deployTemplate(PackageControl &pkg) {
             qWarning() << "Failed to set permissions";
         }
 
+        if (!addLicense(local, info.Name)) {
+            return false;
+        }
+
         inouts.push_back({local, cfg->getTargetDir() + "/" + info.debOut});
     }
 
@@ -93,7 +98,42 @@ bool Deb::deployRawTemplate(PackageControl &pkg) {
                        local, {}, {}, replace)) {
             return false;
         }
+
+        if (!addLicense(local, info.Name)) {
+            return false;
+        }
     }
+
+    return true;
+}
+
+bool Deb::addLicense(const QString &packageLocation, const QString &packageName) const {
+    // The license file of the -license option (issue #456): the license
+    // text is stored in the standard location of the Debian policy: the
+    // usr/share/doc/<package>/copyright file of the package (the same way
+    // the Debian packages of the system store the full license text).
+    const QString license = QuasarAppUtils::Params::getArg("license");
+    if (license.isEmpty()) {
+        return true;
+    }
+
+    QFileInfo licenseInfo(license);
+    if (!licenseInfo.isFile()) {
+        qCritical() << QString("The license file is not found: %0 (issue #456).").arg(license);
+        return false;
+    }
+
+    const QString licenseTarget = packageLocation + "/usr/share/doc/" + packageName
+        + "/copyright";
+    // The copyFile() helper of the iDistribution creates the parent
+    // directories of the target file.
+    if (!copyFile(license, licenseTarget, true)) {
+        qCritical() << QString("Failed to copy the license file into the debian package: %0 (issue #456).")
+                    .arg(licenseTarget);
+        return false;
+    }
+
+    qInfo() << "The license was added into the debian package (issue #456): " + licenseTarget;
 
     return true;
 }

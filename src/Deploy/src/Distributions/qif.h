@@ -52,6 +52,18 @@ private:
      */
     bool initDefaultConfiguratuin();
 
+    /**
+     * @brief addLicense This method inserts the license file of the
+     * -license option into the Qt Installer Framework installer (issue #456).
+     * The license file is copied into the meta directory of every package of
+     * the installer template and the Licenses element is added to the
+     * package.xml of the package, so the installer shows the license
+     * agreement before the installation starts.
+     * @param pkg This is the PackageControl object with the packages of the deploy.
+     * @return true if the license was inserted successful (or the option is not set).
+     */
+    bool addLicense(PackageControl &pkg) const;
+
     TemplateInfo generalInfo;
 };
 

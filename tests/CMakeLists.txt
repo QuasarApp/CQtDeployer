@@ -28,8 +28,9 @@ cmake_minimum_required(VERSION 3.18)
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
 
-set(TEST_CLASSES AppImage DeployConfig DeployCore Dmg DistroModule DistroStruct Envirement
-    FileManager IgnoreRule LibInfo MacOS PathUtils Pe Qifw TargetInfo ZipCompresser)
+set(TEST_CLASSES AppImage Deb DeployConfig DeployCore Dmg DistroModule DistroStruct
+    Envirement FileManager IgnoreRule LibInfo MacOS PathUtils Pe Qifw TargetInfo
+    ZipCompresser)
 
 # The deploy step of the test targets runs the cqtdeployer tool with the
 # qmake taken from the QT_QMAKE_EXECUTABLE variable. The Qt CMake packages
@@ -113,6 +114,17 @@ endif()
 target_compile_definitions(${PROJECT_NAME}-tests-Dmg PRIVATE
     DMG_TEST_CQT_DEPLOYER_EXE="$<TARGET_FILE:${PROJECT_NAME}>"
     DMG_TEST_QMAKE="${QT_QMAKE_EXECUTABLE}")
+
+# The Deb test runs the cqtdeployer executable of the current build
+# tree (not the stable release installed by the CI action), so it
+# verifies the code under review (issue #456). The deb packages are
+# created with the dpkg-deb tool of the Linux system (no bundled tools,
+# the copy targets are not needed), on the other host platforms the
+# package creation test is skipped (the deb option is a Linux-only
+# option, the getDistribution() method of the ConfigParser).
+target_compile_definitions(${PROJECT_NAME}-tests-Deb PRIVATE
+    DEB_TEST_CQT_DEPLOYER_EXE="$<TARGET_FILE:${PROJECT_NAME}>"
+    DEB_TEST_QMAKE="${QT_QMAKE_EXECUTABLE}")
 
 # The self-deploy configs of the build (the configured CQtDeployer.json
 # and CQtDeployerSingle.json of the source tree, see the configure_file_in

@@ -274,6 +274,10 @@ bool QIF::deployTemplate(PackageControl &pkg) {
         return false;
     }
 
+    if (!addLicense(pkg)) {
+        return false;
+    }
+
     return true;
 }
 
@@ -301,6 +305,10 @@ bool QIF::deployRawTemplate(PackageControl &pkg) {
 
     if (!unpackDir(defaultConfig,
                    configLocation, {}, {})) {
+        return false;
+    }
+
+    if (!addLicense(pkg)) {
         return false;
     }
 
@@ -357,6 +365,114 @@ QString QIF::getStyle(const QString& input) const {
     qInfo() << "Use a default installer style";
 
     return "";
+}
+
+bool QIF::addLicense(PackageControl &pkg) const {
+    // The license file of the -license option (issue #456): the installer
+    // shows the license as an agreement before the installation starts.
+    const QString license = QuasarAppUtils::Params::getArg("license");
+    if (license.isEmpty()) {
+        return true;
+    }
+
+    QFileInfo licenseInfo(license);
+    if (!licenseInfo.isFile()) {
+        qCritical() << QString("The license file is not found: %0 (issue #456).").arg(license);
+        return false;
+    }
+
+    const DeployConfig *cfg = DeployCore::_config;
+
+    // The Qt Installer Framework (issue #456) reads the license agreement
+    // from the meta directory of the packages: the file value of the
+    // License element of the Licenses block of the package.xml is the path
+    // relative to the meta directory of the package. The config.xml of the
+    // installer does not support the license agreement elements in the
+    // Qt Installer Framework versions 4.x: the binarycreator tool rejects
+    // the unknown elements of the config.xml (the Settings parser of the
+    // Qt Installer Framework runs in the strict mode).
+    bool added = false;
+    const auto list = pkg.availablePackages();
+    for (const auto &package : list) {
+
+        const QString metaDir = location(cfg->getDistroFromPackage(package)) + "/meta/";
+        const QString packageXml = metaDir + "package.xml";
+        if (!QFile::exists(packageXml)) {
+            qWarning() << QString("The package.xml of the package is not found, "
+                                  "the license is not added into the package: %0 (issue #456).")
+                                .arg(packageXml);
+            continue;
+        }
+
+        // The license file is copied into the meta directory of the
+        // package with the original file name (issue #456): the file value
+        // of the License element of the package.xml is the path relative
+        // to the meta directory of the Qt Installer Framework.
+        const QString licenseTarget = metaDir + licenseInfo.fileName();
+        if (!copyFile(license, licenseTarget, true)) {
+            qCritical() << QString("Failed to copy the license file into the meta "
+                                   "directory of the package: %0 (issue #456).").arg(licenseTarget);
+            return false;
+        }
+
+        QFile file(packageXml);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            qCritical() << QString("Failed to open the package file of the installer: %0 (issue #456).").arg(packageXml);
+            return false;
+        }
+
+        QString xml = QString::fromUtf8(file.readAll());
+        file.close();
+
+        if (xml.contains("<Licenses>")) {
+            // The custom package template already contains the license
+            // configuration: the license file is copied into the meta
+            // directory of the package only (issue #456).
+            qInfo() << "The package.xml of the installer already contains the "
+                       "Licenses element, the license file is copied only (issue #456): " + packageXml;
+            added = true;
+            continue;
+        }
+
+        // The Licenses element is inserted into the package.xml before the
+        // end tag of the Package element (issue #456): the name value of
+        // the License element is the title of the license agreement (the
+        // base name of the license file) and the file value is the license
+        // file of the meta directory of the package.
+        const QString licensesBlock =
+            "    <Licenses>\n"
+            "        <License name=\"" + licenseInfo.completeBaseName()
+            + "\" file=\"" + licenseInfo.fileName() + "\" />\n"
+            "    </Licenses>\n";
+
+        const int endTag = xml.lastIndexOf("</Package>");
+        if (endTag < 0) {
+            qCritical() << QString("The end tag of the Package element is not found "
+                                   "in the package file: %0 (issue #456).").arg(packageXml);
+            return false;
+        }
+
+        xml.insert(endTag, licensesBlock);
+
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
+            qCritical() << QString("Failed to open the package file of the installer for writing: %0 (issue #456).").arg(packageXml);
+            return false;
+        }
+
+        file.write(xml.toUtf8());
+        file.close();
+
+        qInfo() << "The license agreement was added into the package.xml of the "
+                   "installer (issue #456): " + packageXml;
+        added = true;
+    }
+
+    if (!added) {
+        qWarning() << "The license file is not added into the installer: "
+                     "no package.xml of the packages of the installer template was found (issue #456).";
+    }
+
+    return true;
 }
 
 QString QIF::installerFile() const {
