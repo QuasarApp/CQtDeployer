@@ -18,6 +18,7 @@ public:
     QProcessEnvironment processEnvirement() const override;
 
     QStringList outPutFiles() const override;
+    bool addLicense(PackageControl &pkg) const override;
 
     // iDistribution interface
 protected:

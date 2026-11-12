@@ -708,6 +708,16 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             {"-tr"}, "{package;val,val}",
                             "Adds qm files into the translations folder."
                         }});
+    help.insert(group, {QuasarAppUtils::OptionData{
+                            {"-license"}, "{path/to/licenseFile}",
+                            "Sets the license file that is inserted into the installer and the deb packages (issue #456). "
+                            "The Qt Installer Framework installer (the qtifw option) shows the license as an agreement "
+                            "before the installation: the file is copied into the meta directory of the package of the "
+                            "installer template and the Licenses element is added to the package.xml of the package. "
+                            "The deb packages get the license into the usr/share/doc/<package>/copyright file "
+                            "(the standard location of the license text of the Debian policy).",
+                            "cqtdeployer -bin myApp -license ./LICENSE.txt qtifw deb"
+                        }});
 
     group = "Part 4 Control of target options";
 

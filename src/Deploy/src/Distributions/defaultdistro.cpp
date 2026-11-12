@@ -59,6 +59,13 @@ QStringList DefaultDistro::outPutFiles() const {
     return {};
 }
 
+bool DefaultDistro::addLicense(PackageControl &) const {
+    // The default distribution (the copied data folder) has no standard
+    // license location (issue #456): the -license option is inserted into
+    // the qtifw and the deb packages only.
+    return true;
+}
+
 QString DefaultDistro::dataLocation(const DistroModule &) const {
     return "";
 }

@@ -21,6 +21,7 @@ public:
     QProcessEnvironment processEnvirement() const override;
     QStringList outPutFiles() const override;
     bool isAvailable() const override;
+    bool addLicense(PackageControl &pkg) const override;
 
 protected:
     QString dataLocation(const DistroModule &module) const override;

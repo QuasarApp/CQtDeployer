@@ -265,6 +265,7 @@ void QifwTest::optionTableCheck() {
     const QuasarAppUtils::OptionData *qtifwOption = nullptr;
     const QuasarAppUtils::OptionData *qifOption = nullptr;
     const QuasarAppUtils::OptionData *qifSignOption = nullptr;
+    const QuasarAppUtils::OptionData *licenseOption = nullptr;
     for (const auto &option: options) {
         if (option.names() == (QStringList() << "qtifw" << "-qtifw")) {
             qtifwOption = &option;
@@ -274,6 +275,9 @@ void QifwTest::optionTableCheck() {
         }
         if (option.names() == (QStringList() << "qifSign" << "-qifSign")) {
             qifSignOption = &option;
+        }
+        if (option.names() == (QStringList() << "-license")) {
+            licenseOption = &option;
         }
     }
 
@@ -311,6 +315,19 @@ void QifwTest::optionTableCheck() {
         QVERIFY(!qifSignOption->isDepricated());
         QVERIFY(qifSignOption->description().contains("macOS", Qt::CaseInsensitive));
         QVERIFY(qifSignOption->example().contains("qifSign"));
+    }
+
+    // The license option is registered under the -license name in the
+    // control of packages options group: the license file is inserted
+    // into the installer and the deb packages (issue #456).
+    QVERIFY2(licenseOption != nullptr,
+             "The -license option is not registered in the options table");
+    if (licenseOption != nullptr) {
+        QCOMPARE(licenseOption->names(), (QStringList() << "-license"));
+        QVERIFY(!licenseOption->isDepricated());
+        QVERIFY(licenseOption->description().contains("installer", Qt::CaseInsensitive));
+        QVERIFY(licenseOption->description().contains("deb", Qt::CaseInsensitive));
+        QVERIFY(licenseOption->example().contains("license"));
     }
 }
 
@@ -608,6 +625,153 @@ void QifwTest::qifSignIdentityCheck() {
                         "(the full output is stored in test_report.txt.qifSign):\n"
                         + output));
 #endif
+}
+
+void QifwTest::licenseInstallerCheck() {
+    // The -license option inserts the license file into the Qt Installer
+    // Framework installer (issue #456): the license file is copied into
+    // the meta directory of the package of the installer template and the
+    // Licenses element is added to the package.xml of the package, so the
+    // installer shows the license agreement before the installation starts.
+    //
+    // The first run is the standard deploy with the qtifw option: the
+    // binarycreator tool of the Qt Installer Framework parses the
+    // config.xml of the installer in the strict mode and rejects the
+    // unknown elements, so the created installer is the proof that the
+    // license insertion does not break the installer creation (issue #456).
+    //
+    // The second run is the getDefaultTemplate mode of the cqtdeployer:
+    // the standard deploy removes the template directory after the
+    // binarycreator run, the template mode extracts the template with the
+    // license insertion into the target directory without the binarycreator
+    // run, so the content of the template is checked below.
+    if (_deployerExe.isEmpty()) {
+        QSKIP("The cqtdeployer executable of the build tree is not found, the license test cannot run");
+    }
+
+    // The license file of the test with the unique marker: the marker is
+    // checked in the copy of the meta directory of the package of the
+    // installer template after the template extraction.
+    const QString marker = QStringLiteral("CQtDeployer QifwTest License Agreement (issue #456)");
+    const QString licenseFile = _tmp.path() + "/LICENSE.txt";
+    {
+        QFile file(licenseFile);
+        QVERIFY2(file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text),
+                 "Failed to create the license file");
+        file.write(marker.toUtf8());
+        file.close();
+    }
+
+    // The first run: the standard deploy with the qtifw option (issue #456).
+    int exitCode = -1;
+    QString output;
+    QStringList args = {
+        "clear",
+        "-bin", _targetBinary,
+        "-targetDir", _tmp.path() + "/dist",
+        "-libDir", _targetLibDir,
+        "-recursiveDepth", "5",
+        "qtifw",
+        "-license", licenseFile
+    };
+    args << "-qifOut" << installerName("QifwLicense");
+    if (!_qmake.isEmpty()) {
+        args << "-qmake" << _qmake;
+    }
+
+    runDeployerProcess(args, QStringLiteral("license"), &exitCode, &output);
+    QCOMPARE(exitCode, 0);
+
+    const QFileInfo installer = installerInfo("QifwLicense");
+    QVERIFY2(waitForInstaller(5 * 60 * 1000, "QifwLicense"),
+             qPrintable("The qtifw installer with the license is not created (the wait "
+                         "timed out). The dist dir content: [" + distDirListing()
+                         + "]. The installer artifact (" + installer.filePath() + "): ["
+                         + artifactListing()
+                         + "]. The cqtdeployer output (the full output is stored in "
+                           "test_report.txt.license):\n" + output));
+
+    // The second run: the extraction of the template with the
+    // getDefaultTemplate option (issue #456).
+    int templateExitCode = -1;
+    QString templateOutput;
+    QStringList templateArgs = {
+        "clear",
+        "-bin", _targetBinary,
+        "-targetDir", _tmp.path() + "/distTemplate",
+        "-libDir", _targetLibDir,
+        "-recursiveDepth", "5",
+        "getDefaultTemplate",
+        "qtifw",
+        "-license", licenseFile
+    };
+    if (!_qmake.isEmpty()) {
+        templateArgs << "-qmake" << _qmake;
+    }
+
+    runDeployerProcess(templateArgs, QStringLiteral("licenseTemplate"),
+                       &templateExitCode, &templateOutput);
+    QCOMPARE(templateExitCode, 0);
+
+    // The license file is copied into the meta directory of every package
+    // of the installer template with the original file name and the
+    // Licenses element is added to the package.xml of the package
+    // (issue #456).
+    const QString packagesRoot = _tmp.path() + "/distTemplate/defaultQIFWTemplate/packages";
+    const QDir packagesDir(packagesRoot);
+    const QStringList packages = packagesDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    int checked = 0;
+    for (const QString &package : packages) {
+        const QString packageXml = packagesRoot + "/" + package + "/meta/package.xml";
+        if (!QFile::exists(packageXml)) {
+            continue;
+        }
+
+        // The license file is copied into the meta directory of the
+        // package with the original file name (issue #456).
+        const QFileInfo licenseCopy(QFileInfo(packageXml).absolutePath() + "/LICENSE.txt");
+        QVERIFY2(licenseCopy.isFile(),
+                 qPrintable("The license file is not copied into the meta directory of "
+                             "the package (issue #456). The meta dir content: ["
+                             + QDir(licenseCopy.absolutePath()).entryList(QDir::Files | QDir::NoDotAndDotDot).join(", ")
+                             + "]. The cqtdeployer output (the full output is stored in "
+                               "test_report.txt.licenseTemplate):\n" + templateOutput));
+        {
+            QFile file(licenseCopy.filePath());
+            QVERIFY2(file.open(QIODevice::ReadOnly), "Failed to open the license copy");
+            QCOMPARE(QString::fromUtf8(file.readAll()), marker);
+        }
+
+        // The Licenses element is added to the package.xml of the package:
+        // the name value of the License element is the base name of the
+        // license file and the file value is the license file of the meta
+        // directory of the package (issue #456).
+        QFile file(packageXml);
+        QVERIFY2(file.open(QIODevice::ReadOnly | QIODevice::Text),
+                 qPrintable("Failed to open the package.xml of the package: " + packageXml));
+        const QString xml = QString::fromUtf8(file.readAll());
+        QVERIFY2(xml.contains("<Licenses>"),
+                 qPrintable("The Licenses element is not added to the package.xml of the "
+                             "package (issue #456). The package.xml content:\n" + xml
+                             + ". The cqtdeployer output (the full output is stored in "
+                               "test_report.txt.licenseTemplate):\n" + templateOutput));
+        QVERIFY2(xml.contains("<License name=\"LICENSE\" file=\"LICENSE.txt\" />"),
+                 qPrintable("The License element of the Licenses block is not added to the "
+                             "package.xml of the package (issue #456). The package.xml "
+                             "content:\n" + xml));
+        QVERIFY2(xml.contains("</Licenses>"),
+                 qPrintable("The end tag of the Licenses element is not added to the "
+                             "package.xml of the package (issue #456). The package.xml "
+                             "content:\n" + xml));
+        ++checked;
+    }
+
+    QVERIFY2(checked > 0,
+             qPrintable("The package.xml of the packages of the installer template is not "
+                         "found, the license cannot be checked (issue #456). The packages "
+                         "dir content: [" + packages.join(", ")
+                         + "]. The cqtdeployer output (the full output is stored in "
+                           "test_report.txt.licenseTemplate):\n" + templateOutput));
 }
 
 // Standard stand-alone QTest entry point, see the Qt test tutorial:

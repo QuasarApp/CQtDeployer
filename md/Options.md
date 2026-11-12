@@ -135,6 +135,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -prefix [package;val,val]   | Sets the prefix for the package relatively a target directory       |
 |  -extraData [package;val,val]| Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure.|
 |  -tr [package;val,val]       | Adds qm files into the translations folder.                     |
+|  -license [path/to/licenseFile] | Sets the license file that is inserted into the installer, the deb and the DMG packages (issue #456). The Qt Installer Framework installer (the qtifw option) shows the license as an agreement before the installation: the file is copied into the meta directory of the package of the installer template and the Licenses element is added to the package.xml of the package. The deb packages get the license into the usr/share/doc/<package>/copyright file (the standard location of the license text of the Debian policy). The DMG packages get the license into the root folder of the DMG volume (the standard way the macOS DMG files ship the license text, the original file name is kept). Example: cqtdeployer -bin myApp -license ./LICENSE.txt qtifw deb dmg |
 
 ### Controll of targets options
 

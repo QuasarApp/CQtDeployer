@@ -70,6 +70,7 @@ of the deployed package:
     ├── <name>/           - the deployed files of the package (the ready-to-use application)
     ├── <name>.png        - the icon of the application
     ├── README            - the name, the description, the version, the publisher and the homepage of the package
+    ├── LICENSE           - the license file of the -license option (issue #456, the original file name is kept)
     └── Applications      - the symbolic link to the /Applications folder (the standard drag-to-install UX)
 ```
 
@@ -94,6 +95,32 @@ Where:
 3. Launch the application from the Applications folder (the run script
    of the package starts the application with the right environment, see
    the [macOS documentation](macOS.md)).
+
+### License
+
+The `-license` option (issue #456) inserts the license file into the DMG
+packages. The license file is copied into the root folder of the DMG
+volume, next to the application folder, the icon, the README file and
+the Applications symbolic link (the standard way the macOS DMG files ship
+the license / the "Read Me" text of the package). The original file name
+of the license file is kept.
+
+#### For example:
+
+```bash
+    cqtdeployer ... dmg -license ./LICENSE.txt
+```
+
+Where:
+
+* **...** - is list of other options.
+* **dmg** - option for create the DMG package.
+* **-license ./LICENSE.txt** - the license file that is inserted into the
+DMG package.
+
+When the user opens the DMG file the license is available in the root
+folder of the volume (the file of the DMG window, next to the
+application folder and the README file).
 
 ### Limitations
 

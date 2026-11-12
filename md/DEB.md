@@ -45,6 +45,31 @@ Or you can describe packages in [configuration file](DeployConfigFile.md)
 }
 ```
 
+## License
+
+The `-license` option (issue #456) inserts the license file into the deb packages.
+The license file is stored in the standard location of the license text of the
+Debian policy: the `usr/share/doc/<package>/copyright` file of the package
+(the same way the Debian packages of the system store the full license text).
+
+#### For example:
+
+```bash
+    cqtdeployer ... deb -license ./LICENSE.txt
+```
+
+Where:
+
+* **...** - is list of other options.
+* **deb** - option for create the deb package.
+* **-license ./LICENSE.txt** - the license file that is inserted into the deb
+packages.
+
+After the install of the package the license is available in the
+`/usr/share/doc/<package>/copyright` file (the `dpkg -L <package> | grep
+copyright` command shows the path of the license file of the installed
+package).
+
 
 ## Custom Template for DEB
 

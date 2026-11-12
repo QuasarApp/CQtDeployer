@@ -78,6 +78,51 @@ Or you can describe packages in [configuration file](DeployConfigFile.md)
 }
 ```
 
+## License agreement
+
+Starting from the version of the CQtDeployer with the `-license` option (issue #456) you can
+insert the license file into the Qt Installer Framework installer. The installer shows the
+license as an agreement before the installation starts.
+
+The `-license` option sets the path to the license file (plain text, for example
+`LICENSE.txt`). During the deploy the license file is copied into the meta directory of
+the package of the installer template (the original file name is kept) and the `Licenses`
+element is added to the `package.xml` of the package, for example:
+
+```xml
+<Licenses>
+    <License name="LICENSE" file="LICENSE.txt" />
+</Licenses>
+```
+
+Where:
+
+* **name** - the title of the license agreement (the base name of the license file).
+* **file** - the path to the license file relative to the meta directory of the
+package of the installer template.
+
+Note: the Qt Installer Framework versions 4.x read the license agreement from the
+`package.xml` file of the packages (the `meta` directory of the package), the
+`config.xml` file of the installer does not support the license agreement elements:
+the `binarycreator` tool rejects the unknown elements of the `config.xml` file.
+
+### For example:
+
+```bash
+    cqtdeployer ... qtifw -license ./LICENSE.txt
+```
+
+Where:
+
+* **...** - is list of other options.
+* **qtifw** - option for use qt installer framework with default template.
+* **-license ./LICENSE.txt** - the license file that is shown as an agreement before
+the installation starts.
+
+If your custom installer template already contains the `Licenses` element in the
+`package.xml` file of the package then CQtDeployer copies the license file into the
+meta directory of the package only and keeps the `Licenses` element of your template.
+
 # Custom Template for QIF
 
 Starting with CQtDeployer Version 1.5 you can use your own installer template. To do this, you must pass the path to your template to the qtifw parameter.

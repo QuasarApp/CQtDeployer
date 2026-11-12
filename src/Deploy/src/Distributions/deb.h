@@ -29,6 +29,7 @@ public:
     QProcessEnvironment processEnvirement() const override;
     QList<SystemCommandData> runCmd() override;
     QStringList outPutFiles() const override;
+    bool addLicense(PackageControl &pkg) const override;
 
     // iDistribution interface
 protected:
@@ -37,6 +38,17 @@ protected:
     QString releativeLocation(const DistroModule &module) const override;
 
 private:
+    /**
+     * @brief addLicense This method inserts the license file of the
+     * -license option into one debian package (issue #456). The license
+     * file is copied into the standard location of the license text of the
+     * Debian policy: usr/share/doc/<package>/copyright.
+     * @param packageLocation This is the root directory of the debian package.
+     * @param packageName This is the name of the debian package.
+     * @return true if the license was inserted successful (or the option is not set).
+     */
+    bool addLicense(const QString &packageLocation, const QString &packageName) const;
+
     QList<DebInOut> inouts;
 };
 

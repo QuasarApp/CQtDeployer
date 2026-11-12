@@ -39,6 +39,7 @@ private slots:
     void dmgOptionNotQifCheck();
     void noQtGeneralFileInstallerCheck();
     void qifSignIdentityCheck();
+    void licenseInstallerCheck();
 
 private:
     static constexpr const char *DEFAULT_INSTALLER_BASE = "QifwTestInstaller";

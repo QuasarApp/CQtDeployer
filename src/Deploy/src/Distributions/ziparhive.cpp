@@ -77,6 +77,12 @@ QStringList ZipArhive::outPutFiles() const {
     return outFiles;
 }
 
+bool ZipArhive::addLicense(PackageControl &) const {
+    // The zip archives have no standard license location (issue #456):
+    // the -license option is inserted into the qtifw and the deb packages only.
+    return true;
+}
+
 QString ZipArhive::dataLocation(const DistroModule &module) const {
     return location(module) + "/" + releativeLocation(module);
 }

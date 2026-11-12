@@ -326,6 +326,12 @@ QStringList AppImage::outPutFiles() const {
     return result;
 }
 
+bool AppImage::addLicense(PackageControl &) const {
+    // The AppImage packages have no standard license location (issue #456):
+    // the -license option is inserted into the qtifw and the deb packages only.
+    return true;
+}
+
 QString AppImage::dataLocation(const DistroModule &module) const {
     // The deployed data is moved to the root of the AppDir (the root
     // layout of the AppImage spec).

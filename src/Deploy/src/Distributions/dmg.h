@@ -52,6 +52,7 @@ public:
     QList<SystemCommandData> runCmd() override;
     QStringList outPutFiles() const override;
     bool isAvailable() const override;
+    bool addLicense(PackageControl &pkg) const override;
 
     // iDistribution interface
 protected:
