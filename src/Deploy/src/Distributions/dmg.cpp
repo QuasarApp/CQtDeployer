@@ -239,6 +239,12 @@ QStringList Dmg::outPutFiles() const {
     return result;
 }
 
+bool Dmg::addLicense(PackageControl &) const {
+    // The DMG packages have no standard license location (issue #456):
+    // the -license option is inserted into the qtifw and the deb packages only.
+    return true;
+}
+
 QString Dmg::dataLocation(const DistroModule &module) const {
     // The deployed data is moved to the application folder of the DMG
     // volume (the root of the volume is the folder of the DMG window:

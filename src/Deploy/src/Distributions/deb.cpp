@@ -63,11 +63,11 @@ bool Deb::deployTemplate(PackageControl &pkg) {
             qWarning() << "Failed to set permissions";
         }
 
-        if (!addLicense(local, info.Name)) {
-            return false;
-        }
-
         inouts.push_back({local, cfg->getTargetDir() + "/" + info.debOut});
+    }
+
+    if (!addLicense(pkg)) {
+        return false;
     }
 
     return true;
@@ -98,8 +98,28 @@ bool Deb::deployRawTemplate(PackageControl &pkg) {
                        local, {}, {}, replace)) {
             return false;
         }
+    }
 
-        if (!addLicense(local, info.Name)) {
+    if (!addLicense(pkg)) {
+        return false;
+    }
+
+    return true;
+}
+
+bool Deb::addLicense(PackageControl &pkg) const {
+    // The license file of the -license option (issue #456) is inserted
+    // into every package of the deploy: the virtual method of the
+    // iDistribution base class.
+    const DeployConfig *cfg = DeployCore::_config;
+
+    const auto list = pkg.availablePackages();
+    for (const auto &it : list) {
+        const auto package = cfg->getDistroFromPackage(it);
+
+        // The Name value of the collectInfo method is the getName value,
+        // the const helper of the iDistribution base class.
+        if (!addLicense(location(package), getName(package))) {
             return false;
         }
     }
