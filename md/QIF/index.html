@@ -746,6 +746,34 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#license-agreement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        License agreement
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="License agreement">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-example_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For example:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1451,6 +1479,34 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#license-agreement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        License agreement
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="License agreement">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-example_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For example:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1533,6 +1589,41 @@ To create a new package, use the -targetPackage [package; tar1] option</p>
 <span class="p">],</span>
 <span class="p">}</span>
 </code></pre></div>
+<h2 id="license-agreement">License agreement<a class="headerlink" href="#license-agreement" title="Permanent link">&para;</a></h2>
+<p>Starting from the version of the CQtDeployer with the <code>-license</code> option (issue #456) you can
+insert the license file into the Qt Installer Framework installer. The installer shows the
+license as an agreement before the installation starts.</p>
+<p>The <code>-license</code> option sets the path to the license file (plain text, for example
+<code>LICENSE.txt</code>). During the deploy the license file is copied into the meta directory of
+the package of the installer template (the original file name is kept) and the <code>Licenses</code>
+element is added to the <code>package.xml</code> of the package, for example:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;Licenses&gt;</span>
+<span class="w">    </span><span class="nt">&lt;License</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;LICENSE&quot;</span><span class="w"> </span><span class="na">file=</span><span class="s">&quot;LICENSE.txt&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/Licenses&gt;</span>
+</code></pre></div>
+<p>Where:</p>
+<ul>
+<li><strong>name</strong> - the title of the license agreement (the base name of the license file).</li>
+<li><strong>file</strong> - the path to the license file relative to the meta directory of the
+package of the installer template.</li>
+</ul>
+<p>Note: the Qt Installer Framework versions 4.x read the license agreement from the
+<code>package.xml</code> file of the packages (the <code>meta</code> directory of the package), the
+<code>config.xml</code> file of the installer does not support the license agreement elements:
+the <code>binarycreator</code> tool rejects the unknown elements of the <code>config.xml</code> file.</p>
+<h3 id="for-example_1">For example:<a class="headerlink" href="#for-example_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="w">    </span>cqtdeployer<span class="w"> </span>...<span class="w"> </span>qtifw<span class="w"> </span>-license<span class="w"> </span>./LICENSE.txt
+</code></pre></div>
+<p>Where:</p>
+<ul>
+<li><strong>...</strong> - is list of other options.</li>
+<li><strong>qtifw</strong> - option for use qt installer framework with default template.</li>
+<li><strong>-license ./LICENSE.txt</strong> - the license file that is shown as an agreement before
+the installation starts.</li>
+</ul>
+<p>If your custom installer template already contains the <code>Licenses</code> element in the
+<code>package.xml</code> file of the package then CQtDeployer copies the license file into the
+meta directory of the package only and keeps the <code>Licenses</code> element of your template.</p>
 <h1 id="custom-template-for-qif">Custom Template for QIF<a class="headerlink" href="#custom-template-for-qif" title="Permanent link">&para;</a></h1>
 <p>Starting with CQtDeployer Version 1.5 you can use your own installer template. To do this, you must pass the path to your template to the qtifw parameter.</p>
 <div class="highlight"><pre><span></span><code>cqtdeployer<span class="w"> </span>...<span class="w"> </span>-qtifw<span class="w"> </span>/path/to/my/custom/qif/template

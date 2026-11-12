@@ -1071,6 +1071,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        License
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="License">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-example_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For example:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1495,6 +1523,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        License
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="License">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-example_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For example:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1573,6 +1629,7 @@ of the deployed package:</p>
 <span class="w">    </span>├──<span class="w"> </span>&lt;name&gt;/<span class="w">           </span>-<span class="w"> </span>the<span class="w"> </span>deployed<span class="w"> </span>files<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>package<span class="w"> </span><span class="o">(</span>the<span class="w"> </span>ready-to-use<span class="w"> </span>application<span class="o">)</span>
 <span class="w">    </span>├──<span class="w"> </span>&lt;name&gt;.png<span class="w">        </span>-<span class="w"> </span>the<span class="w"> </span>icon<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>application
 <span class="w">    </span>├──<span class="w"> </span>README<span class="w">            </span>-<span class="w"> </span>the<span class="w"> </span>name,<span class="w"> </span>the<span class="w"> </span>description,<span class="w"> </span>the<span class="w"> </span>version,<span class="w"> </span>the<span class="w"> </span>publisher<span class="w"> </span>and<span class="w"> </span>the<span class="w"> </span>homepage<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>package
+<span class="w">    </span>├──<span class="w"> </span>LICENSE<span class="w">           </span>-<span class="w"> </span>the<span class="w"> </span>license<span class="w"> </span>file<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>-license<span class="w"> </span>option<span class="w"> </span><span class="o">(</span>issue<span class="w"> </span><span class="c1">#456, the original file name is kept)</span>
 <span class="w">    </span>└──<span class="w"> </span>Applications<span class="w">      </span>-<span class="w"> </span>the<span class="w"> </span>symbolic<span class="w"> </span>link<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>/Applications<span class="w"> </span>folder<span class="w"> </span><span class="o">(</span>the<span class="w"> </span>standard<span class="w"> </span>drag-to-install<span class="w"> </span>UX<span class="o">)</span>
 </code></pre></div>
 <p>The DMG is created with the <code>hdiutil</code> tool of the macOS system
@@ -1593,6 +1650,26 @@ system):</p>
    of the package starts the application with the right environment, see
    the <a href="../macOS/">macOS documentation</a>).</li>
 </ol>
+<h3 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h3>
+<p>The <code>-license</code> option (issue #456) inserts the license file into the DMG
+packages. The license file is copied into the root folder of the DMG
+volume, next to the application folder, the icon, the README file and
+the Applications symbolic link (the standard way the macOS DMG files ship
+the license / the "Read Me" text of the package). The original file name
+of the license file is kept.</p>
+<h4 id="for-example_1">For example:<a class="headerlink" href="#for-example_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="w">    </span>cqtdeployer<span class="w"> </span>...<span class="w"> </span>dmg<span class="w"> </span>-license<span class="w"> </span>./LICENSE.txt
+</code></pre></div>
+<p>Where:</p>
+<ul>
+<li><strong>...</strong> - is list of other options.</li>
+<li><strong>dmg</strong> - option for create the DMG package.</li>
+<li><strong>-license ./LICENSE.txt</strong> - the license file that is inserted into the
+DMG package.</li>
+</ul>
+<p>When the user opens the DMG file the license is available in the root
+folder of the volume (the file of the DMG window, next to the
+application folder and the README file).</p>
 <h3 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h3>
 <ul>
 <li>The dmg option is available only on the macOS host platforms: the

@@ -2112,6 +2112,10 @@
 <td>-tr [package;val,val]</td>
 <td>Adds qm files into the translations folder.</td>
 </tr>
+<tr>
+<td>-license [path/to/licenseFile]</td>
+<td>Sets the license file that is inserted into the installer, the deb and the DMG packages (issue #456). The Qt Installer Framework installer (the qtifw option) shows the license as an agreement before the installation: the file is copied into the meta directory of the package of the installer template and the Licenses element is added to the package.xml of the package. The deb packages get the license into the usr/share/doc/<package>/copyright file (the standard location of the license text of the Debian policy). The DMG packages get the license into the root folder of the DMG volume (the standard way the macOS DMG files ship the license text, the original file name is kept). Example: cqtdeployer -bin myApp -license ./LICENSE.txt qtifw deb dmg</td>
+</tr>
 </tbody>
 </table>
 <h3 id="controll-of-targets-options">Controll of targets options<a class="headerlink" href="#controll-of-targets-options" title="Permanent link">&para;</a></h3>

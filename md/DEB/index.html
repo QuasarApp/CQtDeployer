@@ -999,6 +999,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        License
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="License">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-example_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For example:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#custom-template-for-deb" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1519,6 +1547,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        License
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="License">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-example_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For example:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#custom-template-for-deb" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1636,6 +1692,25 @@ To create a new package, use the -targetPackage [package; tar1] option</p>
 <span class="nt">&quot;deb&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
 <span class="p">}</span>
 </code></pre></div>
+<h2 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h2>
+<p>The <code>-license</code> option (issue #456) inserts the license file into the deb packages.
+The license file is stored in the standard location of the license text of the
+Debian policy: the <code>usr/share/doc/&lt;package&gt;/copyright</code> file of the package
+(the same way the Debian packages of the system store the full license text).</p>
+<h4 id="for-example_1">For example:<a class="headerlink" href="#for-example_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="w">    </span>cqtdeployer<span class="w"> </span>...<span class="w"> </span>deb<span class="w"> </span>-license<span class="w"> </span>./LICENSE.txt
+</code></pre></div>
+<p>Where:</p>
+<ul>
+<li><strong>...</strong> - is list of other options.</li>
+<li><strong>deb</strong> - option for create the deb package.</li>
+<li><strong>-license ./LICENSE.txt</strong> - the license file that is inserted into the deb
+packages.</li>
+</ul>
+<p>After the install of the package the license is available in the
+<code>/usr/share/doc/&lt;package&gt;/copyright</code> file (the <code>dpkg -L &lt;package&gt; | grep
+copyright</code> command shows the path of the license file of the installed
+package).</p>
 <h2 id="custom-template-for-deb">Custom Template for DEB<a class="headerlink" href="#custom-template-for-deb" title="Permanent link">&para;</a></h2>
 <p>You can create an own Template for the debian packages.</p>
 <h3 id="the-debian-packages-structure">The debian packages structure:<a class="headerlink" href="#the-debian-packages-structure" title="Permanent link">&para;</a></h3>
