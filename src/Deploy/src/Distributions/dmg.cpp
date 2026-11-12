@@ -141,6 +141,10 @@ bool Dmg::deployTemplate(PackageControl &pkg) {
                           sanitizeVolumeName(appFolder)});
     }
 
+    if (!addLicense(pkg)) {
+        return false;
+    }
+
     return true;
 }
 
@@ -165,6 +169,10 @@ bool Dmg::deployRawTemplate(PackageControl &pkg) {
         if (!unpackDir(DmgTemplateDir, local, {}, {""})) {
             return false;
         }
+    }
+
+    if (!addLicense(pkg)) {
+        return false;
     }
 
     return true;
@@ -239,9 +247,45 @@ QStringList Dmg::outPutFiles() const {
     return result;
 }
 
-bool Dmg::addLicense(PackageControl &) const {
-    // The DMG packages have no standard license location (issue #456):
-    // the -license option is inserted into the qtifw and the deb packages only.
+bool Dmg::addLicense(PackageControl &pkg) const {
+    // The license file of the -license option (issue #456): the license
+    // file is copied into the root folder of the DMG volume, next to the
+    // application folder, the icon, the README file and the Applications
+    // symbolic link (the standard way the macOS DMG files ship the
+    // license / the "Read Me" text of the package, the same way the
+    // AppImage backend places the icon in the root of the AppDir,
+    // issue #898).
+    const QString license = QuasarAppUtils::Params::getArg("license");
+    if (license.isEmpty()) {
+        return true;
+    }
+
+    QFileInfo licenseInfo(license);
+    if (!licenseInfo.isFile()) {
+        qCritical() << QString("The license file is not found: %0 (issue #456).").arg(license);
+        return false;
+    }
+
+    const DeployConfig *cfg = DeployCore::_config;
+    const auto list = pkg.availablePackages();
+    for (const auto &it : list) {
+        const auto package = cfg->getDistroFromPackage(it);
+
+        // The license file is copied into the root folder of the DMG
+        // volume with the original file name (issue #456): the volume
+        // root is the folder of the DMG window (the application folder,
+        // the icon, the README file and the Applications symbolic link
+        // are placed there too).
+        const QString licenseTarget = location(package) + "/" + licenseInfo.fileName();
+        if (!copyFile(license, licenseTarget, true)) {
+            qCritical() << QString("Failed to copy the license file into the DMG volume: %0 (issue #456).")
+                        .arg(licenseTarget);
+            return false;
+        }
+
+        qInfo() << "The license was added into the DMG volume (issue #456): " + licenseTarget;
+    }
+
     return true;
 }
 

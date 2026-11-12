@@ -412,6 +412,73 @@ void DmgTest::dmgDistributionStagingCheck() {
 
         DeployCore::_config = previousConfig;
     }
+
+    // The -license option (issue #456): the license file is copied into
+    // the root folder of the DMG volume, next to the application folder,
+    // the icon, the README file and the Applications symbolic link (the
+    // standard way the macOS DMG files ship the license text of the
+    // package). The staging logic is platform independent, so the check
+    // runs on every platform (the real DMG creation runs only on the
+    // macOS hosts, the same way the end-to-end test of the dmg option).
+    {
+        const auto licenseDir = dir + "/srcLicense";
+        QDir().mkpath(licenseDir);
+        const QString marker = QStringLiteral(
+            "CQtDeployer DmgTest License Agreement (issue #456)");
+        const auto licenseFile = licenseDir + "/LICENSE.txt";
+        QVERIFY2(writeFile(licenseFile, marker.toUtf8()),
+                 "Failed to create the license file of the DMG test");
+
+        DistroModule module("TestApp");
+        module.setName("TestApp");
+        module.addTarget("TestApp");
+
+        DeployConfig cfg;
+        cfg.setTargetDir(targetDir);
+        cfg.setDefaultPackage("TestApp");
+        cfg.packagesEdit().insert("TestApp", module);
+
+        const auto previousConfig = DeployCore::_config;
+        DeployCore::_config = &cfg;
+
+        // The -license option is set through the Params of the
+        // QuasarAppLib (the same way the macOS test sets the qifOut
+        // value of the self-deploy test).
+        QuasarAppUtils::Params::setArg("license", licenseFile);
+
+        FileManager fm;
+        Dmg dmg(&fm);
+        TestPackageControl pkg(srcDir, {"TestApp"});
+
+        QVERIFY2(dmg.deployTemplate(pkg),
+                 "The Dmg distribution failed to stage the DMG volume "
+                 "with the license (issue #456)");
+
+        // The license file is copied into the root folder of the DMG
+        // volume with the original file name (issue #456).
+        const auto root = targetDir + "/defaultDmgTemplate/TestApp";
+        const QFileInfo licenseCopy(root + "/LICENSE.txt");
+        QVERIFY2(licenseCopy.isFile(),
+                 qPrintable("The license file is not copied into the root "
+                            "folder of the DMG volume (issue #456). The "
+                            "root folder content: ["
+                            + QDir(root).entryList(QDir::Files | QDir::Dirs
+                                                   | QDir::NoDotAndDotDot)
+                            .join(", ") + "]"));
+        if (licenseCopy.isFile()) {
+            QFile file(licenseCopy.filePath());
+            QVERIFY2(file.open(QIODevice::ReadOnly),
+                     "Failed to open the license copy of the DMG volume");
+            QCOMPARE(QString::fromUtf8(file.readAll()), marker);
+        }
+
+        QuasarAppUtils::Params::setArg("license", QString());
+
+        QVERIFY(dmg.removeTemplate());
+        QVERIFY(!QDir(targetDir + "/defaultDmgTemplate").exists());
+
+        DeployCore::_config = previousConfig;
+    }
 }
 
 void DmgTest::dmgOptionEndToEndCheck() {

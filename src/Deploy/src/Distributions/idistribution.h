@@ -52,9 +52,10 @@ public:
      * @brief addLicense This method inserts the license file of the
      * -license option into the created distribution (issue #456).
      * The backends with the standard license location (the Qt Installer
-     * Framework installer and the debian packages) override this method
-     * and insert the license file into the created package. The backends
-     * without the standard license location return true without changes.
+     * Framework installer, the debian packages and the DMG packages)
+     * override this method and insert the license file into the created
+     * package. The backends without the standard license location return
+     * true without changes.
      * @param pkg This is the PackageControl object with the packages of the deploy.
      * @return true if the license was inserted successful (or the option is not set).
      */
