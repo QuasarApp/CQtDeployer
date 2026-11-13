@@ -28,7 +28,7 @@ cmake_minimum_required(VERSION 3.18)
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
 
-set(TEST_CLASSES AppImage Deb DeployConfig DeployCore Dmg DistroModule DistroStruct
+set(TEST_CLASSES AppImage Deb DeployConfig DeployCore DeployTarget Dmg DistroModule DistroStruct
     Envirement FileManager IgnoreRule LibInfo MacOS PathUtils Pe Qifw TargetInfo
     ZipCompresser)
 

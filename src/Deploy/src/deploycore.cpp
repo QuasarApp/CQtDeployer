@@ -623,7 +623,10 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-runScript"}, "{list,parems}",
                             "forces cqtdeployer swap default run script to new from the arguments of option."
-                            " This option copy all content from input file and insert all code into runScript.sh or .bat",
+                            " This option copy all content from input file and insert all code into runScript.sh or .bat. "
+                            "The target is a target selector: without the '*' character it must equal the target name exactly "
+                            "(case-insensitive) and a selector that contains the '*' character is a glob pattern that can select "
+                            "several targets (issue #311).",
                             "cqtdeployer -runScript \"myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh\""
                         }});
 
@@ -640,7 +643,10 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-targetPackage"}, "{package;tar1,package;tar2}",
                             "Creates a new package and adds 'tar1 and tar2' to it. "
-                            "If you want configure the package that do not have any targets use the allowEmptyPackages option."
+                            "If you want configure the package that do not have any targets use the allowEmptyPackages option. "
+                            "The target name is a target selector: without the '*' character it must equal the target name exactly "
+                            "(case-insensitive) and a selector that contains the '*' character is a glob pattern that can select "
+                            "several targets (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-qmlOut"}, "{package;path,path}",
@@ -723,21 +729,34 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-icon"}, "{target;val,val}",
-                            "Sets path to icon for a targets"
+                            "Sets path to icon for a targets. "
+                            "The target is a target selector: without the '*' character it must equal the target name exactly "
+                            "(case-insensitive) and a selector that contains the '*' character is a glob pattern that can select "
+                            "several targets (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-disableRunScript"}, "{target;val,val}",
-                            "Disables a generation of run script for selected targets"
+                            "Disables a generation of run script for selected targets. "
+                            "The target is a target selector: without the '*' character it must equal the target name exactly "
+                            "(case-insensitive) and a selector that contains the '*' character is a glob pattern that can select "
+                            "several targets (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-disableShortCut"}, "{target;val,val}",
-                            "Disables a generation of shortcut for selected targets"
+                            "Disables a generation of shortcut for selected targets. "
+                            "The target is a target selector: without the '*' character it must equal the target name exactly "
+                            "(case-insensitive) and a selector that contains the '*' character is a glob pattern that can select "
+                            "several targets (issue #311)."
                         }});
 
     help.insert(group, {QuasarAppUtils::OptionData{
                            {"-extraDepends"}, "{target;val,val}",
-                           "Adds extra dependencies for target, if target is skipped then for rest of all targets",
-                           "Example -extraDepends libssl.so or -targetPackage packageName;myExecutable -extraDepends packageName;libssl.so"
+                           "Adds extra dependencies for target, if target is skipped then for rest of all targets. "
+                           "The target is a target selector: without the '*' character it must equal the target name exactly "
+                           "(case-insensitive) and a selector that contains the '*' character is a glob pattern that can select "
+                           "several targets (issue #311).",
+                           "Example -extraDepends libssl.so (all targets) or -extraDepends myExecutable;libssl.so "
+                           "or -extraDepends win*;libssl.so (all the targets that match the 'win*' pattern)"
                        }});
 
     group = "Part 5 Plugins Control Options";
