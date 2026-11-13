@@ -39,6 +39,27 @@ cqtdeployer ... -targetPackage myPacage;target1,myPacage;target2,myPacage2;targe
 ```
 
 
+### Target selectors
+
+The target name after the package name is a target selector. A selector
+that does not contain the `*` character selects the one target that has
+this name exactly (the comparison is case-insensitive). A selector that
+contains `*` is a glob pattern: every `*` matches any sequence of
+characters, so one selector can select several targets (issue #311).
+
+Example: the distribution contains the `win32`, `win64` and `linux`
+targets, the option
+
+```
+cqtdeployer ... -targetPackage winPackage;win*,linuxPackage;linux
+```
+
+creates the `winPackage` package from the `win32` and the `win64`
+targets and the `linuxPackage` package from the `linux` target. Without
+the `*` the `win` selector would not match any target, because a plain
+selector must equal the target name exactly.
+
+
 You can also do the same in the config file
 
 ```

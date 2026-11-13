@@ -11,6 +11,8 @@
 #include "distromodule.h"
 #include "libinfo.h"
 
+#include <QFileInfo>
+
 void DeployConfigTest::initTestCase() {
 }
 
@@ -76,9 +78,98 @@ void DeployConfigTest::targetsEdit() {
     app2.setPlatform(Win32);
     config.targetsEdit().insert("app2", app2);
 
-    QCOMPARE(config.getTargetsListByFilter("APP").size(), 2);
     QCOMPARE(config.getTargetsListByFilter("app1").size(), 1);
+    QCOMPARE(config.getTargetsListByFilter("APP1").size(), 1);
+    QCOMPARE(config.getTargetsListByFilter("APP").size(), 0);
+    QCOMPARE(config.getTargetsListByFilter("app").size(), 0);
     QCOMPARE(config.getTargetsListByFilter("nope").size(), 0);
+}
+
+// Issue #311: a selector without the '*' character must be equal to the
+// target name (the file name of the target path) or to the full path
+// exactly (case-insensitive), so a plain selector selects only the
+// expected target. A selector that contains '*' is a glob pattern where
+// every '*' matches any sequence of characters and all the other
+// characters are matched literally.
+void DeployConfigTest::targetSelector() {
+    DeployConfig config;
+
+    TargetInfo app1;
+    app1.setName("app1");
+    app1.setPlatform(Unix_x86_64);
+    config.targetsEdit().insert("/opt/apps/app1", app1);
+
+    TargetInfo app2;
+    app2.setName("App2");
+    app2.setPlatform(Win32);
+    config.targetsEdit().insert("/opt/apps/App2", app2);
+
+    // Exact, case-insensitive match by the file name of the target.
+    QCOMPARE(config.getTargetsListByFilter("app1").size(), 1);
+    QCOMPARE(config.getTargetsListByFilter("APP1").size(), 1);
+    QCOMPARE(config.getTargetsListByFilter("App2").size(), 1);
+    QVERIFY(config.getTargetsListByFilter("app1").contains("/opt/apps/app1"));
+
+    // A plain selector is not a substring match anymore: it must equal
+    // the file name or the full path exactly.
+    QCOMPARE(config.getTargetsListByFilter("APP").size(), 0);
+    QCOMPARE(config.getTargetsListByFilter("app").size(), 0);
+    QCOMPARE(config.getTargetsListByFilter("apps").size(), 0);
+    QCOMPARE(config.getTargetsListByFilter("nope").size(), 0);
+
+    // A plain selector can also match the full path exactly.
+    QCOMPARE(config.getTargetsListByFilter("/opt/apps/App2").size(), 1);
+    QCOMPARE(config.getTargetsListByFilter("/OPT/APPS/App2").size(), 1);
+
+    // The const overload behaves the same way.
+    const DeployConfig &constConfig = config;
+    QCOMPARE(constConfig.getTargetsListByFilter("app1").size(), 1);
+    QCOMPARE(constConfig.getTargetsListByFilter("nope").size(), 0);
+
+    // An empty selector selects all the targets.
+    QCOMPARE(config.getTargetsListByFilter("").size(), 2);
+}
+
+void DeployConfigTest::targetSelectorWildcard() {
+    DeployConfig config;
+
+    const QStringList names{QStringLiteral("/opt/apps/win32"),
+                            QStringLiteral("/opt/apps/win64"),
+                            QStringLiteral("/opt/apps/win64_gcc"),
+                            QStringLiteral("/opt/apps/linux_gcc"),
+                            QStringLiteral("/opt/apps/macos")};
+    for (const auto &name : names) {
+        TargetInfo target;
+        target.setName(QFileInfo(name).fileName());
+        config.targetsEdit().insert(name, target);
+    }
+
+    // A '*' matches any sequence of characters, case-insensitive.
+    QCOMPARE(config.getTargetsListByFilter("win*").size(), 3);
+    QCOMPARE(config.getTargetsListByFilter("WIN*").size(), 3);
+    QCOMPARE(config.getTargetsListByFilter("*gcc*").size(), 2);
+    QCOMPARE(config.getTargetsListByFilter("win*gcc*").size(), 1);
+    QCOMPARE(config.getTargetsListByFilter("*gcc").size(), 2);
+    QVERIFY(config.getTargetsListByFilter("*gcc*").contains("/opt/apps/win64_gcc"));
+    QVERIFY(config.getTargetsListByFilter("*gcc*").contains("/opt/apps/linux_gcc"));
+    QVERIFY(!config.getTargetsListByFilter("win*").contains("/opt/apps/linux_gcc"));
+
+    // A '*' can match an empty sequence and a pattern is anchored to the
+    // whole name (the file name or the full path).
+    QCOMPARE(config.getTargetsListByFilter("win**").size(), 3);
+    QCOMPARE(config.getTargetsListByFilter("win64*").size(), 2);
+    QCOMPARE(config.getTargetsListByFilter("nowin*").size(), 0);
+    QCOMPARE(config.getTargetsListByFilter("*").size(), 5);
+
+    // The pattern can be applied to the full path of the target.
+    QCOMPARE(config.getTargetsListByFilter("/opt/apps/*").size(), 5);
+    QCOMPARE(config.getTargetsListByFilter("*/linux*").size(), 1);
+    QCOMPARE(config.getTargetsListByFilter("/usr/*").size(), 0);
+
+    // The regular expression special characters are matched literally:
+    // the '.' of the selector is a dot, not a "any character" wildcard.
+    QCOMPARE(config.getTargetsListByFilter("win.64*").size(), 0);
+    QVERIFY(config.getTargetsListByFilter("win*64*").contains("/opt/apps/win64_gcc"));
 }
 
 void DeployConfigTest::packagesEdit() {
