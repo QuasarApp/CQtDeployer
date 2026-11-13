@@ -8,6 +8,57 @@
 #include "deployconfig.h"
 #include "qaglobalutils.h"
 
+#include <QFileInfo>
+#include <QRegularExpression>
+
+namespace {
+
+/**
+ * @brief selectorMatches - checks if the @a target key matches the
+ * @a selector pattern (issue #311).
+ *
+ * The target key is the path of the target executable, so the selector
+ * is checked against the file name of the target (the name of the
+ * executable file) and against the full path. A selector that does not
+ * contain the '*' character must be equal to the target name or to the
+ * full path exactly (case-insensitive), so a plain selector selects only
+ * the expected target. A selector that contains '*' is a glob pattern:
+ * every '*' matches any sequence of characters (including an empty one)
+ * and all the other characters are matched literally. An empty selector
+ * matches every target.
+ */
+bool selectorMatches(const QString &target, const QString &selector) {
+    if (selector.isEmpty()) {
+        return true;
+    }
+
+    const QString fileName = QFileInfo(target).fileName();
+
+    if (!selector.contains(QLatin1Char('*'))) {
+        return target.compare(selector, Qt::CaseInsensitive) == 0 ||
+               fileName.compare(selector, Qt::CaseInsensitive) == 0;
+    }
+
+    QString pattern;
+    pattern.reserve(selector.size() + 2);
+    pattern.append(QLatin1Char('^'));
+    for (const QChar &ch : selector) {
+        if (ch == QLatin1Char('*')) {
+            pattern.append(QLatin1String(".*"));
+        }
+        else {
+            pattern.append(QRegularExpression::escape(QString(ch)));
+        }
+    }
+    pattern.append(QLatin1Char('$'));
+
+    QRegularExpression matcher(pattern, QRegularExpression::CaseInsensitiveOption);
+    return matcher.match(target).hasMatch() ||
+           matcher.match(fileName).hasMatch();
+}
+
+} // namespace
+
 void DeployConfig::reset() {
     *this = DeployConfig{};
 }
@@ -17,7 +68,7 @@ DeployConfig::getTargetsListByFilter(const QString &filter) {
     QHash<QString, TargetInfo*> result;
 
     for( auto it = _targets.begin(); it != _targets.end(); ++it) {
-        if (it.key().contains(filter, Qt::CaseInsensitive)) {
+        if (selectorMatches(it.key(), filter)) {
             result.insert(it.key(), &(*it));
         }
     }
@@ -30,7 +81,7 @@ DeployConfig::getTargetsListByFilter(const QString &filter) const {
     QHash<QString, const TargetInfo*> result;
 
     for( auto it = _targets.cbegin(); it != _targets.cend(); ++it) {
-        if (it.key().contains(filter, Qt::CaseInsensitive)) {
+        if (selectorMatches(it.key(), filter)) {
             result.insert(it.key(), &(*it));
         }
     }

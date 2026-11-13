@@ -25,6 +25,8 @@ private slots:
     void targetDirAndIgnoreList();
     void getTargetDir();
     void targetsEdit();
+    void targetSelector();
+    void targetSelectorWildcard();
     void packagesEdit();
     void getDistro();
     void platform();
