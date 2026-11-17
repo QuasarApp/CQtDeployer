@@ -131,39 +131,77 @@ static QString findMacOSQmake() {
 
 
 /**
- * this function init packages of project
+ * This function init packages of project
  * inputParamsList - list of parameters
  *                   patern : value;package
- * mainContainer - container for insert data, usually it is packages map.
- * seterFunc - this is method of item of mainConteiner for set value from inputParamsList
+ * conf - config with the packages map for insert data.
+ * adder - this is method of the DistroModule item of the packages map
+ *         for set value from inputParamsList.
  * defaultPackage - package name for the single level parameters,
  *                  which have no explicit package selector.
- * important : package in inputParamsList must be second.
+ * important : package in inputParamsList must be first.
+ * The first element of the value is a package selector (issue #311):
+ * a selector that does not contain the '*' character must equal the
+ * package name exactly (case-insensitive) and a selector that contains
+ * the '*' character is a glob pattern that can select several packages.
+ * The selector is checked with the single
+ * DeployConfig::getPackagesListByFilter() entry point (the same
+ * exact/glob semantics of the target selector). A value without the
+ * selector (the single level value) is set to the default package and
+ * a plain selector without a match keeps the old behavior: the package
+ * is created on the fly only when the allowEmptyPackages option is
+ * enabled, otherwise the option is failed.
  */
 
-template<typename Container, typename Adder>
-bool parsePackagesPrivate(Container& mainContainer,
+template <typename Adder>
+bool parsePackagesPrivate(DeployConfig& conf,
                           const QStringList &inputParamsList,
                           Adder adder,
                           const QString& defaultPackage) {
 
+    auto &packages = conf.packagesEdit();
+
     for (const auto& str: inputParamsList) {
         auto paramsList = str.split(DeployCore::getSeparator(1));
         auto first = paramsList.value(0, "");
+
         if (paramsList.size() == 1) {
-            (valueLink(mainContainer, defaultPackage, DistroModule{defaultPackage}).*adder)(first);
+            (valueLink(packages, defaultPackage, DistroModule{defaultPackage}).*adder)(first);
+            continue;
         }
 
-        else {
-            bool skipError = QuasarAppUtils::Params::isEndable("allowEmptyPackages");
-            first = PathUtils::fullStripPath(first);
-            if (!skipError && !mainContainer.contains(first)) {
-                return false;
-            }
+        first = PathUtils::fullStripPath(first);
 
-            for (int i = 1; i < paramsList.size(); ++i) {
-                (valueLink(mainContainer, first, DistroModule{first}).*adder)(paramsList[i]);
+        // The package name chooser of the option: the single
+        // DeployConfig::getPackagesListByFilter() selector (issue #311).
+        const auto packagesMap = conf.getPackagesListByFilter(first);
+
+        if (!packagesMap.isEmpty()) {
+            for (const auto &package : packagesMap) {
+                for (int i = 1; i < paramsList.size(); ++i) {
+                    (package->*adder)(paramsList[i]);
+                }
             }
+            continue;
+        }
+
+        // No package matches the selector: the glob pattern cannot name
+        // the package to create, so it is a hard error.
+        if (first.contains(QLatin1Char('*'))) {
+            qCritical() << QString("Failed to set the option, "
+                                   "no packages match the %0 selector.")
+                               .arg(first);
+            return false;
+        }
+
+        // A plain selector without a match: the package is created on
+        // the fly only when the allowEmptyPackages option is enabled.
+        if (!QuasarAppUtils::Params::isEndable("allowEmptyPackages")) {
+            return false;
+        }
+
+        for (int i = 1; i < paramsList.size(); ++i) {
+            (valueLink(packages, first, DistroModule{first}).*adder)(paramsList[i]);
         }
     }
 
@@ -517,7 +555,6 @@ bool ConfigParser::initDistroStruct() {
         return false;
     }
 
-    auto &mainDistro = _config.packagesEdit();
     const auto defaultPackage = _config.getDefaultPackage();
 
 #ifdef Q_OS_LINUX
@@ -584,107 +621,107 @@ bool ConfigParser::initDistroStruct() {
             split(DeployCore::getSeparator(0), splitbehavior);
 
 // init distro stucts for all targets
-    if (binOut.size() && !parsePackagesPrivate(mainDistro, binOut, &DistroModule::setBinOutDir, defaultPackage)) {
+    if (binOut.size() && !parsePackagesPrivate(_config, binOut, &DistroModule::setBinOutDir, defaultPackage)) {
         packagesErrorLog("binOut");
         return false;
     }
 
-    if (libOut.size() && !parsePackagesPrivate(mainDistro, libOut, &DistroModule::setLibOutDir, defaultPackage)) {
+    if (libOut.size() && !parsePackagesPrivate(_config, libOut, &DistroModule::setLibOutDir, defaultPackage)) {
         packagesErrorLog("libOut");
         return false;
     }
 
-    if (qmlOut.size() && !parsePackagesPrivate(mainDistro, qmlOut, &DistroModule::setQmlOutDir, defaultPackage)) {
+    if (qmlOut.size() && !parsePackagesPrivate(_config, qmlOut, &DistroModule::setQmlOutDir, defaultPackage)) {
         packagesErrorLog("qmlOut");
         return false;
     }
 
-    if (trOut.size() && !parsePackagesPrivate(mainDistro, trOut, &DistroModule::setTrOutDir, defaultPackage)) {
+    if (trOut.size() && !parsePackagesPrivate(_config, trOut, &DistroModule::setTrOutDir, defaultPackage)) {
         packagesErrorLog("trOut");
         return false;
     }
 
-    if (pluginOut.size() && !parsePackagesPrivate(mainDistro, pluginOut, &DistroModule::setPluginsOutDir, defaultPackage)) {
+    if (pluginOut.size() && !parsePackagesPrivate(_config, pluginOut, &DistroModule::setPluginsOutDir, defaultPackage)) {
         packagesErrorLog("pluginOut");
         return false;
     }
 
-    if (recOut.size() && !parsePackagesPrivate(mainDistro, recOut, &DistroModule::setResOutDir, defaultPackage)) {
+    if (recOut.size() && !parsePackagesPrivate(_config, recOut, &DistroModule::setResOutDir, defaultPackage)) {
         packagesErrorLog("recOut");
         return false;
     }
 
-    if (extraDataOut.size() && !parsePackagesPrivate(mainDistro, extraDataOut, &DistroModule::setExtraDataOutDir, defaultPackage)) {
+    if (extraDataOut.size() && !parsePackagesPrivate(_config, extraDataOut, &DistroModule::setExtraDataOutDir, defaultPackage)) {
         packagesErrorLog("extraDataOut");
         return false;
     }
 
-    if (name.size() && !parsePackagesPrivate(mainDistro, name, &DistroModule::setName, defaultPackage)) {
+    if (name.size() && !parsePackagesPrivate(_config, name, &DistroModule::setName, defaultPackage)) {
         packagesErrorLog("name");
         return false;
     }
 
-    if (description.size() && !parsePackagesPrivate(mainDistro, description, &DistroModule::setDescription, defaultPackage)) {
+    if (description.size() && !parsePackagesPrivate(_config, description, &DistroModule::setDescription, defaultPackage)) {
         packagesErrorLog("description");
         return false;
     }
 
-    if (deployVersion.size() && !parsePackagesPrivate(mainDistro, deployVersion, &DistroModule::setVersion, defaultPackage)) {
+    if (deployVersion.size() && !parsePackagesPrivate(_config, deployVersion, &DistroModule::setVersion, defaultPackage)) {
         packagesErrorLog("deployVersion");
         return false;
     }
 
-    if (releaseDate.size() && !parsePackagesPrivate(mainDistro, releaseDate, &DistroModule::setReleaseData, defaultPackage)) {
+    if (releaseDate.size() && !parsePackagesPrivate(_config, releaseDate, &DistroModule::setReleaseData, defaultPackage)) {
         packagesErrorLog("releaseDate");
         return false;
     }
 
-    if (publisher.size() && !parsePackagesPrivate(mainDistro, publisher, &DistroModule::setPublisher, defaultPackage)) {
+    if (publisher.size() && !parsePackagesPrivate(_config, publisher, &DistroModule::setPublisher, defaultPackage)) {
         packagesErrorLog("Publisher");
         return false;
     }
 
-    if (homepage.size() && !parsePackagesPrivate(mainDistro, homepage, &DistroModule::setHomePage, defaultPackage)) {
+    if (homepage.size() && !parsePackagesPrivate(_config, homepage, &DistroModule::setHomePage, defaultPackage)) {
         packagesErrorLog("homePage");
         return false;
     }
 
-    if (prefix.size() && !parsePackagesPrivate(mainDistro, prefix, &DistroModule::setPrefix, defaultPackage)) {
+    if (prefix.size() && !parsePackagesPrivate(_config, prefix, &DistroModule::setPrefix, defaultPackage)) {
         packagesErrorLog("prefix");
         return false;
     }
 
-    if (extraData.size() && !parsePackagesPrivate(mainDistro, extraData, &DistroModule::addExtraData, defaultPackage)) {
+    if (extraData.size() && !parsePackagesPrivate(_config, extraData, &DistroModule::addExtraData, defaultPackage)) {
         packagesErrorLog("extraData");
         return false;
     }
 
-    if (trData.size() && !parsePackagesPrivate(mainDistro, trData, &DistroModule::addTranslation, defaultPackage)) {
+    if (trData.size() && !parsePackagesPrivate(_config, trData, &DistroModule::addTranslation, defaultPackage)) {
         packagesErrorLog("tr");
         return false;
     }
 
-    if (installDirDeb.size() && !parsePackagesPrivate(mainDistro, installDirDeb, &DistroModule::setInstallDirDEB, defaultPackage)) {
+    if (installDirDeb.size() && !parsePackagesPrivate(_config, installDirDeb, &DistroModule::setInstallDirDEB, defaultPackage)) {
         packagesErrorLog("installDirDeb");
         return false;
     }
 
-    if (debOut.size() && !parsePackagesPrivate(mainDistro, debOut, &DistroModule::setDebOut, defaultPackage)) {
+    if (debOut.size() && !parsePackagesPrivate(_config, debOut, &DistroModule::setDebOut, defaultPackage)) {
         packagesErrorLog("debOut");
         return false;
     }
 
-    if (zipOut.size() && !parsePackagesPrivate(mainDistro, zipOut, &DistroModule::setZipOut, defaultPackage)) {
+    if (zipOut.size() && !parsePackagesPrivate(_config, zipOut, &DistroModule::setZipOut, defaultPackage)) {
         packagesErrorLog("zipOut");
         return false;
     }
 
-    if (appimageOut.size() && !parsePackagesPrivate(mainDistro, appimageOut, &DistroModule::setAppimageOut, defaultPackage)) {
+    if (appimageOut.size() && !parsePackagesPrivate(_config, appimageOut, &DistroModule::setAppimageOut, defaultPackage)) {
         packagesErrorLog("appimageOut");
         return false;
     }
 
-    if (dmgOut.size() && !parsePackagesPrivate(mainDistro, dmgOut, &DistroModule::setDmgOut, defaultPackage)) {
+    if (dmgOut.size() && !parsePackagesPrivate(_config, dmgOut, &DistroModule::setDmgOut, defaultPackage)) {
         packagesErrorLog("dmgOut");
         return false;
     }
@@ -764,7 +801,7 @@ bool ConfigParser::initQmlInput() {
 // init distro stucts for all targets
     _config.deployQml = qmlDir.size();
 
-    if (qmlDir.size() && !parsePackagesPrivate(_config.packagesEdit(), qmlDir, &DistroModule::addQmlInput,
+    if (qmlDir.size() && !parsePackagesPrivate(_config, qmlDir, &DistroModule::addQmlInput,
                                                _config.getDefaultPackage())) {
         packagesErrorLog("qmlDir");
         return false;
@@ -1659,7 +1696,7 @@ bool ConfigParser::initPlugins() {
             split(DeployCore::getSeparator(0), splitbehavior);
 
 
-    if (listExtraPlugin.size() && !parsePackagesPrivate(_config.packagesEdit(),
+    if (listExtraPlugin.size() && !parsePackagesPrivate(_config,
                                                         listExtraPlugin,
                                                         &DistroModule::addExtraPlugins,
                                                         _config.getDefaultPackage())) {
@@ -1667,7 +1704,7 @@ bool ConfigParser::initPlugins() {
         return false;
     }
 
-    if (listEnablePlugins.size() && !parsePackagesPrivate(_config.packagesEdit(),
+    if (listEnablePlugins.size() && !parsePackagesPrivate(_config,
                                                           listEnablePlugins,
                                                           &DistroModule::addEnabledPlugins,
                                                           _config.getDefaultPackage())) {
@@ -1675,7 +1712,7 @@ bool ConfigParser::initPlugins() {
         return false;
     }
 
-    if (listDisablePlugins.size() && !parsePackagesPrivate(_config.packagesEdit(),
+    if (listDisablePlugins.size() && !parsePackagesPrivate(_config,
                                                            listDisablePlugins,
                                                            &DistroModule::addDisabledPlugins,
                                                            _config.getDefaultPackage())) {

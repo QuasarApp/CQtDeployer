@@ -27,6 +27,8 @@ private slots:
     void targetsEdit();
     void targetSelector();
     void targetSelectorWildcard();
+    void packageSelector();
+    void packageSelectorWildcard();
     void packagesEdit();
     void getDistro();
     void platform();

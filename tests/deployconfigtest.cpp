@@ -172,6 +172,72 @@ void DeployConfigTest::targetSelectorWildcard() {
     QVERIFY(config.getTargetsListByFilter("win*64*").contains("/opt/apps/win64_gcc"));
 }
 
+// Issue #311: the package selector of the package options (the
+// DeployConfig::getPackagesListByFilter function, the single package
+// selector entry point of the tool) has the same exact/glob semantics
+// as the target selector: a selector without the '*' character must be
+// equal to the package name exactly (case-insensitive) and a selector
+// that contains '*' is a glob pattern where every '*' matches any
+// sequence of characters.
+void DeployConfigTest::packageSelector() {
+    DeployConfig config;
+
+    config.packagesEdit().insert("winPackage", DistroModule{"winPackage"});
+    config.packagesEdit().insert("linuxPackage", DistroModule{"linuxPackage"});
+
+    // Exact, case-insensitive match by the package name.
+    QCOMPARE(config.getPackagesListByFilter("winPackage").size(), 1);
+    QCOMPARE(config.getPackagesListByFilter("WINPACKAGE").size(), 1);
+    QCOMPARE(config.getPackagesListByFilter("linuxPackage").size(), 1);
+    QVERIFY(config.getPackagesListByFilter("winPackage").contains("winPackage"));
+
+    // A plain selector is not a substring match: it must equal the
+    // package name exactly.
+    QCOMPARE(config.getPackagesListByFilter("win").size(), 0);
+    QCOMPARE(config.getPackagesListByFilter("package").size(), 0);
+    QCOMPARE(config.getPackagesListByFilter("nope").size(), 0);
+
+    // The const overload behaves the same way.
+    const DeployConfig &constConfig = config;
+    QCOMPARE(constConfig.getPackagesListByFilter("winPackage").size(), 1);
+    QCOMPARE(constConfig.getPackagesListByFilter("nope").size(), 0);
+
+    // An empty selector selects all the packages.
+    QCOMPARE(config.getPackagesListByFilter("").size(), 2);
+}
+
+void DeployConfigTest::packageSelectorWildcard() {
+    DeployConfig config;
+
+    const QStringList names{QStringLiteral("win32Package"),
+                            QStringLiteral("win64Package"),
+                            QStringLiteral("win64GccPackage"),
+                            QStringLiteral("linuxPackage")};
+    for (const auto &name : names) {
+        config.packagesEdit().insert(name, DistroModule{name});
+    }
+
+    // A '*' matches any sequence of characters, case-insensitive.
+    QCOMPARE(config.getPackagesListByFilter("win*").size(), 3);
+    QCOMPARE(config.getPackagesListByFilter("WIN*").size(), 3);
+    QCOMPARE(config.getPackagesListByFilter("*Package").size(), 4);
+    QCOMPARE(config.getPackagesListByFilter("win*Gcc*").size(), 1);
+    QVERIFY(config.getPackagesListByFilter("win*Gcc*").contains("win64GccPackage"));
+    QVERIFY(!config.getPackagesListByFilter("win*").contains("linuxPackage"));
+
+    // A '*' can match an empty sequence and a pattern is anchored to the
+    // whole package name.
+    QCOMPARE(config.getPackagesListByFilter("win**").size(), 3);
+    QCOMPARE(config.getPackagesListByFilter("win64*").size(), 2);
+    QCOMPARE(config.getPackagesListByFilter("nowin*").size(), 0);
+    QCOMPARE(config.getPackagesListByFilter("*").size(), 4);
+
+    // The regular expression special characters are matched literally:
+    // the '.' of the selector is a dot, not a "any character" wildcard.
+    QCOMPARE(config.getPackagesListByFilter("win64.Gcc*").size(), 0);
+    QVERIFY(config.getPackagesListByFilter("win*Gcc*").contains("win64GccPackage"));
+}
+
 void DeployConfigTest::packagesEdit() {
     DeployConfig config;
 

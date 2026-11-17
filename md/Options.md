@@ -9,7 +9,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 * All options must begin with a '-' sign.
 * After specifying the desired option, you must specify the value.
 * Some options support enumerations (arrays of values). When initializing such options, specify the list of values through ',' without spaces. If you use any programming language and call the cqtdeployer process, then the array of values must be passed as 1 parameter.
-* Some options support redistributions with the ability to select the target for which the flag will be applied. Target and values are separated using the ';' sign. Example -libOut target1;value1,target2;value2,defaultValue.
+* Some options support redistributions with the ability to select the target or the package for which the flag will be applied. The target/package and values are separated using the ';' sign. Example -libOut package1;value1,package2;value2,defaultValue. The target and the package names are selectors (the exact/glob semantics, see the [Target selectors](Packing.md#target-selectors) and the [Package selectors](Packing.md#package-selectors) documentation).
 * To include a flag, simply include the flag name in the list of options.
 
 ## Description of values in the table
@@ -137,6 +137,9 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -tr [package;val,val]       | Adds qm files into the translations folder.                     |
 |  -license [path/to/licenseFile] | Sets the license file that is inserted into the installer, the deb and the DMG packages (issue #456). The Qt Installer Framework installer (the qtifw option) shows the license as an agreement before the installation: the file is copied into the meta directory of the package of the installer template and the Licenses element is added to the package.xml of the package. The deb packages get the license into the usr/share/doc/<package>/copyright file (the standard location of the license text of the Debian policy). The DMG packages get the license into the root folder of the DMG volume (the standard way the macOS DMG files ship the license text, the original file name is kept). Example: cqtdeployer -bin myApp -license ./LICENSE.txt qtifw deb dmg |
 
+
+The package name of these options is a package selector: without the `*` character it must equal the package name exactly (case-insensitive), with the `*` character it is a glob pattern and can select several packages (see the [Package selectors](Packing.md#package-selectors) documentation). All the arguments of the tool that select a package (the `-name`, `-description`, `-deployVersion`, `-releaseDate`, `-publisher`, `-homePage`, `-prefix`, `-extraData`, `-tr`, `-binOut`, `-qmlOut`, `-libOut`, `-trOut`, `-pluginOut`, `-recOut`, `-extraDataOut`, `-installDirDeb`, `-debOut`, `-zipOut`, `-appimageOut`, `-dmgOut`, `-qmlDir`, `-extraPlugin`, `-enablePlugins` and the `-disablePlugins` options) use this single selector (issue #311).
+
 ### Controll of targets options
 
 | Option                      | Description                                              |
@@ -158,6 +161,9 @@ The target name of these options is a target selector: without the `*` character
 |  -disablePlugins [package;val1;val2,SingeleVal]| Disables plugins for distribution.            |
 |                    |You can disable any plugin of your Qt build, just see the yourQtFolder/plugins folder for available plugins.|
 | |Example: if you want disable qxcb plugin: -disablePlugins qxcb. Note that the name of the plugin is indicated without its extension.|
+
+
+The package name of these options is a package selector: without the `*` character it must equal the package name exactly (case-insensitive), with the `*` character it is a glob pattern and can select several packages (see the [Package selectors](Packing.md#package-selectors) documentation, issue #311).
 
 ### QtInstallFramework options
 

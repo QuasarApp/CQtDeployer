@@ -95,6 +95,31 @@ public:
     QHash<QString, const TargetInfo *> getTargetsListByFilter(const QString& filter) const;
 
     /**
+     * @brief getPackagesListByFilter This method returns the packages
+     * that match the @a filter selector (issue #311). It is the single
+     * package selector entry point of the tool: the package name
+     * chooser of the package options (-name, -description, -binOut,
+     * -qmlOut, -libOut, -trOut, -pluginOut, -recOut, -extraDataOut,
+     * -deployVersion, -releaseDate, -publisher, -homePage, -prefix,
+     * -extraData, -tr, -installDirDeb, -debOut, -zipOut, -appimageOut,
+     * -dmgOut, -qmlDir, -extraPlugin, -enablePlugins and the
+     * -disablePlugins options) uses this selector, the same
+     * exact/glob semantics as the target selector of the
+     * getTargetsListByFilter() function. A selector that does not
+     * contain the '*' character must be equal to the package name
+     * exactly (case-insensitive) and a selector that contains the '*'
+     * character is a glob pattern: every '*' matches any sequence of
+     * characters and all the other characters are matched literally
+     * (case-insensitive), so one selector can select several packages.
+     * An empty selector matches every package.
+     * @param filter The package selector.
+     * @return the map of the package names to the DistroModule pointers
+     * of all the packages that match the selector.
+     */
+    QHash<QString, DistroModule *> getPackagesListByFilter(const QString& filter);
+    QHash<QString, const DistroModule *> getPackagesListByFilter(const QString& filter) const;
+
+    /**
      * @brief targetPath
      * @param target
      * @return path to deployement root dir of target.

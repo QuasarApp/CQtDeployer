@@ -565,7 +565,10 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-qmlDir"}, "{params}",
-                            "Sets path to Qml data dir",
+                            "Sets path to Qml data dir. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311).",
                             "-qmlDir ~/my/project/qml"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
@@ -650,69 +653,116 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-qmlOut"}, "{package;path,path}",
-                            "Sets path to qml out directory"
+                            "Sets path to qml out directory. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-libOut"}, "{package;path,path}",
-                            "Sets path to libraries out directory"
+                            "Sets path to libraries out directory. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-trOut"}, "{package;path,path}",
-                            "Sets path to Sets path to translations out directory"
+                            "Sets path to Sets path to translations out directory. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-pluginOut"}, "{package;path,path}",
-                            "Sets path to plugins out directory"
+                            "Sets path to plugins out directory. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-binOut"}, "{package;path,path}",
-                            "Sets path to binary out directory"
+                            "Sets path to binary out directory. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-recOut"}, "{package;path,path}",
-                            "Sets path to recurses out directory"
+                            "Sets path to recurses out directory. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-extraDataOut"}, "{package;path,path}",
-                            "Sets path to extra data files out directory. By Default it is root dir of the distribution."
+                            "Sets path to extra data files out directory. By Default it is root dir of the distribution. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-name"}, "{package;val,val}",
                             "Sets name for a package."
-                            "If this if you do not specify a package, the value will be assigned to the default package ("")"
+                            "If this if you do not specify a package, the value will be assigned to the default package ("")"                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-description"}, "{package;val,val}",
-                            "Sets description for a package"
+                            "Sets description for a package. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-deployVersion"}, "{package;val,val}",
-                            "Sets version for a package"
+                            "Sets version for a package. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-releaseDate"}, "{package;val,val}",
-                            "Sets release date for a package"
+                            "Sets release date for a package. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-publisher"}, "{package;val,val}",
-                            "Sets publisher for a package"
+                            "Sets publisher for a package. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-homePage"}, "{package;val,val}",
-                            "Sets the home page url for a package"
+                            "Sets the home page url for a package. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-prefix"}, "{package;val,val}",
-                            "Sets the prefix for the package relatively a target directory "
+                            "Sets the prefix for the package relatively a target directory . "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-extraData"}, "{package;val,val}",
-                            "Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure."
+                            "Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-tr"}, "{package;val,val}",
-                            "Adds qm files into the translations folder."
+                            "Adds qm files into the translations folder. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-license"}, "{path/to/licenseFile}",
@@ -763,17 +813,26 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-extraPlugin"}, "{package;val1;val2,SingeleVal}",
-                            "Sets an additional path to third-party application plug-in"
+                            "Sets an additional path to third-party application plug-in. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-enablePlugins"}, "{package;val1;val2,SingeleVa}",
-                            "Enables additional plugins for distribution."
+                            "Enables additional plugins for distribution. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                             " By default disabled next plugins: " + PluginsParser::defaultForbidenPlugins().join(',') + " if you want enable"
                             " it then use '-enablePlugins " + PluginsParser::defaultForbidenPlugins().join(',') + "' option"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-disablePlugins"}, "{package;val1;val2,SingeleVal}",
                             "Disables plugins for distribution. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                             "You can disable any plugin of your Qt build, just see the yourQtFolder/plugins forlder for available plugins."
                             " Example if you want disable qxcb plugin: -disablePlugins qxcb."
                             " Note that the name of the plugin is indicated without its extension"
@@ -843,12 +902,18 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-debOut"}, "{package;nameOfOutputDebFile,nameOfOutputDebFile}",
-                            "Sets name of the output debian file. This option can be work with multiple packages"
+                            "Sets name of the output debian file. This option can be work with multiple packages. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-installDirDeb"}, "{params}",
-                            "Sets install target directory fordebian package (by default it is /opt path)"
+                            "Sets install target directory fordebian package (by default it is /opt path). "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
 
 
@@ -856,21 +921,30 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-zipOut"}, "{package;nameOfOutputZipFile,nameOfOutputZipFile}",
-                            "Sets name of the output zip arrhive. This option can be work with multiple packages"
+                            "Sets name of the output zip arrhive. This option can be work with multiple packages. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
 
     group = "Part 9 AppImage package options";
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-appimageOut"}, "{package;nameOfOutputAppImageFile,nameOfOutputAppImageFile}",
-                            "Sets name of the output AppImage file. This option can be work with multiple packages"
+                            "Sets name of the output AppImage file. This option can be work with multiple packages. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
 
     group = "Part 10 DMG package options";
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-dmgOut"}, "{package;nameOfOutputDmgFile,nameOfOutputDmgFile}",
-                            "Sets name of the output DMG file. This option can be work with multiple packages"
+                            "Sets name of the output DMG file. This option can be work with multiple packages. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
 
     return help;

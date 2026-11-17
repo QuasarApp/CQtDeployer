@@ -100,6 +100,35 @@ You can also do the same in the config file
 ```
 
 
+### Package selectors
+
+The package name of the package options (`-name`, `-description`,
+`-deployVersion`, `-releaseDate`, `-publisher`, `-homePage`, `-prefix`,
+`-extraData`, `-tr`, `-binOut`, `-qmlOut`, `-libOut`, `-trOut`,
+`-pluginOut`, `-recOut`, `-extraDataOut`, `-installDirDeb`, `-debOut`,
+`-zipOut`, `-appimageOut`, `-dmgOut`, `-qmlDir`, `-extraPlugin`,
+`-enablePlugins` and the `-disablePlugins` options) is a package
+selector: every argument of the tool that selects a package uses this
+single selector (the same exact/glob semantics of the [target
+selectors](#target-selectors), issue #311). A selector that does not
+contain the `*` character selects the one package that has this name
+exactly (the comparison is case-insensitive). A selector that contains
+`*` is a glob pattern: every `*` matches any sequence of characters, so
+one selector can select several packages. A value without the selector
+(the single level value) is set to the default package.
+
+Example: the distribution contains the `win32Package`, `win64Package`
+and the `linuxPackage` packages, the option
+
+```
+cqtdeployer ... -name win*Package;Windows Package
+```
+
+sets the `Windows Package` name to the `win32Package` and the
+`win64Package` packages and the `linuxPackage` package keeps its name.
+Without the `*` the `winPackage` selector would not match any package,
+because a plain selector must equal the package name exactly.
+
 ## Manual Packages
 
 Manual packages is packages created by user template.

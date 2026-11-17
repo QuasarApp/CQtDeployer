@@ -34,6 +34,7 @@ public:
 
     const DeployConfig* config() const;
     friend class DeployTargetTest;
+    friend class DeployPackageTest;
     friend class IconsTest;
     friend class SetTargetDirTest;
 
