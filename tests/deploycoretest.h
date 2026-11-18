@@ -15,7 +15,11 @@
  *
  * Fast unit tests for the DeployCore platform helpers (issue #855):
  * the runtime flavor compatibility check used by the dependency
- * scanner to resolve libraries and the platform string conversions.
+ * scanner to resolve libraries and the platform string conversions,
+ * and the command line helpers of the issue #311: the reconstruction
+ * of the shell-expanded glob arguments, the '*' glob expansion of the
+ * bin option and the resolution of the directory of the executable
+ * file of the running process.
  */
 class DeployCoreTest : public QObject
 {
@@ -30,6 +34,10 @@ private slots:
     void genericWindowsFallback();
     void platformStrings();
     void qtRootDirQmakeDetection();
+    void shellExpandedGlobs();
+    void binOptionGlobExpansion();
+    void commandLineParser();
+    void executableDir();
 };
 
 #endif // DEPLOYCORETEST_H

@@ -39,6 +39,30 @@ cqtdeployer ... -targetPackage myPacage;target1,myPacage;target2,myPacage2;targe
 ```
 
 
+### Target selectors
+
+The target name of the `-targetPackage`, `-icon`, `-runScript`,
+`-extraDepends`, `-disableShortCut` and the `-disableRunScript` options is
+a target selector: every argument of the tool that selects a target uses
+this single selector (issue #311). A selector that does not contain the
+`*` character selects the one target that has this name exactly (the
+comparison is case-insensitive). A selector that contains `*` is a glob
+pattern: every `*` matches any sequence of characters, so one selector
+can select several targets.
+
+Example: the distribution contains the `win32`, `win64` and `linux`
+targets, the option
+
+```
+cqtdeployer ... -targetPackage winPackage;win*,linuxPackage;linux
+```
+
+creates the `winPackage` package from the `win32` and the `win64`
+targets and the `linuxPackage` package from the `linux` target. Without
+the `*` the `win` selector would not match any target, because a plain
+selector must equal the target name exactly.
+
+
 You can also do the same in the config file
 
 ```
@@ -75,6 +99,76 @@ You can also do the same in the config file
 }
 ```
 
+
+### Package selectors
+
+The package name of the package options (`-name`, `-description`,
+`-deployVersion`, `-releaseDate`, `-publisher`, `-homePage`, `-prefix`,
+`-extraData`, `-tr`, `-binOut`, `-qmlOut`, `-libOut`, `-trOut`,
+`-pluginOut`, `-recOut`, `-extraDataOut`, `-installDirDeb`, `-debOut`,
+`-zipOut`, `-appimageOut`, `-dmgOut`, `-qmlDir`, `-extraPlugin`,
+`-enablePlugins` and the `-disablePlugins` options) is a package
+selector: every argument of the tool that selects a package uses this
+single selector (the same exact/glob semantics of the [target
+selectors](#target-selectors), issue #311). A selector that does not
+contain the `*` character selects the one package that has this name
+exactly (the comparison is case-insensitive). A selector that contains
+`*` is a glob pattern: every `*` matches any sequence of characters, so
+one selector can select several packages. A value without the selector
+(the single level value) is set to the default package.
+
+Example: the distribution contains the `win32Package`, `win64Package`
+and the `linuxPackage` packages, the option
+
+```
+cqtdeployer ... -name win*Package;Windows Package
+```
+
+sets the `Windows Package` name to the `win32Package` and the
+`win64Package` packages and the `linuxPackage` package keeps its name.
+Without the `*` the `winPackage` selector would not match any package,
+because a plain selector must equal the package name exactly.
+
+### Command line globs
+
+The values of the path options (for example the `-bin` option) support
+the `*` glob pattern (issue #311): the value that contains the `*`
+character is expanded to the files and the folders that match the
+pattern, every `*` matches any sequence of characters and all the other
+characters are matched literally (the pattern is matched against the
+name of the last path component in the directory of the pattern, in the
+current working directory when the pattern is a plain file name).
+
+```
+cqtdeployer ... -bin 'bin/*.exe'
+```
+
+deploys all the executable files of the `bin` folder.
+
+The shell (bash, zsh, ...) expands the unquoted glob of the command line
+into the separate file arguments before the tool starts, so the tool
+merges the expanded file list back into the single value of the option
+(the files are joined with the `,` separator of the list options), the
+unquoted pattern works the same way as the quoted one:
+
+```
+cqtdeployer ... -bin bin/*.exe qtifw
+```
+
+is the same command as the quoted example above (the shell passes the
+`bin/app1.exe bin/app2.exe` file list to the tool and the tool sets the
+`bin` option to the `bin/app1.exe,bin/app2.exe` value).
+
+The command line of the tool is parsed with the Qt `QCommandLineParser`
+(the official Qt command line parser, the review of the PR #928): the
+`-option value` and the `-option=value` forms of the options and the
+double-dash form of the option (the `--option value` form) are accepted
+by the parser, and the bare option names of the command line (the
+`qtifw`, `deb`, ... flags of the command line) are normalized by the tool
+to the dash form of the parser (the `DeployCore::normalizeCommandLine`
+function), so every form of the command line works with the globs the
+same way (see the [Options general rules](Options.md#options-general-rules)
+documentation).
 
 ## Manual Packages
 

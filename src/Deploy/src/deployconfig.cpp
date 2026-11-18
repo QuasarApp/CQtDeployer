@@ -8,6 +8,68 @@
 #include "deployconfig.h"
 #include "qaglobalutils.h"
 
+#include <QFileInfo>
+#include <QRegularExpression>
+
+namespace {
+
+/**
+ * @brief selectorMatches - checks if the @a name matches the
+ * @a selector pattern (issue #311).
+ *
+ * The selector is the single selector semantics of the tool: it is used
+ * by the target selector (the target key is the path of the target
+ * executable, so the selector is checked against the file name of the
+ * target and against the full path) and by the package selector (the
+ * selector is checked against the package name). A selector that does
+ * not contain the '*' character must be equal to the name exactly
+ * (case-insensitive), so a plain selector selects only the expected
+ * item. A selector that contains '*' is a glob pattern: every '*'
+ * matches any sequence of characters (including an empty one) and all
+ * the other characters are matched literally. An empty selector
+ * matches every item.
+ */
+bool selectorMatches(const QString &name, const QString &selector) {
+    if (selector.isEmpty()) {
+        return true;
+    }
+
+    if (!selector.contains(QLatin1Char('*'))) {
+        return name.compare(selector, Qt::CaseInsensitive) == 0;
+    }
+
+    QString pattern;
+    pattern.reserve(selector.size() + 2);
+    pattern.append(QLatin1Char('^'));
+    for (const QChar &ch : selector) {
+        if (ch == QLatin1Char('*')) {
+            pattern.append(QLatin1String(".*"));
+        }
+        else {
+            pattern.append(QRegularExpression::escape(QString(ch)));
+        }
+    }
+    pattern.append(QLatin1Char('$'));
+
+    QRegularExpression matcher(pattern, QRegularExpression::CaseInsensitiveOption);
+    return matcher.match(name).hasMatch();
+}
+
+/**
+ * @brief targetSelectorMatches - checks if the target with the @a target
+ * key matches the @a selector (issue #311). The target key is the path
+ * of the target executable, so the selector is checked against the file
+ * name of the target (the name of the executable file) and against the
+ * full path of the target.
+ */
+bool targetSelectorMatches(const QString &target, const QString &selector) {
+    const QString fileName = QFileInfo(target).fileName();
+    return selectorMatches(target, selector) ||
+           selectorMatches(fileName, selector);
+}
+
+} // namespace
+
 void DeployConfig::reset() {
     *this = DeployConfig{};
 }
@@ -17,7 +79,7 @@ DeployConfig::getTargetsListByFilter(const QString &filter) {
     QHash<QString, TargetInfo*> result;
 
     for( auto it = _targets.begin(); it != _targets.end(); ++it) {
-        if (it.key().contains(filter, Qt::CaseInsensitive)) {
+        if (targetSelectorMatches(it.key(), filter)) {
             result.insert(it.key(), &(*it));
         }
     }
@@ -30,7 +92,33 @@ DeployConfig::getTargetsListByFilter(const QString &filter) const {
     QHash<QString, const TargetInfo*> result;
 
     for( auto it = _targets.cbegin(); it != _targets.cend(); ++it) {
-        if (it.key().contains(filter, Qt::CaseInsensitive)) {
+        if (targetSelectorMatches(it.key(), filter)) {
+            result.insert(it.key(), &(*it));
+        }
+    }
+
+    return result;
+}
+
+QHash<QString, DistroModule*>
+DeployConfig::getPackagesListByFilter(const QString &filter) {
+    QHash<QString, DistroModule*> result;
+
+    for( auto it = _packages.begin(); it != _packages.end(); ++it) {
+        if (selectorMatches(it.key(), filter)) {
+            result.insert(it.key(), &(*it));
+        }
+    }
+
+    return result;
+}
+
+QHash<QString, const DistroModule *>
+DeployConfig::getPackagesListByFilter(const QString &filter) const {
+    QHash<QString, const DistroModule*> result;
+
+    for( auto it = _packages.cbegin(); it != _packages.cend(); ++it) {
+        if (selectorMatches(it.key(), filter)) {
             result.insert(it.key(), &(*it));
         }
     }

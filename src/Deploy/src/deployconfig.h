@@ -76,8 +76,48 @@ public:
      * @brief reset config file to default
      */
     void reset();
+    /**
+     * @brief getTargetsListByFilter This method returns the targets that
+     * match the @a filter selector (issue #311). The target key is the
+     * path of the target executable, so the selector is checked against
+     * the file name of the target and against the full path. A selector
+     * that does not contain the '*' character must be equal to the
+     * target name or to the full path exactly (case-insensitive), so a
+     * plain selector selects only the expected target. A selector that
+     * contains '*' is a glob pattern: every '*' matches any sequence of
+     * characters and all the other characters are matched literally
+     * (case-insensitive). An empty selector matches every target.
+     * @param filter The target selector.
+     * @return the map of the target names to the TargetInfo pointers of
+     * all the targets that match the selector.
+     */
     QHash<QString, TargetInfo *> getTargetsListByFilter(const QString& filter);
     QHash<QString, const TargetInfo *> getTargetsListByFilter(const QString& filter) const;
+
+    /**
+     * @brief getPackagesListByFilter This method returns the packages
+     * that match the @a filter selector (issue #311). It is the single
+     * package selector entry point of the tool: the package name
+     * chooser of the package options (-name, -description, -binOut,
+     * -qmlOut, -libOut, -trOut, -pluginOut, -recOut, -extraDataOut,
+     * -deployVersion, -releaseDate, -publisher, -homePage, -prefix,
+     * -extraData, -tr, -installDirDeb, -debOut, -zipOut, -appimageOut,
+     * -dmgOut, -qmlDir, -extraPlugin, -enablePlugins and the
+     * -disablePlugins options) uses this selector, the same
+     * exact/glob semantics as the target selector of the
+     * getTargetsListByFilter() function. A selector that does not
+     * contain the '*' character must be equal to the package name
+     * exactly (case-insensitive) and a selector that contains the '*'
+     * character is a glob pattern: every '*' matches any sequence of
+     * characters and all the other characters are matched literally
+     * (case-insensitive), so one selector can select several packages.
+     * An empty selector matches every package.
+     * @param filter The package selector.
+     * @return the map of the package names to the DistroModule pointers
+     * of all the packages that match the selector.
+     */
+    QHash<QString, DistroModule *> getPackagesListByFilter(const QString& filter);
+    QHash<QString, const DistroModule *> getPackagesListByFilter(const QString& filter) const;
 
     /**
      * @brief targetPath

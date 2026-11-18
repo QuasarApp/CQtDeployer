@@ -14,11 +14,30 @@
 #include <QFileInfo>
 #include <QLibraryInfo>
 #include <QProcess>
+#include <QHash>
+#include <QCommandLineParser>
+#include <QCoreApplication>
 #include <configparser.h>
 #include <iostream>
 #include <qaplatformutils.h>
 
 #include <LIEF/MachO.hpp>
+
+// The system API of the host platform for the resolution of the path of
+// the executable file of the process (the DeployCore::executableDir
+// method, the fallback for the processes without the QCoreApplication
+// instance, the review of the PR #928).
+#ifdef Q_OS_DARWIN
+#include <mach-o/dyld.h>
+#endif
+
+#ifdef Q_OS_WIN
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
+
+#include <vector>
 
 //QString DeployCore::qtDir = "";
 //QStringList DeployCore::extraPaths = QStringList();
@@ -548,6 +567,10 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             " Then, CQtDeployer will extract all dependencies of the copied files and search dependencies in system environments and libDir paths."
                             "**Note**: If CQtDeployer can't find required file then"
                             " CQtDeployer try find required file in the system PATH enviroment."
+                            " The option value supports the '*' glob pattern (issue #311): a value that contains the"
+                            " '*' character is expanded to the files and the folders that match the pattern"
+                            " (example: -bin 'bin/*.exe'), the shell expansion of the unquoted pattern is merged"
+                            " by the tool automatically."
                         }});
 
     help.insert(group, {QuasarAppUtils::OptionData{
@@ -565,7 +588,10 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-qmlDir"}, "{params}",
-                            "Sets path to Qml data dir",
+                            "Sets path to Qml data dir. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311).",
                             "-qmlDir ~/my/project/qml"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
@@ -623,7 +649,10 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-runScript"}, "{list,parems}",
                             "forces cqtdeployer swap default run script to new from the arguments of option."
-                            " This option copy all content from input file and insert all code into runScript.sh or .bat",
+                            " This option copy all content from input file and insert all code into runScript.sh or .bat. "
+                            "The target is a target selector: without the '*' character it must equal the target name exactly "
+                            "(case-insensitive) and a selector that contains the '*' character is a glob pattern that can select "
+                            "several targets (issue #311).",
                             "cqtdeployer -runScript \"myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh\""
                         }});
 
@@ -640,73 +669,123 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-targetPackage"}, "{package;tar1,package;tar2}",
                             "Creates a new package and adds 'tar1 and tar2' to it. "
-                            "If you want configure the package that do not have any targets use the allowEmptyPackages option."
+                            "If you want configure the package that do not have any targets use the allowEmptyPackages option. "
+                            "The target name is a target selector: without the '*' character it must equal the target name exactly "
+                            "(case-insensitive) and a selector that contains the '*' character is a glob pattern that can select "
+                            "several targets (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-qmlOut"}, "{package;path,path}",
-                            "Sets path to qml out directory"
+                            "Sets path to qml out directory. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-libOut"}, "{package;path,path}",
-                            "Sets path to libraries out directory"
+                            "Sets path to libraries out directory. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-trOut"}, "{package;path,path}",
-                            "Sets path to Sets path to translations out directory"
+                            "Sets path to Sets path to translations out directory. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-pluginOut"}, "{package;path,path}",
-                            "Sets path to plugins out directory"
+                            "Sets path to plugins out directory. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-binOut"}, "{package;path,path}",
-                            "Sets path to binary out directory"
+                            "Sets path to binary out directory. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-recOut"}, "{package;path,path}",
-                            "Sets path to recurses out directory"
+                            "Sets path to recurses out directory. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-extraDataOut"}, "{package;path,path}",
-                            "Sets path to extra data files out directory. By Default it is root dir of the distribution."
+                            "Sets path to extra data files out directory. By Default it is root dir of the distribution. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-name"}, "{package;val,val}",
                             "Sets name for a package."
-                            "If this if you do not specify a package, the value will be assigned to the default package ("")"
+                            "If this if you do not specify a package, the value will be assigned to the default package ("")"                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-description"}, "{package;val,val}",
-                            "Sets description for a package"
+                            "Sets description for a package. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-deployVersion"}, "{package;val,val}",
-                            "Sets version for a package"
+                            "Sets version for a package. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-releaseDate"}, "{package;val,val}",
-                            "Sets release date for a package"
+                            "Sets release date for a package. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-publisher"}, "{package;val,val}",
-                            "Sets publisher for a package"
+                            "Sets publisher for a package. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-homePage"}, "{package;val,val}",
-                            "Sets the home page url for a package"
+                            "Sets the home page url for a package. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-prefix"}, "{package;val,val}",
-                            "Sets the prefix for the package relatively a target directory "
+                            "Sets the prefix for the package relatively a target directory . "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-extraData"}, "{package;val,val}",
-                            "Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure."
+                            "Adds the extra files or directories like a target. The selected directory will be copy to the extraDataOut location with save own structure. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-tr"}, "{package;val,val}",
-                            "Adds qm files into the translations folder."
+                            "Adds qm files into the translations folder. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-license"}, "{path/to/licenseFile}",
@@ -723,38 +802,60 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-icon"}, "{target;val,val}",
-                            "Sets path to icon for a targets"
+                            "Sets path to icon for a targets. "
+                            "The target is a target selector: without the '*' character it must equal the target name exactly "
+                            "(case-insensitive) and a selector that contains the '*' character is a glob pattern that can select "
+                            "several targets (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-disableRunScript"}, "{target;val,val}",
-                            "Disables a generation of run script for selected targets"
+                            "Disables a generation of run script for selected targets. "
+                            "The target is a target selector: without the '*' character it must equal the target name exactly "
+                            "(case-insensitive) and a selector that contains the '*' character is a glob pattern that can select "
+                            "several targets (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-disableShortCut"}, "{target;val,val}",
-                            "Disables a generation of shortcut for selected targets"
+                            "Disables a generation of shortcut for selected targets. "
+                            "The target is a target selector: without the '*' character it must equal the target name exactly "
+                            "(case-insensitive) and a selector that contains the '*' character is a glob pattern that can select "
+                            "several targets (issue #311)."
                         }});
 
     help.insert(group, {QuasarAppUtils::OptionData{
                            {"-extraDepends"}, "{target;val,val}",
-                           "Adds extra dependencies for target, if target is skipped then for rest of all targets",
-                           "Example -extraDepends libssl.so or -targetPackage packageName;myExecutable -extraDepends packageName;libssl.so"
+                           "Adds extra dependencies for target, if target is skipped then for rest of all targets. "
+                           "The target is a target selector: without the '*' character it must equal the target name exactly "
+                           "(case-insensitive) and a selector that contains the '*' character is a glob pattern that can select "
+                           "several targets (issue #311).",
+                           "Example -extraDepends libssl.so (all targets) or -extraDepends myExecutable;libssl.so "
+                           "or -extraDepends win*;libssl.so (all the targets that match the 'win*' pattern)"
                        }});
 
     group = "Part 5 Plugins Control Options";
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-extraPlugin"}, "{package;val1;val2,SingeleVal}",
-                            "Sets an additional path to third-party application plug-in"
+                            "Sets an additional path to third-party application plug-in. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-enablePlugins"}, "{package;val1;val2,SingeleVa}",
-                            "Enables additional plugins for distribution."
+                            "Enables additional plugins for distribution. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                             " By default disabled next plugins: " + PluginsParser::defaultForbidenPlugins().join(',') + " if you want enable"
                             " it then use '-enablePlugins " + PluginsParser::defaultForbidenPlugins().join(',') + "' option"
                         }});
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-disablePlugins"}, "{package;val1;val2,SingeleVal}",
                             "Disables plugins for distribution. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                             "You can disable any plugin of your Qt build, just see the yourQtFolder/plugins forlder for available plugins."
                             " Example if you want disable qxcb plugin: -disablePlugins qxcb."
                             " Note that the name of the plugin is indicated without its extension"
@@ -824,12 +925,18 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-debOut"}, "{package;nameOfOutputDebFile,nameOfOutputDebFile}",
-                            "Sets name of the output debian file. This option can be work with multiple packages"
+                            "Sets name of the output debian file. This option can be work with multiple packages. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-installDirDeb"}, "{params}",
-                            "Sets install target directory fordebian package (by default it is /opt path)"
+                            "Sets install target directory fordebian package (by default it is /opt path). "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
 
 
@@ -837,32 +944,487 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-zipOut"}, "{package;nameOfOutputZipFile,nameOfOutputZipFile}",
-                            "Sets name of the output zip arrhive. This option can be work with multiple packages"
+                            "Sets name of the output zip arrhive. This option can be work with multiple packages. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
 
     group = "Part 9 AppImage package options";
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-appimageOut"}, "{package;nameOfOutputAppImageFile,nameOfOutputAppImageFile}",
-                            "Sets name of the output AppImage file. This option can be work with multiple packages"
+                            "Sets name of the output AppImage file. This option can be work with multiple packages. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
 
     group = "Part 10 DMG package options";
 
     help.insert(group, {QuasarAppUtils::OptionData{
                             {"-dmgOut"}, "{package;nameOfOutputDmgFile,nameOfOutputDmgFile}",
-                            "Sets name of the output DMG file. This option can be work with multiple packages"
+                            "Sets name of the output DMG file. This option can be work with multiple packages. "
+                            "The package name is a package selector: without the '*' character it must equal the package "
+                            "name exactly (case-insensitive) and a selector that contains the '*' character is a glob "
+                            "pattern that can select several packages (issue #311)."
                         }});
 
     return help;
 }
 
+QStringList DeployCore::fixShellExpandedGlobs(const QStringList &args) {
+
+    // The names of the options of the tool: every argument of the command
+    // line that matches one of the names is an option (the boolean options
+    // are passed without the '-' prefix, see the optionsForEach parser of
+    // the QuasarAppUtils::Params class), the rest of the arguments without
+    // the '-' prefix are the file arguments of the shell-expanded globs.
+    QSet<QString> knownOptions;
+
+    auto addOptionNames = [&knownOptions](const QuasarAppUtils::OptionsDataList &list) {
+        for (const auto &option : list) {
+            for (const auto &name : option.names()) {
+                knownOptions.insert(name);
+            }
+        }
+    };
+
+    addOptionNames(avilableOptions());
+    addOptionNames(QuasarAppUtils::Params::availableArguments());
+
+    auto isKnownOption = [&knownOptions](const QString &arg) {
+        return knownOptions.contains(arg) || knownOptions.contains('-' + arg);
+    };
+
+    QStringList result;
+
+    // The index of the value argument of the last option in the @a result
+    // list. The file argument that is not the option of the tool is merged
+    // into this value (the value slot is valid until the next boolean
+    // option or the option without the value).
+    int valueSlot = -1;
+
+    for (int i = 0; i < args.size(); ++i) {
+        const QString &arg = args[i];
+
+        if (!arg.startsWith('-')) {
+
+            if (isKnownOption(arg)) {
+                // A boolean option of the tool (the options without the
+                // '-' prefix are passed as the single argument).
+                result.append(arg);
+                valueSlot = -1;
+            } else if (valueSlot != -1) {
+                // A file argument of the shell-expanded glob: merge it
+                // into the value of the option that the file belongs to.
+                result[valueSlot] += getSeparator(0) + arg;
+            } else {
+                // An argument without the known option: keep it as is
+                // (the parser of the tool will handle it).
+                result.append(arg);
+            }
+
+            continue;
+        }
+
+        if (arg.contains('=')) {
+            // The value is inlined into the option argument (the parser of
+            // the tool splits the argument by the '=' separator).
+            result.append(arg);
+            valueSlot = result.size() - 1;
+            continue;
+        }
+
+        // A dash option: the parser of the tool takes the next argument
+        // (that does not start with the '-' prefix) as its value.
+        if (i + 1 < args.size() && !args[i + 1].startsWith('-')) {
+            result.append(arg);
+            result.append(args[i + 1]);
+            valueSlot = result.size() - 1;
+            i++;
+        } else {
+            // The option is passed without the value (the parser of the
+            // tool will report the missing argument).
+            result.append(arg);
+            valueSlot = -1;
+        }
+    }
+
+    return result;
+}
+
+QStringList DeployCore::expandGlob(const QString &pattern) {
+
+    if (!pattern.contains('*')) {
+        return {pattern};
+    }
+
+    // The pattern is matched against the name of the last path component in
+    // the directory of the pattern (in the current working directory when
+    // the pattern is a plain file name).
+    int dirSeparator = -1;
+    for (int i = pattern.size() - 1; i >= 0; --i) {
+        if (pattern[i] == '/' || pattern[i] == '\\') {
+            dirSeparator = i;
+            break;
+        }
+    }
+
+    QString dirPath = ".";
+    QString fileName = pattern;
+    if (dirSeparator != -1) {
+        dirPath = pattern.left(dirSeparator);
+        fileName = pattern.mid(dirSeparator + 1);
+    }
+
+    QDir dir(dirPath);
+    if (!dir.exists()) {
+        return {};
+    }
+
+    QStringList matches;
+    for (const auto &file : dir.entryList({fileName},
+                                          QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot,
+                                          QDir::Name)) {
+        matches.append(dirPath == "." ? file : dir.filePath(file));
+    }
+
+    return matches;
+}
+
+QString DeployCore::executableDir() {
+
+    // The QCoreApplication::applicationDirPath method of the Qt (the
+    // ready-made Qt solution for the directory of the executable file,
+    // the review of the PR #928): the method is used when the
+    // QCoreApplication instance of the process is available. The
+    // QCoreApplication::instance check is required: for the processes
+    // without the instance the applicationDirPath method prints the
+    // "Please instantiate the QApplication object first" warning and
+    // returns the empty string, and the empty value of the appDir
+    // variable of the deploy configuration puts the current working
+    // directory (the empty path of the QDir class) into the ignore
+    // environment of the deploy and rejects the libDir options that
+    // point to the child directories of the working directory.
+    if (QCoreApplication::instance()) {
+        const QString dir = QCoreApplication::applicationDirPath();
+        if (!dir.isEmpty()) {
+            return dir;
+        }
+    }
+
+    // The fallback for the processes without the QCoreApplication
+    // instance: the path of the executable file is resolved with the
+    // system API of the host platform (the same mechanism of the old
+    // QuasarAppUtils::Params::getCurrentExecutableDir method of the
+    // QuasarAppLib library, the parseParams side effect of the old
+    // parser, the review of the PR #928).
+    QString exePath;
+
+#ifdef Q_OS_WIN
+    {
+        wchar_t buffer[MAX_PATH] = {};
+        const DWORD size = GetModuleFileNameW(nullptr, buffer, MAX_PATH);
+        if (size > 0) {
+            exePath = QString::fromWCharArray(buffer, int(size));
+        }
+    }
+#elif defined(Q_OS_DARWIN)
+    {
+        uint32_t size = 0;
+        _NSGetExecutablePath(nullptr, &size);
+        std::vector<char> buffer(size);
+        if (size > 0 && _NSGetExecutablePath(buffer.data(), &size) == 0) {
+            exePath = QString::fromUtf8(buffer.data(), int(size));
+        }
+    }
+#else
+    {
+        char buffer[2048] = {};
+        const ssize_t size = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
+        if (size > 0) {
+            buffer[size] = '\0';
+            exePath = QString::fromUtf8(buffer, int(size));
+        }
+    }
+#endif
+
+    return QFileInfo(exePath).absolutePath();
+}
+
+// The single options table of the command line of the tool: the options of
+// the DeployCore and the base options of the QuasarAppLib library (the
+// verbose and the fileLog options). The table is the single source of the
+// command line options of the tool (the QCommandLineParser registration,
+// the normalization of the bare option names and the help page are built
+// from it, the review of the PR #928).
+static QuasarAppUtils::OptionsDataList allOptionsTable() {
+    QuasarAppUtils::OptionsDataList table = DeployCore::avilableOptions();
+    table.unite(QuasarAppUtils::Params::availableArguments());
+    return table;
+}
+
+// The storage key of the option of the options table: the first name of
+// the option without the '-' prefix (the '-bin' name of the table is the
+// 'bin' key of the QuasarAppUtils::Params storage).
+static QString optionKey(const QuasarAppUtils::OptionData &data) {
+    const QString &first = data.names().first();
+    return first.startsWith('-') ? first.mid(1) : first;
+}
+
+// The option takes the value argument in the command line (the '-bin app'
+// form) when the '-' form of the option is in the options table (the old
+// parser of the QuasarAppLib accepted the value only for the dash options
+// of the table). The 'init' option is the exception: the table contains
+// the bare name only, but the documented command line form of the option
+// is the '-init multi' form (the level of the initialization of the
+// configuration file).
+static bool optionTakesValue(const QuasarAppUtils::OptionData &data) {
+    if (optionKey(data) == "init") {
+        return true;
+    }
+    for (const auto &name : data.names()) {
+        if (name.startsWith('-')) {
+            return true;
+        }
+    }
+    return false;
+}
+
+QList<QCommandLineOption> DeployCore::commandLineOptions() {
+
+    QList<QCommandLineOption> options;
+    for (const auto &data : allOptionsTable()) {
+
+        QStringList names;
+        for (const auto &name : data.names()) {
+            const QString clean = name.startsWith('-') ? name.mid(1) : name;
+            if (!names.contains(clean)) {
+                names.append(clean);
+            }
+        }
+
+        QCommandLineOption option(names, data.description());
+        if (optionTakesValue(data)) {
+            // The QCommandLineParser marks the option as the option with
+            // the value by the valueName property (the value is required
+            // in the command line of the option).
+            option.setValueName(data.arguments().isEmpty() ? "value" : data.arguments());
+        }
+        options.append(option);
+    }
+
+    return options;
+}
+
+bool DeployCore::normalizeCommandLine(const QStringList &args,
+                                      QStringList *normalized) {
+
+    // The option names exactly as they can be written in the command line:
+    // the names with the '-' prefix of the options table (the '-bin' form)
+    // and the bare names of the options (the 'qtifw' flag form of the
+    // command line, the names without the '-' prefix of the table).
+    QSet<QString> dashNames;
+    QSet<QString> bareNames;
+    QHash<QString, bool> takesValue;
+    for (const auto &data : allOptionsTable()) {
+        for (const auto &name : data.names()) {
+            if (name.startsWith('-')) {
+                dashNames.insert(name);
+            } else {
+                bareNames.insert(name);
+            }
+        }
+        const QString key = optionKey(data);
+        takesValue.insert(key, takesValue.value(key, false) || optionTakesValue(data));
+    }
+
+    auto stripPrefix = [](const QString &arg) {
+        return arg.mid(arg.startsWith("--") ? 2 : 1);
+    };
+
+    auto isKnownDash = [&dashNames, &bareNames, &stripPrefix](const QString &arg) {
+        // The '-' and the '--' forms of the dash options of the table and
+        // the '-' form of the bare options of the table (the Qt
+        // QCommandLineParser recognizes the dash form of every name of the
+        // table).
+        return dashNames.contains(arg) ||
+               dashNames.contains('-' + stripPrefix(arg)) ||
+               bareNames.contains(stripPrefix(arg));
+    };
+
+    QStringList result;
+    QString pendingOption;
+    bool expectingValue = false;
+
+    for (const auto &arg : args) {
+
+        if (arg.startsWith('-')) {
+
+            if (expectingValue) {
+                qCritical() << "Missing argument for " + pendingOption;
+                return false;
+            }
+
+            pendingOption = isKnownDash(arg) ? arg : QString();
+            expectingValue = isKnownDash(arg) && takesValue.value(stripPrefix(arg), false);
+            result.append(arg);
+            continue;
+        }
+
+        if (expectingValue) {
+            // The value of the previous option (the '-bin app' form of the
+            // command line).
+            expectingValue = false;
+            result.append(arg);
+            continue;
+        }
+
+        if (bareNames.contains(arg)) {
+            // The bare name of the option of the command line: the Qt
+            // QCommandLineParser recognizes only the dash-prefixed options,
+            // so the bare name is converted to the dash form. The bare form
+            // of the option that can take the value is the boolean form of
+            // the option (the empty value, the same storage of the old
+            // parser).
+            result.append('-' + arg);
+            if (takesValue.value(arg, false)) {
+                result.append(QString());
+            }
+            continue;
+        }
+
+        // The argument without the known option name: the
+        // QCommandLineParser collects it as the positional argument and
+        // the parser of the tool reports the unknown argument.
+        result.append(arg);
+    }
+
+    if (expectingValue) {
+        qCritical() << "Missing argument for " + pendingOption;
+        return false;
+    }
+
+    *normalized = result;
+    return true;
+}
+
+bool DeployCore::parseCommandLine(const QStringList &args) {
+
+    QuasarAppUtils::Params::clearParsedData();
+
+    // The command line of the shell-expanded '*' globs is reconstructed
+    // (issue #311, the manual testing of the PR #928): the shell expands
+    // the unquoted glob of the command line into the separate file
+    // arguments before the tool starts, the function merges the file list
+    // back into the single value of the option.
+    const QStringList fixed = fixShellExpandedGlobs(args);
+
+    // The bare option names of the command line are normalized to the dash
+    // form of the Qt QCommandLineParser.
+    QStringList normalized;
+    if (!normalizeCommandLine(fixed, &normalized)) {
+        return false;
+    }
+
+    QCommandLineParser parser;
+    parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
+    parser.addOptions(commandLineOptions());
+
+    // The QCommandLineParser::parse method expects the name of the
+    // executable file as the first element of the argument list.
+    QStringList commandLine;
+    commandLine.append(QCoreApplication::applicationName().isEmpty()
+                          ? "cqtdeployer" : QCoreApplication::applicationName());
+    commandLine.append(normalized);
+
+    if (!parser.parse(commandLine)) {
+        qCritical() << parser.errorText();
+        return false;
+    }
+
+    if (!parser.positionalArguments().isEmpty()) {
+        for (const auto &arg : parser.positionalArguments()) {
+            qCritical() << QString("The '%0' option not exists!"
+                                   " You use wrong option name,"
+                                   " please check the help before run your commnad.").arg(arg);
+        }
+        return false;
+    }
+
+    // The parsed options are stored in the QuasarAppUtils::Params storage
+    // that the rest of the tool (the ConfigParser and the distributions)
+    // reads: the options with the value are stored with the value and the
+    // boolean options are stored as the enabled keys (the same storage of
+    // the old parser).
+    for (const auto &data : allOptionsTable()) {
+        const QString key = optionKey(data);
+        if (!parser.isSet(key)) {
+            continue;
+        }
+
+        if (optionTakesValue(data)) {
+            const QString value = parser.value(key);
+            if (value.isEmpty()) {
+                QuasarAppUtils::Params::setEnable(key, true);
+            } else {
+                QuasarAppUtils::Params::setArg(key, value);
+            }
+        } else {
+            QuasarAppUtils::Params::setEnable(key, true);
+        }
+    }
+
+    // The deprecated options of the table (the 'qif' option of the issue
+    // #738): the deprecation warning of the old parser is printed for the
+    // old name of the option.
+    for (const auto &data : allOptionsTable()) {
+        if (data.isDepricated() && QuasarAppUtils::Params::isEndable(optionKey(data))) {
+            qWarning() << QString("The %0 option(s) marked as deprecated! "
+                                  "And most likely will be removed in next release.").
+                    arg(data.names().join("/"));
+            qWarning() << QString("Option message: %0").arg(data.depricatedMsg());
+        }
+    }
+
+    // The working options table of the debug log (the same output of the
+    // old parser of the QuasarAppLib library).
+    qDebug() << "--- Working options table start ---";
+    const auto &params = QuasarAppUtils::Params::getUserParamsMap();
+    for (auto it = params.constBegin(); it != params.constEnd(); ++it) {
+        QString row = QString{"Option[%0]"}.arg(it.key());
+        if (!it.value().isEmpty()) {
+            row += QString{": %1"}.arg(it.value());
+        }
+        qDebug() << row;
+    }
+    qDebug() << "--- Working options table end ---";
+
+    return true;
+}
+
 void DeployCore::help() {
 
-    auto localHelp = QuasarAppUtils::Params::getHelpOfInputOptions();
+    // The help of the options that were used in the command line (the same
+    // behavior as the getHelpOfInputOptions method of the old QuasarAppLib
+    // parser: the help page of the used options only when more than one
+    // option is passed in the command line).
+    const auto usedOptions = QuasarAppUtils::Params::getUserParamsMap().keys();
 
-    if(!localHelp.isEmpty()) {
-        QuasarAppUtils::Help::print(localHelp);
+    if (usedOptions.size() > 1) {
+        QuasarAppUtils::Help::Options options;
+        for (const auto &data : allOptionsTable()) {
+            for (const auto &name : data.names()) {
+                const QString key = name.startsWith('-') ? name.mid(1) : name;
+                if (usedOptions.contains(key)) {
+                    options.unite(data.toHelp());
+                    break;
+                }
+            }
+        }
+        QuasarAppUtils::Help::print(
+            QuasarAppUtils::Help::Section{{"Information about using options", options}});
         return;
     }
 
@@ -882,7 +1444,18 @@ void DeployCore::help() {
         }
     };
 
-    help += QuasarAppUtils::Params::getHelp();
+    // The grouped options table (the same content as the userHelp of the
+    // old QuasarAppLib parser: the options of the tool and the base
+    // options of the QuasarAppLib library, grouped by the parts of the
+    // help page).
+    const auto table = allOptionsTable();
+    QHash<QString, QuasarAppUtils::Help::Options> groups;
+    for (auto it = table.constBegin(); it != table.constEnd(); ++it) {
+        groups[it.key()].unite(it.value().toHelp());
+    }
+    for (auto it = groups.constBegin(); it != groups.constEnd(); ++it) {
+        help.insert(it.key(), it.value());
+    }
 
     QuasarAppUtils::Help::print(help);
 

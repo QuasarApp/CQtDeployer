@@ -13,6 +13,7 @@
 #include <QFileInfo>
 #include <QSet>
 #include <memory>
+#include <QCommandLineOption>
 #include "deploy_global.h"
 #include <params.h>
 
@@ -332,6 +333,139 @@ public:
     static RunMode getMode();
     static void help();
     static QuasarAppUtils::OptionsDataList avilableOptions();
+
+    /**
+     * @brief parseCommandLine This method parses the command line of the
+     *  tool with the Qt QCommandLineParser (the official Qt command line
+     *  parser, the review of the PR #928: the command line is parsed by
+     *  the Qt parser instead of the parseParams method of the
+     *  QuasarAppUtils::Params class of the QuasarAppLib library). The
+     *  method runs the real option pipeline of the tool: the command line
+     *  of the shell-expanded '*' globs is reconstructed (the
+     *  fixShellExpandedGlobs function, issue #311), the bare option names
+     *  of the command line (the 'qtifw', 'deb', ... flags of the
+     *  command line) are normalized to the dash form of the parser (the
+     *  normalizeCommandLine function) and the command line is parsed with
+     *  the QCommandLineParser of the ParseAsLongOptions mode. The parsed
+     *  options are stored in the QuasarAppUtils::Params storage that the
+     *  rest of the tool (the ConfigParser and the distributions) reads:
+     *  the options with the value are stored with the value and the
+     *  boolean options are stored as the enabled keys (the same storage
+     *  of the old parser).
+     * @param args This is the command line arguments of the tool (without
+     * the name of the executable file).
+     * @return true if the command line is parsed successful, false
+     * otherwise (the error message is printed to the log).
+     */
+    static bool parseCommandLine(const QStringList &args);
+
+    /**
+     * @brief normalizeCommandLine This method normalizes the command line
+     *  of the tool to the form of the Qt QCommandLineParser (the review
+     *  of the PR #928). The parser recognizes only the dash-prefixed
+     *  options, so the bare option names of the command line (the
+     *  'qtifw', 'deb', ... flags of the command line, the names without
+     *  the '-' prefix of the options table) are converted to the dash
+     *  form ('-qtifw', '-deb', ...). The bare form of the option that can
+     *  take the value is the boolean form of the option (the empty value,
+     *  the same storage of the old parser). The method reports the
+     *  'Missing argument for <option>' error of the old parser when the
+     *  value option is passed without the value argument (the option
+     *  without the value in the end of the command line or the option
+     *  followed by the next option).
+     * @param args This is the command line arguments of the tool (without
+     * the name of the executable file, the fixed form of the
+     *  fixShellExpandedGlobs function).
+     * @param normalized This is the output parameter of the normalized
+     * command line (the dash form of the bare option names).
+     * @return true if the command line is normalized successful, false
+     * otherwise (the error message is printed to the log).
+     */
+    static bool normalizeCommandLine(const QStringList &args,
+                                     QStringList *normalized);
+
+    /**
+     * @brief commandLineOptions This method returns the options of the
+     *  command line of the tool for the Qt QCommandLineParser (the review
+     *  of the PR #928). The single options table of the tool (the
+     *  avilableOptions of the DeployCore and the base options of the
+     *  QuasarAppUtils::Params class of the QuasarAppLib library) is
+     *  converted into the QCommandLineOption objects. The QCommandLineParser
+     *  recognizes the options without the '-' prefix, so the names of the
+     *  options table are passed without the prefix (the '-bin' name of the
+     *  table is the 'bin' name of the parser, the parser accepts the
+     *  '-bin', '--bin', '-bin=value' and '--bin=value' forms of the command
+     *  line). The options that take the value in the command line (the
+     *  '-bin app' form) are marked as the options with the value (the
+     *  valueName property of the QCommandLineOption).
+     * @return the list of the QCommandLineOption objects of the command
+     * line of the tool.
+     */
+    static QList<QCommandLineOption> commandLineOptions();
+
+    /**
+     * @brief fixShellExpandedGlobs This method reconstructs the command line
+     * of the tool when the shell already expanded the '*' glob patterns of
+     * the options into separate file arguments (issue #311, the manual
+     * testing of the PR #928). The shell (bash, zsh, ...) expands the
+     * unquoted glob of the command line (for example the
+     * 'cqtdeployer -bin *.deb qtifw' command) before the tool starts, so the
+     * tool receives the '-bin' option with the value of the first file only
+     * and the rest of the files as the separate arguments without the
+     * delimiter (the parser of the tool expects a single value with the ','
+     * separator for the list options). The method merges the file arguments
+     * that are not the options of the tool (the arguments that do not start
+     * with the '-' prefix and that are not the known option names) back
+     * into the value of the option that the files belong to, so the tool
+     * works with the unquoted glob the same way as with the quoted one.
+     * @param args This is the command line arguments of the tool (without
+     * the name of the executable file).
+     * @return the command line arguments with the expanded glob files
+     * merged into the value of the option (the files are joined with the
+     * ',' separator of the list options of the tool).
+     */
+    static QStringList fixShellExpandedGlobs(const QStringList &args);
+
+    /**
+     * @brief expandGlob This method expands the '*' glob pattern of the
+     * issue #311 to the files and the folders that match the pattern. The
+     * pattern is matched against the name of the last path component in
+     * the directory of the pattern (in the current working directory when
+     * the pattern is a plain file name), every '*' matches any sequence of
+     * characters and all the other characters are matched literally.
+     * @param pattern This is the glob pattern of the option value.
+     * @return the list of the files and the folders that match the
+     * pattern (the single @a pattern itself when it does not contain the
+     * '*' character and the empty list when the pattern has no matches).
+     */
+    static QStringList expandGlob(const QString &pattern);
+
+    /**
+     * @brief executableDir This method returns the directory of the
+     *  executable file of the running process (the review of the PR
+     *  #928: the directory of the executable file of the tool replaces
+     *  the getCurrentExecutableDir method of the QuasarAppLib Params
+     *  class, the parseParams side effect of the old parser). The
+     *  QCoreApplication::applicationDirPath method of the Qt (the
+     *  ready-made Qt solution for the directory of the executable file)
+     *  is used when the QCoreApplication instance of the process is
+     *  available. For the processes without the QCoreApplication
+     *  instance (the QCoreApplication::applicationDirPath method
+     *  prints the "Please instantiate the QApplication object first"
+     *  warning and returns the empty string for them, so the empty
+     *  value of the method breaks the deploy environment of the tool:
+     *  the empty path of the QDir class is the current working
+     *  directory) the path of the executable file is resolved with the
+     *  system API of the host platform (the /proc/self/exe link of the
+     *  Linux, the _NSGetExecutablePath function of the macOS and the
+     *  GetModuleFileName function of the Windows, the same mechanism of
+     *  the old QuasarAppUtils::Params::getCurrentExecutableDir method
+     *  of the QuasarAppLib library).
+     * @return the directory of the executable file of the running
+     * process (the empty string when the path of the executable file is
+     * not available).
+     */
+    static QString executableDir();
 
     static QStringList extractTranslation(const QSet<QString> &libs);
     static QString getAppVersion();

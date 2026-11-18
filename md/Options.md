@@ -6,11 +6,13 @@ General rules for using options
 cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 ```
 
-* All options must begin with a '-' sign.
+* The command line of the tool is parsed with the Qt `QCommandLineParser` (the official Qt command line parser). The options with the value are written with the '-' prefix: the `-option value` form (the value is the separate argument of the command line) or the `-option=value` form (the value is inlined into the option argument with the '=' separator). The double-dash form of the option (the `--option value` form of the command line) is accepted too.
+* The distribution options and the boolean flags of the tool (the `qtifw`, `deb`, `zip`, `appimage`, `dmg`, `clear`, `force-clear`, ... options of the command line) can be written without the '-' prefix (the flag form of the command line).
 * After specifying the desired option, you must specify the value.
 * Some options support enumerations (arrays of values). When initializing such options, specify the list of values through ',' without spaces. If you use any programming language and call the cqtdeployer process, then the array of values must be passed as 1 parameter.
-* Some options support redistributions with the ability to select the target for which the flag will be applied. Target and values are separated using the ';' sign. Example -libOut target1;value1,target2;value2,defaultValue.
+* Some options support redistributions with the ability to select the target or the package for which the flag will be applied. The target/package and values are separated using the ';' sign. Example -libOut package1;value1,package2;value2,defaultValue. The target and the package names are selectors (the exact/glob semantics, see the [Target selectors](Packing.md#target-selectors) and the [Package selectors](Packing.md#package-selectors) documentation).
 * To include a flag, simply include the flag name in the list of options.
+* The values of the path options support the `*` glob pattern (issue #311): the value that contains the `*` character is expanded to the files and the folders that match the pattern (example: `-bin 'bin/*.exe'`), and the shell expansion of the unquoted pattern of the command line is merged by the tool into the single value of the option (example: `-bin *.exe`), see the [Command line globs](Packing.md#command-line-globs) documentation.
 
 ## Description of values in the table
 
@@ -86,7 +88,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 
 | Option                      | Description                                              |
 |-----------------------------|-----------------------------------------------------------|
-|   -bin [list,params]        | Files to deploy or folders that contain files to deploy. For example -bin ~/my/project/bin/,~/my/project/bin.exe,~/my/project/runtimeLinking/lib.dll. For files: These files will be unconditional copied to the destination directory, regardless of their format or suffix. For folders: CQtDeployer will enter these folders and non-recursively copy all executable files to the destination directory. Then, CQtDeployer will extract all dependencies of the copied files and search dependencies in system environments and **libDir** paths. **Note**: If CQtDeployer can't find required file then CQtDeployer try find required file in the system PATH enviroment.|
+|   -bin [list,params]        | Files to deploy or folders that contain files to deploy. For example -bin ~/my/project/bin/,~/my/project/bin.exe,~/my/project/runtimeLinking/lib.dll. For files: These files will be unconditional copied to the destination directory, regardless of their format or suffix. For folders: CQtDeployer will enter these folders and non-recursively copy all executable files to the destination directory. Then, CQtDeployer will extract all dependencies of the copied files and search dependencies in system environments and **libDir** paths. **Note**: If CQtDeployer can't find required file then CQtDeployer try find required file in the system PATH enviroment. The value supports the `*` glob pattern (issue #311): the value that contains the `*` character is expanded to the files and the folders that match the pattern (example: -bin 'bin/*.exe'), the shell expansion of the unquoted pattern is merged by the tool automatically (see the [Command line globs](Packing.md#command-line-globs) documentation).|
 |   -binPrefix [prefixPath]   | Sets prefix path for bin option. Example: **-bin path/MyExecutable** is some as **-bin MyExecutable -binPrefix path** |
 |   -confFile [params]        | The path to the json file with all deployment configurations.|
 |                             | Using this file, you can add the necessary options, |
@@ -118,7 +120,7 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 
 | Option                      | Description                                              |
 |-----------------------------|-----------------------------------------------------------|
-|  -targetPackage [package;tar1,package;tar2]| Creates a new package and adds 'tar1 and tar2' to it |
+|  -targetPackage [package;tar1,package;tar2]| Creates a new package and adds 'tar1 and tar2' to it. The target name is a target selector: without the `*` character it must equal the target name exactly (case-insensitive), with the `*` character it is a glob pattern and can select several targets (see the [Target selectors](Packing.md#target-selectors) documentation) |
 |  -qmlOut [package;path,path] | Sets path to qml out directory                                  |
 |  -libOut [package;path,path] | Sets path to libraries out directory                            |
 |  -trOut [package;path,path]  | Sets path to translations out directory                         |
@@ -137,6 +139,9 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -tr [package;val,val]       | Adds qm files into the translations folder.                     |
 |  -license [path/to/licenseFile] | Sets the license file that is inserted into the installer, the deb and the DMG packages (issue #456). The Qt Installer Framework installer (the qtifw option) shows the license as an agreement before the installation: the file is copied into the meta directory of the package of the installer template and the Licenses element is added to the package.xml of the package. The deb packages get the license into the usr/share/doc/<package>/copyright file (the standard location of the license text of the Debian policy). The DMG packages get the license into the root folder of the DMG volume (the standard way the macOS DMG files ship the license text, the original file name is kept). Example: cqtdeployer -bin myApp -license ./LICENSE.txt qtifw deb dmg |
 
+
+The package name of these options is a package selector: without the `*` character it must equal the package name exactly (case-insensitive), with the `*` character it is a glob pattern and can select several packages (see the [Package selectors](Packing.md#package-selectors) documentation). All the arguments of the tool that select a package (the `-name`, `-description`, `-deployVersion`, `-releaseDate`, `-publisher`, `-homePage`, `-prefix`, `-extraData`, `-tr`, `-binOut`, `-qmlOut`, `-libOut`, `-trOut`, `-pluginOut`, `-recOut`, `-extraDataOut`, `-installDirDeb`, `-debOut`, `-zipOut`, `-appimageOut`, `-dmgOut`, `-qmlDir`, `-extraPlugin`, `-enablePlugins` and the `-disablePlugins` options) use this single selector (issue #311).
+
 ### Controll of targets options
 
 | Option                      | Description                                              |
@@ -147,6 +152,8 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -runScript [target;val,val]  | forces cqtdeployer swap default run script to new from the arguments of option. This option copy all content from input file and insert all code into runScript.sh or .bat. Example of use: cqtdeployer -runScript "myTargetMame;path/to/my/myCustomLaunchScript.sh,myTargetSecondMame;path/to/my/mySecondCustomLaunchScript.sh" For get more information about customScript see the documentation [page](CustomScripts.md)|
 |  -extraDepends [target;val,val]  | Adds extra dependencies for target, if package is skiped then for all targets. Example -extraDepends libssl.so or -extraDepends myExecutable;libssl.so           |
 
+The target name of these options is a target selector: without the `*` character it must equal the target name exactly (case-insensitive), with the `*` character it is a glob pattern and can select several targets (see the [Target selectors](Packing.md#target-selectors) documentation). All the arguments of the tool that select a target (the `-targetPackage`, `-icon`, `-runScript`, `-extraDepends`, `-disableShortCut` and the `-disableRunScript` options) use this single selector (issue #311).
+
 ### Plugins Control Options
  
 | Option                      | Description                                              |
@@ -156,6 +163,9 @@ cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 |  -disablePlugins [package;val1;val2,SingeleVal]| Disables plugins for distribution.            |
 |                    |You can disable any plugin of your Qt build, just see the yourQtFolder/plugins folder for available plugins.|
 | |Example: if you want disable qxcb plugin: -disablePlugins qxcb. Note that the name of the plugin is indicated without its extension.|
+
+
+The package name of these options is a package selector: without the `*` character it must equal the package name exactly (case-insensitive), with the `*` character it is a glob pattern and can select several packages (see the [Package selectors](Packing.md#package-selectors) documentation, issue #311).
 
 ### QtInstallFramework options
 

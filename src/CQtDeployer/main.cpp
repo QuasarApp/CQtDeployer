@@ -7,9 +7,6 @@
 
 #include "deploycore.h"
 #include <QCoreApplication>
-#include <QDir>
-#include <QFileInfo>
-#include <QList>
 #include <deploy.h>
 #include <qalogger.h>
 
@@ -19,8 +16,26 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setOrganizationDomain("https://github.com/QuasarApp");
     QCoreApplication::setApplicationName("CQtDeployer");
 
+    // The command line arguments without the name of the executable file.
+    // The arguments are captured before the QCoreApplication construction,
+    // the constructor reorders the argv array of the process.
+    QStringList params;
+    for (int i = 1; i < argc; ++i) {
+        params.append(QString::fromUtf8(argv[i]));
+    }
 
-    if (!QuasarAppUtils::Params::parseParams(argc, argv, DeployCore::avilableOptions())) {
+    QCoreApplication app(argc, argv);
+
+    // The command line of the tool is parsed with the Qt QCommandLineParser
+    // (the official Qt command line parser, the review of the PR #928:
+    // instead of the parseParams method of the QuasarAppUtils::Params class
+    // of the QuasarAppLib library): the shell-expanded '*' globs of the
+    // command line are reconstructed (the DeployCore::fixShellExpandedGlobs
+    // function, issue #311), the bare option names of the command line are
+    // normalized to the dash form of the parser and the parsed options are
+    // stored in the QuasarAppUtils::Params storage that the rest of the
+    // tool reads.
+    if (!DeployCore::parseCommandLine(params)) {
         qWarning() << "Wrong parameters. Please use the 'help' of 'h' option to show the help page.";
         exit(4);
     }

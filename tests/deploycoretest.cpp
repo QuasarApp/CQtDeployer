@@ -377,6 +377,242 @@ void DeployCoreTest::qtRootDirQmakeDetection() {
     QCOMPARE(DeployCore::findQmakeInQtRoot(noQmakeRoot), QString());
 }
 
+void DeployCoreTest::shellExpandedGlobs() {
+    // The shell (bash, zsh, ...) expands the unquoted '*' glob of the
+    // command line into the separate file arguments before the tool starts
+    // (issue #311, the manual testing of the PR #928): the tool must merge
+    // the file list back into the single value of the option.
+
+    // The exact scenario of the review: '-bin *.deb qtifw' expanded by the
+    // shell into '-bin a.deb b.deb c.deb qtifw'.
+    QStringList in1 = {"-bin", "a.deb", "b.deb", "c.deb", "qtifw"};
+    QCOMPARE(DeployCore::fixShellExpandedGlobs(in1),
+             (QStringList{"-bin", "a.deb,b.deb,c.deb", "qtifw"}));
+
+    // The plain (not expanded) command line is not changed
+    QStringList in2 = {"-bin", "a.deb", "-targetPackage", "pkg;target1", "qtifw"};
+    QCOMPARE(DeployCore::fixShellExpandedGlobs(in2), in2);
+
+    // A single value of the option is not changed
+    QStringList in3 = {"-bin", "a.deb"};
+    QCOMPARE(DeployCore::fixShellExpandedGlobs(in3), in3);
+
+    // The boolean options before and after the glob are kept as is
+    QStringList in4 = {"qtifw", "-bin", "a.deb", "b.deb", "noQt"};
+    QCOMPARE(DeployCore::fixShellExpandedGlobs(in4),
+             (QStringList{"qtifw", "-bin", "a.deb,b.deb", "noQt"}));
+
+    // The glob can select the files of several options at once
+    QStringList in5 = {"-bin", "a.exe", "b.exe", "-targetPackage", "pkg;target1"};
+    QCOMPARE(DeployCore::fixShellExpandedGlobs(in5),
+             (QStringList{"-bin", "a.exe,b.exe", "-targetPackage", "pkg;target1"}));
+
+    // The value inlined with the '=' separator is merged too
+    QStringList in6 = {"-bin=a.deb", "b.deb"};
+    QCOMPARE(DeployCore::fixShellExpandedGlobs(in6),
+             (QStringList{"-bin=a.deb,b.deb"}));
+
+    // The file arguments without the option that takes the value are kept
+    // as is (the parser of the tool will handle them)
+    QStringList in7 = {"a.deb", "b.deb"};
+    QCOMPARE(DeployCore::fixShellExpandedGlobs(in7), in7);
+
+    // The option without the value is not changed (the parser of the tool
+    // will report the missing argument)
+    QStringList in8 = {"-bin", "-verbose", "3"};
+    QCOMPARE(DeployCore::fixShellExpandedGlobs(in8), in8);
+
+    // The boolean option between the value and the file arguments stops
+    // the merge (the file argument belongs to the next option, not to the
+    // previous one)
+    QStringList in9 = {"-bin", "a.deb", "qtifw", "b.deb"};
+    QCOMPARE(DeployCore::fixShellExpandedGlobs(in9), in9);
+}
+
+void DeployCoreTest::binOptionGlobExpansion() {
+    // The '*' glob pattern of the bin option (issue #311): the value that
+    // contains the '*' character is expanded to the files and the folders
+    // that match the pattern.
+    QTemporaryDir tmp;
+    QVERIFY(tmp.isValid());
+
+    auto touch = [&tmp](const QString &name) {
+        QFile file(tmp.path() + "/" + name);
+        QVERIFY(file.open(QIODevice::WriteOnly));
+        file.write("data");
+        file.close();
+    };
+
+    touch("app1.exe");
+    touch("app2.exe");
+    touch("app3.dll");
+    touch("notamatch.txt");
+    QVERIFY(QDir(tmp.path() + "/sub").mkpath(tmp.path() + "/sub"));
+    touch("sub/app4.exe");
+
+    const auto cwd = QDir::currentPath();
+    // The RAII guard restores the working directory on the end of the test
+    // (on the QVERIFY failures too).
+    struct CwdGuard {
+        QString saved;
+        ~CwdGuard() { QDir::setCurrent(saved); }
+    } guard{cwd};
+    QVERIFY(QDir::setCurrent(tmp.path()));
+
+    // A plain name (without the '*' character) is returned as is
+    QCOMPARE(DeployCore::expandGlob("app1.exe"), (QStringList{"app1.exe"}));
+
+    // The glob selects the files that match the pattern
+    QCOMPARE(DeployCore::expandGlob("app*.exe"),
+             (QStringList{"app1.exe", "app2.exe"}));
+
+    // The glob can select the files of the sub-directories
+    QCOMPARE(DeployCore::expandGlob("sub/*"),
+             (QStringList{"sub/app4.exe"}));
+
+    // The bare '*' matches all the files and the folders of the directory
+    QCOMPARE(DeployCore::expandGlob("*"),
+             (QStringList{"app1.exe", "app2.exe", "app3.dll",
+                          "notamatch.txt", "sub"}));
+
+    // The glob without a match returns the empty list
+    QCOMPARE(DeployCore::expandGlob("nope*"), (QStringList{}));
+    QCOMPARE(DeployCore::expandGlob("missing-dir/*"), (QStringList{}));
+}
+
+void DeployCoreTest::commandLineParser() {
+    // The command line of the tool is parsed with the Qt QCommandLineParser
+    // (the review of the PR #928: the parsing of the parameters via the
+    // QuasarAppLib is replaced by the official Qt command line parser).
+    // The DeployCore::parseCommandLine method runs the real option
+    // pipeline of the tool: the fixShellExpandedGlobs step, the
+    // normalizeCommandLine step (the bare option names of the command
+    // line are converted to the dash form of the parser) and the
+    // QCommandLineParser of the ParseAsLongOptions mode. The parsed
+    // options are stored in the QuasarAppUtils::Params storage that the
+    // ConfigParser of the tool reads.
+
+    // The basic deploy command line: the dash option with the value and
+    // the bare option names (the flags of the command line).
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"-bin", "app1,app2", "qtifw", "deb"}));
+    QCOMPARE(QuasarAppUtils::Params::getArg("bin"), QString("app1,app2"));
+    QVERIFY(QuasarAppUtils::Params::isEndable("qtifw"));
+    QVERIFY(QuasarAppUtils::Params::isEndable("deb"));
+
+    // The shell-expanded '*' glob of the command line is merged into the
+    // single value of the option (the '-bin *.deb qtifw' command of the
+    // manual testing of the PR #928).
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"-bin", "a.deb", "b.deb", "c.deb", "qtifw"}));
+    QCOMPARE(QuasarAppUtils::Params::getArg("bin"), QString("a.deb,b.deb,c.deb"));
+    QVERIFY(QuasarAppUtils::Params::isEndable("qtifw"));
+
+    // The value of the option can be inlined into the option argument
+    // with the '=' separator of the command line.
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"-bin=app1", "zip"}));
+    QCOMPARE(QuasarAppUtils::Params::getArg("bin"), QString("app1"));
+    QVERIFY(QuasarAppUtils::Params::isEndable("zip"));
+
+    // The double dash form of the option is accepted by the
+    // QCommandLineParser.
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"--bin", "app1", "appimage"}));
+    QCOMPARE(QuasarAppUtils::Params::getArg("bin"), QString("app1"));
+    QVERIFY(QuasarAppUtils::Params::isEndable("appimage"));
+
+    // The option that can take the value (the qtifw option with the
+    // template path argument) and the boolean form of the same option
+    // (the bare name of the command line).
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"-qtifw", "path/to/template"}));
+    QCOMPARE(QuasarAppUtils::Params::getArg("qtifw"), QString("path/to/template"));
+
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"qtifw"}));
+    QVERIFY(QuasarAppUtils::Params::isEndable("qtifw"));
+    QCOMPARE(QuasarAppUtils::Params::getArg("qtifw"), QString(""));
+
+    // The init option: the bare form (the empty value) and the documented
+    // '-init multi' form of the command line (the level of the
+    // initialization).
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"init"}));
+    QVERIFY(QuasarAppUtils::Params::isEndable("init"));
+    QCOMPARE(QuasarAppUtils::Params::getArg("init"), QString(""));
+
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"-init", "multi"}));
+    QCOMPARE(QuasarAppUtils::Params::getArg("init"), QString("multi"));
+
+    // The boolean options of the command line (the clear and the
+    // force-clear flags).
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"clear", "force-clear"}));
+    QVERIFY(QuasarAppUtils::Params::isEndable("clear"));
+    QVERIFY(QuasarAppUtils::Params::isEndable("force-clear"));
+
+    // The repeated option: the last value wins (the same rule as the old
+    // parser of the QuasarAppLib).
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"-bin", "app1", "-bin", "app2"}));
+    QCOMPARE(QuasarAppUtils::Params::getArg("bin"), QString("app2"));
+
+    // The help and the version options of the command line: the options
+    // are registered in the QCommandLineParser and the automatic help and
+    // version handling of the parser is replaced by the options of the
+    // tool (the info mode of the DeployCore::getMode function).
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"-h"}));
+    QVERIFY(QuasarAppUtils::Params::isEndable("h"));
+
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"version"}));
+    QVERIFY(QuasarAppUtils::Params::isEndable("v"));
+
+    // The unknown option of the command line is a hard error (the
+    // QCommandLineParser error).
+    QVERIFY(!DeployCore::parseCommandLine({"-nope"}));
+
+    // The unknown argument without the '-' prefix is a hard error too
+    // (the positional argument of the QCommandLineParser).
+    QVERIFY(!DeployCore::parseCommandLine({"nope"}));
+
+    // The value option without the value argument is a hard error (the
+    // 'Missing argument for <option>' error of the old parser).
+    QVERIFY(!DeployCore::parseCommandLine({"-bin"}));
+    QVERIFY(!DeployCore::parseCommandLine({"-bin", "-qtifw"}));
+
+    // The failed parse of the command line clears the storage of the
+    // options of the tool (the same behavior as the old parser).
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"-bin", "app1", "zip"}));
+    QVERIFY(QuasarAppUtils::Params::isEndable("zip"));
+    QVERIFY(!DeployCore::parseCommandLine({"-nope"}));
+    QVERIFY(!QuasarAppUtils::Params::isEndable("zip"));
+}
+
+void DeployCoreTest::executableDir() {
+    // The directory of the executable file of the running process (the
+    // review of the PR #928): the method must return the directory of
+    // the running executable (the QCoreApplication instance of the test
+    // process is available, so the QCoreApplication::applicationDirPath
+    // method of the Qt is used). The empty value of the method is a
+    // hard error for the deploy environment of the tool: the empty path
+    // of the QDir class is the current working directory, so the empty
+    // appDir puts the working directory into the ignore environment and
+    // rejects the libDir options (the macOS CI hosts of the issue #311).
+    const QString dir = DeployCore::executableDir();
+    QVERIFY2(!dir.isEmpty(), "The executableDir method must not return the empty string");
+    QVERIFY2(QFileInfo(dir).isDir(), "The executableDir method must return an existing directory");
+    // The running executable file is located in the directory.
+    const QString exe = QCoreApplication::applicationFilePath();
+    QVERIFY2(QFileInfo(QDir(dir).filePath(QFileInfo(exe).fileName())).isFile(),
+             "The executableDir method must return the directory of the running executable");
+    QCOMPARE(QFileInfo(exe).absolutePath(), dir);
+}
+
 // Standard stand-alone QTest entry point, see the Qt test tutorial:
 // https://doc.qt.io/qt-6/qttestlib-tutorial1-example.html
 QTEST_GUILESS_MAIN(DeployCoreTest)
