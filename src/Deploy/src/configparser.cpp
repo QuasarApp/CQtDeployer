@@ -1307,7 +1307,17 @@ void ConfigParser::initIgnoreEnvList() {
         ignoreEnvList.push_back("/usr/lib");
     }
 
-    ignoreEnvList.push_back(_config.appDir);
+    // The empty appDir (the executable directory that is not available
+    // for the process) is not added to the ignore list: the empty path
+    // of the QDir class is the current working directory, so the empty
+    // entry puts the whole tree of the working directory into the
+    // ignore environment and the libDir options that point to the child
+    // directories of the working directory are rejected by the
+    // initExtraPath method with the "Failed to set libDir path!" error
+    // (the macOS CI hosts of the issue #311).
+    if (!_config.appDir.isEmpty()) {
+        ignoreEnvList.push_back(_config.appDir);
+    }
     ignoreEnvList.push_back(_config.getTargetDir());
 
     if (QuasarAppUtils::Params::isEndable("noRecursiveiIgnoreEnv")) {
@@ -2008,11 +2018,19 @@ ConfigParser::ConfigParser(FileManager *filemanager, PluginsParser *pluginsParse
     assert(_scaner);
     assert(_packing);
 
-    // The directory of the executable file of the tool: the
-    // QCoreApplication::applicationDirPath method of the Qt replaces the
-    // getCurrentExecutableDir method of the QuasarAppLib Params class (the
-    // parseParams side effect of the old parser, the review of the PR #928).
-    _config.appDir = QCoreApplication::applicationDirPath();
+    // The directory of the executable file of the tool (the review of
+    // the PR #928: the directory of the executable file of the tool
+    // replaces the getCurrentExecutableDir method of the QuasarAppLib
+    // Params class, the parseParams side effect of the old parser): the
+    // DeployCore::executableDir method uses the
+    // QCoreApplication::applicationDirPath method of the Qt when the
+    // QCoreApplication instance of the process is available and
+    // resolves the path of the executable file with the system API of
+    // the host platform otherwise (the processes without the
+    // QCoreApplication instance get the empty string and the warning
+    // from the applicationDirPath method of the Qt, the empty value of
+    // the appDir variable breaks the deploy environment of the tool).
+    _config.appDir = DeployCore::executableDir();
     if (_config.appDir.right(4) == "/bin") {
         _config.appDir = _config.appDir.left(_config.appDir.size() - 4);
     }

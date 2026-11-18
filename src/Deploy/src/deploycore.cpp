@@ -23,6 +23,22 @@
 
 #include <LIEF/MachO.hpp>
 
+// The system API of the host platform for the resolution of the path of
+// the executable file of the process (the DeployCore::executableDir
+// method, the fallback for the processes without the QCoreApplication
+// instance, the review of the PR #928).
+#ifdef Q_OS_DARWIN
+#include <mach-o/dyld.h>
+#endif
+
+#ifdef Q_OS_WIN
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
+
+#include <vector>
+
 //QString DeployCore::qtDir = "";
 //QStringList DeployCore::extraPaths = QStringList();
 
@@ -1075,6 +1091,66 @@ QStringList DeployCore::expandGlob(const QString &pattern) {
     }
 
     return matches;
+}
+
+QString DeployCore::executableDir() {
+
+    // The QCoreApplication::applicationDirPath method of the Qt (the
+    // ready-made Qt solution for the directory of the executable file,
+    // the review of the PR #928): the method is used when the
+    // QCoreApplication instance of the process is available. The
+    // QCoreApplication::instance check is required: for the processes
+    // without the instance the applicationDirPath method prints the
+    // "Please instantiate the QApplication object first" warning and
+    // returns the empty string, and the empty value of the appDir
+    // variable of the deploy configuration puts the current working
+    // directory (the empty path of the QDir class) into the ignore
+    // environment of the deploy and rejects the libDir options that
+    // point to the child directories of the working directory.
+    if (QCoreApplication::instance()) {
+        const QString dir = QCoreApplication::applicationDirPath();
+        if (!dir.isEmpty()) {
+            return dir;
+        }
+    }
+
+    // The fallback for the processes without the QCoreApplication
+    // instance: the path of the executable file is resolved with the
+    // system API of the host platform (the same mechanism of the old
+    // QuasarAppUtils::Params::getCurrentExecutableDir method of the
+    // QuasarAppLib library, the parseParams side effect of the old
+    // parser, the review of the PR #928).
+    QString exePath;
+
+#ifdef Q_OS_WIN
+    {
+        wchar_t buffer[MAX_PATH] = {};
+        const DWORD size = GetModuleFileNameW(nullptr, buffer, MAX_PATH);
+        if (size > 0) {
+            exePath = QString::fromWCharArray(buffer, int(size));
+        }
+    }
+#elif defined(Q_OS_DARWIN)
+    {
+        uint32_t size = 0;
+        _NSGetExecutablePath(nullptr, &size);
+        std::vector<char> buffer(size);
+        if (size > 0 && _NSGetExecutablePath(buffer.data(), &size) == 0) {
+            exePath = QString::fromUtf8(buffer.data(), int(size));
+        }
+    }
+#else
+    {
+        char buffer[2048] = {};
+        const ssize_t size = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
+        if (size > 0) {
+            buffer[size] = '\0';
+            exePath = QString::fromUtf8(buffer, int(size));
+        }
+    }
+#endif
+
+    return QFileInfo(exePath).absolutePath();
 }
 
 // The single options table of the command line of the tool: the options of

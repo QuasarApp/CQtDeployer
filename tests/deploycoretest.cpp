@@ -593,6 +593,26 @@ void DeployCoreTest::commandLineParser() {
     QVERIFY(!QuasarAppUtils::Params::isEndable("zip"));
 }
 
+void DeployCoreTest::executableDir() {
+    // The directory of the executable file of the running process (the
+    // review of the PR #928): the method must return the directory of
+    // the running executable (the QCoreApplication instance of the test
+    // process is available, so the QCoreApplication::applicationDirPath
+    // method of the Qt is used). The empty value of the method is a
+    // hard error for the deploy environment of the tool: the empty path
+    // of the QDir class is the current working directory, so the empty
+    // appDir puts the working directory into the ignore environment and
+    // rejects the libDir options (the macOS CI hosts of the issue #311).
+    const QString dir = DeployCore::executableDir();
+    QVERIFY2(!dir.isEmpty(), "The executableDir method must not return the empty string");
+    QVERIFY2(QFileInfo(dir).isDir(), "The executableDir method must return an existing directory");
+    // The running executable file is located in the directory.
+    const QString exe = QCoreApplication::applicationFilePath();
+    QVERIFY2(QFileInfo(QDir(dir).filePath(QFileInfo(exe).fileName())).isFile(),
+             "The executableDir method must return the directory of the running executable");
+    QCOMPARE(QFileInfo(exe).absolutePath(), dir);
+}
+
 // Standard stand-alone QTest entry point, see the Qt test tutorial:
 // https://doc.qt.io/qt-6/qttestlib-tutorial1-example.html
 QTEST_GUILESS_MAIN(DeployCoreTest)

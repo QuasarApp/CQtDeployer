@@ -440,6 +440,33 @@ public:
      */
     static QStringList expandGlob(const QString &pattern);
 
+    /**
+     * @brief executableDir This method returns the directory of the
+     *  executable file of the running process (the review of the PR
+     *  #928: the directory of the executable file of the tool replaces
+     *  the getCurrentExecutableDir method of the QuasarAppLib Params
+     *  class, the parseParams side effect of the old parser). The
+     *  QCoreApplication::applicationDirPath method of the Qt (the
+     *  ready-made Qt solution for the directory of the executable file)
+     *  is used when the QCoreApplication instance of the process is
+     *  available. For the processes without the QCoreApplication
+     *  instance (the QCoreApplication::applicationDirPath method
+     *  prints the "Please instantiate the QApplication object first"
+     *  warning and returns the empty string for them, so the empty
+     *  value of the method breaks the deploy environment of the tool:
+     *  the empty path of the QDir class is the current working
+     *  directory) the path of the executable file is resolved with the
+     *  system API of the host platform (the /proc/self/exe link of the
+     *  Linux, the _NSGetExecutablePath function of the macOS and the
+     *  GetModuleFileName function of the Windows, the same mechanism of
+     *  the old QuasarAppUtils::Params::getCurrentExecutableDir method
+     *  of the QuasarAppLib library).
+     * @return the directory of the executable file of the running
+     * process (the empty string when the path of the executable file is
+     * not available).
+     */
+    static QString executableDir();
+
     static QStringList extractTranslation(const QSet<QString> &libs);
     static QString getAppVersion();
     static QString getAppVersionName();

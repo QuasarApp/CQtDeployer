@@ -45,10 +45,13 @@ Envirement QIF::toolKitEnv() const {
 
     // The directory of the executable file of the tool (the QIFW tools
     // are bundled next to the executable, issue #872): the
-    // QCoreApplication::applicationDirPath method of the Qt replaces the
-    // getCurrentExecutableDir method of the QuasarAppLib Params class (the
-    // parseParams side effect of the old parser, the review of the PR #928).
-    QString AppPath = QCoreApplication::applicationDirPath();
+    // DeployCore::executableDir method of the tool replaces the
+    // getCurrentExecutableDir method of the QuasarAppLib Params class
+    // (the parseParams side effect of the old parser, the review of the
+    // PR #928). The method works for the processes without the
+    // QCoreApplication instance too (the applicationDirPath method of
+    // the Qt returns the empty string and the warning for them).
+    const QString AppPath = DeployCore::executableDir();
     result.addEnv(AppPath);
 
     // SNAP
