@@ -35,6 +35,7 @@ private slots:
     void qtRootDirQmakeDetection();
     void shellExpandedGlobs();
     void binOptionGlobExpansion();
+    void commandLineParser();
 };
 
 #endif // DEPLOYCORETEST_H

@@ -159,6 +159,17 @@ is the same command as the quoted example above (the shell passes the
 `bin/app1.exe bin/app2.exe` file list to the tool and the tool sets the
 `bin` option to the `bin/app1.exe,bin/app2.exe` value).
 
+The command line of the tool is parsed with the Qt `QCommandLineParser`
+(the official Qt command line parser, the review of the PR #928): the
+`-option value` and the `-option=value` forms of the options and the
+double-dash form of the option (the `--option value` form) are accepted
+by the parser, and the bare option names of the command line (the
+`qtifw`, `deb`, ... flags of the command line) are normalized by the tool
+to the dash form of the parser (the `DeployCore::normalizeCommandLine`
+function), so every form of the command line works with the globs the
+same way (see the [Options general rules](Options.md#options-general-rules)
+documentation).
+
 ## Manual Packages
 
 Manual packages is packages created by user template.

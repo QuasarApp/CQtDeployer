@@ -14,6 +14,9 @@
 #include <QFileInfo>
 #include <QLibraryInfo>
 #include <QProcess>
+#include <QHash>
+#include <QCommandLineParser>
+#include <QCoreApplication>
 #include <configparser.h>
 #include <iostream>
 #include <qaplatformutils.h>
@@ -1074,12 +1077,278 @@ QStringList DeployCore::expandGlob(const QString &pattern) {
     return matches;
 }
 
+// The single options table of the command line of the tool: the options of
+// the DeployCore and the base options of the QuasarAppLib library (the
+// verbose and the fileLog options). The table is the single source of the
+// command line options of the tool (the QCommandLineParser registration,
+// the normalization of the bare option names and the help page are built
+// from it, the review of the PR #928).
+static QuasarAppUtils::OptionsDataList allOptionsTable() {
+    QuasarAppUtils::OptionsDataList table = DeployCore::avilableOptions();
+    table.unite(QuasarAppUtils::Params::availableArguments());
+    return table;
+}
+
+// The storage key of the option of the options table: the first name of
+// the option without the '-' prefix (the '-bin' name of the table is the
+// 'bin' key of the QuasarAppUtils::Params storage).
+static QString optionKey(const QuasarAppUtils::OptionData &data) {
+    const QString &first = data.names().first();
+    return first.startsWith('-') ? first.mid(1) : first;
+}
+
+// The option takes the value argument in the command line (the '-bin app'
+// form) when the '-' form of the option is in the options table (the old
+// parser of the QuasarAppLib accepted the value only for the dash options
+// of the table). The 'init' option is the exception: the table contains
+// the bare name only, but the documented command line form of the option
+// is the '-init multi' form (the level of the initialization of the
+// configuration file).
+static bool optionTakesValue(const QuasarAppUtils::OptionData &data) {
+    if (optionKey(data) == "init") {
+        return true;
+    }
+    for (const auto &name : data.names()) {
+        if (name.startsWith('-')) {
+            return true;
+        }
+    }
+    return false;
+}
+
+QList<QCommandLineOption> DeployCore::commandLineOptions() {
+
+    QList<QCommandLineOption> options;
+    for (const auto &data : allOptionsTable()) {
+
+        QStringList names;
+        for (const auto &name : data.names()) {
+            const QString clean = name.startsWith('-') ? name.mid(1) : name;
+            if (!names.contains(clean)) {
+                names.append(clean);
+            }
+        }
+
+        QCommandLineOption option(names, data.description());
+        if (optionTakesValue(data)) {
+            // The QCommandLineParser marks the option as the option with
+            // the value by the valueName property (the value is required
+            // in the command line of the option).
+            option.setValueName(data.arguments().isEmpty() ? "value" : data.arguments());
+        }
+        options.append(option);
+    }
+
+    return options;
+}
+
+bool DeployCore::normalizeCommandLine(const QStringList &args,
+                                      QStringList *normalized) {
+
+    // The option names exactly as they can be written in the command line:
+    // the names with the '-' prefix of the options table (the '-bin' form)
+    // and the bare names of the options (the 'qtifw' flag form of the
+    // command line, the names without the '-' prefix of the table).
+    QSet<QString> dashNames;
+    QSet<QString> bareNames;
+    QHash<QString, bool> takesValue;
+    for (const auto &data : allOptionsTable()) {
+        for (const auto &name : data.names()) {
+            if (name.startsWith('-')) {
+                dashNames.insert(name);
+            } else {
+                bareNames.insert(name);
+            }
+        }
+        const QString key = optionKey(data);
+        takesValue.insert(key, takesValue.value(key, false) || optionTakesValue(data));
+    }
+
+    auto stripPrefix = [](const QString &arg) {
+        return arg.mid(arg.startsWith("--") ? 2 : 1);
+    };
+
+    auto isKnownDash = [&dashNames, &bareNames, &stripPrefix](const QString &arg) {
+        // The '-' and the '--' forms of the dash options of the table and
+        // the '-' form of the bare options of the table (the Qt
+        // QCommandLineParser recognizes the dash form of every name of the
+        // table).
+        return dashNames.contains(arg) ||
+               dashNames.contains('-' + stripPrefix(arg)) ||
+               bareNames.contains(stripPrefix(arg));
+    };
+
+    QStringList result;
+    QString pendingOption;
+    bool expectingValue = false;
+
+    for (const auto &arg : args) {
+
+        if (arg.startsWith('-')) {
+
+            if (expectingValue) {
+                qCritical() << "Missing argument for " + pendingOption;
+                return false;
+            }
+
+            pendingOption = isKnownDash(arg) ? arg : QString();
+            expectingValue = isKnownDash(arg) && takesValue.value(stripPrefix(arg), false);
+            result.append(arg);
+            continue;
+        }
+
+        if (expectingValue) {
+            // The value of the previous option (the '-bin app' form of the
+            // command line).
+            expectingValue = false;
+            result.append(arg);
+            continue;
+        }
+
+        if (bareNames.contains(arg)) {
+            // The bare name of the option of the command line: the Qt
+            // QCommandLineParser recognizes only the dash-prefixed options,
+            // so the bare name is converted to the dash form. The bare form
+            // of the option that can take the value is the boolean form of
+            // the option (the empty value, the same storage of the old
+            // parser).
+            result.append('-' + arg);
+            if (takesValue.value(arg, false)) {
+                result.append(QString());
+            }
+            continue;
+        }
+
+        // The argument without the known option name: the
+        // QCommandLineParser collects it as the positional argument and
+        // the parser of the tool reports the unknown argument.
+        result.append(arg);
+    }
+
+    if (expectingValue) {
+        qCritical() << "Missing argument for " + pendingOption;
+        return false;
+    }
+
+    *normalized = result;
+    return true;
+}
+
+bool DeployCore::parseCommandLine(const QStringList &args) {
+
+    QuasarAppUtils::Params::clearParsedData();
+
+    // The command line of the shell-expanded '*' globs is reconstructed
+    // (issue #311, the manual testing of the PR #928): the shell expands
+    // the unquoted glob of the command line into the separate file
+    // arguments before the tool starts, the function merges the file list
+    // back into the single value of the option.
+    const QStringList fixed = fixShellExpandedGlobs(args);
+
+    // The bare option names of the command line are normalized to the dash
+    // form of the Qt QCommandLineParser.
+    QStringList normalized;
+    if (!normalizeCommandLine(fixed, &normalized)) {
+        return false;
+    }
+
+    QCommandLineParser parser;
+    parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
+    parser.addOptions(commandLineOptions());
+
+    // The QCommandLineParser::parse method expects the name of the
+    // executable file as the first element of the argument list.
+    QStringList commandLine;
+    commandLine.append(QCoreApplication::applicationName().isEmpty()
+                          ? "cqtdeployer" : QCoreApplication::applicationName());
+    commandLine.append(normalized);
+
+    if (!parser.parse(commandLine)) {
+        qCritical() << parser.errorText();
+        return false;
+    }
+
+    if (!parser.positionalArguments().isEmpty()) {
+        for (const auto &arg : parser.positionalArguments()) {
+            qCritical() << QString("The '%0' option not exists!"
+                                   " You use wrong option name,"
+                                   " please check the help before run your commnad.").arg(arg);
+        }
+        return false;
+    }
+
+    // The parsed options are stored in the QuasarAppUtils::Params storage
+    // that the rest of the tool (the ConfigParser and the distributions)
+    // reads: the options with the value are stored with the value and the
+    // boolean options are stored as the enabled keys (the same storage of
+    // the old parser).
+    for (const auto &data : allOptionsTable()) {
+        const QString key = optionKey(data);
+        if (!parser.isSet(key)) {
+            continue;
+        }
+
+        if (optionTakesValue(data)) {
+            const QString value = parser.value(key);
+            if (value.isEmpty()) {
+                QuasarAppUtils::Params::setEnable(key, true);
+            } else {
+                QuasarAppUtils::Params::setArg(key, value);
+            }
+        } else {
+            QuasarAppUtils::Params::setEnable(key, true);
+        }
+    }
+
+    // The deprecated options of the table (the 'qif' option of the issue
+    // #738): the deprecation warning of the old parser is printed for the
+    // old name of the option.
+    for (const auto &data : allOptionsTable()) {
+        if (data.isDepricated() && QuasarAppUtils::Params::isEndable(optionKey(data))) {
+            qWarning() << QString("The %0 option(s) marked as deprecated! "
+                                  "And most likely will be removed in next release.").
+                    arg(data.names().join("/"));
+            qWarning() << QString("Option message: %0").arg(data.depricatedMsg());
+        }
+    }
+
+    // The working options table of the debug log (the same output of the
+    // old parser of the QuasarAppLib library).
+    qDebug() << "--- Working options table start ---";
+    const auto &params = QuasarAppUtils::Params::getUserParamsMap();
+    for (auto it = params.constBegin(); it != params.constEnd(); ++it) {
+        QString row = QString{"Option[%0]"}.arg(it.key());
+        if (!it.value().isEmpty()) {
+            row += QString{": %1"}.arg(it.value());
+        }
+        qDebug() << row;
+    }
+    qDebug() << "--- Working options table end ---";
+
+    return true;
+}
+
 void DeployCore::help() {
 
-    auto localHelp = QuasarAppUtils::Params::getHelpOfInputOptions();
+    // The help of the options that were used in the command line (the same
+    // behavior as the getHelpOfInputOptions method of the old QuasarAppLib
+    // parser: the help page of the used options only when more than one
+    // option is passed in the command line).
+    const auto usedOptions = QuasarAppUtils::Params::getUserParamsMap().keys();
 
-    if(!localHelp.isEmpty()) {
-        QuasarAppUtils::Help::print(localHelp);
+    if (usedOptions.size() > 1) {
+        QuasarAppUtils::Help::Options options;
+        for (const auto &data : allOptionsTable()) {
+            for (const auto &name : data.names()) {
+                const QString key = name.startsWith('-') ? name.mid(1) : name;
+                if (usedOptions.contains(key)) {
+                    options.unite(data.toHelp());
+                    break;
+                }
+            }
+        }
+        QuasarAppUtils::Help::print(
+            QuasarAppUtils::Help::Section{{"Information about using options", options}});
         return;
     }
 
@@ -1099,7 +1368,18 @@ void DeployCore::help() {
         }
     };
 
-    help += QuasarAppUtils::Params::getHelp();
+    // The grouped options table (the same content as the userHelp of the
+    // old QuasarAppLib parser: the options of the tool and the base
+    // options of the QuasarAppLib library, grouped by the parts of the
+    // help page).
+    const auto table = allOptionsTable();
+    QHash<QString, QuasarAppUtils::Help::Options> groups;
+    for (auto it = table.constBegin(); it != table.constEnd(); ++it) {
+        groups[it.key()].unite(it.value().toHelp());
+    }
+    for (auto it = groups.constBegin(); it != groups.constEnd(); ++it) {
+        help.insert(it.key(), it.value());
+    }
 
     QuasarAppUtils::Help::print(help);
 

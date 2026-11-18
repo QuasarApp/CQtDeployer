@@ -480,6 +480,119 @@ void DeployCoreTest::binOptionGlobExpansion() {
     QCOMPARE(DeployCore::expandGlob("missing-dir/*"), (QStringList{}));
 }
 
+void DeployCoreTest::commandLineParser() {
+    // The command line of the tool is parsed with the Qt QCommandLineParser
+    // (the review of the PR #928: the parsing of the parameters via the
+    // QuasarAppLib is replaced by the official Qt command line parser).
+    // The DeployCore::parseCommandLine method runs the real option
+    // pipeline of the tool: the fixShellExpandedGlobs step, the
+    // normalizeCommandLine step (the bare option names of the command
+    // line are converted to the dash form of the parser) and the
+    // QCommandLineParser of the ParseAsLongOptions mode. The parsed
+    // options are stored in the QuasarAppUtils::Params storage that the
+    // ConfigParser of the tool reads.
+
+    // The basic deploy command line: the dash option with the value and
+    // the bare option names (the flags of the command line).
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"-bin", "app1,app2", "qtifw", "deb"}));
+    QCOMPARE(QuasarAppUtils::Params::getArg("bin"), QString("app1,app2"));
+    QVERIFY(QuasarAppUtils::Params::isEndable("qtifw"));
+    QVERIFY(QuasarAppUtils::Params::isEndable("deb"));
+
+    // The shell-expanded '*' glob of the command line is merged into the
+    // single value of the option (the '-bin *.deb qtifw' command of the
+    // manual testing of the PR #928).
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"-bin", "a.deb", "b.deb", "c.deb", "qtifw"}));
+    QCOMPARE(QuasarAppUtils::Params::getArg("bin"), QString("a.deb,b.deb,c.deb"));
+    QVERIFY(QuasarAppUtils::Params::isEndable("qtifw"));
+
+    // The value of the option can be inlined into the option argument
+    // with the '=' separator of the command line.
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"-bin=app1", "zip"}));
+    QCOMPARE(QuasarAppUtils::Params::getArg("bin"), QString("app1"));
+    QVERIFY(QuasarAppUtils::Params::isEndable("zip"));
+
+    // The double dash form of the option is accepted by the
+    // QCommandLineParser.
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"--bin", "app1", "appimage"}));
+    QCOMPARE(QuasarAppUtils::Params::getArg("bin"), QString("app1"));
+    QVERIFY(QuasarAppUtils::Params::isEndable("appimage"));
+
+    // The option that can take the value (the qtifw option with the
+    // template path argument) and the boolean form of the same option
+    // (the bare name of the command line).
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"-qtifw", "path/to/template"}));
+    QCOMPARE(QuasarAppUtils::Params::getArg("qtifw"), QString("path/to/template"));
+
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"qtifw"}));
+    QVERIFY(QuasarAppUtils::Params::isEndable("qtifw"));
+    QCOMPARE(QuasarAppUtils::Params::getArg("qtifw"), QString(""));
+
+    // The init option: the bare form (the empty value) and the documented
+    // '-init multi' form of the command line (the level of the
+    // initialization).
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"init"}));
+    QVERIFY(QuasarAppUtils::Params::isEndable("init"));
+    QCOMPARE(QuasarAppUtils::Params::getArg("init"), QString(""));
+
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"-init", "multi"}));
+    QCOMPARE(QuasarAppUtils::Params::getArg("init"), QString("multi"));
+
+    // The boolean options of the command line (the clear and the
+    // force-clear flags).
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"clear", "force-clear"}));
+    QVERIFY(QuasarAppUtils::Params::isEndable("clear"));
+    QVERIFY(QuasarAppUtils::Params::isEndable("force-clear"));
+
+    // The repeated option: the last value wins (the same rule as the old
+    // parser of the QuasarAppLib).
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"-bin", "app1", "-bin", "app2"}));
+    QCOMPARE(QuasarAppUtils::Params::getArg("bin"), QString("app2"));
+
+    // The help and the version options of the command line: the options
+    // are registered in the QCommandLineParser and the automatic help and
+    // version handling of the parser is replaced by the options of the
+    // tool (the info mode of the DeployCore::getMode function).
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"-h"}));
+    QVERIFY(QuasarAppUtils::Params::isEndable("h"));
+
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"version"}));
+    QVERIFY(QuasarAppUtils::Params::isEndable("v"));
+
+    // The unknown option of the command line is a hard error (the
+    // QCommandLineParser error).
+    QVERIFY(!DeployCore::parseCommandLine({"-nope"}));
+
+    // The unknown argument without the '-' prefix is a hard error too
+    // (the positional argument of the QCommandLineParser).
+    QVERIFY(!DeployCore::parseCommandLine({"nope"}));
+
+    // The value option without the value argument is a hard error (the
+    // 'Missing argument for <option>' error of the old parser).
+    QVERIFY(!DeployCore::parseCommandLine({"-bin"}));
+    QVERIFY(!DeployCore::parseCommandLine({"-bin", "-qtifw"}));
+
+    // The failed parse of the command line clears the storage of the
+    // options of the tool (the same behavior as the old parser).
+    QuasarAppUtils::Params::clearParsedData();
+    QVERIFY(DeployCore::parseCommandLine({"-bin", "app1", "zip"}));
+    QVERIFY(QuasarAppUtils::Params::isEndable("zip"));
+    QVERIFY(!DeployCore::parseCommandLine({"-nope"}));
+    QVERIFY(!QuasarAppUtils::Params::isEndable("zip"));
+}
+
 // Standard stand-alone QTest entry point, see the Qt test tutorial:
 // https://doc.qt.io/qt-6/qttestlib-tutorial1-example.html
 QTEST_GUILESS_MAIN(DeployCoreTest)

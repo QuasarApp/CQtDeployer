@@ -11,6 +11,7 @@
 #include <QFileInfo>
 #include <QProcess>
 #include <QVersionNumber>
+#include <QCoreApplication>
 #include "dependenciesscanner.h"
 #include "deploycore.h"
 #include "filemanager.h"
@@ -2007,7 +2008,11 @@ ConfigParser::ConfigParser(FileManager *filemanager, PluginsParser *pluginsParse
     assert(_scaner);
     assert(_packing);
 
-    _config.appDir = QuasarAppUtils::Params::getCurrentExecutableDir();
+    // The directory of the executable file of the tool: the
+    // QCoreApplication::applicationDirPath method of the Qt replaces the
+    // getCurrentExecutableDir method of the QuasarAppLib Params class (the
+    // parseParams side effect of the old parser, the review of the PR #928).
+    _config.appDir = QCoreApplication::applicationDirPath();
     if (_config.appDir.right(4) == "/bin") {
         _config.appDir = _config.appDir.left(_config.appDir.size() - 4);
     }

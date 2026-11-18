@@ -6,7 +6,8 @@ General rules for using options
 cqtdeployer -option1 value1 -option2 list, of, values ​​flag1 flag2 flag3
 ```
 
-* All options must begin with a '-' sign.
+* The command line of the tool is parsed with the Qt `QCommandLineParser` (the official Qt command line parser). The options with the value are written with the '-' prefix: the `-option value` form (the value is the separate argument of the command line) or the `-option=value` form (the value is inlined into the option argument with the '=' separator). The double-dash form of the option (the `--option value` form of the command line) is accepted too.
+* The distribution options and the boolean flags of the tool (the `qtifw`, `deb`, `zip`, `appimage`, `dmg`, `clear`, `force-clear`, ... options of the command line) can be written without the '-' prefix (the flag form of the command line).
 * After specifying the desired option, you must specify the value.
 * Some options support enumerations (arrays of values). When initializing such options, specify the list of values through ',' without spaces. If you use any programming language and call the cqtdeployer process, then the array of values must be passed as 1 parameter.
 * Some options support redistributions with the ability to select the target or the package for which the flag will be applied. The target/package and values are separated using the ';' sign. Example -libOut package1;value1,package2;value2,defaultValue. The target and the package names are selectors (the exact/glob semantics, see the [Target selectors](Packing.md#target-selectors) and the [Package selectors](Packing.md#package-selectors) documentation).

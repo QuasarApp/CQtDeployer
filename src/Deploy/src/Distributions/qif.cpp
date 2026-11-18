@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QDateTime>
 #include <QProcess>
+#include <QCoreApplication>
 #include <deploycore.h>
 #include <packagecontrol.h>
 #include <pathutils.h>
@@ -42,7 +43,12 @@ Envirement QIF::toolKitEnv() const {
         return result;
     }
 
-    QString AppPath = QuasarAppUtils::Params::getCurrentExecutableDir();
+    // The directory of the executable file of the tool (the QIFW tools
+    // are bundled next to the executable, issue #872): the
+    // QCoreApplication::applicationDirPath method of the Qt replaces the
+    // getCurrentExecutableDir method of the QuasarAppLib Params class (the
+    // parseParams side effect of the old parser, the review of the PR #928).
+    QString AppPath = QCoreApplication::applicationDirPath();
     result.addEnv(AppPath);
 
     // SNAP
