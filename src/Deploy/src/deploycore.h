@@ -333,6 +333,43 @@ public:
     static void help();
     static QuasarAppUtils::OptionsDataList avilableOptions();
 
+    /**
+     * @brief fixShellExpandedGlobs This method reconstructs the command line
+     * of the tool when the shell already expanded the '*' glob patterns of
+     * the options into separate file arguments (issue #311, the manual
+     * testing of the PR #928). The shell (bash, zsh, ...) expands the
+     * unquoted glob of the command line (for example the
+     * 'cqtdeployer -bin *.deb qtifw' command) before the tool starts, so the
+     * tool receives the '-bin' option with the value of the first file only
+     * and the rest of the files as the separate arguments without the
+     * delimiter (the parser of the tool expects a single value with the ','
+     * separator for the list options). The method merges the file arguments
+     * that are not the options of the tool (the arguments that do not start
+     * with the '-' prefix and that are not the known option names) back
+     * into the value of the option that the files belong to, so the tool
+     * works with the unquoted glob the same way as with the quoted one.
+     * @param args This is the command line arguments of the tool (without
+     * the name of the executable file).
+     * @return the command line arguments with the expanded glob files
+     * merged into the value of the option (the files are joined with the
+     * ',' separator of the list options of the tool).
+     */
+    static QStringList fixShellExpandedGlobs(const QStringList &args);
+
+    /**
+     * @brief expandGlob This method expands the '*' glob pattern of the
+     * issue #311 to the files and the folders that match the pattern. The
+     * pattern is matched against the name of the last path component in
+     * the directory of the pattern (in the current working directory when
+     * the pattern is a plain file name), every '*' matches any sequence of
+     * characters and all the other characters are matched literally.
+     * @param pattern This is the glob pattern of the option value.
+     * @return the list of the files and the folders that match the
+     * pattern (the single @a pattern itself when it does not contain the
+     * '*' character and the empty list when the pattern has no matches).
+     */
+    static QStringList expandGlob(const QString &pattern);
+
     static QStringList extractTranslation(const QSet<QString> &libs);
     static QString getAppVersion();
     static QString getAppVersionName();

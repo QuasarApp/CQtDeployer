@@ -377,6 +377,109 @@ void DeployCoreTest::qtRootDirQmakeDetection() {
     QCOMPARE(DeployCore::findQmakeInQtRoot(noQmakeRoot), QString());
 }
 
+void DeployCoreTest::shellExpandedGlobs() {
+    // The shell (bash, zsh, ...) expands the unquoted '*' glob of the
+    // command line into the separate file arguments before the tool starts
+    // (issue #311, the manual testing of the PR #928): the tool must merge
+    // the file list back into the single value of the option.
+
+    // The exact scenario of the review: '-bin *.deb qtifw' expanded by the
+    // shell into '-bin a.deb b.deb c.deb qtifw'.
+    QStringList in1 = {"-bin", "a.deb", "b.deb", "c.deb", "qtifw"};
+    QCOMPARE(DeployCore::fixShellExpandedGlobs(in1),
+             (QStringList{"-bin", "a.deb,b.deb,c.deb", "qtifw"}));
+
+    // The plain (not expanded) command line is not changed
+    QStringList in2 = {"-bin", "a.deb", "-targetPackage", "pkg;target1", "qtifw"};
+    QCOMPARE(DeployCore::fixShellExpandedGlobs(in2), in2);
+
+    // A single value of the option is not changed
+    QStringList in3 = {"-bin", "a.deb"};
+    QCOMPARE(DeployCore::fixShellExpandedGlobs(in3), in3);
+
+    // The boolean options before and after the glob are kept as is
+    QStringList in4 = {"qtifw", "-bin", "a.deb", "b.deb", "noQt"};
+    QCOMPARE(DeployCore::fixShellExpandedGlobs(in4),
+             (QStringList{"qtifw", "-bin", "a.deb,b.deb", "noQt"}));
+
+    // The glob can select the files of several options at once
+    QStringList in5 = {"-bin", "a.exe", "b.exe", "-targetPackage", "pkg;target1"};
+    QCOMPARE(DeployCore::fixShellExpandedGlobs(in5),
+             (QStringList{"-bin", "a.exe,b.exe", "-targetPackage", "pkg;target1"}));
+
+    // The value inlined with the '=' separator is merged too
+    QStringList in6 = {"-bin=a.deb", "b.deb"};
+    QCOMPARE(DeployCore::fixShellExpandedGlobs(in6),
+             (QStringList{"-bin=a.deb,b.deb"}));
+
+    // The file arguments without the option that takes the value are kept
+    // as is (the parser of the tool will handle them)
+    QStringList in7 = {"a.deb", "b.deb"};
+    QCOMPARE(DeployCore::fixShellExpandedGlobs(in7), in7);
+
+    // The option without the value is not changed (the parser of the tool
+    // will report the missing argument)
+    QStringList in8 = {"-bin", "-verbose", "3"};
+    QCOMPARE(DeployCore::fixShellExpandedGlobs(in8), in8);
+
+    // The boolean option between the value and the file arguments stops
+    // the merge (the file argument belongs to the next option, not to the
+    // previous one)
+    QStringList in9 = {"-bin", "a.deb", "qtifw", "b.deb"};
+    QCOMPARE(DeployCore::fixShellExpandedGlobs(in9), in9);
+}
+
+void DeployCoreTest::binOptionGlobExpansion() {
+    // The '*' glob pattern of the bin option (issue #311): the value that
+    // contains the '*' character is expanded to the files and the folders
+    // that match the pattern.
+    QTemporaryDir tmp;
+    QVERIFY(tmp.isValid());
+
+    auto touch = [&tmp](const QString &name) {
+        QFile file(tmp.path() + "/" + name);
+        QVERIFY(file.open(QIODevice::WriteOnly));
+        file.write("data");
+        file.close();
+    };
+
+    touch("app1.exe");
+    touch("app2.exe");
+    touch("app3.dll");
+    touch("notamatch.txt");
+    QVERIFY(QDir(tmp.path() + "/sub").mkpath(tmp.path() + "/sub"));
+    touch("sub/app4.exe");
+
+    const auto cwd = QDir::currentPath();
+    // The RAII guard restores the working directory on the end of the test
+    // (on the QVERIFY failures too).
+    struct CwdGuard {
+        QString saved;
+        ~CwdGuard() { QDir::setCurrent(saved); }
+    } guard{cwd};
+    QVERIFY(QDir::setCurrent(tmp.path()));
+
+    // A plain name (without the '*' character) is returned as is
+    QCOMPARE(DeployCore::expandGlob("app1.exe"), (QStringList{"app1.exe"}));
+
+    // The glob selects the files that match the pattern
+    QCOMPARE(DeployCore::expandGlob("app*.exe"),
+             (QStringList{"app1.exe", "app2.exe"}));
+
+    // The glob can select the files of the sub-directories
+    QCOMPARE(DeployCore::expandGlob("sub/*"),
+             (QStringList{"sub/app4.exe"}));
+
+    // The bare '*' matches all the files and the folders of the directory
+    QCOMPARE(DeployCore::expandGlob("*"),
+             (QStringList{"app1.exe", "app2.exe", "app3.dll",
+                          "notamatch.txt", "sub"}));
+
+    // The glob without a match returns the empty list
+    QCOMPARE(DeployCore::expandGlob("nope*"), (QStringList{}));
+    QCOMPARE(DeployCore::expandGlob("missing-dir/*"), (QStringList{}));
+}
+
 // Standard stand-alone QTest entry point, see the Qt test tutorial:
 // https://doc.qt.io/qt-6/qttestlib-tutorial1-example.html
 QTEST_GUILESS_MAIN(DeployCoreTest)

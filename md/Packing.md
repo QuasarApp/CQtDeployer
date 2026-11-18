@@ -129,6 +129,36 @@ sets the `Windows Package` name to the `win32Package` and the
 Without the `*` the `winPackage` selector would not match any package,
 because a plain selector must equal the package name exactly.
 
+### Command line globs
+
+The values of the path options (for example the `-bin` option) support
+the `*` glob pattern (issue #311): the value that contains the `*`
+character is expanded to the files and the folders that match the
+pattern, every `*` matches any sequence of characters and all the other
+characters are matched literally (the pattern is matched against the
+name of the last path component in the directory of the pattern, in the
+current working directory when the pattern is a plain file name).
+
+```
+cqtdeployer ... -bin 'bin/*.exe'
+```
+
+deploys all the executable files of the `bin` folder.
+
+The shell (bash, zsh, ...) expands the unquoted glob of the command line
+into the separate file arguments before the tool starts, so the tool
+merges the expanded file list back into the single value of the option
+(the files are joined with the `,` separator of the list options), the
+unquoted pattern works the same way as the quoted one:
+
+```
+cqtdeployer ... -bin bin/*.exe qtifw
+```
+
+is the same command as the quoted example above (the shell passes the
+`bin/app1.exe bin/app2.exe` file list to the tool and the tool sets the
+`bin` option to the `bin/app1.exe,bin/app2.exe` value).
+
 ## Manual Packages
 
 Manual packages is packages created by user template.

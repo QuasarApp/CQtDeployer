@@ -1048,9 +1048,30 @@ bool ConfigParser::addTarget(const TargetData& target) {
     return false;
 }
 
-bool ConfigParser::setTargets(const QStringList &value) {
+bool ConfigParser::setTargets(const QStringList &valueIn) {
 
     bool isfillList = false;
+
+    // The '*' glob patterns of the bin option (issue #311): a value that
+    // contains the '*' character selects the files (and folders) that match
+    // the pattern, so one value can set several targets.
+    QStringList value;
+    for (const auto &i : valueIn) {
+
+        if (!i.contains('*')) {
+            value.append(i);
+            continue;
+        }
+
+        auto matches = DeployCore::expandGlob(i);
+
+        if (!matches.size()) {
+            qWarning() << "No files or folders match the glob pattern \"" + i + "\" of the bin option!";
+            continue;
+        }
+
+        value.append(matches);
+    }
 
     for (const auto &i : value) {
         QFileInfo targetInfo = DeployCore::findItem(i);

@@ -548,6 +548,10 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                             " Then, CQtDeployer will extract all dependencies of the copied files and search dependencies in system environments and libDir paths."
                             "**Note**: If CQtDeployer can't find required file then"
                             " CQtDeployer try find required file in the system PATH enviroment."
+                            " The option value supports the '*' glob pattern (issue #311): a value that contains the"
+                            " '*' character is expanded to the files and the folders that match the pattern"
+                            " (example: -bin 'bin/*.exe'), the shell expansion of the unquoted pattern is merged"
+                            " by the tool automatically."
                         }});
 
     help.insert(group, {QuasarAppUtils::OptionData{
@@ -948,6 +952,126 @@ QuasarAppUtils::OptionsDataList DeployCore::avilableOptions() {
                         }});
 
     return help;
+}
+
+QStringList DeployCore::fixShellExpandedGlobs(const QStringList &args) {
+
+    // The names of the options of the tool: every argument of the command
+    // line that matches one of the names is an option (the boolean options
+    // are passed without the '-' prefix, see the optionsForEach parser of
+    // the QuasarAppUtils::Params class), the rest of the arguments without
+    // the '-' prefix are the file arguments of the shell-expanded globs.
+    QSet<QString> knownOptions;
+
+    auto addOptionNames = [&knownOptions](const QuasarAppUtils::OptionsDataList &list) {
+        for (const auto &option : list) {
+            for (const auto &name : option.names()) {
+                knownOptions.insert(name);
+            }
+        }
+    };
+
+    addOptionNames(avilableOptions());
+    addOptionNames(QuasarAppUtils::Params::availableArguments());
+
+    auto isKnownOption = [&knownOptions](const QString &arg) {
+        return knownOptions.contains(arg) || knownOptions.contains('-' + arg);
+    };
+
+    QStringList result;
+
+    // The index of the value argument of the last option in the @a result
+    // list. The file argument that is not the option of the tool is merged
+    // into this value (the value slot is valid until the next boolean
+    // option or the option without the value).
+    int valueSlot = -1;
+
+    for (int i = 0; i < args.size(); ++i) {
+        const QString &arg = args[i];
+
+        if (!arg.startsWith('-')) {
+
+            if (isKnownOption(arg)) {
+                // A boolean option of the tool (the options without the
+                // '-' prefix are passed as the single argument).
+                result.append(arg);
+                valueSlot = -1;
+            } else if (valueSlot != -1) {
+                // A file argument of the shell-expanded glob: merge it
+                // into the value of the option that the file belongs to.
+                result[valueSlot] += getSeparator(0) + arg;
+            } else {
+                // An argument without the known option: keep it as is
+                // (the parser of the tool will handle it).
+                result.append(arg);
+            }
+
+            continue;
+        }
+
+        if (arg.contains('=')) {
+            // The value is inlined into the option argument (the parser of
+            // the tool splits the argument by the '=' separator).
+            result.append(arg);
+            valueSlot = result.size() - 1;
+            continue;
+        }
+
+        // A dash option: the parser of the tool takes the next argument
+        // (that does not start with the '-' prefix) as its value.
+        if (i + 1 < args.size() && !args[i + 1].startsWith('-')) {
+            result.append(arg);
+            result.append(args[i + 1]);
+            valueSlot = result.size() - 1;
+            i++;
+        } else {
+            // The option is passed without the value (the parser of the
+            // tool will report the missing argument).
+            result.append(arg);
+            valueSlot = -1;
+        }
+    }
+
+    return result;
+}
+
+QStringList DeployCore::expandGlob(const QString &pattern) {
+
+    if (!pattern.contains('*')) {
+        return {pattern};
+    }
+
+    // The pattern is matched against the name of the last path component in
+    // the directory of the pattern (in the current working directory when
+    // the pattern is a plain file name).
+    int dirSeparator = -1;
+    for (int i = pattern.size() - 1; i >= 0; --i) {
+        if (pattern[i] == '/' || pattern[i] == '\\') {
+            dirSeparator = i;
+            break;
+        }
+    }
+
+    QString dirPath = ".";
+    QString fileName = pattern;
+    if (dirSeparator != -1) {
+        dirPath = pattern.left(dirSeparator);
+        fileName = pattern.mid(dirSeparator + 1);
+    }
+
+    QDir dir(dirPath);
+    if (!dir.exists()) {
+        return {};
+    }
+
+    QStringList matches;
+    for (const auto &file : dir.entryList({fileName},
+                                          QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot,
+                                          QDir::Name)) {
+        matches.append(dirPath == "." ? file : dir.filePath(file));
+    }
+
+    return matches;
 }
 
 void DeployCore::help() {

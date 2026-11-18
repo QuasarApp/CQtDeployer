@@ -19,8 +19,19 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setOrganizationDomain("https://github.com/QuasarApp");
     QCoreApplication::setApplicationName("CQtDeployer");
 
+    // The shell expands the unquoted '*' glob of the command line (for
+    // example the 'cqtdeployer -bin *.deb qtifw' command) into the separate
+    // file arguments before the tool starts (issue #311, the manual
+    // testing of the PR #928): merge the expanded file list back into the
+    // single value of the option, so the tool works with the unquoted glob
+    // the same way as with the quoted one.
+    QStringList params;
+    for (int i = 1; i < argc; ++i) {
+        params.append(QString::fromUtf8(argv[i]));
+    }
 
-    if (!QuasarAppUtils::Params::parseParams(argc, argv, DeployCore::avilableOptions())) {
+    if (!QuasarAppUtils::Params::parseParams(DeployCore::fixShellExpandedGlobs(params),
+                                             DeployCore::avilableOptions())) {
         qWarning() << "Wrong parameters. Please use the 'help' of 'h' option to show the help page.";
         exit(4);
     }
